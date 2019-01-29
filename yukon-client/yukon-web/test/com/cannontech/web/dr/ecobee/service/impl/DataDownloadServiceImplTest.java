@@ -16,8 +16,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
+import com.cannontech.dr.ecobee.message.RuntimeReportJobResponse;
 import com.cannontech.dr.ecobee.message.partial.RuntimeReport;
 import com.cannontech.dr.ecobee.message.partial.RuntimeReportRow;
+import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
@@ -167,5 +169,12 @@ public class DataDownloadServiceImplTest {
         public void sendOverrideControl(String serialNumber) {
             throw new UnsupportedOperationException("Method not implemented.");
         }
+
+        @Override
+        public RuntimeReportJobResponse createRuntimeReportJob(SelectionType selectionType,
+                Collection<String> selectionMatch, Range<Instant> dateRange) {
+            throw new UnsupportedOperationException("Method not implemented.");
+        }
+
     }
 }

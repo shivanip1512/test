@@ -15,6 +15,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.cannontech.common.temperature.TemperatureUnit;
+import com.cannontech.dr.ecobee.message.RuntimeReportJobResponse.JobStatus;
 import com.cannontech.dr.ecobee.message.partial.RuntimeReportRow;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
@@ -362,6 +363,22 @@ public interface JsonSerializers {
         public SelectionType deserialize(JsonParser paramJsonParser,
                 DeserializationContext paramDeserializationContext) throws IOException, JsonProcessingException {
             return SelectionType.fromEcobeeString(paramJsonParser.getValueAsString());
+        }
+    }
+    
+    class TO_JOB_STATUS extends JsonSerializer<JobStatus> {
+        @Override
+        public void serialize(JobStatus jobStatus, JsonGenerator jsonGenerator, SerializerProvider notUsed)
+                throws IOException, JsonProcessingException {
+            jsonGenerator.writeString(jobStatus.getEcobeeStatusString());
+        }
+    }
+
+    class FROM_JOB_STATUS extends JsonDeserializer<JobStatus> {
+        @Override
+        public JobStatus deserialize(JsonParser paramJsonParser,
+                DeserializationContext paramDeserializationContext) throws IOException, JsonProcessingException {
+            return JobStatus.fromEcobeeStatusString(paramJsonParser.getValueAsString());
         }
     }
 }

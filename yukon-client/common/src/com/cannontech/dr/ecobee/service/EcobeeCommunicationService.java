@@ -9,6 +9,8 @@ import com.cannontech.common.util.Range;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
+import com.cannontech.dr.ecobee.message.RuntimeReportJobResponse;
+import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
@@ -114,5 +116,12 @@ public interface EcobeeCommunicationService {
      * @throws EcobeeCommunicationException if Yukon cannot log in or connect to Ecobee API
      */
     List<SetNode> getHierarchy();
+
+    /**
+     * Creates a new runtime report job to be processed and return response object containing jobId.
+     * @throws EcobeeCommunicationException if Yukon cannot log in or connect to Ecobee API
+     */
+    RuntimeReportJobResponse createRuntimeReportJob(SelectionType selectionType, Collection<String> selectionMatch,
+            Range<Instant> dateRange);
 
 }

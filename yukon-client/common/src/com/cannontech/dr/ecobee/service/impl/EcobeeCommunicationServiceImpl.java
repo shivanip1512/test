@@ -1,6 +1,9 @@
 package com.cannontech.dr.ecobee.service.impl;
 
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.*;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.NOT_AUTHORIZED;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.PROCESSING_ERROR;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.SUCCESS;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.VALIDATION_ERROR;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +48,8 @@ import com.cannontech.dr.ecobee.message.ListHierarchyRequest;
 import com.cannontech.dr.ecobee.message.MoveDeviceRequest;
 import com.cannontech.dr.ecobee.message.MoveSetRequest;
 import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
+import com.cannontech.dr.ecobee.message.RuntimeReportJobRequest;
+import com.cannontech.dr.ecobee.message.RuntimeReportJobResponse;
 import com.cannontech.dr.ecobee.message.RuntimeReportRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.UnregisterDeviceRequest;
@@ -80,6 +85,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     private static final String modifyThermostatUrlPart = "hierarchy/thermostat?format=json";
     private static final String demandResponseUrlPart = "demandResponse?format=json";
     private static final String runtimeReportUrlPart = "runtimeReport?format=json";
+    private static final String createRuntimeReportJobUrlPart = "runtimeReportJob/create";
     private static final List<String> deviceReadColumns = ImmutableList.of(
         // If the order is changed here or something is added or removed we need to update
         // JsonSerializers.RuntimeReportRow and RuntimeReport
@@ -407,5 +413,30 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
     private String getUrlBase() {
         return settingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL);
+    }
+
+    @Override
+    public RuntimeReportJobResponse createRuntimeReportJob(SelectionType selectionType,
+            Collection<String> selectionMatch, Range<Instant> dateRange) {
+        RuntimeReportJobRequest request = new RuntimeReportJobRequest(dateRange.getMin(), dateRange.getMax(),
+            selectionMatch, selectionType, deviceReadColumns);
+        if (log.isDebugEnabled()) {
+            try {
+                String requestJson = JsonUtils.toJson(request);
+                log.debug("Request Body json: " + requestJson);
+            } catch (JsonProcessingException e) {
+                log.warn("Error while parsing json in debug.", e);
+            }
+        }
+
+        String url = getUrlBase() + createRuntimeReportJobUrlPart;
+        HttpEntity<RuntimeReportJobRequest> requestEntity = new HttpEntity<>(request, new HttpHeaders());
+
+        log.debug("Sending request to create a new runtime report job.");
+        RuntimeReportJobResponse response =
+            queryEcobee(url, requestEntity, EcobeeQueryType.DATA_COLLECTION, RuntimeReportJobResponse.class);
+
+        log.debug("Runtime report job has been created. JobId: " + response.getJobId());
+        return response;
     }
 }
