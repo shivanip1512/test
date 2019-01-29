@@ -499,14 +499,12 @@ public class ZoneDaoImpl implements ZoneDao {
             CcEventSubType.ManualFlipOperation, CcEventSubType.ManualOperation, CcEventSubType.StandardOperation });
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EV.LogId, EV.Text, EV.DateTime, PAO.PaoName, EV.Value, EV.UserName");
-        sql.append("FROM CCEventLog EV");
-        sql.append("JOIN YukonPAObject PAO ON EV.SubID = PAO.PAObjectId");
-        sql.append("WHERE EV.EventType").eq_k(CcEventType.CommandSent);
-        sql.append("AND PAO.PAObjectId IN (");
-        sql.append("    SELECT DISTINCT(SubstationBusId)");
-        sql.append("        FROM Zone ZE JOIN CapBankToZoneMapping CTZ ON CTZ.ZoneId = ZE.ZoneId");
-        sql.append("    WHERE ZE.ZoneId").in(zoneIds);
-        sql.append(")");
+        sql.append("FROM CapBankToZoneMapping CTZ");
+        sql.append("JOIN YukonPAObject PAO ON CTZ.DeviceId = PAO.PAObjectID");
+        sql.append("JOIN POINT PT ON PAO.PAObjectID = PT.PAObjectID");
+        sql.append("JOIN CCEventLog EV ON PT.POINTID = EV.PointID");
+        sql.append("WHERE CTZ.ZoneId").in(zoneIds);
+        sql.append("AND EV.EventType").eq_k(CcEventType.CommandSent);
         sql.append("AND EV.EventSubtype").in(subTypes);
         sql.append("AND EV.DateTime").gte(since);
 
