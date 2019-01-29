@@ -28,11 +28,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
@@ -146,7 +147,8 @@ public class MeterEventsReportController {
 
     static enum SortBy { NAME, METER_NUMBER, TYPE, DATE, EVENT, VALUE; }
 
-    @RequestMapping(value="home", params="jobId")
+    /**After clicking on a schedule from Meter Events Report page **/
+    @GetMapping(value="home", params="jobId")
     public String homeWithJob(ModelMap model, Integer jobId, YukonUserContext userContext) {
         
         setupExistingJobHomeModelMap(model, jobId, userContext);
@@ -154,10 +156,21 @@ public class MeterEventsReportController {
         
         return "meterEventsReport/home.jsp";
     }
+    
+    /**After selecting Show All in Meter Events widget from Meter Details page **/
+    @GetMapping(value="home", params="collectionType")
+    public String homeWithDeviceCollection(ModelMap model, DeviceCollection collection, YukonUserContext userContext) {
+        
+        setupNewHomeModelMap(model, collection, userContext);
+        scheduledJobsTable(model);
+        
+        return "meterEventsReport/home.jsp";
+    }
 
-    @RequestMapping(value="home", method=RequestMethod.POST)
-    public String homeWithDeviceCollection(ModelMap model, YukonUserContext userContext,
-                                           HttpServletRequest request, FlashScope flashScope) {            
+    /**After selecting devices from Meter Events Report Device Selection page (By Device, Group, Address Range, File Upload)**/
+    @PostMapping("home")
+    public String postWithDeviceCollection(ModelMap model, YukonUserContext userContext,
+                                           HttpServletRequest request, FlashScope flashScope) {
         if (StringUtils.isNotBlank(request.getParameter("collectionType"))) {
             try {
                 DeviceCollection collection = deviceCollectionFactory.createDeviceCollection(request);
@@ -171,7 +184,8 @@ public class MeterEventsReportController {
         return "meterEventsReport/home.jsp";
     }
 
-    @RequestMapping(value="home")
+    /**When clicking on Meter Events Report from AMI Actions (no devices or schedules selected) **/
+    @GetMapping("home")
     public String homeJustSchedules(ModelMap model) {
         scheduledJobsTable(model);
         return "meterEventsReport/home.jsp";
