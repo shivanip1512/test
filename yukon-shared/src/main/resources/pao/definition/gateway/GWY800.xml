@@ -12,7 +12,13 @@
         <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
         <pointInfo name="Connected Device Count" init="true" attributes="STREAMING_CAPABLE_DEVICE_COUNT" />
         <pointInfo name="Data Streaming Load" init="true" attributes="DATA_STREAMING_LOAD" />
+        <pointInfo name="Door Open" attributes="DOOR_OPEN"/>
+        <pointInfo name="Node Count Exceeded" attributes="NODE_COUNT_EXCEEDED"/>
+        <pointInfo name="Power Failure" attributes="POWER_FAILURE"/>
+        <pointInfo name="Radio Failure" attributes="RADIO_FAILURE"/>
         <pointInfo name="Ready Nodes" init="true" attributes="READY_NODES" />
+        <pointInfo name="Security Alarm" attributes="SECURITY_ALARM"/>
         <pointInfo name="Streaming Device Count" init="true" attributes="STREAMING_ACTIVE_DEVICE_COUNT" />
+        <pointInfo name="Time Sync Failed" attributes="TIME_SYNC_FAILED"/>
     </pointInfos>
 </pao>

@@ -487,6 +487,12 @@ INIT_ATTRIBUTE( TamperReverseWhDetected,                            "TAMPER_REVE
 INIT_ATTRIBUTE( TamperLargeIncreaseAfterOutage,                     "TAMPER_LARGE_INCREASE_AFTER_OUTAGE" );
 INIT_ATTRIBUTE( TamperLargeDecreaseAfterOutage,                     "TAMPER_LARGE_DECREASE_AFTER_OUTAGE" );
 
+INIT_ATTRIBUTE( SecurityAlarm,                                      "SECURITY_ALARM" );
+INIT_ATTRIBUTE( PowerFailure,                                       "POWER_FAILURE" );
+INIT_ATTRIBUTE( RadioFailure,                                       "RADIO_FAILURE" );
+INIT_ATTRIBUTE( DoorOpen,                                           "DOOR_OPEN" );
+INIT_ATTRIBUTE( NodeCountExceeded,                                  "NODE_COUNT_EXCEEDED" );
+
 INIT_ATTRIBUTE( StreamingCapableDeviceCount,                        "STREAMING_CAPABLE_DEVICE_COUNT" );
 INIT_ATTRIBUTE( StreamingActiveDeviceCount,                         "STREAMING_ACTIVE_DEVICE_COUNT" );
 INIT_ATTRIBUTE( DataStreamingLoad,                                  "DATA_STREAMING_LOAD" );

@@ -488,7 +488,14 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     TAMPER_LARGE_INCREASE_AFTER_OUTAGE("Tamper - Large Increase After Outage", AttributeGroup.RFN_METERING_EVENT, false),
     TAMPER_LARGE_DECREASE_AFTER_OUTAGE("Tamper - Large Decrease After Outage", AttributeGroup.RFN_METERING_EVENT, false),
     
-    //Gateway Statistics
+    // Gateway Events
+    SECURITY_ALARM("Security Alarm", AttributeGroup.RFN_OTHER_EVENT, false),
+    POWER_FAILURE("Power Failure", AttributeGroup.RFN_OTHER_EVENT, false),
+    RADIO_FAILURE("Radio Failure", AttributeGroup.RFN_OTHER_EVENT, false),
+    DOOR_OPEN("Door Open", AttributeGroup.RFN_OTHER_EVENT, false),
+    NODE_COUNT_EXCEEDED("Node Count Exceeded", AttributeGroup.RFN_OTHER_EVENT, false),
+    
+    // Gateway Statistics
     STREAMING_CAPABLE_DEVICE_COUNT("Connected Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
     STREAMING_ACTIVE_DEVICE_COUNT("Streaming Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
     DATA_STREAMING_LOAD("Data Streaming Load", AttributeGroup.GATEWAY_STATISTICS, false),

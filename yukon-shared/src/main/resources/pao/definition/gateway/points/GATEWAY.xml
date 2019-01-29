@@ -26,6 +26,30 @@
         <decimalplaces value="0"/>
     </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Status">
+        <name>Security Alarm</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="2" type="Status">
+        <name>Power Failure</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="3" type="Status">
+        <name>Radio Failure</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="4" type="Status">
+        <name>Door Open</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="5" type="Status">
+        <name>Node Count Exceeded</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="9" type="Status">
+        <name>Time Sync Failed</name>
+        <stategroup value="TrueFalse"/>
+    </point>
     <point offset="2000" type="Status">
         <name>Comm Status</name>
         <archive interval="ZERO" type="ON_CHANGE" />

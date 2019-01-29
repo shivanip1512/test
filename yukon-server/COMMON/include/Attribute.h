@@ -478,6 +478,12 @@ public:
     static const Attribute  TamperLargeIncreaseAfterOutage;
     static const Attribute  TamperLargeDecreaseAfterOutage;
 
+    static const Attribute  SecurityAlarm;
+    static const Attribute  PowerFailure;
+    static const Attribute  RadioFailure;
+    static const Attribute  DoorOpen;
+    static const Attribute  NodeCountExceeded;
+
     static const Attribute  StreamingCapableDeviceCount;
     static const Attribute  StreamingActiveDeviceCount;
     static const Attribute  DataStreamingLoad;
