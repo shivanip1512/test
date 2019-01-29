@@ -242,13 +242,13 @@
 		<jar destfile="${third-party}/itronServicePointManagerTypes_v1_3_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3/**" />
 		<mkdir dir="build" />
 		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3" destdir="build">
-            <classpath refid="jaxb-impl"/>
-        </javac>	
+			<classpath refid="jaxb-impl"/>
+		</javac>	
 		<jar destfile="lib/itronServicePointManagerTypes_v1_3.jar" basedir="build" />
 		<delete dir="build"/>
 		<delete dir="src/com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3"/>
 
-        <delete dir="src/com/cannontech/dr/itron/model"/>
+		<delete dir="src/com/cannontech/dr/itron/model"/>
 		
 	</target>
 
