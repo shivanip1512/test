@@ -209,7 +209,11 @@
 				<fileset dir=".." includes="**/*.jar" />
 			</classpath>
 		</taskdef>
-		
+
+		<path id="jaxb-impl">
+			<pathelement path="../third-party/jaxb-impl.jar"/>
+		</path>
+			
 		<xjc destdir="src" removeOldOutput="yes" package="com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8">
 		    <arg value="-extension"/>
 		    <arg value="-no-header"/>
@@ -226,19 +230,25 @@
 			<binding dir="src/com/cannontech/dr/itron/schema" includes="root.xjb"/>
 		</xjc>
 		
-		<jar destfile="${third-party}/itronDeviceManagerTypes_v1_8_sources.jar" basedir="src/com/cannontech/dr/itron/model/jaxb/deviceManagerTypes_v1_8" />
+		<jar destfile="${third-party}/itronDeviceManagerTypes_v1_8_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/deviceManagerTypes_v1_8/**" />
 		<mkdir dir="build" />
-		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/deviceManagerTypes_v1_8" destdir="build" />	
+		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/deviceManagerTypes_v1_8" destdir="build">
+			<classpath refid="jaxb-impl"/>
+		</javac>
 		<jar destfile="lib/itronDeviceManagerTypes_v1_8.jar" basedir="build" />
 		<delete dir="build"/>
 		<delete dir="src/com/cannontech/dr/itron/model/jaxb/deviceManagerTypes_v1_8"/>
 		
-		<jar destfile="${third-party}/itronServicePointManagerTypes_v1_3_sources.jar" basedir="src/com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3" />
+		<jar destfile="${third-party}/itronServicePointManagerTypes_v1_3_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3/**" />
 		<mkdir dir="build" />
-		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3" destdir="build" />	
+		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3" destdir="build">
+            <classpath refid="jaxb-impl"/>
+        </javac>	
 		<jar destfile="lib/itronServicePointManagerTypes_v1_3.jar" basedir="build" />
 		<delete dir="build"/>
 		<delete dir="src/com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3"/>
+
+        <delete dir="src/com/cannontech/dr/itron/model"/>
 		
 	</target>
 
