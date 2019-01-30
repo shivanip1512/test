@@ -226,13 +226,6 @@ MODIFY CancelOrStop CHAR(1) NULL;
 INSERT INTO DBUpdates VALUES ('YUK-19141', '7.2.0', SYSDATE);
 /* @end YUK-19141 */
 
-/* @start YUK-19198 */
-DELETE FROM YukonGroupRole WHERE RolePropertyID = -10812;
-DELETE FROM YukonRoleProperty WHERE RolePropertyID = -10812;
-
-INSERT INTO DBUpdates VALUES ('YUK-19198', '7.2.0', SYSDATE);
-/* @end YUK-19198 */
-
 /* @start YUK-19211 */
 UPDATE YukonRoleProperty 
 SET KeyName      = 'Area Commands and Actions', 
@@ -435,6 +428,21 @@ WHERE POINTID IN (
 
 INSERT INTO DBUpdates VALUES ('YUK-19270', '7.2.0', SYSDATE);
 /* @end YUK-19270 */
+
+/* @start YUK-19420 if YUK-19198 */
+INSERT INTO YukonRoleProperty 
+VALUES(-10812, -108, 'Java Web Start Launcher Enabled', 'false', 'Allow access to the Java Web Start Launcher for client applications.');
+
+INSERT INTO DBUpdates VALUES ('YUK-19420', '7.2.0', SYSDATE);
+/* @end YUK-19420 */
+
+/* @start YUK-19420 */
+UPDATE YukonRoleProperty
+SET DefaultValue = 'false'
+WHERE RolePropertyID = -10812;
+
+INSERT INTO DBUpdates VALUES ('YUK-19420', '7.2.0', SYSDATE);
+/* @end YUK-19420 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
