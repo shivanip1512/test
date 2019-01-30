@@ -1,5 +1,7 @@
 Manifest-Version: 1.0
 Class-Path: ./ 
+ itronDeviceManagerTypes_v1_8.jar 
+ itronServicePointManagerTypes_v1_3.jar 
  i18n-en_US.jar 
  commons-lang3-3.4.jar 
  commons-collections4-4.1.jar 

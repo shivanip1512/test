@@ -74,5 +74,10 @@ public class AccountServiceAdapter implements AccountService {
             throws InvalidAccountNumberException {
         throw new UnsupportedOperationException("Not Implemented");
     }
+
+    @Override
+    public AccountDto getAccountDto(int accountId, int energyCompanyId) {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
     
 }

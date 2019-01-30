@@ -13,6 +13,7 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.cannontech.stars.dr.hardware.exception.DeviceMacAddressAlreadyExistsException;
@@ -30,6 +31,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
     @Autowired private DeviceCreationService creationService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private ItronCommunicationService itronCommunicationService;
     
     @Transactional
     @Override
@@ -40,6 +42,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
         SimpleDevice pao = creationService.createDeviceByDeviceType(hardwareTypeToPaoType.get(hardware.getHardwareType()), hardware.getSerialNumber());
         inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), pao.getDeviceId());
         deviceDao.updateDeviceMacAddress(pao.getDeviceId(), hardware.getMacAddress());
+        itronCommunicationService.addDevice(hardware);
     }
 
     @Override
@@ -49,7 +52,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void deleteDevice(YukonPao pao, InventoryIdentifier inventoryId) {
-      
+        deviceDao.removeDevice(pao.getPaoIdentifier().getPaoId());
     }
 
     @Override

@@ -95,4 +95,6 @@ public interface AccountService {
     public AccountDto getAccountDto(String accountNumber, YukonEnergyCompany ec);
 
     public AccountDto getAccountDto(int accountId, int energyCompanyId, YukonUserContext userContext);
+
+    AccountDto getAccountDto(int accountId, int energyCompanyId);
 }

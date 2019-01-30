@@ -35,6 +35,7 @@ import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -93,6 +94,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private NestBuilder nestBuilder;
     @Autowired private LatitudeLongitudeBulkFieldProcessor latitudeLongitudeBulkFieldProcessor;
+    @Autowired private ItronCommunicationService itronCommunicationService;
     
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();

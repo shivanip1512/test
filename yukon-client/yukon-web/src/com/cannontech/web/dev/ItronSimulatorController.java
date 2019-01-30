@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceResponse;
 import com.cannontech.dr.itron.simulator.model.AddProgramError;
 import com.cannontech.dr.itron.simulator.model.ESIGroupError;
 import com.cannontech.dr.itron.simulator.model.EditHANDeviceError;
@@ -39,6 +40,7 @@ public class ItronSimulatorController {
     
     @GetMapping("test")
     public String test() {
+        AddHANDeviceResponse response = new AddHANDeviceResponse();
         return "redirect:itronSimulator";
     }
     

@@ -964,6 +964,15 @@ public class AccountServiceImpl implements AccountService {
         CustomerAccount customerAccount = getCustomerAccountForAccountNumberAndEnergyCompany(accountNumber, ec);
         return getAccountDto(customerAccount, userContext);
     }
+    
+    @Override
+    public AccountDto getAccountDto(int accountId, int energyCompanyId) {
+        EnergyCompany ec = ecDao.getEnergyCompany(energyCompanyId);
+        YukonUserContext userContext = userContextService.getEnergyCompanyDefaultUserContext(ec.getUser());
+
+        CustomerAccount customerAccount = getCustomerAccountForAccountId(accountId);
+        return getAccountDto(customerAccount, userContext);
+    }
 
     @Override
     public AccountDto getAccountDto(int accountId, int energyCompanyId, YukonUserContext userContext) {

@@ -23,6 +23,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -85,7 +86,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Autowired private StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private LocationService locationService;
-
+    @Autowired private ItronCommunicationService itronCommunicationService;
 
     // ADD DEVICE TO ACCOUNT
     @Override
@@ -132,6 +133,13 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                     initStaticLoadGroup(lmHw, energyCompany);
                 }
             }
+            
+            InventoryIdentifier inventoryIdentifier = inventoryDao.getYukonInventory(liteInv.getInventoryID());
+            if (inventoryIdentifier.getHardwareType().isItron()) {
+                itronCommunicationService.addServicePoint(liteInv.getAccountID(), energyCompany.getEnergyCompanyId(),
+                    liteInv.getInventoryID());
+            }
+            
             // add install hardware event here
             addInstallHardwareEvent(liteInv, "", energyCompany, user);
 
