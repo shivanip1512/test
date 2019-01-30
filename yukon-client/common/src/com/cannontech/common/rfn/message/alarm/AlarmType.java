@@ -2,6 +2,7 @@ package com.cannontech.common.rfn.message.alarm;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
@@ -14,16 +15,12 @@ public enum AlarmType {
     NODE_COUNT_ALARM(6L, AlarmCategory.GW_ALARM, BuiltInAttribute.NODE_COUNT_EXCEEDED),
     ;
     
-    private static Map<Long, AlarmType> GwAlarmMap = new HashMap<>() {
-        {
-            put(SECURITY_ALARM.alarmCodeId, SECURITY_ALARM);
-            put(POWER_ALARM.alarmCodeId, POWER_ALARM);
-            put(RADIO_ALARM.alarmCodeId, RADIO_ALARM);
-            put(TIME_SYNCHRONIZATION_ALARM.alarmCodeId, TIME_SYNCHRONIZATION_ALARM);
-            put(EXTERNAL_ALARM.alarmCodeId, EXTERNAL_ALARM);
-            put(NODE_COUNT_ALARM.alarmCodeId, NODE_COUNT_ALARM);
+    private static Map<Long, AlarmType> GwAlarmMap = new HashMap<>();
+    static {
+        for (AlarmType alarm : values()) {
+            GwAlarmMap.put(alarm.alarmCodeId, alarm);
         }
-    };
+    }
     
     BuiltInAttribute attribute = null;
     Long alarmCodeId = null;
@@ -39,10 +36,10 @@ public enum AlarmType {
         return attribute;
     }
     
-    public static AlarmType of(AlarmCategory category, long alarmCode) {
+    public static Optional<AlarmType> of(AlarmCategory category, long alarmCode) {
         if (AlarmCategory.GW_ALARM == category) {
-            return GwAlarmMap.get(alarmCode);
+            return Optional.of(GwAlarmMap.get(alarmCode));
         }
-        return null;
+        return Optional.empty();
     }
 }

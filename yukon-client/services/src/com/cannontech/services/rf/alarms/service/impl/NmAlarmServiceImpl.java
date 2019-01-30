@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.alarm.AlarmArchiveRequest;
 import com.cannontech.common.rfn.message.alarm.AlarmArchiveResponse;
@@ -56,10 +55,10 @@ public class NmAlarmServiceImpl implements NmAlarmService, MessageListener{
         RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(raisedBy);
         if (rfnDevice.getPaoIdentifier().getPaoType().isRfGateway()) {
             AlarmCategory category = request.getAlarmCategory();
-            BuiltInAttribute attribute = AlarmType.of(category, data.getAlarmCodeID()).getAttribute();
-            double value = data.getAlarmState() == AlarmState.ASSERT ? EventStatus.ACTIVE.getRawState() : EventStatus.CLEARED.getRawState();
-            rfnGatewayService.generatePointData(rfnDevice, attribute, value, true, data.getTimeStamp());
-            
+            AlarmType.of(category, data.getAlarmCodeID()).ifPresent(alarmType -> {
+                double value = data.getAlarmState() == AlarmState.ASSERT ? EventStatus.ACTIVE.getRawState() : EventStatus.CLEARED.getRawState();
+                rfnGatewayService.generatePointData(rfnDevice, alarmType.getAttribute(), value, true, data.getTimeStamp());
+            });
         }
         
         AlarmArchiveResponse response = new AlarmArchiveResponse();
