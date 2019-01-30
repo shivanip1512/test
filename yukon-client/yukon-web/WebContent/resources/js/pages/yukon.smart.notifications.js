@@ -18,8 +18,13 @@ yukon.smart.notifications = (function () {
         var type = popup.find('.js-type').val(),
             deviceDataMonitor = type === $(".js-event-type-ddm").val(),
             assetImport = type === $(".js-event-type-asset-import").val();
-        popup.find('.js-monitor').toggleClass('dn', !deviceDataMonitor);      
+        popup.find('.js-monitor').toggleClass('dn', !deviceDataMonitor);
         popup.find('.js-import-result').toggleClass('dn', !assetImport);
+        
+        /* We need to disable these fields even if it is hidden to prevent this value for 
+         * being passed to the controller as a subscription parameter to be saved to the DB.*/
+        popup.find('#js-asset-import-result-type').prop("disabled", !assetImport);
+        popup.find('#device-data-monitor').prop("disabled", !deviceDataMonitor);
    },
     
     initializeSmartNotificationsTable = function () {
@@ -49,17 +54,23 @@ yukon.smart.notifications = (function () {
             event.id = event.eventId;
             eventMessageSpan.append('<strong></strong>');
             if (eventType == 'YUKON_WATCHDOG') {
-                 eventMessageSpan.find('strong').text(event.warningType);	
-            } else {
-                 eventMessageSpan.find('strong').text(event.deviceName);
+                eventMessageSpan.find('strong').text(event.warningType);
+                event.message = eventMessageSpan.html() + " - " + statusMessage.text();
+            } else if (eventType == 'DEVICE_DATA_MONITOR' || eventType == 'INFRASTRUCTURE_WARNING') {
+                eventMessageSpan.find('strong').text(event.deviceName);
+                event.message = eventMessageSpan.html() + " - " + statusMessage.text();
+            } else if (eventType == 'ASSET_IMPORT') {
+                eventMessageSpan.find('strong').text(event.taskName);
+                var message = $(".js-file-import-error-count-lbl").text() + "(" + event.fileErrorCount + ") - " + 
+                              $(".js-file-import-success-count-lbl").text() + "(" + event.fileSuccessCount + ")";
+                event.message = eventMessageSpan.html() + " - " + message;
             }
-            event.message = eventMessageSpan.html() + " - " + statusMessage.text();
+            
             event.timestamp = event.timestamp.millis;
             //change the timezone if needed
-            var row = $('.js-event-' + event.id);
-            var timeText = moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
+            var row = $('.js-event-' + event.id),
+                timeText = moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
             row.find('.js-timestamp').text(timeText);
-            
             toAdd.push(event);
         });
         options.events = toAdd;

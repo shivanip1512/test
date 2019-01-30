@@ -4,13 +4,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
@@ -26,6 +30,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventData;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
+import com.cannontech.common.stars.scheduledDataImport.AssetImportResultType;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.Range;
@@ -62,13 +67,38 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
             createRowMapper(SmartNotificationEventType.INFRASTRUCTURE_WARNING);
     private static final YukonRowMapper<SmartNotificationEventData> createWatchdogWarningEventDetailRowMapper =
             createRowMapperWatchdog(SmartNotificationEventType.YUKON_WATCHDOG);
-                
+    private static final YukonRowMapper<SmartNotificationEventData> createAssetImportEventDetailRowMapper =
+            createAssetImportRowMapper(SmartNotificationEventType.ASSET_IMPORT);
+
+    public static final Comparator<SmartNotificationEventData> fileFailureCountComparator = 
+            Comparator.comparing(SmartNotificationEventData::getFileErrorCount);
    
     @PostConstruct
     public void init() {
         chunkingTemplate = new ChunkingSqlTemplate(jdbcTemplate);
     }
     
+    private static YukonRowMapper<SmartNotificationEventData> createAssetImportRowMapper(
+            final SmartNotificationEventType smartNotificationEventType) {
+        final YukonRowMapper<SmartNotificationEventData> mapper = new YukonRowMapper<SmartNotificationEventData>() {
+            @Override
+            public SmartNotificationEventData mapRow(YukonResultSet rs) throws SQLException {
+                SmartNotificationEventData row = new SmartNotificationEventData();
+                row.setEventId(rs.getInt("EventId"));
+                row.setTimestamp(rs.getInstant("Timestamp"));
+                row.setJobGroupId(rs.getInt("jobGroupId"));
+                row.setJobName(rs.getString("jobName"));
+                row.setFileSuccessCount(rs.getInt("successFileCount"));
+                if (StringUtils.isNoneBlank(rs.getString("filesWithError"))) {
+                    StringTokenizer tokenizer = new StringTokenizer(rs.getString("filesWithError"), ",");
+                    row.setFileErrorCount(tokenizer.countTokens());
+                }
+                return row;
+            }
+        };
+        return mapper;
+    }
+
     private static YukonRowMapper<SmartNotificationEventData> createRowMapper(final SmartNotificationEventType smartNotificationEventType) {
         final YukonRowMapper<SmartNotificationEventData> mapper = new YukonRowMapper<SmartNotificationEventData>() {
             @Override
@@ -465,5 +495,113 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         sql.append("    AND Timestamp").gte(from);
         sql.append("    AND Timestamp").lt(to);
         return jdbcTemplate.queryForInt(sql);
+    }
+
+    @Override
+    public SearchResults<SmartNotificationEventData> getAssetImportEventData(DateTimeZone timeZone,
+            PagingParameters paging, SortBy sortBy, Direction direction, Range<DateTime> dateRange,
+            AssetImportResultType assetImportResultType) {
+        DateTime from = dateRange.getMin().withZone(timeZone);
+        DateTime to = dateRange.getMax().withZone(timeZone);
+
+        int start = paging.getStartIndex();
+        int count = paging.getItemsPerPage();
+
+        if (sortBy == null) {
+            sortBy = SortBy.TIMESTAMP;
+        }
+        if (direction == null) {
+            direction = Direction.desc;
+        }
+
+        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+        boolean isOracle = databaseVendor.isOracle();
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(
+            "SELECT sne.Timestamp, sne.EventId, sne.Type, snep.jobGroupId, snep.jobName, snep.successFileCount, snep.filesWithError");
+        sql.append("FROM SmartNotificationEvent sne");
+        sql.append("    INNER JOIN (");
+        sql.append("        SELECT * FROM (");
+        sql.append("            SELECT EventId, Name, Value FROM SmartNotificationEventParam");
+        sql.append("        ) snep");
+        if (isOracle) {
+            sql.append(
+                "        PIVOT ( Max(Value) FOR Name IN ('jobGroupId' AS jobGroupId, 'jobName' AS jobName, 'importType' AS importType, 'successFileCount' AS successFileCount, 'filesWithError' AS filesWithError)) P");
+        } else {
+            sql.append(
+                "        PIVOT ( Max(Value) FOR Name IN (jobGroupId, jobName, successFileCount, filesWithError)) P ");
+        }
+        sql.append("        ) snep ON sne.EventId = snep.EventId");
+        sql.append("WHERE sne.Type").eq_k(SmartNotificationEventType.ASSET_IMPORT);
+        sql.append("    AND sne.Timestamp").gte(from);
+        sql.append("    AND sne.Timestamp").lt(to);
+        if (sortBy != SortBy.FILE_ERROR_COUNT) {
+            sql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
+        }
+        PagingResultSetExtractor<SmartNotificationEventData> rse =
+            new PagingResultSetExtractor<>(start, count, createAssetImportEventDetailRowMapper);
+        jdbcTemplate.query(sql, rse);
+
+        List<SmartNotificationEventData> filteredResults = rse.getResultList();
+        if (AssetImportResultType.IMPORTS_WITH_ERRORS == assetImportResultType) {
+            filteredResults =
+                rse.getResultList().stream().filter(result -> result.getFileErrorCount() > 0).collect(
+                    Collectors.toList());
+        }
+        if (sortBy == SortBy.FILE_ERROR_COUNT) {
+            if (direction == Direction.asc) {
+                Collections.sort(filteredResults, fileFailureCountComparator);
+            } else {
+                Collections.sort(filteredResults, fileFailureCountComparator.reversed());
+            }
+        }
+        SearchResults<SmartNotificationEventData> retVal = new SearchResults<>();
+        retVal.setBounds(start, count, getAssetImportEventCount(from, to, assetImportResultType));
+        retVal.setResultList(filteredResults);
+        return retVal;
+    }
+
+    @Override
+    public int getAssetImportEventCount(DateTime from, DateTime to, AssetImportResultType assetImportResultType) {
+        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+        boolean isOracle = databaseVendor.isOracle();
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT distinct sne.EventId, snep.filesWithError");
+        sql.append("FROM SmartNotificationEvent sne");
+        sql.append("    INNER JOIN (");
+        sql.append("        SELECT * FROM (");
+        sql.append("            SELECT EventId, Name, Value FROM SmartNotificationEventParam");
+        sql.append("        ) snep");
+        if (isOracle) {
+            sql.append(
+                "        PIVOT ( Max(Value) FOR Name IN ('jobGroupId' AS jobGroupId, 'jobName' AS jobName, 'importType' AS importType, 'successFileCount' AS successFileCount, 'filesWithError' AS filesWithError)) P");
+        } else {
+            sql.append(
+                "        PIVOT ( Max(Value) FOR Name IN (jobGroupId, jobName, successFileCount, filesWithError)) P ");
+        }
+        sql.append("        ) snep ON sne.EventId = snep.EventId");
+        sql.append("WHERE sne.Type").eq_k(SmartNotificationEventType.ASSET_IMPORT);
+        sql.append("    AND sne.Timestamp").gte(from);
+        sql.append("    AND sne.Timestamp").lt(to);
+        List<SmartNotificationEventData> list =
+            jdbcTemplate.query(sql, new YukonRowMapper<SmartNotificationEventData>() {
+                @Override
+                public SmartNotificationEventData mapRow(YukonResultSet rs) throws SQLException {
+                    SmartNotificationEventData eventData = new SmartNotificationEventData();
+                    eventData.setEventId(rs.getInt("EventId"));
+                    if (StringUtils.isNoneBlank(rs.getString("filesWithError"))) {
+                        StringTokenizer tokenizer = new StringTokenizer(rs.getString("filesWithError"));
+                        eventData.setFileErrorCount(tokenizer.countTokens());
+                    }
+                    return eventData;
+                }
+            });
+        List<SmartNotificationEventData> filteredList = list;
+        if (AssetImportResultType.IMPORTS_WITH_ERRORS == assetImportResultType) {
+            filteredList = list.stream().filter(result -> result.getFileErrorCount() > 0).collect(Collectors.toList());
+        }
+        return filteredList.size();
     }
 }

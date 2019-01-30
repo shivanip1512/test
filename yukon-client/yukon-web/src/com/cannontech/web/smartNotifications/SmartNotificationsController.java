@@ -55,6 +55,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationMedia;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.common.smartNotification.model.SmartNotificationVerbosity;
 import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
+import com.cannontech.common.stars.scheduledDataImport.AssetImportResultType;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.ContactDao;
@@ -71,7 +72,6 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.ContactDto;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.web.stars.dr.operator.AssetImportResultType;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.util.WebFileUtils;
@@ -185,6 +185,10 @@ public class SmartNotificationsController {
             addDeviceCollectionToModelMap(allDetail, model);
         } else if (eventType == SmartNotificationEventType.YUKON_WATCHDOG) {
             eventData = eventDao.getWatchdogWarningEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range);
+        } else if (eventType == SmartNotificationEventType.ASSET_IMPORT) {
+            AssetImportResultType assetImportResultType = AssetImportResultType.valueOf(parameter);
+            eventData = eventDao.getAssetImportEventData(userContext.getJodaTimeZone(), paging, sortBy.value,
+                sorting.getDirection(), range, assetImportResultType);
         }
         return eventData;
     }
@@ -416,7 +420,7 @@ public class SmartNotificationsController {
     @RequestMapping(value="download", method=RequestMethod.GET)
     public void download(@ModelAttribute("filter") SmartNotificationEventFilter filter, YukonUserContext userContext, 
                           @DefaultSort(dir=Direction.asc, sort="timestamp") SortingParameters sorting, ModelMap model,
-            String eventType, String parameter, HttpServletResponse response) throws IOException {
+                          String eventType, String parameter, HttpServletResponse response) throws IOException {
         SmartNotificationEventType type = SmartNotificationEventType.valueOf(eventType);
         SearchResults<SmartNotificationEventData> eventData =
             retrieveEventData(userContext, PagingParameters.EVERYTHING, type, parameter, sorting, filter, model);
@@ -425,11 +429,34 @@ public class SmartNotificationsController {
         String[] headerRow = null;
         if (type == SmartNotificationEventType.YUKON_WATCHDOG) {
             headerRow = populateWatchdogWarningData(userContext, dataRows, eventData, type, eventType, accessor);
+        } else if (type == SmartNotificationEventType.ASSET_IMPORT) {
+            headerRow = populateDataForAssetImport(userContext, dataRows, eventData, type, eventType, accessor);
         } else {
             headerRow = populateData(userContext, dataRows, eventData, type, eventType, accessor);
         }
         String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "notificationEvents_" + eventType + "_" + now + ".csv");
+    }
+
+    private String[] populateDataForAssetImport(YukonUserContext userContext, List<String[]> dataRows,
+            SearchResults<SmartNotificationEventData> eventData, SmartNotificationEventType type, String eventType,
+            MessageSourceAccessor accessor) {
+        String scheduleNameHeader = accessor.getMessage(EventSortBy.scheduleName);
+        String timestampHeader = accessor.getMessage(EventSortBy.timestamp);
+        String fileFailureCountHeader = accessor.getMessage(EventSortBy.fileErrorCount);
+        String fileSuccessCountHeader = accessor.getMessage(EventSortBy.fileSuccessCount);
+        String headerRow[] =
+            new String[] { scheduleNameHeader, timestampHeader, fileFailureCountHeader, fileSuccessCountHeader };
+
+        for (SmartNotificationEventData event : eventData.getResultList()) {
+            String scheduleName = event.getJobName();
+            String timestamp = dateFormattingService.format(event.getTimestamp(), DateFormatEnum.BOTH, userContext);
+            String fileSuccessCount = String.valueOf(event.getFileSuccessCount());
+            String fileFailCount = String.valueOf(event.getFileErrorCount());
+            String[] dataRow = new String[] { scheduleName, timestamp, fileSuccessCount, fileFailCount };
+            dataRows.add(dataRow);
+        }
+        return headerRow;
     }
 
     /**
@@ -508,7 +535,10 @@ public class SmartNotificationsController {
         type(SortBy.TYPE),
         status(SortBy.STATUS),
         timestamp(SortBy.TIMESTAMP),
-        warningType(SortBy.WARNING_TYPE);
+        warningType(SortBy.WARNING_TYPE),
+        scheduleName(SortBy.TASK_NAME),
+        fileErrorCount(SortBy.FILE_ERROR_COUNT),
+        fileSuccessCount(SortBy.FILE_SUCCESS_COUNT);
         
         private EventSortBy(SortBy value) {
             this.value = value;

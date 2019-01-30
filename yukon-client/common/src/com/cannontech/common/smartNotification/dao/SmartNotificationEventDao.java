@@ -14,6 +14,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventData;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
+import com.cannontech.common.stars.scheduledDataImport.AssetImportResultType;
 import com.cannontech.common.util.Range;
 
 /**
@@ -27,6 +28,9 @@ public interface SmartNotificationEventDao {
         STATUS("Status"),
         TIMESTAMP("Timestamp"),
         WARNING_TYPE("WarningType"),
+        TASK_NAME("taskName"),
+        FILE_SUCCESS_COUNT("successFileCount"),
+        FILE_ERROR_COUNT("filesWithError")
         ;
         
         private SortBy(String dbString) {
@@ -91,4 +95,16 @@ public interface SmartNotificationEventDao {
      * Returns watchdog event count based on selected from and to time range.
      */
     int getWatchdogWarningEventDetailCount(DateTime from, DateTime to);
+
+    /**
+     * Returns asset import event data to be displayed on UI.
+     */
+    SearchResults<SmartNotificationEventData> getAssetImportEventData(DateTimeZone jodaTimeZone,
+            PagingParameters paging, SortBy value, Direction direction, Range<DateTime> range,
+            AssetImportResultType assetImportResultType);
+    
+    /**
+     * Returns asset import event count based on selected from and to time range.
+     */
+    int getAssetImportEventCount(DateTime from, DateTime to, AssetImportResultType assetImportResultType);
 }

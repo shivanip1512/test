@@ -7,6 +7,10 @@ public class SmartNotificationEventData {
     private int eventId;
     private int monitorId;
     private int deviceId;
+    private int fileSuccessCount;
+    private int fileErrorCount;
+    private int jobGroupId;
+    private String jobName;
     private String status;
     private String severity;
     private String argument1;
@@ -112,4 +116,35 @@ public class SmartNotificationEventData {
         this.warningType = warningType;
     }
 
+    public int getFileSuccessCount() {
+        return fileSuccessCount;
+    }
+
+    public void setFileSuccessCount(int fileSuccessCount) {
+        this.fileSuccessCount = fileSuccessCount;
+    }
+
+    public int getFileErrorCount() {
+        return fileErrorCount;
+    }
+
+    public void setFileErrorCount(int fileErrorCount) {
+        this.fileErrorCount = fileErrorCount;
+    }
+
+    public int getJobGroupId() {
+        return jobGroupId;
+    }
+
+    public void setJobGroupId(int jobGroupId) {
+        this.jobGroupId = jobGroupId;
+    }
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
 }

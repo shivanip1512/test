@@ -11,10 +11,11 @@ public class DataImportHelper {
     /**
      * This method converts the import result object to dataimport warning.
      */
-    public static List<DataImportWarning> getDataImportWarning(String taskName , String importType, AccountImportResult importResult) {
+    public static List<DataImportWarning> getDataImportWarning(Integer jobGroupId, String jobName , String importType, AccountImportResult importResult) {
         List<DataImportWarning> warning = new ArrayList<>();
         DataImportWarning dataImportWarning = new DataImportWarning();
-        dataImportWarning.setTaskName(taskName);
+        dataImportWarning.setJobGroupId(jobGroupId);
+        dataImportWarning.setJobName(jobName);
         dataImportWarning.setImportType(importType);
         dataImportWarning.setFilesWithError("ImportFile1.xls , ImportFile3.xls");//TODO It will be replaced with actual method call after YUK-19061 & YUK-19160 changes. 
         dataImportWarning.setSuccessFileCount(3);//TODO It will be replaced with actual method call after YUK-19061 & YUK-19160 changes.

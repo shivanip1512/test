@@ -1096,7 +1096,8 @@ public class AccountImportService {
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         String taskName = accessor.getMessage("yukon.web.modules.smartNotifications.MANUAL_IMPORT.taskName");
-        List<DataImportWarning> dataImportwarning = DataImportHelper.getDataImportWarning(taskName, ScheduledImportType.ASSET_IMPORT.getImportType(), result);
+        // The first parameter passed to getDataImportWarning is -1 because this is manual import and does not have a job id associated with it.
+        List<DataImportWarning> dataImportwarning = DataImportHelper.getDataImportWarning(-1, taskName, ScheduledImportType.ASSET_IMPORT.getImportType(), result);
         List<SmartNotificationEvent> smartNotificationEvent =
                 dataImportwarning.stream().map(importWarning -> DataImportAssembler.assemble(Instant.now(), importWarning))
                                           .collect(Collectors.toList());

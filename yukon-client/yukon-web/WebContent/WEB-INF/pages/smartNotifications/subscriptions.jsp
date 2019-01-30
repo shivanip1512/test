@@ -57,6 +57,9 @@
                                     <c:if test="${subscription.type == 'DEVICE_DATA_MONITOR'}">
                                         <cti:url var="detailsUrl" value="/notifications/events/${subscription.type.urlPath}/${subscription.parameters['monitorId']}"/>
                                     </c:if>
+                                    <c:if test="${subscription.type == 'ASSET_IMPORT'}">
+                                        <cti:url var="detailsUrl" value="/notifications/events/${subscription.type.urlPath}/${subscription.parameters['assetImportResultType']}"/>
+                                    </c:if>
                                     <cm:dropdownOption key=".notificationDetail" icon="icon-email-open" href="${detailsUrl}"/>
                                     <cm:dropdownOption key=".unsubscribe" icon="icon-email-delete" data-subscription-id="${subId}" 
                                         data-ok-event="yukon:notifications:remove" classes="js-hide-dropdown js-unsubscribe-${subId}"/>

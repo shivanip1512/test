@@ -50,7 +50,7 @@
                 <c:choose>
                     <c:when test="${!empty subscription.parameters['assetImportResultType']}">
                         <i:inline key="yukon.web.modules.operator.assetImportResultType.${subscription.parameters['assetImportResultType']}"/> 
-                        <form:hidden path="parameters['assetImportResultType']"/>
+                        <form:hidden path="parameters['assetImportResultType']" id="js-asset-import-result-type"/>
                     </c:when>
                     <c:otherwise>
                         <tags:selectWithItems path="parameters['assetImportResultType']" items="${assetImportResultTypes}"

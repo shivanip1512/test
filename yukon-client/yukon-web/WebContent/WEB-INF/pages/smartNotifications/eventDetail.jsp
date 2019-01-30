@@ -10,6 +10,7 @@
 <cti:standardPage module="smartNotifications" page="detail">
     <c:set var="infraOrDDMEvent" value="${eventType == 'INFRASTRUCTURE_WARNING' || eventType == 'DEVICE_DATA_MONITOR'}"/>
     <c:set var="watchdogEvent" value="${eventType == 'YUKON_WATCHDOG'}"/>
+    <c:set var="assetImportEvent" value="${eventType == 'ASSET_IMPORT'}"/>
     <cti:toJson id="eventsjson" object="${events.resultList}"/>
     <c:set var="urlPath" value="/notifications/events/${eventType.urlPath}"/>
     <c:if test="${!empty parameter}">
@@ -27,7 +28,13 @@
                     </tags:nameValue2>
                     <c:if test="${!empty monitorName}">
                         <tags:nameValue2 nameKey=".monitor">
-                            ${monitorName}
+                            ${fn:escapeXml(monitorName)}
+                            <input type="hidden" name="parameter" value="${parameter}"/>
+                        </tags:nameValue2>
+                    </c:if>
+                    <c:if test="${assetImportEvent}">
+                        <tags:nameValue2 nameKey=".importResults">
+                            <i:inline key="yukon.web.modules.operator.assetImportResultType.${parameter}"/>
                             <input type="hidden" name="parameter" value="${parameter}"/>
                         </tags:nameValue2>
                     </c:if>
@@ -78,7 +85,7 @@
                         </cti:url>
                         <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/> 
                     </c:if>
-                        <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>  
+                    <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>
                     <c:if test="${infraOrDDMEvent}">
                         <cti:url var="mapUrl" value="/tools/map">
                             <cti:mapParam value="${deviceCollection.collectionParameters}"/>
@@ -106,6 +113,9 @@
 
             <c:if test="${watchdogEvent}">
                 <%@ include file="watchdogWarningEventDetails.jsp" %>
+            </c:if>
+            <c:if test="${assetImportEvent}">
+                <%@ include file="assetImportEventDetails.jsp" %>
             </c:if>
         </c:otherwise>
     </c:choose>

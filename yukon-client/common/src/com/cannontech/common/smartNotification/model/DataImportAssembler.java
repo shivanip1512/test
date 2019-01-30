@@ -18,7 +18,8 @@ import com.cannontech.common.scheduledFileImport.ScheduledImportType;
  */
 public class DataImportAssembler {
 
-    public static final String TASK_NAME = "taskName";
+    public static final String JOB_GROUP_ID = "jobGroupId";
+    public static final String JOB_NAME = "jobName";
     public static final String FILES_WITH_ERROR = "filesWithError";
     public static final String SUCCESS_FILE_COUNT = "successFileCount";
     public static final String IMPORT_TYPE = "importType";
@@ -26,7 +27,8 @@ public class DataImportAssembler {
     public static SmartNotificationEvent assemble(Instant now, DataImportWarning warning) {
         SmartNotificationEvent event = new SmartNotificationEvent(now);
         Map<String, Object> parameters = new LinkedHashMap<>();
-        parameters.put(TASK_NAME, warning.getTaskName());
+        parameters.put(JOB_GROUP_ID, warning.getJobGroupId());
+        parameters.put(JOB_NAME, warning.getJobName());
         if (StringUtils.isNotBlank(warning.getFilesWithError())) {
             parameters.put(FILES_WITH_ERROR, warning.getFilesWithError());
         }
@@ -41,7 +43,7 @@ public class DataImportAssembler {
     }
 
     public static String getTaskName(Map<String, Object> parameters) {
-        return parameters.get(TASK_NAME).toString();
+        return parameters.get(JOB_NAME).toString();
     }
 
     public static Object getFilesWithError(Map<String, Object> parameters) {

@@ -33,7 +33,8 @@ public class ScheduledDataImportTask extends YukonTaskBase {
     public void start() {
         // TODO - Need to implement the file import and processing Logic here
         AccountImportResult importResult = new AccountImportResult();// TODO :Will be removed after YUK-19061 implementation
-        List<DataImportWarning> dataImportwarning = DataImportHelper.getDataImportWarning(getScheduleName(), getImportType(), importResult);
+        List<DataImportWarning> dataImportwarning =
+            DataImportHelper.getDataImportWarning(getJob().getJobGroupId(), getScheduleName(), getImportType(), importResult);
         List<SmartNotificationEvent> smartNotificationEvent =
                 dataImportwarning.stream().map(importWarning -> DataImportAssembler.assemble(Instant.now(), importWarning))
                                           .collect(Collectors.toList());

@@ -2,7 +2,8 @@ package com.cannontech.common.scheduledFileImport;
 
 public class DataImportWarning {
 
-    private String taskName;
+    private Integer jobGroupId;
+    private String jobName;
     private String filesWithError;
     private Integer successFileCount;
     private String importType;
@@ -31,12 +32,20 @@ public class DataImportWarning {
         this.successFileCount = successFileCount;
     }
 
-    public String getTaskName() {
-        return taskName;
+    public String getJobName() {
+        return jobName;
     }
 
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
+
+    public Integer getJobGroupId() {
+        return jobGroupId;
+    }
+
+    public void setJobGroupId(Integer jobGroupId) {
+        this.jobGroupId = jobGroupId;
     }
 
 }

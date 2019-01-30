@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator;
+package com.cannontech.common.stars.scheduledDataImport;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 

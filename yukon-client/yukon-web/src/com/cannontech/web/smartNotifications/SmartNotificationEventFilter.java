@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.common.stars.scheduledDataImport.AssetImportResultType;
 import com.cannontech.infrastructure.model.InfrastructureWarningDeviceCategory;
 
 public class SmartNotificationEventFilter {
@@ -12,6 +13,7 @@ public class SmartNotificationEventFilter {
     private Date startDate;
     private Date endDate;
     private List<InfrastructureWarningDeviceCategory> categories = new ArrayList<>();
+    private List<AssetImportResultType> assetImportResultTypes = new ArrayList<>();
     
     public Date getStartDate() {
         return startDate;
@@ -37,6 +39,10 @@ public class SmartNotificationEventFilter {
     public Instant getEndInstant() {
         return endDate.toInstant();
     }
-    
-
+    public List<AssetImportResultType> getAssetImportResultTypes() {
+        return assetImportResultTypes;
+    }
+    public void setAssetImportResultTypes(List<AssetImportResultType> assetImportResultTypes) {
+        this.assetImportResultTypes = assetImportResultTypes;
+    }
 }

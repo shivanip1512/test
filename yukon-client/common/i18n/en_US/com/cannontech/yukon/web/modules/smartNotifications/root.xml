@@ -30,6 +30,9 @@
     <entry key="yukon.web.modules.smartNotifications.detail.status">Status</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.timestamp">Timestamp</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.deviceTypes">Device Types</entry>
+    <entry key="yukon.web.modules.smartNotifications.detail.scheduleName">Schedule Name</entry>
+    <entry key="yukon.web.modules.smartNotifications.detail.fileErrorCount">File Error Count</entry>
+    <entry key="yukon.web.modules.smartNotifications.detail.fileSuccessCount">File Success Count</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.filteredResults">Filtered Results:</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.events">Events</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.collectionActions">Collection Actions</entry>
@@ -38,6 +41,7 @@
     <entry key="yukon.web.modules.smartNotifications.detail.readAttribute">Read Attribute</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.sendCommand">Send Command</entry>
     <entry key="yukon.web.modules.smartNotifications.noEvents">No events found</entry>
+    <entry key="yukon.web.modules.smartNotifications.importResults">Import Results</entry>
     
     <!-- Subscription popup -->
     <entry key="yukon.web.modules.smartNotifications.existingSubscriptions.message">Select from an existing subscription to edit or click on the Add button to add a new subscription.</entry>
