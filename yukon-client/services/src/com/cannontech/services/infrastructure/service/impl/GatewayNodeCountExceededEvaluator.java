@@ -5,13 +5,12 @@ import java.util.Set;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureStatusWarningEvaluator;
 
 public class GatewayNodeCountExceededEvaluator extends InfrastructureStatusWarningEvaluator {
-    
-    private static int NodeCountExceeded = 1;
-    
+        
     @Override
     public InfrastructureWarningType getWarningType() {
         return InfrastructureWarningType.GATEWAY_NODE_COUNT_EXCEEDED;
@@ -24,7 +23,7 @@ public class GatewayNodeCountExceededEvaluator extends InfrastructureStatusWarni
 
     @Override
     public int getBadState() {
-        return NodeCountExceeded;
+        return EventStatus.ACTIVE.getRawState();
     }
 
     @Override

@@ -5,12 +5,12 @@ import java.util.Set;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureStatusWarningEvaluator;
 
 public class GatewayTimeSyncFailedEvaluator extends InfrastructureStatusWarningEvaluator {
     
-    private static int TIME_SYNC_FAILED = 1;
     
     @Override
     public InfrastructureWarningType getWarningType() {
@@ -24,7 +24,7 @@ public class GatewayTimeSyncFailedEvaluator extends InfrastructureStatusWarningE
 
     @Override
     public int getBadState() {
-        return TIME_SYNC_FAILED;
+        return EventStatus.ACTIVE.getRawState();
     }
 
     @Override

@@ -5,13 +5,12 @@ import java.util.Set;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureStatusWarningEvaluator;
 
 public class GatewayDoorOpenEvaluator extends InfrastructureStatusWarningEvaluator {
-    
-    private static int DOOR_OPEN = 1;
-    
+        
     @Override
     public InfrastructureWarningType getWarningType() {
         return InfrastructureWarningType.GATEWAY_DOOR_OPEN;
@@ -24,7 +23,7 @@ public class GatewayDoorOpenEvaluator extends InfrastructureStatusWarningEvaluat
 
     @Override
     public int getBadState() {
-        return DOOR_OPEN;
+        return EventStatus.ACTIVE.getRawState();
     }
 
     @Override

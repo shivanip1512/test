@@ -5,13 +5,12 @@ import java.util.Set;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureStatusWarningEvaluator;
 
 public class GatewaySecurityAlarmEvaluator extends InfrastructureStatusWarningEvaluator {
-    
-    private static int SECURITY_ALARM = 1;
-    
+     
     @Override
     public InfrastructureWarningType getWarningType() {
         return InfrastructureWarningType.GATEWAY_SECURITY_ALARM;
@@ -24,7 +23,7 @@ public class GatewaySecurityAlarmEvaluator extends InfrastructureStatusWarningEv
 
     @Override
     public int getBadState() {
-        return SECURITY_ALARM;
+        return EventStatus.ACTIVE.getRawState();
     }
 
     @Override
