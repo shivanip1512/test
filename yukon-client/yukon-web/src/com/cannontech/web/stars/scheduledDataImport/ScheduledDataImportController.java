@@ -12,18 +12,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,6 +67,8 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.schedule.ScheduleControllerHelper;
 import com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory.ScheduledDataImportTaskJobWrapper;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.scheduledDataImport.service.ScheduledDataImportService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao.SortBy;
@@ -79,6 +83,7 @@ public class ScheduledDataImportController {
     @Autowired private ScheduledDataImportService scheduledDataImportService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ScheduleControllerHelper scheduleControllerHelper;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
 
     private static final String baseKey = "yukon.web.modules.operator.scheduledDataImportDetail.";
 
@@ -219,12 +224,19 @@ public class ScheduledDataImportController {
 
     @GetMapping("{jobGroupId}/viewHistory")
     public String viewHistory(ModelMap model, @PathVariable int jobGroupId, YukonUserContext userContext,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "MM/dd/yyyy HH:mm") Instant from,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "MM/dd/yyyy HH:mm") Instant to,
+            @RequestParam(required = false) Instant from, @RequestParam(required = false) Instant to,
             @DefaultItemsPerPage(10) PagingParameters paging,
             @DefaultSort(dir = Direction.desc, sort = "fileName") SortingParameters sorting) throws ServletException {
 
         SearchResults<ScheduleImportHistoryEntry> searchResults = new SearchResults<>();
+
+        if (to == null) {
+            to = new Instant();
+        }
+
+        if (from == null) {
+            from = to.minus(Duration.standardDays(7));
+        }
 
         model.addAttribute("from", from);
         model.addAttribute("to", to);
@@ -297,6 +309,11 @@ public class ScheduledDataImportController {
         model.addAttribute("scheduledImportData", scheduledDataImport);
     }
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder, final YukonUserContext userContext) {
+        datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.CURRENT);
+    }
+
     public enum Column implements DisplayableEnum {
         NAME,
         TYPE,
@@ -333,5 +350,5 @@ public class ScheduledDataImportController {
             return "yukon.web.modules.operator.fileImportHistory." + name();
         }
     }
-    
+
 }

@@ -57,18 +57,17 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
     private SqlStatementBuilder getOrderBy(SortBy sortBy, Direction direction) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         if (sortBy == null) {
-            sql.append(sortBy.FILENAME.getDbString()).append(direction);
-        } else if (sortBy == sortBy.TOTAL) {
-            sql.append(sortBy.SUCCESS.getDbString());
+            sql.append(SortBy.FILENAME.getDbString()).append(direction);
+        } else if (sortBy == SortBy.TOTAL) {
+            sql.append(SortBy.SUCCESS.getDbString());
             sql.append("+");
-            sql.append(sortBy.FAILURE.getDbString()).append(direction);
+            sql.append(SortBy.FAILURE.getDbString()).append(direction);
         } else {
             sql.append(sortBy.getDbString()).append(direction);
         }
         return sql;
     }
-    
-    
+
     private int getAllFileHistoryByFilterCount(int jobGroupId, Instant from, Instant to) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
@@ -80,13 +79,12 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("FROM ScheduledDataImportHistory");
 
-        if(from!= null && to!=null){
-        sql.append("WHERE ImportDate").gte(from);
-        sql.append("AND ImportDate").lte(to);
-        sql.append("AND JobGroupId").eq(jobGroupId);
-        }
-        else{
-        sql.append("WHERE JobGroupId").eq(jobGroupId);
+        if (from != null && to != null) {
+            sql.append("WHERE ImportDate").gte(from);
+            sql.append("AND ImportDate").lte(to);
+            sql.append("AND JobGroupId").eq(jobGroupId);
+        } else {
+            sql.append("WHERE JobGroupId").eq(jobGroupId);
         }
 
         return sql;

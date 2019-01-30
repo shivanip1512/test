@@ -1,10 +1,8 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
@@ -12,35 +10,35 @@
 <cti:standardPage module="operator" page="fileImportHistory">
     <tags:sectionContainer2 nameKey="history">
 
-        <cti:url var="saveUrl" value="/stars/scheduledDataImport/${jobGroupId}/viewHistory"/>
-        <form:form id="filter-form" action="${saveUrl}" method="GET">
-            <div class="column-14-10 clearfix">
-                <div class="column one">
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey="yukon.web.modules.tools.bulk.analysis.dateRange">
-                            <dt:dateTime name="from" value="${from}"/>
-                            <dt:dateTime name="to" value="${to}"/>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                </div>
-                <div class="column two nogutter">
-                    <cti:button nameKey="filter" classes="primary action MT1" type="submit"/>
-                </div>
-            </div>
-        </form:form>
+    <div class="clearfix column-16-8 stacked">
+        <div class="column one">
+            <form action="<cti:url value="/stars/scheduledDataImport/${jobGroupId}/viewHistory"/>">
+                <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
+                    <tags:nameValue2 nameKey="yukon.common.dateRange">
+                        <dt:dateRange startValue="${from}" endValue="${to}" startName="from" endName="to" wrapperClasses="dib fl">
+                            <div class="dib fl" style="margin-right: 5px;"><i:inline key="yukon.common.to"/></div>
+                        </dt:dateRange>
+                        <cti:button nameKey="filter" type="submit" classes="action primary"/>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+            </form>
+        </div>
+        <div class="column two nogutter">
+        </div>
+    </div>
 
         <c:choose>
             <c:when test="${results.hitCount == 0}">
                 <span class="empty-list"><i:inline key=".noImports"/></span>
             </c:when>
             <c:otherwise>
-                <cti:url var="saveUrl" value="/stars/scheduledDataImport/${jobGroupId}/viewHistory">
+                <cti:url var="viewHistoryUrl" value="/stars/scheduledDataImport/${jobGroupId}/viewHistory">
                     <cti:formatDate type="DATEHM" value="${from}" var="from"/>
                     <cti:param name="from" value="${from}"/>
                     <cti:formatDate type="DATEHM" value="${to}" var="to"/>
                     <cti:param name="to" value="${to}"/>
                 </cti:url>
-                <div id="file-detail" data-url="${saveUrl}" data-static>
+                <div id="file-detail" data-url="${viewHistoryUrl}" data-static>
                     <table class="compact-results-table row-highlighting wrbw">
                         <thead>
                             <tags:sort column="${fileName}"/>
