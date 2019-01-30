@@ -185,11 +185,18 @@ public class NestSyncServiceImpl implements NestSyncService{
         NestSync sync = new NestSync();
         nestDao.saveSyncInfo(sync);
         nestEventLogService.syncStart(sync.getId(), sync.getStartTime());
-        List<CustomerInfo> existing = nestCommunicationService.retrieveCustomers(EnrollmentState.ACCEPTED);
+        List<CustomerInfo> existing = new ArrayList<CustomerInfo>();
+        try {
+        	existing = nestCommunicationService.retrieveCustomers(EnrollmentState.ACCEPTED);
+        } catch (Exception e) {
+            syncInProgress = false;
+        	log.error("Exception occurred retrieving customers during a Nest sync process",  e);
+        	throw new NestException("Error occurred during Nest sync process");
+        }
         
         if (!existing.isEmpty()) {
            List<String> groupsInNest = parseGroups(existing); 
-           log.debug("Poccessing {} rows", existing.size());
+           log.debug("Processing {} rows", existing.size());
            Blacklist ignore = new Blacklist();
            syncGroups(groupsInNest, sync.getId(), ignore);
            validateProgramAndAreaSetup(groupsInNest, sync.getId(), ignore);

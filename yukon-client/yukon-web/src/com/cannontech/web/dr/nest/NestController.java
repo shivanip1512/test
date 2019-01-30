@@ -42,11 +42,13 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.nest.dao.NestDao;
 import com.cannontech.dr.nest.dao.NestDao.SortBy;
+import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestSync;
 import com.cannontech.dr.nest.model.NestSyncDetail;
 import com.cannontech.dr.nest.model.NestSyncTimeInfo;
 import com.cannontech.dr.nest.model.NestSyncType;
 import com.cannontech.dr.nest.service.NestSyncService;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
@@ -57,6 +59,7 @@ import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.dr.model.NestSyncSettings;
 import com.cannontech.web.security.annotation.CheckGlobalSettingStringExist;
@@ -244,8 +247,12 @@ public class NestController {
     }
     
     @RequestMapping(value="/nest/syncNow", method=RequestMethod.GET)
-    public String syncNow() {
-        nestSyncService.sync(true);
+    public String syncNow(FlashScope flash) {
+    	try {
+    		nestSyncService.sync(true);
+    	} catch (NestException e) {
+    		flash.setError(new YukonMessageSourceResolvable(baseKey + "syncError"));
+    	}
         return "redirect:/dr/nest";
     }
     
