@@ -10,22 +10,20 @@
 <cti:standardPage module="operator" page="fileImportHistory">
     <tags:sectionContainer2 nameKey="history">
 
-    <div class="clearfix column-16-8 stacked">
-        <div class="column one">
+        <div class="dib">
             <form action="<cti:url value="/stars/scheduledDataImport/${jobGroupId}/viewHistory"/>">
-                <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
-                    <tags:nameValue2 nameKey="yukon.common.dateRange">
-                        <dt:dateRange startValue="${from}" endValue="${to}" startName="from" endName="to" wrapperClasses="dib fl">
-                            <div class="dib fl" style="margin-right: 5px;"><i:inline key="yukon.common.to"/></div>
-                        </dt:dateRange>
-                        <cti:button nameKey="filter" type="submit" classes="action primary"/>
-                    </tags:nameValue2>
-                </tags:nameValueContainer2>
+                <div class="dib vam"><i:inline key="yukon.common.dateRange"/>:</div>
+                <div class="dib vam">
+                    <cti:msg var="toTxt" key="yukon.common.to"/>
+                    <dt:dateRange startValue="${from}" endValue="${to}" startName="from" endName="to" 
+                                  wrapperClasses="dib vam" toText="${toTxt}" toStyle="margin-right: 5px; margin-top: 3px;"/>
+                </div>
+                <div class="dib vam">
+                    <cti:button nameKey="filter" classes="primary action" type="submit"/>
+                </div>
             </form>
         </div>
-        <div class="column two nogutter">
-        </div>
-    </div>
+        <hr>
 
         <c:choose>
             <c:when test="${results.hitCount == 0}">
@@ -91,7 +89,16 @@
                                                     <a href="${errorFileUrl}" onclick="yukon.ui.removeAlerts()">${fn:escapeXml(result.failedFileName)}</a>
                                                 </span>
                                             </c:when>
-                                            <c:otherwise><i:inline key=".doesNotExist"/></c:otherwise>
+                                            <c:otherwise>
+                                                <c:choose>
+                                                    <c:when test="${result.successCount == result.totalCount}">
+                                                        <i:inline key="yukon.common.na"/>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <i:inline key=".doesNotExist"/>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:otherwise>
                                         </c:choose>
                                     </td>
                                 </tr>
