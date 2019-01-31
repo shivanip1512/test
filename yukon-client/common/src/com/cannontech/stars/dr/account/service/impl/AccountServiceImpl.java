@@ -644,22 +644,32 @@ public class AccountServiceImpl implements AccountService {
             LiteYukonUser login = userDao.getLiteYukonUser(primaryContact.getLoginID());
             if (login != null && login.getUserID() != UserUtils.USER_NONE_ID) {
                 // Update their login info.
-                int userGroupId = login.getUserGroupId();
+                Integer userGroupId = null;
+                String userGroupName = CtiUtilities.STRING_NONE;
+                if (login.getUserGroupId() != null) {
+                    userGroupId = login.getUserGroupId();
+                    userGroupName = userGroupDao.getLiteUserGroup(login.getUserGroupId()).getUserGroupName();
+                }
                 if (accountDto.getUserGroup() != null) {
                     updateUserGroup(login, accountDto.getUserGroup(), accountNumber);
                 }
                 
-                    login.setUsername(username);
-                String userGroupName = userGroupDao.getLiteUserGroup(userGroupId).getUserGroupName();
+                login.setUsername(username);
+
                 userDao.update(login);
-                usersEventLogService.userUpdated(username, userGroupName, energyCompanyOfAccount.getName(), login.getLoginStatus(), user);
-                if (userGroupId != login.getUserGroupId()) {
+                usersEventLogService.userUpdated(username, userGroupName, energyCompanyOfAccount.getName(),
+                    login.getLoginStatus(), user);
+
+                if (userGroupId == null && login.getUserGroupId() != null) {
+                    LiteUserGroup addedToUserGroup = userGroupDao.getLiteUserGroup(login.getUserGroupId());
+                    usersEventLogService.userAdded(user.getUsername(), addedToUserGroup.getUserGroupName(), user);
+                } else if (userGroupId != null && login.getUserGroupId() == null) {
                     usersEventLogService.userRemoved(user.getUsername(), userGroupName, user);
-                    if (login.getUserGroupId() != null) {
-                        LiteUserGroup addedToUserGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
-                        usersEventLogService.userAdded(user.getUsername(),
-                            addedToUserGroup.getUserGroupName(), user);
-                    }
+                } else if (userGroupId != null && login.getUserGroupId() != null
+                    && userGroupId != login.getUserGroupId()) {
+                    LiteUserGroup addedToUserGroup = userGroupDao.getLiteUserGroup(login.getUserGroupId());
+                    usersEventLogService.userRemoved(user.getUsername(), userGroupName, user);
+                    usersEventLogService.userAdded(user.getUsername(), addedToUserGroup.getUserGroupName(), user);
                 }
 
                 String password = accountDto.getPassword();
@@ -690,7 +700,9 @@ public class AccountServiceImpl implements AccountService {
                 }
 
                 userDao.save(newUser);
-                usersEventLogService.userCreated(user.getUsername(), accountDto.getUserGroup(), energyCompanyOfAccount.getName(), newUser.getLoginStatus() , user);
+                usersEventLogService.userCreated(user.getUsername(),
+                    accountDto.getUserGroup() != null ? accountDto.getUserGroup() : CtiUtilities.STRING_NONE,
+                    energyCompanyOfAccount.getName(), newUser.getLoginStatus(), user);
                 String password = accountDto.getPassword();
                 if (!StringUtils.isBlank(password)) {
                     authenticationService.setPassword(newUser, defaultAuthenticationCategory, password, user);

@@ -9,6 +9,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.cannontech.common.events.loggers.UsersEventLogService;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -62,7 +63,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                 String energyCompanyName = ecDao.getEnergyCompany(energyCompanyId).getName();
                 yukonUserDao.save(newUser);
                 usersEventLogService.userCreated(newUser.getUsername(),
-                    residentialUserGroup != null ? residentialUserGroup.getUserGroupName() : StringUtils.EMPTY,
+                    residentialUserGroup != null ? residentialUserGroup.getUserGroupName() : CtiUtilities.STRING_NONE,
                     energyCompanyName, newUser.getLoginStatus(), user);
                 if (residentialUserGroup != null) {
                     usersEventLogService.userAdded(newUser.getUsername(), residentialUserGroup.getUserGroupName(), user);
@@ -133,7 +134,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                 }
                 String energyCompany = ecDao.getEnergyCompany(energyCompanyId).getName();
                 usersEventLogService.userUpdated(residentialUser.getUsername(),
-                    newUserGroup != null ? newUserGroup.getUserGroupName() : null, energyCompany, updatedStatus,
+                    newUserGroup != null ? newUserGroup.getUserGroupName() : CtiUtilities.STRING_NONE, energyCompany, updatedStatus,
                     userContext.getYukonUser());
                 return null;
             }

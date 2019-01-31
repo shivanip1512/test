@@ -736,7 +736,8 @@ public class StarsAdminUtil {
         userDB.setUserGroupId(liteUserGroup.getUserGroupId());
 
         yukonUser = Transaction.createTransaction(Transaction.INSERT, yukonUser).execute();
-        usersEventLogService.userCreated(username, liteUserGroup.getUserGroupName(), energyCompany!=null ? energyCompany.getName(): StringUtils.EMPTY,  status, user);
+        usersEventLogService.userCreated(username, liteUserGroup.getUserGroupName(),
+            energyCompany != null ? energyCompany.getName() : CtiUtilities.STRING_NONE, status, user);
         if (energyCompany != null) {
             ecMappingDao.addEnergyCompanyOperatorLoginListMapping(userDB.getUserID(),
                 energyCompany.getEnergyCompanyId());
@@ -794,7 +795,7 @@ public class StarsAdminUtil {
         String ecName = energyCompanyDao.getEnergyCompany(createdByUser).getName();
         
         usersEventLogService.userUpdated(username,
-            userGroup != null ? userGroup.getUserGroupName() : StringUtils.EMPTY, ecName, status,
+            userGroup != null ? userGroup.getUserGroupName() : CtiUtilities.STRING_NONE, ecName, status,
             createdByUser);
         handleDBChange(liteUser, DbChangeType.UPDATE);
         // only update try to update the password if specified

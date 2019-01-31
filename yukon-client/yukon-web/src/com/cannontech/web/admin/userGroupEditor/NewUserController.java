@@ -22,6 +22,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.search.result.UltraLightYukonUser;
 import com.cannontech.common.user.NewUser;
 import com.cannontech.common.user.Password;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -111,11 +112,21 @@ public class NewUserController {
         boolean forceReset = user.getAuthCategory() == AuthenticationCategory.ENCRYPTED;
         LiteYukonUser lyu = userDao.create(user, forceReset, createdBy);
 
-        String groupName = userGroupDao.getUserGroup(lyu.getUserGroupId()).getUserGroup().getUserGroupName();
-        EnergyCompany energyCompany = ecDao.getEnergyCompany(user.getEnergyCompanyId());
-        usersEventLogService.userCreated(user.getUsername(), groupName, energyCompany.getName(),
-             user.getLoginStatus(), createdBy);
-        usersEventLogService.userAdded(user.getUsername(), groupName, createdBy);
+        String groupName = CtiUtilities.STRING_NONE;
+        String energyCompanyName = CtiUtilities.STRING_NONE;
+        if (lyu.getUserGroupId() != null) {
+            groupName = userGroupDao.getUserGroup(lyu.getUserGroupId()).getUserGroup().getUserGroupName();
+        }
+        if (user.getEnergyCompanyId() != null) {
+            EnergyCompany energyCompany = ecDao.getEnergyCompany(user.getEnergyCompanyId());
+            energyCompanyName = energyCompany.getName();
+        }
+        usersEventLogService.userCreated(user.getUsername(), groupName, energyCompanyName, user.getLoginStatus(),
+            createdBy);
+
+        if (lyu.getUserGroupId() != null) {
+            usersEventLogService.userAdded(user.getUsername(), groupName, createdBy);
+        }
         
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);

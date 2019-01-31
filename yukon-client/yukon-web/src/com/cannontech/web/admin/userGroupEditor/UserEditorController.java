@@ -25,6 +25,7 @@ import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.user.Password;
 import com.cannontech.common.user.User;
 import com.cannontech.common.user.UserAuthenticationInfo;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -139,7 +140,12 @@ public class UserEditorController {
             @ModelAttribute User user, BindingResult result, ModelMap model, FlashScope flash) {
 
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(user.getUserId());
-        int userGroupId = yukonUser.getUserGroupId();
+        Integer userGroupId = null;
+        String userGroupName = CtiUtilities.STRING_NONE;
+        if (yukonUser.getUserGroupId() != null) {
+            userGroupId = yukonUser.getUserGroupId();
+            userGroupName = userGroupDao.getLiteUserGroup(userGroupId).getUserGroupName();
+        }
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserId());
         user.updateForSave(yukonUser, userAuthenticationInfo);
         boolean requiresPasswordChanged = user.isAuthenticationChanged()
@@ -164,22 +170,27 @@ public class UserEditorController {
             setupModelMap(model, user, PageEditMode.EDIT, userContext);
             return "userGroupEditor/user.jsp";
         }
-        String userGroupName = userGroupDao.getLiteUserGroup(userGroupId).getUserGroupName();
-        String ecName = StringUtils.EMPTY;
+
+        String ecName = CtiUtilities.STRING_NONE;
         if (user.getEnergyCompanyId() != null) {
             ecName = ecDao.getEnergyCompany(user.getEnergyCompanyId()).getName();
         }
         yukonUserDao.save(yukonUser);
         usersEventLogService.userUpdated(user.getUsername(), userGroupName, ecName, user.getLoginStatus(), userContext.getYukonUser());
-        if (userGroupId != yukonUser.getUserGroupId()) {
+        if (userGroupId == null && yukonUser.getUserGroupId() != null) {
+            LiteUserGroup addedToUserGroup = userGroupDao.getLiteUserGroup(yukonUser.getUserGroupId());
+            usersEventLogService.userAdded(user.getUsername(), addedToUserGroup.getUserGroupName(),
+                userContext.getYukonUser());
+        } else if (userGroupId != null && yukonUser.getUserGroupId() == null) {
             usersEventLogService.userRemoved(user.getUsername(), userGroupName, userContext.getYukonUser());
-            if (yukonUser.getUserGroupId() != null) {
-                LiteUserGroup addedToUserGroup = userGroupDao.getLiteUserGroup(yukonUser.getUserGroupId());
-                usersEventLogService.userAdded(user.getUsername(), addedToUserGroup.getUserGroupName(), userContext.getYukonUser());
-            }
+        } else if (userGroupId != null && yukonUser.getUserGroupId() != null
+            && userGroupId != yukonUser.getUserGroupId()) {
+            LiteUserGroup addedToUserGroup = userGroupDao.getLiteUserGroup(yukonUser.getUserGroupId());
+            usersEventLogService.userRemoved(user.getUsername(), userGroupName, userContext.getYukonUser());
+            usersEventLogService.userAdded(user.getUsername(), addedToUserGroup.getUserGroupName(),
+                userContext.getYukonUser());
         }
-        
-        
+
         boolean ecMappingExists = ecDao.isEnergyCompanyOperator(yukonUser);
         if (user.getEnergyCompanyId() != null) {
             if (ecMappingExists) {
