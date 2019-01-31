@@ -83,6 +83,7 @@ public enum YukonRoleProperty {
     STYLE_SHEET(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 2, stringType()),
     HEADER_LOGO(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 5, stringType()),
     LOG_IN_URL(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 6, stringType()),
+    JAVA_WEB_START_LAUNCHER_ENABLED(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 12, booleanType()),
     SUPPRESS_ERROR_PAGE_DETAILS(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 14, booleanType()),
     DATA_UPDATER_DELAY_MS(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 15,integerType()),
     STD_PAGE_STYLE_SHEET(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 16, stringType()),
