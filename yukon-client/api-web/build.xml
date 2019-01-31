@@ -27,7 +27,7 @@
         <include name="aopalliance-1.0.jar"/>
         <include name="api.jar"/>
         <include name="asm.jar"/>
-        <include name="axiom-api-1.2.15.jar"/>
+        <include name="axiom-api-1.2.22.jar"/>
         <include name="axiom-impl-1.2.15.jar"/>
         <include name="bcpkix-fips-1.0.0.jar"/>
         <include name="bc-fips-1.0.0.jar"/>

@@ -202,18 +202,18 @@ Java :
     jira : none
     notes : 
   
-  - filename : axiom-api-1.2.15.jar
+  - filename : axiom-api-1.2.22.jar
     yukon group : Spring Web Services
     project : Apache Axiom
-    version : 1.2.15
-    project URL : "https://ws.apache.org/axiom/release-notes/1.2.15.html"
+    version : 1.2.22
+    project URL : "https://ws.apache.org/axiom/release-notes/1.2.22.html"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.ws.commons.axiom/axiom-api/1.2.15"
-    md5 : 56b93a28558783f249d4f1b18629fdf0
-    sha1 : e5f4f2a8ba280e0cee2029f8dbf4ac3856281bbd
-    updated : 2018-10-29
-    jira : YUK-18680
+    maven URL : "https://mvnrepository.com/artifact/org.apache.ws.commons.axiom/axiom-api/1.2.22"
+    md5 : e439c937a9002000b6de40a4fa8fddad
+    sha1 : 53546db1bef06dc0d5413525f4ae9f5c284b5b7d
+    updated : 2019-01-31
+    jira : YUK-19439
     notes : 
   
   - filename : axiom-impl-1.2.15.jar
