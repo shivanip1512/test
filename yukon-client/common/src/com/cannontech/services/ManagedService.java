@@ -12,7 +12,7 @@ public enum ManagedService {
     SERVER_DEVICE_CREATION("Server Device Creation", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/serverDeviceCreation/serverDeviceCreationContext.xml"),
     ECOBEE_AUTH_TOKEN("Ecobee Auth Token", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/ecobee/authToken/ecobeeAuthTokenContext.xml"),
     NEST_MESSAGE_LISTENER("Nest Message Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/nestMessageListener/nestMessageListenerContext.xml"),
-    NM_ALARM_MESSAGE_LISTENER("NM Alarm Message Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/rf/alarms//services/src/com/cannontech/services/rf/alarms/NmAlarmContext.xml")
+    NM_ALARM_MESSAGE_LISTENER("NM Alarm Message Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/rf/alarms//services/src/com/cannontech/services/rf/alarms/nmAlarmContext.xml")
     ;
     private final String name;
     private final ServiceType type;
