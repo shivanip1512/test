@@ -151,6 +151,9 @@
                     <tags:nameValue name="Note">
                         Reply1 and Reply2 refer to the Reply1 and Reply2 referenced from the class RfnMeterDisconnectService.
                     </tags:nameValue>
+                    <tags:nameValue name="Query State">
+                        This value is used as the disconnect state response to a Disconnect QUERY request.
+                    </tags:nameValue>
                 </tags:nameValueContainer>
             </div>
         
@@ -277,6 +280,10 @@
                                             <input type="text" name="disconnectReply2FailPercent" style="width: 40px;" 
                                             value="${currentRfnMeterReadAndControlDisconnectSimulatorSettings.disconnectReply2FailPercent}" disabled="true"/>%
                                         </tags:nameValue>
+                                        <tags:nameValue name="Query State">
+                                           <tags:selectWithItems path="currentRfnMeterReadAndControlDisconnectSimulatorSettings.queryResponse" 
+                                                    items="${rfnMeterDisconnectQueryResponses}" disabled="true"/>
+                                        </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
                                 <c:if test="${not meterDisconnectReplyActive}">
@@ -296,6 +303,10 @@
                                         <tags:nameValue name="Reply2 Fail Rate">
                                             <input type="text" name="disconnectReply2FailPercent" style="width: 40px;" 
                                             value="${currentRfnMeterReadAndControlDisconnectSimulatorSettings.disconnectReply2FailPercent}"/>%
+                                        </tags:nameValue>
+                                        <tags:nameValue name="Query State">
+                                           <tags:selectWithItems path="currentRfnMeterReadAndControlDisconnectSimulatorSettings.queryResponse" 
+                                                    items="${rfnMeterDisconnectQueryResponses}"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>

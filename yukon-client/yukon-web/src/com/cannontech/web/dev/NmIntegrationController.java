@@ -37,6 +37,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
@@ -567,6 +568,7 @@ public class NmIntegrationController {
         model.addAttribute("rfnMeterReadDataReplies", RfnMeterReadingDataReplyType.values());
         model.addAttribute("rfnMeterDisconnectInitialReplies", RfnMeterDisconnectInitialReplyType.values());
         model.addAttribute("rfnMeterDisconnectConfirmationReplies", RfnMeterDisconnectConfirmationReplyType.values());
+        model.addAttribute("rfnMeterDisconnectQueryResponses", RfnMeterDisconnectState.values());
         
         RfnMeterDataSimulatorStatusResponse rfnMeterResponse = getRfnMeterSimulatorStatusResponse().response;
         RfnMeterReadAndControlSimulatorStatusResponse rfnMeterReadAndControlResponse = getRfnMeterReadAndControlStatusResponse().response;

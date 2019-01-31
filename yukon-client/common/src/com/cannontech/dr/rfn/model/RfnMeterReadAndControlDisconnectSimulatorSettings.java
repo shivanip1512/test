@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 
 public class RfnMeterReadAndControlDisconnectSimulatorSettings implements Serializable {
 
@@ -11,15 +12,17 @@ public class RfnMeterReadAndControlDisconnectSimulatorSettings implements Serial
     private int disconnectReply1FailPercent = 0;
     private RfnMeterDisconnectConfirmationReplyType disconnectReply2;
     private int disconnectReply2FailPercent = 0;
+    private RfnMeterDisconnectState queryResponse;
     
     public RfnMeterReadAndControlDisconnectSimulatorSettings() {
     }
     
-    public RfnMeterReadAndControlDisconnectSimulatorSettings(RfnMeterDisconnectInitialReplyType disconnectReply1, int disconnectReply1FailPercent, RfnMeterDisconnectConfirmationReplyType disconnectReply2, int disconnectReply2FailPercent) {
+    public RfnMeterReadAndControlDisconnectSimulatorSettings(RfnMeterDisconnectInitialReplyType disconnectReply1, int disconnectReply1FailPercent, RfnMeterDisconnectConfirmationReplyType disconnectReply2, int disconnectReply2FailPercent, RfnMeterDisconnectState queryResponse) {
         this.disconnectReply1 = disconnectReply1;
         this.disconnectReply1FailPercent = disconnectReply1FailPercent;
         this.disconnectReply2 = disconnectReply2;
         this.disconnectReply2FailPercent = disconnectReply2FailPercent;
+        this.queryResponse = queryResponse;
     }
     
     public RfnMeterDisconnectInitialReplyType getDisconnectReply1() {
@@ -52,6 +55,14 @@ public class RfnMeterReadAndControlDisconnectSimulatorSettings implements Serial
 
     public void setDisconnectReply2FailPercent(int disconnectReply2FailPercent) {
         this.disconnectReply2FailPercent = disconnectReply2FailPercent;
+    }
+
+    public RfnMeterDisconnectState getQueryResponse() {
+        return queryResponse;
+    }
+
+    public void setQueryResponse(RfnMeterDisconnectState queryResponse) {
+        this.queryResponse = queryResponse;
     }
     
 }

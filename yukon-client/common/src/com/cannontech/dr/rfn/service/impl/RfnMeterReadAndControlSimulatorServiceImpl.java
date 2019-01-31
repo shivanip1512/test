@@ -19,6 +19,7 @@ import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReply;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectRequest;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadDataReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadRequest;
@@ -311,8 +312,20 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
             response.setReplyType(RfnMeterDisconnectConfirmationReplyType.SUCCESS);
         }
         
-        // Echo back of whatever user provides
-        response.setState(RfnMeterDisconnectState.getForType(request.getAction()));
+        switch (request.getAction()) {
+        case ARM:
+            response.setState(RfnMeterDisconnectState.ARMED);
+            break;
+        case QUERY:
+            response.setState(RfnMeterDisconnectState.CONNECTED);
+            break;
+        case RESUME:
+            response.setState(RfnMeterDisconnectState.CONNECTED);
+            break;
+        case TERMINATE:
+            response.setState(RfnMeterDisconnectState.DISCONNECTED);
+            break;
+        }
         
         return response;
     }
