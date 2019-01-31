@@ -41,7 +41,7 @@ yukon.ami.peakDayProfile = (function () {
              *  @param {Object} json - json having the response data 
              */ 
             initiateComplete = function (transport, json) {
-                alert(json['returnMsg']);
+            	alert(transport.responseJSON['returnMsg']);
                 $(divSel + '_startButton').prop('disabled', false);
             };
         
