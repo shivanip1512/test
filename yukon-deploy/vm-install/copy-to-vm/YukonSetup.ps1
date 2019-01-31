@@ -26,23 +26,23 @@ exit
 .SYNOPSIS
     Configures and starts the EIM server
 .DESCRIPTION 
-    If the folder 'C:/Program Files/Apache Software Foundation/apache-tomcat-9.0.12' exists, copies api.xml and starts the "Apache Tomcat 9.0 Tomcat_9" service.
+    If the folder 'C:/Program Files/Apache Software Foundation/Tomcat 9.0' exists, copies api.xml and starts the "Apache Tomcat 9.0 Tomcat9" service.
 .EXAMPLE
     ConfigureAndStartEIM
 #>
 Function ConfigureAndStartEIM() {
-    $TARGETDIR = 'C:/Program Files/Apache Software Foundation/apache-tomcat-9.0.12'
+    $TARGETDIR = 'C:/Program Files/Apache Software Foundation/Tomcat 9.0'
     If(Test-Path -Path $TARGETDIR){
         Write-Host "Found EIM folder, installing"
         
         New-Item -ItemType "directory" -ErrorAction SilentlyContinue `
-                                        -Path "C:/Program Files/Apache Software Foundation/apache-tomcat-9.0.12/conf/Catalina", 
-                                              "C:/Program Files/Apache Software Foundation/apache-tomcat-9.0.12/conf/Catalina/localhost"
+                                        -Path "C:/Program Files/Apache Software Foundation/Tomcat 9.0/conf/Catalina", 
+                                              "C:/Program Files/Apache Software Foundation/Tomcat 9.0/conf/Catalina/localhost"
 
         Copy-Item "C:/Yukon/Server/Extras/Enterprise Integration Module/api.xml" `
-                   -Destination "C:/Program Files/Apache Software Foundation/Tomcat 6.0/conf/Catalina/localhost/api.xml"
+                   -Destination "C:/Program Files/Apache Software Foundation/Tomcat 9.0/conf/Catalina/localhost/api.xml"
 
-        Start-Service "Apache Tomcat 9.0 Tomcat_9"
+        Start-Service "Apache Tomcat 9.0 Tomcat9"
     }
     Else
     {
@@ -104,7 +104,7 @@ Function Expand-Installer() {
 Function StopAllServices () {
     Write-Host "Stopping All Services"
     C:\Yukon\Server\bin\RestartYukonServices.ps1 -Operation stop -ExitWhenComplete
-    Stop-Service "Apache Tomcat 9.0 Tomcat_9"
+    Stop-Service "Apache Tomcat 9.0 Tomcat9"
 }
 
 # Need to add the IF check to decide if we are doing a backup.
@@ -193,7 +193,7 @@ Function Uninstall-Yukon() {
     sc.exe delete "Yukon Field Simulator Service"
 
     Write-Host  "Uninstall EIM"
-    Remove-Item -Path "C:/Program Files/Apache Software Foundation/apache-tomcat-9.0.12/conf/Catalina" -Recurse
+    Remove-Item -Path "C:/Program Files/Apache Software Foundation/Tomcat 9.0/conf/Catalina" -Recurse
 
     # Note that Start-Process is used here to ensure the script waits while the uninstall runs.
     Write-Host "Uninstall Yukon"
