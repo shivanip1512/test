@@ -35,8 +35,9 @@
     <input id="filtered-msg" type="hidden" value="<cti:msg2 key=".filtered"/>">
     <input id="unfiltered-msg" type="hidden" value="<cti:msg2 key=".filter.label"/>">
     <%@ include file="/WEB-INF/pages/stars/mapNetwork/mapPopup.jsp" %>
+    <c:if test="${not empty mappingColors}"><cti:toJson id="mappingColors" object="${mappingColors}"/></c:if>
     
-    <div id="map-container" style="height:100%;width:100%;">
+    <div id="map-container" style="height:100%;width:100%;background:white;">
         <c:if test="${empty dynamic}">
             <div class="fr">
                 <cti:button id="filter-btn" icon="icon-filter" nameKey="filter" data-popup="#map-popup"/>
@@ -74,7 +75,7 @@
             </div>
         </c:if>
     
-        <div class="column-16-8 clearfix stacked">
+        <div class="column-18-6 clearfix stacked">
             <div class="column one">
                 
                 <c:set var="deviceCollectionKey" value="${!empty monitorId ? 'yukon.web.modules.tools.map.monitorDevices' : ''}"/>
@@ -123,6 +124,35 @@
                            <cm:dropdownOption key=".collectionActions" href="${filteredActionsUrl}" icon="icon-cog-go" newTab="true"/>
                            <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href = "${downloadUrl}"/>
                         </cm:dropdown>
+                    </div>
+                </c:if>
+                <c:if test="${!empty colorCollections}">
+                	<div class="js-color-collections column-12-12">
+                		<div class="column one" style="padding-left:10px;">
+		                	<c:forEach var="mapCollection" items="${colorCollections}" varStatus="status">
+		                		<c:set var="collection" value="${mapCollection.deviceCollection}"/>
+		                        <tags:selectedDevices deviceCollection="${collection}" 
+		                            labelKey="${mapCollection.labelKey}" badgeColor="${mapCollection.color}"/>
+		                        <c:if test="${collection.deviceCount > 0}">
+			                        <cti:url var="downloadUrl" value="/tools/map/locations/download">
+			                            <cti:mapParam value="${collection.collectionParameters}"/>
+			                        </cti:url>
+			                        <cti:url var="filteredActionsUrl" value="/bulk/collectionActions">
+			                            <c:forEach items="${collection.collectionParameters}" var="cp">
+			                                <cti:param name="${cp.key}" value="${cp.value}"/>
+			                            </c:forEach>
+			                        </cti:url>
+			                        <cm:dropdown icon="icon-cog">
+			                           <cm:dropdownOption key=".collectionActions" href="${filteredActionsUrl}" icon="icon-cog-go" newTab="true"/>
+			                           <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href = "${downloadUrl}"/>
+			                        </cm:dropdown>
+		                        </c:if>
+								<c:if test="${status.index == 1}">
+									</div>
+									<div class="column two nogutter">
+								</c:if>
+		                    </c:forEach>
+	                    </div>
                     </div>
                 </c:if>
             </div>

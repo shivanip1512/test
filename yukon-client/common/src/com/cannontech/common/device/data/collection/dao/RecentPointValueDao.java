@@ -17,7 +17,27 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 public interface RecentPointValueDao {
     
     enum RangeType {
-        AVAILABLE, EXPECTED, OUTDATED, UNAVAILABLE
+        AVAILABLE("#093"), 
+        EXPECTED("#4d90fe"), 
+        OUTDATED("#ec971f"), 
+        UNAVAILABLE("#888");
+    	
+    	private final String baseKey = "yukon.web.modules.amr.dataCollection.detail.rangeType.";
+    	
+		private String color;
+        
+        private RangeType(String color) {
+        	this.color = color;
+        }
+        
+        public String getColor() {
+			return color;
+		}
+
+		public String getLabelKey() {
+			return baseKey + this.name();
+		}
+        
     }
     
     public enum SortBy{

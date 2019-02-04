@@ -57,6 +57,9 @@ yukon.tools.map = (function() {
     
     _styles = yukon.mapping.getStyles(),
     _tiles = yukon.mapping.getTiles(),
+    
+    /** Hashmap of colors and paoIds for tinting the icons */
+    _mappingColors,
         
     /** 
      * Returns the first layer with name provided.
@@ -113,11 +116,31 @@ yukon.tools.map = (function() {
             var inViolation = data.violationDevices.filter(function (device) {
                 return device.deviceId === pao.paoId;
             });
-            if (inViolation.length > 0) {                       
+            if (inViolation.length > 0) {
                 currentStyle.setImage(new ol.style.Icon({ src: src, color: _violationColor, anchor:  [0.5, 1.0] }));
                 icon.setStyle(currentStyle);
-            } else {                      
+            } else {
+                //return back to original color
                 currentStyle.setImage(new ol.style.Icon({ src: src, anchor:  [0.5, 1.0] }));
+                icon.setStyle(currentStyle);
+            }
+        }
+    },
+    
+    _updateStyleIfFoundInMappingColors = function(paoId, icon) {
+        if (_mappingColors) {
+            var color;
+            Object.keys(_mappingColors).map(function (key) {        
+                var ids = _mappingColors[key];
+                if (ids.includes(parseInt(paoId, 10))) {
+                    color = key;
+                }
+            });
+            if (color) {
+                var currentStyle = icon.getStyle().clone(),
+                    image = currentStyle.getImage(),
+                    src = image.getSrc();
+                currentStyle.setImage(new ol.style.Icon({ src: src, color: color, anchor:  [0.5, 1.0] }));
                 icon.setStyle(currentStyle);
             }
         }
@@ -135,7 +158,12 @@ yukon.tools.map = (function() {
             var 
             icon, icons = [],
             source = _getLayer('icons').getSource(),
-            fc = monitorId ? data.locations : data;
+            fc = monitorId ? data.locations : data,
+            mappingData = $('#mappingColors');
+                        
+            if (mappingData.length) {
+                _mappingColors = yukon.fromJson(mappingData);
+            }
             
             debug.time('Loading Icons');
             
@@ -144,6 +172,7 @@ yukon.tools.map = (function() {
                     pao = feature.properties.paoIdentifier;
                 icon = _createFeature(fc.features[i], fc.crs.properties.name);
                 _updateStyleIfInViolation(data, pao, icon);
+                _updateStyleIfFoundInMappingColors(pao.paoId, icon);
                 icons.push(icon);
             }
             source.addFeatures(icons);
@@ -267,7 +296,7 @@ yukon.tools.map = (function() {
         yukon.mapping.hideNeighborsLegend();
     },
     
-    _findFocusDevice = function(deviceId) {
+    _findFocusDevice = function(deviceId, makeLarger) {
         //check icons first
         var exists = [];
         for (var i in _icons) {
@@ -287,17 +316,19 @@ yukon.tools.map = (function() {
             });
         }
         if (exists.length > 0) {
-            var focusDevice = exists[0],
-                largerStyle = focusDevice.getStyle().clone();
-            largerStyle.getImage().setScale(_largerScale);
-            focusDevice.setStyle(largerStyle);
+            var focusDevice = exists[0];
+            if (makeLarger) {
+                var largerStyle = focusDevice.getStyle().clone();
+	            largerStyle.getImage().setScale(_largerScale);
+	            focusDevice.setStyle(largerStyle);
+            }
             return focusDevice;
         }
     },
     
     _addPrimaryRouteToMap = function(deviceId, routeInfo) {
         var source = _map.getLayers().getArray()[_tiles.length].getSource(),
-            focusDevice = _findFocusDevice(deviceId),
+            focusDevice = _findFocusDevice(deviceId, true),
             focusPoints = focusDevice.getGeometry().getCoordinates(),
             routeColor = '#808080',
             routeLineWidth = 2.5;
@@ -315,22 +346,21 @@ yukon.tools.map = (function() {
             
             icon.setStyle(style);
             
-            //the first device in the route will be the focus device
-            if (x == 0) {
-                var largerStyle = icon.getStyle().clone();
-                largerStyle.getImage().setScale(_largerScale);
-                icon.setStyle(largerStyle);
-            }
-            
-            if (src_projection === _destProjection) {
-                icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+            //check if device already exists on map...the first device will always be the original device so make the icon larger
+            var deviceFound = _findFocusDevice(feature.properties.paoIdentifier.paoId, x == 0);
+            if (deviceFound) {
+            	icon = deviceFound;
             } else {
-                var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
-                icon.setGeometry(new ol.geom.Point(coord));
-            }
+                if (src_projection === _destProjection) {
+                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+                } else {
+                    var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+                    icon.setGeometry(new ol.geom.Point(coord));
+                }
 
-            _deviceFocusIcons.push(icon);
-            source.addFeature(icon);
+                _deviceFocusIcons.push(icon);
+                source.addFeature(icon);
+            }
             
             //draw line
             var points = [];
@@ -369,7 +399,7 @@ yukon.tools.map = (function() {
     
     _addNeighborDataToMap = function(deviceId, neighbors) {
         var source = _map.getLayers().getArray()[_tiles.length].getSource(),
-            focusDevice = _findFocusDevice(deviceId),
+            focusDevice = _findFocusDevice(deviceId, true),
             focusPoints = focusDevice.getGeometry().getCoordinates(),
             clonedFocusDevice = focusDevice.clone();
             
@@ -385,17 +415,23 @@ yukon.tools.map = (function() {
             style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
             icon = new ol.Feature({ neighbor: neighbor });
             
-            icon.setStyle(style);
-            
-            if (src_projection === _destProjection) {
-                icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+            //check if neighbor already exists on map
+            var neighborFound = _findFocusDevice(feature.properties.paoIdentifier.paoId, false);
+            if (neighborFound) {
+            	icon = neighborFound;
             } else {
-                var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
-                icon.setGeometry(new ol.geom.Point(coord));
+                icon.setStyle(style);
+                
+                if (src_projection === _destProjection) {
+                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+                } else {
+                    var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+                    icon.setGeometry(new ol.geom.Point(coord));
+                }
+                
+                _deviceFocusIcons.push(icon);
+                source.addFeature(icon);
             }
-            
-            _deviceFocusIcons.push(icon);
-            source.addFeature(icon);
             
             //draw line
             var points = [];
@@ -599,6 +635,7 @@ yukon.tools.map = (function() {
                                 } else {
                                     currentStyle.setImage(new ol.style.Icon({ src: src, anchor:  [0.5, 1.0] }));
                                     icon.setStyle(currentStyle);
+                                    _updateStyleIfFoundInMappingColors(paoId, icon);
                                 }
                                 if (show && !visible || (filteredDevicesOnly == "false" && !visible)) {
                                     toAdd.push(icon);
@@ -621,6 +658,7 @@ yukon.tools.map = (function() {
                         }
                         
                         $('.js-filtered-devices').removeClass('dn');
+                        $('.js-color-collections').addClass('dn');
                         
                         debug.log('building add/remove arrays: '+ ((new Date().getTime() - start) * .001) + ' seconds');
                         start = new Date().getTime();
@@ -671,6 +709,7 @@ yukon.tools.map = (function() {
                         src = image.getSrc();
                     currentStyle.setImage(new ol.style.Icon({ src: src, anchor:  [0.5, 1.0] }));
                     icon.setStyle(currentStyle);
+                    _updateStyleIfFoundInMappingColors(paoId, icon);
                     if (!_visibility[paoId]) {
                         toAdd.push(icon);
                         _visibility[paoId] = true;
@@ -683,7 +722,8 @@ yukon.tools.map = (function() {
                 filteredBadge.text(0);
                 filteredBadge.addClass('animated flash');
                 $('.js-filtered-devices').addClass('dn');
-                
+                $('.js-color-collections').removeClass('dn');
+
                 debug.log('removing icons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
                 start = new Date().getTime();
             });
@@ -798,7 +838,7 @@ yukon.tools.map = (function() {
                     $('#map-container').css('padding-top', '0px');
                 } else {
                     //adjust height for mapping buttons
-                    $('#map-container').css('padding-bottom', '80px');
+                    $('#map-container').css('padding-bottom', '120px');
                     $('#map-container').css('padding-top', '10px');
                 }
                 

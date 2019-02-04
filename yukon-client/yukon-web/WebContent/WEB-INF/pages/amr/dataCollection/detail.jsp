@@ -1,11 +1,11 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="dataCollection.detail">
 
@@ -80,11 +80,11 @@
     <c:if test="${detail.hitCount > 0}">
         <span class="js-cog-menu">
             <cm:dropdown icon="icon-cog">
-                <cm:dropdownOption key=".collectionActions" icon="icon-cog-go" classes="js-collection-action" data-url="/bulk/collectionActions"/> 
+                <cm:dropdownOption key=".collectionActions" icon="icon-cog-go" classes="js-collection-action" data-collection-action="${collectionActionsType}"/> 
                 <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>  
-                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" classes="js-collection-action" data-url="/tools/map"/>
-                <cm:dropdownOption icon="icon-read" key=".readAttribute" classes="js-collection-action" data-url="/group/groupMeterRead/homeCollection"/>          
-                <cm:dropdownOption icon="icon-ping" key=".sendCommand" classes="js-collection-action" data-url="/group/commander/collectionProcessing"/>
+                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" classes="js-collection-action" data-collection-action="${mappingType}"/>
+                <cm:dropdownOption icon="icon-read" key=".readAttribute" classes="js-collection-action" data-collection-action="${readAttributeType}"/>          
+                <cm:dropdownOption icon="icon-ping" key=".sendCommand" classes="js-collection-action" data-collection-action="${sendCommandType}"/>
             </cm:dropdown>
         </span>
     </c:if>

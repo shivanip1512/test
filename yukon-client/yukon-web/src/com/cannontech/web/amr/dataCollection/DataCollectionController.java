@@ -22,10 +22,13 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
+import com.cannontech.common.bulk.collection.DeviceMemoryCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionUrl;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.RangeType;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.SortBy;
@@ -57,6 +60,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.common.widgets.model.DataCollectionSummary;
 import com.cannontech.web.common.widgets.service.DataCollectionWidgetService;
+import com.cannontech.web.tools.mapping.MappingColorCollection;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
@@ -74,6 +78,7 @@ public class DataCollectionController {
     @Autowired private PointFormattingService pointFormattingService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private PaoNotesService paoNotesService;
+    @Autowired private DeviceMemoryCollectionProducer producer;
     
     private final static String baseKey = "yukon.web.modules.amr.dataCollection.detail.";
     private final static String widgetKey = "yukon.web.widgets.";
@@ -176,6 +181,12 @@ public class DataCollectionController {
                                                                            .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
         
+        //add collection action types for page
+        model.addAttribute("collectionActionsType", CollectionActionUrl.COLLECTION_ACTIONS);
+        model.addAttribute("mappingType", CollectionActionUrl.MAPPING);
+        model.addAttribute("sendCommandType", CollectionActionUrl.SEND_COMMAND);
+        model.addAttribute("readAttributeType", CollectionActionUrl.READ_ATTRIBUTE);
+        
     }
     
     private List<DeviceGroup> retrieveSubGroups(String[] deviceSubGroups) {
@@ -189,14 +200,33 @@ public class DataCollectionController {
     }
     
     @RequestMapping(value="collectionAction", method=RequestMethod.GET)
-    public String collectionAction(String actionUrl, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges, YukonUserContext userContext) {
+    public String collectionAction(CollectionActionUrl actionType, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, 
+                                   RangeType[] ranges, RedirectAttributes attrs) {
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
-        SearchResults<DeviceCollectionDetail> allDetail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled, Lists.newArrayList(ranges), PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
+        SearchResults<DeviceCollectionDetail> allDetail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled, 
+                                                              Lists.newArrayList(ranges), PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
         List<YukonPao> devices = allDetail.getResultList().stream().map(d -> new SimpleDevice(d.getPaoIdentifier())).collect(Collectors.toList());
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
-        return "redirect:" + actionUrl + "?collectionType=group&group.name=" + tempGroup.getFullName();
+        if (actionType.equals(CollectionActionUrl.MAPPING)) {
+        	List<MappingColorCollection> colorCollections = new ArrayList<MappingColorCollection>();
+            Map<String, List<Integer>> mappingMap = new HashMap<String, List<Integer>>();
+        	for(RangeType range : ranges) {
+                List<YukonPao> rangeDevices = allDetail.getResultList().stream()
+                		.filter(detail -> detail.getRange().equals(range))
+                		.map(d -> new SimpleDevice(d.getPaoIdentifier()))
+                		.collect(Collectors.toList());
+	            List<Integer> deviceIds = rangeDevices.stream().map(d -> d.getPaoIdentifier().getPaoId()).collect(Collectors.toList());
+	            DeviceCollection rangeCollection = producer.createDeviceCollection(deviceIds);
+	            MappingColorCollection mapCollection = new MappingColorCollection(rangeCollection, range.getColor(), range.getLabelKey());
+	            colorCollections.add(mapCollection);
+	            mappingMap.put(range.getColor(), deviceIds);
+        	}
+        	attrs.addFlashAttribute("mappingColors", mappingMap);
+        	attrs.addFlashAttribute("colorCollections", colorCollections);
+        }
+        return "redirect:" + actionType.getUrl() + "?collectionType=group&group.name=" + tempGroup.getFullName();
     }
     
     @RequestMapping("download")

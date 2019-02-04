@@ -32,11 +32,11 @@ yukon.ami.dataCollection.detail = (function () {
                 form.attr('action', yukon.url('/amr/dataCollection/detail'));
             });
             
-            $(document).on('click', '.js-collection-action', function () {   
-                var actionUrl = $(this).data('url'),
+            $(document).on('click', '.js-collection-action', function () {
+                var collectionAction = $(this).data('collection-action'),
                     form = $('#collectionDetail'),
                     data = form.serialize();
-                window.open(yukon.url('/amr/dataCollection/collectionAction?actionUrl=' + actionUrl + '&' + data), '_blank');
+                window.open(yukon.url('/amr/dataCollection/collectionAction?actionType=' + collectionAction + '&' + data), '_blank');
             });
 
             _initialized = true;
