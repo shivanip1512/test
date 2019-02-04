@@ -14,7 +14,7 @@ public enum CMEPCommodityEnum{
     }
     
     public static CMEPCommodityEnum findByDeviceIconType(String deviceIconType) {
-        if (deviceIconType.equals("electric_meter")) {
+        if (deviceIconType.equals("electric_meter") || deviceIconType.equals("plc_electric_meter")) {
             return ELECTRIC;
         } else if (deviceIconType.equals("water_meter")) {
             return WATER;
