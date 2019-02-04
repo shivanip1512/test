@@ -390,6 +390,12 @@ begin
         DeleteDir(sDir, ALLCONTENTS);
     endif;
 
+    //Delete Runtime folder in case of upgrade when installed version < "7.2.0".
+    if(IsInstalledVersionLesser("7.2.0")) then
+        sDir = TARGETDIR ^ "\\Runtime";
+        DeleteDir(sDir, ALLCONTENTS);
+    endif;
+
 	//set installer to update all features that are currently installed
 	FeatureReinstall();
 	
@@ -629,6 +635,10 @@ begin
     sDir = TARGETDIR ^ "\\Client\\bin\\temp";
     DeleteDir(sDir, ALLCONTENTS);
     
+    // Delete Runtime folder.
+        sDir = TARGETDIR ^ "\\Runtime";
+        DeleteDir(sDir, ALLCONTENTS);
+
     RemoveActiveMQFolders();
 
     // Added in 11.0, disable the cancel button during uninstall.
