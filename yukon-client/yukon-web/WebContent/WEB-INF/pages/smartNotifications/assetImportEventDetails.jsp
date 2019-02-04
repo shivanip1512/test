@@ -11,7 +11,7 @@
 </cti:url>
 
 <div id="events-detail" data-url="${detailUrl}" data-static>
-    <table class="compact-results-table has-actions row-highlighting">
+    <table class="compact-results-table row-highlighting">
         <tr>
             <tags:sort column="${scheduleName}"/>
             <tags:sort column="${timestamp}"/>

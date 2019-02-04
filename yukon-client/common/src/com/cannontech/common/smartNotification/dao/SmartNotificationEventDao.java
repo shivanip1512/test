@@ -28,7 +28,7 @@ public interface SmartNotificationEventDao {
         STATUS("Status"),
         TIMESTAMP("Timestamp"),
         WARNING_TYPE("WarningType"),
-        TASK_NAME("taskName"),
+        JOB_NAME("jobName"),
         FILE_SUCCESS_COUNT("successFileCount"),
         FILE_ERROR_COUNT("filesWithError")
         ;

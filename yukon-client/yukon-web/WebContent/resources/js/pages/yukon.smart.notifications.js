@@ -60,7 +60,7 @@ yukon.smart.notifications = (function () {
                 eventMessageSpan.find('strong').text(event.deviceName);
                 event.message = eventMessageSpan.html() + " - " + statusMessage.text();
             } else if (eventType == 'ASSET_IMPORT') {
-                eventMessageSpan.find('strong').text(event.taskName);
+                eventMessageSpan.find('strong').text(event.jobName);
                 var message = $(".js-file-import-error-count-lbl").text() + "(" + event.fileErrorCount + ") - " + 
                               $(".js-file-import-success-count-lbl").text() + "(" + event.fileSuccessCount + ")";
                 event.message = eventMessageSpan.html() + " - " + message;

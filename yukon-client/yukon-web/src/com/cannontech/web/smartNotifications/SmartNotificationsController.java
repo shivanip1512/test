@@ -536,7 +536,7 @@ public class SmartNotificationsController {
         status(SortBy.STATUS),
         timestamp(SortBy.TIMESTAMP),
         warningType(SortBy.WARNING_TYPE),
-        scheduleName(SortBy.TASK_NAME),
+        scheduleName(SortBy.JOB_NAME),
         fileErrorCount(SortBy.FILE_ERROR_COUNT),
         fileSuccessCount(SortBy.FILE_SUCCESS_COUNT);
         

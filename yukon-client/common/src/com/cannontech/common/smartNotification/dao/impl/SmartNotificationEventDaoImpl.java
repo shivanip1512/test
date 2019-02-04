@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +70,7 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
             createAssetImportRowMapper(SmartNotificationEventType.ASSET_IMPORT);
 
     public static final Comparator<SmartNotificationEventData> fileFailureCountComparator = 
-            Comparator.comparing(SmartNotificationEventData::getFileErrorCount);
+            Comparator.comparingInt(SmartNotificationEventData::getFileErrorCount);
    
     @PostConstruct
     public void init() {
@@ -519,7 +518,7 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(
-            "SELECT sne.Timestamp, sne.EventId, sne.Type, snep.jobGroupId, snep.jobName, snep.successFileCount, snep.filesWithError");
+            "SELECT sne.Timestamp, sne.EventId, snep.jobGroupId, snep.jobName, snep.successFileCount, snep.filesWithError");
         sql.append("FROM SmartNotificationEvent sne");
         sql.append("    INNER JOIN (");
         sql.append("        SELECT * FROM (");
@@ -545,15 +544,15 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
 
         List<SmartNotificationEventData> filteredResults = rse.getResultList();
         if (AssetImportResultType.IMPORTS_WITH_ERRORS == assetImportResultType) {
-            filteredResults =
-                rse.getResultList().stream().filter(result -> result.getFileErrorCount() > 0).collect(
-                    Collectors.toList());
+            filteredResults = rse.getResultList().stream()
+                                                 .filter(result -> result.getFileErrorCount() > 0)
+                                                 .collect(Collectors.toList());
         }
         if (sortBy == SortBy.FILE_ERROR_COUNT) {
             if (direction == Direction.asc) {
-                Collections.sort(filteredResults, fileFailureCountComparator);
+                filteredResults.sort(fileFailureCountComparator);
             } else {
-                Collections.sort(filteredResults, fileFailureCountComparator.reversed());
+                filteredResults.sort(fileFailureCountComparator.reversed());
             }
         }
         SearchResults<SmartNotificationEventData> retVal = new SearchResults<>();
@@ -568,7 +567,7 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         boolean isOracle = databaseVendor.isOracle();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT distinct sne.EventId, snep.filesWithError");
+        sql.append("SELECT DISTINCT sne.EventId, snep.filesWithError");
         sql.append("FROM SmartNotificationEvent sne");
         sql.append("    INNER JOIN (");
         sql.append("        SELECT * FROM (");
