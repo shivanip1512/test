@@ -65,7 +65,8 @@ public class TrendDataController {
     @GetMapping("/trends/{id}/data")
     public @ResponseBody Map<String, Object> trend(YukonUserContext userContext, @PathVariable int id) {
         LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(id);
-        return getTrendJson(userContext,trend, false);
+        Months months = Months.months(globalSettingDao.getInteger(GlobalSettingType.TRENDS_HISTORICAL_MONTHS));
+        return getTrendJson(userContext, trend, months);
     }
     
     @GetMapping("/trends/widgetDisplay/{id}/data")
@@ -74,7 +75,7 @@ public class TrendDataController {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         if (trend != null) {
-            json = getTrendJson(userContext, trend, true);
+            json = getTrendJson(userContext, trend, Months.ONE);
             Instant lastUpdateTime = new Instant();
             json.put("lastAttemptedRefresh", lastUpdateTime);
             json.put("refreshMillis", trendDataService.getRefreshMilliseconds());
@@ -109,7 +110,7 @@ public class TrendDataController {
      * @param trend - the LiteGraphDefinition object
      * @return {@link ResponseBody} json serialized data.
      */
-    private Map<String, Object> getTrendJson(YukonUserContext userContext, LiteGraphDefinition trend, boolean isDisplayedInWidget) {
+    private Map<String, Object> getTrendJson(YukonUserContext userContext, LiteGraphDefinition trend, Months months) {
         
         List<GraphDataSeries> graphDataSeriesList = graphDao.getGraphDataSeries(trend.getGraphDefinitionID());
         List<GraphDataSeries> dateGraphDataSeriesList = new ArrayList<>();
@@ -121,11 +122,6 @@ public class TrendDataController {
         boolean hasCurrentDateBoundary = false;
         boolean showRightAxis = false;
         boolean isTruncated = false;
-        /* Calculate earliestStartDate */
-        Months months = Months.months(globalSettingDao.getInteger(GlobalSettingType.TRENDS_HISTORICAL_MONTHS));
-        if (isDisplayedInWidget) {
-            months = Months.ONE;
-        }
         DateTime earliestStartDate = new DateTime().withTimeAtStartOfDay().minus(months);
         
         for (GraphDataSeries seriesItem : graphDataSeriesList) {
