@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
+import org.joda.time.Months;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -64,7 +65,7 @@ public class TrendDataController {
     @GetMapping("/trends/{id}/data")
     public @ResponseBody Map<String, Object> trend(YukonUserContext userContext, @PathVariable int id) {
         LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(id);
-        return getTrendJson(userContext,trend);
+        return getTrendJson(userContext,trend, false);
     }
     
     @GetMapping("/trends/widgetDisplay/{id}/data")
@@ -73,7 +74,7 @@ public class TrendDataController {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         if (trend != null) {
-            json = getTrendJson(userContext, trend);
+            json = getTrendJson(userContext, trend, true);
             Instant lastUpdateTime = new Instant();
             json.put("lastAttemptedRefresh", lastUpdateTime);
             json.put("refreshMillis", trendDataService.getRefreshMilliseconds());
@@ -108,7 +109,7 @@ public class TrendDataController {
      * @param trend - the LiteGraphDefinition object
      * @return {@link ResponseBody} json serialized data.
      */
-    private Map<String, Object> getTrendJson(YukonUserContext userContext, LiteGraphDefinition trend) {
+    private Map<String, Object> getTrendJson(YukonUserContext userContext, LiteGraphDefinition trend, boolean isDisplayedInWidget) {
         
         List<GraphDataSeries> graphDataSeriesList = graphDao.getGraphDataSeries(trend.getGraphDefinitionID());
         List<GraphDataSeries> dateGraphDataSeriesList = new ArrayList<>();
@@ -120,7 +121,13 @@ public class TrendDataController {
         boolean hasCurrentDateBoundary = false;
         boolean showRightAxis = false;
         boolean isTruncated = false;
-        boolean isDataAvaliableForAnySeries = false;
+        /* Calculate earliestStartDate */
+        Months months = Months.months(globalSettingDao.getInteger(GlobalSettingType.TRENDS_HISTORICAL_MONTHS));
+        if (isDisplayedInWidget) {
+            months = Months.ONE;
+        }
+        DateTime earliestStartDate = new DateTime().withTimeAtStartOfDay().minus(months);
+        
         for (GraphDataSeries seriesItem : graphDataSeriesList) {
             TrendType itemType = TrendType.of(seriesItem.getType());
             log.info("TrendType:" + itemType.getGraphType() + " Graph Type:" + GDSTypesFuncs.getType(seriesItem.getType()));
@@ -138,15 +145,15 @@ public class TrendDataController {
                 dateGraphDataSeriesList.add(seriesItem);
                 continue;
             case USAGE_TYPE:
-                seriesItemResult = trendDataService.rawPointHistoryDataProvider(seriesItem.getPointID());
-                seriesData = trendDataService.usageGraphDataProvider(seriesItemResult);
+                seriesItemResult = getSeriesItemResultForPoint(seriesItem.getPointID(), earliestStartDate);
+                seriesData = trendDataService.usageGraphDataProvider(seriesItemResult, earliestStartDate);
                 break;
             case YESTERDAY_TYPE:
-                seriesItemResult = trendDataService.rawPointHistoryDataProvider(seriesItem.getPointID());
+                seriesItemResult = getSeriesItemResultForPoint(seriesItem.getPointID(), earliestStartDate);
                 seriesData = trendDataService.yesterdayGraphDataProvider(seriesItemResult);
                 break;
             case BASIC_TYPE:
-                seriesItemResult = trendDataService.rawPointHistoryDataProvider(seriesItem.getPointID());
+                seriesItemResult = getSeriesItemResultForPoint(seriesItem.getPointID(), earliestStartDate);
                 seriesData = trendDataService.graphDataProvider(seriesItemResult);
                 break;
             case MARKER_TYPE:
@@ -164,8 +171,6 @@ public class TrendDataController {
             }
             if (seriesData.isEmpty()) {
                 seriesProperties.put("error", graphDataStateMessage(GraphDataError.NO_TREND_DATA_AVAILABLE, userContext));
-            } else {
-                isDataAvaliableForAnySeries = true;
             }
             seriesProperties.put("data", seriesData);
             if (seriesItem.isRight()) {
@@ -228,12 +233,10 @@ public class TrendDataController {
             
             endDate = specificDate.plusDays(1);
             seriesItemResult = trendDataService.datePointHistoryDataProvider(pointId, specificDate, endDate);
-            seriesData = trendDataService.dateGraphDataProvider(seriesItemResult, chartDatePrime, chartDateLimit);
+            seriesData = trendDataService.dateGraphDataProvider(seriesItemResult, chartDatePrime, chartDateLimit, earliestStartDate);
             
             if (seriesData.isEmpty()) {
                 seriesProperties.put("error", graphDataStateMessage(GraphDataError.NO_TREND_DATA_AVAILABLE, userContext));
-            } else {
-                isDataAvaliableForAnySeries = true;
             }
             seriesProperties.put("data", seriesData);
             if (seriesItem.isRight()) {
@@ -270,8 +273,13 @@ public class TrendDataController {
             addRightAxis(userContext, seriesList, yAxis, labels);
         }
         json.put("yAxis", yAxis);
-        json.put("isDataAvaliableForAnySeries", isDataAvaliableForAnySeries);
         return json;
+    }
+
+    private List<PointValueHolder> getSeriesItemResultForPoint(Integer pointID, DateTime earliestStartDate) {
+        Instant start = earliestStartDate.toInstant();
+        Instant end = new DateTime().withTimeAtStartOfDay().plusDays(1).toInstant();
+        return trendDataService.rawPointHistoryDataProvider(pointID, start, end);
     }
 
     /**
@@ -338,5 +346,4 @@ public class TrendDataController {
         json.put("prefZoom", trendZoom.ordinal());
         return json;
     }
-
 }

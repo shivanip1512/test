@@ -59,7 +59,7 @@ yukon.widget.trends = (function () {
                         }
                     },
                     chartWidth : widgetContainer.closest('.widgetWrapper').width() - 20,
-                    chartHeight : trend.isDataAvaliableForAnySeries ? 425 : 310,
+                    chartHeight : 425,
                     animateSeriesPloting: animateSeriesPloting
                 };
                 if (widgetContainer.exists()) {
@@ -69,9 +69,14 @@ yukon.widget.trends = (function () {
                         this[name + 'DateBox'].attr("fill", "#f7f7f7");
                         this[name + 'DateBox'].on('click', function () {} );
                     });
-                    yukon.trends.buildChart(chartContainer, chartOptions, trend);
+                    var highChartOptions = {
+                            lang:{
+                                rangeSelectorZoom: '',
+                                rangeSelectorFrom: ''
+                            }
+                    };
+                    yukon.trends.buildChart(chartContainer, trend, chartOptions, highChartOptions);
                     chartContainer.find(".highcharts-input-group").attr('cursor','default');
-                    chartContainer.find('.highcharts-range-label').first().attr('visibility', 'hidden');
                 }
                 var refreshButton = widgetContainer.find('.js-trends-update'),
                     dateTime = moment(trend.lastAttemptedRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm),

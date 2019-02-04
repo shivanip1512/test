@@ -35,10 +35,12 @@ public interface TrendDataService {
      * @see {@link RawPointHistoryDao#getPointData(int, java.util.Date, java.util.Date)
      * <p>
      * @param pointId {@link int} is the unique identifier for the range of entries.
-     * @param rawPointHistoryDao {@link RawPointHistoryDao} is dependency service the client object needs to provide the data back.   
+     * @param rawPointHistoryDao {@link RawPointHistoryDao} is dependency service the client object needs to provide the data back.
+     * @param start {@link Instant}
+     * @param end {@link Instant}
      * @return {@link PointValueHolder} <code>List<PointValueHolder></code>
      */
-    List<PointValueHolder> rawPointHistoryDataProvider(int pointId);
+    List<PointValueHolder> rawPointHistoryDataProvider(int pointId, Instant start, Instant end);
     
     /**
      * requestPeakDateDataProvider
@@ -99,9 +101,10 @@ public interface TrendDataService {
      * @see {@link #usageGraphDataProvider(List<PointValueHolder>)
      * <p>
      * @param data {@link List<PointValueHolder>} is the unique identifier for the range of entries.
+     * @param datePrime {@link DateTime}
      * @return <code>List<Object[]></code>
      */
-    List<Object[]> usageGraphDataProvider(List<PointValueHolder> data);
+    List<Object[]> usageGraphDataProvider(List<PointValueHolder> data, DateTime datePrime);
     
     /**
      * dateGraphDataProvider
@@ -115,9 +118,11 @@ public interface TrendDataService {
      * @param data {@link List<PointValueHolder>} is the unique identifier for the range of entries.
      * @param chartDatePrime{@link DateTime}
      * @param chartDateLimit{@link ReadableInstant}
+     * @param earliestStartDateTime {@link DateTime}
      * @return <code>List<Object[]></code>
      */
-    List<Object[]> dateGraphDataProvider(List<PointValueHolder> data, DateTime chartDatePrime, ReadableInstant chartDateLimit);
+    List<Object[]> dateGraphDataProvider(List<PointValueHolder> data, DateTime chartDatePrime,
+            ReadableInstant chartDateLimit, DateTime earliestStartDateTime);
     
     /**
      * graphDataProvider

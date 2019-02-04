@@ -10,10 +10,13 @@ yukon.trends = (function () {
     
     var mod = {
         
-        buildChart: function (trendChartContainer, trendChartOptions, trend) {
+        buildChart: function (trendChartContainer, trend, trendChartOptions, highChartOptions) {
             var trendId = trendChartContainer.data('trend');
-            
-            Highcharts.setOptions(yg.highcharts_options);
+            if (!$.isEmptyObject(highChartOptions)) {
+                Highcharts.setOptions($.extend(highChartOptions, yg.highcharts_options));
+            } else {
+                Highcharts.setOptions(yg.highcharts_options);
+            }
             var labelFormat = '%Y-%m-%d %l:%M:%S %p',
                 dateTimeLabelFormats = {
                     millisecond: [labelFormat,labelFormat],

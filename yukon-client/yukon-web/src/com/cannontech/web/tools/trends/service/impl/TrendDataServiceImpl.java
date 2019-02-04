@@ -16,7 +16,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.Months;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,9 +43,7 @@ public class TrendDataServiceImpl implements TrendDataService {
     private static final Logger log = YukonLogManager.getLogger(TrendDataController.class);
 
     @Override
-    public List<PointValueHolder> rawPointHistoryDataProvider(int pointId) {
-        Instant end = new DateTime().withTimeAtStartOfDay().plusDays(1).toInstant();
-        Instant start = getEarliestStartDate().toInstant();
+    public List<PointValueHolder> rawPointHistoryDataProvider(int pointId, Instant start, Instant end) {
         Range<Instant> instantRange = Range.inclusive(start, end);
         int maxRows = globalSettingDao.getInteger(GlobalSettingType.TRENDS_READING_PER_POINT);
         if (maxRows != 0) {
@@ -101,12 +98,11 @@ public class TrendDataServiceImpl implements TrendDataService {
     
 
     @Override
-    public  List<Object[]> usageGraphDataProvider(List<PointValueHolder> data) {
+    public  List<Object[]> usageGraphDataProvider(List<PointValueHolder> data, DateTime datePrime) {
         log.debug("UsageGraphDataProvider Called");
         
         List<Object[]> values = new ArrayList<>();
         DateTime dateNow = new DateTime().withTimeAtStartOfDay().plusDays(1);
-        DateTime datePrime = getEarliestStartDate();
         DateTime previousTimeStamp = new DateTime();
         double previousPointValue = 0;
 
@@ -146,14 +142,14 @@ public class TrendDataServiceImpl implements TrendDataService {
     }
 
     @Override
-    public List<Object[]> dateGraphDataProvider(List<PointValueHolder> data, DateTime chartDatePrime, ReadableInstant chartDateLimit) {
+    public List<Object[]> dateGraphDataProvider(List<PointValueHolder> data, DateTime chartDatePrime, ReadableInstant chartDateLimit, DateTime earliestStartDateTime) {
         log.debug("dateGraphDataProvider Called");
         List<Object[]> values = new ArrayList<>();
         if (!data.isEmpty()) {
             DateTime datePrime = new DateTime(data.get(0).getPointDataTimeStamp());
             ReadableInstant dateLimit = new DateTime(data.get(data.size() - 1).getPointDataTimeStamp());
             datePrime = (datePrime.isAfter(chartDatePrime)) ? chartDatePrime : datePrime;                   // the earlier of chartDatePrime and this data set's datePrime
-            datePrime = (datePrime.isBefore(getEarliestStartDate())) ? getEarliestStartDate() : datePrime;  // but limited to the earliest day 
+            datePrime = (datePrime.isBefore(earliestStartDateTime)) ? earliestStartDateTime : datePrime;  // but limited to the earliest day 
             dateLimit = (dateLimit.isBefore(chartDateLimit)) ? chartDateLimit : dateLimit;
             int days = Days.daysBetween(datePrime, dateLimit).getDays();
             log.debug("DatePrime: " + datePrime.toString() + " DateLimit:" + dateLimit.toString() +  " DaysBetween:" + days);
@@ -194,14 +190,6 @@ public class TrendDataServiceImpl implements TrendDataService {
         }
         log.debug("GraphDataProvider:Amount Returned:" + values.size());
         return values;
-    }
-
-    /**
-     * Returns the earliest starting date to collect trending data for. 
-     */
-    private DateTime getEarliestStartDate() {
-        Months months = Months.months(globalSettingDao.getInteger(GlobalSettingType.TRENDS_HISTORICAL_MONTHS));
-        return new DateTime().withTimeAtStartOfDay().minus(months);
     }
 
     @Override

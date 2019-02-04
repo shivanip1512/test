@@ -76,9 +76,11 @@ yukon.tools.trends = (function () {
                         chartWidth : null, //When null the width is calculated from the offset width of the containing element.
                         chartHeight : 675,
                         animateSeriesPloting: true
-                };
+                    },
+                    highChartOptions = {};
+                
                 if (trendChartContainer.exists()) {
-                    yukon.trends.buildChart(trendChartContainer, trendChartOptions, trend);
+                    yukon.trends.buildChart(trendChartContainer, trend, trendChartOptions, highChartOptions);
                 }
             }).always(function () {
                 yukon.ui.unblockPage();
