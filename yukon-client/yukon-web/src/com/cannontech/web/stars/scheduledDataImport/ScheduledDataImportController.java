@@ -260,14 +260,29 @@ public class ScheduledDataImportController {
     }
 
     @GetMapping("downloadArchivedFile")
-    public String downloadArchivedFile(HttpServletResponse response, FlashScope flashScope, String originalFileName,
-            String fileName, boolean isSuccessFile, String failedFilePath, int jobGroupId) {
+    public String downloadArchivedFile(HttpServletResponse response, FlashScope flashScope, Integer entryId,
+            Boolean isSuccessFile) {
         String baseKey = "yukon.web.modules.operator.fileImportHistory.";
-        try (InputStream input = new FileInputStream(scheduledDataImportService.downloadArchivedFile(fileName, isSuccessFile, failedFilePath));
+        String fileName = null;
+        String failedFilePath = null;
+        String originalFileName = null;
+        String jobGroupId = null;
+        Map<String, String> historyEntry = scheduledDataImportService.getHistoryEntryById(entryId, isSuccessFile);
+        if (isSuccessFile) {
+            fileName = historyEntry.get("archiveFileName");
+            originalFileName = historyEntry.get("fileName");
+        } else {
+            fileName = historyEntry.get("failedFileName");
+            failedFilePath = historyEntry.get("failedFilePath");
+        }
+        jobGroupId = historyEntry.get("jobGroupId");
+        try (InputStream input = new FileInputStream(
+            scheduledDataImportService.downloadArchivedFile(fileName, isSuccessFile, failedFilePath));
              OutputStream output = response.getOutputStream();) {
             // set up the response
             response.setContentType("text/csv");
-            String safeFileName = ServletUtil.makeWindowsSafeFileName(originalFileName != null ? originalFileName : fileName);
+            String safeFileName =
+                ServletUtil.makeWindowsSafeFileName(originalFileName != null ? originalFileName : fileName);
             response.setHeader("Content-Disposition", "attachment; filename=\"" + safeFileName + "\"");
             // pull data from the file and push it to the browser
             IOUtils.copy(input, output);

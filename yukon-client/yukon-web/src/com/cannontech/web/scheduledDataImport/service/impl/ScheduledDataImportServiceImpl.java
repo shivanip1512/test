@@ -177,4 +177,9 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
         }
         return file;
     }
+
+    @Override
+    public Map<String, String> getHistoryEntryById(int entryID, boolean isSuccessFile) {
+        return scheduledDataImportDao.getHistoryEntryById(entryID, isSuccessFile);
+    }
 }

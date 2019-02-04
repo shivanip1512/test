@@ -1,6 +1,8 @@
 package com.cannontech.web.stars.scheduledDataImport.dao.impl;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,4 +112,28 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
         }
     }
 
+    @Override
+    public Map<String, String> getHistoryEntryById(int entryID, boolean isSuccessFile) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        if (isSuccessFile) {
+            sql.append("SELECT FileName, ArchiveFileName");
+        } else {
+            sql.append("SELECT FailedFileName, FailedFilePath");
+        }
+        sql.append(", JobGroupId");
+        sql.append("FROM ScheduledDataImportHistory");
+        sql.append("WHERE EntryId").eq(entryID);
+        HashMap<String, String> results = new HashMap<>();
+        yukonJdbcTemplate.query(sql, (YukonResultSet rs) -> {
+            if (isSuccessFile) {
+                results.put("fileName", rs.getString("FileName"));
+                results.put("archiveFileName", rs.getString("ArchiveFileName"));
+            } else {
+                results.put("failedFileName", rs.getString("FailedFileName"));
+                results.put("failedFilePath", rs.getString("FailedFilePath"));
+            }
+            results.put("jobGroupId", rs.getString("JobGroupId"));
+        });
+        return results;
+    }
 }

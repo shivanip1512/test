@@ -1,5 +1,7 @@
 package com.cannontech.web.stars.scheduledDataImport.dao;
 
+import java.util.Map;
+
 import org.joda.time.Instant;
 
 import com.cannontech.common.model.Direction;
@@ -34,5 +36,14 @@ public interface ScheduledDataImportDao {
      */
     SearchResults<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId, Instant from, Instant to,
             SortBy sortBy, Direction direction, PagingParameters paging);
+
+    /**
+     * Retrieve the data required for downloading a success/failure file
+     * 
+     * @param entryID
+     * @param isSuccessFile
+     * @return Map<String, String>
+     */
+    public Map<String, String> getHistoryEntryById(int entryID, boolean isSuccessFile);
 
 }

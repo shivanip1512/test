@@ -49,16 +49,12 @@
                         <tbody>
                             <c:forEach var="result" items="${results.resultList}">
                                 <c:url var="fileUrl" value="/stars/scheduledDataImport/downloadArchivedFile">
-                                    <c:param name="fileName" value="${result.archiveFileName}"/>
+                                    <c:param name="entryId" value="${result.entryId}"/>
                                     <c:param name="isSuccessFile" value="true"/>
-                                    <c:param name="originalFileName" value="${result.fileName}"/>
-                                    <c:param name="jobGroupId" value="${jobGroupId}"/>
                                 </c:url>
                                 <c:url var="errorFileUrl" value="/stars/scheduledDataImport/downloadArchivedFile">
-                                    <c:param name="fileName" value="${result.failedFileName}"/>
+                                    <c:param name="entryId" value="${result.entryId}"/>
                                     <c:param name="isSuccessFile" value="false"/>
-                                    <c:param name="failedFilePath" value="${result.failedFilePath}"/>
-                                    <c:param name="jobGroupId" value="${jobGroupId}"/>
                                 </c:url>
                                 <tr>
                                     <td>

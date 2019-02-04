@@ -2,6 +2,7 @@ package com.cannontech.web.scheduledDataImport.service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Map;
 
 import org.joda.time.Instant;
 
@@ -64,5 +65,14 @@ public interface ScheduledDataImportService {
      */
     public File downloadArchivedFile(String fileName, boolean isSuccessFile, String failedFilePath)
             throws FileNotFoundException, FileCreationException;
+
+    /**
+     * Retrieve the data required for downloading a success/failure file
+     * 
+     * @param entryID
+     * @param isSuccessFile
+     * @return Map<String, String>
+     */
+    public Map<String, String> getHistoryEntryById(int entryID, boolean isSuccessFile);
 
 }
