@@ -599,7 +599,8 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
             });
         List<SmartNotificationEventData> filteredList = list;
         if (AssetImportResultType.IMPORTS_WITH_ERRORS == assetImportResultType) {
-            filteredList = list.stream().filter(result -> result.getFileErrorCount() > 0).collect(Collectors.toList());
+            filteredList = list.stream().filter(result -> result.getFileErrorCount() > 0)
+                                        .collect(Collectors.toList());
         }
         return filteredList.size();
     }
