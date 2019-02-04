@@ -1881,14 +1881,14 @@
       <xsd:enumeration value="LOCATION_TYPE_TRANSFORM"/>
     </xsd:restriction>
   </xsd:simpleType>
-</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://USPLYWHP6035868:8088/DeviceManagerPort</con:endpoint><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint></con:endpoints><con:operation id="6aa7f572-dcf1-4134-977b-08167adea84d" isOneWay="false" action="" name="activateESIHANRadio" bindingOperationName="activateESIHANRadio" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="6ec7367d-46ef-4b5b-bc92-073669b4da2c" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8083/DeviceManagerPort</con:endpoint></con:endpoints><con:operation id="6aa7f572-dcf1-4134-977b-08167adea84d" isOneWay="false" action="" name="activateESIHANRadio" bindingOperationName="activateESIHANRadio" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="6ec7367d-46ef-4b5b-bc92-073669b4da2c" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:ActivateESIHANRadioRequest>\r
          <urn:ESIMacID>?</urn:ESIMacID>\r
       </urn:ActivateESIHANRadioRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/activateESIHANRadioRequest"/></con:call></con:operation><con:operation id="583e9d12-3921-441a-90a5-624b775240bf" isOneWay="false" action="" name="addESIGroup" bindingOperationName="addESIGroup" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="02b6ea52-721a-4884-a659-19604b16cbe0" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/activateESIHANRadioRequest"/></con:call></con:operation><con:operation id="583e9d12-3921-441a-90a5-624b775240bf" isOneWay="false" action="" name="addESIGroup" bindingOperationName="addESIGroup" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="02b6ea52-721a-4884-a659-19604b16cbe0" name="addESIGroup Test Request"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:AddESIGroupRequest>\r
@@ -1987,7 +1987,7 @@
          </urn:ESISearchRequest>\r
       </urn:AddESIGroupRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addESIGroupRequest"/></con:call></con:operation><con:operation id="d66946a5-9e92-49d9-a780-e09adabbc642" isOneWay="false" action="" name="addHANDevice" bindingOperationName="addHANDevice" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="83631a47-c3a8-4286-b525-0ab859f8c28c" name="Test Request"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://USPLYWHP6035868:8088/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addESIGroupRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="d66946a5-9e92-49d9-a780-e09adabbc642" isOneWay="false" action="" name="addHANDevice" bindingOperationName="addHANDevice" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="83631a47-c3a8-4286-b525-0ab859f8c28c" name="addHANDevice Test Request"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:AddHANDeviceRequest>\r
@@ -2007,90 +2007,7 @@
          </urn:D2GAttributes>\r
       </urn:AddHANDeviceRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:username>yukon</con:username><con:password>yukon</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addHANDeviceRequest"/><con:wsrmConfig version="1.2"/></con:call><con:call id="5ba229cd-4873-4d76-9ce4-804408a15a6b" name="Request Template"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://USPLYWHP6035868:8088/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
-   <soapenv:Header/>\r
-   <soapenv:Body>\r
-      <urn:AddHANDeviceRequest>\r
-         <!--Optional:-->\r
-         <urn:Notes>?</urn:Notes>\r
-         <!--Optional:-->\r
-         <urn:OwnedBy>?</urn:OwnedBy>\r
-         <!--Optional:-->\r
-         <urn:DeviceIdentifiers>\r
-            <urn:MacID>?</urn:MacID>\r
-            <!--Optional:-->\r
-            <urn:DeviceName>?</urn:DeviceName>\r
-         </urn:DeviceIdentifiers>\r
-         <!--Optional:-->\r
-         <urn:BatteryPowered>?</urn:BatteryPowered>\r
-         <!--Optional:-->\r
-         <urn:LoadShedPotential>?</urn:LoadShedPotential>\r
-         <!--Optional:-->\r
-         <urn:NullableInputCapacity Null="false">\r
-            <!--Optional:-->\r
-            <urn:InputCapacity>\r
-               <urn:InputCapacityValue>?</urn:InputCapacityValue>\r
-               <urn:InputCapacityUnit>?</urn:InputCapacityUnit>\r
-            </urn:InputCapacity>\r
-         </urn:NullableInputCapacity>\r
-         <!--Optional:-->\r
-         <urn:InputSeerRating>?</urn:InputSeerRating>\r
-         <!--You have a CHOICE of the next 2 items at this level-->\r
-         <urn:ZigbeeAttributes>\r
-            <!--Optional:-->\r
-            <urn:HANDeviceAdditionalInfo>\r
-               <!--Optional:-->\r
-               <urn:ManufacturerName>?</urn:ManufacturerName>\r
-               <!--Optional:-->\r
-               <urn:ManufacturerModel>?</urn:ManufacturerModel>\r
-               <!--Optional:-->\r
-               <urn:HardwareVersion>?</urn:HardwareVersion>\r
-               <!--Optional:-->\r
-               <urn:Firmware1Version>?</urn:Firmware1Version>\r
-               <!--Optional:-->\r
-               <urn:Firmware1Type>?</urn:Firmware1Type>\r
-               <!--Optional:-->\r
-               <urn:Firmware2Version>?</urn:Firmware2Version>\r
-               <!--Optional:-->\r
-               <urn:Firmware2Type>?</urn:Firmware2Type>\r
-               <!--Optional:-->\r
-               <urn:SoftwareVersion>?</urn:SoftwareVersion>\r
-            </urn:HANDeviceAdditionalInfo>\r
-            <!--Optional:-->\r
-            <urn:DeviceSerialNumber>?</urn:DeviceSerialNumber>\r
-            <urn:DeviceType>?</urn:DeviceType>\r
-            <!--Optional:-->\r
-            <urn:ESIMacID>?</urn:ESIMacID>\r
-            <!--Optional:-->\r
-            <urn:SEPVersion>?</urn:SEPVersion>\r
-            <!--Optional:-->\r
-            <urn:HANDeviceClass>?</urn:HANDeviceClass>\r
-            <!--You have a CHOICE of the next 2 items at this level-->\r
-            <urn:InstallCode>?</urn:InstallCode>\r
-            <urn:PreConfiguredLinkKey>?</urn:PreConfiguredLinkKey>\r
-            <!--Optional:-->\r
-            <urn:UtilityEnrollmentGroup>?</urn:UtilityEnrollmentGroup>\r
-         </urn:ZigbeeAttributes>\r
-         <urn:D2GAttributes>\r
-            <urn:ESI>\r
-               <!--Optional:-->\r
-               <urn:Notes>?</urn:Notes>\r
-               <!--Optional:-->\r
-               <urn:OwnedBy>?</urn:OwnedBy>\r
-               <urn:DeviceIdentifiers>\r
-                  <urn:MacID>?</urn:MacID>\r
-                  <!--Optional:-->\r
-                  <urn:DeviceName>?</urn:DeviceName>\r
-               </urn:DeviceIdentifiers>\r
-               <!--Optional:-->\r
-               <urn:SerialNumber>?</urn:SerialNumber>\r
-            </urn:ESI>\r
-            <!--Optional:-->\r
-            <urn:ServicePointUtilID>?</urn:ServicePointUtilID>\r
-         </urn:D2GAttributes>\r
-      </urn:AddHANDeviceRequest>\r
-   </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addHANDeviceRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="54d1b984-9482-4915-9e63-8823f597d921" isOneWay="false" action="" name="editESIGroup" bindingOperationName="editESIGroup" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f15d7f07-2421-4790-aa08-dc04e5c7970e" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:username>yukon</con:username><con:password>yukon</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addHANDeviceRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="54d1b984-9482-4915-9e63-8823f597d921" isOneWay="false" action="" name="editESIGroup" bindingOperationName="editESIGroup" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f15d7f07-2421-4790-aa08-dc04e5c7970e" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:EditESIGroupRequest>\r
@@ -2189,7 +2106,7 @@
          </urn:ESISearchRequest>\r
       </urn:EditESIGroupRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editESIGroupRequest"/></con:call></con:operation><con:operation id="03ad6db4-e6f5-47ae-a513-b9888e9198b1" isOneWay="false" action="" name="editHANDevice" bindingOperationName="editHANDevice" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="1e70018c-117a-46e3-8492-73d23625528a" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd" xmlns:urn1="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editESIGroupRequest"/></con:call></con:operation><con:operation id="03ad6db4-e6f5-47ae-a513-b9888e9198b1" isOneWay="false" action="" name="editHANDevice" bindingOperationName="editHANDevice" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="1e70018c-117a-46e3-8492-73d23625528a" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd" xmlns:urn1="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:EditHANDeviceRequest>\r
@@ -2315,7 +2232,7 @@
          </urn:D2GAttributes>\r
       </urn:EditHANDeviceRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editHANDeviceRequest"/></con:call></con:operation><con:operation id="a4dbcf25-5cb0-4b73-b7ea-45bfbdc11735" isOneWay="false" action="" name="findESI" bindingOperationName="findESI" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="2334cd73-c826-403f-bdf5-d196f7e8edc2" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd" xmlns:urn1="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editHANDeviceRequest"/></con:call></con:operation><con:operation id="a4dbcf25-5cb0-4b73-b7ea-45bfbdc11735" isOneWay="false" action="" name="findESI" bindingOperationName="findESI" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="2334cd73-c826-403f-bdf5-d196f7e8edc2" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd" xmlns:urn1="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:FindESIRequest>\r
@@ -2405,7 +2322,7 @@
          </urn:Pagination>\r
       </urn:FindESIRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/findESIRequest"/></con:call></con:operation><con:operation id="8af688c3-d609-44c5-b97c-03e889be9ff1" isOneWay="false" action="" name="findHANDevice" bindingOperationName="findHANDevice" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="caff73f5-1510-4b18-b39c-42aa097f3805" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd" xmlns:urn1="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/findESIRequest"/></con:call></con:operation><con:operation id="8af688c3-d609-44c5-b97c-03e889be9ff1" isOneWay="false" action="" name="findHANDevice" bindingOperationName="findHANDevice" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="caff73f5-1510-4b18-b39c-42aa097f3805" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd" xmlns:urn1="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:FindHANDeviceRequest>\r
@@ -2499,14 +2416,14 @@
          </urn:Pagination>\r
       </urn:FindHANDeviceRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/findHANDeviceRequest"/></con:call></con:operation><con:operation id="56353c7a-5ca5-426c-8df5-4c521ed35cd9" isOneWay="false" action="" name="getActivateESIHANRadioCommandStatus" bindingOperationName="getActivateESIHANRadioCommandStatus" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="791fead6-58e6-436f-b6ec-b8e1687cc938" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/findHANDeviceRequest"/></con:call></con:operation><con:operation id="56353c7a-5ca5-426c-8df5-4c521ed35cd9" isOneWay="false" action="" name="getActivateESIHANRadioCommandStatus" bindingOperationName="getActivateESIHANRadioCommandStatus" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="791fead6-58e6-436f-b6ec-b8e1687cc938" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:GetActivateESIHANRadioCommandStatusRequest>\r
          <urn:ActivateESIHANRadioCommandID>?</urn:ActivateESIHANRadioCommandID>\r
       </urn:GetActivateESIHANRadioCommandStatusRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/getActivateESIHANRadioCommandStatusRequest"/></con:call></con:operation><con:operation id="73b06e43-da52-4cba-90c0-1fe067dc9012" isOneWay="false" action="" name="getESIGroupMembers" bindingOperationName="getESIGroupMembers" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f04f2366-6d13-41f8-a226-83c4392cc7c1" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd" xmlns:urn1="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/getActivateESIHANRadioCommandStatusRequest"/></con:call></con:operation><con:operation id="73b06e43-da52-4cba-90c0-1fe067dc9012" isOneWay="false" action="" name="getESIGroupMembers" bindingOperationName="getESIGroupMembers" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f04f2366-6d13-41f8-a226-83c4392cc7c1" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd" xmlns:urn1="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:GetESIGroupMembersRequest>\r
@@ -2517,42 +2434,42 @@
          </urn:Pagination>\r
       </urn:GetESIGroupMembersRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/getESIGroupMembersRequest"/></con:call></con:operation><con:operation id="bdff828d-098a-40b9-88ce-b1f36369042a" isOneWay="false" action="" name="getESISyncStatus" bindingOperationName="getESISyncStatus" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="bfd5827d-8157-47ed-b704-d490d261d77c" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/getESIGroupMembersRequest"/></con:call></con:operation><con:operation id="bdff828d-098a-40b9-88ce-b1f36369042a" isOneWay="false" action="" name="getESISyncStatus" bindingOperationName="getESISyncStatus" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="bfd5827d-8157-47ed-b704-d490d261d77c" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:GetESISyncStatusRequest>\r
          <urn:JobID>?</urn:JobID>\r
       </urn:GetESISyncStatusRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/getESISyncStatusRequest"/></con:call></con:operation><con:operation id="dac3d29e-8840-4a91-b441-7a25de56fc75" isOneWay="false" action="" name="getJobStatus" bindingOperationName="getJobStatus" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="2b06dfaf-b31c-4701-8e3e-7b170fa483ca" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/getESISyncStatusRequest"/></con:call></con:operation><con:operation id="dac3d29e-8840-4a91-b441-7a25de56fc75" isOneWay="false" action="" name="getJobStatus" bindingOperationName="getJobStatus" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="2b06dfaf-b31c-4701-8e3e-7b170fa483ca" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:GetJobStatusRequest>\r
          <urn:JobIdentifier>?</urn:JobIdentifier>\r
       </urn:GetJobStatusRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/getJobStatusRequest"/></con:call></con:operation><con:operation id="0bce5d12-db44-47ed-b4f6-229e6cf71385" isOneWay="false" action="" name="getPCTState" bindingOperationName="getPCTState" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="77691e80-590a-44a9-8c22-34e1b29ce7f8" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/getJobStatusRequest"/></con:call></con:operation><con:operation id="0bce5d12-db44-47ed-b4f6-229e6cf71385" isOneWay="false" action="" name="getPCTState" bindingOperationName="getPCTState" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="77691e80-590a-44a9-8c22-34e1b29ce7f8" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:GetPCTStateRequest>\r
          <urn:PCTMacID>?</urn:PCTMacID>\r
       </urn:GetPCTStateRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/getPCTStateRequest"/></con:call></con:operation><con:operation id="39c2e71e-a983-4c62-bf21-447e4b323455" isOneWay="false" action="" name="getPingHANDeviceStatus" bindingOperationName="getPingHANDeviceStatus" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="cf306fc8-8689-48e4-b9ac-e05685eba462" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/getPCTStateRequest"/></con:call></con:operation><con:operation id="39c2e71e-a983-4c62-bf21-447e4b323455" isOneWay="false" action="" name="getPingHANDeviceStatus" bindingOperationName="getPingHANDeviceStatus" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="cf306fc8-8689-48e4-b9ac-e05685eba462" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:GetPingHANDeviceStatusRequest>\r
          <urn:PingHANDeviceCommandID>?</urn:PingHANDeviceCommandID>\r
       </urn:GetPingHANDeviceStatusRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/getPingHANDeviceStatusRequest"/></con:call></con:operation><con:operation id="57a89b55-9677-4f24-8e12-5adecc3a0b2a" isOneWay="false" action="" name="getProvisionHANDeviceCommandStatus" bindingOperationName="getProvisionHANDeviceCommandStatus" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="93712802-ab67-48f9-82dc-f1f48614de47" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/getPingHANDeviceStatusRequest"/></con:call></con:operation><con:operation id="57a89b55-9677-4f24-8e12-5adecc3a0b2a" isOneWay="false" action="" name="getProvisionHANDeviceCommandStatus" bindingOperationName="getProvisionHANDeviceCommandStatus" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="93712802-ab67-48f9-82dc-f1f48614de47" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:GetProvisionHANDeviceCommandStatusRequest>\r
          <urn:ProvisionHANDeviceCommandID>?</urn:ProvisionHANDeviceCommandID>\r
       </urn:GetProvisionHANDeviceCommandStatusRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/getProvisionHANDeviceCommandStatusRequest"/></con:call></con:operation><con:operation id="d424381e-5b01-4131-b059-68d1df5b7950" isOneWay="false" action="" name="listHANDevices" bindingOperationName="listHANDevices" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f0408107-cab7-49a5-8a09-cbe265bdc646" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/getProvisionHANDeviceCommandStatusRequest"/></con:call></con:operation><con:operation id="d424381e-5b01-4131-b059-68d1df5b7950" isOneWay="false" action="" name="listHANDevices" bindingOperationName="listHANDevices" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f0408107-cab7-49a5-8a09-cbe265bdc646" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:ListHANDevicesRequest>\r
@@ -2560,14 +2477,14 @@
          <urn:MacID>?</urn:MacID>\r
       </urn:ListHANDevicesRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/listHANDevicesRequest"/></con:call></con:operation><con:operation id="0b0b408a-326c-49fe-9fa0-a0bb4ab535ee" isOneWay="false" action="" name="pingHANDevice" bindingOperationName="pingHANDevice" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="76ddfff2-6e94-4a35-9da3-52e4bc439b19" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/listHANDevicesRequest"/></con:call></con:operation><con:operation id="0b0b408a-326c-49fe-9fa0-a0bb4ab535ee" isOneWay="false" action="" name="pingHANDevice" bindingOperationName="pingHANDevice" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="76ddfff2-6e94-4a35-9da3-52e4bc439b19" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:PingHANDeviceRequest>\r
          <urn:MacID>?</urn:MacID>\r
       </urn:PingHANDeviceRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/pingHANDeviceRequest"/></con:call></con:operation><con:operation id="ff6610ad-1587-452d-b96e-1a3a0d6232f2" isOneWay="false" action="" name="provisionHANDevice" bindingOperationName="provisionHANDevice" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="38480906-e097-4f66-a55c-76edbc54653e" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/pingHANDeviceRequest"/></con:call></con:operation><con:operation id="ff6610ad-1587-452d-b96e-1a3a0d6232f2" isOneWay="false" action="" name="provisionHANDevice" bindingOperationName="provisionHANDevice" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="38480906-e097-4f66-a55c-76edbc54653e" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:ProvisionHANDeviceRequest>\r
@@ -2576,7 +2493,7 @@
          <urn:JoinDurationSeconds>?</urn:JoinDurationSeconds>\r
       </urn:ProvisionHANDeviceRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/provisionHANDeviceRequest"/></con:call></con:operation><con:operation id="abd1dd68-fbc2-4814-84f2-af89b70bf802" isOneWay="false" action="" name="setILCO" bindingOperationName="setILCO" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="a74d148b-ec7a-48ab-887a-57026da0910d" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/provisionHANDeviceRequest"/></con:call></con:operation><con:operation id="abd1dd68-fbc2-4814-84f2-af89b70bf802" isOneWay="false" action="" name="setILCO" bindingOperationName="setILCO" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="a74d148b-ec7a-48ab-887a-57026da0910d" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:SetILCORequest>\r
@@ -2593,7 +2510,7 @@
          <urn:TargetVirtualRelayID>?</urn:TargetVirtualRelayID>\r
       </urn:SetILCORequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/setILCORequest"/></con:call></con:operation><con:operation id="3d94af91-0533-4b34-91fa-cf4cfb967ca8" isOneWay="false" action="" name="setPCTState" bindingOperationName="setPCTState" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f212ca15-eb74-449b-a8a8-b3fbddb81f2f" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/setILCORequest"/></con:call></con:operation><con:operation id="3d94af91-0533-4b34-91fa-cf4cfb967ca8" isOneWay="false" action="" name="setPCTState" bindingOperationName="setPCTState" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f212ca15-eb74-449b-a8a8-b3fbddb81f2f" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:SetPCTStateRequest>\r
@@ -2612,7 +2529,7 @@
          <urn:Mode>?</urn:Mode>\r
       </urn:SetPCTStateRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/setPCTStateRequest"/></con:call></con:operation><con:operation id="0b4f0389-41b6-4144-9011-3645ff349c11" isOneWay="false" action="" name="syncESI" bindingOperationName="syncESI" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="bc5c5c83-74e4-4b38-8bd8-a2912c4ce20c" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/setPCTStateRequest"/></con:call></con:operation><con:operation id="0b4f0389-41b6-4144-9011-3645ff349c11" isOneWay="false" action="" name="syncESI" bindingOperationName="syncESI" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="bc5c5c83-74e4-4b38-8bd8-a2912c4ce20c" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:SyncESIRequest>\r
@@ -2623,14 +2540,14 @@
          <urn:GroupID>?</urn:GroupID>\r
       </urn:SyncESIRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/syncESIRequest"/></con:call></con:operation><con:operation id="881b8de7-ed73-4fe4-a17d-ebdcf1b6ac17" isOneWay="false" action="" name="unprovisionHANDevice" bindingOperationName="unprovisionHANDevice" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="ebb59a55-5eef-4dd5-b9b8-ccd6ceea7343" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/syncESIRequest"/></con:call></con:operation><con:operation id="881b8de7-ed73-4fe4-a17d-ebdcf1b6ac17" isOneWay="false" action="" name="unprovisionHANDevice" bindingOperationName="unprovisionHANDevice" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="ebb59a55-5eef-4dd5-b9b8-ccd6ceea7343" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:UnprovisionHANDeviceRequest>\r
          <urn:HANMacID>?</urn:HANMacID>\r
       </urn:UnprovisionHANDeviceRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/unprovisionHANDeviceRequest"/></con:call></con:operation><con:operation id="adf9476a-d9b3-4e32-ba1b-3707426eef68" isOneWay="false" action="" name="updateDeviceEventLogs" bindingOperationName="updateDeviceEventLogs" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="a511b8c6-94e4-4e52-a9aa-536b6b7afeda" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:8080/drm/services/v1_8/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/unprovisionHANDeviceRequest"/></con:call></con:operation><con:operation id="adf9476a-d9b3-4e32-ba1b-3707426eef68" isOneWay="false" action="" name="updateDeviceEventLogs" bindingOperationName="updateDeviceEventLogs" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="a511b8c6-94e4-4e52-a9aa-536b6b7afeda" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint xsi:nil="true"/><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:UpdateDeviceEventLogsRequest>\r
@@ -2641,70 +2558,126 @@
          <urn:GroupID>?</urn:GroupID>\r
       </urn:UpdateDeviceEventLogsRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/updateDeviceEventLogsRequest"/></con:call></con:operation></con:interface><con:mockService id="7c299e39-2acb-4188-922d-dd164e57ac5d" port="8088" path="/DeviceManagerPort" host="USPLYWHP6035868" name="DeviceManager MockService"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:mockOperation name="activateESIHANRadio" id="037f6d7a-5ac6-4f91-a1fb-76b581a9f66e" interface="DeviceManagerSoapBinding" operation="activateESIHANRadio"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Response 1" id="1235fd56-40b9-452a-b4f2-77d7a448f984" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/updateDeviceEventLogsRequest"/></con:call></con:operation></con:interface><con:mockService id="7c299e39-2acb-4188-922d-dd164e57ac5d" port="8083" path="/DeviceManagerPort" host="localhost" name="DeviceManager Mock Service" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:mockOperation name="activateESIHANRadio" id="037f6d7a-5ac6-4f91-a1fb-76b581a9f66e" interface="DeviceManagerSoapBinding" operation="activateESIHANRadio"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Response 1" id="1235fd56-40b9-452a-b4f2-77d7a448f984" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">
    <soapenv:Header/>
    <soapenv:Body>
       <urn:ActivateESIHANRadioResponse>
          <urn:ActivateESIHANRadioCommandID>?</urn:ActivateESIHANRadioCommandID>
       </urn:ActivateESIHANRadioResponse>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/activateESIHANRadioResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="addESIGroup" id="8b65c811-462d-4c47-a1f3-4afa1bd216b4" interface="DeviceManagerSoapBinding" operation="addESIGroup"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Response 1" id="6655db19-c26f-4f39-b516-905bddb08b73" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/activateESIHANRadioResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="addESIGroup" id="8b65c811-462d-4c47-a1f3-4afa1bd216b4" interface="DeviceManagerSoapBinding" operation="addESIGroup"><con:settings/><con:defaultResponse>Mock Success Response (Randomized)</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Mock Success Response (Randomized)" id="6655db19-c26f-4f39-b516-905bddb08b73" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>// create XmlHolder for request content
+def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
+
+// generate randomized GroupID between 10000 and 99999
+def GroupID = (int)(10000 + Math.random() * 89999)
+requestContext.returnGroupID = GroupID</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.7:DeviceManager.xsd">
    <soapenv:Header/>
    <soapenv:Body>
       <urn:AddESIGroupResponse>
-         <urn:GroupID>?</urn:GroupID>
+         <urn:GroupID>${returnGroupID}</urn:GroupID>
+      </urn:AddESIGroupResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addESIGroupResponse"/></con:response><con:response name="Mock Failure Response (Randomized)" id="39ec83de-50f2-4aa2-b0de-ff2f9727160e" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>// create XmlHolder for request content
+def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
+
+// generate randomized GroupID between 10000 and 99999
+def GroupID = (int)(10000 + Math.random() * 89999)
+requestContext.returnGroupID = GroupID
+
+// get AddESIGroupRequest/EISSearchRequest/FindDeviceCommonAttributes/MacId return for response
+def mac = holder["//urn:MacID"][1].toString()
+requestContext.returnMac = mac
+
+// randomly generate an error from the list of possible errors
+requestContext.errorCode = "ERROR_MACID_NOT_FOUND"</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.7:DeviceManager.xsd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:AddESIGroupResponse>
+         <urn:GroupID>${returnGroupID}</urn:GroupID>
          <!--Zero or more repetitions:-->
          <urn:Errors>
-            <urn:MacID>?</urn:MacID>
-            <urn:Error>?</urn:Error>
+            <urn:MacID>${returnMac}</urn:MacID>
+            <urn:Error>${errorCode}</urn:Error>
          </urn:Errors>
       </urn:AddESIGroupResponse>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addESIGroupResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="addHANDevice" id="fda0ab95-c30f-4035-abc4-bf948e6e0c69" interface="DeviceManagerSoapBinding" operation="addHANDevice"><con:settings/><con:defaultResponse>Automatic Response</con:defaultResponse><con:dispatchStyle>SCRIPT</con:dispatchStyle><con:response name="Automatic Response" id="f28c0902-3679-455d-89c1-6a3871b1a5a1" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
-
-requestContext.mac = holder["/soapenv:Envelope/soapenv:Body/urn:AddHANDeviceRequest/urn:DeviceIdentifiers/urn:MacID"]
-
-</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addESIGroupResponse"/></con:response><con:response name="Mock Success Response" id="90e977ff-938b-449a-b848-ec2cb9d7b831" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.7:DeviceManager.xsd">
    <soapenv:Header/>
    <soapenv:Body>
-      <urn:AddHANDeviceResponse>
-         <urn:MacID>${mac}</urn:MacID>
-      </urn:AddHANDeviceResponse>
+      <urn:AddESIGroupResponse>
+         <urn:GroupID>1</urn:GroupID>
+      </urn:AddESIGroupResponse>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addHANDeviceResponse"/></con:response><con:response name="Error Response" id="c6f519b3-00b1-4974-abc4-6a0de12f1c7f" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
-
-requestContext.mac = holder["/soapenv:Envelope/soapenv:Body/urn:AddHANDeviceRequest/urn:DeviceIdentifiers/urn:MacID"]
-</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addESIGroupResponse"/></con:response><con:response name="Mock Failure Response" id="2047f059-1db5-41a1-851a-5a10d9d62bc7" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.7:DeviceManager.xsd">
    <soapenv:Header/>
    <soapenv:Body>
-      <urn:AddHANDeviceResponse>
-         <urn:MacID>${mac}</urn:MacID>
-         <urn:Error>An error has occurred</urn:Error>
-      </urn:AddHANDeviceResponse>
-   </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addHANDeviceResponse"/></con:response><con:response name="Response Template" id="fc771f9a-33dd-4537-b76d-fe6e83596856" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">
-   <soapenv:Header/>
-   <soapenv:Body>
-      <urn:AddHANDeviceResponse>
-         <urn:MacID>?</urn:MacID>
+      <urn:AddESIGroupResponse>
+         <urn:GroupID>1</urn:GroupID>
          <!--Zero or more repetitions:-->
-         <urn:Error>?</urn:Error>
-      </urn:AddHANDeviceResponse>
+         <urn:Errors>
+            <urn:MacID>11</urn:MacID>
+            <urn:Error>ERROR_MACID_NOT_FOUND</urn:Error>
+         </urn:Errors>
+      </urn:AddESIGroupResponse>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addHANDeviceResponse"/></con:response><con:response name="Soap Fault Response" id="ffe123c5-f415-4556-a498-4f874d952c67" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addESIGroupResponse"/></con:response><con:response name="Mock SoapFault Response" id="79588c07-f58c-455a-b80a-78d4e086dd17" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
   <soapenv:Body>
     <soapenv:Fault>
-      <faultcode>?</faultcode>
-      <faultstring xml:lang="?">?</faultstring>
+      <faultcode>SOAP-ENV:Client</faultcode>
+      <faultstring>Improperly formatted message.</faultstring>
       <!--Optional:-->
-      <faultactor>?</faultactor>
+      <faultactor>http://mockError.com/error</faultactor>
       <!--Optional:-->
       <detail>
         <urn:ErrorFault>
           <!--1 or more repetitions:-->
           <urn:Error>
-            <urn:ErrorCode>?</urn:ErrorCode>
-            <urn:ErrorMessage>?</urn:ErrorMessage>
+            <urn:ErrorCode>INVALID_MESSAGE</urn:ErrorCode>
+            <urn:ErrorMessage>Improperly formatted message.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addESIGroupResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="addHANDevice" id="fda0ab95-c30f-4035-abc4-bf948e6e0c69" interface="DeviceManagerSoapBinding" operation="addHANDevice"><con:settings/><con:defaultResponse>Mock Success Response</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Mock Success Response" id="f28c0902-3679-455d-89c1-6a3871b1a5a1" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
+
+requestContext.mac = holder["/soapenv:Envelope/soapenv:Body/urn:AddHANDeviceRequest/urn:DeviceIdentifiers/urn:MacID"]
+
+</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.7:DeviceManager.xsd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:AddHANDeviceResponse>
+         <urn:MacID>66:bb:be:ee:00:00:02:00</urn:MacID>
+      </urn:AddHANDeviceResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addHANDeviceResponse"/></con:response><con:response name="Mock Failure Response" id="c6f519b3-00b1-4974-abc4-6a0de12f1c7f" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
+
+requestContext.mac = holder["/soapenv:Envelope/soapenv:Body/urn:AddHANDeviceRequest/urn:DeviceIdentifiers/urn:MacID"]
+</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.7:DeviceManager.xsd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:AddHANDeviceResponse>
+         <urn:MacID></urn:MacID>
+         <!--Zero or more repetitions:-->
+         <urn:Error>Test1</urn:Error>
+         <urn:Error>Test2</urn:Error>
+      </urn:AddHANDeviceResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addHANDeviceResponse"/></con:response><con:response name="Mock SoapFault Response" id="e7f3c612-d02f-41d3-83d0-72c2329c45c2" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>SOAP-ENV:Client</faultcode>
+      <faultstring>Improperly formatted message.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://mockError.com/error</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>INVALID_MESSAGE</urn:ErrorCode>
+            <urn:ErrorMessage>Improperly formatted message.</urn:ErrorMessage>
           </urn:Error>
         </urn:ErrorFault>
         <!--You may enter ANY elements at this point-->
@@ -3206,4 +3179,4 @@ requestContext.mac = holder["/soapenv:Envelope/soapenv:Body/urn:AddHANDeviceRequ
          <urn:updateRequested>?</urn:updateRequested>
       </urn:UpdateDeviceEventLogsResponse>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/updateDeviceEventLogsResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/></con:soapui-project>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/updateDeviceEventLogsResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
