@@ -65,9 +65,11 @@ yukon.widget.trends = (function () {
                 if (widgetContainer.exists()) {
                     // disable editing the date fields. 
                     Highcharts.wrap(Highcharts.RangeSelector.prototype, 'drawInput', function (proceed, name) {
-                        proceed.call(this, name);
-                        this[name + 'DateBox'].attr("fill", "#f7f7f7");
-                        this[name + 'DateBox'].on('click', function () {} );
+                        if ($(this.chart.renderTo).hasClass('js-trends-chart')) {
+                            proceed.call(this, name);
+                            this[name + 'DateBox'].attr("fill", "#f7f7f7");
+                            this[name + 'DateBox'].on('click', function () {} );
+                        }
                     });
                     var highChartOptions = {
                             lang:{

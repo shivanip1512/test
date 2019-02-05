@@ -160,8 +160,6 @@ yukon.widget.porterQueueCounts = (function () {
             },
             yAxis: data.yAxis,
         });
-        
-        $(chart).find('.highcharts-range-label').first().attr('visibility', 'hidden');
         chart.removeClass('js-initialize');
     },
     
@@ -224,7 +222,13 @@ yukon.widget.porterQueueCounts = (function () {
         init : function () {
             if (_initialized) return;
             
-            Highcharts.setOptions(yg.highcharts_options);
+            var highChartOptionsLangOptions = {
+                    lang:{
+                        rangeSelectorZoom: '',
+                        rangeSelectorFrom: ''
+                    }
+            };
+            Highcharts.setOptions($.extend(highChartOptionsLangOptions, yg.highcharts_options));
             $.ajax({
                 url: yukon.url('/amr/porterQueueCounts/getZoom'),
                 type: 'get',
