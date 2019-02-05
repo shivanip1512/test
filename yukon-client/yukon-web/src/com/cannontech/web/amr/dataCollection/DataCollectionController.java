@@ -200,30 +200,30 @@ public class DataCollectionController {
     }
     
     @RequestMapping(value="collectionAction", method=RequestMethod.GET)
-    public String collectionAction(CollectionActionUrl actionType, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, 
+    public String collectionAction(CollectionActionUrl actionType, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled,
                                    RangeType[] ranges, RedirectAttributes attrs) {
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
-        SearchResults<DeviceCollectionDetail> allDetail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled, 
-                                                              Lists.newArrayList(ranges), PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
+        SearchResults<DeviceCollectionDetail> allDetail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled,
+                                                                  Lists.newArrayList(ranges), PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
         List<YukonPao> devices = allDetail.getResultList().stream().map(d -> new SimpleDevice(d.getPaoIdentifier())).collect(Collectors.toList());
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
-        deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
+        deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
         if (actionType.equals(CollectionActionUrl.MAPPING)) {
-        	List<MappingColorCollection> colorCollections = new ArrayList<MappingColorCollection>();
+            List<MappingColorCollection> colorCollections = new ArrayList<MappingColorCollection>();
             Map<String, List<Integer>> mappingMap = new HashMap<String, List<Integer>>();
-        	for(RangeType range : ranges) {
+            for (RangeType range : ranges) {
                 List<Integer> deviceIds = allDetail.getResultList().stream()
-                		.filter(detail -> detail.getRange().equals(range))
-                		.map(d -> d.getPaoIdentifier().getPaoId())
-                		.collect(Collectors.toList());
-	            DeviceCollection rangeCollection = producer.createDeviceCollection(deviceIds);
-	            MappingColorCollection mapCollection = new MappingColorCollection(rangeCollection, range.getColor(), range.getLabelKey());
-	            colorCollections.add(mapCollection);
-	            mappingMap.put(range.getColor(), deviceIds);
-        	}
-        	attrs.addFlashAttribute("mappingColors", mappingMap);
-        	attrs.addFlashAttribute("colorCollections", colorCollections);
+                    .filter(detail -> detail.getRange().equals(range))
+                    .map(d -> d.getPaoIdentifier().getPaoId())
+                    .collect(Collectors.toList());
+                DeviceCollection rangeCollection = producer.createDeviceCollection(deviceIds);
+                MappingColorCollection mapCollection = new MappingColorCollection(rangeCollection, range.getColor(), range.getLabelKey());
+                colorCollections.add(mapCollection);
+                mappingMap.put(range.getColor(), deviceIds);
+            }
+            attrs.addFlashAttribute("mappingColors", mappingMap);
+            attrs.addFlashAttribute("colorCollections", colorCollections);
         }
         return "redirect:" + actionType.getUrl() + "?collectionType=group&group.name=" + tempGroup.getFullName();
     }
