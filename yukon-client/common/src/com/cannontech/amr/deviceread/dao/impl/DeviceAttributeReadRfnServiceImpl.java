@@ -16,10 +16,15 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnDeviceReadCompletionCallback;
+import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
+import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
@@ -31,6 +36,8 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -57,6 +64,8 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RfnMeterReadService rfnMeterReadService;
+    @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
+    @Autowired private AttributeService attributeService;
     @Autowired private MeterDao meterDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnExpressComMessageService rfnExpressComMessageService;
@@ -76,8 +85,8 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
     
     @Override
     public boolean isReadable(Iterable<PaoMultiPointIdentifier> devices) {
-        // There's only one command we can send for an Eka meter and it will return everything,
-        // so we'll just check if at least one of the attributes requested exists.
+        // There are only two commands we can send for an Eka meter - one for just the disconnect status and one for everything,
+        // so we'll just check if they specified at least one attribute.
         return !Iterables.isEmpty(devices);
     }
 
@@ -155,6 +164,15 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         }
     }
     
+    //Use for RFN disconnect statuses
+    private void sendMeterDisconnectQueries(List<RfnMeter> meters, final DeviceAttributeReadCallback delegateCallback) {
+        final AtomicInteger pendingRequests = new AtomicInteger(meters.size());
+        for (final RfnMeter meter : meters) {
+            var disconnectCallback = getDisconnectCallback(meter, delegateCallback, pendingRequests);
+            rfnMeterDisconnectService.send(meter, RfnMeterDisconnectStatusType.QUERY, disconnectCallback);
+        }
+    }
+
     //Use for RFN LCRs
     private void sendDeviceRequests(List<RfnDevice> devices, Multimap<Integer, Integer> devicePointIds, final DeviceAttributeReadCallback delegateCallback) {
         final AtomicInteger pendingRequests = new AtomicInteger(devices.size());
@@ -169,6 +187,7 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         }
     }
     
+    //Use for RFN meters
     private <T1, T2> RfnDeviceReadCompletionCallback<T1, T2> getCallback(final YukonDevice device, final DeviceAttributeReadCallback delegateCallback, final AtomicInteger pendingRequests) {
         RfnDeviceReadCompletionCallback<T1, T2> callback = new RfnDeviceReadCompletionCallback<T1, T2>() {
 
@@ -212,6 +231,41 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         };
         
         return callback;
+    }
+    
+    //Use for RFN disconnect statuses
+    private RfnMeterDisconnectCallback getDisconnectCallback(final RfnMeter meter, final DeviceAttributeReadCallback delegateCallback,
+            final AtomicInteger pendingRequests) {
+        return new RfnMeterDisconnectCallback() {
+
+            @Override
+            public void processingExceptionOccurred(MessageSourceResolvable detail) {
+                SpecificDeviceErrorDescription error = getError(DeviceError.FAILURE, detail);
+                delegateCallback.receivedException(error);
+            }
+
+            @Override
+            public void complete() {
+                delegateCallback.receivedLastValue(meter.getPaoIdentifier(), "");
+                int remaining = pendingRequests.decrementAndGet();
+                if (remaining == 0) {
+                    delegateCallback.complete();
+                }
+            }
+
+            @Override
+            public void receivedSuccess(RfnMeterDisconnectState state, PointValueQualityHolder pointData) {
+                delegateCallback.receivedValue(meter.getPaoIdentifier(), pointData);
+            }
+
+            @Override
+            public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state,
+                    RfnMeterDisconnectConfirmationReplyType replyType) {
+                SpecificDeviceErrorDescription error =
+                        getError(DeviceError.FAILURE, replyType, "yukon.common.device.attributeRead.rfn.statusError");
+                delegateCallback.receivedError(meter.getPaoIdentifier(), error);
+            }
+        };
     }
     
     /**
@@ -290,12 +344,17 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
     
     private void initiateRead(Iterable<PaoMultiPointIdentifier> points,  RfnStrategyCallback strategyCallback){
         List<RfnMeter> rfnMeters = Lists.newArrayListWithCapacity(IterableUtils.guessSize(points));
+        List<RfnMeter> rfnDisconnectMeters = Lists.newArrayListWithCapacity(IterableUtils.guessSize(points));
         List<RfnDevice> rfnDevices = Lists.newArrayListWithCapacity(IterableUtils.guessSize(points));
         
         for (PaoMultiPointIdentifier pointIdentifier: points) {
             if (pointIdentifier.getPao().getPaoType().isMeter()) {
                 RfnMeter rfnMeter = meterDao.getRfnMeterForId(pointIdentifier.getPao().getPaoId());
-                rfnMeters.add(rfnMeter);
+                if (containsOnlyDisconnectStatus(pointIdentifier)) {
+                    rfnDisconnectMeters.add(rfnMeter);
+                } else {
+                    rfnMeters.add(rfnMeter);
+                }
             } else {
                 RfnDevice rfnDevice = rfnDeviceDao.getDevice(pointIdentifier.getPao());
                 rfnDevices.add(rfnDevice);
@@ -323,9 +382,22 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
                 
         strategyCallback.setCompletionCounter(completionCounter);
         sendMeterRequests(rfnMeters, strategyCallback);        
+        sendMeterDisconnectQueries(rfnDisconnectMeters, strategyCallback);
         sendDeviceRequests(rfnDevices, devicePointIds, strategyCallback);
     }
-            
+    
+    private boolean containsOnlyDisconnectStatus(PaoMultiPointIdentifier paoMultiPointIdentifier) {
+        var paoPointIdentifiers = paoMultiPointIdentifier.getPaoPointIdentifiers(); 
+        if (paoPointIdentifiers.size() == 1) {
+            var point = Iterables.getOnlyElement(paoPointIdentifiers);
+            var disconnectPoint = attributeService.getPaoPointIdentifierForAttribute(paoMultiPointIdentifier.getPao(), BuiltInAttribute.DISCONNECT_STATUS);
+            if (disconnectPoint.equals(point)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private <T> SpecificDeviceErrorDescription getError(DeviceError error, T replyType, String msgCode) {
         DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(error);
         MessageSourceResolvable detail = YukonMessageSourceResolvable.createSingleCodeWithArguments(msgCode, replyType);
