@@ -207,6 +207,19 @@
                         <ul>
                             <li><a href="<cti:url value="/support"/>"><i:inline key=".support"/></a></li>
                             <li><a href="<cti:url value="/sitemap"/>"><i:inline key=".siteMap"/></a></li>
+                            <cti:checkRolesAndProperties value="JAVA_WEB_START_LAUNCHER_ENABLED">
+                                <li>
+                                    <a href="javascript:void(0);" data-popup="#yukon-apps-popup">
+                                        <i:inline key=".applications"/>
+                                    </a>
+                                   <div id="yukon-apps-popup" 
+                                        data-title="<cti:msg2 key=".applications.title"/>" 
+                                        data-width="600" 
+                                        class="dn">
+                                        <cti:msg2 key=".applications.description"/>
+                                   </div>
+                                </li>
+                            </cti:checkRolesAndProperties>
                             <c:if test="${showNM}">
                                 <li><a href="${nmUrl}" target="_blank"><i:inline key="yukon.common.networkManager"/></a></li>
                             </c:if>
