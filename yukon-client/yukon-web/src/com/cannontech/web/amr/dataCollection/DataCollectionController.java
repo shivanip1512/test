@@ -213,11 +213,10 @@ public class DataCollectionController {
         	List<MappingColorCollection> colorCollections = new ArrayList<MappingColorCollection>();
             Map<String, List<Integer>> mappingMap = new HashMap<String, List<Integer>>();
         	for(RangeType range : ranges) {
-                List<YukonPao> rangeDevices = allDetail.getResultList().stream()
+                List<Integer> deviceIds = allDetail.getResultList().stream()
                 		.filter(detail -> detail.getRange().equals(range))
-                		.map(d -> new SimpleDevice(d.getPaoIdentifier()))
+                		.map(d -> d.getPaoIdentifier().getPaoId())
                 		.collect(Collectors.toList());
-	            List<Integer> deviceIds = rangeDevices.stream().map(d -> d.getPaoIdentifier().getPaoId()).collect(Collectors.toList());
 	            DeviceCollection rangeCollection = producer.createDeviceCollection(deviceIds);
 	            MappingColorCollection mapCollection = new MappingColorCollection(rangeCollection, range.getColor(), range.getLabelKey());
 	            colorCollections.add(mapCollection);
