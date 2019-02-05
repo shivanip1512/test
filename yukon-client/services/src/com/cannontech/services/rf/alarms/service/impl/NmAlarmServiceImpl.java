@@ -21,13 +21,11 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.database.db.point.stategroup.EventStatus;
-import com.cannontech.infrastructure.dao.InfrastructureWarningsDao;
 import com.cannontech.services.rf.alarms.service.NmAlarmService;
 
 public class NmAlarmServiceImpl implements NmAlarmService, MessageListener{
 
     @Autowired RfnDeviceLookupService rfnDeviceLookupService;
-    @Autowired InfrastructureWarningsDao infrastructureWarningsDao;
     @Autowired RfnGatewayService rfnGatewayService;
     
     private JmsTemplate jmsTemplate;
