@@ -174,6 +174,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         // company setting.
                         if (autoConfig) {
                             if (!trackAddressing || hardwareType.isZigbee() || hardwareType.isEcobee() || hardwareType.isHoneywell()) {
+                                
                                 LmHardwareCommand command = new LmHardwareCommand();
                                 command.setDevice(liteHw);
                                 command.setType(LmHardwareCommandType.CONFIG);

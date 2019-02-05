@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceResponse;
+import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.dr.itron.simulator.model.AddProgramError;
 import com.cannontech.dr.itron.simulator.model.ESIGroupError;
 import com.cannontech.dr.itron.simulator.model.EditHANDeviceError;
@@ -23,6 +24,7 @@ import com.cannontech.web.security.annotation.CheckCparm;
 public class ItronSimulatorController {
     
     @Autowired private SimulatedItronSettings itronSimulatorSettings;
+    @Autowired private ItronCommunicationService itronCommunicationService;
     
 
     @GetMapping("itronSimulator")
@@ -41,6 +43,7 @@ public class ItronSimulatorController {
     @GetMapping("test")
     public String test() {
         AddHANDeviceResponse response = new AddHANDeviceResponse();
+        itronCommunicationService.addEsiGroup();
         return "redirect:itronSimulator";
     }
     
@@ -58,7 +61,7 @@ public class ItronSimulatorController {
     
     @GetMapping("stop")
     public String stop() {
-        //?ssimulatorService.stopSimulator();
+        //simulatorService.stopSimulator();
         return "redirect:itronSimulator";
     }
 }

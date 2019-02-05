@@ -72,10 +72,10 @@ public class ServicePointHelper {
      *     </urn:ServicePoint>
      * </urn:AddServicePointRequest>
      */
-   public static AddServicePointRequest buildRequest(AccountDto accountDto, int invenoryId) {
+   public static AddServicePointRequest buildAddRequest(AccountDto accountDto) {
         AddServicePointType servicePoint = new AddServicePointType();
         
-        servicePoint.setUtilServicePointID(String.valueOf(invenoryId));
+        servicePoint.setUtilServicePointID(accountDto.getAccountNumber());
         
         AccountType account = new AccountType();
         account.setUtilAccountID(accountDto.getAccountNumber());

@@ -587,5 +587,20 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/itronProgramManagerTypes_v1_1.jar" sourcepath="/third-party/linked-sources/itronProgramManagerTypes_v1_1_sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="C:/dev/trunk/third-party/itronProgramEventManagerTypes_v1_6.jar" sourcepath="/third-party/linked-sources/itronProgramEventManagerTypes_v1_6_sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-ws-core-3.0.4.RELEASE.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

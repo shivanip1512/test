@@ -1,24 +1,39 @@
 package com.cannontech.dr.itron.service.impl;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPConstants;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.soap.SoapMessageFactory;
+import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.inventory.Hardware;
+import com.cannontech.common.util.xml.XmlUtils;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceRequest;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceResponse;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIGroupRequestType;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIGroupResponseType;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditHANDeviceRequest;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditHANDeviceResponse;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ObjectFactory;
+import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.AddProgramRequest;
+import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.AddProgramResponse;
+import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.SetServicePointEnrollmentRequest;
+import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.SetServicePointEnrollmentResponse;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServicePointRequest;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServicePointResponse;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.dr.itron.service.ItronException;
-import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.service.AccountService;
-import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.user.YukonUserContext;
-
 
 public class ItronCommunicationServiceImpl implements ItronCommunicationService {
     
@@ -26,9 +41,14 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private String password;
     private String userName;
     @Autowired private AccountService accountService;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private DeviceDao deviceDao;
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class); 
-    
+
+    private static WebServiceTemplate deviceManagerTemplate =
+        getTemplate("com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8");
+    private static WebServiceTemplate servicePointTemplate =
+            getTemplate("com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3");
+
     @Autowired
     public ItronCommunicationServiceImpl(GlobalSettingDao settingDao) {
         url = "http://localhost:8083/itronSimulatorServer";
@@ -40,42 +60,185 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Override
     public void addDevice(Hardware hardware) {
         //TODO add event log
-        String itronUrl = url + "/addHANDevice";
-        log.debug("Sending request to Itron {} to add device with Mac Id {}.", itronUrl, hardware.getMacAddress());
-        AddHANDeviceRequest request = DeviceManagerHelper.buildRequest(hardware.getMacAddress(), hardware.getInventoryId());
-        
-        //TODO send to itron
-        AddHANDeviceResponse response = new AddHANDeviceResponse();
+        String itronUrl = "http://localhost:8083/DeviceManagerPort";
+       // String itronUrl = "http://localhost:8083/DeviceManagerPort" + "/addHANDevice";
+        AddHANDeviceRequest request = null;
+        AccountDto account = null;
+        if (hardware.getAccountId() > 0) {
+            account = accountService.getAccountDto(hardware.getAccountId(), hardware.getEnergyCompanyId());
+            log.debug("AddHANDeviceRequest - Sending request to Itron {} to add device with Mac Id {} to account {}.",
+                itronUrl, hardware.getMacAddress(), account.getAccountNumber());
+            //check if we haven't created account before
+            addServicePoint(account);
+            request = DeviceManagerHelper.buildAddRequestWithServicePoint(hardware, account);
+        } else {
+            log.debug("AddHANDeviceRequest - Sending request to Itron {} to add device with Mac Id {} and inventory Id {}.",
+                itronUrl, hardware.getMacAddress(), hardware.getInventoryId());
+            request = DeviceManagerHelper.buildAddRequestWithoutServicePoint(hardware);
+        }
+              
+        AddHANDeviceResponse response = null;
         try {
+            log.debug(XmlUtils.getPrettyXml(request));
+            response = (AddHANDeviceResponse) deviceManagerTemplate.marshalSendAndReceive(url, request);
+           // response = new AddHANDeviceResponse();
+            log.debug(XmlUtils.getPrettyXml(response));
             if (!response.getErrors().isEmpty()) {
-                String errors = String.join(",", response.getErrors());
-                throw new ItronException("Errors recieved from Itron:" + errors, errors);
+                throw new ItronException("Error recieved from Itron:" + XmlUtils.getPrettyXml(response));
             }
+        } catch (ItronException e) {
+            e.setErrorAddDevice(response);
+            throw e;
         } catch (Exception e) {
-            throw new ItronException("Communication error", e);
+            ItronException itronException = response == null? new ItronException("Communication error", e) :
+                new ItronException("Communication error:" + XmlUtils.getPrettyXml(response), e);
+            itronException.setErrorAddDevice(response);
+            throw itronException;
         }
-        log.debug("Request to Itron {} to add device with Mac Id {} is successful.", itronUrl, hardware.getMacAddress());
-        
-        if(hardware.getAccountId() > 0) {
-            addServicePoint(hardware.getAccountId(), hardware.getEnergyCompanyId(), hardware.getInventoryId());
+        log.debug("AddHANDeviceResponse - Request to Itron {} to add device with Mac Id {} is successful.", itronUrl,
+            response.getMacID());
+    }
+
+    private void addDeviceToServicePoint(String macAddress, AccountDto account) {
+        //TODO add event log
+        String itronUrl = url + "/editHANDevice";
+        log.debug("EditHANDeviceRequest - Sending request to Itron {} to add device to a service point with Mac Id {} account number {}.",
+            itronUrl, macAddress, account.getAccountNumber());
+        EditHANDeviceRequest request = DeviceManagerHelper.buildEditRequestWithServicePoint(macAddress, account);
+        EditHANDeviceResponse response = editDevice(request); 
+        log.debug("EditHANDeviceResponse - Request to Itron {} to add device with Mac Id {} is successful.", itronUrl,
+            response.getMacID());
+    }
+
+    /**
+     * Sends edit device request to itron
+     */
+    private EditHANDeviceResponse editDevice(EditHANDeviceRequest request) {
+        // EditHANDeviceResponse response = (EditHANDeviceResponse) deviceManagerTemplate.marshalSendAndReceive(url, request);
+        EditHANDeviceResponse response = new EditHANDeviceResponse();
+        try {
+            log.debug(XmlUtils.getPrettyXml(request));
+            response = new EditHANDeviceResponse();
+            log.debug(XmlUtils.getPrettyXml(response));
+            if (!response.getErrors().isEmpty()) {
+                throw new ItronException("Error recieved from Itron:" + XmlUtils.getPrettyXml(response));
+            }
+        } catch (ItronException e) {
+            e.setErrorEditDevice(response);
+            throw e;
+        } catch (Exception e) {
+            ItronException itronException = response == null? new ItronException("Communication error", e) :
+                new ItronException("Communication error:" + XmlUtils.getPrettyXml(response), e);
+            itronException.setErrorEditDevice(response);
+            throw itronException;
         }
+        return response;
     }
     
     @Override
-    public void addServicePoint(int accountId, int energyCompanyId, int invenoryId) {
+    public void removeDeviceFromServicePoint(int deviceId) {
+        String macAddress = deviceDao.getDeviceMacAddress(deviceId);
+        //TODO add event log
+        String itronUrl = url + "/editHANDevice";
+        log.debug("EditHANDeviceRequest - Sending request to Itron {} to add device with Mac Id {}.", itronUrl, macAddress);
+        EditHANDeviceRequest request = DeviceManagerHelper.buildEditRequestRemoveServicePoint(macAddress);
+        EditHANDeviceResponse response = editDevice(request); 
+        log.debug("EditHANDeviceResponse - Request to Itron {} to add device with Mac Id {} is successful.", itronUrl,
+            response.getMacID());
+    }
+    
+    @Override
+    public void addServicePoint(int accountId, int energyCompanyId, int deviceId) {
+        AccountDto account = accountService.getAccountDto(accountId, energyCompanyId);
+        addServicePoint(account);
+        String macAddress = deviceDao.getDeviceMacAddress(deviceId);
+        addDeviceToServicePoint(macAddress, account);
+    }
+    
+    /**
+     * Sends request to itron to add service point
+     */
+    private void addServicePoint(AccountDto account) {
         //TODO add event log
         /*
          * Note: The newly created Service Point is not available in the user interface until an ESI is
          * associated to it. It is, however, in the database. (see DeviceManagerHelper buildRequest) 
          */
         String itronUrl = url + "/addServicePoint";
-       
-        AccountDto account = accountService.getAccountDto(accountId, energyCompanyId);
-        AddServicePointRequest request = ServicePointHelper.buildRequest(account, invenoryId);
-        log.debug("Sending request to Itron {} to add service point for account {}.", itronUrl, account.getAccountNumber());
-        //TODO send to itron
+
+        AddServicePointRequest request = ServicePointHelper.buildAddRequest(account);
+        log.debug(XmlUtils.getPrettyXml(request));
+        log.debug("AddServicePointRequest - Sending request to Itron {} to add service point for account {}.", itronUrl,
+            account.getAccountNumber());
+        // AddServicePointResponse response = (AddServicePointResponse) servicePointTemplate.marshalSendAndReceive(url, request);
+        
         AddServicePointResponse response= new AddServicePointResponse();
+        log.debug(XmlUtils.getPrettyXml(response));
        
-        log.debug("Request to Itron {} to add service point for account {} is successful.", itronUrl, account.getAccountNumber());
+        log.debug("AddServicePointResponse - Request to Itron {} to add service point for account {} is successful.",
+            itronUrl, account.getAccountNumber());
     }
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * Creates a template
+     */
+    private static WebServiceTemplate getTemplate(String path) {
+        try {
+            Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+            marshaller.setContextPath(path);
+            marshaller.afterPropertiesSet();
+            MessageFactory saajFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
+            SoapMessageFactory factory = new SaajSoapMessageFactory(saajFactory);
+    
+            WebServiceTemplate template = new WebServiceTemplate(factory);
+            template.setMarshaller(marshaller);
+            template.setUnmarshaller(marshaller);
+            template.afterPropertiesSet();
+            return template;
+        } catch(Exception e) {
+            log.error("Unable to initaialize template for path " + path, e);
+            return null;
+        }
+    }
+    
+    @Override
+    public void addEsiGroup() {
+        //TODO add event log
+       // String itronUrl = url + "/AddESIGroup";
+        String itronUrl = "http://localhost:8083/DeviceManagerPort";
+        //log.debug("Sending request to Itron {} to add device with Mac Id {}.", itronUrl, hardware.getMacAddress());
+       
+        try {
+            AddProgramRequest a;
+            AddProgramResponse b;
+            SetServicePointEnrollmentRequest c;
+            SetServicePointEnrollmentResponse d;
+            //EditESIGroupRequest f;
+            
+            WebServiceTemplate template = getTemplate("com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8");
+
+            ESIGroupRequestType requestType = new ESIGroupRequestType();
+            requestType.setGroupName("Test");
+            JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createAddESIGroupRequest(requestType);
+            ESIGroupResponseType response = (ESIGroupResponseType) template.marshalSendAndReceive(itronUrl, request);
+            // System.out.println(response.getMacID());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
 }

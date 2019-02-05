@@ -52,6 +52,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void deleteDevice(YukonPao pao, InventoryIdentifier inventoryId) {
+        itronCommunicationService.removeDeviceFromServicePoint(pao.getPaoIdentifier().getPaoId());
         deviceDao.removeDevice(pao.getPaoIdentifier().getPaoId());
     }
 
@@ -71,7 +72,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void moveDeviceToInventory(YukonPao pao, InventoryIdentifier inventoryId) {
-   
+        itronCommunicationService.removeDeviceFromServicePoint(pao.getPaoIdentifier().getPaoId());
     }
 
     @Override

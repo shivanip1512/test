@@ -17,4 +17,12 @@ public interface ItronCommunicationService {
      * Account and Location information.
      */
     void addServicePoint(int accountId, int energyCompanyId, int inventoryId);
+
+    /**
+     * Removes existing Device from Service Point
+     */
+    void removeDeviceFromServicePoint(int inventoryId);
+    
+
+    void addEsiGroup();
 }

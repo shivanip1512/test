@@ -1,20 +1,30 @@
 package com.cannontech.common.util.xml;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.text.WordUtils;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -250,5 +260,46 @@ public class XmlUtils {
         Validate.notNull(enumString);
         
         return enumString.toUpperCase().replaceAll(" ", "_");
+    }
+    
+    /**
+     * Returns formats xml string to display nicely in a log file.
+     */
+    public static String getPrettyXml(String xmlData, int indent) {
+        try {
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setAttribute("indent-number", indent);
+
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            StringWriter stringWriter = new StringWriter();
+            StreamResult xmlOutput = new StreamResult(stringWriter);
+
+            Source xmlInput = new StreamSource(new StringReader(xmlData));
+            transformer.transform(xmlInput, xmlOutput);
+
+            return System.getProperty("line.separator") + xmlOutput.getWriter().toString();
+        } catch (Exception e) {
+            //ignore
+            return "";
+        }
+    }
+    
+    /**
+     * Converts jaxb class to xml string, returns formated xml string to display nicely in a log file.
+     */
+    public static String getPrettyXml(Object response) {
+        try {
+            JAXBContext jc = JAXBContext.newInstance(response.getClass());
+            Marshaller marshaller = jc.createMarshaller();
+            StringWriter stringWriter = new StringWriter();
+            marshaller.marshal(response, stringWriter);
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            return getPrettyXml(stringWriter.toString(), 2);
+        } catch (Exception e) {
+            // ignore
+            return "";
+        }
     }
 }
