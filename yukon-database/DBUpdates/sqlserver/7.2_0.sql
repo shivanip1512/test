@@ -449,6 +449,41 @@ WHERE RolePropertyID = -10812;
 INSERT INTO DBUpdates VALUES ('YUK-19420', '7.2.0', GETDATE());
 /* @end YUK-19420 */
 
+/* @start YUK-19447 */
+ALTER TABLE EncryptionKey
+ALTER COLUMN PublicKey VARCHAR(3800);
+GO
+
+ALTER TABLE EncryptionKey
+ADD Temp TEXT;
+GO
+
+UPDATE EncryptionKey
+SET Temp = PrivateKey;
+GO
+
+ALTER TABLE EncryptionKey
+ALTER COLUMN PrivateKey VARCHAR(1920) NULL;
+GO
+
+ALTER TABLE EncryptionKey
+DROP COLUMN PrivateKey;
+GO
+
+EXEC sp_rename 'EncryptionKey.Temp', 'PrivateKey', 'COLUMN';
+GO
+
+ALTER TABLE EncryptionKey
+ALTER COLUMN PrivateKey TEXT NOT NULL;
+GO
+
+ALTER TABLE EncryptionKey
+ADD Timestamp DATETIME;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-19447', '7.2.0', GETDATE());
+/* @end YUK-19447 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
