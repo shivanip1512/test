@@ -78,66 +78,51 @@
 		<div class="column-18-6 clearfix stacked">
 			<div class="column one">
 
-				<c:set var="deviceCollectionKey"
-					value="${!empty monitorId ? 'yukon.web.modules.tools.map.monitorDevices' : ''}" />
-				<tags:selectedDevices deviceCollection="${deviceCollection}"
-					id="device-collection" labelKey="${deviceCollectionKey}" />
+				<c:set var="deviceCollectionKey" value="${!empty monitorId ? 'yukon.web.modules.tools.map.monitorDevices' : ''}" />
+				<tags:selectedDevices deviceCollection="${deviceCollection}" id="device-collection" labelKey="${deviceCollectionKey}" />
 				<cti:url var="downloadUrl" value="/tools/map/locations/download">
 					<cti:mapParam value="${deviceCollection.collectionParameters}" />
 				</cti:url>
 				<cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
-					<c:forEach items="${deviceCollection.collectionParameters}"
-						var="cp">
+					<c:forEach items="${deviceCollection.collectionParameters}" var="cp">
 						<cti:param name="${cp.key}" value="${cp.value}" />
 					</c:forEach>
 				</cti:url>
 				<cm:dropdown icon="icon-cog">
-					<cm:dropdownOption key=".collectionActions"
-						href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true" />
-					<cm:dropdownOption icon="icon-csv" key="yukon.common.download"
-						href="${downloadUrl}" />
+					<cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true" />
+					<cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
 				</cm:dropdown>
 				<c:if test="${!empty violationsCollection}">
-					<tags:selectedDevices deviceCollection="${violationsCollection}"
-						id="violation-collection"
-						labelKey="yukon.web.modules.tools.map.violationDevices"
-						badgeClasses="badge-warning js-violations" />
+					<tags:selectedDevices deviceCollection="${violationsCollection}" id="violation-collection"
+						labelKey="yukon.web.modules.tools.map.violationDevices" badgeClasses="badge-warning js-violations" />
 					<cti:url var="downloadUrl" value="/tools/map/locations/download">
 						<cti:mapParam value="${violationsCollection.collectionParameters}" />
 					</cti:url>
 					<cti:url var="violationActionsUrl" value="/bulk/collectionActions">
-						<c:forEach items="${violationsCollection.collectionParameters}"
-							var="cp">
+						<c:forEach items="${violationsCollection.collectionParameters}" var="cp">
 							<cti:param name="${cp.key}" value="${cp.value}" />
 						</c:forEach>
 					</cti:url>
 					<cm:dropdown icon="icon-cog">
-						<cm:dropdownOption key=".collectionActions"
-							href="${violationActionsUrl}" icon="icon-cog-go" newTab="true" />
-						<cm:dropdownOption icon="icon-csv" key="yukon.common.download"
-							href="${downloadUrl}" />
+						<cm:dropdownOption key=".collectionActions" href="${violationActionsUrl}" icon="icon-cog-go" newTab="true" />
+						<cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
 					</cm:dropdown>
 				</c:if>
 				<c:if test="${!empty filteredCollection}">
 					<div class="js-filtered-devices PT10 dn">
-						<tags:selectedDevices deviceCollection="${filteredCollection}"
-							id="filtered-collection"
-							labelKey="yukon.web.modules.tools.map.filter.filteredOnly"
-							badgeClasses="badge-warning js-filtered" />
+						<tags:selectedDevices deviceCollection="${filteredCollection}" id="filtered-collection"
+							labelKey="yukon.web.modules.tools.map.filter.filteredOnly" badgeClasses="badge-warning js-filtered" />
 						<cti:url var="downloadUrl" value="/tools/map/locations/download">
 							<cti:mapParam value="${filteredCollection.collectionParameters}" />
 						</cti:url>
 						<cti:url var="filteredActionsUrl" value="/bulk/collectionActions">
-							<c:forEach items="${filteredCollection.collectionParameters}"
-								var="cp">
+							<c:forEach items="${filteredCollection.collectionParameters}" var="cp">
 								<cti:param name="${cp.key}" value="${cp.value}" />
 							</c:forEach>
 						</cti:url>
 						<cm:dropdown icon="icon-cog">
-							<cm:dropdownOption key=".collectionActions"
-								href="${filteredActionsUrl}" icon="icon-cog-go" newTab="true" />
-							<cm:dropdownOption icon="icon-csv" key="yukon.common.download"
-								href="${downloadUrl}" />
+							<cm:dropdownOption key=".collectionActions" href="${filteredActionsUrl}" icon="icon-cog-go" newTab="true" />
+							<cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
 						</cm:dropdown>
 					</div>
 				</c:if>
