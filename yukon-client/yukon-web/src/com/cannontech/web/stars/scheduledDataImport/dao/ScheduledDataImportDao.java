@@ -40,9 +40,6 @@ public interface ScheduledDataImportDao {
     /**
      * Retrieve the data required for downloading a success/failure file
      * 
-     * @param entryID
-     * @param isSuccessFile
-     * @return Map<String, String>
      */
     public Map<String, String> getHistoryEntryById(int entryID, boolean isSuccessFile);
 
