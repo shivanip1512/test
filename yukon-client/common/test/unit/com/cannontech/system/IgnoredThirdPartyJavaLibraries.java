@@ -50,7 +50,9 @@ public enum IgnoredThirdPartyJavaLibraries {
     ANT_JUNIT("ant-junit.jar", ANT_BUILD_HELPERS),
     
     ITRON_DEVICE_MANAGER_TYPES("itronDeviceManagerTypes_v1_8.jar", COMPILED_ITRON_WSDL), 
-    ITRON_SERVICE_POINT_MANAGER_TYPES("itronServicePointManagerTypes_v1_3.jar", COMPILED_ITRON_WSDL);
+    ITRON_SERVICE_POINT_MANAGER_TYPES("itronServicePointManagerTypes_v1_3.jar", COMPILED_ITRON_WSDL),
+    SERVICE_POINT_MANAGER_TYPES("servicePointManagerTypes_v1_3", COMPILED_ITRON_WSDL), 
+    PROGRAM_EVENT_MANAGER_TYPES("programEventManagerTypes_v1_6", COMPILED_ITRON_WSDL);
 
     enum IgnoreReason {
         YUKON_PROJECT("Yukon project JARs owned by Eaton, third-party license not applicable"),
