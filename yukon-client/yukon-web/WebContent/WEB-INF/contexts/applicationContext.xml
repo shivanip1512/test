@@ -233,6 +233,9 @@
                 <entry key="VALIDATION_PROCESSING">
                     <ref bean="validationMonitorBackingService"/>
                 </entry>
+                <entry key="PORTER_RESPONSE_MONITORING">
+                    <ref bean="porterResponseMonitorBackingService"/>
+                </entry>
                 <entry key="JOB">
                     <ref bean="jobBackingService"/>
                 </entry>
@@ -461,6 +464,10 @@
     <bean class="com.cannontech.web.updater.validationProcessing.handler.PeakDownViolationsProcessor"/>
     <bean class="com.cannontech.web.updater.validationProcessing.handler.ChangeOutViolationsProcessor"/>
     <bean class="com.cannontech.web.updater.validationProcessing.handler.ShowViolationsProcessor"/>
+    
+    <!-- porter response monitor -->
+    <bean id="porterResponseMonitorBackingService" class="com.cannontech.web.updater.porterResponseMonitoring.PorterResponseMonitorBackingService"/>
+    <bean id="porterResponseMonitorMonitoringCountUpdaterHandler" class="com.cannontech.web.updater.porterResponseMonitoring.handler.MonitoringCountPorterResponseUpdaterHandler"/>
 
     <!-- jobs -->
     <bean id="jobBackingService" class="com.cannontech.web.updater.job.JobBackingService">

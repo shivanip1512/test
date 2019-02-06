@@ -50,5 +50,6 @@ public enum DataType {
     DEMAND_RESET,
     DATA_STREAMING,
     PQR_CONFIG,
+    PORTER_RESPONSE_MONITORING
     ;
 }

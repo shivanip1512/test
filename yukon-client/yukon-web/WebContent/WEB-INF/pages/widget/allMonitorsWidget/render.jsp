@@ -293,7 +293,7 @@
             <tr>
                 <th class="name"><i:inline key=".name"/></th>
                 <th class="data">&nbsp;</th>
-                <th class="monitoring">&nbsp;</th>
+                <th class="monitoring tar"><i:inline key=".tableHeader.monitoring"/></th>
                 <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
             </tr>
         </thead>
@@ -304,7 +304,7 @@
 
             <tr class="monitor js-monitor-${monitorType}-${monitor.monitorId}" data-removed-text="${removedText}">
                 <%-- monitor name --%>
-                <td colspan="3">
+                <td colspan="2">
                     <cti:url var="viewMonitorUrl" value="/amr/porterResponseMonitor/viewPage">
                         <cti:param name="monitorId" value="${monitor.monitorId}" />
                     </cti:url>
@@ -313,6 +313,11 @@
 
                 <c:set var="isPorterEnabled" value="${monitor.evaluatorStatus eq 'ENABLED'}"/>
                 <c:set var="cssClass" value="${isPorterEnabled ? '' : 'very-disabled-look'}"/>
+                
+                <%-- monitoring count --%>
+                <td class="tar">
+                    <cti:dataUpdaterValue type="PORTER_RESPONSE_MONITORING" identifier="${monitor.monitorId}/MONITORING_COUNT" styleClass="js-monitoring-count ${cssClass}"/>
+                </td>
 
                 <%-- cog-menu --%>
                 <td>

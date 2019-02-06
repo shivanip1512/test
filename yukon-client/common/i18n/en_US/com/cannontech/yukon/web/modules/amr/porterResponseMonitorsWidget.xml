@@ -5,6 +5,7 @@
     <!-- PorterResponseMonitorsWidget render.jsp -->
     <entry key="yukon.web.widgets.porterResponseMonitorsWidget.noMonitors">No Porter Response Monitors</entry>
     <entry key="yukon.web.widgets.porterResponseMonitorsWidget.name">Porter Response</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
     <entry key="yukon.web.widgets.porterResponseMonitorsWidget.enabled">Enabled</entry>
     <entry key="yukon.web.widgets.porterResponseMonitorsWidget.edit.hoverText">Edit Porter Response Monitor Details ({0})</entry>
     <entry key="yukon.web.widgets.porterResponseMonitorsWidget.enable.hoverText">Enable ({0})</entry>
