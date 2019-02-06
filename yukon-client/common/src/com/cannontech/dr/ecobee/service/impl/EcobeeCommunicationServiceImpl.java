@@ -491,15 +491,16 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                             + file.getName().substring(0, file.getName().indexOf(".csv") + 4));
 
                         while (iterator.hasNext()) {
-                            String[] data2 = iterator.next();
+                            String[] thermostatData = iterator.next();
                             DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-dd-MM HH:mm:ss");
-                            Instant date = new DateTime(formatter.parseDateTime(data2[0] + " " + data2[1])).toInstant();
-                            String eventActivity = data2[2];
-                            String zoneHVACMode = data2[3];
-                            Float setHeatTempInF = Float.parseFloat(data2[4]);
-                            Float setCoolTempInF = Float.parseFloat(data2[5]);
-                            Float indoorTempInF = Float.parseFloat(data2[6]);
-                            Float dmOffset = Float.parseFloat(data2[7]);
+                            Instant date = new DateTime(
+                                formatter.parseDateTime(thermostatData[0] + " " + thermostatData[1])).toInstant();
+                            String eventActivity = thermostatData[2];
+                            String zoneHVACMode = thermostatData[3];
+                            Float setHeatTempInF = Float.parseFloat(thermostatData[4]);
+                            Float setCoolTempInF = Float.parseFloat(thermostatData[5]);
+                            Float indoorTempInF = Float.parseFloat(thermostatData[6]);
+                            Float dmOffset = Float.parseFloat(thermostatData[7]);
                             EcobeeDeviceReading deviceReading = new EcobeeDeviceReading(0f, indoorTempInF,
                                 setCoolTempInF, setHeatTempInF, 0, eventActivity, date, zoneHVACMode, dmOffset);
                             readings.add(deviceReading);
