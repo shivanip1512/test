@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.inventory.Hardware;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceResponse;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.dr.itron.simulator.model.AddProgramError;
@@ -26,7 +27,6 @@ public class ItronSimulatorController {
     @Autowired private SimulatedItronSettings itronSimulatorSettings;
     @Autowired private ItronCommunicationService itronCommunicationService;
     
-
     @GetMapping("itronSimulator")
     public String itronSimulator(ModelMap model) {
         boolean simulatorRunning = false;
@@ -43,7 +43,9 @@ public class ItronSimulatorController {
     @GetMapping("test")
     public String test() {
         AddHANDeviceResponse response = new AddHANDeviceResponse();
-        itronCommunicationService.addEsiGroup();
+        Hardware hardware = new Hardware();
+       // itronCommunicationService.addDevice(hardware);
+        System.out.println(itronCommunicationService.getGroup(1));
         return "redirect:itronSimulator";
     }
     
