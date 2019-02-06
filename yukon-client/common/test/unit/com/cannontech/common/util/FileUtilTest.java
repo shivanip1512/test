@@ -210,6 +210,7 @@ public class FileUtilTest {
              InputStream inputStream = this.getClass().getResourceAsStream("testLogForFileUtil.log");) {
             tarOutputStream.putNextEntry(new TarEntry(file));
             IOUtils.copy(inputStream, tarOutputStream);
+            tarOutputStream.closeEntry();
         }
         List<File> untarFiles = FileUtil.untar(tarFile);
         for (File file : untarFiles) {
