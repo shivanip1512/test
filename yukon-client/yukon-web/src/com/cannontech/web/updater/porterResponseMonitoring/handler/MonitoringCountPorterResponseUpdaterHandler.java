@@ -15,8 +15,8 @@ import com.cannontech.web.updater.porterResponseMonitoring.PorterResponseMonitor
 
 public class MonitoringCountPorterResponseUpdaterHandler implements PorterResponseUpdaterHandler {
 
-    private PorterResponseMonitorDao porterResponseMonitorDao;
-    private DeviceGroupService deviceGroupService;
+    private @Autowired PorterResponseMonitorDao porterResponseMonitorDao;
+    private @Autowired DeviceGroupService deviceGroupService;
 
     @Override
     public String handle(int porterResponseMonitorId, YukonUserContext userContext) {
@@ -43,14 +43,5 @@ public class MonitoringCountPorterResponseUpdaterHandler implements PorterRespon
     public PorterResponseMonitorUpdaterTypeEnum getUpdaterType() {
         return PorterResponseMonitorUpdaterTypeEnum.MONITORING_COUNT;
     }
-    
-    @Autowired
-    public void setValidationMonitorDao(PorterResponseMonitorDao porterResponseMonitorDao) {
-        this.porterResponseMonitorDao = porterResponseMonitorDao;
-    }
-    
-    @Autowired
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
+
 }
