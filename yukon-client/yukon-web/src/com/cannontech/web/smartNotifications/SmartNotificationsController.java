@@ -453,7 +453,7 @@ public class SmartNotificationsController {
             String timestamp = dateFormattingService.format(event.getTimestamp(), DateFormatEnum.BOTH, userContext);
             String fileSuccessCount = String.valueOf(event.getFileSuccessCount());
             String fileFailCount = String.valueOf(event.getFileErrorCount());
-            String[] dataRow = new String[] { scheduleName, timestamp, fileSuccessCount, fileFailCount };
+            String[] dataRow = new String[] { scheduleName, timestamp, fileFailCount, fileSuccessCount };
             dataRows.add(dataRow);
         }
         return headerRow;
