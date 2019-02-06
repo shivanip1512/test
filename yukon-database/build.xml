@@ -174,7 +174,7 @@
         <!-- Run the oracle creation scripts -->
         <echo message="Importing Creation Scripts" />
         <exec executable="sqlplus" output="db-init-lookup-identity.log">
-            <arg value="${databaseName}/${databaseName}@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=${dbOracleServer})(PORT=${dbOracleServerPort})))(CONNECT_DATA=(SERVICE_NAME=${dbOracleServerAlias}.cannontech.com)))"/>
+            <arg value="${databaseName}/${databaseName}@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=${dbOracleServer})(PORT=${dbOracleServerPort})))(CONNECT_DATA=(SERVICE_NAME=${dbOracleServerAlias}.eatoneaseng.net)))"/>
             <arg value="@CreationScripts/OracleTableCreation.sql"/>
         </exec>
 
