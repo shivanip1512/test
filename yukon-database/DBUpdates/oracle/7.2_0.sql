@@ -473,6 +473,14 @@ ADD Timestamp DATE;
 INSERT INTO DBUpdates VALUES ('YUK-19447', '7.2.0', SYSDATE);
 /* @end YUK-19447 */
 
+/* @start YUK-19471 */
+UPDATE Widget
+SET WidgetType = 'CSR_TREND'
+WHERE WidgetType = 'TREND';
+
+INSERT INTO DBUpdates VALUES ('YUK-19471', '7.2.0', GETDATE());
+/* @end YUK-19471 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
