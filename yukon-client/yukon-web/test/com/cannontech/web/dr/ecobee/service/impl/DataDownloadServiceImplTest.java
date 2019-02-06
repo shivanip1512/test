@@ -107,7 +107,7 @@ public class DataDownloadServiceImplTest {
                     reportRows.add(row);
                     EcobeeDeviceReading reading = new EcobeeDeviceReading(row.getOutdoorTemp(), row.getIndoorTemp(),
                            row.getCoolSetPoint(), row.getHeatSetPoint(), row.getRuntime(), row.getEventName(),
-                           reportTime.toDateTime(timeZone).toInstant());
+                        reportTime.toDateTime(timeZone).toInstant(), null, 0f);
                     expectedReadings.add(reading);
                 }
                 reports.add(new RuntimeReport(serialNumber, reportRows.size(), reportRows));
@@ -173,6 +173,11 @@ public class DataDownloadServiceImplTest {
         @Override
         public RuntimeReportJobResponse createRuntimeReportJob(SelectionType selectionType,
                 Collection<String> selectionMatch, Range<Instant> dateRange) {
+            throw new UnsupportedOperationException("Method not implemented.");
+        }
+
+        @Override
+        public List<EcobeeDeviceReadings> downloadRuntimeReport(List<String> dataUrls) {
             throw new UnsupportedOperationException("Method not implemented.");
         }
 

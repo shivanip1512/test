@@ -5,20 +5,32 @@ import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.PROCESSING_ERROR
 import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.SUCCESS;
 import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.VALIDATION_ERROR;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalDateTime;
 import org.joda.time.MutableDateTime;
 import org.joda.time.Period;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -29,6 +41,8 @@ import org.springframework.web.client.RestOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.FileUtil;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
@@ -66,6 +80,7 @@ import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.user.YukonUserContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableList;
@@ -231,7 +246,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                     Instant date = reportRow.getThermostatTime().toDateTime(thermostatDateTime).toInstant();
                     EcobeeDeviceReading reading = new EcobeeDeviceReading(reportRow.getOutdoorTemp(),
                         reportRow.getIndoorTemp(), reportRow.getCoolSetPoint(), reportRow.getHeatSetPoint(),
-                        reportRow.getRuntime(), reportRow.getEventName(), date);
+                        reportRow.getRuntime(), reportRow.getEventName(), date, null, 0f);
                     readings.add(reading);
                 }
                 deviceData.add(new EcobeeDeviceReadings(runtimeReport.getThermostatIdentifier(), dateRange, readings));
@@ -438,5 +453,70 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
         log.debug("Runtime report job has been created. JobId: " + response.getJobId());
         return response;
+    }
+
+    @Override
+    public List<EcobeeDeviceReadings> downloadRuntimeReport(List<String> dataUrls) {
+        List<EcobeeDeviceReadings> ecobeeDeviceReadings = new ArrayList<>();
+        for (String url : dataUrls) {
+            String decryptedFileName = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
+
+            log.debug("Encrypted file : " + url.substring(url.lastIndexOf('/') + 1, url.length())
+                + "received for Job ID : " + decryptedFileName.substring(0, decryptedFileName.indexOf("-")));
+
+            try (BufferedInputStream gpgInputStream = new BufferedInputStream(new URL(url).openStream())) {
+                // TODO : Once changes for YUK-19276 checked in, Need to call appropriate method for
+                // decrypting these files
+                byte byteArray[] = new byte[0];
+                File tarGzfile =
+                    File.createTempFile(decryptedFileName, "", new File(CtiUtilities.getImportArchiveDirPath()));
+                tarGzfile.deleteOnExit();
+                FileUtils.writeByteArrayToFile(tarGzfile, byteArray);
+                List<File> csvFiles = FileUtil.untar(FileUtil.ungzip(tarGzfile));
+                EcobeeDeviceReadings deviceReadings = null;
+
+                for (File file : csvFiles) {
+                    try (FileInputStream inputStream = new FileInputStream(file);
+                         BOMInputStream bomInputStream =
+                             new BOMInputStream(inputStream, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
+                                 ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
+                         InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream)) {
+                        CSVReader csvReader = new CSVReader(inputStreamReader);
+                        Iterator<String[]> iterator = csvReader.readAll().iterator();
+                        iterator.next();
+                        List<EcobeeDeviceReading> readings = new ArrayList<EcobeeDeviceReading>();
+                        String serialNumber = file.getName().substring(0, file.getName().indexOf('-'));
+
+                        log.debug("Received runtime reports for Thermostat : " + serialNumber + "in file name"
+                            + file.getName().substring(0, file.getName().indexOf(".csv") + 4));
+
+                        while (iterator.hasNext()) {
+                            String[] data2 = iterator.next();
+                            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-dd-MM HH:mm:ss");
+                            Instant date = new DateTime(formatter.parseDateTime(data2[0] + " " + data2[1])).toInstant();
+                            String eventActivity = data2[2];
+                            String zoneHVACMode = data2[3];
+                            Float setHeatTempInF = Float.parseFloat(data2[4]);
+                            Float setCoolTempInF = Float.parseFloat(data2[5]);
+                            Float indoorTempInF = Float.parseFloat(data2[6]);
+                            Float dmOffset = Float.parseFloat(data2[7]);
+                            EcobeeDeviceReading deviceReading = new EcobeeDeviceReading(0f, indoorTempInF,
+                                setCoolTempInF, setHeatTempInF, 0, eventActivity, date, zoneHVACMode, dmOffset);
+                            readings.add(deviceReading);
+                        }
+
+                        deviceReadings = new EcobeeDeviceReadings(serialNumber, null, readings);
+                        CtiUtilities.close(iterator, csvReader);
+                        file.delete();
+                    }
+                    ecobeeDeviceReadings.add(deviceReadings);
+                }
+
+            } catch (Exception e) {
+                log.error("Error while processing runtimereport data.", e);
+                throw new EcobeeCommunicationException("Error occured while processing runtimereport data.");
+            }
+        }
+        return ecobeeDeviceReadings;
     }
 }

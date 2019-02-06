@@ -12,7 +12,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.tools.tar.TarEntry;
+import org.apache.tools.tar.TarOutputStream;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -180,5 +184,40 @@ public class FileUtilTest {
         // Invalid file name
         assertTrue(FileUtil.getLogCreationDate("Webserver_201802.log", "Webserver_") == null);
         
+    }
+
+    @Test
+    public void test_ungzip() throws IOException {
+        File gzipFile = File.createTempFile("testGzipFileForFileUtil", ".log.gz");
+        gzipFile.deleteOnExit();
+        try (InputStream inputStream = this.getClass().getResourceAsStream("testLogForFileUtil.log");
+             GZIPOutputStream gzipOutputStream = new GZIPOutputStream(new FileOutputStream(gzipFile));) {
+            IOUtils.copy(inputStream, gzipOutputStream);
+        }
+        String fileName = FileUtil.ungzip(gzipFile).getName();
+        String newFileExtension = fileName.substring(fileName.indexOf('.'), fileName.length());
+        boolean containslogExtension = newFileExtension.contains(".log");
+        boolean containsgzipExtension = newFileExtension.contains(".gz");
+        assertTrue(containslogExtension);
+        assertFalse(containsgzipExtension);
+    }
+
+    @Test
+    public void test_untar() throws IOException {
+        File tarFile = File.createTempFile("testTarFileForFileUtil", ".tar");
+        tarFile.deleteOnExit();
+        try (TarOutputStream tarOutputStream = new TarOutputStream(new FileOutputStream(tarFile));
+             InputStream inputStream = this.getClass().getResourceAsStream("testLogForFileUtil.log");) {
+            tarOutputStream.putNextEntry(new TarEntry(file));
+            IOUtils.copy(inputStream, tarOutputStream);
+        }
+        List<File> untarFiles = FileUtil.untar(tarFile);
+        for (File file : untarFiles) {
+            String newFileExtension = file.getName().substring(file.getName().indexOf('.'), file.getName().length());
+            boolean containsTempExtension = newFileExtension.contains(".tmp");
+            boolean containsTarExtension = newFileExtension.contains(".tar");
+            assertTrue(containsTempExtension);
+            assertFalse(containsTarExtension);
+        }
     }
 }

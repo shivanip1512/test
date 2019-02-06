@@ -172,7 +172,7 @@ public class EcobeeCommunicationServiceImplTest {
                 reportRows.add(row);
                 EcobeeDeviceReading reading = new EcobeeDeviceReading(row.getOutdoorTemp(), row.getIndoorTemp(),
                        row.getCoolSetPoint(), row.getHeatSetPoint(), row.getRuntime(), row.getEventName(),
-                       reportTime.toDateTime(testCase.getTimeZone()).toInstant());
+                    reportTime.toDateTime(testCase.getTimeZone()).toInstant(), null, 0f);
                 expectedReadings.add(reading);
             }
             reports.add(new RuntimeReport(serialNumber, reportRows.size(), reportRows));

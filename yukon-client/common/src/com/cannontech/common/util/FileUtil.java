@@ -3,6 +3,8 @@ package com.cannontech.common.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,9 +22,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.apache.tools.tar.TarEntry;
+import org.apache.tools.tar.TarInputStream;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
@@ -437,6 +443,59 @@ public final class FileUtil {
             if (!success) {
                 throw new FileCreationException("Error occurred while creating directory " + path);
             }
+        }
+    }
+
+    /**
+     * Method to un-zip a .gz file.
+     * 
+     * @throws IOException If any error occurs while ungzipping the file
+     */
+    public static File ungzip(File gzFile) throws IOException {
+        String outputDir = gzFile.getParent();
+        File outputFile = File.createTempFile(gzFile.getName().substring(0, gzFile.getName().lastIndexOf('.')), "",
+            new File(outputDir));
+        outputFile.deleteOnExit();
+        try (GZIPInputStream in = new GZIPInputStream(new FileInputStream(gzFile));
+             FileOutputStream out = new FileOutputStream(outputFile);) {
+            IOUtils.copy(in, out);
+            return outputFile;
+        } catch (IOException e) {
+            log.error("Unable to unzip the file");
+            throw new IOException();
+        }
+    }
+
+    /**
+     * Method to untar a file
+     * 
+     * @throws IOException If any error occurs while untaring the file
+     */
+    public static List<File> untar(File tarFile) throws IOException {
+        try (TarInputStream tin = new TarInputStream(new FileInputStream(tarFile))) {
+            String outputDir = tarFile.getParent();
+            TarEntry tarEntry = tin.getNextEntry();
+            List<File> untarFiles = new ArrayList<>();
+            if (new File(outputDir).exists()) {
+                while (tarEntry != null) {
+                    File destPath = File.createTempFile(tarEntry.getName(), "", new File(outputDir));
+                    destPath.deleteOnExit();
+                    if (!tarEntry.isDirectory()) {
+                        try (FileOutputStream fout = new FileOutputStream(destPath)) {
+                            tin.copyEntryContents(fout);
+                        }
+                    } else {
+                        destPath.mkdir();
+                    }
+                    untarFiles.add(destPath);
+                    tarEntry = tin.getNextEntry();
+                }
+                tin.close();
+            }
+            return untarFiles;
+        } catch (IOException e) {
+            log.error("Unable to untar the file");
+            throw new IOException();
         }
     }
 }

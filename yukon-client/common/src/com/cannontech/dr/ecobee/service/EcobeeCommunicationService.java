@@ -124,4 +124,11 @@ public interface EcobeeCommunicationService {
     RuntimeReportJobResponse createRuntimeReportJob(SelectionType selectionType, Collection<String> selectionMatch,
             Range<Instant> dateRange);
 
+    /**
+     * Retrieve thermostats data for the specified URLs.These URLs are specific to a job.
+     * 
+     * @throws EcobeeCommunicationException if anything goes wrong.
+     */
+    List<EcobeeDeviceReadings> downloadRuntimeReport(List<String> dataUrls);
+
 }

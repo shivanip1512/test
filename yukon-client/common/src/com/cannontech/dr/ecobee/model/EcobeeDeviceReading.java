@@ -11,9 +11,11 @@ public final class EcobeeDeviceReading {
     private final Integer runtimeSeconds;
     private final String eventActivity;
     private final Instant date;
+    private final String zoneHVACMode;
+    private final Float dmOffset;
 
     public EcobeeDeviceReading(Float outdoorTempInF, Float indoorTempInF, Float setCoolTempInF,
-                               Float setHeatTempInF, Integer runtimeSeconds, String eventActivity, Instant date) {
+                               Float setHeatTempInF, Integer runtimeSeconds, String eventActivity, Instant date,String zoneHVACMode,Float dmOffset) {
         this.outdoorTempInF = outdoorTempInF;
         this.indoorTempInF = indoorTempInF;
         this.setCoolTempInF = setCoolTempInF;
@@ -21,6 +23,8 @@ public final class EcobeeDeviceReading {
         this.runtimeSeconds = runtimeSeconds;
         this.eventActivity = eventActivity;
         this.date = date;
+        this.zoneHVACMode = zoneHVACMode;
+        this.dmOffset = dmOffset;
     }
 
     public Float getOutdoorTempInF() {
@@ -60,5 +64,13 @@ public final class EcobeeDeviceReading {
                setCoolTempInF != null || 
                setHeatTempInF != null ||
                StringUtils.isNotBlank(eventActivity);
+    }
+
+    public String getZoneHVACMode() {
+        return zoneHVACMode;
+    }
+
+    public Float getDmOffset() {
+        return dmOffset;
     }
 }
