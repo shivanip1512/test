@@ -1,7 +1,9 @@
 package com.cannontech.dr.itron.service;
 
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceResponse;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIGroupResponseType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditHANDeviceResponse;
+import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.AddProgramResponse;
 
 public class ItronException extends RuntimeException {
 
@@ -9,6 +11,8 @@ public class ItronException extends RuntimeException {
     // exception is thrown but response is null.
     private AddHANDeviceResponse errorAddDevice;
     private EditHANDeviceResponse errorEditDevice;
+    private ESIGroupResponseType  errorAddGroup;
+    private AddProgramResponse errorAddProgram;
    
     public ItronException(String message) {
         super(message);
@@ -34,5 +38,19 @@ public class ItronException extends RuntimeException {
         this.errorEditDevice = errorEditDevice;
     }
 
+    public ESIGroupResponseType getErrorAddGroup() {
+        return errorAddGroup;
+    }
 
+    public void setErrorAddGroup(ESIGroupResponseType errorAddGroup) {
+        this.errorAddGroup = errorAddGroup;
+    }
+
+    public AddProgramResponse getErrorAddProgram() {
+        return errorAddProgram;
+    }
+
+    public void setErrorAddProgram(AddProgramResponse errorAddProgram) {
+        this.errorAddProgram = errorAddProgram;
+    }
 }

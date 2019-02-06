@@ -173,8 +173,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         // Whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION energy
                         // company setting.
                         if (autoConfig) {
-                            if (!trackAddressing || hardwareType.isZigbee() || hardwareType.isEcobee() || hardwareType.isHoneywell()) {
-                                
+                            if (!trackAddressing || hardwareType.isZigbee() || hardwareType.isEcobee()
+                                || hardwareType.isHoneywell() || hardwareType.isItron()) {
+     
                                 LmHardwareCommand command = new LmHardwareCommand();
                                 command.setDevice(liteHw);
                                 command.setType(LmHardwareCommandType.CONFIG);

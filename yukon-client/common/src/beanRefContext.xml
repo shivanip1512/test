@@ -34,9 +34,9 @@
                 <value>com/cannontech/common/pao/pao.xml</value>
                 <value>com/cannontech/support/supportContext.xml</value>
                 <value>com/cannontech/core/service/serverServicesContext.xml</value>
+                <value>com/cannontech/dr/itron/itronContext.xml</value>
                 <value>com/cannontech/stars/starsContext.xml</value>
                 <value>com/cannontech/common/fileExportHistory/fileExportHistory.xml</value>
-                <value>com/cannontech/dr/itron/itronContext.xml</value>
             </list>
         </constructor-arg>
         <constructor-arg index="1" value="true" />

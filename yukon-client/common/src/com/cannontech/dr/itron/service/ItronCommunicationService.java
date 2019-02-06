@@ -22,7 +22,20 @@ public interface ItronCommunicationService {
      * Removes existing Device from Service Point
      */
     void removeDeviceFromServicePoint(int inventoryId);
-    
+   
+    /**
+     * Attempts to get itron group id from the database, if doesn't exist sends request to itron to create
+     * group, persist the group id returned by itron to the database.
+     * 
+     * @return itron group id
+     */
+    long getProgram(int paoId);
 
-    void addEsiGroup();
+    /**
+     * Attempts to get itron program id from the database, if doesn't exist sends request to itron to create
+     * program, persist the program id returned by itron to the database.
+     * 
+     * @return itron program id
+     */
+    long getGroup(int paoId);
 }

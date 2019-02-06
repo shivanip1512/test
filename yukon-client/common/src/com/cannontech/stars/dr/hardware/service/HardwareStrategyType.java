@@ -5,5 +5,6 @@ public enum HardwareStrategyType {
     RF,
     ZIGBEE,
     ECOBEE,
-    HONEYWELL
+    HONEYWELL,
+    ITRON
 }
