@@ -1,7 +1,7 @@
 yukon.namespace('yukon.widget.csrTrend');
 
 /**
- * Module for the Trend Widget.
+ * Module for the CSR Trend Widget.
  * @module yukon.widget.csrTrend
  * @requires JQUERY
  * @requires yukon

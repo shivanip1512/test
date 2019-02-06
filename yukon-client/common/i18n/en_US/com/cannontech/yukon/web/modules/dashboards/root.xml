@@ -84,8 +84,8 @@
     <entry key="yukon.web.modules.dashboard.widgetType.FAVORITES.description">Displays links to any pages that you mark as your favorite.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.MONITOR_SUBSCRIPTIONS.name">Monitor Subscriptions</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.MONITOR_SUBSCRIPTIONS.description">Displays the Monitors you have subscribed to and the # of Violations, Monitoring. </entry>
-    <entry key="yukon.web.modules.dashboard.widgetType.TREND.name">Meter Trend</entry>   
-    <entry key="yukon.web.modules.dashboard.widgetType.TREND.description">Displays a trend for a specific meter with a predefined set of data attributes to view.</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.CSR_TREND.name">Meter Trend</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.CSR_TREND.description">Displays a trend for a specific meter with a predefined set of data attributes to view.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.MONITORS.name">Monitors</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.MONITORS.description">Displays the Monitors you have set up in your system and the # of Violations, Monitoring.</entry>  
     <entry key="yukon.web.modules.dashboard.widgetType.METER_SEARCH.name">Meter Search</entry>

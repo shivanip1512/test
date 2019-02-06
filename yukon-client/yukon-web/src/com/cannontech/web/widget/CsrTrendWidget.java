@@ -86,7 +86,7 @@ public class CsrTrendWidget extends WidgetControllerBase {
     @Override
     @RequestMapping(value = "render", method = {RequestMethod.GET, RequestMethod.POST})
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ModelAndView mav = new ModelAndView("trendWidget/render.jsp");
+        ModelAndView mav = new ModelAndView("csrTrendWidget/render.jsp");
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);

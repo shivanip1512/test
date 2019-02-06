@@ -30,7 +30,7 @@ public enum WidgetType implements DisplayableEnum {
     INFRASTRUCTURE_WARNINGS(DashboardScope.GENERAL, WidgetCategory.OTHER, "infrastructureWarningsWidget", "image-infrastructure-warnings"),
     PAO_NOTES_SEARCH(DashboardScope.GENERAL, WidgetCategory.OTHER, "paoNotesSearchWidget", "image-notes-search"),
 
-    TREND(DashboardScope.GENERAL, WidgetCategory.AMI, "csrTrendWidget", "image-csr-trend"), // individual device based trend
+    CSR_TREND(DashboardScope.GENERAL, WidgetCategory.AMI, "csrTrendWidget", "image-csr-trend"), // individual device based trend
     TRENDS(DashboardScope.GENERAL, WidgetCategory.OTHER, "trendsWidget", "image-trends"),  // predefined graphDefinition based trend
     PORTER_QUEUE_COUNTS(DashboardScope.GENERAL, WidgetCategory.AMI, "porterQueueCountsWidget", "image-porter-queue-counts"),
 
@@ -88,7 +88,7 @@ public enum WidgetType implements DisplayableEnum {
         );
 
         Builder<WidgetType, WidgetParameter> builder = new ImmutableListMultimap.Builder<WidgetType, WidgetParameter>()
-            .put(TREND, new WidgetParameter("deviceId", WidgetInputType.METER_PICKER, MeterPickerValidator.get()))
+            .put(CSR_TREND, new WidgetParameter("deviceId", WidgetInputType.METER_PICKER, MeterPickerValidator.get()))
             .put(TRENDS, new WidgetParameter("trendId", WidgetInputType.TREND_PICKER, TrendPickerValidator.get()))
             .put(WidgetType.ASSET_AVAILABILITY,
                 new WidgetParameter("controlAreaOrProgramOrScenarioId",
