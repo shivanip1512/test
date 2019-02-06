@@ -478,7 +478,7 @@ UPDATE Widget
 SET WidgetType = 'CSR_TREND'
 WHERE WidgetType = 'TREND';
 
-INSERT INTO DBUpdates VALUES ('YUK-19471', '7.2.0', GETDATE());
+INSERT INTO DBUpdates VALUES ('YUK-19471', '7.2.0', SYSDATE);
 /* @end YUK-19471 */
 
 /**************************************************************/
