@@ -1203,7 +1203,7 @@ void APIENTRY PorterCleanUp (ULONG Reason)
     {
         while( ! _statisticsThread.tryJoinFor(Cti::Timing::Chrono::milliseconds(1500)) )
         {
-            CTILOG_ERROR(dout, "_statisticsThread has not shutdown");
+            CTILOG_WARN(dout, "_statisticsThread has not shutdown");
         }
 
         CTILOG_INFO(dout, "_statisticsThread shutdown");
@@ -1388,7 +1388,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
         {
             if( CtiPortSPtr port = PortManager.getPortById(pChg->getId()) )
             {
-                port->verifyPortIsRunnable();
+                port->verifyPortIsRunnable(hPorterEvents[P_QUIT_EVENT]);
             }
         }
     }
