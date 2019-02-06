@@ -133,14 +133,14 @@ Java :
     notes : 
   
   - filename : ant-1.10.5.jar
-    yukon group : Yukon - Build
+    yukon group : Common
     project : Apache Tomcat
     version : 1.10.5
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/org.apache.ant/ant/1.10.5"
-    md5 : fc84dc26cdab0363c09c1af52998325c
+    md5 : bb28a359dce342e39e1fb607be3e0acb
     sha1 : 4a48332c2df6f535d9dd9d904cd780ab26266e20
     updated : 2019-02-05
     jira : YUK-19279
