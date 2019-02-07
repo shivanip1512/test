@@ -171,7 +171,7 @@ public class DeviceDataMonitorController {
                       ModelMap model, 
                       YukonUserContext userContext,
                       FlashScope flash) {
-
+    	monitor.setProcessors(getRemainingProcessors(monitor.getProcessors()));
         validator.validate(monitor, result);
         
         if (result.hasErrors()) {
