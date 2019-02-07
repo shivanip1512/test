@@ -14,7 +14,6 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.util.xml.XmlUtils;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceRequest;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceResponse;
@@ -30,7 +29,6 @@ import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServi
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.dr.itron.service.ItronException;
 import com.cannontech.stars.dr.account.model.AccountDto;
-import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
@@ -40,8 +38,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private String url = "http://localhost:8083/";
     private String password;
     private String userName;
-    @Autowired private AccountService accountService;
-    @Autowired private DeviceDao deviceDao;
+
     @Autowired private IDatabaseCache cache;
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
 
@@ -61,14 +58,12 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
       
     @Override
-    public void addDevice(Hardware hardware) {
+    public void addDevice(Hardware hardware, AccountDto account) {
         //String itronUrl = "http://localhost:8083/DeviceManagerPort";
         String itronUrl = "http://localhost:8083/DeviceManagerPort";
         AddHANDeviceRequest request = null;
-        AccountDto account = null;
-        if (hardware.getAccountId() > 0) {
+        if (account != null) {
             //TODO handle itron error if account already exist implementation pending simulator
-            account = accountService.getAccountDto(hardware.getAccountId(), hardware.getEnergyCompanyId());
             log.debug("AddHANDeviceRequest - Sending request to Itron {} to add device with Mac Id {} to account {}.",
                 itronUrl, hardware.getMacAddress(), account.getAccountNumber());
             //check if we haven't created account before
@@ -83,12 +78,14 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         AddHANDeviceResponse response = null;
         try {
             log.debug(XmlUtils.getPrettyXml(request));
+
+           // response = (AddHANDeviceResponse) deviceManagerTemplate.marshalSendAndReceive(url, request);
+            response = new AddHANDeviceResponse();
             //TODO add event log
             //yukon.common.events.dr.itron.addHANDeviceRequest
             response = (AddHANDeviceResponse) deviceManagerTemplate.marshalSendAndReceive(url, request);
             //TODO add event log
             //yukon.common.events.dr.itron.addHANDeviceResponse
-            //response = new AddHANDeviceResponse();
             log.debug(XmlUtils.getPrettyXml(response));
             if (!response.getErrors().isEmpty()) {
                 throw new ItronException("Error recieved from Itron:" + XmlUtils.getPrettyXml(response));
@@ -146,8 +143,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     @Override
-    public void removeDeviceFromServicePoint(int deviceId) {
-        String macAddress = deviceDao.getDeviceMacAddress(deviceId);
+    public void removeDeviceFromServicePoint(String macAddress) {
 
         String itronUrl = url + "/editHANDevice";
         log.debug("EditHANDeviceRequest - Sending request to Itron {} to add device with Mac Id {}.", itronUrl, macAddress);
@@ -162,10 +158,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     @Override
-    public void addServicePoint(int accountId, int energyCompanyId, int deviceId) {
-        AccountDto account = accountService.getAccountDto(accountId, energyCompanyId);
+    public void addServicePoint(AccountDto account, String macAddress) {
         addServicePoint(account);
-        String macAddress = deviceDao.getDeviceMacAddress(deviceId);
         addDeviceToServicePoint(macAddress, account);
     }
     
@@ -198,15 +192,15 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     
     @Override
     public long getGroup(int paoId) {
-        
-    /*    LiteYukonPAObject group = cache.getAllLMGroups().stream()
-                .filter(g -> g.getLiteID() == paoId).findAny().orElse(null);*/
+  
+        LiteYukonPAObject group = cache.getAllLMGroups().stream()
+                .filter(g -> g.getLiteID() == paoId).findAny().orElse(null);
        
         // TODO check is pao id is in the table and return itron id otherwise send request to itron
 
         long itronGroupId = 0;
         String itronUrl = "http://localhost:8083/DeviceManagerPort";
-      //  log.debug("ESIGroupRequestType - Sending request to Itron {} to add {} group.", itronUrl, group.getPaoName());
+        log.debug("ESIGroupRequestType - Sending request to Itron {} to add {} group.", itronUrl, group.getPaoName());
 
         ESIGroupResponseType response = null;
         try {
@@ -216,8 +210,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             //TODO add event log
             //yukon.common.events.dr.itron.addGroupRequest
             log.debug(XmlUtils.getPrettyXml(request));
-            //response = new ESIGroupResponseType();
-            response = (ESIGroupResponseType) deviceManagerTemplate.marshalSendAndReceive(itronUrl, request);
+            response = new ESIGroupResponseType();
+            //response = (ESIGroupResponseType) deviceManagerTemplate.marshalSendAndReceive(itronUrl, request);
             //TODO add event log
             //yukon.common.events.dr.itron.addGroupResponse
             log.debug(XmlUtils.getPrettyXml(response));

@@ -1,6 +1,7 @@
 package com.cannontech.dr.itron.service;
 
 import com.cannontech.common.inventory.Hardware;
+import com.cannontech.stars.dr.account.model.AccountDto;
 
 public interface ItronCommunicationService {
 
@@ -10,18 +11,18 @@ public interface ItronCommunicationService {
      * customers to add a ZigBee, Direct-to-Grid, or ESI devices
      * from the utility's web portal,
      */
-    void addDevice(Hardware hardware);
+    public void addDevice(Hardware hardware, AccountDto account);
 
     /**
      * Use to create and add a service point, which can include customer's
      * Account and Location information.
      */
-    void addServicePoint(int accountId, int energyCompanyId, int inventoryId);
+    public void addServicePoint(AccountDto account, String macAddress);
 
     /**
      * Removes existing Device from Service Point
      */
-    void removeDeviceFromServicePoint(int inventoryId);
+    void removeDeviceFromServicePoint(String macAddress);
    
     /**
      * Attempts to get itron group id from the database, if doesn't exist sends request to itron to create

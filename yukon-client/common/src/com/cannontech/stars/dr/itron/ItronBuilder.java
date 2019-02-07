@@ -15,6 +15,8 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.dr.account.model.AccountDto;
+import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.cannontech.stars.dr.hardware.exception.DeviceMacAddressAlreadyExistsException;
 import com.cannontech.util.Validator;
@@ -32,6 +34,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DeviceDao deviceDao;
     @Autowired private ItronCommunicationService itronCommunicationService;
+    @Autowired private AccountService accountService;
     
     @Transactional
     @Override
@@ -39,10 +42,14 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
         if (deviceDao.isMacAddressExists(hardware.getMacAddress())) {
             throw new DeviceMacAddressAlreadyExistsException();
         }
+        AccountDto account = null;
+        if(hardware.getAccountId() > 0) {
+            account = accountService.getAccountDto(hardware.getAccountId(), hardware.getEnergyCompanyId());
+        }
         SimpleDevice pao = creationService.createDeviceByDeviceType(hardwareTypeToPaoType.get(hardware.getHardwareType()), hardware.getSerialNumber());
         inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), pao.getDeviceId());
         deviceDao.updateDeviceMacAddress(pao.getDeviceId(), hardware.getMacAddress());
-        itronCommunicationService.addDevice(hardware);
+        itronCommunicationService.addDevice(hardware, account);
     }
 
     @Override
@@ -52,7 +59,8 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void deleteDevice(YukonPao pao, InventoryIdentifier inventoryId) {
-        itronCommunicationService.removeDeviceFromServicePoint(pao.getPaoIdentifier().getPaoId());
+        String macAddress = deviceDao.getDeviceMacAddress(pao.getPaoIdentifier().getPaoId());
+        itronCommunicationService.removeDeviceFromServicePoint(macAddress);
         deviceDao.removeDevice(pao.getPaoIdentifier().getPaoId());
     }
 
@@ -72,7 +80,8 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void moveDeviceToInventory(YukonPao pao, InventoryIdentifier inventoryId) {
-        itronCommunicationService.removeDeviceFromServicePoint(pao.getPaoIdentifier().getPaoId());
+        String macAddress = deviceDao.getDeviceMacAddress(pao.getPaoIdentifier().getPaoId());
+        itronCommunicationService.removeDeviceFromServicePoint(macAddress);
     }
 
     @Override

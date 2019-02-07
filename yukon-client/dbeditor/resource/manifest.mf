@@ -3,10 +3,6 @@ Main-Class: com.cannontech.dbeditor.DatabaseEditor
 Trusted-Only: true
 Class-Path: 
  ./ 
- itronDeviceManagerTypes_v1_8.jar 
- itronServicePointManagerTypes_v1_3.jar 
- itronProgramEventManagerTypes_v1_6.jar 
- itronProgramManagerTypes_v1_1.jar 
  common.jar 
  jradius-client.jar 
  billing.jar 

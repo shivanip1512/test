@@ -21,6 +21,7 @@ import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
@@ -38,7 +39,9 @@ import com.cannontech.stars.database.data.lite.LiteLMHardwareEvent;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
@@ -87,6 +90,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Autowired private YukonListDao yukonListDao;
     @Autowired private LocationService locationService;
     @Autowired private ItronCommunicationService itronCommunicationService;
+    @Autowired private AccountService accountService;
+    @Autowired private DeviceDao deviceDao;
 
     // ADD DEVICE TO ACCOUNT
     @Override
@@ -136,8 +141,9 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             
             InventoryIdentifier inventoryIdentifier = inventoryDao.getYukonInventory(liteInv.getInventoryID());
             if (inventoryIdentifier.getHardwareType().isItron()) {
-                itronCommunicationService.addServicePoint(liteInv.getAccountID(), energyCompany.getEnergyCompanyId(),
-                    liteInv.getInventoryID());
+                AccountDto account = accountService.getAccountDto(liteInv.getAccountID(), energyCompany.getEnergyCompanyId());
+                String macAddress = deviceDao.getDeviceMacAddress(liteInv.getDeviceID());
+                itronCommunicationService.addServicePoint(account, macAddress);
             }
             
             // add install hardware event here

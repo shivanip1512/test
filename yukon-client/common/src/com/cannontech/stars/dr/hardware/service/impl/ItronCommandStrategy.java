@@ -13,35 +13,54 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.dr.program.service.ProgramService;
-import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.HardwareStrategyType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandStrategy;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class ItronCommandStrategy  implements LmHardwareCommandStrategy{
     
-    @Autowired private LMHardwareConfigurationDao lmHardwareConfigDao;
+    @Autowired private LMHardwareConfigurationDao lmHardwareConfigDao;    
+    @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     @Autowired private ProgramService programService;
     @Autowired private PaoDao paoDao;
     @Autowired private ItronCommunicationService itronCommunicationService;
+    @Autowired private EnrollmentDao enrollmentDao;
+    @Autowired private IDatabaseCache cache;
+    @Autowired private ProgramDao programDao;
     
     @Override
-    public void sendCommand(LmHardwareCommand parameters) throws CommandCompletionException {
-        int groupId = getGroupId(parameters.getDevice().getInventoryID());
-        long itronGroupId = itronCommunicationService.getGroup(groupId);
-        LMProgramBase program =
-            programService.getProgramForPao(paoDao.getYukonPao(parameters.getDevice().getDeviceID()));
-        long itronProgramId = itronCommunicationService.getProgram(program.getPaoIdentifier().getPaoId());
-        System.out.println();
+    public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
+
+        /**
+         * I believe the device being enrolled needs to be added to the Itron group that corresponds to the
+         * yukon load group. When we initiate a control event, I think we need to target by group.1:15 PM
+         * the service point needs to be enrolled in the program, or the device will not control for events in
+         * that program. But the event will target devices by program and group. We might only want to control
+         * one group, not all groups in the program.
+         */
+       // long itronGroupId = itronCommunicationService.getGroup(groupId);
+       // long itronProgramId = itronCommunicationService.getProgram(programId);
+   
+       // System.out.println(getGroupId(command.getDevice().getInventoryID()));
+        switch (command.getType()) {
+            case IN_SERVICE:
+            case CONFIG:
+        default:
+            break;    
+        }
     }
     
     @Override
@@ -96,7 +115,10 @@ public class ItronCommandStrategy  implements LmHardwareCommandStrategy{
     
     private int getGroupId(int inventoryId) {
         List<LMHardwareConfiguration> hardwareConfig = lmHardwareConfigDao.getForInventoryId(inventoryId);
+        if(hardwareConfig.size() != 1) {
+            throw new BadConfigurationException("Ecobee only supports one and only one group per device. "
+                + hardwareConfig.size() + " groups found.");
+        }
         return hardwareConfig.get(0).getAddressingGroupId();
     }
-
 }
