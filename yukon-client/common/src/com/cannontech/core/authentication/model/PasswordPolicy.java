@@ -184,7 +184,7 @@ public class PasswordPolicy {
         // Shuffle the characters around to make the password more random.
         List<Character> passwordCharacters = Arrays.asList(ArrayUtils.toObject(genPass.toCharArray()));
         Collections.shuffle(passwordCharacters);
-        Character[] characters = (Character[]) passwordCharacters.toArray();
+        Character[] characters = passwordCharacters.toArray(new Character[0]);
         String finalGeneratedPassword = String.valueOf(ArrayUtils.toPrimitive(characters));
         
         return finalGeneratedPassword;
