@@ -20,7 +20,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class ItronMessageListener {
     private static final Logger log = YukonLogManager.getLogger(ItronMessageListener.class);
     
-    @Autowired private ControlHistoryService controlHistoryService;//Is control history service needed for itron?
+    @Autowired private ControlHistoryService controlHistoryService;
     @Autowired private ItronCommunicationService itronCommunicationService;
     @Autowired private IDatabaseCache dbCache;
     
@@ -43,6 +43,11 @@ public class ItronMessageListener {
                 int dutyCyclePercent = msg.readByte();
                 int dutyCyclePeriod = msg.readInt();
                 int criticality = msg.readByte();
+                
+                log.debug("Parsed message - Group Id: " + groupId + ", startTime: " + startTime + ", endTime: " + endTime + 
+                          ", Ramp In: " + rampIn + ", Ramp Out: " + rampOut + ",Duty Cycle Percent: " + dutyCyclePercent + 
+                          ", Duty Cycle Period: " + dutyCyclePeriod + ", criticality: " + criticality);
+                
                 controlHistoryService.sendControlHistoryShedMessage(groupId, startTimeUtc, ControlType.ITRON, null,
                     controlDurationSeconds, 0);
             } catch (JMSException e) {
@@ -58,7 +63,10 @@ public class ItronMessageListener {
                 log.debug("Received message on yukon.notif.stream.dr.ItronRestoreMessage queue.");
                 StreamMessage msg = (StreamMessage) message;
                 int groupId = msg.readInt();
-
+                long restoreTime = msg.readLong();
+                
+                log.debug("Parsed: Group Id: " + groupId + ", Restore Time: " + restoreTime);
+                
                 LiteYukonPAObject group = dbCache.getAllLMGroups().stream()
                         .filter(g -> g.getLiteID() == groupId).findAny().orElse(null);
                 if (group == null) {
