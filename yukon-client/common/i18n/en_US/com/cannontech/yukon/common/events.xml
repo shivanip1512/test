@@ -862,6 +862,20 @@
     <entry key="yukon.common.events.system.rfn.dataStreaming.removeDataStreamingCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
     <entry key="yukon.common.events.system.rfn.dataStreaming.removeDataStreamingCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
     
+    <!-- Itron -->
+    <entry key="yukon.common.events.dr.itron.addHANDeviceRequest">Add HAN Device Request To Itron {Itron URL}: Device: {Device Name}. Mac Address: {Device Mac Address}. Account: {Itron Account}. Request Time: {Request Time}.</entry>
+    <entry key="yukon.common.events.dr.itron.addHANDeviceResponse">Add HAN Device Response From Itron {Itron URL}: Device: {Device Name}. Account: {Itron Account}. Response: {Response}. Request Time: {Request Time}. Response Time: {Response Time}.</entry>
+    <entry key="yukon.common.events.dr.itron.addHANDeviceToServicePointRequest">Add HAN Device To Service Point Request To Itron {Itron URL}: Device: {Device Name}. Mac Address: {Device Mac Address}. Account: {Itron Account}. Request Time: {Request Time}.</entry>
+    <entry key="yukon.common.events.dr.itron.addHANDeviceToServicePointResponse">Add HAN Device To Service Point Response From Itron {Itron URL}: Device: {Device Name}. Mac Address: {Device Mac Address}. Account: {Itron Account}. Request Time: {Request Time}. Response Time: {Response Time}.</entry>
+    <entry key="yukon.common.events.dr.itron.removeHANDeviceFromServicePointRequest">Remove HAN Device From Service Point Request To Itron {Itron URL}: Device: {Device Name}. Mac Address: {Device Mac Address}. Account: {Itron Account}. Request Time: {Request Time}.</entry>
+    <entry key="yukon.common.events.dr.itron.removeHANDeviceFromServicePointResponse">Remove HAN Device From Service Point Response From Itron {Itron URL}: Device: {Device Name}. Mac Address: {Device Mac Address}. Account: {Itron Account}. Request Time: {Request Time}. Response Time: {Response Time}.</entry>
+    <entry key="yukon.common.events.dr.itron.addServicePointRequest">Add Service Point Request To Itron {Itron URL}: Account: {Itron Account}. Request Time: {Request Time}.</entry>
+    <entry key="yukon.common.events.dr.itron.addServicePointResponse">Add Service Point Response From Itron {Itron URL}: Account: {Itron Account}. Request Time: {Request Time}. Response Time: {Response Time}.</entry>
+    <entry key="yukon.common.events.dr.itron.addGroupRequest">Add Group Request To Itron {Itron URL}: Group Name: {Group PAO Name}. Group ID: {Group ID}. Request Time: {Request Time}.</entry>
+    <entry key="yukon.common.events.dr.itron.addGroupResponse">Add Group Request From Itron {Itron URL}: Group Name: {Group PAO Name}. Group ID: {Group ID}. Request Time: {Request Time}. Response Time: {Response Time}.</entry>
+    <entry key="yukon.common.events.dr.itron.addProgramRequest">Add Program Request To Itron {Itron URL}: Program Name: {Program PAO Name}. Program ID: {Program ID}. Request Time: {Request Time}.</entry>
+    <entry key="yukon.common.events.dr.itron.addProgramResponse">Add Program Request From Itron {Itron URL}: Program Name: {Program PAO Name}. Program ID: {Program ID}. Request Time: {Request Time}. Response Time: {Response Time}.</entry>
+    
     <!-- Nest-->
     <entry key="yukon.common.events.dr.nest.syncStart">Sync Start: Sync Id: {7}, Start Time: {11}</entry>
     <entry key="yukon.common.events.dr.nest.syncResults">Sync Results: Sync Id: {7}, Start Time: {11}, Stop Time: {12}, Auto Count: {8}, Manual Count: {9} </entry>

@@ -62,7 +62,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
       
     @Override
     public void addDevice(Hardware hardware) {
-        //TODO add event log
         //String itronUrl = "http://localhost:8083/DeviceManagerPort";
         String itronUrl = "http://localhost:8083/DeviceManagerPort";
         AddHANDeviceRequest request = null;
@@ -84,7 +83,11 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         AddHANDeviceResponse response = null;
         try {
             log.debug(XmlUtils.getPrettyXml(request));
+            //TODO add event log
+            //yukon.common.events.dr.itron.addHANDeviceRequest
             response = (AddHANDeviceResponse) deviceManagerTemplate.marshalSendAndReceive(url, request);
+            //TODO add event log
+            //yukon.common.events.dr.itron.addHANDeviceResponse
             //response = new AddHANDeviceResponse();
             log.debug(XmlUtils.getPrettyXml(response));
             if (!response.getErrors().isEmpty()) {
@@ -104,12 +107,15 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
 
     private void addDeviceToServicePoint(String macAddress, AccountDto account) {
-        //TODO add event log
         String itronUrl = url + "/editHANDevice";
         log.debug("EditHANDeviceRequest - Sending request to Itron {} to add device to a service point with Mac Id {} account number {}.",
             itronUrl, macAddress, account.getAccountNumber());
         EditHANDeviceRequest request = DeviceManagerHelper.buildEditRequestWithServicePoint(macAddress, account);
+        //TODO add event log
+        //yukon.common.events.dr.itron.addHANDeviceToServicePointRequest
         EditHANDeviceResponse response = editDevice(request); 
+        //TODO add event log
+        //yukon.common.events.dr.itron.addHANDeviceToServicePointResponse
         log.debug("EditHANDeviceResponse - Request to Itron {} to add device with Mac Id {} is successful.", itronUrl,
             response.getMacID());
     }
@@ -142,11 +148,15 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Override
     public void removeDeviceFromServicePoint(int deviceId) {
         String macAddress = deviceDao.getDeviceMacAddress(deviceId);
-        //TODO add event log
+
         String itronUrl = url + "/editHANDevice";
         log.debug("EditHANDeviceRequest - Sending request to Itron {} to add device with Mac Id {}.", itronUrl, macAddress);
         EditHANDeviceRequest request = DeviceManagerHelper.buildEditRequestRemoveServicePoint(macAddress);
+        //TODO add event log
+        //yukon.common.events.dr.itron.removeHANDeviceFromServicePointRequest
         EditHANDeviceResponse response = editDevice(request); 
+        //TODO add event log
+        //yukon.common.events.dr.itron.removeHANDeviceFromServicePointResponse
         log.debug("EditHANDeviceResponse - Request to Itron {} to add device with Mac Id {} is successful.", itronUrl,
             response.getMacID());
     }
@@ -163,7 +173,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * Sends request to itron to add service point
      */
     private void addServicePoint(AccountDto account) {
-        //TODO add event log
         /*
          * Note: The newly created Service Point is not available in the user interface until an ESI is
          * associated to it. It is, however, in the database. (see DeviceManagerHelper buildRequest) 
@@ -171,12 +180,16 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         String itronUrl = url + "/addServicePoint";
 
         AddServicePointRequest request = ServicePointHelper.buildAddRequest(account);
+        //TODO add event log
+        //yukon.common.events.dr.itron.addServicePointRequest
         log.debug(XmlUtils.getPrettyXml(request));
         log.debug("AddServicePointRequest - Sending request to Itron {} to add service point for account {}.", itronUrl,
             account.getAccountNumber());
         // AddServicePointResponse response = (AddServicePointResponse) servicePointTemplate.marshalSendAndReceive(url, request);
         
         AddServicePointResponse response= new AddServicePointResponse();
+        //TODO add event log
+        //yukon.common.events.dr.itron.addServicePointResponse
         log.debug(XmlUtils.getPrettyXml(response));
        
         log.debug("AddServicePointResponse - Request to Itron {} to add service point for account {} is successful.",
@@ -192,7 +205,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         // TODO check is pao id is in the table and return itron id otherwise send request to itron
 
         long itronGroupId = 0;
-        // TODO add event log
         String itronUrl = "http://localhost:8083/DeviceManagerPort";
       //  log.debug("ESIGroupRequestType - Sending request to Itron {} to add {} group.", itronUrl, group.getPaoName());
 
@@ -201,9 +213,13 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             ESIGroupRequestType requestType = new ESIGroupRequestType();
             requestType.setGroupName(String.valueOf(paoId));
             JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createAddESIGroupRequest(requestType);
+            //TODO add event log
+            //yukon.common.events.dr.itron.addGroupRequest
             log.debug(XmlUtils.getPrettyXml(request));
             //response = new ESIGroupResponseType();
             response = (ESIGroupResponseType) deviceManagerTemplate.marshalSendAndReceive(itronUrl, request);
+            //TODO add event log
+            //yukon.common.events.dr.itron.addGroupResponse
             log.debug(XmlUtils.getPrettyXml(response));
             
             //TODO persist to a table
@@ -230,7 +246,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 
         // TODO check is pao id is in the table and return itron id otherwise send request to itron
         long itronProgramId = 0;
-        // TODO add event log
 
         // TODO use different URL
         String itronUrl = "http://localhost:8083/DeviceManagerPort";
@@ -240,9 +255,13 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         try {            
             AddProgramRequest request = new AddProgramRequest();
             request.setProgramName(String.valueOf(paoId));
+            //TODO add event log
+            //yukon.common.events.dr.itron.addProgramRequest
             log.debug(XmlUtils.getPrettyXml(request));
             response = new AddProgramResponse();
             //response = (AddProgramResponse) programManagerTemplate.marshalSendAndReceive(itronUrl, request);
+            //TODO add event log
+            //yukon.common.events.dr.itron.addProgramResponse
             log.debug(XmlUtils.getPrettyXml(response));
             
             // TODO persist to a table
