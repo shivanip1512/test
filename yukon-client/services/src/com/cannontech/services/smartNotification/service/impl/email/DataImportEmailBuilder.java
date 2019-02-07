@@ -6,21 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.smartNotification.model.DataImportAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationVerbosity;
-import com.cannontech.common.util.WebserverUrlResolver;
 
 /**
  * Builds up email subject and body content for Data import notification messages.
  */
 public class DataImportEmailBuilder extends SmartNotificationEmailBuilder {
-    
-    @Autowired private WebserverUrlResolver webserverUrlResolver;
     
     @Override
     public SmartNotificationEventType getSupportedType() {
@@ -143,9 +138,5 @@ public class DataImportEmailBuilder extends SmartNotificationEmailBuilder {
      */
     private String getScheduleOrManualTaskName(Map<String, Object> parameters) {
         return DataImportAssembler.getTaskName(parameters);
-    }
-
-    protected String getUrl(String postfix) {
-        return webserverUrlResolver.getUrl("/notifications/events/" + postfix);
     }
 }
