@@ -24,16 +24,15 @@
             </form>
         </div>
         <hr>
-
+        <cti:formatDate type="DATEHM" value="${from}" var="from"/>
+        <cti:formatDate type="DATEHM" value="${to}" var="to"/>
         <c:choose>
             <c:when test="${results.hitCount == 0}">
                 <span class="empty-list"><i:inline key=".noImports"/></span>
             </c:when>
             <c:otherwise>
                 <cti:url var="viewHistoryUrl" value="/stars/scheduledDataImport/${jobGroupId}/viewHistory">
-                    <cti:formatDate type="DATEHM" value="${from}" var="from"/>
                     <cti:param name="from" value="${from}"/>
-                    <cti:formatDate type="DATEHM" value="${to}" var="to"/>
                     <cti:param name="to" value="${to}"/>
                 </cti:url>
                 <div id="file-detail" data-url="${viewHistoryUrl}" data-static>
@@ -49,8 +48,14 @@
                         <tbody>
                             <c:forEach var="result" items="${results.resultList}">
                                 <c:url var="fileUrl" value="/stars/scheduledDataImport/downloadArchivedFile">
-                                    <c:param name="entryId" value="${result.entryId}"/>
-                                    <c:param name="isSuccessFile" value="true"/>
+                                    <cti:param name="from" value="${from}"/>
+                                    <cti:param name="to" value="${to}"/>
+                                    <cti:param name="dir" value="${sorting.direction}"/>
+                                    <cti:param name="sort" value="${sorting.sort}"/>
+                                    <cti:param name="itemsPerPage" value="${paging.itemsPerPage}"/>
+                                    <cti:param name="page" value="${paging.page}"/>
+                                    <cti:param name="entryId" value="${result.entryId}"/>
+                                    <cti:param name="isSuccessFile" value="true"/>
                                 </c:url>
                                 <c:url var="errorFileUrl" value="/stars/scheduledDataImport/downloadArchivedFile">
                                     <c:param name="entryId" value="${result.entryId}"/>

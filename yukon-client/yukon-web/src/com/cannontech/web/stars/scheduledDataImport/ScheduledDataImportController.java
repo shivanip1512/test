@@ -49,6 +49,8 @@ import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.model.JobState;
@@ -84,6 +86,7 @@ public class ScheduledDataImportController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ScheduleControllerHelper scheduleControllerHelper;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private DateFormattingService dateFormattingService;
 
     private static final String baseKey = "yukon.web.modules.operator.scheduledDataImportDetail.";
 
@@ -240,12 +243,15 @@ public class ScheduledDataImportController {
 
         model.addAttribute("from", from);
         model.addAttribute("to", to);
-
+        
         searchResults = scheduledDataImportService.getImportHistory(jobGroupId, from, to,
             FileImportHistory.valueOf(sorting.getSort()).getValue(), sorting.getDirection(), paging);
 
         model.addAttribute("results", searchResults);
         model.addAttribute("jobGroupId", jobGroupId);
+        model.addAttribute("paging", paging);
+        model.addAttribute("sorting", sorting);
+
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         FileImportHistory sortBy = FileImportHistory.valueOf(sorting.getSort());
@@ -260,13 +266,18 @@ public class ScheduledDataImportController {
     }
 
     @GetMapping("downloadArchivedFile")
-    public String downloadArchivedFile(HttpServletResponse response, FlashScope flashScope, Integer entryId,
-            Boolean isSuccessFile) {
+    public String downloadArchivedFile(HttpServletResponse response, FlashScope flashScope,
+            @RequestParam(required = true) Integer entryId, @RequestParam(required = true) Instant from,
+            @RequestParam(required = true) Instant to, @RequestParam(required = true) Boolean isSuccessFile,
+            @DefaultItemsPerPage(10) PagingParameters paging,
+            @DefaultSort(dir = Direction.desc, sort = "fileName") SortingParameters sorting,
+            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
         String baseKey = "yukon.web.modules.operator.fileImportHistory.";
         String fileName = null;
         String failedFilePath = null;
         String originalFileName = null;
         String jobGroupId = null;
+        
         Map<String, String> historyEntry = scheduledDataImportService.getHistoryEntryById(entryId, isSuccessFile);
         if (isSuccessFile) {
             fileName = historyEntry.get("archiveFileName");
@@ -276,6 +287,15 @@ public class ScheduledDataImportController {
             failedFilePath = historyEntry.get("failedFilePath");
         }
         jobGroupId = historyEntry.get("jobGroupId");
+
+        if (to == null) {
+            to = new Instant();
+        }
+
+        if (from == null) {
+            from = to.minus(Duration.standardDays(7));
+        }
+
         try (InputStream input = new FileInputStream(
             scheduledDataImportService.downloadArchivedFile(fileName, isSuccessFile, failedFilePath));
              OutputStream output = response.getOutputStream();) {
@@ -288,7 +308,13 @@ public class ScheduledDataImportController {
             IOUtils.copy(input, output);
         } catch (FileNotFoundException e) {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + "fileNotFound"));
-            return "redirect:/stars/scheduledDataImport/" + jobGroupId + "/viewHistory";
+            String fromDate = dateFormattingService.format(from, DateFormatEnum.DATEHM, userContext);
+            String toDate = dateFormattingService.format(to, DateFormatEnum.DATEHM, userContext);
+
+            return "redirect:/stars/scheduledDataImport/" + jobGroupId + "/viewHistory?from=" + fromDate + "&to="
+                + toDate + "&page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage() + "&dir="
+                + sorting.getDirection() + "&sort=" + sorting.getSort();
+
         } catch (Exception e) {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + "ioError"));
             return "redirect:/stars/scheduledDataImport/" + jobGroupId + "/viewHistory";
