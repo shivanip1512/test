@@ -221,12 +221,13 @@ public class PointValidator extends SimpleValidator<PointModel> {
         PointBase base = model.getPointBase();
         
         if (!(base instanceof StatusPoint)) return;
-        if (base instanceof CalcStatusPoint) return;
-        
         StatusPoint point = (StatusPoint) base;
         
         YukonValidationUtils.checkRange(errors, "pointBase.point.pointOffset", 
             point.getPoint().getPointOffset(), 0, 99999999, true);
+        
+        YukonValidationUtils.checkRange(errors, "staleData.time", 
+            model.getStaleData().getTime(), 0, 99999999,  model.getStaleData().isEnabled());
         
         if (point.getPointStatusControl().getControlType() == StatusControlType.NONE.getControlName()) {
             return;
@@ -243,10 +244,5 @@ public class PointValidator extends SimpleValidator<PointModel> {
         
         YukonValidationUtils.checkRange(errors, "pointBase.pointStatusControl.commandTimeOut", 
             point.getPointStatusControl().getCommandTimeOut(), 0, 9999999, true);
-        
-        YukonValidationUtils.checkRange(errors, "staleData.time", 
-            model.getStaleData().getTime(), 0, 99999999,  model.getStaleData().isEnabled());
-        
     }
-    
 }
