@@ -35,7 +35,7 @@
             <c:if test = "${not isCalcType}">
                 <input type="hidden" id="isPhysicalOffset" value="${copyPointModel.physicalOffset}"/>
                 <tags:nameValue2 nameKey=".physicalOffset" rowClass="filter-section">
-                    <tags:switchButton path="physicalOffset" offClasses="M0"
+                    <tags:switchButton path="physicalOffset" offClasses="M0" inputClass="js-use-offset"
                                        toggleGroup="copy-point-physicalOffset" toggleAction="hide" 
                                        offNameKey=".physicalOffset.pseudo" id="copy-point-physicalOffset-toggle"/>
 

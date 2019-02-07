@@ -471,7 +471,7 @@ yukon.tools.point = (function () {
             $('.js-stale-data-enabled').on('change', updateStaleData);
 
             $('.js-reasonability').on('change', updateReasonability);
-            $('.js-use-offset').on('change', updatePointOffset);
+            $(document).on('change', '.js-use-offset', updatePointOffset);
 
             $('.js-add-fdr').on('click', addFdr);
             
@@ -558,7 +558,7 @@ yukon.tools.point = (function () {
             });
             
             $(document).on('click', '#copy-point-physicalOffset-toggle', function () {
-                if ($("#copy-point-physicalOffset-txt").hasClass('dn')) {
+            	if ($("#copy-point-physicalOffset-txt").hasClass('dn')) {
                     $('#pointOffset\\.errors').addClass('dn');
                 } else {
                     $('#pointOffset\\.errors').removeClass('dn');
