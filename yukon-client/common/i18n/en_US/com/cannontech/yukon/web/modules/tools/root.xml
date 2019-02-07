@@ -101,6 +101,7 @@
     <entry key="yukon.web.modules.tools.trend.pageDescription">{0}</entry>
     <!-- If no trend is found -->
     <entry key="yukon.web.modules.tools.trend.noTrends">No Trends</entry>
+    <entry key="yukon.web.modules.tools.trend.TrendsNotFound">Trend was not found or does not exists.</entry>
     <!-- /trends -->
     <entry key="yukon.web.modules.tools.trends.pageName">Trends</entry>
     <entry key="yukon.web.modules.tools.trends.axis">Axis: {0}</entry>

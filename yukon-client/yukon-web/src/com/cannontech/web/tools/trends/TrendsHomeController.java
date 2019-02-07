@@ -19,8 +19,10 @@ import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.graph.Graph;
 import com.cannontech.graph.model.TrendProperties;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -50,18 +52,24 @@ public class TrendsHomeController {
     }
     
     @RequestMapping("/trends/{id}")
-    public String trend(ModelMap model, YukonUserContext userContext, @PathVariable int id) throws JsonProcessingException {
-        
+    public String trend(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash)
+            throws JsonProcessingException {
+
         List<LiteGraphDefinition> trends = graphDao.getGraphDefinitions();
         model.addAttribute("trends", trends);
-        
+
         LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(id);
-        model.addAttribute("trendId", id);
-        model.addAttribute("trendName", trend.getName());
-        model.addAttribute("pageName", "trend");
-        model.addAttribute("labels", TrendUtils.getLabels(userContext, messageResolver));
-        
-        return "trends/trends.jsp";
+        if (null == trend) {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.tools.trend.TrendsNotFound"));
+            return "redirect:/tools/trends";
+        } else {
+            model.addAttribute("trendId", id);
+            model.addAttribute("trendName", trend.getName());
+            model.addAttribute("pageName", "trend");
+            model.addAttribute("labels", TrendUtils.getLabels(userContext, messageResolver));
+
+            return "trends/trends.jsp";
+        }
     }
     
     @RequestMapping("/trends/{id}/csv")
