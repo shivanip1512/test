@@ -481,6 +481,32 @@ WHERE WidgetType = 'TREND';
 INSERT INTO DBUpdates VALUES ('YUK-19471', '7.2.0', SYSDATE);
 /* @end YUK-19471 */
 
+/* @start YUK-19474 */
+CREATE TABLE LMGroupItronMapping  (
+    ItronGroupId        NUMBER      NOT NULL,
+    DeviceId            NUMBER      NOT NULL,
+    CONSTRAINT PK_LMGroupItronMapping PRIMARY KEY (ItronGroupId)
+);
+
+CREATE TABLE LMProgramItronMapping  (
+    ItronProgramId      NUMBER      NOT NULL,
+    DeviceId            NUMBER      NOT NULL,
+    CONSTRAINT PK_LMProgramItronMapping PRIMARY KEY (ItronProgramId)
+);
+
+ALTER TABLE LMGroupItronMapping
+    ADD CONSTRAINT FK_LMGroup_LMGroupItronMapping FOREIGN KEY (DeviceId)
+    REFERENCES LMGroup (DeviceID)
+    ON DELETE CASCADE;
+
+ALTER TABLE LMProgramItronMapping
+    ADD CONSTRAINT FK_LMProg_LMProgItronMapping FOREIGN KEY (DeviceId)
+    REFERENCES LMPROGRAM (DeviceID)
+    ON DELETE CASCADE;
+
+INSERT INTO DBUpdates VALUES ('YUK-19474', '7.2.0', SYSDATE);
+/* @end YUK-19474 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

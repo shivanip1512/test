@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/5/2019 4:31:59 AM                          */
+/* Created on:     2/6/2019 3:38:46 PM                          */
 /*==============================================================*/
 
 
@@ -6843,6 +6843,16 @@ alter table LMGroupHoneywellWiFi
 go
 
 /*==============================================================*/
+/* Table: LMGroupItronMapping                                   */
+/*==============================================================*/
+create table LMGroupItronMapping (
+   ItronGroupId         numeric              not null,
+   DeviceId             numeric              not null,
+   constraint PK_LMGroupItronMapping primary key (ItronGroupId)
+)
+go
+
+/*==============================================================*/
 /* Table: LMGroupMCT                                            */
 /*==============================================================*/
 create table LMGroupMCT (
@@ -7326,6 +7336,16 @@ create table LMProgramHistory (
    ProgramName          varchar(60)          not null,
    ProgramId            numeric              not null,
    constraint PK_LMPROGRAMHISTORY primary key nonclustered (LMProgramHistoryId)
+)
+go
+
+/*==============================================================*/
+/* Table: LMProgramItronMapping                                 */
+/*==============================================================*/
+create table LMProgramItronMapping (
+   ItronProgramId       numeric              not null,
+   DeviceId             numeric              not null,
+   constraint PK_LMProgramItronMapping primary key (ItronProgramId)
 )
 go
 
@@ -13947,6 +13967,12 @@ alter table LMGroupHoneywellWiFi
          on delete cascade
 go
 
+alter table LMGroupItronMapping
+   add constraint FK_LMGroup_LMGroupItronMapping foreign key (DeviceId)
+      references LMGroup (DeviceID)
+         on delete cascade
+go
+
 alter table LMGroupMCT
    add constraint FK_LMGrMC_Grp foreign key (DeviceID)
       references LMGroup (DeviceID)
@@ -14194,6 +14220,12 @@ go
 alter table LMProgramGearHistory
    add constraint FK_LMProgGearHist_LMProgHist foreign key (LMProgramHistoryId)
       references LMProgramHistory (LMProgramHistoryId)
+go
+
+alter table LMProgramItronMapping
+   add constraint FK_LMProg_LMProgItronMapping foreign key (DeviceId)
+      references LMPROGRAM (DeviceID)
+         on delete cascade
 go
 
 alter table LMProgramWebPublishing

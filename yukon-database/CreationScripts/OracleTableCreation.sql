@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/5/2019 4:30:07 AM                          */
+/* Created on:     2/6/2019 3:41:43 PM                          */
 /*==============================================================*/
 
 
@@ -6467,6 +6467,15 @@ alter table LMGroupHoneywellWiFi
    add constraint AK_LMGroupHoneywellWiFi unique (HoneywellGroupId);
 
 /*==============================================================*/
+/* Table: LMGroupItronMapping                                   */
+/*==============================================================*/
+create table LMGroupItronMapping  (
+   ItronGroupId         NUMBER                          not null,
+   DeviceId             NUMBER                          not null,
+   constraint PK_LMGroupItronMapping primary key (ItronGroupId)
+);
+
+/*==============================================================*/
 /* Table: LMGroupMCT                                            */
 /*==============================================================*/
 create table LMGroupMCT  (
@@ -6914,6 +6923,15 @@ create table LMProgramHistory  (
    ProgramName          VARCHAR2(60)                    not null,
    ProgramId            NUMBER                          not null,
    constraint PK_LMPROGRAMHISTORY primary key (LMProgramHistoryId)
+);
+
+/*==============================================================*/
+/* Table: LMProgramItronMapping                                 */
+/*==============================================================*/
+create table LMProgramItronMapping  (
+   ItronProgramId       NUMBER                          not null,
+   DeviceId             NUMBER                          not null,
+   constraint PK_LMProgramItronMapping primary key (ItronProgramId)
 );
 
 /*==============================================================*/
@@ -12884,6 +12902,11 @@ alter table LMGroupHoneywellWiFi
       references LMGroup (DeviceID)
       on delete cascade;
 
+alter table LMGroupItronMapping
+   add constraint FK_LMGroup_LMGroupItronMapping foreign key (DeviceId)
+      references LMGroup (DeviceID)
+      on delete cascade;
+
 alter table LMGroupMCT
    add constraint FK_LMGrMC_Grp foreign key (DeviceID)
       references LMGroup (DeviceID);
@@ -13083,6 +13106,11 @@ alter table LMProgramEvent
 alter table LMProgramGearHistory
    add constraint FK_LMProgGearHist_LMProgHist foreign key (LMProgramHistoryId)
       references LMProgramHistory (LMProgramHistoryId);
+
+alter table LMProgramItronMapping
+   add constraint FK_LMProg_LMProgItronMapping foreign key (DeviceId)
+      references LMPROGRAM (DeviceID)
+      on delete cascade;
 
 alter table LMProgramWebPublishing
    add constraint FK_CsLEn_LPWbP foreign key (ChanceOfControlID)
