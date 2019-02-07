@@ -1,0 +1,24 @@
+<beans
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:jms="http://www.springframework.org/schema/jms"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+
+    <context:annotation-config/>
+    
+    <bean id="itronMessageListener" class="com.cannontech.dr.itron.service.impl.ItronMessageListener"/>
+    
+    <jms:listener-container 
+        connection-factory="connectionFactory" 
+        destination-type="queue"
+        concurrency="1" 
+        container-type="simple"
+        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="yukon.notif.stream.dr.ItronCyclingControlMessage" ref="itronMessageListener" method="handleCyclingControlMessage"/>
+        <jms:listener destination="yukon.notif.stream.dr.ItronRestoreMessage" ref="itronMessageListener" method="handleRestoreMessage"/>
+    </jms:listener-container>
+    
+</beans>

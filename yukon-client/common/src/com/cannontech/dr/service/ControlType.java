@@ -10,6 +10,7 @@ public enum ControlType {
     TERMINATE("Control terminate"), //Used for restore
     HONEYWELLWIFI("Honeywell WIFI Cycle"),
     NEST("Nest Cycle"),
+    ITRON("Itron Cycle"),
     ;
     
     private String stringValue;
