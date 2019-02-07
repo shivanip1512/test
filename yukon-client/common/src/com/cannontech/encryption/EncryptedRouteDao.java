@@ -1,6 +1,9 @@
 package com.cannontech.encryption;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.joda.time.Instant;
 
 import com.cannontech.database.db.pao.EncryptedRoute;
 import com.cannontech.database.db.security.EncryptionKey;
@@ -15,19 +18,19 @@ public interface EncryptedRouteDao {
     
     public List<EncryptionKey> getEncryptionKeys();
     
-    public void saveNewEncryptionKey(String name, String privateKey, String publicKey, EncryptionKeyType type)
+    public void saveNewEncryptionKey(String name, String privateKey, String publicKey, EncryptionKeyType type, Instant timeStamp)
             throws CryptoException;
     
     public void deleteEncryptionKey(int encryptionKeyId);
 
     /**
-     * Saves Honeywell public and private key in the EncryptionKey table
+     * Saves or update Honeywell and Ecobee public and private key in the EncryptionKey table
      */
-    void saveNewHoneywellEncryptionKey(String privateKey, String publicKey);
+    void saveOrUpdateEncryptionKey(String privateKey, String publicKey, EncryptionKeyType encryptionKeyType, Instant timestamp);
 
     /**
-     * Gets Honeywell Private and Public keys from the EncryptionKey table
+     * Gets Honeywell and Ecobee Private and Public keys from the EncryptionKey table
      */
-    EncryptionKey getHoneywellEncryptionKey();
-    
+    Optional<EncryptionKey> getEncryptionKey(EncryptionKeyType encryptionKeyType);
+
 }

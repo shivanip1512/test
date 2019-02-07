@@ -1,5 +1,7 @@
 package com.cannontech.database.db.security;
 
+import org.joda.time.Instant;
+
 public class EncryptionKey {
 
     private int encryptionKeyId;
@@ -8,6 +10,7 @@ public class EncryptionKey {
     private String name = null;
     private boolean currentlyUsed;
     private boolean isValid = true;
+    private Instant timestamp;
     
     public EncryptionKey() { }
     
@@ -69,5 +72,13 @@ public class EncryptionKey {
     
     public void setIsValid(boolean isValid) {
         this.isValid = isValid;
+    }
+
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
     }
 }

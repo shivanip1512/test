@@ -6,5 +6,6 @@ package com.cannontech.encryption;
  */
 public enum EncryptionKeyType {
     ExpresscomOneWay, 
-    Honeywell
+    Honeywell,
+    Ecobee
 }

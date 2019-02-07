@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import org.apache.commons.codec.DecoderException;
@@ -54,6 +55,7 @@ import com.cannontech.dr.honeywellWifi.model.HoneywellWifiDutyCycleDrParameters;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.EncryptedRouteDao;
+import com.cannontech.encryption.EncryptionKeyType;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 import com.cannontech.system.GlobalSettingType;
@@ -261,13 +263,13 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             char[] password = CryptoUtils.getSharedPasskey();
             AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
             
-            EncryptionKey honeywellEncryptionKey = encryptedRouteDao.getHoneywellEncryptionKey();
-            if (honeywellEncryptionKey == null) {
+            Optional<EncryptionKey> honeywellEncryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.Honeywell);
+            if (honeywellEncryptionKey.isEmpty()) {
                 log.error("Honeywell Encryption key not found.");
                 throw new HoneywellCommunicationException("Honeywell Encryption key not found");
             }
 
-            String decryptedPrivateKey = encrypter.decryptHexStr(honeywellEncryptionKey.getPrivateKey());
+            String decryptedPrivateKey = encrypter.decryptHexStr(honeywellEncryptionKey.get().getPrivateKey());
             byte[] encoded = new Base64().decode(decryptedPrivateKey);
 
             // PKCS8 decode the encoded RSA private key

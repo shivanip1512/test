@@ -70,10 +70,13 @@
         <dependent-module archiveName="jsch-0.1.54.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jsch-0.1.54.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="bcpkix-fips-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/bcpkix-fips-1.0.0.jar">
+        <dependent-module archiveName="bcpkix-fips-1.0.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/bcpkix-fips-1.0.2.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="bc-fips-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/bc-fips-1.0.0.jar">
+        <dependent-module archiveName="bc-fips-1.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/bc-fips-1.0.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="bcpg-fips-1.0.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/bcpg-fips-1.0.2.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jfreereport.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jfreereport.jar">

@@ -15,6 +15,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
@@ -32,6 +33,7 @@ import com.cannontech.encryption.CertificateGenerationFailedException;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.EncryptedRouteDao;
+import com.cannontech.encryption.EncryptionKeyType;
 import com.cannontech.encryption.HoneywellSecurityService;
 
 public class HoneywellSecurityServiceImpl implements HoneywellSecurityService {
@@ -49,15 +51,16 @@ public class HoneywellSecurityServiceImpl implements HoneywellSecurityService {
     public X509Certificate generateHoneywellCertificate() throws CertificateGenerationFailedException {
         try {
             // get honeywell public and private keys from database
-            EncryptionKey honeywellEncryptionKey = encryptedRouteDao.getHoneywellEncryptionKey();
+            Optional<EncryptionKey> honeywellEncryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.Honeywell);
             
-            if(honeywellEncryptionKey == null) {
+            
+            if(honeywellEncryptionKey.isEmpty()) {
                 throw new CertificateGenerationFailedException("Honeywell public key not found in database");
             }
 
             // decrypt the public and private keys
-            String decryptedPublicKey = decryptKey(honeywellEncryptionKey.getPublicKey());
-            String decryptedPrivateKey = decryptKey(honeywellEncryptionKey.getPrivateKey());
+            String decryptedPublicKey = decryptKey(honeywellEncryptionKey.get().getPublicKey());
+            String decryptedPrivateKey = decryptKey(honeywellEncryptionKey.get().getPrivateKey());
 
             // certificate validity
             Date validFrom = new Date(System.currentTimeMillis() - TIME_OFFSET);

@@ -440,32 +440,46 @@ Java :
     jira : YUK-15740
     notes : Microsoft Azure SDK Tracing Logger Utility
   
-  - filename : bc-fips-1.0.0.jar
+  - filename : bc-fips-1.0.1.jar
     yukon group : Bouncy Castle
     project : Bouncy Castle FIPS
-    version : 1.0.0
+    version : 1.0.1
     project URL : "https://www.bouncycastle.org/fips-java/"
     license : MIT-like
     license URLs : "https://www.bouncycastle.org/license.html"
     maven URL : n/a
-    md5 : ef6ba12c421e0f0330fadcff0ce4cee6
-    sha1 : 1586b17ffd1d4a6554f2236e005c25eac736948c
-    updated : 2017-09-14
-    jira : YUK-16442
+    md5 : 9495b97a8325c45255bb68027af2284b
+    sha1 : ed8dd3144761eaa33b9c56f5e2bef85f1b731d6f
+    updated : 2019-02-06
+    jira : YUK-19276
     notes : Open source, but supported via donation or purchase
   
-  - filename : bcpkix-fips-1.0.0.jar
+  - filename : bcpkix-fips-1.0.2.jar
     yukon group : Bouncy Castle
     project : Bouncy Castle FIPS
-    version : 1.0.0
+    version : 1.0.2
     project URL : "https://www.bouncycastle.org/fips-java/"
     license : MIT-like
     license URLs : "https://www.bouncycastle.org/license.html"
     maven URL : n/a
-    md5 : 9cc303f65b9c154d21189b50051ad9e3
-    sha1 : 3c77e54a28dc5b69eec05727bbb684a3f66b17b9
-    updated : 2017-09-14
-    jira : YUK-16442
+    md5 : eda684a72cae38afd4aa32691d80d595
+    sha1 : 543bc7a08cdba0172e95e536b5f7ca61f021253d
+    updated : 2019-02-06
+    jira : YUK-19276
+    notes : Open source, but supported via donation or purchase
+  
+  - filename : bcpg-fips-1.0.2.jar
+    yukon group : Bouncy Castle
+    project : Bouncy Castle FIPS
+    version : 1.0.2
+    project URL : "https://www.bouncycastle.org/fips-java/"
+    license : MIT-like
+    license URLs : "https://www.bouncycastle.org/license.html"
+    maven URL : n/a
+    md5 : 8e283a0b21b67775d681c2a8c05c6dfe
+    sha1 : d00c7b8e5df8b3f40f81be7544f8185191712509
+    updated : 2019-02-06
+    jira : YUK-19276
     notes : Open source, but supported via donation or purchase
   
   - filename : bsf-2.3.0.jar

@@ -15,6 +15,8 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +50,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.exception.EcobeePGPException;
 import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.validator.SimpleValidator;
@@ -59,6 +62,7 @@ import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.encryption.CertificateGenerationFailedException;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
+import com.cannontech.encryption.EcobeeSecurityService;
 import com.cannontech.encryption.EncryptedRouteDao;
 import com.cannontech.encryption.EncryptionKeyType;
 import com.cannontech.encryption.HoneywellSecurityService;
@@ -84,6 +88,7 @@ public class YukonSecurityController {
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private HoneywellSecurityService honeywellSecurityService;
     @Autowired private ConfigurationSource configurationSource;
+    @Autowired private EcobeeSecurityService ecobeeSecurityService;
 
     private static final int KEYNAME_MAX_LENGTH = 50;
     private static final int KEYHEX_DIGITS_LENGTH = 32;
@@ -220,11 +225,11 @@ public class YukonSecurityController {
             boolean honeywellEnabled =
                 configurationSource.getBoolean(MasterConfigBoolean.HONEYWELL_SUPPORT_ENABLED, false);
             if (honeywellEnabled) {
-                EncryptionKey honeywellEncryptionKey = encryptedRouteDao.getHoneywellEncryptionKey();
-                if (honeywellEncryptionKey != null) {
+                Optional<EncryptionKey> honeywellEncryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.Honeywell);
+                if (honeywellEncryptionKey.isPresent()) {
                     try {
                         String decryptedPublicKeyValue = 
-                                aes.decryptHexStr(honeywellEncryptionKey.getPublicKey());
+                                aes.decryptHexStr(honeywellEncryptionKey.get().getPublicKey());
                         model.addAttribute("honeywellPublicKey", decryptedPublicKeyValue);
                     } catch (CryptoException | DecoderException e) {
                         flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".honeywellKeyDecryptionFailed",
@@ -246,6 +251,14 @@ public class YukonSecurityController {
             model.addAttribute("blockingError", true);
         }
 
+        try {
+            Instant keyCreationTime = ecobeeSecurityService.getEcobeeKeyPairCreationTime();
+            String dateGenerated = dateFormattingService.format(keyCreationTime,
+                DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
+            model.put("ecobeeKeyGeneratedDateTime", dateGenerated);
+        } catch(NoSuchElementException e) {
+            log.debug("Ecobee PGP Key Creation time is not available, may be it is not generated yet.");
+        }
         model.addAttribute("encryptionKeys", encryptionKeys);
 
         model.addAttribute("fileImportBindingBean", fileImportBindingBean);
@@ -273,7 +286,7 @@ public class YukonSecurityController {
         String encryptedValue = new String(Hex.encodeHex(encrypter.encrypt(keyBytes)));
 
         encryptedRouteDao.saveNewEncryptionKey(encryptionKey.getName(), encryptedValue, null,
-            EncryptionKeyType.ExpresscomOneWay);
+            EncryptionKeyType.ExpresscomOneWay, Instant.now());
 
         return "redirect:view";
     }
@@ -417,7 +430,7 @@ public class YukonSecurityController {
 
             String encryptedPrivateKeyValue = new String(Hex.encodeHex(encrypter.encrypt(privateStringKey.getBytes())));
 
-            encryptedRouteDao.saveNewHoneywellEncryptionKey(encryptedPrivateKeyValue, encryptedpublicKeyValue);
+            encryptedRouteDao.saveOrUpdateEncryptionKey(encryptedPrivateKeyValue, encryptedpublicKeyValue, EncryptionKeyType.Honeywell, Instant.now());
             systemEventLogService.newPublicKeyGenerated(userContext.getYukonUser(), DREncryption.HONEYWELL);
             json.put("honeywellPublicKey", publicStringKey);
 
@@ -473,7 +486,7 @@ public class YukonSecurityController {
                 byte[] encryptedData = new AESPasswordBasedCrypto(sharedPassword).encrypt(bytes);
                 String encryptedValue = new String(Hex.encodeHex(encryptedData));
                 encryptedRouteDao.saveNewEncryptionKey(fileImportBindingBean.getName(), encryptedValue, null,
-                    EncryptionKeyType.ExpresscomOneWay);
+                    EncryptionKeyType.ExpresscomOneWay, Instant.now());
                 flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".fileUploadSuccess",
                     fileImportBindingBean.getName()));
                 success = true;
@@ -536,7 +549,7 @@ public class YukonSecurityController {
             String encryptedPublicKey = new String(Hex.encodeHex(encrypter.encrypt(keyPair.getPublicKey().getBytes())));
             String encryptedPrivateKey = new String(Hex.encodeHex(encrypter.encrypt(keyPair.getPrivateKey().getBytes())));
 
-            encryptedRouteDao.saveNewHoneywellEncryptionKey(encryptedPrivateKey, encryptedPublicKey);
+            encryptedRouteDao.saveOrUpdateEncryptionKey(encryptedPrivateKey, encryptedPublicKey, EncryptionKeyType.Honeywell, Instant.now());
             flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".fileUploadSuccess", "Honeywell"));
             success = true;
         } catch (IOException e) {
@@ -593,29 +606,32 @@ public class YukonSecurityController {
     @GetMapping(value = "/config/security/downloadEcobeeKey")
     @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
     public void downloadEcobeeKey(HttpServletResponse response) {
-        //TODO: Get Key if exists or create new key, save to DB and return public key
-        String publicKey = "MWJFOIJW834739498JFOIEJIFWEOJIWEFJOIOJIWEF";
-        response.setContentType("text/plain");
-        response.setHeader("Content-Type", "application/force-download");
-        String fileName = ServletUtil.makeWindowsSafeFileName("ecobeePublicKey.txt");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
         try (OutputStream stream = response.getOutputStream()) {
+            String publicKey = ecobeeSecurityService.getEcobeePGPPublicKey();
+            response.setContentType("text/plain");
+            response.setHeader("Content-Type", "application/force-download");
+            String fileName = ServletUtil.makeWindowsSafeFileName("ecobeePublicKey.txt");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
             stream.write(publicKey.getBytes());
-        } catch (IOException e) {
-            log.warn("Exception getting the ecobee Public Key", e);
+        } catch (Exception e) {
+            log.error("Exception getting the ecobee Public Key", e);
         }
     }
     
 
     @GetMapping(value = "/config/security/generateEcobeeKey")
     @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
-    public @ResponseBody Map<String, Object> generateEcobeeKey(YukonUserContext userContext) throws CryptoException {
+    public @ResponseBody Map<String, Object> generateEcobeeKey(YukonUserContext userContext, FlashScope flashScope) throws CryptoException {
         Map<String, Object> json = new HashMap<>();
-        String dateGenerated = dateFormattingService.format(new Instant(), DateFormattingService.DateFormatEnum.DATEHM_12,
-                    userContext);
-        //TODO: Generate new keys and save to DB, return new date/time keys were generated
-        json.put("ecobeeKeyGeneratedDateTime", dateGenerated);
-
+        try {
+            Instant keyCreationTime = ecobeeSecurityService.generateEcobeePGPKeyPair();
+            String dateGenerated = dateFormattingService.format(keyCreationTime,
+                DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
+            json.put("ecobeeKeyGeneratedDateTime", dateGenerated);
+        } catch (EcobeePGPException epe) {
+            log.error("Exception while generating the PGP Public and Private Key ", epe);
+        }
         return json;
 
     }

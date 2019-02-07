@@ -11,6 +11,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
@@ -25,6 +26,7 @@ import com.cannontech.encryption.CertificateGenerationFailedException;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.EncryptedRouteDao;
+import com.cannontech.encryption.EncryptionKeyType;
 import com.cannontech.encryption.HoneywellSecurityService;
 
 public class HoneywellSecurityServiceImplTest {
@@ -61,7 +63,7 @@ public class HoneywellSecurityServiceImplTest {
             EncryptionKey encryptionKey = new EncryptionKey(encryptedPrivateKey, encryptedPublicKey);
             
             // mock the call to get honeywell keys from DB.
-            EasyMock.expect(mockEncryptedRouteDao.getHoneywellEncryptionKey()).andReturn(encryptionKey);
+            EasyMock.expect(mockEncryptedRouteDao.getEncryptionKey(EncryptionKeyType.Honeywell)).andReturn(Optional.of(encryptionKey));
             EasyMock.replay(mockEncryptedRouteDao);
 
             // call the service method to be tested

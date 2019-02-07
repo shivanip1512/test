@@ -29,8 +29,9 @@
         <include name="asm.jar"/>
         <include name="aspectjrt.jar"/>
         <include name="aspectjweaver.jar"/>
-        <include name="bcpkix-fips-1.0.0.jar"/>
-        <include name="bc-fips-1.0.0.jar"/>
+        <include name="bcpg-fips-1.0.2.jar"/>
+        <include name="bcpkix-fips-1.0.2.jar"/>
+        <include name="bc-fips-1.0.1.jar"/>
         <include name="cglib-2.1.3.jar"/>
         <include name="ojdbc6.jar"/>
         <include name="common.jar"/>

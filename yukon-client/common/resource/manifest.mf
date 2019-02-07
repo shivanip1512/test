@@ -88,8 +88,9 @@ Class-Path: ./
  xml-apis-1.4.01.jar 
  jasypt-1.9.2.jar 
  servlet-api.jar 
- bcpkix-fips-1.0.0.jar 
- bc-fips-1.0.0.jar 
+ bcpkix-fips-1.0.2.jar 
+ bc-fips-1.0.1.jar 
+ bcpg-fips-1.0.2.jar 
  libthrift-0.11.0.jar 
  yukon-shared.jar 
  annotation-detector-3.0.4.jar 
