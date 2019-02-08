@@ -154,18 +154,6 @@ public class ScheduledDataImportDaoImplTest {
     }
 
     @Test
-    public void test_sortByNull() {
-
-        Instant to = new Instant("2019-01-31T14:17:58.206Z");
-        Instant from = new Instant("2018-01-20T14:17:58.206Z");
-
-        PagingParameters paging = PagingParameters.of(25, 1);
-        SearchResults<ScheduleImportHistoryEntry> searchResults =
-            scheduledDataImportDao.getImportHistory(3061, from, to, null, Direction.desc, paging);
-        assertTrue(searchResults.getResultList().get(0).getFileName().equals("Import file 3.csv"));
-    }
-
-    @Test
     public void test_directionNull() {
 
         Instant to = new Instant("2019-01-31T14:17:58.206Z");
