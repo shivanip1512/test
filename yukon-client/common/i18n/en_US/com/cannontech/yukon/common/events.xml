@@ -328,7 +328,7 @@
 	<entry key="yukon.common.events.system.commandSchedule.allSchedulesDisabled">All schedules disabled by {1}.</entry>
 	
 	<!-- Schedule Data Import -->
-	<entry key="yukon.common.events.scheduledDataImportDetail.scheduleCreated">Schedule name: {2} created by {1}.</entry>
+    <entry key="yukon.common.events.scheduledDataImportDetail.scheduleCreated">Schedule name: {2} created by {1}.</entry>
     <entry key="yukon.common.events.scheduledDataImportDetail.scheduleUpdated">Schedule name: {2} updated by {1}.</entry>
     <entry key="yukon.common.events.scheduledDataImportDetail.scheduleDeleted">Schedule name: {2} deleted by {1}.</entry>
 
