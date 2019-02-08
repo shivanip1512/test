@@ -76,6 +76,10 @@
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.CommandScheduleEventLogService"/>
     </bean>
     
+    <bean id="scheduleDataImportEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.ScheduleDataImportEventLogService"/>
+    </bean>
+    
     <bean id="zigbeeEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.ZigbeeEventLogService"/>
     </bean>

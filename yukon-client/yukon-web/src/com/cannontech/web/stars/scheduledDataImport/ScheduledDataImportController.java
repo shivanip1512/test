@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.common.events.loggers.ScheduleDataImportEventLogService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -83,6 +84,7 @@ public class ScheduledDataImportController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private ScheduledDataImportService scheduledDataImportService;
+    @Autowired private ScheduleDataImportEventLogService logService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ScheduleControllerHelper scheduleControllerHelper;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
@@ -150,6 +152,8 @@ public class ScheduledDataImportController {
         YukonJob savedJob = null;
         if (scheduledImportData.getJobId() == null) {
             savedJob = scheduledDataImportService.scheduleDataImport(scheduledImportData, userContext);
+            if (savedJob.getId() != null)
+                logService.scheduleCreated(userContext.getYukonUser(), scheduledImportData.getScheduleName());
         } else {
             JobState currentJobState = scheduleControllerHelper.getJobState(scheduledImportData.getJobId());
             if (currentJobState == JobState.DELETED) {
@@ -160,6 +164,7 @@ public class ScheduledDataImportController {
                 return "redirect:/stars/scheduledDataImport/" + scheduledImportData.getJobId() + "/view";
             }
             savedJob = scheduledDataImportService.updateDataImport(scheduledImportData, userContext);
+            logService.scheduleUpdated(userContext.getYukonUser(), scheduledImportData.getScheduleName());
         }
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", scheduledImportData.getScheduleName()));
         return "redirect:/stars/scheduledDataImport/" + savedJob.getId() + "/view";
@@ -192,7 +197,7 @@ public class ScheduledDataImportController {
     }
     
     @DeleteMapping("{jobId}/delete")
-    public String delete(@PathVariable int jobId, FlashScope flash) {
+    public String delete(@PathVariable int jobId, FlashScope flash, YukonUserContext userContext) {
         JobState currentJobState = scheduleControllerHelper.getJobState(jobId);
         if (currentJobState == JobState.DELETED) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "editDeletedJob.error"));
@@ -204,6 +209,7 @@ public class ScheduledDataImportController {
         
         ScheduledDataImport deleteJob = scheduledDataImportService.deleteJobById(jobId);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", deleteJob.getScheduleName()));
+        logService.scheduleDeleted(userContext.getYukonUser(), deleteJob.getScheduleName());
         return "redirect:/stars/scheduledDataImport/list";
     }
 

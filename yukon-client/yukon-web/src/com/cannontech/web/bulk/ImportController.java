@@ -32,8 +32,10 @@ import com.cannontech.common.bulk.service.BulkImportService;
 import com.cannontech.common.bulk.service.BulkImportType;
 import com.cannontech.common.bulk.service.ParsedBulkImportFileInfo;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.cannontech.web.bulk.util.BulkFileUploadUtils;
@@ -47,6 +49,7 @@ public class ImportController {
     @Autowired private BulkImportService bulkImportService;
     @Autowired private List<BulkImportMethod> importMethods;
     @Autowired private ToolsEventLogService toolsEventLogService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Resource(name = "recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
 
     private Map<String, BulkImportFileInfo> bulkImportFileInfoMap = new ConcurrentHashMap<>();
@@ -79,9 +82,10 @@ public class ImportController {
     }
     
     @RequestMapping(value="upload", method=RequestMethod.POST)
-    public String parseUpload(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
+    public String parseUpload(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletRequestBindingException {
         
         // options 
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String importTypeSelector = ServletRequestUtils.getStringParameter(request, "importTypeSelector");
         Boolean ignoreInvalidCols = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", false);
         
@@ -103,7 +107,7 @@ public class ImportController {
         FileSystemResource fileResource = new FileSystemResource(bulkFileUpload.getFile());
         BulkImportFileInfo bulkImportFileInfo = new BulkImportFileInfo(fileResource, ignoreInvalidCols);
         bulkImportFileInfo.setOriginalFilename(bulkFileUpload.getName());
-        bulkImportFileInfo.setImportType(importTypeSelector);
+        bulkImportFileInfo.setImportType(accessor.getMessage("yukon.web.menu.ami.import").toString() +" - "+ importTypeSelector);
         
         // save file info
         String fileInfoId = bulkImportFileInfo.getId();
@@ -159,7 +163,7 @@ public class ImportController {
         BulkImportFileInfo bulkImportFileInfo = bulkImportFileInfoMap.get(fileInfoId);
         ParsedBulkImportFileInfo parsedResult = 
                 bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, bulkImportType);
-        toolsEventLogService.importStarted(userContext.getYukonUser(), bulkImportType.name(),
+        toolsEventLogService.importStarted(userContext.getYukonUser(), bulkImportFileInfo.getImportType(),
             bulkImportFileInfo.getOriginalFilename());
         String resultsId = bulkImportService.startBulkImport(parsedResult);
         
