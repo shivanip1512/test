@@ -60,7 +60,6 @@ public class TrendsHomeController {
 
         LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(id);
         if (null == trend) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.tools.trend.TrendsNotFound"));
             return "redirect:/tools/trends";
         } else {
             model.addAttribute("trendId", id);
