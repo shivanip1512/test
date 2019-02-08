@@ -72,6 +72,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 itronUrl, hardware.getMacAddress(), hardware.getInventoryId());
             request = DeviceManagerHelper.buildAddRequestWithoutServicePoint(hardware);
         }
+        //TODO add event log - yukon.common.events.dr.itron.addHANDevice
               
         AddHANDeviceResponse response = null;
         try {
@@ -93,7 +94,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             itronException.setErrorAddDevice(response);
             throw itronException;
         }
-        //TODO add event log - yukon.common.events.dr.itron.addHANDevice
         log.debug("AddHANDeviceResponse - Request to Itron {} to add device with Mac Id {} is successful.", itronUrl,
             response.getMacID());
     }
@@ -103,8 +103,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         log.debug("EditHANDeviceRequest - Sending request to Itron {} to add device to a service point with Mac Id {} account number {}.",
             itronUrl, macAddress, account.getAccountNumber());
         EditHANDeviceRequest request = DeviceManagerHelper.buildEditRequestWithServicePoint(macAddress, account);
-        EditHANDeviceResponse response = editDevice(request); 
         //TODO add event log - yukon.common.events.dr.itron.addHANDeviceToServicePoint
+        EditHANDeviceResponse response = editDevice(request); 
         log.debug("EditHANDeviceResponse - Request to Itron {} to add device with Mac Id {} is successful.", itronUrl,
             response.getMacID());
     }
@@ -140,8 +140,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         String itronUrl = url + "/editHANDevice";
         log.debug("EditHANDeviceRequest - Sending request to Itron {} to add device with Mac Id {}.", itronUrl, macAddress);
         EditHANDeviceRequest request = DeviceManagerHelper.buildEditRequestRemoveServicePoint(macAddress);
-        EditHANDeviceResponse response = editDevice(request); 
         //TODO add event log - yukon.common.events.dr.itron.removeHANDeviceFromServicePoint
+        EditHANDeviceResponse response = editDevice(request); 
         log.debug("EditHANDeviceResponse - Request to Itron {} to add device with Mac Id {} is successful.", itronUrl,
             response.getMacID());
     }
@@ -163,6 +163,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         String itronUrl = url + "/addServicePoint";
 
         AddServicePointRequest request = ServicePointHelper.buildAddRequest(account);
+        //TODO add event log - yukon.common.events.dr.itron.addServicePoint
         log.debug(XmlUtils.getPrettyXml(request));
         log.debug("AddServicePointRequest - Sending request to Itron {} to add service point for account {}.", itronUrl,
             account.getAccountNumber());
@@ -170,7 +171,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         
         AddServicePointResponse response= new AddServicePointResponse();
         log.debug(XmlUtils.getPrettyXml(response));
-        //TODO add event log - yukon.common.events.dr.itron.addServicePoint
         log.debug("AddServicePointResponse - Request to Itron {} to add service point for account {} is successful.",
             itronUrl, account.getAccountNumber());
     }
@@ -188,6 +188,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             ESIGroupRequestType requestType = new ESIGroupRequestType();
             requestType.setGroupName(String.valueOf(pao.getLiteID()));
             JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createAddESIGroupRequest(requestType);
+            //TODO add event log - yukon.common.events.dr.itron.addGroup
             log.debug(XmlUtils.getPrettyXml(request));
             response = new ESIGroupResponseType();
             //response = (ESIGroupResponseType) deviceManagerTemplate.marshalSendAndReceive(itronUrl, request);
@@ -195,7 +196,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             
             //TODO persist to a table
             response.getGroupID();
-            //TODO add event log - yukon.common.events.dr.itron.addGroup
             log.debug("ESIGroupResponseType - Sending request to Itron {} to add {} group is successful", itronUrl,
                 pao.getPaoName(), response.getGroupID());
             return itronGroupId;
@@ -225,6 +225,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         try {            
             AddProgramRequest request = new AddProgramRequest();
             request.setProgramName(String.valueOf(pao.getLiteID()));
+            //TODO add event log - yukon.common.events.dr.itron.addProgram
             log.debug(XmlUtils.getPrettyXml(request));
             response = new AddProgramResponse();
             //response = (AddProgramResponse) programManagerTemplate.marshalSendAndReceive(itronUrl, request);
@@ -232,7 +233,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             
             // TODO persist to a table
             response.getProgramID();
-            //TODO add event log - yukon.common.events.dr.itron.addProgram
             log.debug("AddProgramResponse - Sending request to Itron {} to add {} program is successful. Itron program id {} created",
                 itronUrl, pao.getPaoName(), response.getProgramID());
             return itronProgramId;

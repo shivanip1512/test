@@ -868,12 +868,12 @@
     <entry key="yukon.common.events.system.rfn.dataStreaming.removeDataStreamingCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
     
     <!-- Itron -->
-    <entry key="yukon.common.events.dr.itron.addHANDevice">Device {Device Name} addition request with mac address {Mac Address} sent by user {User}. Response: {Response}.</entry>
-    <entry key="yukon.common.events.dr.itron.addHANDeviceToServicePoint">Device {Device Name} addition request to service point {Account Number} with mac address {Mac Address} by user {User}. Response: {Response}</entry>
-    <entry key="yukon.common.events.dr.itron.removeHANDeviceFromServicePoint">Device {Device Name} removal request from service point {Account Number} by user {User}. Response: {Response}.</entry>
-    <entry key="yukon.common.events.dr.itron.addServicePoint">Service Point {Account Number} creation request by user {User}. Response: {Response}.</entry>
-    <entry key="yukon.common.events.dr.itron.addGroup">Group {Group Name} with group ID {Group ID} creation request by user {User}. Response: {Response}.</entry>
-    <entry key="yukon.common.events.dr.itron.addProgram">Program {Program Name} with program ID {Program ID} creation request by user {User}. Response: {Response}.</entry>
+    <entry key="yukon.common.events.dr.itron.addHANDevice">Device {Device Name} addition request with mac address {Mac Address} sent by user {User}.</entry>
+    <entry key="yukon.common.events.dr.itron.addHANDeviceToServicePoint">Device {Device Name} addition request to service point {Account Number} with mac address {Mac Address} sent by user {User}.</entry>
+    <entry key="yukon.common.events.dr.itron.removeHANDeviceFromServicePoint">Device {Device Name} removal request from service point {Account Number} sent by user {User}.</entry>
+    <entry key="yukon.common.events.dr.itron.addServicePoint">Service Point {Account Number} creation request sent by user {User}.</entry>
+    <entry key="yukon.common.events.dr.itron.addGroup">Group {Group Name} with group ID {Group ID} creation request sent by user {User}.</entry>
+    <entry key="yukon.common.events.dr.itron.addProgram">Program {Program Name} with program ID {Program ID} creation request sent by user {User}.</entry>
     
     <!-- Nest-->
     <entry key="yukon.common.events.dr.nest.syncStart">Sync Start: Sync Id: {7}, Start Time: {11}</entry>
