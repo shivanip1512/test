@@ -25,6 +25,7 @@ Class-Path: ./
  spring-context-5.0.2.RELEASE.jar 
  spring-context-support-5.0.2.RELEASE.jar 
  spring-core-5.0.2.RELEASE.jar 
+ spring-ws-core-3.0.4.RELEASE.jar 
  spring-expression-5.0.2.RELEASE.jar 
  spring-instrument-5.0.2.RELEASE.jar 
  spring-jdbc-5.0.2.RELEASE.jar 
