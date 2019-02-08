@@ -53,13 +53,9 @@
                                         </td>
                                         <%-- Status --%>
                                         <td id="status_${jobId}">
-                                            <span id="jobNotRunningSpan_${jobId}"
-                                                <c:if test="${jobWrapper.jobState eq 'RUNNING'}">style="display:none;"</c:if>>
-                                                <cti:dataUpdaterValue type="JOB" identifier="${jobId}/STATE_TEXT"/>
-                                            </span>
-                                            <div id="jobRunningSpan_${jobId}"
-                                                <c:if test="${not (jobWrapper.jobState eq 'RUNNING')}">style="display:none;"</c:if> class="wsnw">
-                                            </div>
+                                            <cti:classUpdater type="JOB" identifier="${jobId}/JOB_STATUS_CLASS">
+                                                <cti:dataUpdaterValue type="JOB" identifier="${jobId}/JOB_STATE_TEXT"/>
+                                            </cti:classUpdater>
                                         </td>
                                         <td class="tar">
                                             <cm:dropdown icon="icon-cog">
@@ -73,7 +69,7 @@
                                         </td>
                                     </tr>
                                     <span>
-                                        <cti:dataUpdaterCallback function="yukon.assets.scheduleddataimport.setTrClassByJobState(${jobId})" initialize="true" state="JOB/${jobId}/STATE"/>
+                                        <cti:dataUpdaterCallback function="yukon.assets.scheduleddataimport.setTrClassByJobState(${jobId})" initialize="true" state="JOB/${jobId}/JOB_STATE_TEXT"/>
                                     </span>
                                 </c:forEach>
                             </body>
