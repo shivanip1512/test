@@ -24,7 +24,7 @@ import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao.S
 import com.cannontech.web.stars.scheduledDataImport.dao.impl.ScheduledDataImportDaoImpl;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({"/com/cannontech/common/daoTestContext.xml"})
+@ContextConfiguration({"/com/cannontech/web/dao/resource/scheduledDataImport/scheduledDataImportdaoTestContext.xml"})
 public class ScheduledDataImportDaoImplTest {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     private ScheduledDataImportDao scheduledDataImportDao;
