@@ -1,6 +1,7 @@
 package com.cannontech.dr.itron.service;
 
 import com.cannontech.common.inventory.Hardware;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.dr.account.model.AccountDto;
 
 public interface ItronCommunicationService {
@@ -30,7 +31,7 @@ public interface ItronCommunicationService {
      * 
      * @return itron group id
      */
-    long getProgram(int paoId);
+    long getProgram(LiteYukonPAObject pao);
 
     /**
      * Attempts to get itron program id from the database, if doesn't exist sends request to itron to create
@@ -38,5 +39,5 @@ public interface ItronCommunicationService {
      * 
      * @return itron program id
      */
-    long getGroup(int paoId);
+    long getGroup(LiteYukonPAObject pao);
 }

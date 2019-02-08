@@ -31,7 +31,6 @@ import com.cannontech.dr.itron.service.ItronException;
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class ItronCommunicationServiceImpl implements ItronCommunicationService {
     
@@ -39,7 +38,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private String password;
     private String userName;
 
-    @Autowired private IDatabaseCache cache;
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
 
     private static WebServiceTemplate deviceManagerTemplate =
@@ -191,21 +189,17 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     @Override
-    public long getGroup(int paoId) {
-  
-        LiteYukonPAObject group = cache.getAllLMGroups().stream()
-                .filter(g -> g.getLiteID() == paoId).findAny().orElse(null);
-       
+    public long getGroup(LiteYukonPAObject pao) {
         // TODO check is pao id is in the table and return itron id otherwise send request to itron
 
-        long itronGroupId = 0;
         String itronUrl = "http://localhost:8083/DeviceManagerPort";
-        log.debug("ESIGroupRequestType - Sending request to Itron {} to add {} group.", itronUrl, group.getPaoName());
+        log.debug("ESIGroupRequestType - Sending request to Itron {} to add {} group.", itronUrl, pao.getPaoName());
 
         ESIGroupResponseType response = null;
+        long itronGroupId = 0;
         try {
             ESIGroupRequestType requestType = new ESIGroupRequestType();
-            requestType.setGroupName(String.valueOf(paoId));
+            requestType.setGroupName(String.valueOf(pao.getLiteID()));
             JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createAddESIGroupRequest(requestType);
             //TODO add event log
             //yukon.common.events.dr.itron.addGroupRequest
@@ -218,8 +212,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             
             //TODO persist to a table
             response.getGroupID();
-            // log.debug("ESIGroupResponseType - Sending request to Itron {} to add {} group is successful.
-            // Itron group id {} created", itronUrl, group.getPaoName(), response.getGroupID());
+            log.debug("ESIGroupResponseType - Sending request to Itron {} to add {} group is successful", itronUrl,
+                pao.getPaoName(), response.getGroupID());
             return itronGroupId;
             
         } catch (ItronException e) {
@@ -234,21 +228,19 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     @Override
-    public long getProgram(int paoId) {        
-        LiteYukonPAObject program = cache.getAllLMPrograms().stream()
-                .filter(g -> g.getLiteID() == paoId).findAny().orElse(null);
+    public long getProgram(LiteYukonPAObject pao) {        
                 
         // TODO check is pao id is in the table and return itron id otherwise send request to itron
         long itronProgramId = 0;
 
         // TODO use different URL
         String itronUrl = "http://localhost:8083/DeviceManagerPort";
-        log.debug("AddProgramResponse - Sending request to Itron {} to add {} program.", itronUrl, program.getPaoName());
+        log.debug("AddProgramResponse - Sending request to Itron {} to add {} program.", itronUrl, pao.getPaoName());
 
         AddProgramResponse response = null;
         try {            
             AddProgramRequest request = new AddProgramRequest();
-            request.setProgramName(String.valueOf(paoId));
+            request.setProgramName(String.valueOf(pao.getLiteID()));
             //TODO add event log
             //yukon.common.events.dr.itron.addProgramRequest
             log.debug(XmlUtils.getPrettyXml(request));
@@ -261,7 +253,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             // TODO persist to a table
             response.getProgramID();
             log.debug("AddProgramResponse - Sending request to Itron {} to add {} program is successful. Itron program id {} created",
-                itronUrl, program.getPaoName(), response.getProgramID());
+                itronUrl, pao.getPaoName(), response.getProgramID());
             return itronProgramId;
         } catch (ItronException e) {
             e.setErrorAddProgram(response);

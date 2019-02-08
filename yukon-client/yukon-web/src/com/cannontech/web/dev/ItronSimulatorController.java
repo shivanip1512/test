@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.inventory.Hardware;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceResponse;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.dr.itron.simulator.model.AddProgramError;
@@ -45,7 +46,9 @@ public class ItronSimulatorController {
         AddHANDeviceResponse response = new AddHANDeviceResponse();
         Hardware hardware = new Hardware();
        // itronCommunicationService.addDevice(hardware);
-        System.out.println(itronCommunicationService.getGroup(1));
+        LiteYukonPAObject group = new LiteYukonPAObject(1);
+        group.setPaoName("test");
+        System.out.println(itronCommunicationService.getGroup(group));
         return "redirect:itronSimulator";
     }
     
