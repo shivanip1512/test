@@ -20,7 +20,7 @@
 <entry key="yukon.web.layout.standard.applications.description">
     Due to the removal of Java Web Start from Java 11 and beyond, the Database Editor and Trending applications are 
     no longer available to be deployed from the web. Access to these applications is limited to the application server
-    where they are directly installed. Commander and Tabular Data Console functionality is available via their web based
+    where they are directly installed. Commander and Tabular Data Console functionality is available via their web-based
     equivalents. Please contact your system administrator for more details.
 </entry>
 
