@@ -27,6 +27,7 @@ import org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.bouncycastle.bcpg.sig.Features;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
+import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPEncryptedData;
 import org.bouncycastle.openpgp.PGPEncryptedDataList;
 import org.bouncycastle.openpgp.PGPException;
@@ -47,7 +48,6 @@ import org.bouncycastle.openpgp.jcajce.JcaPGPObjectFactory;
 import org.bouncycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.bouncycastle.openpgp.operator.PBESecretKeyEncryptor;
 import org.bouncycastle.openpgp.operator.PGPDigestCalculator;
-import org.bouncycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
 import org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
@@ -236,10 +236,12 @@ public class EcobeeSecurityServiceImpl implements EcobeeSecurityService {
         encryptedRouteDao.saveOrUpdateEncryptionKey(aesBasedCryptoPrivateKey, aesBasedCryptoPublicKey, EncryptionKeyType.Ecobee, timestamp);
     }
 
-
     private byte[] decryptFile(InputStream imputStream, String privateKey) throws EcobeePGPException {
+        PGPPublicKeyEncryptedData publicKeyEncryptedData = null;
+        PGPEncryptedDataList encList;
+        JcaPGPObjectFactory jcaPGPObjectFactory;
         try {
-            byte[] bytes = IOUtils.toByteArray(imputStream);
+            byte[] encryptedGPGByteArray = IOUtils.toByteArray(imputStream);
             char[] password = CryptoUtils.getSharedPasskey();
 
             AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
@@ -247,26 +249,42 @@ public class EcobeeSecurityServiceImpl implements EcobeeSecurityService {
             PGPSecretKey secretKey = readSecretKey(aesDecryptedPrivatekey);
             PBESecretKeyDecryptor decryptor = new JcePBESecretKeyDecryptorBuilder().build(PASSPHRASE.toCharArray());
             PGPPrivateKey pgpPrivateKey = secretKey.extractPrivateKey(decryptor);
-            PGPObjectFactory pgpFact = new JcaPGPObjectFactory(bytes);
-            PGPEncryptedDataList encList = (PGPEncryptedDataList) pgpFact.nextObject();
-            PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) encList.get(0);
-            PublicKeyDataDecryptorFactory dataDecryptorFactory =
-                new JcePublicKeyDataDecryptorFactoryBuilder().setProvider("BCFIPS").build(pgpPrivateKey);
-            InputStream dataStream = encData.getDataStream(dataDecryptorFactory);
-            byte[] literalData = Streams.readAll(dataStream);
-            if (encData.verify()) {
-                PGPObjectFactory litFact = new JcaPGPObjectFactory(literalData);
-                PGPLiteralData litData = (PGPLiteralData) litFact.nextObject();
-                byte[] decryptedData = Streams.readAll(litData.getInputStream());
-                return decryptedData;
+            PGPObjectFactory pgpObjectFactory = new JcaPGPObjectFactory(encryptedGPGByteArray);
+            Object obj = pgpObjectFactory.nextObject();
+            if (obj instanceof PGPEncryptedDataList) {
+                encList = (PGPEncryptedDataList) obj;
+            } else {
+                encList = (PGPEncryptedDataList) pgpObjectFactory.nextObject();
             }
-        } catch (CryptoException | IOException | JDOMException | DecoderException | PGPException | EcobeePGPException e) {
+
+            Iterator<PGPPublicKeyEncryptedData> iterator = encList.getEncryptedDataObjects();
+            while (iterator.hasNext()) {
+                publicKeyEncryptedData = iterator.next();
+            }
+
+            if (publicKeyEncryptedData == null) {
+                throw new EcobeePGPException("Didn't found PGP Public Key Encrypted data.");
+            }
+            InputStream dataStream = publicKeyEncryptedData
+                                    .getDataStream(new JcePublicKeyDataDecryptorFactoryBuilder().build(pgpPrivateKey));
+
+            jcaPGPObjectFactory = new JcaPGPObjectFactory(dataStream);
+            PGPCompressedData compressedData = (PGPCompressedData) jcaPGPObjectFactory.nextObject();
+            jcaPGPObjectFactory = new JcaPGPObjectFactory(compressedData.getDataStream());
+
+            PGPLiteralData literalData = (PGPLiteralData) jcaPGPObjectFactory.nextObject();
+            byte[] decryptedData = Streams.readAll(literalData.getDataStream());
+            return decryptedData;
+        } catch (CryptoException | IOException | JDOMException | DecoderException | PGPException e) {
             log.error("Error while decrypting the gpg file" + e);
             throw new EcobeePGPException("Unable to decrypt the gpg file");
         }
-        throw new EcobeePGPException("Unable to decrypt the gpg file");
     }
 
+    /**
+     * This method will return the PGPSecret Key from the Secret Key Ring Collection and with secret key
+     * we will get the PGPPrivate Key to decrypt the gpg file.
+     */
     private PGPSecretKey readSecretKey(String privateKey) throws IOException, PGPException, EcobeePGPException {
         InputStream in = new ByteArrayInputStream(privateKey.getBytes());
         PGPSecretKeyRingCollection pgpSec =
