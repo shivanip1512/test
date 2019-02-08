@@ -195,6 +195,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             
             //TODO persist to a table
             response.getGroupID();
+            //TODO add event log - yukon.common.events.dr.itron.addGroup
             log.debug("ESIGroupResponseType - Sending request to Itron {} to add {} group is successful", itronUrl,
                 pao.getPaoName(), response.getGroupID());
             return itronGroupId;
