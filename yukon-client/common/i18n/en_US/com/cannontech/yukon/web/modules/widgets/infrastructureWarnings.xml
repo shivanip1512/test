@@ -2,23 +2,22 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CONNECTION_STATUS.LOW">Gateway communications interrupted since {0}</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_COLOR.LOW">Duplicate color {0} configured into gateway</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_FAILSAFE.LOW">Gateway is currently in failsafe mode</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CONNECTED_NODES.LOW">Gateway''s total connected node count {0} is higher than recommended</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CONNECTED_NODES.HIGH">Gateway''s total connected node count {0} has reached the maximum limit</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DATA_STREAMING_LOAD.LOW">Data streaming capacity at {0}%</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DATA_STREAMING_LOAD.HIGH">Data streaming capacity at {0}%</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.RELAY_OUTAGE.LOW">An outage notification has been received</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CCU_COMM_STATUS.LOW">Communication status is disconnected</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.REPEATER_COMM_STATUS.LOW">Communication status is disconnected</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_READY_NODES.LOW">Gateway''s total ready node count ({0}) is lower than the warning threshold ({1}).</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_SECURITY_ALARM.LOW">Gateway security alarm has been asserted</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_POWER_FAILURE.LOW">Gateway is currently having a power failure</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RADIO_FAILURE.LOW">Gateway is currently having a radio failure</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_TIME_SYNC_FAILED.LOW">Gateway time synchronization has failed</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DOOR_OPEN.LOW">Gateway has detected an open door</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_NODE_COUNT_EXCEEDED.LOW">Gateway node count has exceeded limit</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CONNECTION_STATUS.LOW">Gateway communications interrupted since {0}.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_COLOR.LOW">Duplicate color {0} configured into gateway.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_FAILSAFE.LOW">Gateway is currently in failsafe mode.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CONNECTED_NODES.LOW">Gateway''s total connected node count {0} is higher than recommended.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CONNECTED_NODES.HIGH">Gateway''s total connected node count {0} has reached the maximum limit.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DATA_STREAMING_LOAD.LOW">Data streaming capacity at {0}%.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DATA_STREAMING_LOAD.HIGH">Data streaming capacity at {0}%.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.RELAY_OUTAGE.LOW">An outage notification has been received.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CCU_COMM_STATUS.LOW">Communication status is disconnected.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.REPEATER_COMM_STATUS.LOW">Communication status is disconnected.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_SECURITY_ALARM.LOW">Gateway security alarm, SSH service enabled.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_POWER_FAILURE.LOW">Gateway detecting power loss event.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RADIO_FAILURE.LOW">Gateway radio connection lost. </entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_TIME_SYNC_FAILED.LOW">Gateway unable to synchronize time.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DOOR_OPEN.LOW">Gateway detecting open door.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_NODE_COUNT_EXCEEDED.LOW">Gateway node count exceeding limit.</entry>
     
     <entry key="yukon.web.widgets.infrastructureWarnings.gateways">Gateways</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.relays">Relays</entry>
