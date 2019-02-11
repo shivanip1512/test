@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +51,7 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.exception.EcobeePGPException;
 import com.cannontech.common.exception.FileImportException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -70,6 +70,7 @@ import com.cannontech.encryption.RSAKeyfileService;
 import com.cannontech.encryption.SecurityKeyPair;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.DREncryption;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -89,6 +90,7 @@ public class YukonSecurityController {
     @Autowired private HoneywellSecurityService honeywellSecurityService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private EcobeeSecurityService ecobeeSecurityService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private static final int KEYNAME_MAX_LENGTH = 50;
     private static final int KEYHEX_DIGITS_LENGTH = 32;
@@ -225,17 +227,16 @@ public class YukonSecurityController {
             boolean honeywellEnabled =
                 configurationSource.getBoolean(MasterConfigBoolean.HONEYWELL_SUPPORT_ENABLED, false);
             if (honeywellEnabled) {
-                Optional<EncryptionKey> honeywellEncryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.Honeywell);
-                if (honeywellEncryptionKey.isPresent()) {
-                    try {
-                        String decryptedPublicKeyValue = 
-                                aes.decryptHexStr(honeywellEncryptionKey.get().getPublicKey());
-                        model.addAttribute("honeywellPublicKey", decryptedPublicKeyValue);
-                    } catch (CryptoException | DecoderException e) {
-                        flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".honeywellKeyDecryptionFailed",
-                            e.getMessage()));
-                    }
-                }
+                encryptedRouteDao.getEncryptionKey(EncryptionKeyType.Honeywell)
+                    .ifPresent(encKey -> {
+                        try {
+                            String decryptedPublicKeyValue = aes.decryptHexStr(encKey.getPublicKey());
+                            model.addAttribute("honeywellPublicKey", decryptedPublicKeyValue);
+                        } catch (CryptoException | DecoderException e) {
+                            flashScope.setError(new YukonMessageSourceResolvable(
+                                baseKey + ".honeywellKeyDecryptionFailed", e.getMessage()));
+                        }
+                    });
             }
 
         } catch (Exception e) {
@@ -256,7 +257,7 @@ public class YukonSecurityController {
             String dateGenerated = dateFormattingService.format(keyCreationTime,
                 DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
             model.put("ecobeeKeyGeneratedDateTime", dateGenerated);
-        } catch(NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             log.debug("Ecobee PGP Key Creation time is not available, may be it is not generated yet.");
         }
         model.addAttribute("encryptionKeys", encryptionKeys);
@@ -631,9 +632,11 @@ public class YukonSecurityController {
             json.put("ecobeeKeyGeneratedDateTime", dateGenerated);
         } catch (EcobeePGPException epe) {
             log.error("Exception while generating the PGP Public and Private Key ", epe);
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String errMsg = accessor.getMessage(baseKey + ".ecobeeKeyPair.generationFailed");
+            json.put("ecobeeKeyGeneratedDateTime", errMsg);
         }
         return json;
-
     }
 
 }

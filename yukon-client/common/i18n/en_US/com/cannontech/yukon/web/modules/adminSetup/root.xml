@@ -246,6 +246,7 @@
     <entry key="yukon.web.modules.adminSetup.security.confirmGenerate.message"><![CDATA[Are you sure you want to generate a new Honeywell key?
     <br><br><b>Note:After generating a new key, you need to share it with Honeywell.  DR functionality in Yukon will only work after the key has been updated at their end.</b>
     ]]></entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeKeyPair.generationFailed">Error occurred generating the PGP Public and Private Key. Check logs for more information.</entry>
     
     <!-- jobs/active.jsp --> 
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.active.pageName">Active Jobs</entry>

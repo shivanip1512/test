@@ -155,8 +155,8 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO EncryptionKey");
         sql.append("(EncryptionKeyId, Name, PrivateKey");
-        if (encryptionKeyType.equals(EncryptionKeyType.Honeywell) ||
-                encryptionKeyType.equals(EncryptionKeyType.Ecobee)) {
+        if (encryptionKeyType == EncryptionKeyType.Honeywell ||
+                encryptionKeyType == EncryptionKeyType.Ecobee) {
             sql.append(", PublicKey, EncryptionKeyType, Timestamp)");
             sql.values(encryptionKeyId, name, privateKey, publicKey, encryptionKeyType, timestamp);
         } else {
@@ -191,7 +191,7 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
         EncryptionKey encryptionKey=null;
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT PrivateKey ,PublicKey, Timestamp ");
+            sql.append("SELECT PrivateKey, PublicKey, Timestamp ");
             sql.append("FROM EncryptionKey ");
             sql.append("WHERE EncryptionKeyType =").appendArgument(encryptionKeyType);
             encryptionKey = yukonJdbcTemplate.queryForObject(sql, encryptionKeyRowMapper);
