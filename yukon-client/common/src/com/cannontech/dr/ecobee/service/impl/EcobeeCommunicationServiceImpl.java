@@ -549,8 +549,9 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                 } catch (Exception e) {
                     log.error("Error while processing runtimereport data.", e);
                     throw new EcobeeCommunicationException("Error occured while processing runtimereport data.");
+                } finally {
+                    connection.disconnect();
                 }
-                connection.disconnect();
             } catch (Exception e) {
                 log.error("Unable to connect with proxy server or URL is not correct", e);
                 throw new EcobeeCommunicationException("Unable to connect with proxy server or URL is not correct");
