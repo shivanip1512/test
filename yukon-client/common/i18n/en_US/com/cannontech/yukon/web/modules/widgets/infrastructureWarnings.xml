@@ -12,6 +12,7 @@
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.RELAY_OUTAGE.LOW">An outage notification has been received.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CCU_COMM_STATUS.LOW">Communication status is disconnected.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.REPEATER_COMM_STATUS.LOW">Communication status is disconnected.</entry>
+    <entry key="yukon.web.widgets.infrastru	ctureWarnings.warningType.GATEWAY_READY_NODES.LOW">Gateway''s total ready node count ({0}) is lower than the warning threshold ({1}).</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_SECURITY_ALARM.LOW">Gateway security alarm, SSH service enabled.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_POWER_FAILURE.LOW">Gateway detecting power loss event.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RADIO_FAILURE.LOW">Gateway radio connection lost. </entry>
