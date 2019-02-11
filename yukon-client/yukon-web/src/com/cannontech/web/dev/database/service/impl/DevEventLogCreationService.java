@@ -44,7 +44,6 @@ import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.events.loggers.PqrEventLogService;
 import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
-import com.cannontech.common.events.loggers.ScheduleDataImportEventLogService;
 import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
@@ -103,7 +102,6 @@ public class DevEventLogCreationService {
     @Autowired private PointEventLogService pointEventLogService;
     @Autowired private PqrEventLogService pqrEventLogService;
     @Autowired private RfnDeviceEventLogService rfnDeviceEventLogService;
-    @Autowired private ScheduleDataImportEventLogService scheduleDataImportEventLogService;
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private ToolsEventLogService toolsEventLogService;
@@ -797,17 +795,6 @@ public class DevEventLogCreationService {
                 rfnDeviceEventLogService.unableToCreateDeviceFromTemplate(templateName, sensorManufacturer, sensorModel, sensorSerialNumber);
             }
         });
-        executables.put(LogType.SCHEDULE_DATA_IMPORT, new DevEventLogExecutable() {
-            @Override
-            public void execute(DevEventLog devEventLog) {
-                LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
-                String ScheduleName = "ScheduleTest";
-
-                scheduleDataImportEventLogService.scheduleCreated(yukonUser, ScheduleName);
-                scheduleDataImportEventLogService.scheduleUpdated(yukonUser, ScheduleName);
-                scheduleDataImportEventLogService.scheduleDeleted(yukonUser, ScheduleName);
-            }
-        });
         executables.put(LogType.STARS, new DevEventLogExecutable() {
             @Override
             public void execute(DevEventLog devEventLog) {
@@ -962,7 +949,14 @@ public class DevEventLogCreationService {
                 String fileName = "MCT_Import.csv";
                 toolsEventLogService.importStarted(user, BulkImportType.MCT.name(), fileName);
                 toolsEventLogService.importCompleted(BulkImportType.MCT.name(), fileName, 10, 0);
-                
+
+                String scheduleName = "Schedule_test1";
+                String type = "Asset Import";
+                String scheduledRun = "Monday, 12:00 AM";
+                toolsEventLogService.scheduleCreated(user, scheduleName, type, scheduledRun);
+                toolsEventLogService.scheduleUpdated(user, scheduleName, type, scheduledRun);
+                toolsEventLogService.scheduleDeleted(user, scheduleName);
+
             }
         });
         executables.put(LogType.USERS, new DevEventLogExecutable() {
@@ -1194,10 +1188,9 @@ public class DevEventLogCreationService {
         POINT(PointEventLogService.class, 15),
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
         RFN_DEVICE(RfnDeviceEventLogService.class, 3),
-        SCHEDULE_DATA_IMPORT(ScheduleDataImportEventLogService.class, 3),
         STARS(StarsEventLogService.class, 26),
         SYSTEM(SystemEventLogService.class, 35),
-        TOOLS(ToolsEventLogService.class, 23),
+        TOOLS(ToolsEventLogService.class, 26),
         USERS(UsersEventLogService.class, 23),
         VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),

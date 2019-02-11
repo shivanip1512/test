@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.cannontech.common.events.loggers.ScheduleDataImportEventLogService;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -84,7 +84,7 @@ public class ScheduledDataImportController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private ScheduledDataImportService scheduledDataImportService;
-    @Autowired private ScheduleDataImportEventLogService logService;
+    @Autowired private ToolsEventLogService logService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ScheduleControllerHelper scheduleControllerHelper;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
@@ -134,8 +134,11 @@ public class ScheduledDataImportController {
     @PostMapping("save")
     public String save(@ModelAttribute("scheduledImportData") ScheduledDataImport scheduledImportData, BindingResult result,
              FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String scheduledRun = org.apache.commons.lang3.StringUtils.EMPTY;
         try {
             String cronExpression = cronExpressionTagService.build("cronExpression", request, userContext);
+            scheduledRun = cronExpressionTagService.getDescription(cronExpression, userContext);
             scheduledImportData.setCronString(cronExpression);
         } catch (CronException e) {
             result.rejectValue("cronString", "yukon.common.invalidCron");
@@ -153,7 +156,9 @@ public class ScheduledDataImportController {
         if (scheduledImportData.getJobId() == null) {
             savedJob = scheduledDataImportService.scheduleDataImport(scheduledImportData, userContext);
             if (savedJob.getId() != null)
-                logService.scheduleCreated(userContext.getYukonUser(), scheduledImportData.getScheduleName());
+                logService.scheduleCreated(userContext.getYukonUser(), scheduledImportData.getScheduleName(),
+                    accessor.getMessage(scheduledImportData.getImportType().getFormatKey()),
+                    scheduledRun);
         } else {
             JobState currentJobState = scheduleControllerHelper.getJobState(scheduledImportData.getJobId());
             if (currentJobState == JobState.DELETED) {
@@ -164,7 +169,9 @@ public class ScheduledDataImportController {
                 return "redirect:/stars/scheduledDataImport/" + scheduledImportData.getJobId() + "/view";
             }
             savedJob = scheduledDataImportService.updateDataImport(scheduledImportData, userContext);
-            logService.scheduleUpdated(userContext.getYukonUser(), scheduledImportData.getScheduleName());
+            logService.scheduleUpdated(userContext.getYukonUser(), scheduledImportData.getScheduleName(),
+                accessor.getMessage(scheduledImportData.getImportType().getFormatKey()),
+                scheduledRun);
         }
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", scheduledImportData.getScheduleName()));
         return "redirect:/stars/scheduledDataImport/" + savedJob.getId() + "/view";
