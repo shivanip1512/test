@@ -9,18 +9,24 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.input.BOMInputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -77,6 +83,7 @@ import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
+import com.cannontech.encryption.EcobeeSecurityService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -95,6 +102,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     @Autowired private @Qualifier("ecobee") RestOperations restTemplate;
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private EcobeeSecurityService ecobeeSecurityService;
 
     private static final String modifySetUrlPart = "hierarchy/set?format=json";
     private static final String modifyThermostatUrlPart = "hierarchy/thermostat?format=json";
@@ -246,7 +254,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                     Instant date = reportRow.getThermostatTime().toDateTime(thermostatDateTime).toInstant();
                     EcobeeDeviceReading reading = new EcobeeDeviceReading(reportRow.getOutdoorTemp(),
                         reportRow.getIndoorTemp(), reportRow.getCoolSetPoint(), reportRow.getHeatSetPoint(),
-                        reportRow.getRuntime(), reportRow.getEventName(), date, null, 0f);
+                        reportRow.getRuntime(), reportRow.getEventName(), date);
                     readings.add(reading);
                 }
                 deviceData.add(new EcobeeDeviceReadings(runtimeReport.getThermostatIdentifier(), dateRange, readings));
@@ -458,66 +466,123 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     @Override
     public List<EcobeeDeviceReadings> downloadRuntimeReport(List<String> dataUrls) {
         List<EcobeeDeviceReadings> ecobeeDeviceReadings = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+        String proxyString = settingDao.getString(GlobalSettingType.HTTP_PROXY);
+        String defaultValue = GlobalSettingType.HTTP_PROXY.getDefaultValue().toString();
+
+        if (StringUtils.isEmpty(proxyString) || proxyString.equalsIgnoreCase(defaultValue)) {
+            log.error("System proxy setting is not available.");
+            throw new EcobeeCommunicationException("System proxy setting is not available.");
+        }
         for (String url : dataUrls) {
-            String decryptedFileName = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
+            try {
+                String decryptedFileName = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
+                log.debug("Encrypted file : " + url.substring(url.lastIndexOf('/') + 1, url.length())
+                    + "received for Job ID : " + decryptedFileName.substring(0, decryptedFileName.indexOf("-")));
+                HttpURLConnection connection = getHttpURLConnection(proxyString, url);
 
-            log.debug("Encrypted file : " + url.substring(url.lastIndexOf('/') + 1, url.length())
-                + "received for Job ID : " + decryptedFileName.substring(0, decryptedFileName.indexOf("-")));
+                try (BufferedInputStream gpgInputStream = new BufferedInputStream(connection.getInputStream())) {
+                    byte byteArray[] = ecobeeSecurityService.decryptEcobeeFile(gpgInputStream);
+                    File tarGzfile =
+                        File.createTempFile(decryptedFileName, "", new File(CtiUtilities.getImportArchiveDirPath()));
+                    tarGzfile.deleteOnExit();
+                    FileUtils.writeByteArrayToFile(tarGzfile, byteArray);
+                    List<File> csvFiles = FileUtil.untar(FileUtil.ungzip(tarGzfile));
+                    EcobeeDeviceReadings deviceReadings = null;
 
-            try (BufferedInputStream gpgInputStream = new BufferedInputStream(new URL(url).openStream())) {
-                // TODO : Once changes for YUK-19276 checked in, Need to call appropriate method for
-                // decrypting these files
-                byte byteArray[] = new byte[0];
-                File tarGzfile =
-                    File.createTempFile(decryptedFileName, "", new File(CtiUtilities.getImportArchiveDirPath()));
-                tarGzfile.deleteOnExit();
-                FileUtils.writeByteArrayToFile(tarGzfile, byteArray);
-                List<File> csvFiles = FileUtil.untar(FileUtil.ungzip(tarGzfile));
-                EcobeeDeviceReadings deviceReadings = null;
+                    for (File file : csvFiles) {
+                        try (FileInputStream inputStream = new FileInputStream(file);
+                             BOMInputStream bomInputStream =
+                                 new BOMInputStream(inputStream, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
+                                     ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
+                             InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream)) {
+                            CSVReader csvReader = new CSVReader(inputStreamReader);
+                            Iterator<String[]> iterator = csvReader.readAll().iterator();
+                            Map<String, Integer> headerMap = getHeaderIndex(iterator.next());
+                            List<EcobeeDeviceReading> readings = new ArrayList<EcobeeDeviceReading>();
+                            String serialNumber = file.getName().substring(0, file.getName().indexOf('-'));
 
-                for (File file : csvFiles) {
-                    try (FileInputStream inputStream = new FileInputStream(file);
-                         BOMInputStream bomInputStream =
-                             new BOMInputStream(inputStream, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
-                                 ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
-                         InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream)) {
-                        CSVReader csvReader = new CSVReader(inputStreamReader);
-                        Iterator<String[]> iterator = csvReader.readAll().iterator();
-                        iterator.next();
-                        List<EcobeeDeviceReading> readings = new ArrayList<EcobeeDeviceReading>();
-                        String serialNumber = file.getName().substring(0, file.getName().indexOf('-'));
+                            log.debug("Received runtime reports for Thermostat : " + serialNumber + "in file name"
+                                + file.getName().substring(0, file.getName().indexOf(".csv") + 4));
 
-                        log.debug("Received runtime reports for Thermostat : " + serialNumber + "in file name"
-                            + file.getName().substring(0, file.getName().indexOf(".csv") + 4));
+                            while (iterator.hasNext()) {
+                                String[] thermostatData = iterator.next();
+                                Instant date = new DateTime(formatter.parseDateTime(
+                                    thermostatData[0] + StringUtils.SPACE + thermostatData[1])).toInstant();
+                                String eventActivity = thermostatData[headerMap.get("zoneCalendarEvent")];
+                                Float indoorTempInF = StringUtils.isEmpty(thermostatData[headerMap.get("zoneAveTemp")])
+                                    ? null : Float.parseFloat(thermostatData[headerMap.get("zoneAveTemp")]);
+                                Float outdoorTempInF = StringUtils.isEmpty(thermostatData[headerMap.get("outdoorTemp")])
+                                    ? null : Float.parseFloat(thermostatData[headerMap.get("outdoorTemp")]);
+                                Float setCoolTempInF =
+                                    StringUtils.isEmpty(thermostatData[headerMap.get("zoneCoolTemp")]) ? null
+                                        : Float.parseFloat(thermostatData[headerMap.get("zoneCoolTemp")]);
+                                Float setHeatTempInF =
+                                    StringUtils.isEmpty(thermostatData[headerMap.get("zoneHeatTemp")]) ? null
+                                        : Float.parseFloat(thermostatData[headerMap.get("zoneHeatTemp")]);
+                                Integer setCompCool = StringUtils.isEmpty(thermostatData[headerMap.get("compCool1")])
+                                    ? null : Integer.parseInt(thermostatData[headerMap.get("compCool1")]);
+                                Integer setCompHeat = StringUtils.isEmpty(thermostatData[headerMap.get("compHeat1")])
+                                    ? null : Integer.parseInt(thermostatData[headerMap.get("compHeat1")]);
+                                Integer runtime;
+                                // Add the values if they're both non-null
+                                if (setCompCool != null && setCompHeat != null) {
+                                    runtime = setCompCool + setCompHeat;
+                                    // If only one is non-null, use that value. Otherwise return null.
+                                } else if (setCompCool == null) {
+                                    runtime = setCompHeat;
+                                } else {
+                                    runtime = setCompCool;
+                                }
+                                EcobeeDeviceReading deviceReading = new EcobeeDeviceReading(outdoorTempInF,
+                                    indoorTempInF, setCoolTempInF, setHeatTempInF, runtime, eventActivity, date);
+                                readings.add(deviceReading);
+                            }
 
-                        while (iterator.hasNext()) {
-                            String[] thermostatData = iterator.next();
-                            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-dd-MM HH:mm:ss");
-                            Instant date = new DateTime(
-                                formatter.parseDateTime(thermostatData[0] + " " + thermostatData[1])).toInstant();
-                            String eventActivity = thermostatData[2];
-                            String zoneHVACMode = thermostatData[3];
-                            Float setHeatTempInF = Float.parseFloat(thermostatData[4]);
-                            Float setCoolTempInF = Float.parseFloat(thermostatData[5]);
-                            Float indoorTempInF = Float.parseFloat(thermostatData[6]);
-                            Float dmOffset = Float.parseFloat(thermostatData[7]);
-                            EcobeeDeviceReading deviceReading = new EcobeeDeviceReading(0f, indoorTempInF,
-                                setCoolTempInF, setHeatTempInF, 0, eventActivity, date, zoneHVACMode, dmOffset);
-                            readings.add(deviceReading);
+                            deviceReadings = new EcobeeDeviceReadings(serialNumber, null, readings);
+                            CtiUtilities.close(iterator, csvReader);
+                            file.delete();
                         }
-
-                        deviceReadings = new EcobeeDeviceReadings(serialNumber, null, readings);
-                        CtiUtilities.close(iterator, csvReader);
-                        file.delete();
+                        ecobeeDeviceReadings.add(deviceReadings);
                     }
-                    ecobeeDeviceReadings.add(deviceReadings);
-                }
 
+                } catch (Exception e) {
+                    log.error("Error while processing runtimereport data.", e);
+                    throw new EcobeeCommunicationException("Error occured while processing runtimereport data.");
+                }
+                connection.disconnect();
             } catch (Exception e) {
-                log.error("Error while processing runtimereport data.", e);
-                throw new EcobeeCommunicationException("Error occured while processing runtimereport data.");
+                log.error("Unable to connect with proxy server or URL is not correct", e);
+                throw new EcobeeCommunicationException("Unable to connect with proxy server or URL is not correct");
             }
         }
         return ecobeeDeviceReadings;
+    }
+
+    private Map<String, Integer> getHeaderIndex(String[] headers) {
+        Map<String, Integer> headerMap = new HashMap<String, Integer>();
+        for (int i = 0; i < headers.length; i++) {
+            String header = headers[i];
+            if (deviceReadColumns.contains(header)) {
+                headerMap.put(header, i);
+            }
+        }
+        return headerMap;
+    }
+
+    private HttpURLConnection getHttpURLConnection(String proxyString, String url) throws Exception {
+        String proxyConfig[] = proxyString.split(":");
+        Proxy proxy =
+            new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyConfig[0], Integer.parseInt(proxyConfig[1])));
+        HttpURLConnection urlConnection = null;
+        try {
+            URL connectionUrl = new URL(url);
+            urlConnection = (HttpURLConnection) connectionUrl.openConnection(proxy);
+            urlConnection.connect();
+        } catch (Exception e) {
+            log.error("Unable to connect with proxy server or URL is not correct", e);
+            throw new Exception("Unable to connect with proxy server or URL is not correct");
+        }
+        return urlConnection;
     }
 }

@@ -131,20 +131,6 @@ Java :
     updated : 2018-09-12
     jira : YUK-18790
     notes : 
-  
-  - filename : ant-1.10.5.jar
-    yukon group : Common
-    project : Apache Tomcat
-    version : 1.10.5
-    project URL : "https://tomcat.apache.org/"
-    license : Apache 2.0
-    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.ant/ant/1.10.5"
-    md5 : bb28a359dce342e39e1fb607be3e0acb
-    sha1 : 4a48332c2df6f535d9dd9d904cd780ab26266e20
-    updated : 2019-02-05
-    jira : YUK-19279
-    notes : 
     
   - filename : aopalliance-1.0.jar
     yukon group : Spring
@@ -662,6 +648,20 @@ Java :
     sha1 : a4cf4688fe1c7e3a63aa636cc96d013af537768e
     updated : 2017-04-03
     jira : YUK-16390
+    notes : 
+    
+  - filename : commons-compress-1.18.jar
+    yukon group : Apache Commons
+    project : Apache Commons Compress
+    version : 1.18
+    project URL : "https://commons.apache.org/proper/commons-compress/"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-compress/1.18"
+    md5 : bcbecfff4bdb0d3d0cdead3d995da2ef
+    sha1 : 1191f9f2bc0c47a8cce69193feb1ff0a8bcb37d5
+    updated : 2019-02-08
+    jira : YUK-19279
     notes : 
   
   - filename : commons-configuration2-2.1.1.jar

@@ -107,7 +107,7 @@ public class DataDownloadServiceImplTest {
                     reportRows.add(row);
                     EcobeeDeviceReading reading = new EcobeeDeviceReading(row.getOutdoorTemp(), row.getIndoorTemp(),
                            row.getCoolSetPoint(), row.getHeatSetPoint(), row.getRuntime(), row.getEventName(),
-                        reportTime.toDateTime(timeZone).toInstant(), null, 0f);
+                        reportTime.toDateTime(timeZone).toInstant());
                     expectedReadings.add(reading);
                 }
                 reports.add(new RuntimeReport(serialNumber, reportRows.size(), reportRows));

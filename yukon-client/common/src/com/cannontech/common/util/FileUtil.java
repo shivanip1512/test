@@ -24,11 +24,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
-import org.apache.tools.tar.TarEntry;
-import org.apache.tools.tar.TarInputStream;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
@@ -453,7 +453,7 @@ public final class FileUtil {
      */
     public static File ungzip(File gzFile) throws IOException {
         String outputDir = gzFile.getParent();
-        File outputFile = File.createTempFile(gzFile.getName().substring(0, gzFile.getName().lastIndexOf('.')), "",
+        File outputFile = File.createTempFile(gzFile.getName().substring(0, gzFile.getName().lastIndexOf('.')), StringUtils.EMPTY,
             new File(outputDir));
         outputFile.deleteOnExit();
         try (GZIPInputStream in = new GZIPInputStream(new FileInputStream(gzFile));
@@ -461,8 +461,9 @@ public final class FileUtil {
             IOUtils.copy(in, out);
             return outputFile;
         } catch (IOException e) {
-            log.error("Unable to unzip the file");
-            throw new IOException();
+            String message = "Unable to unzip the file";
+            log.error(message);
+            throw new IOException(message, e);
         }
     }
 
@@ -472,30 +473,29 @@ public final class FileUtil {
      * @throws IOException If any error occurs while untaring the file
      */
     public static List<File> untar(File tarFile) throws IOException {
-        try (TarInputStream tin = new TarInputStream(new FileInputStream(tarFile))) {
+        try (TarArchiveInputStream tin = new TarArchiveInputStream(new FileInputStream(tarFile))) {
             String outputDir = tarFile.getParent();
-            TarEntry tarEntry = tin.getNextEntry();
+            TarArchiveEntry tarEntry = null;
             List<File> untarFiles = new ArrayList<>();
             if (new File(outputDir).exists()) {
-                while (tarEntry != null) {
-                    File destPath = File.createTempFile(tarEntry.getName(), "", new File(outputDir));
+                while ((tarEntry = (TarArchiveEntry) tin.getNextEntry()) != null) {
+                    File destPath = File.createTempFile(tarEntry.getName(), StringUtils.EMPTY, new File(outputDir));
                     destPath.deleteOnExit();
                     if (!tarEntry.isDirectory()) {
                         try (FileOutputStream fout = new FileOutputStream(destPath)) {
-                            tin.copyEntryContents(fout);
+                            IOUtils.copy(tin, fout);
                         }
                     } else {
                         destPath.mkdir();
                     }
                     untarFiles.add(destPath);
-                    tarEntry = tin.getNextEntry();
                 }
-                tin.close();
             }
             return untarFiles;
         } catch (IOException e) {
-            log.error("Unable to untar the file");
-            throw new IOException();
+            String message = "Unable to untar the file";
+            log.error(message);
+            throw new IOException(message, e);
         }
     }
 }

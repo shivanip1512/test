@@ -14,9 +14,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.io.IOUtils;
-import org.apache.tools.tar.TarEntry;
-import org.apache.tools.tar.TarOutputStream;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -206,11 +206,12 @@ public class FileUtilTest {
     public void test_untar() throws IOException {
         File tarFile = File.createTempFile("testTarFileForFileUtil", ".tar");
         tarFile.deleteOnExit();
-        try (TarOutputStream tarOutputStream = new TarOutputStream(new FileOutputStream(tarFile));
+        try (TarArchiveOutputStream archiveOutputStream = new TarArchiveOutputStream(new FileOutputStream(tarFile));
              InputStream inputStream = this.getClass().getResourceAsStream("testLogForFileUtil.log");) {
-            tarOutputStream.putNextEntry(new TarEntry(file));
-            IOUtils.copy(inputStream, tarOutputStream);
-            tarOutputStream.closeEntry();
+            TarArchiveEntry tarEntry = new TarArchiveEntry(file, "testLogForFileUtil.tmp");
+            archiveOutputStream.putArchiveEntry(tarEntry);
+            IOUtils.copy(inputStream, archiveOutputStream);
+            archiveOutputStream.closeArchiveEntry();
         }
         List<File> untarFiles = FileUtil.untar(tarFile);
         for (File file : untarFiles) {

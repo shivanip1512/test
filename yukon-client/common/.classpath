@@ -607,6 +607,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/ant-1.10.5.jar"/>
+	<classpathentry kind="lib" path="/third-party/commons-compress-1.18.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
