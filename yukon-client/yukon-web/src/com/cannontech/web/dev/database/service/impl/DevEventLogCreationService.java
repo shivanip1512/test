@@ -37,6 +37,7 @@ import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
+import com.cannontech.common.events.loggers.ItronEventLogService;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.events.loggers.NestEventLogService;
@@ -57,7 +58,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -95,6 +95,7 @@ public class DevEventLogCreationService {
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private HardwareEventLogService hardwareEventLogService;
     @Autowired private InventoryConfigEventLogService inventoryConfigEventLogService;
+    @Autowired private ItronEventLogService itronEventLogService;
     @Autowired private MeteringEventLogService meteringEventLogService;
     @Autowired private MultispeakEventLogService multispeakEventLogService;
     @Autowired private NestEventLogService nestEventLogService;
@@ -624,6 +625,27 @@ public class DevEventLogCreationService {
                 inventoryConfigEventLogService.itemConfigSucceeded(yukonUser, serialNumber);
                 inventoryConfigEventLogService.itemConfigFailed(yukonUser, serialNumber, "error");
                 inventoryConfigEventLogService.itemConfigUnsupported(yukonUser, serialNumber);
+            }
+        });
+        executables.put(LogType.ITRON, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                String userName = new LiteYukonUser(0, devEventLog.getUsername()).getUsername();
+
+                String groupName = "Group One";
+                long groupId = 2L;
+                String displayName = "ItronDevice1";
+                String macAddress = "0:2:3:4";
+                String accountNumber = "accountNumberTest";
+                String programName = "programNameTest";
+                Long programId = 124L;
+                
+                itronEventLogService.addGroup(groupName, groupId, userName);
+                itronEventLogService.addHANDevice(displayName, macAddress, userName);
+                itronEventLogService.addHANDeviceToServicePoint(accountNumber, macAddress, userName);
+                itronEventLogService.addProgram(programName, programId, userName);
+                itronEventLogService.addServicePoint(accountNumber, userName);
+                itronEventLogService.removeHANDeviceFromServicePoint(macAddress, userName);
             }
         });
         executables.put(LogType.METERING, new DevEventLogExecutable() {
@@ -1181,6 +1203,7 @@ public class DevEventLogCreationService {
         GATEWAY(GatewayEventLogService.class, 9),
         HARDWARE(HardwareEventLogService.class, 23),
         INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),  
+        ITRON(ItronEventLogService.class, 6),
         METERING(MeteringEventLogService.class, 15),
         MULTISPEAK(MultispeakEventLogService.class, 35),
         NEST(NestEventLogService.class, 12),

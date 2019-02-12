@@ -146,4 +146,8 @@
    <bean id="usersEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.UsersEventLogService"/>
     </bean>
+    
+    <bean id="itronEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.ItronEventLogService"/>
+    </bean>
 </beans>
