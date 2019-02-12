@@ -386,7 +386,7 @@ void PilServer::mainThread()
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15), CALLSITE);
     VanGoghConnection.close();
 
-    CTILOG_INFO(dout, "PIL mainThread - Terminating");
+    CTILOG_INFO(dout, "PIL mainThread - Exiting");
 }
 
 void PilServer::connectionThread()
@@ -430,7 +430,7 @@ void PilServer::connectionThread()
 
     _broken = true;
 
-    CTILOG_INFO(dout, "PIL connThread - Terminating");
+    CTILOG_INFO(dout, "PIL connThread - Exiting");
 }
 
 /**
@@ -565,7 +565,7 @@ void PilServer::resultThread()
 
     _broken = true;
 
-    CTILOG_INFO(dout, "PIL resultThread - Terminating");
+    CTILOG_INFO(dout, "PIL resultThread - Exiting");
 }
 
 
@@ -1067,7 +1067,7 @@ void PilServer::nexusThread()
 
     _broken = true;
 
-    CTILOG_INFO(dout, "PIL nexusThread - Terminating");
+    CTILOG_INFO(dout, "PIL nexusThread - Exiting");
 }
 
 void PilServer::nexusWriteThread()
@@ -1108,7 +1108,7 @@ void PilServer::nexusWriteThread()
         bServerClosing = TRUE;
     }
 
-    CTILOG_INFO(dout, "PIL nexusWriteThread - Terminating");
+    CTILOG_INFO(dout, "PIL nexusWriteThread - Exiting");
 }
 
 struct RequestExecuter : Devices::DeviceHandler
@@ -1573,7 +1573,7 @@ void PilServer::vgConnThread()
 
     } /* End of for */
 
-    CTILOG_INFO(dout, "PIL vgConnThread - Terminating");
+    CTILOG_INFO(dout, "PIL vgConnThread - Exiting");
 }
 
 struct message_time_less
@@ -1616,7 +1616,7 @@ void PilServer::schedulerThread()
         }
     }
 
-    CTILOG_INFO(dout, "PIL schedulerThread - Terminating");
+    CTILOG_INFO(dout, "PIL schedulerThread - Exiting");
 }
 
 vector<long> PilServer::getDeviceGroupMembers( string groupname ) const
@@ -2307,7 +2307,7 @@ void PilServer::periodicActionThread()
         //  <Add other periodic events here>
     }
 
-    CTILOG_INFO(dout, "PIL periodicActionThread - Terminating");
+    CTILOG_INFO(dout, "PIL periodicActionThread - Exiting");
 }
 
 }

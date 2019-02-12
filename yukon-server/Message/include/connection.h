@@ -29,20 +29,12 @@ class MessageProducer;
 class CMSException;
 }
 
-namespace decaf {
-namespace internal {
-namespace util {
-namespace concurrent {
+namespace decaf::internal::util::concurrent {
 struct Threading;
 struct ThreadHandle;
 }
-}
-}
-}
 
-namespace Cti {
-namespace Messaging {
-namespace ActiveMQ {
+namespace Cti::Messaging::ActiveMQ {
 class ManagedConnection;
 class DestinationProducer;
 class DestinationConsumer;
@@ -51,14 +43,12 @@ class QueueConsumer;
 class TopicConsumer;
 class TempQueueConsumer;
 }
-}
-}
 
 class IM_EX_MSG CtiConnection : public Cti::Messaging::BaseConnection
 {
 public:
 
-    typedef  CtiQueue<CtiMessage, std::greater<CtiMessage> > Que_t;
+    using Que_t = CtiQueue<CtiMessage, std::greater<CtiMessage> >;
 
 protected:
 
@@ -68,6 +58,8 @@ protected:
     // atomic<bool> is not copyable, so make sure we don't try
     CtiConnection( const CtiConnection& other ) = delete; // non construction-copyable
     CtiConnection& operator=( const CtiConnection& ) = delete; // non copyable
+
+    void joinOutThreadOrDie();
 
     std::string _name;
     std::string _peerName;
@@ -88,9 +80,9 @@ protected:
     std::atomic<size_t> _outQueueSizeWarning = 100;
     std::atomic<size_t> _inQueueSizeWarning = 100;
 
-    typedef Cti::readers_writer_lock_t Lock;
-    typedef Lock::reader_lock_guard_t  ReaderGuard;
-    typedef Lock::writer_lock_guard_t  WriterGuard;
+    using Lock = Cti::readers_writer_lock_t;
+    using ReaderGuard = Lock::reader_lock_guard_t;
+    using WriterGuard = Lock::writer_lock_guard_t;
 
     mutable Lock               _connMux;
     mutable CtiCriticalSection _peerMux;

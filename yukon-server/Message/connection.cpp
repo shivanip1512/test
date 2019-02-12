@@ -494,36 +494,7 @@ void CtiConnection::close()
         // interrupt the current or the next getQueue() call
         _outQueue.interruptBlockingRead();
 
-        if ( ! _outthread.tryJoinFor( Chrono::seconds( 35 ) ) )
-        {
-            if( const auto threadHandle = _amqOutThreadHandle.load() )
-            {
-                CTILOG_WARN(dout, who() << "_outthread did not join.  Interrupting AMQ native thread.");
-
-                decaf::internal::util::concurrent::Threading::interrupt(threadHandle);
-            }
-            else
-            {
-                CTILOG_WARN(dout, who() << "_outthread did not join.  Missing AMQ thread handle, cannot interrupt AMQ send, if any.");
-            }
-
-            if( ! _outthread.tryJoinFor( Chrono::seconds( 5 ) ) )
-            {
-                Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
- 
-                CTILOG_FATAL( dout, who() << "_outthread failed to join in a timely manner. Creating a mini-dump and aborting." );
-                {
-                    std::ostringstream os;
-
-                    os << "connection.close-" << _title << "-" << getName() << "-" << GetCurrentThreadId();
-                    CreateMiniDump( os.str() );
-                }
-
-                std::this_thread::sleep_for( std::chrono::seconds( 10 ) );
-
-                abort();
-            }
-        }
+        joinOutThreadOrDie();
 
         forceTermination();
 
@@ -546,6 +517,57 @@ void CtiConnection::close()
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - Unexpected exception during connection close");
     }
+}
+
+void CtiConnection::joinOutThreadOrDie()
+{
+    try
+    {
+        if( _outthread.tryJoinFor(Chrono::seconds(35)) )
+        {
+            return;
+        }
+    }
+    catch( boost::thread_interrupted& )
+    {
+        CTILOG_INFO(dout, "Interrupted while joining outThread");
+    }
+
+    if( const auto threadHandle = _amqOutThreadHandle.load() )
+    {
+        CTILOG_WARN(dout, who() << "_outthread did not join.  Interrupting AMQ native thread.");
+
+        decaf::internal::util::concurrent::Threading::interrupt(threadHandle);
+    }
+    else
+    {
+        CTILOG_WARN(dout, who() << "_outthread did not join.  Missing AMQ thread handle, cannot interrupt AMQ send, if any.");
+    }
+
+    try
+    {
+        if( _outthread.tryJoinFor(Chrono::seconds(5)) )
+        {
+            return;
+        }
+    }
+    catch( boost::thread_interrupted& )
+    {
+        CTILOG_INFO(dout, "Interrupted while joining outThread");
+    }
+
+    Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
+
+    CTILOG_FATAL(dout, who() << "_outthread failed to join in a timely manner. Creating a mini-dump and aborting.");
+
+    std::ostringstream os;
+
+    os << "connection.close-" << _title << "-" << getName() << "-" << GetCurrentThreadId();
+    CreateMiniDump(os.str());
+
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+
+    abort();
 }
 
 YukonError_t CtiConnection::WriteConnQue(CtiMessage *QEnt, ::Cti::CallSite cs, unsigned timeoutMillis)

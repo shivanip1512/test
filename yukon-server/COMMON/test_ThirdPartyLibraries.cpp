@@ -39,6 +39,8 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
 
     auto libraries = Cti::ThirdPartyLibraries::getLibraries();
 
+    int libraryIndex = 0;
+
     for( const auto library : libraries )
     {
         BOOST_TEST_CONTEXT(library.project)
@@ -69,7 +71,14 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
                 size_t files = 0;
                 uint64_t fileSizes = 0;
 
-                for( auto p : fs::recursive_directory_iterator { libraryPath.data() } )
+                std::vector<fs::directory_entry> fileList;
+                
+                std::copy(fs::recursive_directory_iterator{ libraryPath.data() }, {}, std::back_inserter(fileList));
+                
+                //  Print status so users know why they're waiting
+                std::cout << "Generating hashes for " << ++libraryIndex << "/" << libraries.size() << ": " << library.project << std::endl;
+
+                for( auto p : fileList )
                 {
                     if( p.is_regular_file() )
                     {
@@ -89,6 +98,12 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
 
                             MD5_Update (&md5Context,  block.data(), blockSize);
                             SHA1_Update(&sha1Context, block.data(), blockSize);
+                        }
+
+                        //  Print updates if there are more than 1000 files to process (Boost has 14,000+)
+                        if( ! (files % 1000) )
+                        {
+                            std::cout << "\t" << files << "/" << fileList.size() << std::endl;
                         }
                     }
                 }
