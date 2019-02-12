@@ -10,8 +10,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +19,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.io.ByteOrderMark;
@@ -51,6 +50,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileUtil;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
@@ -467,24 +467,17 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     public List<EcobeeDeviceReadings> downloadRuntimeReport(List<String> dataUrls) {
         List<EcobeeDeviceReadings> ecobeeDeviceReadings = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-        String proxyString = settingDao.getString(GlobalSettingType.HTTP_PROXY);
-        String defaultValue = GlobalSettingType.HTTP_PROXY.getDefaultValue().toString();
-
-        if (StringUtils.isEmpty(proxyString) || proxyString.equalsIgnoreCase(defaultValue)) {
-            log.error("System proxy setting is not available.");
-            throw new EcobeeCommunicationException("System proxy setting is not available.");
-        }
         for (String url : dataUrls) {
             try {
                 String decryptedFileName = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
                 log.debug("Encrypted file : " + url.substring(url.lastIndexOf('/') + 1, url.length())
                     + "received for Job ID : " + decryptedFileName.substring(0, decryptedFileName.indexOf("-")));
-                HttpURLConnection connection = getHttpURLConnection(proxyString, url);
+                HttpURLConnection connection = getHttpURLConnection(url);
 
                 try (BufferedInputStream gpgInputStream = new BufferedInputStream(connection.getInputStream())) {
                     byte byteArray[] = ecobeeSecurityService.decryptEcobeeFile(gpgInputStream);
-                    File tarGzfile =
-                        File.createTempFile(decryptedFileName, "", new File(CtiUtilities.getImportArchiveDirPath()));
+                    File tarGzfile = File.createTempFile(decryptedFileName, StringUtils.EMPTY,
+                        new File(CtiUtilities.getImportArchiveDirPath()));
                     tarGzfile.deleteOnExit();
                     FileUtils.writeByteArrayToFile(tarGzfile, byteArray);
                     List<File> csvFiles = FileUtil.untar(FileUtil.ungzip(tarGzfile));
@@ -571,14 +564,16 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         return headerMap;
     }
 
-    private HttpURLConnection getHttpURLConnection(String proxyString, String url) throws Exception {
-        String proxyConfig[] = proxyString.split(":");
-        Proxy proxy =
-            new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyConfig[0], Integer.parseInt(proxyConfig[1])));
+    private HttpURLConnection getHttpURLConnection(String url) throws Exception {
+        Optional<YukonHttpProxy> proxy = YukonHttpProxy.fromGlobalSetting(settingDao);
         HttpURLConnection urlConnection = null;
         try {
             URL connectionUrl = new URL(url);
-            urlConnection = (HttpURLConnection) connectionUrl.openConnection(proxy);
+            if (proxy.isPresent()) {
+                urlConnection = (HttpURLConnection) connectionUrl.openConnection(proxy.get().getJavaHttpProxy());
+            } else {
+                urlConnection = (HttpURLConnection) connectionUrl.openConnection();
+            }
             urlConnection.connect();
         } catch (Exception e) {
             log.error("Unable to connect with proxy server or URL is not correct", e);
