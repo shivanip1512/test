@@ -128,7 +128,7 @@ public class DataImportEmailBuilder extends SmartNotificationEmailBuilder {
         Object filesWithError = DataImportAssembler.getFilesWithError(parameters);
         List<String> files = new ArrayList<>();
         if (filesWithError != null) {
-            files = Arrays.asList(filesWithError.toString().split(" , "));
+            files = Arrays.asList(filesWithError.toString().split(","));
         }
         return files;
     }
