@@ -161,7 +161,7 @@ yukon.tools.map = (function() {
             fc = monitorId ? data.locations : data,
             mappingData = $('#mappingColors');
                         
-            if (mappingData.length) {
+            if (mappingData.exists()) {
                 _mappingColors = yukon.fromJson(mappingData);
             }
             

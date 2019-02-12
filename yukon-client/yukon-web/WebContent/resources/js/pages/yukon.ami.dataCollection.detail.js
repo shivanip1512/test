@@ -36,7 +36,7 @@ yukon.ami.dataCollection.detail = (function () {
                 var collectionAction = $(this).data('collection-action'),
                     form = $('#collectionDetail'),
                     data = form.serialize();
-                window.open(yukon.url('/amr/dataCollection/collectionAction?actionType=' + collectionAction + '&' + data), '_blank');
+                window.open(yukon.url('/amr/dataCollection/collectionAction?actionType=' + collectionAction + '&' + data));
             });
 
             _initialized = true;

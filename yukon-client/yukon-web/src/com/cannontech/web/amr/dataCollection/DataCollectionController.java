@@ -209,7 +209,7 @@ public class DataCollectionController {
         List<YukonPao> devices = allDetail.getResultList().stream().map(d -> new SimpleDevice(d.getPaoIdentifier())).collect(Collectors.toList());
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
-        if (actionType.equals(CollectionActionUrl.MAPPING)) {
+        if (actionType == CollectionActionUrl.MAPPING) {
             List<MappingColorCollection> colorCollections = new ArrayList<MappingColorCollection>();
             Map<String, List<Integer>> mappingMap = new HashMap<String, List<Integer>>();
             for (RangeType range : ranges) {

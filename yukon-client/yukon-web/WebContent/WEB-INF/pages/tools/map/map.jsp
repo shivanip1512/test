@@ -127,48 +127,42 @@
 					</div>
 				</c:if>
 				<c:if test="${!empty colorCollections}">
-					<div class="js-color-collections column-12-12">
-						<div class="column one" style="padding-left: 10px;">
+					<table class="js-color-collections compact-results-table no-stripes">
+						<tr>
 							<c:forEach var="mapCollection" items="${colorCollections}" varStatus="status">
-								<c:set var="collection" value="${mapCollection.deviceCollection}" />
-								<tags:selectedDevices deviceCollection="${collection}" labelKey="${mapCollection.labelKey}"
-									badgeColor="${mapCollection.color}" />
-								<c:if test="${collection.deviceCount > 0}">
-									<cti:url var="downloadUrl" value="/tools/map/locations/download">
-										<cti:mapParam value="${collection.collectionParameters}" />
-									</cti:url>
-									<cti:url var="filteredActionsUrl" value="/bulk/collectionActions">
-										<c:forEach items="${collection.collectionParameters}" var="cp">
-											<cti:param name="${cp.key}" value="${cp.value}" />
-										</c:forEach>
-									</cti:url>
-									<cm:dropdown icon="icon-cog">
-										<cm:dropdownOption key=".collectionActions" href="${filteredActionsUrl}" icon="icon-cog-go" newTab="true" />
-										<cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
-									</cm:dropdown>
+								<c:if test="${status.index == 2}">
+									</tr><tr>
 								</c:if>
-								<c:if test="${status.index == 1}">
-									</div>
-									<div class="column two nogutter">
-								</c:if>
+								<td class="PB0">
+									<c:set var="collection" value="${mapCollection.deviceCollection}" />
+									<tags:selectedDevices deviceCollection="${collection}" labelKey="${mapCollection.labelKey}"
+										badgeColor="${mapCollection.color}" />
+									<c:if test="${collection.deviceCount > 0}">
+										<cti:url var="downloadUrl" value="/tools/map/locations/download">
+											<cti:mapParam value="${collection.collectionParameters}" />
+										</cti:url>
+										<cti:url var="filteredActionsUrl" value="/bulk/collectionActions">
+											<c:forEach items="${collection.collectionParameters}" var="cp">
+												<cti:param name="${cp.key}" value="${cp.value}" />
+											</c:forEach>
+										</cti:url>
+										<cm:dropdown icon="icon-cog">
+											<cm:dropdownOption key=".collectionActions" href="${filteredActionsUrl}" icon="icon-cog-go" newTab="true" />
+											<cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
+										</cm:dropdown>
+									</c:if>
+								</td>
 							</c:forEach>
-						</div>
-					</div>
+						</tr>
+					</table>
 				</c:if>
-			</div>
-            <div id="status-info" class="column two nogutter">
-                <div class="dn js-status-retrieving">
-                    <cti:icon icon="icon-spinner"/>
-                    <i:inline key=".status.retrieving"/>
-                </div>
-                <div class="dn js-status-filtering">
-                    <cti:icon icon="icon-spinner"/>
-                    <i:inline key=".status.filtering"/>
-                </div>
+				
                 <div class="dn js-status-loading">
                     <cti:icon icon="icon-spinner"/>
                     <i:inline key=".status.loading"/>
                 </div>
+			</div>
+            <div class="column two nogutter">
                 <c:if test="${!empty monitorId}">
                     <input type="hidden" id="monitorId" value="${monitorId}"/>
                     <cti:url value="/tools/map/locations/${monitorType}/${monitorId}" var="monitorLocationsUrl"/>
@@ -191,6 +185,14 @@
                         </select>
                     </span>
                 </c:if>
+                <div class="dn js-status-retrieving">
+                    <cti:icon icon="icon-spinner"/>
+                    <i:inline key=".status.retrieving"/>
+                </div>
+                <div class="dn js-status-filtering">
+                    <cti:icon icon="icon-spinner"/>
+                    <i:inline key=".status.filtering"/>
+                </div>
             </div>
 
         </div>
