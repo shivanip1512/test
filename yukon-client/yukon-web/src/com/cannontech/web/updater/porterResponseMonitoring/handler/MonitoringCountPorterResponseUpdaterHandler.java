@@ -10,16 +10,15 @@ import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.porterResponseMonitoring.PorterResponseMonitorUpdaterTypeEnum;
 
 public class MonitoringCountPorterResponseUpdaterHandler implements PorterResponseUpdaterHandler {
 
-    private @Autowired PorterResponseMonitorDao porterResponseMonitorDao;
-    private @Autowired DeviceGroupService deviceGroupService;
+    @Autowired private PorterResponseMonitorDao porterResponseMonitorDao;
+    @Autowired private DeviceGroupService deviceGroupService;
 
     @Override
-    public String handle(int porterResponseMonitorId, YukonUserContext userContext) {
+    public String handle(int porterResponseMonitorId) {
 
         String countStr = "N/A";
         

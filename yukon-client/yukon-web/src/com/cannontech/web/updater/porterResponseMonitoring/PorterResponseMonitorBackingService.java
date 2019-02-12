@@ -26,19 +26,19 @@ public class PorterResponseMonitorBackingService implements UpdateBackingService
 
     @Override
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
-        int poterResponseMonitorId = 0;
+        int porterResponseMonitorId = 0;
         String updaterTypeStr = null;
         String[] idParts = StringUtils.split(identifier, "/");
         if (idParts.length == 1) {
             updaterTypeStr = idParts[0];
         } else {
-            poterResponseMonitorId = Integer.parseInt(idParts[0]);
+            porterResponseMonitorId = Integer.parseInt(idParts[0]);
             updaterTypeStr = idParts[1];
         }
 
         PorterResponseMonitorUpdaterTypeEnum updaterType = PorterResponseMonitorUpdaterTypeEnum.valueOf(updaterTypeStr);
         PorterResponseUpdaterHandler handler = handlersMap.get(updaterType);
-        return handler.handle(poterResponseMonitorId, userContext);
+        return handler.handle(porterResponseMonitorId);
     }
 
     @Override
