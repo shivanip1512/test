@@ -146,10 +146,10 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
     /**
      * Move import file to error output path.
      */
-    private void moveFiletoErrorFileOutputPath(File fietoProcess, String errorFileOutputPath) {
+    private void moveFiletoErrorFileOutputPath(File filetoProcess, String errorFileOutputPath) {
 
         try {
-            FileUtils.moveFile(fietoProcess, new File(errorFileOutputPath, fietoProcess.getName()));
+            FileUtils.moveFile(filetoProcess, new File(errorFileOutputPath, filetoProcess.getName()));
         } catch (IOException e) {
             log.error("Unable to move file to Error path directory due to I/O issue" + e);
         }
