@@ -1,14 +1,17 @@
 package com.cannontech.dr.itron.service.impl;
 
 import com.cannontech.common.inventory.Hardware;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddD2GAttributeType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceRequest;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.DeviceIdentifierAttributeType;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIGroupRequestType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditD2GAttributeType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditHANDeviceRequest;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditPrimaryHANDeviceType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.NullableString;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.StaticGroupMemberListType;
 import com.cannontech.stars.dr.account.model.AccountDto;
 
 public class DeviceManagerHelper {
@@ -116,4 +119,20 @@ public class DeviceManagerHelper {
         request.setD2GAttributes(attribute);
         return request;
     }
+    
+    public static ESIGroupRequestType buildGroupEditRequest(LiteYukonPAObject pao, String macAddress) {
+        ESIGroupRequestType requestType = new ESIGroupRequestType();
+        requestType.setGroupName(String.valueOf(pao.getLiteID()));
+        StaticGroupMemberListType type = new StaticGroupMemberListType();
+        type.getMacIDs().add(macAddress);
+        requestType.setStaticGroupMemberList(type);
+        return requestType;
+    }
+
+    public static ESIGroupRequestType buildGroupAddRequest(LiteYukonPAObject pao) {
+        ESIGroupRequestType requestType = new ESIGroupRequestType();
+        requestType.setGroupName(String.valueOf(pao.getLiteID()));
+        return requestType;
+    }
+    
 }

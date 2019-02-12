@@ -38,26 +38,41 @@ public class ItronCommandStrategy  implements LmHardwareCommandStrategy{
          * that program. But the event will target devices by program and group. We might only want to control
          * one group, not all groups in the program.
          */
-        long yukonGroupId = (int) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
-        long yukonProgramId = (int) command.getParams().get(LmHardwareCommandParam.OPTIONAL_GROUP_ID);
-        
-        LiteYukonPAObject programPao = cache.getAllLMPrograms().stream()
-                .filter(program -> program.getLiteID() == yukonProgramId)
-                .findFirst().get();
-        
+       
+        switch (command.getType()) {
+        case CONFIG:
+            // ignore config since "In Service" will be sent after
+            break;
+        case IN_SERVICE:
+            LiteYukonPAObject programPao = getProgram(command);
+            LiteYukonPAObject groupPao = getGroup(command);
+            itronCommunicationService.enroll(command.getDevice().getAccountID(), command.getDevice().getDeviceID(),
+                programPao, groupPao);
+            break;
+
+        case OUT_OF_SERVICE:
+        case TEMP_OUT_OF_SERVICE:
+            itronCommunicationService.unenroll(command.getDevice().getAccountID());
+        default:
+
+            break;
+        }
+    }
+
+    private LiteYukonPAObject getGroup(LmHardwareCommand command) {
+        int yukonGroupId = (int) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
         LiteYukonPAObject groupPao = cache.getAllLMGroups().stream()
                 .filter(group -> group.getLiteID() == yukonGroupId)
                 .findFirst().get();
+        return groupPao;
+    }
 
-        long itronGroupId = itronCommunicationService.getGroup(groupPao);
-        long itronProgramId  = itronCommunicationService.getProgram(programPao);
-        
-        switch (command.getType()) {
-            case IN_SERVICE:
-            case CONFIG:
-        default:
-            break;    
-        }
+    private LiteYukonPAObject getProgram(LmHardwareCommand command) {
+        int yukonProgramId = (int) command.getParams().get(LmHardwareCommandParam.OPTIONAL_GROUP_ID);
+        LiteYukonPAObject programPao = cache.getAllLMPrograms().stream()
+                .filter(program -> program.getLiteID() == yukonProgramId)
+                .findFirst().get();
+        return programPao;
     }
     
     @Override

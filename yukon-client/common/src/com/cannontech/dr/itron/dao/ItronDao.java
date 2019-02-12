@@ -1,25 +1,19 @@
 package com.cannontech.dr.itron.dao;
 
+import java.util.Collection;
 import java.util.List;
 
-import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.core.dao.NotFoundException;
 
 public interface ItronDao {
-    /**
-     * @return Itron Device Id
-     */
-    int getGroup();
     
-    /**
-     * @return Itron Device Id
-     */
-    int getProgram();
+    int getGroup(int groupPaoId) throws NotFoundException;
+    
+    int getProgram(int programPaoId) throws NotFoundException;
+    
+    void addGroup(long itronId, int programPaoId);
+    
+    void addProgram(long itronId, int groupPaoId);
 
-    void addProgram(int itronId, PaoIdentifier paoId);
-    
-    void addGroup(int itronId, PaoIdentifier paoId);
-    
-    List<Integer> getAllGroupIds(PaoIdentifier paoId);
-
-    List<Integer> getAllProgramIds(PaoIdentifier paoId);
+    List<Long> getItronProgramIds(Collection<Integer> programPaoIds);
 }

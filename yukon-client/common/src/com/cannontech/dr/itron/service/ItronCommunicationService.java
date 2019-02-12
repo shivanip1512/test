@@ -24,20 +24,10 @@ public interface ItronCommunicationService {
      * Removes existing Device from Service Point
      */
     void removeDeviceFromServicePoint(String macAddress);
-   
-    /**
-     * Attempts to get itron group id from the database, if doesn't exist sends request to itron to create
-     * group, persist the group id returned by itron to the database.
-     * 
-     * @return itron group id
-     */
-    long getProgram(LiteYukonPAObject pao);
+  
+    void createGroup(LiteYukonPAObject pao);
 
-    /**
-     * Attempts to get itron program id from the database, if doesn't exist sends request to itron to create
-     * program, persist the program id returned by itron to the database.
-     * 
-     * @return itron program id
-     */
-    long getGroup(LiteYukonPAObject pao);
+    void enroll(int accountId, int deviceId, LiteYukonPAObject programPao, LiteYukonPAObject groupPao);
+
+    void unenroll(int accountId);
 }

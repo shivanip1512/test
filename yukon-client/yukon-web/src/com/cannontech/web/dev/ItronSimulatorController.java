@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceResponse;
+import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
-import com.cannontech.dr.itron.service.ItronException;
 import com.cannontech.dr.itron.simulator.model.AddProgramError;
 import com.cannontech.dr.itron.simulator.model.ESIGroupError;
 import com.cannontech.dr.itron.simulator.model.EditHANDeviceError;
@@ -45,7 +44,6 @@ public class ItronSimulatorController {
     
     @GetMapping("test")
     public String test() {
-        AddHANDeviceResponse response = new AddHANDeviceResponse();
         Hardware hardware = new Hardware();
         hardware.setMacAddress("12:13:14:15:16:17:18");
         AccountDto account = new AccountDto();
@@ -54,8 +52,8 @@ public class ItronSimulatorController {
             itronCommunicationService.addDevice(hardware, account);
             LiteYukonPAObject group = new LiteYukonPAObject(1);
             group.setPaoName("itron load group test");
-            System.out.println(itronCommunicationService.getGroup(group));
-        } catch(ItronException e) {
+            itronCommunicationService.createGroup(group);
+        } catch(ItronCommunicationException e) {
             System.out.println(e.getMessage());
         }
         return "redirect:itronSimulator";

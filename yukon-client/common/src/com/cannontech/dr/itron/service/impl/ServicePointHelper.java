@@ -115,5 +115,4 @@ public class ServicePointHelper {
         AddServicePointRequest request = new AddServicePointRequest();
         return request;
     }
-
 }

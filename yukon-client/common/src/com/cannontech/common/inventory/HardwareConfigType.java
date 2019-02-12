@@ -43,7 +43,7 @@ public enum HardwareConfigType implements DisplayableEnum {
     private final static String keyPrefix = "yukon.web.dr.consumer.hardwareConfigType.";
     
     private final static ImmutableSet<HardwareConfigType> saTypes = ImmutableSet.of(SA_SIMPLE, SA205, SA305);
-    private final static ImmutableSet<HardwareConfigType> supportsServiceInOut = ImmutableSet.of(EXPRESSCOM, VERSACOM);
+    private final static ImmutableSet<HardwareConfigType> supportsServiceInOut = ImmutableSet.of(EXPRESSCOM, VERSACOM, ITRON);
     
     private final static ImmutableMap<Integer, HardwareConfigType> lookupById;
     static {
