@@ -155,4 +155,6 @@
     <bean class="com.cannontech.dr.nest.dao.impl.NestDaoImpl"/>
 
     <bean class="com.cannontech.dr.pxwhite.service.impl.PxWhiteCommunicationServiceImpl"/>
+    
+    <bean class="com.cannontech.dr.itron.dao.impl.ItronDaoImpl"/>
 </beans>
