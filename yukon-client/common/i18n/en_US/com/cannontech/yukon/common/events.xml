@@ -871,7 +871,7 @@
     <!-- Itron -->
     <entry key="yukon.common.events.dr.itron.addHANDevice">Device {1} addition request with mac address {2} sent by {3}.</entry>
     <entry key="yukon.common.events.dr.itron.addHANDeviceToServicePoint">Device addition request to service point {1} with mac address {2} sent by {3}.</entry>
-    <entry key="yukon.common.events.dr.itron.removeHANDeviceFromServicePoint">Device removal request from service point with mac address {2} sent by {3}.</entry>
+    <entry key="yukon.common.events.dr.itron.removeHANDeviceFromServicePoint">Device removal request from service point with mac address {1} sent by {2}.</entry>
     <entry key="yukon.common.events.dr.itron.addServicePoint">Service Point {1} creation request sent by {2}.</entry>
     <entry key="yukon.common.events.dr.itron.addGroup">Group {1} with group ID {7} creation request sent by {2}.</entry>
     <entry key="yukon.common.events.dr.itron.addProgram">Program {1} with program ID {7} creation request sent by {2}.</entry>
