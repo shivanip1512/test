@@ -34,8 +34,8 @@ public class DeviceManagerHelper {
         type.setDeviceIdentifiers(identifier);
         AddD2GAttributeType attribute = new AddD2GAttributeType();
         attribute.setESI(type);
-        request.setD2GAttributes(attribute);
         attribute.setServicePointUtilID(account.getAccountNumber());
+        request.setD2GAttributes(attribute);
         return request;
     }
        

@@ -13,11 +13,13 @@ import com.cannontech.common.inventory.Hardware;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceResponse;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
+import com.cannontech.dr.itron.service.ItronException;
 import com.cannontech.dr.itron.simulator.model.AddProgramError;
 import com.cannontech.dr.itron.simulator.model.ESIGroupError;
 import com.cannontech.dr.itron.simulator.model.EditHANDeviceError;
 import com.cannontech.dr.itron.simulator.model.ItronBasicError;
 import com.cannontech.dr.itron.simulator.model.SimulatedItronSettings;
+import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.web.security.annotation.CheckCparm;
 
 @Controller
@@ -45,10 +47,17 @@ public class ItronSimulatorController {
     public String test() {
         AddHANDeviceResponse response = new AddHANDeviceResponse();
         Hardware hardware = new Hardware();
-       // itronCommunicationService.addDevice(hardware);
-        LiteYukonPAObject group = new LiteYukonPAObject(1);
-        group.setPaoName("test");
-        System.out.println(itronCommunicationService.getGroup(group));
+        hardware.setMacAddress("12:13:14:15:16:17:18");
+        AccountDto account = new AccountDto();
+        account.setAccountNumber("123456789");
+        try {
+            itronCommunicationService.addDevice(hardware, account);
+            LiteYukonPAObject group = new LiteYukonPAObject(1);
+            group.setPaoName("itron load group test");
+            System.out.println(itronCommunicationService.getGroup(group));
+        } catch(ItronException e) {
+            System.out.println(e.getMessage());
+        }
         return "redirect:itronSimulator";
     }
     

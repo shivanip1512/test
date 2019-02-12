@@ -57,19 +57,19 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
       
     @Override
     public void addDevice(Hardware hardware, AccountDto account) {
-        //String itronUrl = "http://localhost:8083/DeviceManagerPort";
-        String itronUrl = "http://localhost:8083/DeviceManagerPort";
+        String mockUrl = "http://localhost:8083/DeviceManagerPort";
+        
         AddHANDeviceRequest request = null;
         if (account != null) {
             //TODO handle itron error if account already exist implementation pending simulator
             log.debug("AddHANDeviceRequest - Sending request to Itron {} to add device with Mac Id {} to account {}.",
-                itronUrl, hardware.getMacAddress(), account.getAccountNumber());
+                mockUrl, hardware.getMacAddress(), account.getAccountNumber());
             //check if we haven't created account before
             addServicePoint(account);
             request = DeviceManagerHelper.buildAddRequestWithServicePoint(hardware, account);
         } else {
             log.debug("AddHANDeviceRequest - Sending request to Itron {} to add device with Mac Id {} and inventory Id {}.",
-                itronUrl, hardware.getMacAddress(), hardware.getInventoryId());
+                mockUrl, hardware.getMacAddress(), hardware.getInventoryId());
             request = DeviceManagerHelper.buildAddRequestWithoutServicePoint(hardware);
         }
               
@@ -77,9 +77,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         try {
             log.debug(XmlUtils.getPrettyXml(request));
 
-           // response = (AddHANDeviceResponse) deviceManagerTemplate.marshalSendAndReceive(url, request);
-            response = new AddHANDeviceResponse();
-            response = (AddHANDeviceResponse) deviceManagerTemplate.marshalSendAndReceive(url, request);
+            response = (AddHANDeviceResponse) deviceManagerTemplate.marshalSendAndReceive(mockUrl, request);
             //TODO add event log - yukon.common.events.dr.itron.addHANDevice
             log.debug(XmlUtils.getPrettyXml(response));
             if (!response.getErrors().isEmpty()) {
@@ -94,7 +92,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             itronException.setErrorAddDevice(response);
             throw itronException;
         }
-        log.debug("AddHANDeviceResponse - Request to Itron {} to add device with Mac Id {} is successful.", itronUrl,
+        log.debug("AddHANDeviceResponse - Request to Itron {} to add device with Mac Id {} is successful.", mockUrl,
             response.getMacID());
     }
 
@@ -195,7 +193,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug(XmlUtils.getPrettyXml(response));
             
             //TODO persist to a table
-            response.getGroupID();
+            itronGroupId = response.getGroupID();
             log.debug("ESIGroupResponseType - Sending request to Itron {} to add {} group is successful", itronUrl,
                 pao.getPaoName(), response.getGroupID());
             return itronGroupId;
