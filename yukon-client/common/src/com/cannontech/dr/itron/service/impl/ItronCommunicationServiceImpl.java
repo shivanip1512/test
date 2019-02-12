@@ -1,5 +1,6 @@
 package com.cannontech.dr.itron.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -173,15 +174,18 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         
         CustomerAccount account = customerAccountDao.getById(accountId);
         List<ProgramEnrollment> enrollments = enrollmentDao.getActiveEnrollmentsByAccountId(accountId);
-        enrollments.removeIf(enrollment -> itronGroups.containsKey(enrollment.getLmGroupId()));
+        enrollments.removeIf(enrollment -> !itronGroups.containsKey(enrollment.getLmGroupId()));
+        List<Long> itronGroupIds = new ArrayList<>();
         
-        List<Integer> assignedProgramIds = enrollments.stream()
-                .map(enrollment -> enrollment.getAssignedProgramId())
-                .collect(Collectors.toList());
-        Collection<Integer> programPaoIds = assignedProgramDao.getProgramIdsByAssignedProgramIds(assignedProgramIds).values();      
-        
-        List<Long> itronGroupIds = itronDao.getItronProgramIds(programPaoIds);
-      
+        if (!enrollments.isEmpty()) {
+            List<Integer> assignedProgramIds =
+                enrollments.stream().map(enrollment -> enrollment.getAssignedProgramId()).collect(Collectors.toList());
+            Collection<Integer> programPaoIds =
+                assignedProgramDao.getProgramIdsByAssignedProgramIds(assignedProgramIds).values();
+
+            itronGroupIds.addAll(itronDao.getItronProgramIds(programPaoIds));
+        }
+   
         SetServicePointEnrollmentRequest request =
             ProgramManagerHelper.buildEnrollmentRequest(account.getAccountNumber(), itronGroupIds);
         // TODO send to itron
