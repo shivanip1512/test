@@ -228,7 +228,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug(XmlUtils.getPrettyXml(request));
             response = new AddProgramResponse();
             //response = (AddProgramResponse) programManagerTemplate.marshalSendAndReceive(itronUrl, request);
-            //TODO add event log - yukon.common.events.dr.itron.addProgram
             itronEventLogService.addProgram(response.getProgramName(), response.getProgramID(), userName);
             log.debug(XmlUtils.getPrettyXml(response));
             
