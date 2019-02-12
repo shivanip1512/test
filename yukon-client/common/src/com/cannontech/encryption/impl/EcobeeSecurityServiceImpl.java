@@ -230,9 +230,9 @@ public class EcobeeSecurityServiceImpl implements EcobeeSecurityService {
         char[] password = CryptoUtils.getSharedPasskey();
         AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
         String aesBasedCryptoPublicKey = new String(Hex.encodeHex(encrypter.encrypt(publicKey.getBytes())));
-        log.info("AES based crypto Public key [" + aesBasedCryptoPublicKey + "]");
+        log.debug("AES based crypto Public key [" + aesBasedCryptoPublicKey + "]");
         String aesBasedCryptoPrivateKey = new String(Hex.encodeHex(encrypter.encrypt(privateKey.getBytes())));
-        log.info("AES based crypto Private key [" + aesBasedCryptoPrivateKey + "]");
+        log.debug("AES based crypto Private key [" + aesBasedCryptoPrivateKey + "]");
         encryptedRouteDao.saveOrUpdateEncryptionKey(aesBasedCryptoPrivateKey, aesBasedCryptoPublicKey, EncryptionKeyType.Ecobee, timestamp);
     }
 
