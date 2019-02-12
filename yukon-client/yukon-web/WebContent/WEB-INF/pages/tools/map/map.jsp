@@ -75,123 +75,119 @@
             </div>
         </c:if>
 
-		<div class="column-18-6 clearfix stacked">
-			<div class="column one">
+        <div class="column-18-6 clearfix stacked">
+            <div class="column one">
 
-				<c:set var="deviceCollectionKey" value="${!empty monitorId ? 'yukon.web.modules.tools.map.monitorDevices' : ''}" />
-				<tags:selectedDevices deviceCollection="${deviceCollection}" id="device-collection" labelKey="${deviceCollectionKey}" />
-				<cti:url var="downloadUrl" value="/tools/map/locations/download">
-					<cti:mapParam value="${deviceCollection.collectionParameters}" />
-				</cti:url>
-				<cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
-					<c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-						<cti:param name="${cp.key}" value="${cp.value}" />
-					</c:forEach>
-				</cti:url>
-				<cm:dropdown icon="icon-cog">
-					<cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true" />
-					<cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
-				</cm:dropdown>
-				<c:if test="${!empty violationsCollection}">
-					<tags:selectedDevices deviceCollection="${violationsCollection}" id="violation-collection"
-						labelKey="yukon.web.modules.tools.map.violationDevices" badgeClasses="badge-warning js-violations" />
-					<cti:url var="downloadUrl" value="/tools/map/locations/download">
-						<cti:mapParam value="${violationsCollection.collectionParameters}" />
-					</cti:url>
-					<cti:url var="violationActionsUrl" value="/bulk/collectionActions">
-						<c:forEach items="${violationsCollection.collectionParameters}" var="cp">
-							<cti:param name="${cp.key}" value="${cp.value}" />
-						</c:forEach>
-					</cti:url>
-					<cm:dropdown icon="icon-cog">
-						<cm:dropdownOption key=".collectionActions" href="${violationActionsUrl}" icon="icon-cog-go" newTab="true" />
-						<cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
-					</cm:dropdown>
-				</c:if>
-				<c:if test="${!empty filteredCollection}">
-					<div class="js-filtered-devices PT10 dn">
-						<tags:selectedDevices deviceCollection="${filteredCollection}" id="filtered-collection"
-							labelKey="yukon.web.modules.tools.map.filter.filteredOnly" badgeClasses="badge-warning js-filtered" />
-						<cti:url var="downloadUrl" value="/tools/map/locations/download">
-							<cti:mapParam value="${filteredCollection.collectionParameters}" />
-						</cti:url>
-						<cti:url var="filteredActionsUrl" value="/bulk/collectionActions">
-							<c:forEach items="${filteredCollection.collectionParameters}" var="cp">
-								<cti:param name="${cp.key}" value="${cp.value}" />
-							</c:forEach>
-						</cti:url>
-						<cm:dropdown icon="icon-cog">
-							<cm:dropdownOption key=".collectionActions" href="${filteredActionsUrl}" icon="icon-cog-go" newTab="true" />
-							<cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
-						</cm:dropdown>
-					</div>
-				</c:if>
-				<c:if test="${!empty colorCollections}">
-					<table class="js-color-collections compact-results-table no-stripes">
-						<tr>
-							<c:forEach var="mapCollection" items="${colorCollections}" varStatus="status">
-								<c:if test="${status.index == 2}">
-									</tr><tr>
-								</c:if>
-								<td class="PB0">
-									<c:set var="collection" value="${mapCollection.deviceCollection}" />
-									<tags:selectedDevices deviceCollection="${collection}" labelKey="${mapCollection.labelKey}"
-										badgeColor="${mapCollection.color}" />
-									<c:if test="${collection.deviceCount > 0}">
-										<cti:url var="downloadUrl" value="/tools/map/locations/download">
-											<cti:mapParam value="${collection.collectionParameters}" />
-										</cti:url>
-										<cti:url var="filteredActionsUrl" value="/bulk/collectionActions">
-											<c:forEach items="${collection.collectionParameters}" var="cp">
-												<cti:param name="${cp.key}" value="${cp.value}" />
-											</c:forEach>
-										</cti:url>
-										<cm:dropdown icon="icon-cog">
-											<cm:dropdownOption key=".collectionActions" href="${filteredActionsUrl}" icon="icon-cog-go" newTab="true" />
-											<cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
-										</cm:dropdown>
-									</c:if>
-								</td>
-							</c:forEach>
-						</tr>
-					</table>
-				</c:if>
-				
+                <c:set var="deviceCollectionKey" value="${!empty monitorId ? 'yukon.web.modules.tools.map.monitorDevices' : ''}" />
+                <tags:selectedDevices deviceCollection="${deviceCollection}" id="device-collection" labelKey="${deviceCollectionKey}" />
+                <cti:url var="downloadUrl" value="/tools/map/locations/download">
+                    <cti:mapParam value="${deviceCollection.collectionParameters}" />
+                </cti:url>
+                <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+                    <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                        <cti:param name="${cp.key}" value="${cp.value}" />
+                    </c:forEach>
+                </cti:url>
+                <cm:dropdown icon="icon-cog">
+                    <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true" />
+                    <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
+                </cm:dropdown>
+                <c:if test="${!empty violationsCollection}">
+                    <tags:selectedDevices deviceCollection="${violationsCollection}" id="violation-collection"
+                        labelKey="yukon.web.modules.tools.map.violationDevices" badgeClasses="badge-warning js-violations" />
+                    <cti:url var="downloadUrl" value="/tools/map/locations/download">
+                        <cti:mapParam value="${violationsCollection.collectionParameters}" />
+                    </cti:url>
+                    <cti:url var="violationActionsUrl" value="/bulk/collectionActions">
+                        <c:forEach items="${violationsCollection.collectionParameters}" var="cp">
+                            <cti:param name="${cp.key}" value="${cp.value}" />
+                        </c:forEach>
+                    </cti:url>
+                    <cm:dropdown icon="icon-cog">
+                        <cm:dropdownOption key=".collectionActions" href="${violationActionsUrl}" icon="icon-cog-go" newTab="true" />
+                        <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
+                    </cm:dropdown>
+                </c:if>
+                <c:if test="${!empty filteredCollection}">
+                    <div class="js-filtered-devices PT10 dn">
+                        <tags:selectedDevices deviceCollection="${filteredCollection}" id="filtered-collection"
+                            labelKey="yukon.web.modules.tools.map.filter.filteredOnly" badgeClasses="badge-warning js-filtered" />
+                        <cti:url var="downloadUrl" value="/tools/map/locations/download">
+                            <cti:mapParam value="${filteredCollection.collectionParameters}" />
+                        </cti:url>
+                        <cti:url var="filteredActionsUrl" value="/bulk/collectionActions">
+                            <c:forEach items="${filteredCollection.collectionParameters}" var="cp">
+                                <cti:param name="${cp.key}" value="${cp.value}" />
+                            </c:forEach>
+                        </cti:url>
+                        <cm:dropdown icon="icon-cog">
+                            <cm:dropdownOption key=".collectionActions" href="${filteredActionsUrl}" icon="icon-cog-go" newTab="true" />
+                            <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
+                        </cm:dropdown>
+                    </div>
+                </c:if>
+                <c:if test="${!empty colorCollections}">
+                    <table class="js-color-collections compact-results-table no-stripes">
+                        <tr>
+                            <c:forEach var="mapCollection" items="${colorCollections}" varStatus="status">
+                                <c:if test="${status.index == 2}">
+                        </tr>
+                        <tr>
+                            </c:if>
+                            <td class="PB0"><c:set var="collection" value="${mapCollection.deviceCollection}" /> <tags:selectedDevices
+                                    deviceCollection="${collection}" labelKey="${mapCollection.labelKey}"
+                                    badgeColor="${mapCollection.color}" /> <c:if test="${collection.deviceCount > 0}">
+                                    <cti:url var="downloadUrl" value="/tools/map/locations/download">
+                                        <cti:mapParam value="${collection.collectionParameters}" />
+                                    </cti:url>
+                                    <cti:url var="filteredActionsUrl" value="/bulk/collectionActions">
+                                        <c:forEach items="${collection.collectionParameters}" var="cp">
+                                            <cti:param name="${cp.key}" value="${cp.value}" />
+                                        </c:forEach>
+                                    </cti:url>
+                                    <cm:dropdown icon="icon-cog">
+                                        <cm:dropdownOption key=".collectionActions" href="${filteredActionsUrl}" icon="icon-cog-go"
+                                            newTab="true" />
+                                        <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
+                                    </cm:dropdown>
+                                </c:if></td>
+                            </c:forEach>
+                        </tr>
+                    </table>
+                </c:if>
+
                 <div class="dn js-status-loading">
-                    <cti:icon icon="icon-spinner"/>
-                    <i:inline key=".status.loading"/>
+                    <cti:icon icon="icon-spinner" />
+                    <i:inline key=".status.loading" />
                 </div>
-			</div>
+            </div>
             <div class="column two nogutter">
                 <c:if test="${!empty monitorId}">
-                    <input type="hidden" id="monitorId" value="${monitorId}"/>
-                    <cti:url value="/tools/map/locations/${monitorType}/${monitorId}" var="monitorLocationsUrl"/>
+                    <input type="hidden" id="monitorId" value="${monitorId}" />
+                    <cti:url value="/tools/map/locations/${monitorType}/${monitorId}" var="monitorLocationsUrl" />
                     <input id="monitorLocations" type="hidden" value="${fn:escapeXml(monitorLocationsUrl)}">
-                    <span class="fr">
-                        <i:inline key=".filter.label"/>:
-                        <c:set var="violationsSelected" value="${violationsOnly ? 'selected=selected' : ''}"/>
-                        <select id="violationsSelect">
-                            <option value="false"><i:inline key=".filter.allDevices"/></option>
-                            <option value="true" ${violationsSelected}><i:inline key=".filter.violationsOnly"/></option>
-                        </select>
+                    <span class="fr"> <i:inline key=".filter.label" />: <c:set var="violationsSelected"
+                            value="${violationsOnly ? 'selected=selected' : ''}" /> <select id="violationsSelect">
+                            <option value="false"><i:inline key=".filter.allDevices" /></option>
+                            <option value="true" ${violationsSelected}><i:inline key=".filter.violationsOnly" /></option>
+                    </select>
                     </span>
                 </c:if>
                 <c:if test="${!empty filter}">
-                    <span class="fr js-filtered-devices PT10 dn">
-                        <i:inline key=".filter.display.label"/>:
-                        <select id="devicesFilter">
-                            <option value="false"><i:inline key=".filter.allDevices"/></option>
-                            <option value="true" selected="selected"><i:inline key=".filter.filteredOnly"/></option>
-                        </select>
+                    <span class="fr js-filtered-devices PT10 dn"> <i:inline key=".filter.display.label" />: <select
+                        id="devicesFilter">
+                            <option value="false"><i:inline key=".filter.allDevices" /></option>
+                            <option value="true" selected="selected"><i:inline key=".filter.filteredOnly" /></option>
+                    </select>
                     </span>
                 </c:if>
                 <div class="dn js-status-retrieving">
-                    <cti:icon icon="icon-spinner"/>
-                    <i:inline key=".status.retrieving"/>
+                    <cti:icon icon="icon-spinner" />
+                    <i:inline key=".status.retrieving" />
                 </div>
                 <div class="dn js-status-filtering">
-                    <cti:icon icon="icon-spinner"/>
-                    <i:inline key=".status.filtering"/>
+                    <cti:icon icon="icon-spinner" />
+                    <i:inline key=".status.filtering" />
                 </div>
             </div>
 
