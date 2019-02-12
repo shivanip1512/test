@@ -56,7 +56,7 @@ public class DataImportEmailBuilder extends SmartNotificationEmailBuilder {
                     Collectors.joining("\n"));
             argumentList.add(errorBody);
         }
-        argumentList.add(getUrl("assetImport"));
+        argumentList.add(getUrl("assetImport/ALL_IMPORTS"));
 
         return argumentList;
     }
@@ -93,7 +93,7 @@ public class DataImportEmailBuilder extends SmartNotificationEmailBuilder {
             }
         }
         argumentList.add(builder.toString());
-        argumentList.add(getUrl("assetImport"));
+        argumentList.add(getUrl("assetImport/ALL_IMPORTS"));
         return argumentList;
     }
 
