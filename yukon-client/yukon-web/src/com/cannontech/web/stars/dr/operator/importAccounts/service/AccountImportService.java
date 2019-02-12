@@ -123,7 +123,11 @@ public class AccountImportService {
         executor.execute(() -> {
             Instant startTime = Instant.now();
             result.setStartTime(startTime);
-            processAccountImport(result, context, startTime.toDate());
+            try {
+                processAccountImport(result, context, startTime.toDate());
+            } catch (Exception e) {
+                log.error("Error Occured in Account Import Process " + e);
+            }
         });
     }
 
@@ -224,7 +228,7 @@ public class AccountImportService {
     }
 
     @SuppressWarnings("deprecation")
-    private void processAccountImport(AccountImportResult result, YukonUserContext context, Date startTime) {
+    public void processAccountImport(AccountImportResult result, YukonUserContext context, Date startTime) throws Exception {
         boolean preScan = result.isPrescan();
         final File custFile = result.getCustomerFile();
         final File hwFile = result.getHardwareFile();
@@ -1037,7 +1041,11 @@ public class AccountImportService {
             }
             
             result.setComplete(true);
-            
+
+            if (!result.isScheduled()) {
+                sendSmartNotifications(result, context);
+            }
+
         } catch (Exception e) {
             result.setComplete(true);
             if (!result.isCanceled()) {
@@ -1070,6 +1078,9 @@ public class AccountImportService {
                     addToLog(lineNo, value, importLog);
                 }
             }
+            if (result.isScheduled()) {
+                throw new Exception(e);
+            }
 
             ActivityLogger.logEvent(result.getCurrentUser().getUserID(), ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, "");
         } finally {
@@ -1093,17 +1104,34 @@ public class AccountImportService {
                 log.error("Failed to send the import log by email");
             }
         }
-        
+
+    }
+
+    private void sendSmartNotifications(AccountImportResult result, YukonUserContext context) {
+
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         String taskName = accessor.getMessage("yukon.web.modules.smartNotifications.MANUAL_IMPORT.taskName");
-        // The first parameter passed to getDataImportWarning is -1 because this is manual import and does not have a job id associated with it.
-        List<DataImportWarning> dataImportwarning = DataImportHelper.getDataImportWarning(-1, taskName, ScheduledImportType.ASSET_IMPORT.getImportType(), result);
-        List<SmartNotificationEvent> smartNotificationEvent =
-                dataImportwarning.stream().map(importWarning -> DataImportAssembler.assemble(Instant.now(), importWarning))
-                                          .collect(Collectors.toList());
+        // The first parameter passed to getDataImportWarning is -1 because this is manual import and does
+        // not have a job id associated with it.
+
+        List<String> errorFiles = new ArrayList<>();
+        if (result.custFileErrors != 0) {
+            errorFiles.add(result.getAccountFileUpload().getName());
+        }
+        if (result.hwFileErrors != 0) {
+            errorFiles.add(result.getHardwareFileUpload().getName());
+        }
+
+        int successFileCount = 2 - errorFiles.size(); // Can upload both files simultaneously
+
+        List<DataImportWarning> dataImportwarning = DataImportHelper.getDataImportWarning(-1, taskName,
+            ScheduledImportType.ASSET_IMPORT.getImportType(), errorFiles, successFileCount);
+        List<SmartNotificationEvent> smartNotificationEvent = dataImportwarning.stream()
+                                                                               .map(importWarning -> DataImportAssembler.assemble(Instant.now(), importWarning))
+                                                                               .collect(Collectors.toList());
         smartNotificationEventCreationService.send(SmartNotificationEventType.ASSET_IMPORT, smartNotificationEvent);
     }
-    
+
     private LiteInventoryBase importHardware(String[] hwFields, 
                                              LiteAccountInfo liteAcctInfo, 
                                              AccountImportResult result, 

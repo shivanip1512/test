@@ -3,17 +3,21 @@ package com.cannontech.web.scheduledDataImport.tasks;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.scheduledFileImport.DataImportWarning;
+import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.smartNotification.model.DataImportAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.jobs.support.YukonTaskBase;
 import com.cannontech.web.dataImport.DataImportHelper;
-import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
+import com.cannontech.web.scheduledDataImport.ScheduledDataImportResult;
+import com.cannontech.web.scheduledDataImport.service.ScheduledImportService;
 
 /**
  * A data import file task that will import the file based on import path
@@ -22,6 +26,9 @@ import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
  */
 public class ScheduledDataImportTask extends YukonTaskBase {
 
+    private static final Logger log = YukonLogManager.getLogger(ScheduledDataImportTask.class);
+
+    @Autowired private ScheduledImportService scheduledImportService;
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
 
     private String scheduleName;
@@ -31,14 +38,27 @@ public class ScheduledDataImportTask extends YukonTaskBase {
 
     @Override
     public void start() {
-        // TODO - Need to implement the file import and processing Logic here
-        AccountImportResult importResult = new AccountImportResult();// TODO :Will be removed after YUK-19061 implementation
-        List<DataImportWarning> dataImportwarning =
-            DataImportHelper.getDataImportWarning(getJob().getJobGroupId(), getScheduleName(), getImportType(), importResult);
-        List<SmartNotificationEvent> smartNotificationEvent =
-                dataImportwarning.stream().map(importWarning -> DataImportAssembler.assemble(Instant.now(), importWarning))
-                                          .collect(Collectors.toList());
-        smartNotificationEventCreationService.send(SmartNotificationEventType.ASSET_IMPORT, smartNotificationEvent);
+
+        if (ScheduledImportType.fromImportTypeMap(getImportType()) == ScheduledImportType.ASSET_IMPORT) {
+            log.info("Initiate Asset Import Task");
+            ScheduledDataImportResult result = scheduledImportService.initiateImport(scheduleName, importPath, errorFileOutputPath);
+            log.info("Sending smart notification messages for asset import");
+            sendSmartNotification(SmartNotificationEventType.ASSET_IMPORT, result.getErrorFiles(), result.getSuccessFiles().size());
+        }
+
+    }
+
+    private void sendSmartNotification(SmartNotificationEventType eventType, List<String> errorFiles,
+            Integer successFileCount) {
+        if (!errorFiles.isEmpty() || successFileCount > 0) {
+            List<DataImportWarning> dataImportwarning = DataImportHelper.getDataImportWarning(getJob().getJobGroupId(),
+                getScheduleName(), getImportType(), errorFiles, successFileCount);
+            List<SmartNotificationEvent> smartNotificationEvent = dataImportwarning.stream().map(
+                importWarning -> DataImportAssembler.assemble(Instant.now(), importWarning)).collect(
+                    Collectors.toList());
+            smartNotificationEventCreationService.send(eventType, smartNotificationEvent);
+        }
+
     }
 
     public String getScheduleName() {

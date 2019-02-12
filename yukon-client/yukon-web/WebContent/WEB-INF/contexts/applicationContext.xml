@@ -1033,7 +1033,6 @@
 
     <bean id="accountImportResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     <bean id="accountImportDataValidator" class="com.cannontech.web.stars.dr.operator.validator.AccountImportDataValidator"/>
-    <bean id="accountImportSerivce" class="com.cannontech.web.stars.dr.operator.importAccounts.service.AccountImportService"/>
     <bean id="accountImportBackingService" class="com.cannontech.web.updater.dr.AccountImportBackingService">
         <property name="resultsCache" ref="accountImportResultsCache"/>
     </bean>
@@ -1360,6 +1359,5 @@
      <bean class="com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory"/>
      
      <bean class="com.cannontech.web.common.schedule.ScheduleControllerHelper"/>
-     <bean class="com.cannontech.web.stars.scheduledDataImport.dao.impl.ScheduledDataImportDaoImpl"/>
      
 </beans>

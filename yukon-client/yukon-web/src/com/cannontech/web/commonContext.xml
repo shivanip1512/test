@@ -399,4 +399,8 @@
     
     <bean name="pointValidationUtil" class="com.cannontech.web.tools.points.validators.PointValidationUtil"/>
     <bean class="com.cannontech.dr.itron.simulator.model.SimulatedItronSettings"/>
+    <bean id="accountImportSerivce" class="com.cannontech.web.stars.dr.operator.importAccounts.service.AccountImportService"/>
+    <bean class="com.cannontech.web.stars.scheduledDataImport.dao.impl.ScheduledDataImportDaoImpl"/>
+    <bean class="com.cannontech.web.scheduledDataImport.service.impl.ScheduledDataImportHelper"/>
+    <bean class="com.cannontech.web.scheduledDataImport.service.impl.AssetScheduledImportServiceImpl"/>
 </beans>

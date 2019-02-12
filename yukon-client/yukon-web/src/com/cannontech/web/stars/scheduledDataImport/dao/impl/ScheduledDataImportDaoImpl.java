@@ -13,10 +13,14 @@ import com.cannontech.common.scheduledFileImport.ScheduleImportHistoryEntry;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -97,21 +101,26 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
         @Override
         public ScheduleImportHistoryEntry mapRow(YukonResultSet rs) throws SQLException {
 
-            int entryId = rs.getInt("EntryId");
-            String fileName = rs.getString("FileName");
-            Instant importDate = rs.getInstant("ImportDate");
-            String archiveFileName = rs.getString("ArchiveFileName");
-            String archiveFilePath = rs.getString("ArchiveFilePath");
-            boolean archiveFileExists = rs.getBoolean("ArchiveFileExists");
-            String failedFileName = rs.getString("FailedFileName");
-            String failedFilePath = rs.getString("FailedFilePath");
-            int successCount = rs.getInt("SuccessCount");
-            int failureCount = rs.getInt("FailureCount");
-            return new ScheduleImportHistoryEntry(entryId, fileName, importDate, archiveFileName, archiveFilePath,
-                archiveFileExists, failedFileName, failedFilePath, successCount, failureCount);
+            return processEntry(rs);
         }
     }
 
+    
+    private static ScheduleImportHistoryEntry processEntry(YukonResultSet rs) throws SQLException {
+        int entryId = rs.getInt("EntryId");
+        String fileName = rs.getString("FileName");
+        Instant importDate = rs.getInstant("ImportDate");
+        String archiveFileName = rs.getString("ArchiveFileName");
+        String archiveFilePath = rs.getString("ArchiveFilePath");
+        boolean archiveFileExists = rs.getBoolean("ArchiveFileExists");
+        String failedFileName = rs.getString("FailedFileName");
+        String failedFilePath = rs.getString("FailedFilePath");
+        int successCount = rs.getInt("SuccessCount");
+        int failureCount = rs.getInt("FailureCount");
+        return new ScheduleImportHistoryEntry(entryId, fileName, importDate, archiveFileName, archiveFilePath,
+            archiveFileExists, failedFileName, failedFilePath, successCount, failureCount);
+    }
+    
     @Override
     public Map<String, String> getHistoryEntryById(int entryID, boolean isSuccessFile) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -136,4 +145,35 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
         });
         return results;
     }
+    
+    @Override
+    public Multimap<Instant, ScheduleImportHistoryEntry> getEntriesWithArchiveByDate() {
+        final Multimap<Instant, ScheduleImportHistoryEntry> entries = ArrayListMultimap.create();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EntryId, FileName, ImportDate, ArchiveFileName, ArchiveFilePath,");
+        sql.append("    ArchiveFileExists, FailedFileName, FailedFilePath, SuccessCount, FailureCount");
+        sql.append("FROM ScheduledDataImportHistory");
+        sql.append("WHERE  ArchiveFileExists").eq(true);
+
+        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                ScheduleImportHistoryEntry entry = processEntry(rs);
+                entries.put(entry.getImportDate(), entry);
+            }
+        });
+        return entries;
+    }
+
+    @Override
+    public boolean markArchiveDeleted(int entryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink sink = sql.update("ScheduledDataImportHistory");
+        sink.addValue("ArchiveFileExists", false);
+        sql.append("WHERE  EntryId").eq(entryId);
+
+        int rowsModified = yukonJdbcTemplate.update(sql);
+        return rowsModified > 0;
+    }
+
 }

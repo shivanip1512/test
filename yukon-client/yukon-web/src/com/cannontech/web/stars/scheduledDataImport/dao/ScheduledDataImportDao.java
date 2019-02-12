@@ -8,6 +8,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.scheduledFileImport.ScheduleImportHistoryEntry;
 import com.cannontech.common.search.result.SearchResults;
+import com.google.common.collect.Multimap;
 
 public interface ScheduledDataImportDao {
 
@@ -42,5 +43,16 @@ public interface ScheduledDataImportDao {
      * 
      */
     public Map<String, String> getHistoryEntryById(int entryID, boolean isSuccessFile);
+
+    /**
+     * Retrieves all entries that have an archive file, mapped by creation date.
+     */
+    Multimap<Instant, ScheduleImportHistoryEntry> getEntriesWithArchiveByDate();
+
+    /**
+     * Marks the DB entry as no longer having an archived file associated with it.
+     * This should be done in conjunction with actually deleting the file.
+     */
+    boolean markArchiveDeleted(int entryId);
 
 }

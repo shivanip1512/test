@@ -425,11 +425,11 @@ public class AccountImportResult implements Completable {
     }
 
     public File getCustomerFile() {
-        return accountFileUpload.hasErrors() ? null : accountFileUpload.getFile();
+        return (accountFileUpload == null || accountFileUpload.hasErrors()) ? null : accountFileUpload.getFile();
     }
     
     public File getHardwareFile() {
-        return hardwareFileUpload.hasErrors() ? null : hardwareFileUpload.getFile();
+        return (hardwareFileUpload == null || hardwareFileUpload.hasErrors()) ? null : hardwareFileUpload.getFile();
     }
 
     public void setAccountFileUpload(BulkFileUpload accountFileUpload) {
