@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.function.Consumer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -44,6 +44,7 @@ import com.cannontech.dr.rfn.tlv.FieldType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImpl<ListMultimap<FieldType, byte[]>> {
@@ -270,7 +271,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                 }
                 if (relayPoint != null) {
                     PointData pointData = buildPointData(relayPoint.getPointID(), relayPoint.getPointType(),
-                        currentIntervalTimestamp.toDate(), new Double(value));
+                        currentIntervalTimestamp.toDate(), Double.valueOf(value));
                     intervalPointData.add(pointData);
                 }
 
@@ -302,56 +303,34 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             return;
         }
 
-        if (CollectionUtils.isNotEmpty(data.get(FieldType.SPID))) {
-            address.setSpid(ByteUtil.getInteger(data.get(FieldType.SPID).get(0)));
-        }
+        updateIfPresent(data, FieldType.SPID, address::setSpid);
+        updateIfPresent(data, FieldType.GEO_ADDRESS, address::setGeo);
+        updateIfPresent(data, FieldType.SUBSTATION_ADDRESS, address::setSubstation);
+        updateIfPresent(data, FieldType.FEEDER_ADDRESS, address::setFeeder);
+        updateIfPresent(data, FieldType.ZIP_ADDRESS, address::setZip);
+        updateIfPresent(data, FieldType.UDA_ADDRESS, address::setUda);
+        updateIfPresent(data, FieldType.REQUIRED_ADDRESS, address::setRequired);
 
-        if (CollectionUtils.isNotEmpty(data.get(FieldType.GEO_ADDRESS))) {
-            address.setGeo(ByteUtil.getInteger(data.get(FieldType.GEO_ADDRESS).get(0)));
-        }
+        List<byte[]> reportedRelaySplinterAddresses = data.get(FieldType.RELAY_N_SPLINTER_ADDRESS);
+        List<byte[]> reportedRelayProgramAddresses = data.get(FieldType.RELAY_N_PROGRAM_ADDRESS);
 
-        if (CollectionUtils.isNotEmpty(data.get(FieldType.SUBSTATION_ADDRESS))) {
-            address.setSubstation(ByteUtil.getInteger(data.get(FieldType.SUBSTATION_ADDRESS).get(0)));
-        }
+        // If there are new relay addresses, update any exiting relay records
+        if (CollectionUtils.isNotEmpty(reportedRelaySplinterAddresses) || 
+            CollectionUtils.isNotEmpty(reportedRelayProgramAddresses)) {
+            //  Get the existing relays so we can update them
+            Map<Integer, ExpressComReportedAddressRelay> relays = 
+                    Maps.newHashMap(Maps.uniqueIndex(address.getRelays(), ExpressComReportedAddressRelay::getRelayNumber));
 
-        if (CollectionUtils.isNotEmpty(data.get(FieldType.FEEDER_ADDRESS))) {
-            address.setFeeder(ByteUtil.getInteger(data.get(FieldType.FEEDER_ADDRESS).get(0)));
-        }
-        if (CollectionUtils.isNotEmpty(data.get(FieldType.ZIP_ADDRESS))) {
-            address.setZip(ByteUtil.getInteger(data.get(FieldType.ZIP_ADDRESS).get(0)));
-        }
-        if (CollectionUtils.isNotEmpty(data.get(FieldType.UDA_ADDRESS))) {
-            address.setUda(ByteUtil.getInteger(data.get(FieldType.UDA_ADDRESS).get(0)));
-        }
-        if (CollectionUtils.isNotEmpty(data.get(FieldType.REQUIRED_ADDRESS))) {
-            address.setRequired(ByteUtil.getInteger(data.get(FieldType.REQUIRED_ADDRESS).get(0)));
-        }
+            reportedRelaySplinterAddresses.forEach(relayNode ->
+                relays.computeIfAbsent(ByteUtil.getInteger(relayNode[0]), ExpressComReportedAddressRelay::new) 
+                    .setSplinter(ByteUtil.getInteger(relayNode[1])));
 
-        Map<Integer, ExpressComReportedAddressRelay> relays = new HashMap<>();
+            reportedRelayProgramAddresses.forEach(relayNode ->
+                relays.computeIfAbsent(ByteUtil.getInteger(relayNode[0]), ExpressComReportedAddressRelay::new) 
+                    .setProgram(ByteUtil.getInteger(relayNode[1])));
 
-        if (CollectionUtils.isNotEmpty(data.get(FieldType.RELAY_N_SPLINTER_ADDRESS))) {
-            data.get(FieldType.RELAY_N_SPLINTER_ADDRESS).forEach(relayNode -> {
-                var relayNumber = ByteUtil.getInteger(relayNode[0]);
-                ExpressComReportedAddressRelay relay = new ExpressComReportedAddressRelay(relayNumber);
-                relay.setSplinter(ByteUtil.getInteger(relayNode[1]));
-                relays.put(relay.getRelayNumber(), relay);
-            });
+            address.setRelays(new HashSet<>(relays.values()));
         }
-
-        if (CollectionUtils.isNotEmpty(data.get(FieldType.RELAY_N_PROGRAM_ADDRESS))) {
-            data.get(FieldType.RELAY_N_PROGRAM_ADDRESS).forEach(relayNode -> {
-                ExpressComReportedAddressRelay relay;
-                if (relays.get(ByteUtil.getInteger(relayNode[0])) != null) {
-                    relay = relays.get(ByteUtil.getInteger(relayNode[0]));
-                    relay.setProgram(ByteUtil.getInteger(relayNode[1]));
-                } else {
-                    relay = new ExpressComReportedAddressRelay(ByteUtil.getInteger(relayNode[0]));
-                    relay.setProgram(ByteUtil.getInteger(relayNode[1]));
-                    relays.put(relay.getRelayNumber(), relay);
-                }
-            });
-        }
-        address.setRelays(new HashSet<>(relays.values()));
 
         log.debug(String.format("Received LM Address for %s - ", address, device.getName()));
         
@@ -363,6 +342,13 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
 
         jmsTemplate.convertAndSend(JmsApiDirectory.LM_ADDRESS_NOTIFICATION.getQueue().getName(), address);
 
+    }
+
+    private void updateIfPresent(ListMultimap<FieldType, byte[]> data, FieldType fieldType, Consumer<Integer> setter) {
+        data.get(fieldType).stream()
+            .findFirst()
+            .map(ByteUtil::getInteger)
+            .ifPresent(setter);
     }
 
     @Override
