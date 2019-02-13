@@ -10545,7 +10545,7 @@
         <columnList>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>ITRONGROUPID</i__columnName>
+            <i__columnName>YUKONGROUPID</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>NUMBER</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -10561,7 +10561,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>DEVICEID</i__columnName>
+            <i__columnName>ITRONGROUPID</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>NUMBER</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -10586,7 +10586,7 @@
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>LMGROUPITRONMAPPING</i__tableName>
                   <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>ITRONGROUPID</i__columnName>
+                  <i__columnName>YUKONGROUPID</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
@@ -36259,7 +36259,7 @@
         <columnList>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>ITRONPROGRAMID</i__columnName>
+            <i__columnName>YUKONPROGRAMID</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>NUMBER</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -36275,7 +36275,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>DEVICEID</i__columnName>
+            <i__columnName>ITRONPROGRAMID</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>NUMBER</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -36300,7 +36300,7 @@
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>LMPROGRAMITRONMAPPING</i__tableName>
                   <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>ITRONPROGRAMID</i__columnName>
+                  <i__columnName>YUKONPROGRAMID</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
@@ -46379,9 +46379,9 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_LMPROG_LMPROGITRONMAPPING</i__foreignKeyName>
+            <i__foreignKeyName>FK_LMPROGITRONMAPPING_LMPROG</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>DEVICEID</i__columnName>
+            <i__columnName>YUKONPROGRAMID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
             <i__foreignTableName>LMPROGRAM</i__foreignTableName>
             <i__updateRule>0</i__updateRule>
@@ -46890,9 +46890,9 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_LMGROUP_LMGROUPITRONMAPPING</i__foreignKeyName>
+            <i__foreignKeyName>FK_LMGROUPITRONMAPPING_LMGROUP</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>DEVICEID</i__columnName>
+            <i__columnName>YUKONGROUPID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
             <i__foreignTableName>LMGROUP</i__foreignTableName>
             <i__updateRule>0</i__updateRule>
