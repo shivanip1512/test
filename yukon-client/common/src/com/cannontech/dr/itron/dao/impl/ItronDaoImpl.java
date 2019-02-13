@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -24,7 +25,11 @@ public class ItronDaoImpl implements ItronDao {
         sql.append("SELECT ItronGroupId");
         sql.append("FROM LMGroupItronMapping");
         sql.append("WHERE YukonGroupId").eq(groupPaoId);
-        return jdbcTemplate.queryForInt(sql);
+        try {
+            return jdbcTemplate.queryForInt(sql);
+        } catch (EmptyResultDataAccessException ex){
+            throw new NotFoundException("ItronGroupId with YukonGroupId: " + groupPaoId + " was not found.");
+        }
     }
 
     @Override
@@ -33,8 +38,11 @@ public class ItronDaoImpl implements ItronDao {
         sql.append("SELECT ItronProgramId");
         sql.append("FROM LMProgramItronMapping");
         sql.append("WHERE YukonProgramId").eq(programPaoId);
-        return jdbcTemplate.queryForInt(sql);
-    }
+        try {
+            return jdbcTemplate.queryForInt(sql);
+        } catch (EmptyResultDataAccessException ex){
+            throw new NotFoundException("ItronProgramId with YukonProgramId: " + programPaoId + " was not found.");
+        }    }
 
     @Override
     public void addProgram(long itronId, int programPaoId) {
@@ -62,7 +70,7 @@ public class ItronDaoImpl implements ItronDao {
             @Override
             public Map<Integer,Long> mapRow(YukonResultSet rs) throws SQLException {
                 HashMap<Integer, Long> row = new HashMap<>();
-                row.put(rs.getInt("YukonProgramId"), rs.getLong("YukonProgramId"));
+                row.put(rs.getInt("YukonProgramId"), rs.getLong("ItronProgramId"));
                 return row;
             }
         });
@@ -78,7 +86,7 @@ public class ItronDaoImpl implements ItronDao {
             @Override
             public Map<Integer,Long> mapRow(YukonResultSet rs) throws SQLException {
                 HashMap<Integer, Long> row = new HashMap<>();
-                row.put(rs.getInt("YukonGroupId"), rs.getLong("YukonGroupId"));
+                row.put(rs.getInt("YukonGroupId"), rs.getLong("ItronGroupId"));
                 return row;
             }
         });
