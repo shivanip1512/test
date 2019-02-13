@@ -27,7 +27,7 @@ public interface ItronCommunicationService {
   
     void createGroup(LiteYukonPAObject pao);
 
-    void enroll(int accountId, int deviceId, LiteYukonPAObject programPao, LiteYukonPAObject groupPao);
+    void enroll(int accountId, int deviceId, int groupId);
 
     void unenroll(int accountId);
 }

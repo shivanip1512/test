@@ -5,12 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -194,7 +192,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                 if(hardwareType.isItron()) {
                                     command.setParams(itronParams.getParams(liteHw.getInventoryID()));
                                 }
-
+                                
                                 lmHardwareCommandService.sendConfigCommand(command);
                             }
                         } else if (inventoryBaseDao.getDeviceStatus(liteHw.getInventoryID())
@@ -215,10 +213,6 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         command.setDevice(liteHw);
                         command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
                         command.setUser(user);
-                        
-                        if(hardwareType.isItron()) {
-                            command.setParams(itronParams.getParams(liteHw.getInventoryID()));
-                        }
                         
                         lmHardwareCommandService.sendOutOfServiceCommand(command);
                     }
@@ -917,56 +911,21 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
      */
     private class ItronParams {
         Map<Integer, Integer> inventoryIdToGroupPaoId = new HashMap<>();
-        Map<Integer, Integer> inventoryIdToProgramPaoId = new HashMap<>();
         Map<Integer, LiteYukonPAObject> itronGroups = cache.getAllLMGroups().stream()
                 .filter(group -> group.getPaoType() == PaoType.LM_GROUP_ITRON)
                 .collect(Collectors.toMap(LiteYukonPAObject::getLiteID, group -> group));
         
         ItronParams(List<ProgramEnrollment> requests, CustomerAccount account) {
-            
-            List<ProgramEnrollment> activeProgramEnrollments = 
-                    enrollmentDao.getActiveEnrollmentsByAccountId(account.getAccountId());
-  
-            Set<Integer> allAssignedItronProgramId = new HashSet<>();
-            allAssignedItronProgramId.addAll(getAssignedItronPrograms(requests));
-            allAssignedItronProgramId.addAll(getAssignedItronPrograms(activeProgramEnrollments));
-            
-            if(allAssignedItronProgramId.isEmpty()) {
-                //doesn't contain itron program
-                return;
-            }
-
-            // map of program assigned ids to pao ids
-            Map<Integer, Integer> assignedIdsToPaoIds =
-                assignedProgramDao.getProgramIdsByAssignedProgramIds(allAssignedItronProgramId);
-  
-            populatePaoIds(requests, assignedIdsToPaoIds);
-            populatePaoIds(activeProgramEnrollments, assignedIdsToPaoIds);
-        }
-        
-        private void populatePaoIds(List<ProgramEnrollment> requests, Map<Integer, Integer> assignedIdsToPaoIds) {
-            requests.forEach(enrollment -> {
-                if (itronGroups.containsKey(enrollment.getLmGroupId())) {
-                    inventoryIdToGroupPaoId.put(enrollment.getInventoryId(), enrollment.getLmGroupId());
-                    inventoryIdToProgramPaoId.put(enrollment.getInventoryId(),
-                        assignedIdsToPaoIds.get(enrollment.getAssignedProgramId()));
+            requests.forEach(request -> {
+                if (itronGroups.containsKey(request.getLmGroupId())) {
+                    inventoryIdToGroupPaoId.put(request.getInventoryId(), request.getLmGroupId());
                 }
             });
         }
         
-        private Set<Integer> getAssignedItronPrograms(List<ProgramEnrollment> requests) {
-            return requests.stream()
-                    .filter(request -> itronGroups.containsKey(request.getLmGroupId()))
-                    .map(request -> request.getAssignedProgramId())
-                    .collect(Collectors.toSet());
-        }
-        
         public ImmutableMap<LmHardwareCommandParam, Object> getParams(int inventoryId) {
             ImmutableMap.Builder<LmHardwareCommandParam, Object> builder = new ImmutableMap.Builder<>();
-            return builder.put(LmHardwareCommandParam.GROUP_ID, inventoryIdToGroupPaoId.get(inventoryId))
-                    //program id 
-                .put(LmHardwareCommandParam.OPTIONAL_GROUP_ID, inventoryIdToProgramPaoId.get(inventoryId))
-                .build();
+            return builder.put(LmHardwareCommandParam.GROUP_ID, inventoryIdToGroupPaoId.get(inventoryId)).build();
         }
     }
 }

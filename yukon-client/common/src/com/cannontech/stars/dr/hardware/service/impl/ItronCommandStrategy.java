@@ -7,7 +7,6 @@ import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -21,33 +20,21 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class ItronCommandStrategy  implements LmHardwareCommandStrategy{
     
     @Autowired private ItronCommunicationService itronCommunicationService;
-    @Autowired private IDatabaseCache cache;
-    
+
     @Override
     public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
-
-        /**
-         * I believe the device being enrolled needs to be added to the Itron group that corresponds to the
-         * yukon load group. When we initiate a control event, I think we need to target by group.1:15 PM
-         * the service point needs to be enrolled in the program, or the device will not control for events in
-         * that program. But the event will target devices by program and group. We might only want to control
-         * one group, not all groups in the program.
-         */
        
         switch (command.getType()) {
         case CONFIG:
             // ignore config since "In Service" will be sent after
             break;
         case IN_SERVICE:
-            LiteYukonPAObject programPao = getProgram(command);
-            LiteYukonPAObject groupPao = getGroup(command);
-            itronCommunicationService.enroll(command.getDevice().getAccountID(), command.getDevice().getDeviceID(),
-                programPao, groupPao);
+            int yukonGroupId = (int) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
+            itronCommunicationService.enroll(command.getDevice().getAccountID(), command.getDevice().getDeviceID(), yukonGroupId);
             break;
 
         case OUT_OF_SERVICE:
@@ -57,22 +44,6 @@ public class ItronCommandStrategy  implements LmHardwareCommandStrategy{
 
             break;
         }
-    }
-
-    private LiteYukonPAObject getGroup(LmHardwareCommand command) {
-        int yukonGroupId = (int) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
-        LiteYukonPAObject groupPao = cache.getAllLMGroups().stream()
-                .filter(group -> group.getLiteID() == yukonGroupId)
-                .findFirst().get();
-        return groupPao;
-    }
-
-    private LiteYukonPAObject getProgram(LmHardwareCommand command) {
-        int yukonProgramId = (int) command.getParams().get(LmHardwareCommandParam.OPTIONAL_GROUP_ID);
-        LiteYukonPAObject programPao = cache.getAllLMPrograms().stream()
-                .filter(program -> program.getLiteID() == yukonProgramId)
-                .findFirst().get();
-        return programPao;
     }
     
     @Override

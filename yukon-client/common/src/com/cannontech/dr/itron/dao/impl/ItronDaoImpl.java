@@ -1,8 +1,8 @@
 package com.cannontech.dr.itron.dao.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.dr.itron.dao.ItronDao;
@@ -28,11 +28,20 @@ public class ItronDaoImpl implements ItronDao {
     }
 
     @Override
-    public List<Long> getItronProgramIds(Collection<Integer> programPaoIds) {
-        List<Long> list = new ArrayList<>();
-        list.add(1L);
-        list.add(2L);
-        list.add(3L);
+    public Map<Integer, Long> getItronProgramIds(Collection<Integer> programPaoIds) {
+        Map<Integer, Long> list = new HashMap<>();
+        list.put(1,1L);
+        list.put(2,2L);
+        list.put(3,3L);
+        return list;
+    }
+    
+    @Override
+    public Map<Integer, Long> getItronGroupIds(Collection<Integer> groupPaoIds) {
+        Map<Integer, Long> list = new HashMap<>();
+        list.put(1,1L);
+        list.put(2,2L);
+        list.put(3,3L);
         return list;
     }
 }

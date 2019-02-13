@@ -1,7 +1,7 @@
 package com.cannontech.dr.itron.dao;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
 import com.cannontech.core.dao.NotFoundException;
 
@@ -15,5 +15,7 @@ public interface ItronDao {
     
     void addProgram(long itronId, int groupPaoId);
 
-    List<Long> getItronProgramIds(Collection<Integer> programPaoIds);
+    Map<Integer, Long> getItronProgramIds(Collection<Integer> programPaoIds);
+
+    Map<Integer, Long> getItronGroupIds(Collection<Integer> groupPaoIds);
 }

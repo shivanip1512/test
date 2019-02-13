@@ -100,10 +100,10 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 mockUrl, hardware.getMacAddress(), hardware.getInventoryId());
             request = DeviceManagerHelper.buildAddRequestWithoutServicePoint(hardware);
         }
-        AddHANDeviceResponse response = null;
+        AddHANDeviceResponse response = new AddHANDeviceResponse();
         try {
             log.debug(XmlUtils.getPrettyXml(request));
-            response = (AddHANDeviceResponse) deviceManagerTemplate.marshalSendAndReceive(mockUrl, request);
+          //  response = (AddHANDeviceResponse) deviceManagerTemplate.marshalSendAndReceive(mockUrl, request);
             itronEventLogService.addHANDevice(hardware.getDisplayName(), hardware.getMacAddress(), userName);
             log.debug(XmlUtils.getPrettyXml(response));
             if (!response.getErrors().isEmpty()) {
@@ -120,7 +120,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
 
     @Override
     public void removeDeviceFromServicePoint(String macAddress) {
-
         String itronUrl = url + "/editHANDevice";
         log.debug("EditHANDeviceRequest - Sending request to Itron {} to add device with Mac Id {}.", itronUrl, macAddress);
         EditHANDeviceRequest request = DeviceManagerHelper.buildEditRequestRemoveServicePoint(macAddress);
@@ -139,7 +138,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     /**
      * Checks if itron program id is in database, if doesn't exist sends request to itron to create
      * group, persist the group id returned by itron to the database.
-     * 
      */
     @Override
     public void createGroup(LiteYukonPAObject pao) {
@@ -151,60 +149,86 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
 
     @Override
-    public void enroll(int accountId, int deviceId, LiteYukonPAObject programPao, LiteYukonPAObject groupPao) {
-        createGroup(groupPao);
-        createProgram(programPao);
-        sendEnrollmentRequest(accountId);
+    public void enroll(int accountId, int deviceId, int groupId) {
+        sendEnrollmentRequest(accountId, true);
         String macAddress = deviceDao.getDeviceMacAddress(deviceId);
-        addMacAddressToGroup(groupPao, macAddress);
+        addMacAddressToGroup(getGroup(groupId), macAddress);
     }
     
     @Override
     public void unenroll(int accountId) {
-        sendEnrollmentRequest(accountId);
+        sendEnrollmentRequest(accountId, false);
     }
 
     /**
-     * Sends enrollment requests to Itron
+     * Returns the list of enrollments in itron programs for account
      */
-    private void sendEnrollmentRequest(int accountId) {
+    private List<ProgramEnrollment> getItronProgramEnrollments(int accountId) {
         Map<Integer, LiteYukonPAObject> itronGroups = cache.getAllLMGroups().stream()
                 .filter(group -> group.getPaoType() == PaoType.LM_GROUP_ITRON)
                 .collect(Collectors.toMap(LiteYukonPAObject::getLiteID, group -> group));   
         
-        CustomerAccount account = customerAccountDao.getById(accountId);
         List<ProgramEnrollment> enrollments = enrollmentDao.getActiveEnrollmentsByAccountId(accountId);
         enrollments.removeIf(enrollment -> !itronGroups.containsKey(enrollment.getLmGroupId()));
+        return enrollments;
+    }
+    
+    /**
+     * Sends enrollment requests to Itron
+     */
+    private void sendEnrollmentRequest(int accountId, boolean enroll) {
+        List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
+        
         List<Long> itronGroupIds = new ArrayList<>();
         
         if (!enrollments.isEmpty()) {
             List<Integer> assignedProgramIds =
                 enrollments.stream().map(enrollment -> enrollment.getAssignedProgramId()).collect(Collectors.toList());
-            Collection<Integer> programPaoIds =
-                assignedProgramDao.getProgramIdsByAssignedProgramIds(assignedProgramIds).values();
-
-            itronGroupIds.addAll(itronDao.getItronProgramIds(programPaoIds));
+            Collection<Integer> programPaoIds = assignedProgramDao.getProgramIdsByAssignedProgramIds(assignedProgramIds).values();
+            
+            if(enroll) {
+                createPrograms(programPaoIds);
+                createGroups(enrollments);
+            }
+            itronGroupIds.addAll(itronDao.getItronProgramIds(programPaoIds).values());            
         }
+        
+        CustomerAccount account = customerAccountDao.getById(accountId);
    
+        log.debug("Sending enrollment request to itron for account {} groups to enroll {} ", account.getAccountNumber(),
+            itronGroupIds);
         SetServicePointEnrollmentRequest request =
             ProgramManagerHelper.buildEnrollmentRequest(account.getAccountNumber(), itronGroupIds);
         // TODO send to itron
         // TODO add event log
         log.debug(XmlUtils.getPrettyXml(request));
     }
+
+    /**
+     * Checks if enrollment contains the group that was not previously sent to Itron.
+     * Sends the group to itron to get the itron group Id back
+     */
+    private void createGroups(List<ProgramEnrollment> enrollments) {    
+       List<Integer> groupPaoIds = enrollments.stream()
+               .map(enrollment -> enrollment.getLmGroupId())
+               .collect(Collectors.toList());
+        Map<Integer, Long> groupPaoIdtoItronId = itronDao.getItronGroupIds(groupPaoIds);
+        groupPaoIds.stream()
+            .filter(paoId -> !groupPaoIdtoItronId.containsKey(paoId))
+            .forEach(paoId -> itronDao.addGroup(getGroupIdFromItron(getGroup(paoId)), paoId));
+    }
     
     /**
-     * Checks if itron group id is in database, if doesn't exist sends request to itron to create
-     * group, persist the program id returned by itron to the database.
+     * Checks if enrollment contains the program that was not previously sent to Itron.
+     * Sends the program to itron to get the itron program Id back
      */
-    private void createProgram(LiteYukonPAObject pao) {
-        try {
-            itronDao.getProgram(pao.getLiteID());
-        } catch (NotFoundException e) {
-            itronDao.addProgram(getProgramIdFromItron(pao), pao.getLiteID());
-        }
+    private void createPrograms(Collection<Integer> programPaoIds) {       
+        Map<Integer, Long> programPaoIdtoItronId = itronDao.getItronProgramIds(programPaoIds);
+        programPaoIds.stream()
+            .filter(paoId -> !programPaoIdtoItronId.containsKey(paoId))
+            .forEach(paoId -> itronDao.addProgram(getProgramIdFromItron(getProgram(paoId)), paoId));
     }
-
+    
     /**
      * Sends Itron program id and receives itron program id
      */
@@ -216,16 +240,12 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         AddProgramResponse response = null;
         try {
             AddProgramRequest request = new AddProgramRequest();
-            request.setProgramName(String.valueOf(pao.getLiteID()));
-            log.debug(XmlUtils.getPrettyXml(request));
+            request.setProgramName(String.valueOf(pao.getLiteID()));;
             response = new AddProgramResponse();
             // response = (AddProgramResponse) programManagerTemplate.marshalSendAndReceive(itronUrl,
             // request);
             itronEventLogService.addProgram(response.getProgramName(), response.getProgramID(), userName);
-            log.debug(XmlUtils.getPrettyXml(response));
-
-            log.debug(
-                "AddProgramResponse - Sending request to Itron {} to add {} program is successful. Itron program id {} created",
+            log.debug("AddProgramResponse - Sending request to Itron {} to add {} program is successful. Itron program id {} created",
                 itronUrl, pao.getPaoName(), response.getProgramID());
             return response.getProgramID();
         } catch (Exception e) {
@@ -350,6 +370,20 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         log.debug(XmlUtils.getPrettyXml(response));
         log.debug("AddServicePointResponse - Request to Itron {} to add service point for account {} is successful.",
             itronUrl, account.getAccountNumber());
+    }
+    
+    private LiteYukonPAObject getGroup(int yukonGroupId) {
+        LiteYukonPAObject groupPao = cache.getAllLMGroups().stream()
+                .filter(group -> group.getLiteID() == yukonGroupId)
+                .findFirst().get();
+        return groupPao;
+    }
+
+    private LiteYukonPAObject getProgram(int yukonProgramId) {
+        LiteYukonPAObject programPao = cache.getAllLMPrograms().stream()
+                .filter(program -> program.getLiteID() == yukonProgramId)
+                .findFirst().get();
+        return programPao;
     }
     
     /**
