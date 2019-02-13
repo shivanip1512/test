@@ -6153,7 +6153,7 @@ holder.declareNamespace('soap-env',"http://schemas.xmlsoap.org/soap/envelope/")
 holder.declareNamespace('itron-dm',"urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd")
 
 //This will probably only work if there is a single mac ID specified.
-requestContext.mac = holder["/soap-env:Envelope/soap-env:Body/itron-dm:EditHANDeviceRequest/itron-dm:D2GAttributes/itron-dm:ESI/itron-dm:MacID"]
+requestContext.mac = holder["/soap-env:Envelope/soap-env:Body/itron-dm:EditHANDeviceRequest/itron-dm:D2GAttributes/itron-dm:PrimaryAttributes/itron-dm:MacID"]
 
 //switch to the line below to just return a default mac (which won't match the request)
 //requestContext.mac = "12.12.12.12.12.12"</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">
