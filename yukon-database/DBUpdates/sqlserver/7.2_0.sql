@@ -492,33 +492,40 @@ WHERE WidgetType = 'TREND';
 INSERT INTO DBUpdates VALUES ('YUK-19471', '7.2.0', GETDATE());
 /* @end YUK-19471 */
 
-/* @start YUK-19474 */
+/* @start YUK-19474-2 if YUK-19474 */
+DROP TABLE LMGroupItronMapping;
+DROP TABLE LMProgramItronMapping;
+
+INSERT INTO DBUpdates VALUES ('YUK-19474-2', '7.2.0', GETDATE());
+/* @end YUK-19474-2 */
+
+/* @start YUK-19511 */
 CREATE TABLE LMGroupItronMapping (
+    YukonGroupId        NUMERIC     NOT NULL,
     ItronGroupId        NUMERIC     NOT NULL,
-    DeviceId            NUMERIC     NOT NULL,
-    CONSTRAINT PK_LMGroupItronMapping PRIMARY KEY (ItronGroupId)
+    CONSTRAINT PK_LMGroupItronMapping PRIMARY KEY (YukonGroupId)
 );
 
 CREATE TABLE LMProgramItronMapping (
+    YukonProgramId      NUMERIC     NOT NULL,
     ItronProgramId      NUMERIC     NOT NULL,
-    DeviceId            NUMERIC     NOT NULL,
-    CONSTRAINT PK_LMProgramItronMapping PRIMARY KEY (ItronProgramId)
+    CONSTRAINT PK_LMProgramItronMapping PRIMARY KEY (YukonProgramId)
 );
 GO
 
 ALTER TABLE LMGroupItronMapping
-    ADD CONSTRAINT FK_LMGroup_LMGroupItronMapping FOREIGN KEY (DeviceId)
+    ADD CONSTRAINT FK_LMGroupItronMapping_LMGroup FOREIGN KEY (YukonGroupId)
     REFERENCES LMGroup (DeviceID)
     ON DELETE CASCADE;
 
 ALTER TABLE LMProgramItronMapping
-    ADD CONSTRAINT FK_LMProg_LMProgItronMapping FOREIGN KEY (DeviceId)
+    ADD CONSTRAINT FK_LMProgItronMapping_LMProg FOREIGN KEY (YukonProgramId)
     REFERENCES LMPROGRAM (DeviceID)
     ON DELETE CASCADE;
 GO
 
-INSERT INTO DBUpdates VALUES ('YUK-19474', '7.2.0', GETDATE());
-/* @end YUK-19474 */
+INSERT INTO DBUpdates VALUES ('YUK-19511', '7.2.0', GETDATE());
+/* @end YUK-19511 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

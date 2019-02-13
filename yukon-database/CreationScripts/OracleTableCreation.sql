@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/6/2019 3:41:43 PM                          */
+/* Created on:     2/13/2019 2:27:53 PM                         */
 /*==============================================================*/
 
 
@@ -6470,9 +6470,9 @@ alter table LMGroupHoneywellWiFi
 /* Table: LMGroupItronMapping                                   */
 /*==============================================================*/
 create table LMGroupItronMapping  (
+   YukonGroupId         NUMBER                          not null,
    ItronGroupId         NUMBER                          not null,
-   DeviceId             NUMBER                          not null,
-   constraint PK_LMGroupItronMapping primary key (ItronGroupId)
+   constraint PK_LMGroupItronMapping primary key (YukonGroupId)
 );
 
 /*==============================================================*/
@@ -6929,9 +6929,9 @@ create table LMProgramHistory  (
 /* Table: LMProgramItronMapping                                 */
 /*==============================================================*/
 create table LMProgramItronMapping  (
+   YukonProgramId       NUMBER                          not null,
    ItronProgramId       NUMBER                          not null,
-   DeviceId             NUMBER                          not null,
-   constraint PK_LMProgramItronMapping primary key (ItronProgramId)
+   constraint PK_LMProgramItronMapping primary key (YukonProgramId)
 );
 
 /*==============================================================*/
@@ -12903,7 +12903,7 @@ alter table LMGroupHoneywellWiFi
       on delete cascade;
 
 alter table LMGroupItronMapping
-   add constraint FK_LMGroup_LMGroupItronMapping foreign key (DeviceId)
+   add constraint FK_LMGroupItronMapping_LMGroup foreign key (YukonGroupId)
       references LMGroup (DeviceID)
       on delete cascade;
 
@@ -13108,7 +13108,7 @@ alter table LMProgramGearHistory
       references LMProgramHistory (LMProgramHistoryId);
 
 alter table LMProgramItronMapping
-   add constraint FK_LMProg_LMProgItronMapping foreign key (DeviceId)
+   add constraint FK_LMProgItronMapping_LMProg foreign key (YukonProgramId)
       references LMPROGRAM (DeviceID)
       on delete cascade;
 
