@@ -86,6 +86,7 @@ public class DeviceManagerHelper {
         EditD2GAttributeType attribute = new EditD2GAttributeType();
         NullableString nullableString = new NullableString();
         nullableString.setNull(true);
+        attribute.setPrimaryAttributes(editType);
         attribute.setServicePointUtilID(nullableString);
         request.setD2GAttributes(attribute);
         return request;
