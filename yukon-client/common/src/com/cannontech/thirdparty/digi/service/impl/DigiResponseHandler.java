@@ -28,6 +28,7 @@ import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -408,7 +409,7 @@ public class DigiResponseHandler {
         logHelper.debug("Received LM Address for %s - " + address, endPoint.getName());
         sepReportedAddressDao.save(address);
         
-        jmsTemplate.convertAndSend("yukon.notif.obj.dr.rfn.LmAddressNotification", address);
+        jmsTemplate.convertAndSend(JmsApiDirectory.LM_ADDRESS_NOTIFICATION.getQueue().getName(), address);
     }
     
     public Map<PaoIdentifier,ZigbeePingResponse> handleXbeeCoreResponse(String source, List<ZigbeeDevice> expected) {        

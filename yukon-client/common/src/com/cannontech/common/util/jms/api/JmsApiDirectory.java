@@ -878,7 +878,6 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in DigiResponseHandler, RfnLcrDataMappingServiceImpl
     public static JmsApi<LmReportedAddress,?,?> LM_ADDRESS_NOTIFICATION =
             JmsApi.builder(LmReportedAddress.class)
                   .name("LM Address Notification")
