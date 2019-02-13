@@ -15,7 +15,6 @@ import com.cannontech.dr.dao.ExpressComReportedAddress;
 import com.cannontech.dr.dao.ExpressComReportedAddressDao;
 import com.cannontech.dr.dao.LmReportedAddress;
 import com.cannontech.dr.dao.SepReportedAddress;
-import com.cannontech.dr.dao.SepReportedAddressDao;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -28,7 +27,6 @@ public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmRep
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private ExpressComReportedAddressDao expressComReportedAddressDao;
-    @Autowired private SepReportedAddressDao sepReportedAddressDao;
     @Autowired @Qualifier("main") private Executor executor;
 
     private final Cache<Integer, DatedObject<LmReportedAddress>> currentAddresses =
@@ -97,7 +95,7 @@ public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmRep
             String[] idBits, YukonUserContext context) {
         String value = null;
         String fieldName = idBits[1];
-        String relayNum = idBits.length > 2 ? idBits[2] : null; // set if field is relay
+        Integer relayNum = idBits.length > 2 ? Integer.valueOf(idBits[2]) : null; // set if field is relay
 
         ExpressComReportedAddress address = (ExpressComReportedAddress) datedObject.getObject();
         ExpressComAddressField field = ExpressComAddressField.valueOf(fieldName);
@@ -131,10 +129,10 @@ public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmRep
             value = Integer.toString(address.getUda());
             break;
         case RELAY_PROGRAM:
-            value = Integer.toString(address.getRelayByNumber(Integer.valueOf(relayNum)).getProgram());
+            value = Integer.toString(address.getRelayByNumber(relayNum).getProgram());
             break;
         case RELAY_SPLINTER:
-            value = Integer.toString(address.getRelayByNumber(Integer.valueOf(relayNum)).getSplinter());
+            value = Integer.toString(address.getRelayByNumber(relayNum).getSplinter());
             break;
         default:
             break;
@@ -152,8 +150,8 @@ public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmRep
     }
 
     /**
-     * Called from Yukon Service Maganger's {@link LcrReadingArchiveRequestListener} 
-     * upon recieving an  {@link RfnLcrReadingArchiveRequest}
+     * Called from Yukon Service Manager's {@link LcrReadingArchiveRequestListener} 
+     * upon receiving an  {@link RfnLcrReadingArchiveRequest}
      */
     public void handleAddress(LmReportedAddress address) {
         currentAddresses.put(address.getDeviceId(), new DatedObject<>(address));
