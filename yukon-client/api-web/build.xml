@@ -105,9 +105,16 @@
         <include name="yc.jar"/>
         <include name="yukon-shared.jar"/>
         <include name="yukonappserver.jar"/>
-    	<include name="jaxb-api.jar"/>
-    	<include name="jaxb-impl.jar"/>
-    	<include name="jaxws-api.jar"/>
+        <include name="jaxb-api.jar"/>
+        <include name="jaxb-impl.jar"/>
+        <include name="jaxws-api.jar"/>
+        <include name="saaj-api-1.3.5.jar"/>
+        <include name="saaj-impl-1.4.0.jar"/>
+        <include name="itronDeviceManagerTypes_v1_8.jar"/>
+        <include name="itronProgramEventManagerTypes_v1_6.jar"/>
+        <include name="itronProgramManagerTypes_v1_1.jar"/>
+        <include name="itronServicePointManagerTypes_v1_3.jar"/>
+        <include name="commons-compress-1.18.jar"/>
     </fileset>
 
     <target name="compile">
