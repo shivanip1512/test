@@ -17,9 +17,9 @@
             </tags:nameValue>
             <tags:nameValue name="Model">
                 <select name="model">
-                    <option value="RFN-LCR6200">RFN-LCR6200</option>
-                    <option value="RFN-LCR6600">RFN-LCR6600</option>
-                    <option value="RFN-LCR6700">RFN-LCR6700</option>
+                    <option value="1077">RFN-LCR6200</option>
+                    <option value="1082">RFN-LCR6600</option>
+                    <option value="1086">RFN-LCR6700</option>
                 </select>
             </tags:nameValue>
         </tags:nameValueContainer>
