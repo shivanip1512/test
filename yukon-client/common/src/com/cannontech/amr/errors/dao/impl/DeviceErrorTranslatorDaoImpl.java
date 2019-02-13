@@ -128,7 +128,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
         });
         Validate.notNull(defaultTranslation, "No default translation found");
         store.put(defaultThemeKey, mapBuilder.build());
-        log.info("Device error code descriptions loaded: " + store.size());
+        log.info("Device error code descriptions loaded: " + store.get(defaultThemeKey).size());
     }
 
     public void setErrorDefinitions(InputStream errorDefinitions) {
