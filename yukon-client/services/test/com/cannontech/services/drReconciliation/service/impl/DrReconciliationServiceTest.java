@@ -619,18 +619,15 @@ public class DrReconciliationServiceTest {
             lcrAddressing.setZip(7);
             lcrAddressing.setUda(8);
             
-            ExpressComReportedAddressRelay relay1 = new ExpressComReportedAddressRelay();
-            relay1.setRelayNumber(1);
+            var relay1 = new ExpressComReportedAddressRelay(1);
             relay1.setProgram(9);
             relay1.setSplinter(10);
 
-            ExpressComReportedAddressRelay relay2 = new ExpressComReportedAddressRelay();
-            relay2.setRelayNumber(6);
+            var relay2 = new ExpressComReportedAddressRelay(6);
             relay2.setProgram(9);
             relay2.setSplinter(1);
 
-            ExpressComReportedAddressRelay relay3 = new ExpressComReportedAddressRelay();
-            relay3.setRelayNumber(7);
+            var relay3 = new ExpressComReportedAddressRelay(7);
             relay3.setProgram(9);
             relay3.setSplinter(125);
             

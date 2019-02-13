@@ -331,8 +331,8 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
 
         if (CollectionUtils.isNotEmpty(data.get(FieldType.RELAY_N_SPLINTER_ADDRESS))) {
             data.get(FieldType.RELAY_N_SPLINTER_ADDRESS).forEach(relayNode -> {
-                ExpressComReportedAddressRelay relay = new ExpressComReportedAddressRelay();
-                relay.setRelayNumber(ByteUtil.getInteger(relayNode[0]));
+                var relayNumber = ByteUtil.getInteger(relayNode[0]);
+                ExpressComReportedAddressRelay relay = new ExpressComReportedAddressRelay(relayNumber);
                 relay.setSplinter(ByteUtil.getInteger(relayNode[1]));
                 relays.put(relay.getRelayNumber(), relay);
             });
@@ -345,8 +345,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                     relay = relays.get(ByteUtil.getInteger(relayNode[0]));
                     relay.setProgram(ByteUtil.getInteger(relayNode[1]));
                 } else {
-                    relay = new ExpressComReportedAddressRelay();
-                    relay.setRelayNumber(ByteUtil.getInteger(relayNode[0]));
+                    relay = new ExpressComReportedAddressRelay(ByteUtil.getInteger(relayNode[0]));
                     relay.setProgram(ByteUtil.getInteger(relayNode[1]));
                     relays.put(relay.getRelayNumber(), relay);
                 }

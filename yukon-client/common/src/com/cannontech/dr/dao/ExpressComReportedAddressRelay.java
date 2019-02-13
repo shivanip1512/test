@@ -17,6 +17,10 @@ public class ExpressComReportedAddressRelay implements Serializable {
     private int program;
     private int splinter;
     
+    public ExpressComReportedAddressRelay(int relayNumber) {
+        this.relayNumber = relayNumber;
+    }
+    
     public int getRelayNumber() {
         return relayNumber;
     }

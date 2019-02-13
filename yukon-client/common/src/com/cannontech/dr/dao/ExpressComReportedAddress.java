@@ -232,9 +232,8 @@ public class ExpressComReportedAddress extends LmReportedAddress implements Seri
 
         Set<ExpressComReportedAddressRelay> newRelayAddress = new HashSet<>();
         for (ExpressComReportedAddressRelay addressRelay : relays) {
-            ExpressComReportedAddressRelay newAddressRelay = new ExpressComReportedAddressRelay();
+            var newAddressRelay = new ExpressComReportedAddressRelay(addressRelay.getRelayNumber());
             newAddressRelay.setProgram(addressRelay.getProgram());
-            newAddressRelay.setRelayNumber(addressRelay.getRelayNumber());
             newAddressRelay.setSplinter(addressRelay.getSplinter());
             newRelayAddress.add(newAddressRelay);
         }

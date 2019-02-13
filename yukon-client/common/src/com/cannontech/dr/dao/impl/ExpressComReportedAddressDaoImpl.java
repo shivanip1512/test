@@ -94,9 +94,8 @@ public class ExpressComReportedAddressDaoImpl implements ExpressComReportedAddre
 
         @Override
         public ExpressComReportedAddressRelay mapRow(YukonResultSet rs) throws SQLException {
-            ExpressComReportedAddressRelay relay = new ExpressComReportedAddressRelay();
+            var relay = new ExpressComReportedAddressRelay(rs.getInt("RelayNumber"));
             
-            relay.setRelayNumber(rs.getInt("RelayNumber"));
             relay.setProgram(rs.getInt("Program"));
             relay.setSplinter(rs.getInt("Splinter"));
             

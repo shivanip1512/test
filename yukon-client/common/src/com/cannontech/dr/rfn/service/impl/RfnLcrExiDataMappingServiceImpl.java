@@ -196,12 +196,12 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                 }
                 if (runTimePoint != null) {
                     PointData runTimePointData = buildPointData(runTimePoint.getPointID(), 
-                        runTimePoint.getPointType(), currentIntervalTimestamp.toDate(), new Double(runTime));
+                        runTimePoint.getPointType(), currentIntervalTimestamp.toDate(), Double.valueOf(runTime));
                     intervalPointData.add(runTimePointData);
                 }
                 if (shedTimePoint != null) {
                     PointData shedTimePointData = buildPointData(shedTimePoint.getPointID(), 
-                        shedTimePoint.getPointType(), currentIntervalTimestamp.toDate(), new Double(shedTime));
+                        shedTimePoint.getPointType(), currentIntervalTimestamp.toDate(), Double.valueOf(shedTime));
                     intervalPointData.add(shedTimePointData);
                 }
                 currentIntervalTimestamp = currentIntervalTimestamp.minus(Duration.standardMinutes(intervalLengthMinutes));
@@ -286,9 +286,8 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         Set<ExpressComReportedAddressRelay> relays = Sets.newHashSet();
         for (Node relayNode : relaysNodes) {
             Element elem = (Element) relayNode;
-            ExpressComReportedAddressRelay relay = new ExpressComReportedAddressRelay();
+            var relay = new ExpressComReportedAddressRelay(Integer.parseInt(elem.getAttribute("id")));
             
-            relay.setRelayNumber(Integer.parseInt(elem.getAttribute("id")));
             relay.setProgram(Integer.parseInt(elem.getElementsByTagName("Program").item(0).getTextContent()));
             relay.setSplinter(Integer.parseInt(elem.getElementsByTagName("Splinter").item(0).getTextContent()));
             
