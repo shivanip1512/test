@@ -68,7 +68,7 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
         try (Stream<Path> paths = Files.walk(Paths.get(importPath))) {
             paths.filter(Files::isRegularFile).forEach(path -> {
                 Instant startTime = Instant.now();
-                log.info("Scheduled Data Import for type Asset Started at " + startTime + "for  " + path.toFile());
+                log.info("Scheduled Data Import for type Asset Started at " + startTime + " for  " + path.toFile());
                 try {
                     String[] columnHeaders = getcolumnHeaders(path.toFile());
                     if (ArrayUtils.isNotEmpty(columnHeaders)) {
@@ -120,12 +120,12 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
                 } catch (ScheduledDataImportException | IOException e) {
                     dataImportResult.getErrorFiles().add(path.toFile().getName());
                     moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath);
-                    log.error("Error occured while processing file" + path.toFile().getName() + e);
+                    log.error("Error occured while processing file " + path.toFile().getName() + e);
                 }
-                log.info("Scheduled Data Import for type Asset completed at " + Instant.now() + "for  " + path.toFile());
+                log.info("Scheduled Data Import for type Asset completed at " + Instant.now() + " for  " + path.toFile());
             });
         } catch (IOException e) {
-            log.error("Error occured while processing files due to I/O errors:" + e);
+            log.error("Error occured while processing files due to I/O errors: " + e);
         }
 
         return dataImportResult;
@@ -156,7 +156,7 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
             dataImportHelper.getErrorFileName(startTime.toDate(), filetoProcess, "_ErrorResults_IN_Header_", ".csv");
             FileUtils.moveFile(filetoProcess, new File(errorFileOutputPath, filetoProcess.getName()));
         } catch (IOException e) {
-            log.error("Unable to move file to Error path directory due to I/O issue" + e);
+            log.error("Unable to move file to Error path directory due to I/O issue " + e);
         }
     }
 

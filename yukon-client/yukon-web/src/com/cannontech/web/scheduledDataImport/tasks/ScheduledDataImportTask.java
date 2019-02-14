@@ -48,7 +48,7 @@ public class ScheduledDataImportTask extends YukonTaskBase {
                     result.getSuccessFiles().size());
             }
         } else {
-            log.warn("No directory found for Import Path" + importPath);
+            log.warn("No directory found for Import Path " + importPath);
         }
 
     }
