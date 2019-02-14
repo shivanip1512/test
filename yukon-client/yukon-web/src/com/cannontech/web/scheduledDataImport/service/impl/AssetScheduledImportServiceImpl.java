@@ -65,8 +65,9 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
         ScheduledDataImportResult dataImportResult = new ScheduledDataImportResult();
         try (Stream<Path> paths = Files.walk(Paths.get(importPath))) {
             paths.filter(Files::isRegularFile).forEach(path -> {
+                Instant startTime = Instant.now();
+                log.info("Scheduled Data Import for type Asset Started at " + startTime + "for  " + path.toFile());
                 try {
-                   
                     String[] columnHeaders = getcolumnHeaders(path.toFile());
                     if (ArrayUtils.isNotEmpty(columnHeaders)) {
                         AccountImportResult result = new AccountImportResult();
@@ -76,7 +77,6 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
                             BulkFileUpload bulkFileUpload = new BulkFileUpload();
                             bulkFileUpload.setFile(path.toFile());
 
-                            Instant startTime = Instant.now();
                             File archiveFile = dataImportHelper.getArchiveFile(startTime.toDate(), path.toFile(), ".csv");
                             String errorFileName = null;
                             boolean isValidActionColHeader = true;
@@ -91,7 +91,7 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
                                 dataImportResult.getErrorFiles().add(path.toFile().getName());
                                 log.warn("Column Name HW_ACTION/CUST_ACTION is not correct in File " + path.toFile().getName());
                                 isValidActionColHeader = false;
-                                moveFiletoErrorFileOutputPath(path.toFile(), errorFileOutputPath);
+                                moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath);
                             }
 
                             if (isValidActionColHeader) {
@@ -110,16 +110,17 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
                         } else {
                             dataImportResult.getErrorFiles().add(path.toFile().getName());
                             log.warn("HW_ACTION/CUST_ACTION is not present in File " + path.toFile().getName());
-                            moveFiletoErrorFileOutputPath(path.toFile(), errorFileOutputPath);
+                            moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath);
                         }
 
                     }
 
                 } catch (Exception e) {
                     dataImportResult.getErrorFiles().add(path.toFile().getName());
-                    moveFiletoErrorFileOutputPath(path.toFile(), errorFileOutputPath);
+                    moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath);
                     log.error("Error occured while processing file" + path.toFile().getName() + e);
                 }
+                log.info("Scheduled Data Import for type Asset completed at " + Instant.now() + "for  " + path.toFile());
             });
         } catch (IOException e) {
             log.error("Error occured while processing files due to I/O errors:" + e);
@@ -146,9 +147,10 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
     /**
      * Move import file to error output path.
      */
-    private void moveFiletoErrorFileOutputPath(File filetoProcess, String errorFileOutputPath) {
+    private void moveFiletoErrorFileOutputPath(Instant startTime, File filetoProcess, String errorFileOutputPath) {
 
         try {
+            dataImportHelper.getErrorFileName(startTime.toDate(), filetoProcess, "_ErrorResults_IN_Header_", ".csv");
             FileUtils.moveFile(filetoProcess, new File(errorFileOutputPath, filetoProcess.getName()));
         } catch (IOException e) {
             log.error("Unable to move file to Error path directory due to I/O issue" + e);

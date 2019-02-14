@@ -566,18 +566,8 @@ public class AccountImportService {
                         }
                     }
 
-                    if (!preScan || result.isScheduled()) {
-                        try {
-                            liteAcctInfo = importAccount(custFields, result, context.getYukonUser());
-                        } catch (Exception ex) {
-                            result.custFileErrors++;
-                            String[] value = result.getCustLines().get(lineNoKey);
-                            value[1] = "[line: " + lineNo + " error: " + ex.getMessage() + "]";
-                            result.getCustLines().put(lineNoKey, value);
-                            addToLog(lineNoKey, value, importLog);
-                            continue;
-                        }
-                    }
+                    String[] hwFields = prepareFields(ImportFields.NUM_INV_FIELDS);
+                    String[] appFields = prepareFields(ImportFields.NUM_APP_FIELDS);
 
                     if (hwInfoContained) {
                         if (preScan) {
@@ -588,8 +578,6 @@ public class AccountImportService {
                                 appFieldsList = new ArrayList<String[]>();
                             }
                         }
-                        
-                        String[] hwFields = prepareFields(ImportFields.NUM_INV_FIELDS);
                         hwFields[ImportFields.IDX_LINE_NUM] = String.valueOf(lineNo);
                         setHardwareFields(hwFields, columns, hwColIdx, result);
                         
@@ -667,9 +655,7 @@ public class AccountImportService {
                             }
                         }
 
-                        String[] appFields = null;
                         if (hwColIdx[result.COL_APP_TYPE] != -1) {
-                            appFields = prepareFields(ImportFields.NUM_APP_FIELDS);
                             setApplianceFields(appFields, columns, hwColIdx, result);
                             
                             if ((appFields[ImportFields.IDX_APP_TYPE].trim().length() > 0) &&
@@ -731,16 +717,29 @@ public class AccountImportService {
                                 appFieldsList.add(appFields);
                             }
                         }
+                    }
 
+                    if (!preScan || result.isScheduled()) {
+                        try {
+                            liteAcctInfo = importAccount(custFields, result, context.getYukonUser());
+                        } catch (Exception ex) {
+                            result.custFileErrors++;
+                            String[] value = result.getCustLines().get(lineNoKey);
+                            value[1] = "[line: " + lineNo + " error: " + ex.getMessage() + "]";
+                            result.getCustLines().put(lineNoKey, value);
+                            addToLog(lineNoKey, value, importLog);
+                            continue;
+                        }
+                    }
+
+                    if (hwInfoContained) {
                         if (!preScan || result.isScheduled()) {
                             try {
-                                LiteInventoryBase liteInv = null;
-                                
                                 // IMPORT HARDWARE
-                                liteInv = importHardware(hwFields, liteAcctInfo, result, context.getYukonUser());
+                                LiteInventoryBase liteInv = importHardware(hwFields, liteAcctInfo, result, context.getYukonUser());
 
                                 if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
-                                        && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
+                                    && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
                                     programSignUp(hwFields, appFields, liteAcctInfo, liteInv, result);
                                 }
                             } catch (Exception e) {
@@ -751,9 +750,8 @@ public class AccountImportService {
                                 addToLog(lineNoKey, value, importLog);
                                 continue;
                             }
-                        } 
+                        }
                     }
-                    
                     if (result.isCanceled()) {
                         throw new Exception();
                     }
@@ -1110,7 +1108,12 @@ public class AccountImportService {
     private void sendSmartNotifications(AccountImportResult result, YukonUserContext context) {
 
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        String taskName = accessor.getMessage("yukon.web.modules.smartNotifications.MANUAL_IMPORT.taskName");
+        String taskName;
+        if (result.isPrescan()) {
+            taskName = accessor.getMessage("yukon.web.modules.smartNotifications.MANUAL_PRESCAN.taskName");
+        } else {
+            taskName = accessor.getMessage("yukon.web.modules.smartNotifications.MANUAL_IMPORT.taskName");
+        }
         // The first parameter passed to getDataImportWarning is -1 because this is manual import and does
         // not have a job id associated with it.
 
@@ -1122,7 +1125,12 @@ public class AccountImportService {
             errorFiles.add(result.getHardwareFileUpload().getName());
         }
 
-        int successFileCount = 2 - errorFiles.size(); // Can upload both files simultaneously
+        int successFileCount = 0;
+        if (result.getHardwareFile() != null && result.getCustomerFile() != null) {
+            successFileCount = 2 - errorFiles.size(); // Can upload both files simultaneously
+        } else {
+            successFileCount = 1 - errorFiles.size();
+        }
 
         List<DataImportWarning> dataImportwarning = DataImportHelper.getDataImportWarning(-1, taskName,
             ScheduledImportType.ASSET_IMPORT.getImportType(), errorFiles, successFileCount);

@@ -78,7 +78,7 @@ public class ScheduledDataImportHelper {
     public String archiveErrors(List<String[]> errorList, Instant startTime, String errorFileOutputPath, File file) {
         String errorFileName = null;
         if (CollectionUtils.isNotEmpty(errorList)) {
-            errorFileName = getErrorFileName(startTime.toDate(), file, ".csv");
+            errorFileName = getErrorFileName(startTime.toDate(), file, "_ErrorResults_", ".csv");
             File errorFile = new File(errorFileOutputPath, errorFileName);
             try (FileWriter writer = new FileWriter(errorFile);
                  CSVWriter csvWriter = new CSVWriter(writer);) {
@@ -93,11 +93,12 @@ public class ScheduledDataImportHelper {
     }
 
     /**
-     * Get error file name (File__ErrorResults_YYYYMMDD_HHMM)based on startTime, file and ext.
+     * Get error file name (File_ErrorResults_YYYYMMDD_HHMM or
+     * File_ErrorResults_IN_Header_YYYYMMDD_HHMM)based on startTime, file and ext.
      */
-    public String getErrorFileName(Date startTime, File file, String ext) {
+    public String getErrorFileName(Date startTime, File file, String fileNameExtension, String ext) {
         String fileName = file.getName().substring(0, file.getName().length() - 4);
-        String errorFileName = fileName + "_ErrorResults_" + StarsUtils.starsDateFormat.format(startTime) + "_"
+        String errorFileName = fileName + fileNameExtension + StarsUtils.starsDateFormat.format(startTime) + "_"
             + StarsUtils.starsTimeFormat.format(startTime) + ".csv";
         return errorFileName;
 
