@@ -51,8 +51,10 @@
     </c:if>
     <c:if test="${!empty nodeSN}">
         <tags:nameValue2 nameKey=".nodeSN">${fn:escapeXml(nodeSN)}</tags:nameValue2>
-    </c:if>    
-    <tags:nameValue2 nameKey=".status" nameClass="dn js-status-display" valueClass="dn js-status js-status-display"></tags:nameValue2>
+    </c:if>
+    <c:if test="${!empty deviceStatus}">
+        <tags:nameValue2 nameKey=".status" valueClass="js-status">${fn:escapeXml(deviceStatus)}</tags:nameValue2>
+    </c:if>
     <c:if test="${showRoute}">
         <tags:nameValue2 nameKey=".route">${fn:escapeXml(pao.meter.route)}</tags:nameValue2>
     </c:if>

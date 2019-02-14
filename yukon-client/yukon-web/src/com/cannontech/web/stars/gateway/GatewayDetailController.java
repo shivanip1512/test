@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
@@ -30,7 +29,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -56,7 +54,6 @@ public class GatewayDetailController {
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private PointDao pointDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @RequestMapping("/gateways/{id}")
     public String detail(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
@@ -82,10 +79,6 @@ public class GatewayDetailController {
             List<DataSequence> sequences = Lists.newArrayList(gateway.getData().getSequences());
             helper.sortSequences(sequences, userContext);
             model.addAttribute("sequences", sequences);
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String statusString = accessor.getMessage("yukon.web.modules.operator.gateways.connectionStatus."
-                                                      + gateway.getData().getConnectionStatus().toString());
-            model.addAttribute("deviceStatus", statusString);
         }
                 
         Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(gateway.getId());

@@ -642,12 +642,6 @@ yukon.map.network = (function () {
                             if (feature.get('pao') != null) {
                                 url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
                                 $('#device-info').load(url, function() {
-                                    var deviceStatus = $('.js-device-status').val();
-                                    if (deviceStatus) {
-                                        $('.js-status').text(deviceStatus);
-                                        yukon.mapping.updateDeviceStatusClass(deviceStatus);
-                                        $('.js-status-display').show();
-                                    }
                                     if (nearby != null) {
                                         $('.js-distance').text(nearby.distance.distance.toFixed(4) + " ");
                                         $('.js-distance-display').show();
@@ -655,6 +649,8 @@ yukon.map.network = (function () {
                                     $('#device-info').show();
                                     $('#marker-info').show();
                                     _overlay.setPosition(coord);
+                                    var deviceStatus = $('.js-status').text();
+                                    yukon.mapping.updateDeviceStatusClass(deviceStatus);
                                 });
                             }
                         }

@@ -5,7 +5,6 @@
 
 <cti:standardPage module="operator" page="mapNetwork">
     
-    <input type="hidden" class="js-device-status" value="${deviceStatus}"/>
     <input type="hidden" class="js-device-id" value="${deviceId}"/>
     
     <div class="column-10-14 clearfix">

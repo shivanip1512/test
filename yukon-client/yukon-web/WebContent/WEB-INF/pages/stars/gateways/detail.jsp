@@ -9,7 +9,6 @@
 
 <cti:standardPage module="operator" page="gateways.detail">
 
-<input type="hidden" class="js-device-status" value="${deviceStatus}"/>
 <input type="hidden" class="js-device-id" value="${gateway.paoIdentifier.paoId}"/>
 
 <c:if test="${not empty geojson}"><cti:toJson id="geojson" object="${geojson}"/></c:if>

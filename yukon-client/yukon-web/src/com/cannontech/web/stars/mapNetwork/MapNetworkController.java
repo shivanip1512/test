@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.geojson.FeatureCollection;
 import org.geojson.Point;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +25,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -37,16 +34,9 @@ import com.cannontech.common.pao.model.DistanceUnit;
 import com.cannontech.common.pao.model.PaoDistance;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.service.LocationService;
-import com.cannontech.common.rfn.message.metadata.CommStatusType;
-import com.cannontech.common.rfn.message.metadata.RfnMetadata;
-import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.model.RfnGatewayData;
-import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
-import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -70,16 +60,12 @@ import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Route;
 @Controller
 public class MapNetworkController {
     
-    private static final Logger log = YukonLogManager.getLogger(MapNetworkController.class);
     private static final String nameKey= "yukon.web.modules.operator.mapNetwork.";
     
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private DeviceDao deviceDao;
     @Autowired private NmNetworkService nmNetworkService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
-    @Autowired private RfnDeviceMetadataService metadataService;
-    @Autowired private RfnGatewayDataCache gatewayDataCache;
     @Autowired private LocationValidator locationValidator;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private LocationService locationService;
@@ -120,36 +106,6 @@ public class MapNetworkController {
         
         int numLayers = BooleanUtils.toInteger(displayNeighborsLayer) + BooleanUtils.toInteger(displayParentNodeLayer) + BooleanUtils.toInteger(displayPrimaryRouteLayer);
         model.addAttribute("numLayers", numLayers);
-        
-        // try to get commstatus for device
-        if (device.getDeviceType().isRfn()) {
-            try {
-                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-                RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(deviceId);
-                Object commStatus = null;
-                if (rfnDevice.getPaoIdentifier().getPaoType().isRfGateway()) {
-                    RfnGatewayData gateway = gatewayDataCache.get(rfnDevice.getPaoIdentifier());
-                    String statusString = accessor.getMessage("yukon.web.modules.operator.gateways.connectionStatus." + gateway.getConnectionStatus().toString());
-                    model.addAttribute("deviceStatus", statusString);
-                } else {
-                    Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);
-                    commStatus = metadata.get(RfnMetadata.COMM_STATUS);
-                    if (commStatus != null) {
-                        CommStatusType status = CommStatusType.valueOf(commStatus.toString());
-                        String statusString = accessor.getMessage(nameKey + "status." + status);
-                        model.addAttribute("deviceStatus", statusString);
-                    } else {
-                        // ignore, status will be set to "UNKNOWN"
-                        log.error("NM didn't return communication status for " + deviceId);
-                    }
-                }
-            } catch (NmCommunicationException e) {
-                // ignore, status will be set to "UNKNOWN"
-                log.error("Failed to get meta-data for " + deviceId, e);
-            } catch (NotFoundException e) {
-                log.error(e);
-            }
-        }
 
         return "mapNetwork/home.jsp";
     }

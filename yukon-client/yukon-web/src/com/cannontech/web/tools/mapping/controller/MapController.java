@@ -55,6 +55,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
+import com.cannontech.common.rfn.message.metadata.CommStatusType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -192,6 +193,7 @@ public class MapController {
     
     @RequestMapping("/map/device/{id}/info")
     public String info(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         YukonPao pao = databaseCache.getAllPaosMap().get(id);
         PaoType type = pao.getPaoIdentifier().getPaoType();
         DisplayablePao displayable = paoLoadingService.getDisplayablePao(pao);
@@ -219,6 +221,8 @@ public class MapController {
                     RfnGatewayData gateway = gatewayDataCache.get(pao.getPaoIdentifier());
                     model.addAttribute("gatewayIPAddress", gateway.getIpAddress());
                     model.addAttribute("macAddress", gateway.getMacAddress());
+                    String statusString = accessor.getMessage("yukon.web.modules.operator.gateways.connectionStatus." + gateway.getConnectionStatus().toString());
+                    model.addAttribute("deviceStatus", statusString);
                 } catch (NmCommunicationException e) {
                     log.error("Failed to get gateway data for " + id, e);
                     model.addAttribute("errorMsg", e.getMessage());
@@ -231,6 +235,15 @@ public class MapController {
                     model.addAttribute("primaryGatewayName", primaryGatewayName);
                     String nodeSN = metadataService.getMetaDataValueAsString(RfnMetadata.NODE_SERIAL_NUMBER, metadata);
                     model.addAttribute("nodeSN", nodeSN);
+                    Object commStatus = metadata.get(RfnMetadata.COMM_STATUS);
+                    if (commStatus != null) {
+                        CommStatusType status = CommStatusType.valueOf(commStatus.toString());
+                        String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + status);
+                        model.addAttribute("deviceStatus", statusString);
+                    } else {
+                        // ignore, status will be set to "UNKNOWN"
+                        log.error("NM didn't return communication status for " + id);
+                    }
                     //primary gateway from NM contains the IP Address too
                     List<LiteYukonPAObject> foundGateways;
                     foundGateways = paoDao.getLiteYukonPaoByName(primaryGatewayName, false);
