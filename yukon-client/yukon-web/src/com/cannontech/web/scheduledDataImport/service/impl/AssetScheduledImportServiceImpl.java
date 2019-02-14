@@ -23,11 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.scheduledFileImport.ScheduledImportType;
+import com.cannontech.common.util.FileUtil;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.util.BulkFileUpload;
+import com.cannontech.web.scheduledDataImport.ScheduledDataImportException;
 import com.cannontech.web.scheduledDataImport.ScheduledDataImportResult;
 import com.cannontech.web.scheduledDataImport.ScheduledFileImportResult;
 import com.cannontech.web.scheduledDataImport.service.ScheduledImportService;
@@ -115,7 +117,7 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
 
                     }
 
-                } catch (Exception e) {
+                } catch (ScheduledDataImportException | IOException e) {
                     dataImportResult.getErrorFiles().add(path.toFile().getName());
                     moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath);
                     log.error("Error occured while processing file" + path.toFile().getName() + e);
@@ -132,7 +134,7 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
     /**
      *  Process account import based on file and account import inputs.
      */
-    private void processAssetImport(File filetoProcess, Instant startTime, AccountImportResult result) throws Exception {
+    private void processAssetImport(File filetoProcess, Instant startTime, AccountImportResult result) {
 
         result.setCurrentUser(YukonUserContext.system.getYukonUser());
         YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(YukonUserContext.system.getYukonUser());
@@ -150,6 +152,7 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
     private void moveFiletoErrorFileOutputPath(Instant startTime, File filetoProcess, String errorFileOutputPath) {
 
         try {
+            FileUtil.verifyDirectory(errorFileOutputPath);
             dataImportHelper.getErrorFileName(startTime.toDate(), filetoProcess, "_ErrorResults_IN_Header_", ".csv");
             FileUtils.moveFile(filetoProcess, new File(errorFileOutputPath, filetoProcess.getName()));
         } catch (IOException e) {

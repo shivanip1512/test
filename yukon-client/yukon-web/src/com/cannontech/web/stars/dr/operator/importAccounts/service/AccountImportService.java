@@ -84,6 +84,7 @@ import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.dataImport.DataImportHelper;
+import com.cannontech.web.scheduledDataImport.ScheduledDataImportException;
 import com.cannontech.web.stars.dr.operator.AccountImportFields;
 import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
 import com.google.common.collect.Lists;
@@ -123,11 +124,7 @@ public class AccountImportService {
         executor.execute(() -> {
             Instant startTime = Instant.now();
             result.setStartTime(startTime);
-            try {
-                processAccountImport(result, context, startTime.toDate());
-            } catch (Exception e) {
-                log.error("Error Occured in Account Import Process " + e);
-            }
+            processAccountImport(result, context, startTime.toDate());
         });
     }
 
@@ -228,7 +225,7 @@ public class AccountImportService {
     }
 
     @SuppressWarnings("deprecation")
-    public void processAccountImport(AccountImportResult result, YukonUserContext context, Date startTime) throws Exception {
+    public void processAccountImport(AccountImportResult result, YukonUserContext context, Date startTime) {
         boolean preScan = result.isPrescan();
         final File custFile = result.getCustomerFile();
         final File hwFile = result.getHardwareFile();
@@ -1077,7 +1074,7 @@ public class AccountImportService {
                 }
             }
             if (result.isScheduled()) {
-                throw new Exception(e);
+                throw new ScheduledDataImportException(e);
             }
 
             ActivityLogger.logEvent(result.getCurrentUser().getUserID(), ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, "");

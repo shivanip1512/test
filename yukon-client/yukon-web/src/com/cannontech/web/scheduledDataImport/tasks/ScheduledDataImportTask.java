@@ -1,5 +1,6 @@
 package com.cannontech.web.scheduledDataImport.tasks;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,12 +39,16 @@ public class ScheduledDataImportTask extends YukonTaskBase {
 
     @Override
     public void start() {
-
-        if (ScheduledImportType.fromImportTypeMap(getImportType()) == ScheduledImportType.ASSET_IMPORT) {
-            log.info("Initiate Asset Import Task");
-            ScheduledDataImportResult result = scheduledImportService.initiateImport(scheduleName, importPath, errorFileOutputPath);
-            log.info("Sending smart notification messages for asset import");
-            sendSmartNotification(SmartNotificationEventType.ASSET_IMPORT, result.getErrorFiles(), result.getSuccessFiles().size());
+        File importDir = new File(getImportPath());
+        if (importDir.exists()) {
+            if (ScheduledImportType.fromImportTypeMap(getImportType()) == ScheduledImportType.ASSET_IMPORT) {
+                log.info("Initiate Asset Import Task");
+                ScheduledDataImportResult result = scheduledImportService.initiateImport(scheduleName, importPath, errorFileOutputPath);
+                sendSmartNotification(SmartNotificationEventType.ASSET_IMPORT, result.getErrorFiles(),
+                    result.getSuccessFiles().size());
+            }
+        } else {
+            log.warn("No directory found for Import Path" + importPath);
         }
 
     }
@@ -51,6 +56,7 @@ public class ScheduledDataImportTask extends YukonTaskBase {
     private void sendSmartNotification(SmartNotificationEventType eventType, List<String> errorFiles,
             Integer successFileCount) {
         if (!errorFiles.isEmpty() || successFileCount > 0) {
+            log.info("Sending smart notification messages for asset import");
             List<DataImportWarning> dataImportwarning = DataImportHelper.getDataImportWarning(getJob().getJobGroupId(),
                 getScheduleName(), getImportType(), errorFiles, successFileCount);
             List<SmartNotificationEvent> smartNotificationEvent = dataImportwarning.stream().map(

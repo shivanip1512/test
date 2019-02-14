@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.scheduledFileImport.ScheduleImportHistoryEntry;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.FileUtil;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -78,6 +79,7 @@ public class ScheduledDataImportHelper {
     public String archiveErrors(List<String[]> errorList, Instant startTime, String errorFileOutputPath, File file) {
         String errorFileName = null;
         if (CollectionUtils.isNotEmpty(errorList)) {
+            FileUtil.verifyDirectory(errorFileOutputPath);
             errorFileName = getErrorFileName(startTime.toDate(), file, "_ErrorResults_", ".csv");
             File errorFile = new File(errorFileOutputPath, errorFileName);
             try (FileWriter writer = new FileWriter(errorFile);
