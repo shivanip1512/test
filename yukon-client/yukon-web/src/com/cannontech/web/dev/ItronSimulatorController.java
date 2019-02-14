@@ -46,13 +46,13 @@ public class ItronSimulatorController {
     public String test() {
         Hardware hardware = new Hardware();
         hardware.setMacAddress("12:13:14:15:16:17:18");
-        AccountDto account = new AccountDto();
-        account.setAccountNumber("123456789");
+       // AccountDto account = new AccountDto();
+       // account.setAccountNumber("123456789");
         try {
-            itronCommunicationService.addDevice(hardware, account);
-            LiteYukonPAObject group = new LiteYukonPAObject(1);
-            group.setPaoName("itron load group test");
-            itronCommunicationService.createGroup(group);
+            itronCommunicationService.addDevice(hardware, null);
+            //LiteYukonPAObject group = new LiteYukonPAObject(1);
+            //group.setPaoName("itron load group test");
+            //itronCommunicationService.createGroup(group);
         } catch(ItronCommunicationException e) {
             System.out.println(e.getMessage());
         }

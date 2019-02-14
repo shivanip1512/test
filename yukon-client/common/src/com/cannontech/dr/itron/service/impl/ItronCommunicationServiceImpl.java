@@ -103,7 +103,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Override
     public void addDevice(Hardware hardware, AccountDto account) {
         String url = Manager.DEVICE.getUrl(settingsUrl);
-
+    //    Lists.newArrayList(Manager.values()).forEach(manager -> manager.getTemplate().setMessageSender(getMessageSender("A", "B")));
         AddHANDeviceRequest request = null;
         if (account != null) {
             // TODO handle itron error if account already exist implementation pending simulator
