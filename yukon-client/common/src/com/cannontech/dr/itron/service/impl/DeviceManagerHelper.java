@@ -121,19 +121,18 @@ public class DeviceManagerHelper {
         return request;
     }
     
-    public static ESIGroupRequestType buildGroupEditRequest(LiteYukonPAObject pao, String macAddress) {
+    public static ESIGroupRequestType buildGroupEditRequest(LiteYukonPAObject lmGroup, String macAddress) {
         ESIGroupRequestType requestType = new ESIGroupRequestType();
-        requestType.setGroupName(String.valueOf(pao.getLiteID()));
+        requestType.setGroupName(String.valueOf(lmGroup.getLiteID()));
         StaticGroupMemberListType type = new StaticGroupMemberListType();
         type.getMacIDs().add(macAddress);
         requestType.setStaticGroupMemberList(type);
         return requestType;
     }
 
-    public static ESIGroupRequestType buildGroupAddRequest(LiteYukonPAObject pao) {
+    public static ESIGroupRequestType buildGroupAddRequest(LiteYukonPAObject lmGroup) {
         ESIGroupRequestType requestType = new ESIGroupRequestType();
-        requestType.setGroupName(String.valueOf(pao.getLiteID()));
+        requestType.setGroupName(String.valueOf(lmGroup.getLiteID()));
         return requestType;
     }
-    
 }

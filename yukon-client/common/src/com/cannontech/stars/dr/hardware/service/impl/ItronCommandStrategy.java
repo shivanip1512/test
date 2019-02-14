@@ -30,8 +30,6 @@ public class ItronCommandStrategy  implements LmHardwareCommandStrategy{
        
         switch (command.getType()) {
         case CONFIG:
-            // ignore config since "In Service" will be sent after
-            break;
         case IN_SERVICE:
             int yukonGroupId = (int) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
             itronCommunicationService.enroll(command.getDevice().getAccountID(), command.getDevice().getDeviceID(), yukonGroupId);
@@ -40,8 +38,8 @@ public class ItronCommandStrategy  implements LmHardwareCommandStrategy{
         case OUT_OF_SERVICE:
         case TEMP_OUT_OF_SERVICE:
             itronCommunicationService.unenroll(command.getDevice().getAccountID());
+            break;
         default:
-
             break;
         }
     }

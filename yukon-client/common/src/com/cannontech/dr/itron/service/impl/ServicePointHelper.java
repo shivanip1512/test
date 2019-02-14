@@ -113,6 +113,7 @@ public class ServicePointHelper {
         }
         servicePoint.setLocation(location);
         AddServicePointRequest request = new AddServicePointRequest();
+        request.setServicePoint(servicePoint);
         return request;
     }
 }

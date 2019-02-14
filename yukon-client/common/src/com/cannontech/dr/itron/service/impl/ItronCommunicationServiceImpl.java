@@ -38,6 +38,7 @@ import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ObjectFactory;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.AddProgramRequest;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.AddProgramResponse;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.SetServicePointEnrollmentRequest;
+import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.SetServicePointEnrollmentResponse;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServicePointRequest;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServicePointResponse;
 import com.cannontech.dr.itron.service.ItronAddDeviceException;
@@ -70,18 +71,18 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
 
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
 
-    enum Manager {
-        DEVICE("DeviceManagerPort", createTemplate("com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8")),
-        PROGRAM("ProgramManagerPort", createTemplate("com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1")),
-        PROGRAM_EVENT("ProgramEventManagerPort", createTemplate("com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6")),
-        SERVICE("ServicePointManagerPort", createTemplate("com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3"));
+    private enum Manager {
+        DEVICE("DeviceManagerPort", "com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8"),
+        PROGRAM("ProgramManagerPort", "com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1"),
+        PROGRAM_EVENT("ProgramEventManagerPort", "com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6"),
+        SERVICE_POINT("ServicePointManagerPort", "com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3");
         
         private WebServiceTemplate template;
         private String port;
         
-        Manager(String port, WebServiceTemplate template){
+        Manager(String port, String path){
             this.port = port;
-            this.template = template;
+            this.template = createTemplate(path);
         }
         public WebServiceTemplate getTemplate() {
             return template;
@@ -96,7 +97,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         settingsUrl = settingDao.getString(GlobalSettingType.ITRON_HCM_API_URL);
         String userName = settingDao.getString(GlobalSettingType.ITRON_HCM_USERNAME);
         String password = settingDao.getString(GlobalSettingType.ITRON_HCM_PASSWORD);
-        Lists.newArrayList(Manager.values()).forEach(manager -> manager.getTemplate().setMessageSender(getAuth(userName, password)));
+        Lists.newArrayList(Manager.values()).forEach(manager -> manager.getTemplate().setMessageSender(getMessageSender(userName, password)));
     }
       
     @Override
@@ -187,6 +188,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * Sends enrollment requests to Itron
      */
     private void sendEnrollmentRequest(int accountId, boolean enroll) {
+        String url = Manager.PROGRAM.getUrl(settingsUrl);
         List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
         
         List<Long> itronProgramIds = new ArrayList<>();
@@ -209,9 +211,19 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             itronProgramIds);
         SetServicePointEnrollmentRequest request =
             ProgramManagerHelper.buildEnrollmentRequest(account.getAccountNumber(), itronProgramIds);
-        // TODO send to itron
-        // TODO add event log
+        log.debug("ITRON-sendEnrollmentRequest url:{} account number:{}.", url, account.getAccountNumber());
         log.debug(XmlUtils.getPrettyXml(request));
+        
+        try {
+            SetServicePointEnrollmentResponse response =
+                (SetServicePointEnrollmentResponse) Manager.PROGRAM.getTemplate().marshalSendAndReceive(url, request);
+            // TODO add event log
+            log.debug("Response for this call is blank:" + XmlUtils.getPrettyXml(response));
+            log.debug("ITRON-sendEnrollmentRequest url:{} account number:{} result{}.", url, account.getAccountNumber(),
+                "success");
+        } catch (Exception e) {
+            throw new ItronCommunicationException("Communication error:", e);
+        }
     }
 
     /**
@@ -242,24 +254,22 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     /**
      * Sends Itron program id and receives itron program id
      */
-    private long getProgramIdFromItron(LiteYukonPAObject pao) {
-        // TODO use different URL
-        String itronUrl = "http://localhost:8083/DeviceManagerPort";
-        log.debug("AddProgramResponse - Sending request to Itron {} to add {} program.", itronUrl, pao.getPaoName());
-
-        AddProgramResponse response = null;
+    private long getProgramIdFromItron(LiteYukonPAObject programPao) {
+        String url = Manager.PROGRAM.getUrl(settingsUrl);
         try {
             AddProgramRequest request = new AddProgramRequest();
-            request.setProgramName(String.valueOf(pao.getLiteID()));;
-            response = new AddProgramResponse();
-            // response = (AddProgramResponse) programManagerTemplate.marshalSendAndReceive(itronUrl,
-            // request);
+            request.setProgramName(String.valueOf(programPao.getLiteID()));
+            log.debug("ITRON-getProgramIdFromItron url:{} program name:{}.", url, programPao.getPaoName());
+            log.debug(XmlUtils.getPrettyXml(request));
+            AddProgramResponse response =
+                (AddProgramResponse) Manager.PROGRAM.getTemplate().marshalSendAndReceive(url, request);
+            log.debug(XmlUtils.getPrettyXml(response));
+            log.debug("ITRON-getProgramIdFromItron url:{} program name:{} result:{}.", url, programPao.getPaoName(),
+                "success");
             itronEventLogService.addProgram(response.getProgramName(), response.getProgramID(), userName);
-            log.debug("AddProgramResponse - Sending request to Itron {} to add {} program is successful. Itron program id {} created",
-                itronUrl, pao.getPaoName(), response.getProgramID());
             return response.getProgramID();
         } catch (Exception e) {
-            throw new ItronCommunicationException("Communication error:" + XmlUtils.getPrettyXml(response), e);
+            throw new ItronCommunicationException("Communication error:", e);
         }
     }
     
@@ -267,53 +277,52 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * Sends request to itron to add mac address to a group.
      */
     private void addMacAddressToGroup(LiteYukonPAObject groupPao, String macAddress) {
-        String itronUrl = "http://localhost:8083/DeviceManagerPort";
-        log.debug("ESIGroupRequestType - Sending request to Itron {} to add mac address {} to {} group.", itronUrl,
-            macAddress, groupPao.getPaoName());
+        String url = Manager.DEVICE.getUrl(settingsUrl);
 
-        ESIGroupResponseType response = null;
+        ESIGroupResponseType response = new ESIGroupResponseType();
         try {
             ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupEditRequest(groupPao, macAddress);
             JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createEditESIGroupRequest(requestType);
             // TODO add event log
-            log.debug(XmlUtils.getPrettyXml(request.getDeclaredType()));
-            response = new ESIGroupResponseType();
-            // response = (ESIGroupResponseType) deviceManagerTemplate.marshalSendAndReceive(itronUrl,
-            // request);
+            log.debug("ITRON-addMacAddressToGroup url:{} group name:{} mac address:{}.", url, groupPao.getPaoName(),
+                macAddress);
+            log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));
+            // TODO fix
+            //response = (ESIGroupResponseType) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
+            log.debug("ITRON-addMacAddressToGroup url:{} group name:{} mac address:{} result:{}.", url,
+                groupPao.getPaoName(), macAddress, "success");
+            log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response)));
             itronEventLogService.addGroup(String.valueOf(groupPao.getLiteID()), response.getGroupID(), userName);
-            log.debug(XmlUtils.getPrettyXml(response));
-
-            log.debug("ESIGroupRequestType - Sending request to Itron {} to add mac address {} to {} group is successful.", itronUrl,
-                macAddress, groupPao.getPaoName());
             if (!response.getErrors().isEmpty()) {
                 throw new ItronAddEditGroupException(response);
             }
         } catch (ItronAddEditGroupException e) {
             throw e;
         } catch (Exception e) {
-            throw new ItronCommunicationException("Communication error:" + XmlUtils.getPrettyXml(response), e);
+            throw new ItronCommunicationException(
+                "Communication error:" + XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response)), e);
         }
     }
     
     /**
      * Returns itron group id
      */
-    private long getGroupIdFromItron(LiteYukonPAObject pao) {
-        String itronUrl = "http://localhost:8083/DeviceManagerPort";
-        log.debug("ESIGroupRequestType - Sending request to Itron {} to add {} group.", itronUrl, pao.getPaoName());
+    private long getGroupIdFromItron(LiteYukonPAObject groupPao) {
+        String url = Manager.DEVICE.getUrl(settingsUrl);
 
-        ESIGroupResponseType response = null;
+        ESIGroupResponseType response = new ESIGroupResponseType();
         try {
-            ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupAddRequest(pao);
+            ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupAddRequest(groupPao);
             JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createAddESIGroupRequest(requestType);
-            log.debug(XmlUtils.getPrettyXml(request.getDeclaredType()));
-            response = new ESIGroupResponseType();
-            //response = (ESIGroupResponseType) deviceManagerTemplate.marshalSendAndReceive(itronUrl, request);
-            itronEventLogService.addGroup(String.valueOf(pao.getLiteID()), response.getGroupID(), userName);
-            log.debug(XmlUtils.getPrettyXml(response));
-            
-            log.debug("ESIGroupResponseType - Sending request to Itron {} to add {} group is successful", itronUrl,
-                pao.getPaoName(), response.getGroupID());
+            // TODO add event log
+            log.debug("ITRON-addMacAddressToGroup url:{} group name:{}", url, groupPao.getPaoName());
+            log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));
+            // TODO fix
+          //  response = (ESIGroupResponseType) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
+            log.debug("ITRON-addMacAddressToGroup url:{} group name:{} result:{}.", url, groupPao.getPaoName(),
+                "success");
+            log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response)));
+            itronEventLogService.addGroup(String.valueOf(groupPao.getLiteID()), response.getGroupID(), userName);
             if (!response.getErrors().isEmpty()) {
                 throw new ItronAddEditGroupException(response);
             }
@@ -321,7 +330,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         } catch (ItronAddEditGroupException e) {
             throw e;
         } catch (Exception e) {
-            throw new ItronCommunicationException("Communication error:" + XmlUtils.getPrettyXml(response), e);
+            throw new ItronCommunicationException("Communication error:" + XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response)), e);
         }
     }
     
@@ -339,6 +348,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      */
     private void editDevice(EditHANDeviceRequest request) {
         String url = Manager.DEVICE.getUrl(settingsUrl);
+        
         log.debug("ITRON-editDevice url {}", url);
         log.debug(XmlUtils.getPrettyXml(request));
         EditHANDeviceResponse response = null;
@@ -364,19 +374,21 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
          * Note: The newly created Service Point is not available in the user interface until an ESI is
          * associated to it. It is, however, in the database. (see DeviceManagerHelper buildRequest) 
          */
-        String itronUrl = "";
+        String url = Manager.SERVICE_POINT.getUrl(settingsUrl);
 
         AddServicePointRequest request = ServicePointHelper.buildAddRequest(account);
+        log.debug("ITRON-addServicePoint url:{} account number:{}.", url, account.getAccountNumber());
         log.debug(XmlUtils.getPrettyXml(request));
-        log.debug("AddServicePointRequest - Sending request to Itron {} to add service point for account {}.", itronUrl,
-            account.getAccountNumber());
-        // AddServicePointResponse response = (AddServicePointResponse) servicePointTemplate.marshalSendAndReceive(url, request);
-        
-        AddServicePointResponse response= new AddServicePointResponse();
-        itronEventLogService.addServicePoint(account.getAccountNumber(), userName);
-        log.debug(XmlUtils.getPrettyXml(response));
-        log.debug("AddServicePointResponse - Request to Itron {} to add service point for account {} is successful.",
-            itronUrl, account.getAccountNumber());
+        try {
+            AddServicePointResponse response =
+                (AddServicePointResponse) Manager.SERVICE_POINT.getTemplate().marshalSendAndReceive(url, request);
+
+            itronEventLogService.addServicePoint(account.getAccountNumber(), userName);
+            log.debug(XmlUtils.getPrettyXml(response));
+            log.debug("ITRON-addServicePoint url:{} account number:{} result:{}.", url, account.getAccountNumber());
+        } catch (Exception e) {
+            throw new ItronCommunicationException("Communication error:", e);
+        }
     }
     
     private LiteYukonPAObject getGroup(int yukonGroupId) {
@@ -415,7 +427,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         }
     }
     
-    private HttpComponentsMessageSender getAuth(String userName, String password) {
+    private HttpComponentsMessageSender getMessageSender(String userName, String password) {
         HttpComponentsMessageSender httpComponentsMessageSender = new HttpComponentsMessageSender();
         httpComponentsMessageSender.setCredentials(new UsernamePasswordCredentials(userName, password));
         return httpComponentsMessageSender;
