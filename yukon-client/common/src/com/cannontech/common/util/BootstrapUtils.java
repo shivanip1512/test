@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -22,6 +24,7 @@ import com.cannontech.spring.YukonSpringHook;
  */
 public class BootstrapUtils {
     private final static String KEYS_DIRECTORY = "/Server/Config/Keys/";
+    private static String serviceStartTime = "";
 
     static {
         System.setProperty("java.locale.providers", "COMPAT,SPI");
@@ -219,5 +222,14 @@ public class BootstrapUtils {
 
     public static boolean isWebStartClient() {
         return StringUtils.isNotBlank(System.getProperty("jnlp.yukon.host"));
+    }
+
+    public static String getServiceStartTime() {
+        if(serviceStartTime.isEmpty()) {
+            Date currentDate = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            serviceStartTime = formatter.format(currentDate); 
+        }
+        return serviceStartTime;
     }
 }

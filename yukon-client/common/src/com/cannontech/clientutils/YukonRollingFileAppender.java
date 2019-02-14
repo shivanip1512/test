@@ -97,12 +97,15 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
      * The maximum log file size. If this is exceeded, logging will stop for the
      * rest of the day. Default is 1G.
      */
-    private long maxFileSize = 1073741824L;
+    private long maxFileSize = YukonLoggingReloader.DEFAULT_MAX_FILE_SIZE;
 
-    /**
-     * String representation of the date and time this log was started.
-     */
-    private String startDate = "";
+    public long getMaxFileSize() {
+        return maxFileSize;
+    }
+
+    public void setMaxFileSize(long maxFileSize) {
+        this.maxFileSize = maxFileSize;
+    }
 
     /**
      * logRetentionDays is used to delete archive files.
@@ -123,7 +126,6 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
         systemInfoString = CtiUtilities.getSystemInfoString();
         calendar = Calendar.getInstance();
         prefix = applicationName + "_";
-        setStartDate();
 
     }
 
@@ -200,7 +202,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
                 try (FileWriter fwriter = new FileWriter(fileName, true)) {
                     // Add log Creation date on top of log file. 
                     String logCreationDate = "Log Creation Date : "+ new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-                    String header = logCreationDate + "\r\n" + "LOG CONTINUES (Running since " + startDate + ")\r\n" + systemInfoString + "\r\n";
+                    String header = logCreationDate + "\r\n" + "LOG CONTINUES (Running since " + BootstrapUtils.getServiceStartTime() + ")\r\n" + systemInfoString + "\r\n";
                     fwriter.write(header);
                 } catch (IOException e) {
                     LOGGER.error("Unable to write header to new log file.");
@@ -208,6 +210,10 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
             } // end outer if
 
             File tempFile = new File(fileName);
+
+            if(tempFile.length() < maxFileSize) {
+                isMaxFileSizeReached = false;
+            }
 
             if (tempFile.canRead() && (tempFile.length() > maxFileSize) && !isMaxFileSizeReached) {
                 // if the max file size is reached, append an error message to the file
@@ -298,12 +304,6 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
             String[] output = file.getAbsolutePath().split("\\.");
             file.renameTo(new File(output[0] + ".zip"));
         }
-    }
-
-    private void setStartDate() {
-        Date currentDate = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-        startDate = formatter.format(currentDate);
     }
 
     /**
