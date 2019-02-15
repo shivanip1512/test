@@ -55,7 +55,7 @@ public class EimJavaLibraryTest {
     public void test_newlyAddedJars() throws Exception {
 
         Set<String> eimJars = new HashSet<>();
-        File resourceFile = new File(".\\build.xml");
+        File resourceFile = new File(".\\.\\.\\build.xml");
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
         DefaultHandler handler = new DefaultHandler() {
