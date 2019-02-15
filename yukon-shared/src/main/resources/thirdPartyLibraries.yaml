@@ -3483,8 +3483,8 @@ C++ :
     project URL : "https://www.openssl.org/"
     license : BSD-style
     license URLs : "https://github.com/openssl/openssl/blob/e216bf9d7ca761718f34e8b3094fcb32c7a143e4/LICENSE"
-    md5 : 38f00628e2daa88b06d0fd6e513e6b5f
-    sha1 : feb324dcf1876c74637e930be88ab72343a1a62a
+    md5 : 69d1c87e884171ed240307a37e6ba6ad
+    sha1 : 8f6e5878e16bf7ce2e09cbd3fd5b9b1f2bbb0198
     updated : 2018-05-17  
     jira : YUK-18201
     notes : Since transitioned to Apache 2.0 license
