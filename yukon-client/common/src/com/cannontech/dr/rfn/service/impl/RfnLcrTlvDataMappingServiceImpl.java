@@ -314,7 +314,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         List<byte[]> reportedRelaySplinterAddresses = data.get(FieldType.RELAY_N_SPLINTER_ADDRESS);
         List<byte[]> reportedRelayProgramAddresses = data.get(FieldType.RELAY_N_PROGRAM_ADDRESS);
 
-        // If there are new relay addresses, update any exiting relay records
+        // If there are new relay addresses, update any existing relay records
         if (CollectionUtils.isNotEmpty(reportedRelaySplinterAddresses) || 
             CollectionUtils.isNotEmpty(reportedRelayProgramAddresses)) {
             //  Get the existing relays so we can update them
