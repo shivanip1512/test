@@ -2070,7 +2070,7 @@
          </urn:D2GAttributes>\r
       </urn:AddHANDeviceRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:username>test</con:username><con:password>test</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addHANDeviceRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="c5c35c45-8a57-4890-98a2-27dcce812540" isOneWay="false" action="" name="editESIGroup" bindingOperationName="editESIGroup" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="352f446d-e45d-4143-a7a1-b9cb84a2bd99" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:username>test_wrong</con:username><con:password>test</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addHANDeviceRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="c5c35c45-8a57-4890-98a2-27dcce812540" isOneWay="false" action="" name="editESIGroup" bindingOperationName="editESIGroup" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="352f446d-e45d-4143-a7a1-b9cb84a2bd99" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:EditESIGroupRequest>\r
@@ -2621,7 +2621,7 @@
          <urn:GroupID>?</urn:GroupID>\r
       </urn:UpdateDeviceEventLogsRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/updateDeviceEventLogsRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="dffc4d07-809e-4bc2-9f72-83a24d31617c" wsaVersion="NONE" name="ServicePointManagerSoapBinding" type="wsdl" bindingName="{urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager}ServicePointManagerSoapBinding" soapVersion="1_1" anonymous="optional" definition="file:/P:/Itron%20WSDL%20Files/wsdls/wsdls/2.3/ServicePointManager.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/P:/Itron%20WSDL%20Files/wsdls/wsdls/2.3/ServicePointManager.wsdl"><con:part><con:url>file:/P:/Itron%20WSDL%20Files/wsdls/wsdls/2.3/ServicePointManager.wsdl</con:url><con:content><![CDATA[<!--root element wsdl:definitions defines set of related services-->
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/updateDeviceEventLogsRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="dffc4d07-809e-4bc2-9f72-83a24d31617c" wsaVersion="NONE" name="ServicePointManagerSoapBinding" type="wsdl" bindingName="{urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager}ServicePointManagerSoapBinding" soapVersion="1_1" anonymous="optional" definition="file:/P:/Itron%20WSDL%20Files/wsdls/wsdls/2.3/ServicePointManager.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/P:/Itron%20WSDL%20Files/wsdls/wsdls/2.3/ServicePointManager.wsdl"><con:part><con:url>file:/P:/Itron%20WSDL%20Files/wsdls/wsdls/2.3/ServicePointManager.wsdl</con:url><con:content><![CDATA[<!--root element wsdl:definitions defines set of related services-->
 <wsdl:definitions name="ServicePointManager" targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager" xmlns:basicxsd="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd" xmlns:location="urn:com:ssn:dr:xmlschema:service:v1.0:LocationTypes.xsd" xmlns:spm="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager" xmlns:spmxsd="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager.xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <xsd:schema targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager.wsdl" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager.wsdl">
@@ -4886,7 +4886,7 @@
          </urn:CriticalPeakPriceProgramEvent>\r
       </urn:AddCriticalPeakPriceProgramEventRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/addCriticalPeakPriceProgramEventRequest"/></con:call></con:operation><con:operation id="bdd3e50d-ede8-4a1a-88f1-12d2dc6b25b5" isOneWay="false" action="" name="addHANLoadControlProgramEvent" bindingOperationName="addHANLoadControlProgramEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="2ebc1236-f9b9-4f8a-bcb2-9a54f6905c7e" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/addCriticalPeakPriceProgramEventRequest"/></con:call></con:operation><con:operation id="bdd3e50d-ede8-4a1a-88f1-12d2dc6b25b5" isOneWay="false" action="" name="addHANLoadControlProgramEvent" bindingOperationName="addHANLoadControlProgramEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="2ebc1236-f9b9-4f8a-bcb2-9a54f6905c7e" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:AddHANLoadControlProgramEventRequest>\r
@@ -4995,7 +4995,7 @@
          </urn:HANLoadControlProgramEvent>\r
       </urn:AddHANLoadControlProgramEventRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/addHANLoadControlProgramEventRequest"/></con:call></con:operation><con:operation id="22aa0534-95c0-4877-86fa-70f85733f01b" isOneWay="false" action="" name="addMessageProgramEvent" bindingOperationName="addMessageProgramEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="ceaf1654-661e-4c95-a2d2-db1d2f19e33c" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:username>test</con:username><con:password>test</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/addHANLoadControlProgramEventRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="22aa0534-95c0-4877-86fa-70f85733f01b" isOneWay="false" action="" name="addMessageProgramEvent" bindingOperationName="addMessageProgramEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="ceaf1654-661e-4c95-a2d2-db1d2f19e33c" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:AddMessageProgramEventRequest>\r
@@ -5036,21 +5036,21 @@
          <urn:NicMacID>?</urn:NicMacID>\r
       </urn:CancelAllHANLoadControlProgramEventOnDevicesRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelAllHANLoadControlProgramEventOnDevicesRequest"/></con:call></con:operation><con:operation id="8aed4d1d-e58e-460c-9e2c-cf357f93c4c5" isOneWay="false" action="" name="cancelCriticalPeakPriceProgramEvent" bindingOperationName="cancelCriticalPeakPriceProgramEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="8c7559e9-18e6-43f4-ba6c-9a6d5214abae" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelAllHANLoadControlProgramEventOnDevicesRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="8aed4d1d-e58e-460c-9e2c-cf357f93c4c5" isOneWay="false" action="" name="cancelCriticalPeakPriceProgramEvent" bindingOperationName="cancelCriticalPeakPriceProgramEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="8c7559e9-18e6-43f4-ba6c-9a6d5214abae" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:CancelCriticalPeakPriceProgramEventRequest>\r
          <urn:ProgramEventID>?</urn:ProgramEventID>\r
       </urn:CancelCriticalPeakPriceProgramEventRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelCriticalPeakPriceProgramEventRequest"/></con:call></con:operation><con:operation id="c4e0c77e-c290-459c-9ddd-08bd77d6a43a" isOneWay="false" action="" name="cancelHANLoadControlProgramEvent" bindingOperationName="cancelHANLoadControlProgramEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="8465c328-2876-4888-bf64-25f8bc47e8ea" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelCriticalPeakPriceProgramEventRequest"/></con:call></con:operation><con:operation id="c4e0c77e-c290-459c-9ddd-08bd77d6a43a" isOneWay="false" action="" name="cancelHANLoadControlProgramEvent" bindingOperationName="cancelHANLoadControlProgramEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="8465c328-2876-4888-bf64-25f8bc47e8ea" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:CancelHANLoadControlProgramEventRequest>\r
-         <urn:ProgramEventID>?</urn:ProgramEventID>\r
+         <urn:ProgramEventID>12345</urn:ProgramEventID>\r
       </urn:CancelHANLoadControlProgramEventRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelHANLoadControlProgramEventRequest"/></con:call></con:operation><con:operation id="d066dc96-9a5a-415e-b359-f5a1c8c417a3" isOneWay="false" action="" name="cancelHANLoadControlProgramEventOnDevices" bindingOperationName="cancelHANLoadControlProgramEventOnDevices" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="ce1216da-b12e-45cc-ac97-818c6c677132" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:username>test</con:username><con:password>test</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelHANLoadControlProgramEventRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="d066dc96-9a5a-415e-b359-f5a1c8c417a3" isOneWay="false" action="" name="cancelHANLoadControlProgramEventOnDevices" bindingOperationName="cancelHANLoadControlProgramEventOnDevices" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="ce1216da-b12e-45cc-ac97-818c6c677132" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:CancelHANLoadControlProgramEventOnDevicesRequest>\r
@@ -5062,7 +5062,7 @@
          <urn:NicMacID>?</urn:NicMacID>\r
       </urn:CancelHANLoadControlProgramEventOnDevicesRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelHANLoadControlProgramEventOnDevicesRequest"/></con:call></con:operation><con:operation id="bf63b834-1570-4871-8ae9-840b0af3e020" isOneWay="false" action="" name="cancelMessageProgramEvent" bindingOperationName="cancelMessageProgramEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="81d29a8c-fc46-4cc9-86d0-d94eb3624e63" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:username>test</con:username><con:password>test</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelHANLoadControlProgramEventOnDevicesRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="bf63b834-1570-4871-8ae9-840b0af3e020" isOneWay="false" action="" name="cancelMessageProgramEvent" bindingOperationName="cancelMessageProgramEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="81d29a8c-fc46-4cc9-86d0-d94eb3624e63" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:CancelMessageProgramEventRequest>\r
@@ -6036,7 +6036,9 @@
          </urn:Pagination>\r
       </urn:ListProgramEventsByProgramIDRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd/ReportManagerPortType/listProgramEventsByProgramIDRequest"/></con:call></con:operation></con:interface><con:mockService id="3bd35ea7-0439-4c9a-8c37-191ef852a201" port="8083" path="/DeviceManagerPort" host="localhost" name="DeviceManager Mock Service" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:onRequestScript>import com.eviware.soapui.support.types.StringToStringsMap;
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd/ReportManagerPortType/listProgramEventsByProgramIDRequest"/></con:call></con:operation></con:interface><con:mockService id="3bd35ea7-0439-4c9a-8c37-191ef852a201" port="8083" path="/DeviceManagerPort" host="localhost" name="DeviceManager Mock Service" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:onRequestScript>log.info(mockRequest.getRequestHeaders())
+
+import com.eviware.soapui.support.types.StringToStringsMap;
 
 // Package the Username and Password into variables
 
@@ -6297,7 +6299,15 @@ requestContext.mac = holder["/soap-env:Envelope/soap-env:Body/itron-dm:EditESIGr
       </detail>
     </soapenv:Fault>
   </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editESIGroupResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:mockService id="549c8aaf-ab99-4ab9-b0b7-6a43f74276fb" port="8083" path="/ServicePointManagerPort" host="localhost" name="ServicePointManager Mock Service" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:onRequestScript>import com.eviware.soapui.support.types.StringToStringsMap;
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editESIGroupResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="updateDeviceEventLogs" id="3dee0edc-1681-47f5-93e4-021dc231d105" interface="DeviceManagerSoapBinding" operation="updateDeviceEventLogs"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Response 1" id="20138120-67e5-4e07-aea9-be27af71af51" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:UpdateDeviceEventLogsResponse>
+         <!--Optional:-->
+         <urn:updateRequested>?</urn:updateRequested>
+      </urn:UpdateDeviceEventLogsResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/updateDeviceEventLogsResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:mockService id="549c8aaf-ab99-4ab9-b0b7-6a43f74276fb" port="8083" path="/ServicePointManagerPort" host="localhost" name="ServicePointManager Mock Service" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:onRequestScript>import com.eviware.soapui.support.types.StringToStringsMap;
 
 // Package the Username and Password into variables
 
@@ -6349,6 +6359,26 @@ requestContext.utilServicePointId = holder["/soap-env:Envelope/soap-env:Body/itr
          <urn:UtilServicePointID>${utilServicePointId}</urn:UtilServicePointID>
       </urn:AddServicePointResponse>
    </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/addServicePointResponse"/></con:response><con:response name="Mock SoapFault Response" id="680da22a-0520-4683-b9cd-5dac37e7f2b6" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Improperly formatted message.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>INVALID_MESSAGE</urn:ErrorCode>
+            <urn:ErrorMessage>Itron documentation does not detail possible errors.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
 </soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/addServicePointResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="editServicePoint" id="6f5b900b-c668-43f6-81b7-df24b2acc379" interface="ServicePointManagerSoapBinding" operation="editServicePoint"><con:settings/><con:defaultResponse>Mock Success Response</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Mock Success Response" id="6fb26844-6360-4fb7-8140-bcb630c87ea7" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
 //We must declare the namespace alias we will use in the xpath below.
 //If we don't do this, the namespace aliases in the xpath must exactly match those in the request
@@ -6363,7 +6393,27 @@ requestContext.utilServicePointId = holder["/soap-env:Envelope/soap-env:Body/itr
          <urn:UtilServicePointID>${utilServicePointId}</urn:UtilServicePointID>
       </urn:EditServicePointResponse>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/editServicePointResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:mockService id="cbd82b96-26d1-42a4-a8e6-587ddb10dca7" port="8083" path="/ProgramEventManagerPort" host="USPLYWHP6035863" name="ProgramEventManagerSoapBinding MockService"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:onRequestScript>import com.eviware.soapui.support.types.StringToStringsMap;
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/editServicePointResponse"/></con:response><con:response name="Mock SoapFault Response" id="82d383f6-b9be-42e7-969c-70785c170037" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Improperly formatted message.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>INVALID_MESSAGE</urn:ErrorCode>
+            <urn:ErrorMessage>Itron documentation does not detail possible errors.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/editServicePointResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:mockService id="cbd82b96-26d1-42a4-a8e6-587ddb10dca7" port="8083" path="/ProgramEventManagerPort" host="USPLYWHP6035863" name="ProgramEventManagerSoapBinding MockService" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:onRequestScript>import com.eviware.soapui.support.types.StringToStringsMap;
 
 // Package the Username and Password into variables
 
@@ -6401,7 +6451,103 @@ headers.each
 		}
 	}
 }
-</con:onRequestScript></con:mockService><con:mockService id="67e0bfa6-89bd-40b1-b191-b67fe033b782" port="8083" path="/ProgramManagerPort" host="USPLYWHP6035863" name="ProgramManagerSoapBinding MockService"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:onRequestScript>import com.eviware.soapui.support.types.StringToStringsMap;
+</con:onRequestScript><con:mockOperation name="addHANLoadControlProgramEvent" id="5d07e677-4772-48e9-861a-d29b103d8bed" interface="ProgramEventManagerSoapBinding" operation="addHANLoadControlProgramEvent"><con:settings/><con:defaultResponse>Mock Success Response</con:defaultResponse><con:dispatchStyle>SCRIPT</con:dispatchStyle><con:dispatchPath>return "Mock Success Response"
+//return "Mock SoapFault Response"</con:dispatchPath><con:response name="Mock Success Response" id="28dd5c35-a465-4a79-b55c-7fca065df0c2" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>Random random = new Random()
+requestContext.randProgramId = random.nextInt(10000)</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:AddProgramEventResponse>
+         <urn:ProgramEventID>${randProgramId}</urn:ProgramEventID>
+      </urn:AddProgramEventResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/addHANLoadControlProgramEventResponse"/></con:response><con:response name="Mock SoapFault Response" id="bb8d9c75-fe3e-4bd5-b8c8-068640d5e460" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Improperly formatted message.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>INVALID_MESSAGE</urn:ErrorCode>
+            <urn:ErrorMessage>Itron documentation does not detail possible errors.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/addHANLoadControlProgramEventResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="cancelHANLoadControlProgramEvent" id="a9902449-5221-4156-bab2-65598027ea8a" interface="ProgramEventManagerSoapBinding" operation="cancelHANLoadControlProgramEvent"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SCRIPT</con:dispatchStyle><con:dispatchPath>return "Mock Success Response";
+//return "Mock SoapFault Response";</con:dispatchPath><con:response name="Mock Success Response" id="03dfc294-cca1-41b6-842c-ce9a9e07c19a" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
+//We must declare the namespace alias we will use in the xpath below.
+//If we don't do this, the namespace aliases in the xpath must exactly match those in the request
+holder.declareNamespace('soap-env',"http://schemas.xmlsoap.org/soap/envelope/")
+holder.declareNamespace('itron-pem',"urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd")
+
+//This will probably only work if there is a single mac ID specified.
+requestContext.programEventId = holder["/soap-env:Envelope/soap-env:Body/itron-pem:CancelHANLoadControlProgramEventRequest/itron-pem:ProgramEventID"]
+
+//switch to the line below to just return a default mac (which won't match the request
+//requestContext.mac = "12.12.12.12.12.12"</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:CancelHANLoadControlProgramEventResponse>
+         <urn:ProgramEventID>${programEventId}</urn:ProgramEventID>
+      </urn:CancelHANLoadControlProgramEventResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelHANLoadControlProgramEventResponse"/></con:response><con:response name="Mock SoapFault Response" id="971a30d8-c49a-428b-8ef8-bbd17a1e255b" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Improperly formatted message.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>INVALID_MESSAGE</urn:ErrorCode>
+            <urn:ErrorMessage>Itron documentation does not detail possible errors.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelHANLoadControlProgramEventResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="cancelHANLoadControlProgramEventOnDevices" id="799ee8b7-a527-4075-81f0-f59ca43497c7" interface="ProgramEventManagerSoapBinding" operation="cancelHANLoadControlProgramEventOnDevices"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SCRIPT</con:dispatchStyle><con:dispatchPath>return "Mock Success Response";
+//return "Mock SoapFault Response";</con:dispatchPath><con:response name="Mock Success Response" id="67ddaba2-03e3-41f0-b0ef-062c255eb5b3" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>Random random = new Random()
+requestContext.randJobId = random.nextInt(10000)</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:CancelHANLoadControlProgramEventOnDevicesResponse>
+         <urn:JobID>${randJobId}</urn:JobID>
+      </urn:CancelHANLoadControlProgramEventOnDevicesResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelHANLoadControlProgramEventOnDevicesResponse"/></con:response><con:response name="Mock SoapFault Response" id="9d7a83e3-d705-4e57-b5f9-4c36a4ab86dd" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Improperly formatted message.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>INVALID_MESSAGE</urn:ErrorCode>
+            <urn:ErrorMessage>Itron documentation does not detail possible errors.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelHANLoadControlProgramEventOnDevicesResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:mockService id="67e0bfa6-89bd-40b1-b191-b67fe033b782" port="8083" path="/ProgramManagerPort" host="USPLYWHP6035863" name="ProgramManagerSoapBinding MockService"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:onRequestScript>import com.eviware.soapui.support.types.StringToStringsMap;
 
 // Package the Username and Password into variables
 
