@@ -3468,7 +3468,7 @@ C++ :
   - project : Microsoft SQL Server Client
     path : MICROSOFT_SQL
     version : 2000.80.194.0
-    project URL : "https://logging.apache.org/log4cxx/latest_stable/"
+    project URL : "https://social.msdn.microsoft.com/Forums/sqlserver/en-US/534f6983-6326-423b-9285-391d4fef42ff/ntwdblibdll-for-sql-2012?forum=sqlgetstarted"
     license : Microsoft indemnification
     license URLs : "n/a"
     md5 : 4a76e50c4921ca9a35c5bb3c010b0cf8
