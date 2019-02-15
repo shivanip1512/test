@@ -24,8 +24,6 @@ public interface ItronCommunicationService {
      * Removes existing Device from Service Point
      */
     void removeDeviceFromServicePoint(String macAddress);
-  
-    void createGroup(LiteYukonPAObject pao);
 
     void enroll(int accountId, int deviceId, int groupId);
 

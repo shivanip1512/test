@@ -25,7 +25,6 @@ import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.dao.ItronDao;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceRequest;
@@ -146,19 +145,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         addDeviceToServicePoint(macAddress, account);
     }
     
-    /**
-     * Checks if itron program id is in database, if doesn't exist sends request to itron to create
-     * group, persist the group id returned by itron to the database.
-     */
-    @Override
-    public void createGroup(LiteYukonPAObject pao) {
-        try {
-            itronDao.getGroup(pao.getLiteID());
-        } catch (NotFoundException e) {
-            itronDao.addGroup(getGroupIdFromItron(pao), pao.getLiteID());
-        }
-    }
-
     @Override
     public void enroll(int accountId, int deviceId, int groupId) {
         sendEnrollmentRequest(accountId, true);
@@ -279,7 +265,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private void addMacAddressToGroup(LiteYukonPAObject groupPao, String macAddress) {
         String url = Manager.DEVICE.getUrl(settingsUrl);
 
-        ESIGroupResponseType response = new ESIGroupResponseType();
+        JAXBElement<ESIGroupResponseType> response = null;
         try {
             ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupEditRequest(groupPao, macAddress);
             JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createEditESIGroupRequest(requestType);
@@ -287,20 +273,19 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug("ITRON-addMacAddressToGroup url:{} group name:{} mac address:{}.", url, groupPao.getPaoName(),
                 macAddress);
             log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));
-            // TODO fix
-            //response = (ESIGroupResponseType) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
+            response = (JAXBElement<ESIGroupResponseType>) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
             log.debug("ITRON-addMacAddressToGroup url:{} group name:{} mac address:{} result:{}.", url,
                 groupPao.getPaoName(), macAddress, "success");
-            log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response)));
-            itronEventLogService.addGroup(String.valueOf(groupPao.getLiteID()), response.getGroupID(), userName);
-            if (!response.getErrors().isEmpty()) {
-                throw new ItronAddEditGroupException(response);
+            log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())));
+            itronEventLogService.addGroup(String.valueOf(groupPao.getLiteID()), response.getValue().getGroupID(), userName);
+            if (!response.getValue().getErrors().isEmpty()) {
+                throw new ItronAddEditGroupException(response.getValue());
             }
         } catch (ItronAddEditGroupException e) {
             throw e;
         } catch (Exception e) {
             throw new ItronCommunicationException(
-                "Communication error:" + XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response)), e);
+                "Communication error:" + XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())), e);
         }
     }
     
@@ -310,27 +295,26 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private long getGroupIdFromItron(LiteYukonPAObject groupPao) {
         String url = Manager.DEVICE.getUrl(settingsUrl);
 
-        ESIGroupResponseType response = new ESIGroupResponseType();
+        JAXBElement<ESIGroupResponseType> response = null;
         try {
             ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupAddRequest(groupPao);
             JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createAddESIGroupRequest(requestType);
             // TODO add event log
             log.debug("ITRON-addMacAddressToGroup url:{} group name:{}", url, groupPao.getPaoName());
             log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));
-            // TODO fix
-          //  response = (ESIGroupResponseType) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
+            response = (JAXBElement<ESIGroupResponseType>) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
             log.debug("ITRON-addMacAddressToGroup url:{} group name:{} result:{}.", url, groupPao.getPaoName(),
                 "success");
-            log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response)));
-            itronEventLogService.addGroup(String.valueOf(groupPao.getLiteID()), response.getGroupID(), userName);
-            if (!response.getErrors().isEmpty()) {
-                throw new ItronAddEditGroupException(response);
+            log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())));
+            itronEventLogService.addGroup(String.valueOf(groupPao.getLiteID()), response.getValue().getGroupID(), userName);
+            if (!response.getValue().getErrors().isEmpty()) {
+                throw new ItronAddEditGroupException(response.getValue());
             }
-            return response.getGroupID();
+            return response.getValue().getGroupID();
         } catch (ItronAddEditGroupException e) {
             throw e;
         } catch (Exception e) {
-            throw new ItronCommunicationException("Communication error:" + XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response)), e);
+            throw new ItronCommunicationException("Communication error:" + XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())), e);
         }
     }
     
