@@ -432,5 +432,8 @@
       <sequence name="LMNestControlEvent">
         <table name="LMNestControlEvent" identitycolumn="NestControlEventId" initsequence="true"/>
       </sequence>
+     <sequence name="ScheduledDataImportHistory">
+        <table name="ScheduledDataImportHistory" identitycolumn="EntryId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

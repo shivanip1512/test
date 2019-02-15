@@ -15,10 +15,13 @@ import com.cannontech.common.smartNotification.model.DataImportAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.jobs.support.YukonTaskBase;
 import com.cannontech.web.dataImport.DataImportHelper;
 import com.cannontech.web.scheduledDataImport.ScheduledDataImportResult;
+import com.cannontech.web.scheduledDataImport.ScheduledFileImportResult;
 import com.cannontech.web.scheduledDataImport.service.ScheduledImportService;
+import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao;
 
 /**
  * A data import file task that will import the file based on import path
@@ -30,6 +33,7 @@ public class ScheduledDataImportTask extends YukonTaskBase {
     private static final Logger log = YukonLogManager.getLogger(ScheduledDataImportTask.class);
 
     @Autowired private ScheduledImportService scheduledImportService;
+    @Autowired private ScheduledDataImportDao scheduledImportDao;
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
 
     private String scheduleName;
@@ -42,10 +46,15 @@ public class ScheduledDataImportTask extends YukonTaskBase {
         File importDir = new File(getImportPath());
         if (importDir.exists()) {
             if (ScheduledImportType.fromImportTypeMap(getImportType()) == ScheduledImportType.ASSET_IMPORT) {
-                log.info("Initiate Asset Import Task");
+                log.info("Asset Import Task - Initiated");
                 ScheduledDataImportResult result = scheduledImportService.initiateImport(scheduleName, importPath, errorFileOutputPath);
+                if (!result.getImportResults().isEmpty()) {
+                    int groupId = getJob().getJobGroupId();
+                    insertFileHistory(result.getImportResults(), groupId, CtiUtilities.getExportArchiveDirPath() );
+                }
                 sendSmartNotification(SmartNotificationEventType.ASSET_IMPORT, result.getErrorFiles(),
                     result.getSuccessFiles().size());
+                log.info("Asset Import Task - Completed");
             }
         } else {
             log.warn("No directory found for Import Path " + importPath);
@@ -65,6 +74,10 @@ public class ScheduledDataImportTask extends YukonTaskBase {
             smartNotificationEventCreationService.send(eventType, smartNotificationEvent);
         }
 
+    }
+
+    private void insertFileHistory(List<ScheduledFileImportResult> result, int jobGroupId, String archievePath) {
+        result.stream().forEach(e -> scheduledImportDao.insertEntry(e, jobGroupId, archievePath));
     }
 
     public String getScheduleName() {

@@ -330,7 +330,12 @@ public class ScheduledDataImportController {
 
         } catch (Exception e) {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + "ioError"));
-            return "redirect:/stars/scheduledDataImport/" + jobGroupId + "/viewHistory";
+            String fromDate = dateFormattingService.format(from, DateFormatEnum.DATEHM, userContext);
+            String toDate = dateFormattingService.format(to, DateFormatEnum.DATEHM, userContext);
+
+            return "redirect:/stars/scheduledDataImport/" + jobGroupId + "/viewHistory?from=" + fromDate + "&to="
+                + toDate + "&page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage() + "&dir="
+                + sorting.getDirection() + "&sort=" + sorting.getSort();
         }
         return null;
     }

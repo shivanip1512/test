@@ -8,6 +8,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.scheduledFileImport.ScheduleImportHistoryEntry;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.web.scheduledDataImport.ScheduledFileImportResult;
 import com.google.common.collect.Multimap;
 
 public interface ScheduledDataImportDao {
@@ -32,6 +33,11 @@ public interface ScheduledDataImportDao {
 
     }
 
+    /**
+     * Insert record into file import history (ScheduledDataImportHistory)
+     */
+    int insertEntry(ScheduledFileImportResult fileImportResult, int jobGroupId, String archievePath);
+     
     /**
      * Retrieve the file import history of a job with specified jobGroupId.
      */

@@ -58,11 +58,17 @@
                                     <cti:param name="isSuccessFile" value="true"/>
                                 </c:url>
                                 <c:url var="errorFileUrl" value="/stars/scheduledDataImport/downloadArchivedFile">
-                                    <c:param name="entryId" value="${result.entryId}"/>
-                                    <c:param name="isSuccessFile" value="false"/>
+                                    <cti:param name="from" value="${from}"/>
+                                    <cti:param name="to" value="${to}"/>
+                                    <cti:param name="dir" value="${sorting.direction}"/>
+                                    <cti:param name="sort" value="${sorting.sort}"/>
+                                    <cti:param name="itemsPerPage" value="${paging.itemsPerPage}"/>
+                                    <cti:param name="page" value="${paging.page}"/>
+                                    <cti:param name="entryId" value="${result.entryId}"/>
+                                    <cti:param name="isSuccessFile" value="false"/>
                                 </c:url>
                                 <tr>
-                                    <td>
+                                    <td class="wbba">
                                         <c:choose>
                                             <c:when test="${result.archiveFileExists}">
                                                 <cti:msg2 var="downloadMouseover" key=".downloadMouseover"/>
@@ -82,7 +88,7 @@
                                     <td>${result.successCount}</td>
                                     <td>${result.failureCount}</td>
                                     <td>${result.totalCount}</td>
-                                    <td>
+                                    <td class="wbba">
                                         <c:choose>
                                             <c:when test="${not empty result.failedFileName}">
                                                 <cti:msg2 var="downloadErrFileMouseover" key=".downloadErrFileMouseover"/>

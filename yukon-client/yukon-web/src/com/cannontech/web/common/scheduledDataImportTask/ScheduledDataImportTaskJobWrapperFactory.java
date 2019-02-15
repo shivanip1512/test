@@ -113,7 +113,7 @@ public class ScheduledDataImportTaskJobWrapperFactory {
     }
 
     public static Comparator<ScheduledDataImportTaskJobWrapper> getNextRunComparator() {
-        return Ordering.natural().onResultOf(ScheduledDataImportTaskJobWrapper::getNextRun);
+        return Ordering.natural().nullsFirst().onResultOf(ScheduledDataImportTaskJobWrapper::getNextRun);
     }
 
     public static Comparator<ScheduledDataImportTaskJobWrapper> getStatusComparator() {

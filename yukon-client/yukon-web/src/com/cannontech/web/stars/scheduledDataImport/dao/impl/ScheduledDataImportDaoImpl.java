@@ -18,16 +18,43 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.web.scheduledDataImport.ScheduledFileImportResult;
 import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
 
     private ScheduledDataImportHistoryRowMapper scheduledDataImportHistoryRowMapper =
         new ScheduledDataImportHistoryRowMapper();
 
+    @Override
+    public int insertEntry(ScheduledFileImportResult fileImportResult, int jobGroupId, String archievePath) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink sink = sql.insertInto("ScheduledDataImportHistory");
+        int entryId = nextValueHelper.getNextValue("ScheduledDataImportHistory");
+        
+        sink.addValue("EntryId", entryId);
+        sink.addValue("FileName", fileImportResult.getFileName());
+        sink.addValue("FileImportType", fileImportResult.getScheduledImportType());
+        sink.addValue("ImportDate", fileImportResult.getImportDate());
+        sink.addValue("ArchiveFileName", fileImportResult.getArchiveFileName());
+        sink.addValue("ArchiveFilePath", archievePath);
+        sink.addValue("ArchiveFileExists", fileImportResult.isArchiveFileExists());
+        sink.addValue("FailedFileName", fileImportResult.getFailedFileName());
+        sink.addValue("FailedFilePath", fileImportResult.getFailedFilePath());
+        sink.addValue("SuccessCount", fileImportResult.getSuccessCount());
+        sink.addValue("FailureCount", fileImportResult.getFailureCount());
+        sink.addValue("JobGroupId", jobGroupId);
+
+        yukonJdbcTemplate.update(sql);
+
+        return entryId;
+    }
+    
     @Override
     public SearchResults<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId, Instant from, Instant to,
                                                           SortBy sortBy,
