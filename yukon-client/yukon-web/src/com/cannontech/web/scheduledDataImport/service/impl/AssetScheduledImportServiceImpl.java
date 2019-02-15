@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -45,6 +47,8 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ScheduledDataImportHelper dataImportHelper;
     private final String failureColumnName = "Failure Reason";
+    
+    Set<String> importPathSet = ConcurrentHashMap.newKeySet();
 
     private static volatile DateTime cleanupTime;
 
@@ -56,78 +60,87 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
             cleanupTime = new DateTime();
             dataImportHelper.deleteArchiveFile();
         }
-        return initiateAssetImport(importPath, errorFileOutputPath);
+        return initiateAssetImport(scheduleName, importPath, errorFileOutputPath);
 
     }
      /**
       * Start asset import based on import path and create error file if there is any import error in file.
       * Also create file in archive directory and delete from import directory.
       */
-    private ScheduledDataImportResult initiateAssetImport(String importPath, String errorFileOutputPath) {
+    private ScheduledDataImportResult initiateAssetImport(String scheduleName, String importPath, String errorFileOutputPath) {
+        boolean importPathCheck = importPathSet.add(importPath);
         ScheduledDataImportResult dataImportResult = new ScheduledDataImportResult();
-        try (Stream<Path> paths = Files.walk(Paths.get(importPath))) {
-            paths.filter(Files::isRegularFile).forEach(path -> {
-                Instant startTime = Instant.now();
-                log.info("Scheduled Data Import for type Asset Started at " + startTime.toDate() + " for  " + path.toFile());
-                try {
-                    String[] columnHeaders = getcolumnHeaders(path.toFile());
-                    if (ArrayUtils.isNotEmpty(columnHeaders)) {
-                        AccountImportResult result = new AccountImportResult();
-                        String action = columnHeaders[result.COL_CUST_ACTION] != null ? columnHeaders[result.COL_CUST_ACTION] : columnHeaders[result.COL_HW_ACTION];
+        if (importPathCheck) {
+            try (Stream<Path> paths = Files.walk(Paths.get(importPath))) {
+                paths.filter(Files::isRegularFile).forEach(path -> {
+                    Instant startTime = Instant.now();
+                    log.info("Scheduled Data Import for type Asset Started at " + startTime.toDate() + " for  "
+                        + path.toFile());
+                    try {
+                        String[] columnHeaders = getcolumnHeaders(path.toFile());
+                        if (ArrayUtils.isNotEmpty(columnHeaders)) {
+                            AccountImportResult result = new AccountImportResult();
+                            String action = columnHeaders[result.COL_CUST_ACTION] != null ? columnHeaders[result.COL_CUST_ACTION] : columnHeaders[result.COL_HW_ACTION];
 
-                        if (action != null) {
-                            BulkFileUpload bulkFileUpload = new BulkFileUpload();
-                            bulkFileUpload.setFile(path.toFile());
+                            if (action != null) {
+                                BulkFileUpload bulkFileUpload = new BulkFileUpload();
+                                bulkFileUpload.setFile(path.toFile());
 
-                            File archiveFile = dataImportHelper.getArchiveFile(startTime.toDate(), path.toFile(), ".csv");
-                            String errorFileName = null;
-                            boolean isValidActionColHeader = true;
+                                File archiveFile = dataImportHelper.getArchiveFile(startTime.toDate(), path.toFile(), ".csv");
+                                String errorFileName = null;
+                                boolean isValidActionColHeader = true;
 
-                            if (action.equalsIgnoreCase(result.CUST_COLUMNS[result.COL_CUST_ACTION])) {
-                                result.setAccountFileUpload(bulkFileUpload);
-                                result.setCustArchiveDir(archiveFile);
-                            } else if (action.equalsIgnoreCase(result.HW_COLUMNS[result.COL_HW_ACTION])) {
-                                result.setHardwareFileUpload(bulkFileUpload);
-                                result.setHwArchiveDir(archiveFile);
+                                if (action.equalsIgnoreCase(result.CUST_COLUMNS[result.COL_CUST_ACTION])) {
+                                    result.setAccountFileUpload(bulkFileUpload);
+                                    result.setCustArchiveDir(archiveFile);
+                                } else if (action.equalsIgnoreCase(result.HW_COLUMNS[result.COL_HW_ACTION])) {
+                                    result.setHardwareFileUpload(bulkFileUpload);
+                                    result.setHwArchiveDir(archiveFile);
+                                } else {
+                                    dataImportResult.getErrorFiles().add(path.toFile().getName());
+                                    log.warn("Column Name HW_ACTION/CUST_ACTION is not correct in File "
+                                        + path.toFile().getName());
+                                    isValidActionColHeader = false;
+                                    moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath);
+                                }
+
+                                if (isValidActionColHeader) {
+                                    processAssetImport(path.toFile(), startTime, result);
+                                    if (result.hasErrors()) {
+                                        errorFileName = archiveErrorsToCsvFile(startTime, result, columnHeaders, path.toFile(), errorFileOutputPath);
+                                        dataImportResult.getErrorFiles().add(path.toFile().getName());
+                                    } else {
+                                        dataImportResult.getSuccessFiles().add(path.toFile().getName());
+                                    }
+                                }
+                                ScheduledFileImportResult fileImportResult = buildScheduledFileImportResult(result, startTime, path.toFile().getName(),
+                                        archiveFile.getName(), errorFileOutputPath, errorFileName);
+                                dataImportResult.getImportResults().add(fileImportResult);
+
                             } else {
                                 dataImportResult.getErrorFiles().add(path.toFile().getName());
-                                log.warn("Column Name HW_ACTION/CUST_ACTION is not correct in File " + path.toFile().getName());
-                                isValidActionColHeader = false;
+                                log.warn("HW_ACTION/CUST_ACTION is not present in File " + path.toFile().getName());
                                 moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath);
                             }
 
-                            if (isValidActionColHeader) {
-                                processAssetImport(path.toFile(), startTime, result);
-                                if (result.hasErrors()) {
-                                    errorFileName = archiveErrorsToCsvFile(startTime, result, columnHeaders, path.toFile(), errorFileOutputPath);
-                                    dataImportResult.getErrorFiles().add(path.toFile().getName());
-                                } else {
-                                    dataImportResult.getSuccessFiles().add(path.toFile().getName());
-                                }
-                            }
-                            ScheduledFileImportResult fileImportResult =
-                                buildScheduledFileImportResult(result, startTime, path.toFile().getName(), archiveFile.getName(), errorFileOutputPath, errorFileName);
-                            dataImportResult.getImportResults().add(fileImportResult);
-
-                        } else {
-                            dataImportResult.getErrorFiles().add(path.toFile().getName());
-                            log.warn("HW_ACTION/CUST_ACTION is not present in File " + path.toFile().getName());
-                            moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath);
                         }
 
+                    } catch (ScheduledDataImportException | IOException e) {
+                        dataImportResult.getErrorFiles().add(path.toFile().getName());
+                        moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath);
+                        log.error("Error occured while processing file " + path.toFile().getName() + e);
                     }
-
-                } catch (ScheduledDataImportException | IOException e) {
-                    dataImportResult.getErrorFiles().add(path.toFile().getName());
-                    moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath);
-                    log.error("Error occured while processing file " + path.toFile().getName() + e);
-                }
-                log.info("Scheduled Data Import for type Asset completed at " + Instant.now().toDate() + " for  " + path.toFile());
-            });
-        } catch (IOException e) {
-            log.error("Error occured while processing files due to I/O errors: " + e);
+                    log.info("Scheduled Data Import for type Asset completed at " + Instant.now().toDate() + " for  "
+                        + path.toFile());
+                });
+            } catch (IOException e) {
+                log.error("Error occured while processing files due to I/O errors: " + e);
+            }
+            importPathSet.remove(importPath);
+        } else {
+            log.warn(scheduleName + " Schedule is not imorting files as another schedule "
+                + "is already running on directory " + importPath);
         }
-
         return dataImportResult;
     }
 
