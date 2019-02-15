@@ -527,6 +527,40 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-19511', '7.2.0', GETDATE());
 /* @end YUK-19511 */
 
+/* @start YUK-18984 */
+DELETE FROM DYNAMICPOINTDISPATCH WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 133
+    AND YP.Type IN ('RFN-430A3R', 'RFN-430kV'));
+
+DELETE FROM POINTUNIT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 133
+    AND YP.Type IN ('RFN-430A3R', 'RFN-430kV'));
+
+DELETE FROM PointAlarming WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 133
+    AND YP.Type IN ('RFN-430A3R', 'RFN-430kV'));
+
+DELETE FROM DISPLAY2WAYDATA WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 133
+    AND YP.Type IN ('RFN-430A3R', 'RFN-430kV'));
+
+DELETE FROM POINTANALOG WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 133
+    AND YP.Type IN ('RFN-430A3R', 'RFN-430kV'));
+
+DELETE FROM POINT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 133
+    AND YP.Type IN ('RFN-430A3R', 'RFN-430kV'));
+
+INSERT INTO DBUpdates VALUES ('YUK-18984', '7.2.0', GETDATE());
+/* @end YUK-18984 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
