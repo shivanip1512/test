@@ -138,7 +138,7 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
             }
             importPathSet.remove(importPath);
         } else {
-            log.warn(scheduleName + " Schedule is not imorting files as another schedule "
+            log.warn(scheduleName + " Schedule is not importing files as another schedule "
                 + "is already running on directory " + importPath);
         }
         return dataImportResult;
