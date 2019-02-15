@@ -608,7 +608,7 @@
     <entry key="yukon.common.events.system.tools.scheduledDataImport.scheduleUpdated">Data import schedule {2} updated for type {3} with scheduled run {4} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.scheduledDataImport.scheduleUpdated.3">Import Type</entry>
     <entry key="yukon.common.events.system.tools.scheduledDataImport.scheduleDeleted">Data import schedule {2} deleted by {1}.</entry>
-    
+    <entry key="yukon.common.events.system.tools.scheduledDataImport.scheduleImportError">Error occurred while processing files of Data import schedule {1} for type {2} due to I/O errors: {3}.</entry>
     <!--  System Administration -->
     <!-- Maintenance -->
     <entry key="yukon.common.events.system.maintenance.rphDeleteDuplicates">Deleted {7} duplicate RawPointHistory rows from database. Start time: {11}. Finish time: {12}.</entry>

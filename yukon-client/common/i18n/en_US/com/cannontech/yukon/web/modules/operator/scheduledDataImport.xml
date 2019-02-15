@@ -31,6 +31,7 @@
     <entry key="yukon.web.modules.operator.scheduledDataImportDetail.jobStatus.RUNNING">Running</entry>
     
     <entry key="yukon.web.modules.operator.scheduledDataImportDetail.info">Info</entry>
+    <entry key="yukon.web.modules.operator.scheduledDataImportDetail.dataImportSchedule">Data import schedule</entry>
     
     <entry key="yukon.web.modules.operator.scheduledData.importType.ASSET_IMPORT">Asset Import</entry>
     <entry key="yukon.web.modules.operator.scheduledDataImportList.tableTitle.title">Scheduled Data Imports</entry>

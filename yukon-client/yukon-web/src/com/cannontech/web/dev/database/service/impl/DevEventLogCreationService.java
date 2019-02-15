@@ -975,9 +975,11 @@ public class DevEventLogCreationService {
                 String scheduleName = "Schedule_test1";
                 String type = "Asset Import";
                 String scheduledRun = "Monday, 12:00 AM";
+                String error = "An I/O error occurred while importing file";
                 toolsEventLogService.scheduleCreated(user, scheduleName, type, scheduledRun);
                 toolsEventLogService.scheduleUpdated(user, scheduleName, type, scheduledRun);
                 toolsEventLogService.scheduleDeleted(user, scheduleName);
+                toolsEventLogService.scheduleImportError(scheduleName, type, error);
 
             }
         });

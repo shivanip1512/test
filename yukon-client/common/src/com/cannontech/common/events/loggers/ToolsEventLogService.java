@@ -105,5 +105,8 @@ public interface ToolsEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.scheduledDataImport")
     public void scheduleDeleted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
             @Arg(ArgEnum.scheduleName) String ScheduleName);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.scheduledDataImport")
+    public void scheduleImportError(@Arg(ArgEnum.scheduleName) String ScheduleName, @Arg(ArgEnum.type) String importType, @Arg(ArgEnum.error) String error);
 
 }

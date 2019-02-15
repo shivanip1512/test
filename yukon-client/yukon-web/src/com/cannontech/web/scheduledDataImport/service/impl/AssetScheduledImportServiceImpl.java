@@ -24,8 +24,11 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.util.FileUtil;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.tools.csv.CSVReader;
@@ -46,7 +49,12 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
     @Autowired private AccountImportService importService;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ScheduledDataImportHelper dataImportHelper;
+    @Autowired private ToolsEventLogService logService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     private final String failureColumnName = "Failure Reason";
+    private static final String baseKey = "yukon.web.modules.operator.scheduledDataImportDetail.";
+    private static final String typeKey = "yukon.web.modules.operator.scheduledData.importType.";
+     
     
     Set<String> importPathSet = ConcurrentHashMap.newKeySet();
 
@@ -68,14 +76,20 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
       * Also create file in archive directory and delete from import directory.
       */
     private ScheduledDataImportResult initiateAssetImport(String scheduleName, String importPath, String errorFileOutputPath) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
         boolean importPathCheck = importPathSet.add(importPath);
         ScheduledDataImportResult dataImportResult = new ScheduledDataImportResult();
         if (importPathCheck) {
             try (Stream<Path> paths = Files.walk(Paths.get(importPath))) {
                 paths.filter(Files::isRegularFile).forEach(path -> {
+                    int successCount = 0, failureCount = 0;
                     Instant startTime = Instant.now();
                     log.info("Scheduled Data Import for type Asset Started at " + startTime.toDate() + " for  "
                         + path.toFile());
+                    logService.importStarted(YukonUserContext.system.getYukonUser(),
+                        accessor.getMessage(baseKey + "dataImportSchedule") + " - "
+                            + accessor.getMessage(typeKey + "ASSET_IMPORT"),
+                        path.getFileName().toString());
                     try {
                         String[] columnHeaders = getcolumnHeaders(path.toFile());
                         if (ArrayUtils.isNotEmpty(columnHeaders)) {
@@ -116,6 +130,8 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
                                 ScheduledFileImportResult fileImportResult = buildScheduledFileImportResult(result, startTime, path.toFile().getName(),
                                         archiveFile.getName(), errorFileOutputPath, errorFileName);
                                 dataImportResult.getImportResults().add(fileImportResult);
+                                successCount = fileImportResult.getSuccessCount();
+                                failureCount = fileImportResult.getFailureCount();
 
                             } else {
                                 dataImportResult.getErrorFiles().add(path.toFile().getName());
@@ -132,9 +148,15 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
                     }
                     log.info("Scheduled Data Import for type Asset completed at " + Instant.now().toDate() + " for  "
                         + path.toFile());
+                    logService.importCompleted(
+                        accessor.getMessage(baseKey + "dataImportSchedule") + " - "
+                            + accessor.getMessage(typeKey + "ASSET_IMPORT"),
+                        path.getFileName().toString(), successCount, failureCount);
                 });
             } catch (IOException e) {
                 log.error("Error occured while processing files due to I/O errors: " + e);
+                logService.scheduleImportError(scheduleName, accessor.getMessage(typeKey + "ASSET_IMPORT"),
+                    e.toString());
             }
             importPathSet.remove(importPath);
         } else {

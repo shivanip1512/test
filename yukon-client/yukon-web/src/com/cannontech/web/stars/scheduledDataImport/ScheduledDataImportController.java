@@ -134,7 +134,6 @@ public class ScheduledDataImportController {
     @PostMapping("save")
     public String save(@ModelAttribute("scheduledImportData") ScheduledDataImport scheduledImportData, BindingResult result,
              FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request, YukonUserContext userContext) {
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String scheduledRun = org.apache.commons.lang3.StringUtils.EMPTY;
         try {
             String cronExpression = cronExpressionTagService.build("cronExpression", request, userContext);
@@ -157,8 +156,7 @@ public class ScheduledDataImportController {
             savedJob = scheduledDataImportService.scheduleDataImport(scheduledImportData, userContext);
             if (savedJob.getId() != null)
                 logService.scheduleCreated(userContext.getYukonUser(), scheduledImportData.getScheduleName(),
-                    accessor.getMessage(scheduledImportData.getImportType().getFormatKey()),
-                    scheduledRun);
+                    scheduledImportData.getImportType().toString(), scheduledRun);
         } else {
             JobState currentJobState = scheduleControllerHelper.getJobState(scheduledImportData.getJobId());
             if (currentJobState == JobState.DELETED) {
@@ -170,8 +168,7 @@ public class ScheduledDataImportController {
             }
             savedJob = scheduledDataImportService.updateDataImport(scheduledImportData, userContext);
             logService.scheduleUpdated(userContext.getYukonUser(), scheduledImportData.getScheduleName(),
-                accessor.getMessage(scheduledImportData.getImportType().getFormatKey()),
-                scheduledRun);
+                scheduledImportData.getImportType().toString(), scheduledRun);
         }
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", scheduledImportData.getScheduleName()));
         return "redirect:/stars/scheduledDataImport/" + savedJob.getId() + "/view";
