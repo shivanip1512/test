@@ -2,11 +2,12 @@ package com.cannontech.services.infrastructure.service.impl;
 
 import static org.joda.time.Instant.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -129,7 +130,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                 // Get the old warnings and non-repeated warnings that we want to put in the Infrastructure
                 // Warnings table, then insert warnings into DB (overwriting previous warnings in the table).
                 // This process carries over the start time for warnings that have been repeatedly calculated.
-                List<InfrastructureWarning> infrastructureWarnings = getInfrastructureWarnings(oldWarnings, smartNotificationWarnings);
+                List<InfrastructureWarning> infrastructureWarnings = getInfrastructureWarnings(oldWarnings, warnings);
                 infrastructureWarningsDao.insert(infrastructureWarnings);
 
                 log.info("Infrastructure warnings calculation complete");
@@ -145,11 +146,23 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
         }   
     }
     
-    private List<InfrastructureWarning> getInfrastructureWarnings(List<InfrastructureWarning> oldWarnings,
-                                                                  List<InfrastructureWarning> smartNotificationWarnings) {
-        return Stream.concat(smartNotificationWarnings.stream(),
-                             oldWarnings.stream())
-                     .collect(Collectors.toList());
+    private List<InfrastructureWarning> getInfrastructureWarnings(List<InfrastructureWarning> oldWarnings, List<InfrastructureWarning> currentWarnings) {
+        //if warning is an existing warning, maintain timestamp from existing
+        List<InfrastructureWarning> warnings = new ArrayList<InfrastructureWarning>();
+        for (InfrastructureWarning currentWarning : currentWarnings) {
+            Optional<InfrastructureWarning> optional = oldWarnings.stream()
+                                                                  .filter(old -> old.equals(currentWarning))
+                                                                  .findFirst();
+            if (optional.isPresent()) {
+                //update warning but maintain date/time
+                InfrastructureWarning existingWarning = optional.get();
+                warnings.add(new InfrastructureWarning(currentWarning.getPaoIdentifier(), currentWarning.getWarningType(), 
+                                                       currentWarning.getSeverity(), existingWarning.getTimestamp(), currentWarning.getArguments()));
+            } else {
+                warnings.add(currentWarning);
+            }
+        }
+        return warnings;
     }
 
     /**
