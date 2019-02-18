@@ -7,35 +7,31 @@ import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.VALIDATION_ERROR
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalDateTime;
 import org.joda.time.MutableDateTime;
 import org.joda.time.Period;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -50,7 +46,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileUtil;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
-import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
@@ -64,12 +59,16 @@ import com.cannontech.dr.ecobee.message.DrResponse;
 import com.cannontech.dr.ecobee.message.DrRestoreRequest;
 import com.cannontech.dr.ecobee.message.DutyCycleDrRequest;
 import com.cannontech.dr.ecobee.message.HierarchyResponse;
+import com.cannontech.dr.ecobee.message.JobStatus;
 import com.cannontech.dr.ecobee.message.ListHierarchyRequest;
 import com.cannontech.dr.ecobee.message.MoveDeviceRequest;
 import com.cannontech.dr.ecobee.message.MoveSetRequest;
 import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
+import com.cannontech.dr.ecobee.message.ReportJob;
 import com.cannontech.dr.ecobee.message.RuntimeReportJobRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportJobResponse;
+import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusRequest;
+import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusResponse;
 import com.cannontech.dr.ecobee.message.RuntimeReportRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.UnregisterDeviceRequest;
@@ -83,14 +82,13 @@ import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
+import com.cannontech.dr.ecobee.service.EcobeeStatusCode;
 import com.cannontech.encryption.EcobeeSecurityService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.user.YukonUserContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -98,27 +96,21 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     
     private static final Logger log = YukonLogManager.getLogger(EcobeeCommunicationServiceImpl.class);
 
+    private static final int MINUTES_TO_WAIT_TO_START_CALCULATION = 5;
+
     @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
     @Autowired private @Qualifier("ecobee") RestOperations restTemplate;
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private EcobeeSecurityService ecobeeSecurityService;
+    @Autowired private EcobeeCommunicationServiceHelper ecobeeCommunicationServiceHelper;
 
     private static final String modifySetUrlPart = "hierarchy/set?format=json";
     private static final String modifyThermostatUrlPart = "hierarchy/thermostat?format=json";
     private static final String demandResponseUrlPart = "demandResponse?format=json";
-    private static final String runtimeReportUrlPart = "runtimeReport?format=json";
     private static final String createRuntimeReportJobUrlPart = "runtimeReportJob/create";
-    private static final List<String> deviceReadColumns = ImmutableList.of(
-        // If the order is changed here or something is added or removed we need to update
-        // JsonSerializers.RuntimeReportRow and RuntimeReport
-        "zoneCalendarEvent", //currently running event
-        "zoneAveTemp", // indoor temp
-        "outdoorTemp", // outdoor temp
-        "zoneCoolTemp", // cool set point
-        "zoneHeatTemp", // heat set point
-        "compCool1", // cool runtime
-        "compHeat1"); // heat runtime
+    private static final String runtimeReportUrlPart = "runtimeReport?format=json";
+    private static final String getRuntimeReportJobStatusUrlPart = "runtimeReportJob/status?format=json";
 
     @Override
     public void registerDevice(String serialNumber) {
@@ -439,7 +431,43 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     @Override
-    public RuntimeReportJobResponse createRuntimeReportJob(SelectionType selectionType,
+    public List<EcobeeDeviceReadings> readDeviceData(SelectionType selectionType, Collection<String> selectionMatch,
+            Range<Instant> dateRange) {
+
+        List<EcobeeDeviceReadings> deviceReadings = new ArrayList<>();
+        try {
+            RuntimeReportJobResponse response = createRuntimeReportJob(selectionType, selectionMatch, dateRange);
+            ReportJob reportJob = pollForJobCompletion(response.getJobId()).get();
+            
+            if (reportJob != null) {
+                if (reportJob.getStatus() == JobStatus.COMPLETED) {
+                    List<String> dataUrls = Arrays.asList(reportJob.getFiles());
+                    deviceReadings = downloadRuntimeReport(dataUrls);
+                }
+
+                if (reportJob.getStatus() == JobStatus.ERROR) {
+                    throw new EcobeeCommunicationException(
+                        "Recieved error : " + reportJob.getMessage() + " in response with jobId " + reportJob.getJobId());
+                }
+            }
+
+            if (SelectionType.THERMOSTATS == selectionType) {
+                ecobeeCommunicationServiceHelper.logMissingSerialNumber(deviceReadings, selectionMatch);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("Error while processing Runtime Report Job. ", e);
+            throw new EcobeeCommunicationException("Error while processing Runtime Report Job.");
+        }
+
+        return deviceReadings;
+
+    }
+
+    /**
+     * Creates a new runtime report job to be processed and return response object containing jobId.
+     * @throws EcobeeCommunicationException if Yukon cannot log in or connect to Ecobee API
+     */
+    private RuntimeReportJobResponse createRuntimeReportJob(SelectionType selectionType,
             Collection<String> selectionMatch, Range<Instant> dateRange) {
         RuntimeReportJobRequest request = new RuntimeReportJobRequest(dateRange.getMin(), dateRange.getMax(),
             selectionMatch, selectionType, deviceReadColumns);
@@ -460,88 +488,28 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
             queryEcobee(url, requestEntity, EcobeeQueryType.DATA_COLLECTION, RuntimeReportJobResponse.class);
 
         log.debug("Runtime report job has been created. JobId: " + response.getJobId());
+
         return response;
     }
 
-    @Override
-    public List<EcobeeDeviceReadings> downloadRuntimeReport(List<String> dataUrls) {
+    /**
+     * Retrieve thermostats data for the specified URLs.These URLs are specific to a job.
+     * @throws EcobeeCommunicationException if anything goes wrong.
+     */
+    private List<EcobeeDeviceReadings> downloadRuntimeReport(List<String> dataUrls) {
         List<EcobeeDeviceReadings> ecobeeDeviceReadings = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         for (String url : dataUrls) {
             try {
-                String decryptedFileName = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
-                log.debug("Encrypted file : " + url.substring(url.lastIndexOf('/') + 1, url.length())
-                    + "received for Job ID : " + decryptedFileName.substring(0, decryptedFileName.indexOf("-")));
-                HttpURLConnection connection = getHttpURLConnection(url);
+                String decryptedFileName = ecobeeCommunicationServiceHelper.getDecryptedFileName(url);
+                HttpURLConnection connection = ecobeeCommunicationServiceHelper.getHttpURLConnection(url);
 
                 try (BufferedInputStream gpgInputStream = new BufferedInputStream(connection.getInputStream())) {
                     byte byteArray[] = ecobeeSecurityService.decryptEcobeeFile(gpgInputStream);
-                    File tarGzfile = File.createTempFile(decryptedFileName, StringUtils.EMPTY,
-                        new File(CtiUtilities.getImportArchiveDirPath()));
+                    File tarGzfile = File.createTempFile(decryptedFileName, StringUtils.EMPTY, new File(CtiUtilities.getImportArchiveDirPath()));
                     tarGzfile.deleteOnExit();
                     FileUtils.writeByteArrayToFile(tarGzfile, byteArray);
                     List<File> csvFiles = FileUtil.untar(FileUtil.ungzip(tarGzfile));
-                    EcobeeDeviceReadings deviceReadings = null;
-
-                    for (File file : csvFiles) {
-                        try (FileInputStream inputStream = new FileInputStream(file);
-                             BOMInputStream bomInputStream =
-                                 new BOMInputStream(inputStream, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
-                                     ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
-                             InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream)) {
-                            CSVReader csvReader = new CSVReader(inputStreamReader);
-                            Iterator<String[]> iterator = csvReader.readAll().iterator();
-                            Map<String, Integer> headerMap = getHeaderIndex(iterator.next());
-                            List<EcobeeDeviceReading> readings = new ArrayList<EcobeeDeviceReading>();
-                            String serialNumber = file.getName().substring(0, file.getName().indexOf('-'));
-
-                            log.debug("Received runtime reports for Thermostat : " + serialNumber + "in file name"
-                                + file.getName().substring(0, file.getName().indexOf(".csv") + 4));
-
-                            while (iterator.hasNext()) {
-                                String[] thermostatData = iterator.next();
-                                Instant date = new DateTime(formatter.parseDateTime(
-                                    thermostatData[0] + StringUtils.SPACE + thermostatData[1])).toInstant();
-                                String eventActivity = thermostatData[headerMap.get("zoneCalendarEvent")];
-                                Float indoorTempInF = StringUtils.isEmpty(thermostatData[headerMap.get("zoneAveTemp")])
-                                    ? null : Float.parseFloat(thermostatData[headerMap.get("zoneAveTemp")]);
-                                Float outdoorTempInF = StringUtils.isEmpty(thermostatData[headerMap.get("outdoorTemp")])
-                                    ? null : Float.parseFloat(thermostatData[headerMap.get("outdoorTemp")]);
-                                Float setCoolTempInF =
-                                    StringUtils.isEmpty(thermostatData[headerMap.get("zoneCoolTemp")]) ? null
-                                        : Float.parseFloat(thermostatData[headerMap.get("zoneCoolTemp")]);
-                                Float setHeatTempInF =
-                                    StringUtils.isEmpty(thermostatData[headerMap.get("zoneHeatTemp")]) ? null
-                                        : Float.parseFloat(thermostatData[headerMap.get("zoneHeatTemp")]);
-                                Integer setCompCool = StringUtils.isEmpty(thermostatData[headerMap.get("compCool1")])
-                                    ? null : Integer.parseInt(thermostatData[headerMap.get("compCool1")]);
-                                Integer setCompHeat = StringUtils.isEmpty(thermostatData[headerMap.get("compHeat1")])
-                                    ? null : Integer.parseInt(thermostatData[headerMap.get("compHeat1")]);
-                                Integer runtime;
-                                // Add the values if they're both non-null
-                                if (setCompCool != null && setCompHeat != null) {
-                                    runtime = setCompCool + setCompHeat;
-                                    // If only one is non-null, use that value. Otherwise return null.
-                                } else if (setCompCool == null) {
-                                    runtime = setCompHeat;
-                                } else {
-                                    runtime = setCompCool;
-                                }
-                                EcobeeDeviceReading deviceReading = new EcobeeDeviceReading(outdoorTempInF,
-                                    indoorTempInF, setCoolTempInF, setHeatTempInF, runtime, eventActivity, date);
-                                readings.add(deviceReading);
-                            }
-
-                            deviceReadings = new EcobeeDeviceReadings(serialNumber, null, readings);
-                            CtiUtilities.close(iterator, csvReader);
-                            file.delete();
-                        }
-                        ecobeeDeviceReadings.add(deviceReadings);
-                    }
-
-                } catch (Exception e) {
-                    log.error("Error while processing runtimereport data.", e);
-                    throw new EcobeeCommunicationException("Error occured while processing runtimereport data.");
+                    ecobeeDeviceReadings = ecobeeCommunicationServiceHelper.getEcobeeDeviceReadings(csvFiles);
                 } finally {
                     connection.disconnect();
                 }
@@ -553,32 +521,70 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         return ecobeeDeviceReadings;
     }
 
-    private Map<String, Integer> getHeaderIndex(String[] headers) {
-        Map<String, Integer> headerMap = new HashMap<String, Integer>();
-        for (int i = 0; i < headers.length; i++) {
-            String header = headers[i];
-            if (deviceReadColumns.contains(header)) {
-                headerMap.put(header, i);
+    /**
+     * Polling Job completion based on jobId in every 5 min.
+     * Provide 2 min initial delay for executor
+     */
+    
+    private CompletableFuture<ReportJob> pollForJobCompletion(String jobId) {
+        final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        CompletableFuture<ReportJob> completionFuture = new CompletableFuture<>();
+        final ScheduledFuture<?> checkFuture = scheduledExecutorService.scheduleAtFixedRate(() -> {
+            try {
+                RuntimeReportJobStatusResponse jobStatusResponse = getRuntimeReportJobStatus(jobId);
+
+                if (jobStatusResponse.getStatus().getCode() != EcobeeStatusCode.SUCCESS.getCode()) {
+                    completionFuture.completeExceptionally(
+                        new EcobeeCommunicationException("Recieved error message : " + jobStatusResponse.getStatus().getMessage()
+                            + " with code " + jobStatusResponse.getStatus().getCode()
+                            + " in response while polling for runtime report job."));
+                }
+
+                if (jobStatusResponse != null && CollectionUtils.isNotEmpty(jobStatusResponse.getJobs())) {
+                    ReportJob reportJob = jobStatusResponse.getJobs().get(0);
+                    if (reportJob != null) {
+                        log.info("Response : RunTime Report Job recieved for JobId: " + jobId + " with status: "
+                            + reportJob.getStatus().getEcobeeStatusString());
+                        if (reportJob.getStatus() == JobStatus.COMPLETED || reportJob.getStatus() == JobStatus.ERROR) {
+                            completionFuture.complete(reportJob);
+                        }
+                    }
+                }
+            } catch (Throwable e) {
+                log.error("Recieved error while polling for runtime report job " + e);
+                completionFuture.completeExceptionally(new EcobeeCommunicationException("Recieved error while polling for runtime report job."));
+            }
+
+        }, 2, MINUTES_TO_WAIT_TO_START_CALCULATION, TimeUnit.MINUTES);
+
+        completionFuture.whenComplete((result, thrown) -> {
+            checkFuture.cancel(true);
+            scheduledExecutorService.shutdown();
+        });
+
+        return completionFuture;
+    }
+    
+    /**
+     * Retrieve job status for based on jobId
+     */
+    private RuntimeReportJobStatusResponse getRuntimeReportJobStatus(String jobId) {
+        HttpEntity<String> requestEntity = new HttpEntity<>(new HttpHeaders());
+        String url = getUrlBase() + getRuntimeReportJobStatusUrlPart + "&body={bodyJson}";
+        RuntimeReportJobStatusRequest jobStatusRequest = new RuntimeReportJobStatusRequest(jobId);
+
+        if (log.isDebugEnabled()) {
+            try {
+                String requestJson = JsonUtils.toJson(jobStatusRequest);
+                log.debug("Request Body json: " + requestJson);
+            } catch (JsonProcessingException e) {
+                log.warn("Error while parsing json in debug.", e);
             }
         }
-        return headerMap;
+        log.debug("Request : Runtime Report Job status. JobId: " + jobId);
+        RuntimeReportJobStatusResponse response = queryEcobeeGet(url, requestEntity, jobStatusRequest,
+            EcobeeQueryType.DATA_COLLECTION, RuntimeReportJobStatusResponse.class);
+        return response;
     }
 
-    private HttpURLConnection getHttpURLConnection(String url) throws Exception {
-        Optional<YukonHttpProxy> proxy = YukonHttpProxy.fromGlobalSetting(settingDao);
-        HttpURLConnection urlConnection = null;
-        try {
-            URL connectionUrl = new URL(url);
-            if (proxy.isPresent()) {
-                urlConnection = (HttpURLConnection) connectionUrl.openConnection(proxy.get().getJavaHttpProxy());
-            } else {
-                urlConnection = (HttpURLConnection) connectionUrl.openConnection();
-            }
-            urlConnection.connect();
-        } catch (Exception e) {
-            log.error("Unable to connect with proxy server or URL is not correct", e);
-            throw new Exception("Unable to connect with proxy server or URL is not correct");
-        }
-        return urlConnection;
-    }
 }

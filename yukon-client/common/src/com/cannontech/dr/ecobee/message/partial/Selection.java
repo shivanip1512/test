@@ -25,7 +25,7 @@ import com.google.common.collect.ImmutableSet;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Selection {
     private final SelectionType selectionType;
-    private final Collection<String> serialNumbers;
+    private final Collection<String> selectionMatch;
 
     @JsonSerialize(using = TO_SELECTION_TYPE.class)
     @JsonDeserialize(using = FROM_SELECTION_TYPE.class)
@@ -66,9 +66,9 @@ public class Selection {
      */
     @JsonCreator
     public Selection(@JsonProperty("selectionType") SelectionType selectionType,
-            @JsonDeserialize(using=FROM_BASIC_CSV.class) @JsonProperty("selectionMatch") Collection<String> serialNumbers) {
+            @JsonDeserialize(using=FROM_BASIC_CSV.class) @JsonProperty("selectionMatch") Collection<String> selectionMatch) {
         this.selectionType = selectionType;
-        this.serialNumbers = ImmutableSet.copyOf(serialNumbers);
+        this.selectionMatch = ImmutableSet.copyOf(selectionMatch);
     }
 
     public Selection(SelectionType selectionType, String serialNumber) {
@@ -82,7 +82,7 @@ public class Selection {
     @JsonGetter("selectionMatch")
     @JsonSerialize(using=TO_BASIC_CSV.class)
     public Collection<String> getSerialNumbers() {
-        return serialNumbers;
+        return selectionMatch;
     }
 
     @Override
@@ -90,7 +90,7 @@ public class Selection {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((selectionType == null) ? 0 : selectionType.hashCode());
-        result = prime * result + ((serialNumbers == null) ? 0 : serialNumbers.hashCode());
+        result = prime * result + ((selectionMatch == null) ? 0 : selectionMatch.hashCode());
         return result;
     }
 
@@ -109,11 +109,11 @@ public class Selection {
         if (selectionType != other.selectionType) {
             return false;
         }
-        if (serialNumbers == null) {
-            if (other.serialNumbers != null) {
+        if (selectionMatch == null) {
+            if (other.selectionMatch != null) {
                 return false;
             }
-        } else if (!serialNumbers.equals(other.serialNumbers)) {
+        } else if (!selectionMatch.equals(other.selectionMatch)) {
             return false;
         }
         return true;

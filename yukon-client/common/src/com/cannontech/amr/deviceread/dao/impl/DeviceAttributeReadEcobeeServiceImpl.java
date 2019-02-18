@@ -30,6 +30,7 @@ import com.cannontech.common.util.Range;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
+import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.impl.EcobeePointUpdateServiceImpl;
@@ -119,15 +120,11 @@ public class DeviceAttributeReadEcobeeServiceImpl implements DeviceAttributeRead
 
         Range<Instant> dateRange = Range.inclusive(start, end);
 
-        for (List<String> serialNumbers : Iterables.partition(ecobeeDevices.keySet(), 25)) {
-            List<EcobeeDeviceReadings> allDeviceReadings =
-                ecobeeCommunicationService.readDeviceData(serialNumbers, dateRange);
-            for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
-                PaoIdentifier paoIdentifier = ecobeeDevices.get(deviceReadings.getSerialNumber());
-                Set<PointValueHolder> pointValues =
-                    ecobeePointUpdateServiceImpl.updatePointData(paoIdentifier, deviceReadings);
-                devicesToPointValues.putAll(paoIdentifier, pointValues);
-            }
+        List<EcobeeDeviceReadings> allDeviceReadings = ecobeeCommunicationService.readDeviceData(SelectionType.THERMOSTATS, ecobeeDevices.keySet(), dateRange);
+        for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
+            PaoIdentifier paoIdentifier = ecobeeDevices.get(deviceReadings.getSerialNumber());
+            Set<PointValueHolder> pointValues = ecobeePointUpdateServiceImpl.updatePointData(paoIdentifier, deviceReadings);
+            devicesToPointValues.putAll(paoIdentifier, pointValues);
         }
 
         return devicesToPointValues;

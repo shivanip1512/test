@@ -97,6 +97,7 @@
     <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeQueryCountDaoImpl"/>
 
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationServiceImpl"/>
+    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationServiceHelper"/>
     <bean class="com.cannontech.dr.ecobee.service.impl.EcobeePointUpdateServiceImpl"/>
 
     <bean class="com.cannontech.dr.recenteventparticipation.dao.impl.RecentEventParticipationDaoImpl"/>

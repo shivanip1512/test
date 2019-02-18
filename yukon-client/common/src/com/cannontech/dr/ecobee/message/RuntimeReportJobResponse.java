@@ -1,53 +1,15 @@
 package com.cannontech.dr.ecobee.message;
 
-import com.cannontech.dr.JsonSerializers.FROM_JOB_STATUS;
-import com.cannontech.dr.JsonSerializers.TO_JOB_STATUS;
 import com.cannontech.dr.ecobee.message.partial.Status;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class RuntimeReportJobResponse extends BaseResponse {
     private final String jobId;
     private final JobStatus jobStatus;
-    
-    @JsonSerialize(using = TO_JOB_STATUS.class)
-    @JsonDeserialize(using = FROM_JOB_STATUS.class)
-    public static enum JobStatus {
-        QUEUED("queued"),
-        PROCESSING("processing"),
-        COMPLETED("completed"),
-        CANCELLED("cancelled"),
-        ERROR("error");
-
-        private String jobStatus;
-        private static final ImmutableMap<String, JobStatus> jobStatusStrings;
-
-        static {
-            final Builder<String, JobStatus> b = ImmutableMap.builder();
-            for (JobStatus jobStatus : values()) {
-                b.put(jobStatus.jobStatus, jobStatus);
-            }
-            jobStatusStrings = b.build();
-        }
-
-        private JobStatus(String jobStatus) {
-            this.jobStatus = jobStatus;
-        }
-
-        public static JobStatus fromEcobeeStatusString(String jobStatus) {
-            return jobStatusStrings.get(jobStatus);
-        }
-
-        public String getEcobeeStatusString() {
-            return jobStatus;
-        }
-    }
+  
 
     @JsonCreator
     public RuntimeReportJobResponse(@JsonProperty("jobId") String jobId,

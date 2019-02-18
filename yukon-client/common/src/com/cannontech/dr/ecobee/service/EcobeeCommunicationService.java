@@ -9,11 +9,11 @@ import com.cannontech.common.util.Range;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
-import com.cannontech.dr.ecobee.message.RuntimeReportJobResponse;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+import com.google.common.collect.ImmutableList;
 
 /**
  * This service provides the communications layer with the Ecobee portal. It is responsible for converting requests into
@@ -30,6 +30,18 @@ public interface EcobeeCommunicationService {
     String UNENROLLED_SET = "unenrolled";
     String YUKON_CYCLE_EVENT_NAME = "yukonCycle";
     String YUKON_OVERRIDE_EVENT_NAME = "override";
+    
+    
+    static final List<String> deviceReadColumns = ImmutableList.of(
+        // If the order is changed here or something is added or removed we need to update
+        // JsonSerializers.RuntimeReportRow and RuntimeReport
+        "zoneCalendarEvent", //currently running event
+        "zoneAveTemp", // indoor temp
+        "outdoorTemp", // outdoor temp
+        "zoneCoolTemp", // cool set point
+        "zoneHeatTemp", // heat set point
+        "compCool1", // cool runtime
+        "compHeat1"); // heat runtime
     
     /**
      * Registers the specified device with Ecobee.
@@ -118,17 +130,11 @@ public interface EcobeeCommunicationService {
     List<SetNode> getHierarchy();
 
     /**
-     * Creates a new runtime report job to be processed and return response object containing jobId.
-     * @throws EcobeeCommunicationException if Yukon cannot log in or connect to Ecobee API
+     * Requests device data for the specified devices or group (Management set)
+     * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
      */
-    RuntimeReportJobResponse createRuntimeReportJob(SelectionType selectionType, Collection<String> selectionMatch,
-            Range<Instant> dateRange);
 
-    /**
-     * Retrieve thermostats data for the specified URLs.These URLs are specific to a job.
-     * 
-     * @throws EcobeeCommunicationException if anything goes wrong.
-     */
-    List<EcobeeDeviceReadings> downloadRuntimeReport(List<String> dataUrls);
+    List<EcobeeDeviceReadings> readDeviceData(SelectionType selectionType, Collection<String> selectionMatch,
+            Range<Instant> dateRange);
 
 }

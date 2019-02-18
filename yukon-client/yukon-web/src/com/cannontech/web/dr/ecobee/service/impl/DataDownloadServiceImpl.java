@@ -20,12 +20,12 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
+import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeReadResult;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.web.dr.ecobee.service.DataDownloadService;
-import com.google.common.collect.Lists;
 
 public class DataDownloadServiceImpl implements DataDownloadService {
     
@@ -73,50 +73,43 @@ public class DataDownloadServiceImpl implements DataDownloadService {
                     "Set Heat Temp", 
                     "Runtime Seconds", 
                     "Event Activity"));
-            
-            // readDeviceData should only be sent 25 serial numbers at a time
-            for (List<String> batch : Lists.partition(serialNumbers, 25)) {
-                
-                List<EcobeeDeviceReadings> batchedReads = new ArrayList<>();
-                try {
-                    batchedReads = commService.readDeviceData(batch, dateRange);
-                } catch (EcobeeCommunicationException e) {
-                    // TODO Add retry mechanism
-                    log.error("Unable to retreive data from ecobee service.", e);
-                    result.setComplete();
-                    result.setSuccessful(false);
-                    break;
-                }
-                
-                for (EcobeeDeviceReadings deviceReadings : batchedReads) {
-                    
-                    for (EcobeeDeviceReading deviceReading : deviceReadings.getReadings()) {
-                        String dateStr = timeFormatter.print(deviceReading.getDate());
-                        Integer runtimeSeconds = deviceReading.getRuntimeSeconds();
-                        if (runtimeSeconds != null && 0 > runtimeSeconds) {
-                            log.debug("runtimeSeconds=" + runtimeSeconds + ", converting to absolute value");
-                            runtimeSeconds = Math.abs(runtimeSeconds);
-                        }
-                        
-                        String dataRow = String.format(format,
-                            deviceReadings.getSerialNumber(),
-                            dateStr,
-                            formatNullable(deviceReading.getOutdoorTempInF()),
-                            formatNullable(deviceReading.getIndoorTempInF()),
-                            formatNullable(deviceReading.getSetCoolTempInF()),
-                            formatNullable(deviceReading.getSetHeatTempInF()),
-                            formatNullable(runtimeSeconds),
-                            deviceReading.getEventActivity());
-                        
-                        output.write(dataRow);
-                    }
-                    result.incrementCompleted();
-                }
+
+            List<EcobeeDeviceReadings> allDeviceReadings = new ArrayList<>();
+            try {
+                allDeviceReadings = commService.readDeviceData(SelectionType.THERMOSTATS, serialNumbers, dateRange);
+            } catch (EcobeeCommunicationException e) {
+                // TODO Add retry mechanism
+                log.error("Unable to retreive data from ecobee service.", e);
+                result.setComplete();
+                result.setSuccessful(false);
+
             }
-            
+
+            for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
+
+                for (EcobeeDeviceReading deviceReading : deviceReadings.getReadings()) {
+                    String dateStr = timeFormatter.print(deviceReading.getDate());
+                    Integer runtimeSeconds = deviceReading.getRuntimeSeconds();
+                    if (runtimeSeconds != null && 0 > runtimeSeconds) {
+                        log.debug("runtimeSeconds=" + runtimeSeconds + ", converting to absolute value");
+                        runtimeSeconds = Math.abs(runtimeSeconds);
+                    }
+
+                    String dataRow = String.format(format, deviceReadings.getSerialNumber(), dateStr,
+                        formatNullable(deviceReading.getOutdoorTempInF()),
+                        formatNullable(deviceReading.getIndoorTempInF()),
+                        formatNullable(deviceReading.getSetCoolTempInF()),
+                        formatNullable(deviceReading.getSetHeatTempInF()), formatNullable(runtimeSeconds),
+                        deviceReading.getEventActivity());
+
+                    output.write(dataRow);
+                }
+                result.incrementCompleted();
+            }
+
             result.setSuccessful(true);
             result.setComplete();
-            
+
         } catch (IOException e) {
             log.error("Unable to write ecobee data file.", e);
             result.setComplete();

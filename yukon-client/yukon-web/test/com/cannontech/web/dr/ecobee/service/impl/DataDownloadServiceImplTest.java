@@ -16,9 +16,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
-import com.cannontech.dr.ecobee.message.RuntimeReportJobResponse;
-import com.cannontech.dr.ecobee.message.partial.RuntimeReport;
-import com.cannontech.dr.ecobee.message.partial.RuntimeReportRow;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
@@ -89,28 +86,21 @@ public class DataDownloadServiceImplTest {
         }
         
         @Override
-        public List<EcobeeDeviceReadings> readDeviceData(Collection<String> serialNumbers, Range<Instant> dateRange) {
-            
-            List<RuntimeReport> reports = new ArrayList<>();
+        public List<EcobeeDeviceReadings> readDeviceData(SelectionType type , Collection<String> serialNumbers, Range<Instant> dateRange) {
+
             List<EcobeeDeviceReadings> deviceReadings = new ArrayList<>();
 
             for (String serialNumber : serialNumbers) {
-                List<RuntimeReportRow> reportRows = new ArrayList<>();
                 List<EcobeeDeviceReading> expectedReadings = new ArrayList<>();
 
                 LocalDateTime thermostatStartTime = dateRange.getMin().toDateTime().withZone(timeZone).toLocalDateTime();
                 LocalDateTime thermostatEndTime = dateRange.getMax().toDateTime().withZone(timeZone).toLocalDateTime();
 
-                for (LocalDateTime reportTime = thermostatStartTime; reportTime.isBefore(thermostatEndTime);
-                        reportTime = reportTime.plusMinutes(5)) {
-                    RuntimeReportRow row = new RuntimeReportRow(reportTime, "", 75f, 95f, 75f, 75f, 0);
-                    reportRows.add(row);
-                    EcobeeDeviceReading reading = new EcobeeDeviceReading(row.getOutdoorTemp(), row.getIndoorTemp(),
-                           row.getCoolSetPoint(), row.getHeatSetPoint(), row.getRuntime(), row.getEventName(),
-                        reportTime.toDateTime(timeZone).toInstant());
+                for (LocalDateTime reportTime = thermostatStartTime; reportTime.isBefore(thermostatEndTime); reportTime = reportTime.plusMinutes(5)) {
+                    EcobeeDeviceReading reading = new EcobeeDeviceReading(95f, 75f, 75f, 75f, 0, "", reportTime.toDateTime(timeZone).toInstant());
                     expectedReadings.add(reading);
                 }
-                reports.add(new RuntimeReport(serialNumber, reportRows.size(), reportRows));
+
                 deviceReadings.add(new EcobeeDeviceReadings(serialNumber, dateRange, expectedReadings));
             }
             
@@ -171,13 +161,7 @@ public class DataDownloadServiceImplTest {
         }
 
         @Override
-        public RuntimeReportJobResponse createRuntimeReportJob(SelectionType selectionType,
-                Collection<String> selectionMatch, Range<Instant> dateRange) {
-            throw new UnsupportedOperationException("Method not implemented.");
-        }
-
-        @Override
-        public List<EcobeeDeviceReadings> downloadRuntimeReport(List<String> dataUrls) {
+        public List<EcobeeDeviceReadings> readDeviceData(Collection<String> serialNumbers, Range<Instant> dateRange) {
             throw new UnsupportedOperationException("Method not implemented.");
         }
 
