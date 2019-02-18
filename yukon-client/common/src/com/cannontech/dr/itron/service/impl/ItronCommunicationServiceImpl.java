@@ -251,7 +251,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         Map<Integer, Long> groupPaoIdtoItronId = itronDao.getItronGroupIds(groupPaoIds);
         groupPaoIds.stream()
             .filter(paoId -> !groupPaoIdtoItronId.containsKey(paoId))
-            .forEach(paoId -> itronDao.addGroup(getGroupIdFromItron(getGroup(paoId)), paoId));
+            .forEach(paoId -> itronDao.addGroupMapping(getGroupIdFromItron(getGroup(paoId)), paoId));
     }
     
     /**
@@ -262,7 +262,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         Map<Integer, Long> programPaoIdtoItronId = itronDao.getItronProgramIds(programPaoIds);
         programPaoIds.stream()
             .filter(paoId -> !programPaoIdtoItronId.containsKey(paoId))
-            .forEach(paoId -> itronDao.addProgram(getProgramIdFromItron(getProgram(paoId)), paoId));
+            .forEach(paoId -> itronDao.addProgramMapping(getProgramIdFromItron(getProgram(paoId)), paoId));
     }
     
     /**

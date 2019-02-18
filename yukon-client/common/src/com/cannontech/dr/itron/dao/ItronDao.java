@@ -7,15 +7,33 @@ import com.cannontech.core.dao.NotFoundException;
 
 public interface ItronDao {
     
-    int getGroup(int groupPaoId) throws NotFoundException;
+    /**
+     * Get the ID of the Itron group that is mapped to the specified Yukon LM group.
+     */
+    int getItronGroupId(int yukonLmGroupId) throws NotFoundException;
     
-    int getProgram(int programPaoId) throws NotFoundException;
+    /**
+     * Get the ID of the Itron program that is mapped to the specified Yukon LM program.
+     */
+    int getItronProgramId(int yukonLmProgramId) throws NotFoundException;
     
-    void addGroup(long itronId, int programPaoId);
+    /**
+     * Add a mapping for an Itron group ID and a Yukon LM Group
+     */
+    void addGroupMapping(long itronGroupId, int yukonLmGroupId);
     
-    void addProgram(long itronId, int groupPaoId);
+    /**
+     * Add a mapping for an Itron program ID and a Yukon LM Program
+     */
+    void addProgramMapping(long itronProgramId, int yukonLmProgramId);
 
-    Map<Integer, Long> getItronProgramIds(Collection<Integer> programPaoIds);
+    /**
+     * Get all Itron program IDs mapped to the specified Yukon LM programs.
+     */
+    Map<Integer, Long> getItronProgramIds(Collection<Integer> lmProgramIds);
 
-    Map<Integer, Long> getItronGroupIds(Collection<Integer> groupPaoIds);
+    /**
+     * Get all Itron group IDs mapped to the specified Yukon LM groups.
+     */
+    Map<Integer, Long> getItronGroupIds(Collection<Integer> lmGroupIds);
 }

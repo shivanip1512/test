@@ -10,6 +10,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -20,53 +21,55 @@ public class ItronDaoImpl implements ItronDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     @Override
-    public int getGroup(int groupPaoId) throws NotFoundException {
+    public int getItronGroupId(int yukonLmGroupId) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ItronGroupId");
         sql.append("FROM LMGroupItronMapping");
-        sql.append("WHERE YukonGroupId").eq(groupPaoId);
+        sql.append("WHERE YukonGroupId").eq(yukonLmGroupId);
         try {
             return jdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException ex){
-            throw new NotFoundException("ItronGroupId with YukonGroupId: " + groupPaoId + " was not found.");
+            throw new NotFoundException("ItronGroupId with YukonGroupId: " + yukonLmGroupId + " was not found.");
         }
     }
 
     @Override
-    public int getProgram(int programPaoId) throws NotFoundException {
+    public int getItronProgramId(int yukonLmProgramId) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ItronProgramId");
         sql.append("FROM LMProgramItronMapping");
-        sql.append("WHERE YukonProgramId").eq(programPaoId);
+        sql.append("WHERE YukonProgramId").eq(yukonLmProgramId);
         try {
             return jdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException ex) {
-            throw new NotFoundException("ItronProgramId with YukonProgramId: " + programPaoId + " was not found.");
+            throw new NotFoundException("ItronProgramId with YukonProgramId: " + yukonLmProgramId + " was not found.");
         }
     }
 
     @Override
-    public void addProgram(long itronId, int programPaoId) {
+    public void addProgramMapping(long itronProgramId, int yukonLmProgramId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("INSERT INTO LMProgramItronMapping");
-        sql.values(programPaoId, itronId);
+        SqlParameterSink params = sql.insertInto("LMProgramItronMapping");
+        params.addValue("YukonProgramId", yukonLmProgramId);
+        params.addValue("ItronProgramId", itronProgramId);
         jdbcTemplate.update(sql);
     }
 
     @Override
-    public void addGroup(long itronId, int groupPaoId) {
+    public void addGroupMapping(long itronGroupId, int yukonLmGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("INSERT INTO LMGroupItronMapping");
-        sql.values(groupPaoId, itronId);
+        SqlParameterSink params = sql.insertInto("LMGroupItronMapping");
+        params.addValue("YukonGroupId", yukonLmGroupId);
+        params.addValue("ItronGroupId", itronGroupId);
         jdbcTemplate.update(sql);
     }
 
     @Override
-    public Map<Integer, Long> getItronProgramIds(Collection<Integer> programPaoIds) {
+    public Map<Integer, Long> getItronProgramIds(Collection<Integer> lmProgramIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT YukonProgramId, ItronProgramId");
         sql.append("FROM LMProgramItronMapping");
-        sql.append("WHERE YukonProgramId").in(programPaoIds);
+        sql.append("WHERE YukonProgramId").in(lmProgramIds);
         
         Map<Integer, Long> result = new HashMap<>();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
@@ -79,11 +82,11 @@ public class ItronDaoImpl implements ItronDao {
     }
     
     @Override
-    public Map<Integer, Long> getItronGroupIds(Collection<Integer> groupPaoIds) {
+    public Map<Integer, Long> getItronGroupIds(Collection<Integer> lmGroupIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT YukonGroupId, ItronGroupId");
         sql.append("FROM LMGroupItronMapping");
-        sql.append("WHERE YukonGroupId").in(groupPaoIds);
+        sql.append("WHERE YukonGroupId").in(lmGroupIds);
         Map<Integer, Long> result = new HashMap<>();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
