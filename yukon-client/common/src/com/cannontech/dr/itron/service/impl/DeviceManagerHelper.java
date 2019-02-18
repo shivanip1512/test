@@ -1,5 +1,7 @@
 package com.cannontech.dr.itron.service.impl;
 
+import java.util.List;
+
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddD2GAttributeType;
@@ -121,11 +123,11 @@ public class DeviceManagerHelper {
         return request;
     }
     
-    public static ESIGroupRequestType buildGroupEditRequest(LiteYukonPAObject lmGroup, String macAddress) {
+    public static ESIGroupRequestType buildGroupEditRequest(LiteYukonPAObject lmGroup, List<String> macAddresses) {
         ESIGroupRequestType requestType = new ESIGroupRequestType();
         requestType.setGroupName(String.valueOf(lmGroup.getLiteID()));
         StaticGroupMemberListType type = new StaticGroupMemberListType();
-        type.getMacIDs().add(macAddress);
+        type.getMacIDs().addAll(macAddresses);
         requestType.setStaticGroupMemberList(type);
         return requestType;
     }

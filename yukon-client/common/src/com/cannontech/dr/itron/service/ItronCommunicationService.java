@@ -1,7 +1,6 @@
 package com.cannontech.dr.itron.service;
 
 import com.cannontech.common.inventory.Hardware;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.dr.account.model.AccountDto;
 
 public interface ItronCommunicationService {
@@ -25,7 +24,13 @@ public interface ItronCommunicationService {
      */
     void removeDeviceFromServicePoint(String macAddress);
 
-    void enroll(int accountId, int deviceId, int groupId);
+    /**
+     * Attempts to sync Yukon account with Itron
+     */
+    void enroll(int accountId);
 
+    /**
+     * Attempts to sync Yukon account with Itron
+     */
     void unenroll(int accountId);
 }

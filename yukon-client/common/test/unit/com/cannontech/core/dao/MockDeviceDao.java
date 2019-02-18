@@ -1,6 +1,8 @@
 package com.cannontech.core.dao;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.DisplayableDevice;
@@ -177,6 +179,11 @@ public class MockDeviceDao implements DeviceDao {
 
     @Override
     public boolean isMacAddressExists(String macAddress) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public Map<Integer, String> getDeviceMacAddresses(Collection<Integer> deviceIds) {
         throw new MethodNotImplementedException();
     }
 }

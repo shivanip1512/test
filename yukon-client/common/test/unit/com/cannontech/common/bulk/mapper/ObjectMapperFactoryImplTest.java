@@ -1,6 +1,7 @@
 package com.cannontech.common.bulk.mapper;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -518,6 +519,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
         @Override
         public boolean isMacAddressExists(String macAddress) {
+            throw new MethodNotImplementedException();
+        }
+
+        @Override
+        public Map<Integer, String> getDeviceMacAddresses(Collection<Integer> deviceIds) {
             throw new MethodNotImplementedException();
         }
     }

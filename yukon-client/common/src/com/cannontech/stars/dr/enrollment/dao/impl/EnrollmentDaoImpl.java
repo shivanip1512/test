@@ -8,14 +8,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.TypeRowMapper;
@@ -28,6 +33,10 @@ import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.dao.ProgramRowMapper;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class EnrollmentDaoImpl implements EnrollmentDao {
@@ -63,6 +72,32 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         Set<Integer> uniqueInventoryIds = Sets.newHashSet(inventoryIds);
 
         return uniqueInventoryIds;
+    }
+    
+    @Override
+    public Multimap<Integer, Integer> getActiveEnrolledInventoryIdsMapForGroupIds(Collection<Integer> groupIds) {
+
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT LMHCG.InventoryId, LMGroupId");
+                sql.append("FROM LMHardwareControlGroup LMHCG");
+                sql.append("WHERE LMGroupId").in(groupIds);
+                sql.append("AND NOT LMHCG.groupEnrollStart IS NULL");
+                sql.append("AND LMHCG.groupEnrollStop IS NULL");
+                return sql;
+            }
+        };
+        RowMapper<Map.Entry<Integer, Integer>> rowMapper = new RowMapper<Entry<Integer, Integer>>() {
+            @Override
+            public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Integer groupId = rs.getInt("LMGroupId");
+                Integer inventoryId = rs.getInt("InventoryId");
+                return Maps.immutableEntry(groupId, inventoryId);
+            }
+        };
+        return template.multimappedQuery(sqlGenerator, groupIds, rowMapper, Functions.identity());
     }
 
     /**

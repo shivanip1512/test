@@ -2,6 +2,8 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,6 +40,7 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -117,6 +120,22 @@ public final class DeviceDaoImpl implements DeviceDao {
         sql.append("FROM DeviceMacAddress");
         sql.append("WHERE DeviceId").eq(deviceId);
         return jdbcTemplate.queryForString(sql);
+    }
+    
+    @Override
+    public Map<Integer, String> getDeviceMacAddresses(Collection<Integer> devicesId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId, MacAddress");
+        sql.append("FROM DeviceMacAddress");
+        sql.append("WHERE DeviceId").in(devicesId);
+        Map<Integer, String> result = new HashMap<>();
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                result.put(rs.getInt("DeviceId"), rs.getString("macAddress"));
+            }
+        });
+        return result;
     }
     
     @Override

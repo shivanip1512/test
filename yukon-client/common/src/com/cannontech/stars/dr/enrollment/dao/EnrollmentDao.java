@@ -10,6 +10,7 @@ import org.joda.time.Instant;
 
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.google.common.collect.Multimap;
 
 public interface EnrollmentDao {
 
@@ -119,4 +120,10 @@ public interface EnrollmentDao {
      */
     List<ProgramEnrollment> findOtherApplianceConflictingEnrollments(int accountId, int assignedProgramId,
             List<Integer> inventoryIds , int assignedProgramCategoryId);
+
+    /**
+     * Returns the map of group ids to inventory ids
+     */
+
+    Multimap<Integer, Integer> getActiveEnrolledInventoryIdsMapForGroupIds(Collection<Integer> groupIds);
 }

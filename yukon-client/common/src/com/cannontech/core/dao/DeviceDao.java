@@ -1,6 +1,8 @@
 package com.cannontech.core.dao;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.DisplayableDevice;
@@ -173,4 +175,9 @@ public interface DeviceDao {
      * True if Mac address exists
      */
     boolean isMacAddressExists(String macAddress);
+
+    /**
+     * Returns a map for device ids and Mac addresses
+     */
+    Map<Integer, String> getDeviceMacAddresses(Collection<Integer> deviceIds);
 }

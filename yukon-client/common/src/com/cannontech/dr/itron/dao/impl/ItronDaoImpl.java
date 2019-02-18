@@ -33,16 +33,17 @@ public class ItronDaoImpl implements ItronDao {
     }
 
     @Override
-    public int getProgram(int programPaoId) throws NotFoundException{
+    public int getProgram(int programPaoId) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ItronProgramId");
         sql.append("FROM LMProgramItronMapping");
         sql.append("WHERE YukonProgramId").eq(programPaoId);
         try {
             return jdbcTemplate.queryForInt(sql);
-        } catch (EmptyResultDataAccessException ex){
+        } catch (EmptyResultDataAccessException ex) {
             throw new NotFoundException("ItronProgramId with YukonProgramId: " + programPaoId + " was not found.");
-        }    }
+        }
+    }
 
     @Override
     public void addProgram(long itronId, int programPaoId) {

@@ -9,7 +9,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -26,13 +25,11 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.device.commands.exception.SystemConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.activity.ActivityLogActions;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
@@ -63,7 +60,6 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
-import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
@@ -87,7 +83,6 @@ import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ListMultimap;
 
 public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
@@ -160,7 +155,6 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     }
                 }
                 
-                ItronParams itronParams = new ItronParams(requests, account);
                 // Process Enrollments
                 List<LiteLmHardwareBase> hwsToConfig = updateProgramEnrollment(programSignUp, liteAccount, null, ec, user);
 
@@ -189,10 +183,6 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                 command.setType(LmHardwareCommandType.CONFIG);
                                 command.setUser(user);
                                 
-                                if(hardwareType.isItron()) {
-                                    command.setParams(itronParams.getParams(liteHw.getInventoryID()));
-                                }
-                                
                                 lmHardwareCommandService.sendConfigCommand(command);
                             }
                         } else if (inventoryBaseDao.getDeviceStatus(liteHw.getInventoryID())
@@ -202,10 +192,6 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                             command.setType(LmHardwareCommandType.IN_SERVICE);
                             command.setUser(user);
 
-                            if(hardwareType.isItron()) {
-                                command.setParams(itronParams.getParams(liteHw.getInventoryID()));
-                            }
-                            
                             lmHardwareCommandService.sendInServiceCommand(command);
                         }
                     } else if (!suppressMessages) {
@@ -904,28 +890,5 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         }
 
         return null;
-    }
-    
-    /**
-     * This class collects information needed for communications with itron
-     */
-    private class ItronParams {
-        Map<Integer, Integer> inventoryIdToGroupPaoId = new HashMap<>();
-        Map<Integer, LiteYukonPAObject> itronGroups = cache.getAllLMGroups().stream()
-                .filter(group -> group.getPaoType() == PaoType.LM_GROUP_ITRON)
-                .collect(Collectors.toMap(LiteYukonPAObject::getLiteID, group -> group));
-        
-        ItronParams(List<ProgramEnrollment> requests, CustomerAccount account) {
-            requests.forEach(request -> {
-                if (itronGroups.containsKey(request.getLmGroupId())) {
-                    inventoryIdToGroupPaoId.put(request.getInventoryId(), request.getLmGroupId());
-                }
-            });
-        }
-        
-        public ImmutableMap<LmHardwareCommandParam, Object> getParams(int inventoryId) {
-            ImmutableMap.Builder<LmHardwareCommandParam, Object> builder = new ImmutableMap.Builder<>();
-            return builder.put(LmHardwareCommandParam.GROUP_ID, inventoryIdToGroupPaoId.get(inventoryId)).build();
-        }
     }
 }

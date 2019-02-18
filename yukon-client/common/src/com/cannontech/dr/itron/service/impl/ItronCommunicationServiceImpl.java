@@ -14,6 +14,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.SoapMessageFactory;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
@@ -50,11 +51,13 @@ import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 public class ItronCommunicationServiceImpl implements ItronCommunicationService {
     
@@ -66,6 +69,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Autowired private AssignedProgramDao assignedProgramDao;
     @Autowired private IDatabaseCache cache;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private InventoryDao inventoryDao;
     String userName = "test";
 
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
@@ -99,6 +103,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         Lists.newArrayList(Manager.values()).forEach(manager -> manager.getTemplate().setMessageSender(getMessageSender(userName, password)));
     }
       
+    @Transactional
     @Override
     public void addDevice(Hardware hardware, AccountDto account) {
         String url = Manager.DEVICE.getUrl(settingsUrl);
@@ -132,6 +137,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         }
     }
 
+    @Transactional
     @Override
     public void removeDeviceFromServicePoint(String macAddress) {
         EditHANDeviceRequest request = DeviceManagerHelper.buildEditRequestRemoveServicePoint(macAddress);
@@ -139,22 +145,49 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         itronEventLogService.removeHANDeviceFromServicePoint(macAddress, userName);
     }
     
+    @Transactional
     @Override
     public void addServicePoint(AccountDto account, String macAddress) {
         addServicePoint(account);
         addDeviceToServicePoint(macAddress, account);
     }
     
+    @Transactional
     @Override
-    public void enroll(int accountId, int deviceId, int groupId) {
-        sendEnrollmentRequest(accountId, true);
-        String macAddress = deviceDao.getDeviceMacAddress(deviceId);
-        addMacAddressToGroup(getGroup(groupId), macAddress);
+    public void enroll(int accountId) {
+        CustomerAccount account = customerAccountDao.getById(accountId);
+        log.debug("ITRON-enroll account number {}", account.getAccountNumber());
+        List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
+        sendEnrollmentRequest(enrollments, account, true);
+
+        Map<Integer, LiteYukonPAObject> groups = enrollments.stream()
+                .map(enrollment -> getGroup(enrollment.getLmGroupId()))
+                .distinct()
+                .collect(Collectors.toMap(g -> g.getPaoIdentifier().getPaoId(), g->g));
+        log.debug("ITRON-groups {} associated with account number {}",
+            groups.values().stream().map(g -> g.getPaoName()).collect(Collectors.toList()), account.getAccountNumber());
+
+        Multimap<Integer, Integer> groupIdsToInventoryIds =
+            enrollmentDao.getActiveEnrolledInventoryIdsMapForGroupIds(groups.keySet());
+
+        groups.keySet().forEach(groupId -> {
+            Collection<Integer> inventoryIds = groupIdsToInventoryIds.get(groupId);
+            log.debug("ITRON-{} device(s) in group {}", inventoryIds.size(), groups.get(groupId).getPaoName());
+            Map<Integer, Integer> inventoryIdsToDeviceIds = inventoryDao.getDeviceIds(inventoryIds);
+            List<String> macAddresses =
+                Lists.newArrayList(deviceDao.getDeviceMacAddresses(inventoryIdsToDeviceIds.values()).values());
+            Lists.partition(macAddresses, 1000).forEach(
+                macAddressesForGroup -> addMacAddressToGroup(groups.get(groupId), macAddresses));
+        });
     }
     
+    @Transactional
     @Override
     public void unenroll(int accountId) {
-        sendEnrollmentRequest(accountId, false);
+        CustomerAccount account = customerAccountDao.getById(accountId);
+        log.debug("ITRON-unenroll account number {}", account.getAccountNumber());
+        List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
+        sendEnrollmentRequest(enrollments, account, false);
     }
 
     /**
@@ -173,10 +206,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     /**
      * Sends enrollment requests to Itron
      */
-    private void sendEnrollmentRequest(int accountId, boolean enroll) {
+    private void sendEnrollmentRequest(List<ProgramEnrollment> enrollments, CustomerAccount account, boolean enroll) {
         String url = Manager.PROGRAM.getUrl(settingsUrl);
-        List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
-        
         List<Long> itronProgramIds = new ArrayList<>();
         
         if (!enrollments.isEmpty()) {
@@ -191,8 +222,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             itronProgramIds.addAll(itronDao.getItronProgramIds(programPaoIds).values());            
         }
         
-        CustomerAccount account = customerAccountDao.getById(accountId);
-   
         log.debug("Sending enrollment request to itron for account {} groups to enroll {} ", account.getAccountNumber(),
             itronProgramIds);
         SetServicePointEnrollmentRequest request =
@@ -205,7 +234,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 (SetServicePointEnrollmentResponse) Manager.PROGRAM.getTemplate().marshalSendAndReceive(url, request);
             // TODO add event log
             log.debug("Response for this call is blank:" + XmlUtils.getPrettyXml(response));
-            log.debug("ITRON-sendEnrollmentRequest url:{} account number:{} result{}.", url, account.getAccountNumber(),
+            log.debug("ITRON-sendEnrollmentRequest url:{} account number:{} result:{}.", url, account.getAccountNumber(),
                 "success");
         } catch (Exception e) {
             throw new ItronCommunicationException("Communication error:", e);
@@ -260,22 +289,22 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     /**
-     * Sends request to itron to add mac address to a group.
+     * Sends request to itron to add mac addresses to a group.
      */
-    private void addMacAddressToGroup(LiteYukonPAObject groupPao, String macAddress) {
+    private void addMacAddressToGroup(LiteYukonPAObject groupPao, List<String> macAddresses) {
         String url = Manager.DEVICE.getUrl(settingsUrl);
 
         JAXBElement<ESIGroupResponseType> response = null;
         try {
-            ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupEditRequest(groupPao, macAddress);
+            ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupEditRequest(groupPao, macAddresses);
             JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createEditESIGroupRequest(requestType);
             // TODO add event log
-            log.debug("ITRON-addMacAddressToGroup url:{} group name:{} mac address:{}.", url, groupPao.getPaoName(),
-                macAddress);
+            log.debug("ITRON-addMacAddressToGroup url:{} group name:{} mac addresses:{}.", url, groupPao.getPaoName(),
+                macAddresses);
             log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));
             response = (JAXBElement<ESIGroupResponseType>) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
-            log.debug("ITRON-addMacAddressToGroup url:{} group name:{} mac address:{} result:{}.", url,
-                groupPao.getPaoName(), macAddress, "success");
+            log.debug("ITRON-addMacAddressToGroup url:{} group name:{} mac addresses:{} result:{}.", url,
+                groupPao.getPaoName(), macAddresses, "success");
             log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())));
             itronEventLogService.addGroup(String.valueOf(groupPao.getLiteID()), response.getValue().getGroupID(), userName);
             if (!response.getValue().getErrors().isEmpty()) {
@@ -300,10 +329,10 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupAddRequest(groupPao);
             JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createAddESIGroupRequest(requestType);
             // TODO add event log
-            log.debug("ITRON-addMacAddressToGroup url:{} group name:{}", url, groupPao.getPaoName());
+            log.debug("ITRON-getGroupIdFromItron url:{} group name:{}", url, groupPao.getPaoName());
             log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));
             response = (JAXBElement<ESIGroupResponseType>) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
-            log.debug("ITRON-addMacAddressToGroup url:{} group name:{} result:{}.", url, groupPao.getPaoName(),
+            log.debug("ITRON-getGroupIdFromItron url:{} group name:{} result:{}.", url, groupPao.getPaoName(),
                 "success");
             log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())));
             itronEventLogService.addGroup(String.valueOf(groupPao.getLiteID()), response.getValue().getGroupID(), userName);
