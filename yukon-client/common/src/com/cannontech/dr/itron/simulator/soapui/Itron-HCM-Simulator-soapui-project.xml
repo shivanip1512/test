@@ -3042,7 +3042,7 @@
          </urn:ServicePoint>\r
       </urn:AddServicePointRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/addServicePointRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="c2e6a551-6b6e-4dd3-96c7-78aac9e4dfcd" isOneWay="false" action="" name="editServicePoint" bindingOperationName="editServicePoint" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="447e0cf7-a9aa-4a94-bc67-7748a1f90e0c" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ServicePointManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager.xsd" xmlns:urn1="urn:com:ssn:dr:xmlschema:service:v1.0:LocationTypes.xsd">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:username>test</con:username><con:password>test</con:password><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:preemptive>true</con:preemptive><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/addServicePointRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="c2e6a551-6b6e-4dd3-96c7-78aac9e4dfcd" isOneWay="false" action="" name="editServicePoint" bindingOperationName="editServicePoint" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="447e0cf7-a9aa-4a94-bc67-7748a1f90e0c" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ServicePointManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager.xsd" xmlns:urn1="urn:com:ssn:dr:xmlschema:service:v1.0:LocationTypes.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:EditServicePointRequest>\r
@@ -3108,7 +3108,7 @@
          </urn:ServicePoint>\r
       </urn:EditServicePointRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/editServicePointRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="c7ddf610-ecca-493b-82e7-93b527e29e54" isOneWay="false" action="" name="getServicePointEnrollment" bindingOperationName="getServicePointEnrollment" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="429c01f6-f339-46ea-8aa9-c10463673869" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ServicePointManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:username>test</con:username><con:password>test</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/editServicePointRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="c7ddf610-ecca-493b-82e7-93b527e29e54" isOneWay="false" action="" name="getServicePointEnrollment" bindingOperationName="getServicePointEnrollment" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="429c01f6-f339-46ea-8aa9-c10463673869" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ServicePointManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:GetServicePointEnrollmentRequest>\r
@@ -3116,7 +3116,7 @@
          <urn:ServicePointID>?</urn:ServicePointID>\r
       </urn:GetServicePointEnrollmentRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/getServicePointEnrollmentRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="95a18212-dcce-422c-8a97-e51c899a2e8d" wsaVersion="NONE" name="ProgramEventManagerSoapBinding" type="wsdl" bindingName="{urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager}ProgramEventManagerSoapBinding" soapVersion="1_1" anonymous="optional" definition="file:/P:/Itron%20WSDL%20Files/wsdls/wsdls/2.3/ProgramEventManager.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/P:/Itron%20WSDL%20Files/wsdls/wsdls/2.3/ProgramEventManager.wsdl"><con:part><con:url>file:/P:/Itron%20WSDL%20Files/wsdls/wsdls/2.3/ProgramEventManager.wsdl</con:url><con:content><![CDATA[<!--root element wsdl:definitions defines set of related services-->
+</soapenv:Envelope>]]></con:request><con:credentials><con:username>test</con:username><con:password>test</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/getServicePointEnrollmentRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="95a18212-dcce-422c-8a97-e51c899a2e8d" wsaVersion="NONE" name="ProgramEventManagerSoapBinding" type="wsdl" bindingName="{urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager}ProgramEventManagerSoapBinding" soapVersion="1_1" anonymous="optional" definition="file:/P:/Itron%20WSDL%20Files/wsdls/wsdls/2.3/ProgramEventManager.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/P:/Itron%20WSDL%20Files/wsdls/wsdls/2.3/ProgramEventManager.wsdl"><con:part><con:url>file:/P:/Itron%20WSDL%20Files/wsdls/wsdls/2.3/ProgramEventManager.wsdl</con:url><con:content><![CDATA[<!--root element wsdl:definitions defines set of related services-->
 <wsdl:definitions name="ProgramEventManager" targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager" xmlns:basicxsd="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd" xmlns:pem="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager" xmlns:pemxsd="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <xsd:schema targetNamespace="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.wsdl" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.wsdl">
@@ -5980,7 +5980,7 @@
       <xsd:maxInclusive value="23"/>
     </xsd:restriction>
   </xsd:simpleType>
-</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8083/ReportManagerPort</con:endpoint></con:endpoints><con:operation id="df70770f-8d03-4e4f-a586-a4affcd51c83" isOneWay="false" action="" name="exportDeviceLog" bindingOperationName="exportDeviceLog" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="c289dd94-8d61-4d5c-b63f-8dcac081e8f2" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ReportManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd">\r
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8083/ReportManagerPort</con:endpoint></con:endpoints><con:operation id="df70770f-8d03-4e4f-a586-a4affcd51c83" isOneWay="false" action="" name="exportDeviceLog" bindingOperationName="exportDeviceLog" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="c289dd94-8d61-4d5c-b63f-8dcac081e8f2" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ReportManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:ExportDeviceLogRequest>\r
@@ -5993,7 +5993,7 @@
          <urn:ResultAction>?</urn:ResultAction>\r
       </urn:ExportDeviceLogRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd/ReportManagerPortType/exportDeviceLogRequest"/></con:call></con:operation><con:operation id="2cff6774-2a7c-4ca4-9d94-e2430c1205a5" isOneWay="false" action="" name="getReportGenerationStatus" bindingOperationName="getReportGenerationStatus" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="033500a4-0b3c-4203-9896-a357761730d1" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ReportManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:username>test</con:username><con:password>test</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd/ReportManagerPortType/exportDeviceLogRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="2cff6774-2a7c-4ca4-9d94-e2430c1205a5" isOneWay="false" action="" name="getReportGenerationStatus" bindingOperationName="getReportGenerationStatus" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="033500a4-0b3c-4203-9896-a357761730d1" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ReportManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:GetReportGenerationStatusRequest>\r
@@ -6301,12 +6301,11 @@ requestContext.mac = holder["/soap-env:Envelope/soap-env:Body/itron-dm:EditESIGr
   </soapenv:Body>
 </soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editESIGroupResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="updateDeviceEventLogs" id="3dee0edc-1681-47f5-93e4-021dc231d105" interface="DeviceManagerSoapBinding" operation="updateDeviceEventLogs"><con:settings/><con:defaultResponse>Mock Success Response</con:defaultResponse><con:dispatchStyle>SCRIPT</con:dispatchStyle><con:dispatchPath>return "Mock Success Response"
 //return "Mock Success Response (False)"
-//return "Mock SoapFault Response"</con:dispatchPath><con:response name="Mock Success Response" id="0ec361b8-dbfd-4a64-83ec-4dc3768adb0d" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>requestContext.updateRequestedBool = true
-//requestContext.updateRequestBool = false</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">
+//return "Mock SoapFault Response"</con:dispatchPath><con:response name="Mock Success Response" id="0ec361b8-dbfd-4a64-83ec-4dc3768adb0d" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">
    <soapenv:Header/>
    <soapenv:Body>
       <urn:UpdateDeviceEventLogsResponse>
-         <urn:updateRequested>${updateRequestedBool}</urn:updateRequested>
+         <urn:updateRequested>true</urn:updateRequested>
       </urn:UpdateDeviceEventLogsResponse>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/updateDeviceEventLogsResponse"/></con:response><con:response name="Mock Success Response (False)" id="0ec361b8-dbfd-4a64-83ec-4dc3768adb0d" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>//requestContext.updateRequestedBool = true
@@ -6314,7 +6313,7 @@ requestContext.updateRequestBool = false</con:script><con:responseContent><![CDA
    <soapenv:Header/>
    <soapenv:Body>
       <urn:UpdateDeviceEventLogsResponse>
-         <urn:updateRequested>${updateRequestedBool}</urn:updateRequested>
+         <urn:updateRequested>false</urn:updateRequested>
       </urn:UpdateDeviceEventLogsResponse>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/updateDeviceEventLogsResponse"/></con:response><con:response name="Mock SoapFault Response" id="164bdb31-1838-4219-8ac5-835f1aae082d" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
@@ -6723,26 +6722,22 @@ headers.each
 }
 </con:onRequestScript><con:mockOperation name="getReportGenerationStatus" id="b68de82f-5e71-40a2-8b14-82a3b71b93ea" interface="ReportManagerSoapBinding" operation="getReportGenerationStatus"><con:settings/><con:defaultResponse>Mock Success Response</con:defaultResponse><con:dispatchStyle>SCRIPT</con:dispatchStyle><con:dispatchPath>return "Mock Success Response";
 //return "Mock Failure Response";
-//return "Mock SoapFault Response";</con:dispatchPath><con:response name="Mock Success Response" id="ce9a2524-fdc8-407d-bf65-7f2adbc5df52" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>requestContext.completedBool = true
-
-//Note, this is likely not the standard location of where Itron will put report data
+//return "Mock SoapFault Response";</con:dispatchPath><con:response name="Mock Success Response" id="ce9a2524-fdc8-407d-bf65-7f2adbc5df52" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>//Note, this is likely not the standard location of where Itron will put report data
 //Chances are, we'll want to update this once we have more information
 requestContext.filePath = "P:/Itron_Test_Report_Location/drm-report-event_log_export_0_to_end-4fcb4df3-5056-4f0a-8fbb-4dda1cb71cad.csv"</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd">
    <soapenv:Header/>
    <soapenv:Body>
       <urn:GetReportGenerationStatusResponse>
-         <urn:Completed>${completedBool}</urn:Completed>
+         <urn:Completed>true</urn:Completed>
          <urn:ReportFileName>${filePath}</urn:ReportFileName>
       </urn:GetReportGenerationStatusResponse>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd/ReportManagerPortType/getReportGenerationStatusResponse"/></con:response><con:response name="Mock Failure Response" id="1186ea52-c957-42bc-b7ba-b90178bc592f" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>requestContext.completedBool = true
-requestContext.failedBool = true
-requestContext.failedText = "Report failed to generate."</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd">
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd/ReportManagerPortType/getReportGenerationStatusResponse"/></con:response><con:response name="Mock Failure Response" id="1186ea52-c957-42bc-b7ba-b90178bc592f" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>requestContext.failedText = "Report failed to generate."</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd">
    <soapenv:Header/>
    <soapenv:Body>
       <urn:GetReportGenerationStatusResponse>
-         <urn:Completed>${completedBool}</urn:Completed>
-         <urn:Failed>${failedBool}</urn:Failed>
+         <urn:Completed>true</urn:Completed>
+         <urn:Failed>true</urn:Failed>
          <urn:FailureMessage>${failedText}</urn:FailureMessage>
       </urn:GetReportGenerationStatusResponse>
    </soapenv:Body>
@@ -6766,4 +6761,32 @@ requestContext.failedText = "Report failed to generate."</con:script><con:respon
       </detail>
     </soapenv:Fault>
   </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd/ReportManagerPortType/getReportGenerationStatusResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd/ReportManagerPortType/getReportGenerationStatusResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="exportDeviceLog" id="dbdbfdca-93f1-4455-96b3-d07c3b9ea00c" interface="ReportManagerSoapBinding" operation="exportDeviceLog"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Mock Success Response" id="8cc9d55a-76d5-4ddf-a1e0-3f22539509ca" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>Random random = new Random()
+requestContext.randCommandId = random.nextInt(10000)</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:CommandIDResponse>
+         <urn:CommandID>${randCommandId}</urn:CommandID>
+      </urn:CommandIDResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd/ReportManagerPortType/exportDeviceLogResponse"/></con:response><con:response name="Mock SoapFault Response" id="a62c779d-eeeb-44e3-8fd0-fcb2b195598f" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Improperly formatted message.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>INVALID_MESSAGE</urn:ErrorCode>
+            <urn:ErrorMessage>Itron documentation does not detail possible errors.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd/ReportManagerPortType/exportDeviceLogResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
