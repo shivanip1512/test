@@ -70,7 +70,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Autowired private IDatabaseCache cache;
     @Autowired private DeviceDao deviceDao;
     @Autowired private InventoryDao inventoryDao;
-    String userName = "test";
 
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
 
@@ -125,7 +124,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug(XmlUtils.getPrettyXml(request));
             response = (AddHANDeviceResponse) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
             log.debug("ITRON-addDevice url:{} mac id:{} result:{}.", url, response.getMacID(), "success");
-            itronEventLogService.addHANDevice(hardware.getDisplayName(), hardware.getMacAddress(), userName);
+            itronEventLogService.addHANDevice(hardware.getDisplayName(), hardware.getMacAddress(), account.getUserName());
             log.debug(XmlUtils.getPrettyXml(response));
             if (!response.getErrors().isEmpty()) {
                 throw new ItronAddDeviceException(response);
@@ -142,7 +141,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     public void removeDeviceFromServicePoint(String macAddress) {
         EditHANDeviceRequest request = DeviceManagerHelper.buildEditRequestRemoveServicePoint(macAddress);
         editDevice(request); 
-        itronEventLogService.removeHANDeviceFromServicePoint(macAddress, userName);
+        itronEventLogService.removeHANDeviceFromServicePoint(macAddress);
     }
     
     @Transactional
@@ -281,7 +280,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug(XmlUtils.getPrettyXml(response));
             log.debug("ITRON-getProgramIdFromItron url:{} program name:{} result:{}.", url, programPao.getPaoName(),
                 "success");
-            itronEventLogService.addProgram(response.getProgramName(), response.getProgramID(), userName);
+            itronEventLogService.addProgram(response.getProgramName(), response.getProgramID());
             return response.getProgramID();
         } catch (Exception e) {
             throw new ItronCommunicationException("Communication error:", e);
@@ -306,7 +305,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug("ITRON-addMacAddressToGroup url:{} group name:{} mac addresses:{} result:{}.", url,
                 groupPao.getPaoName(), macAddresses, "success");
             log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())));
-            itronEventLogService.addGroup(String.valueOf(groupPao.getLiteID()), response.getValue().getGroupID(), userName);
+            itronEventLogService.addGroup(String.valueOf(groupPao.getLiteID()), response.getValue().getGroupID());
             if (!response.getValue().getErrors().isEmpty()) {
                 throw new ItronAddEditGroupException(response.getValue());
             }
@@ -335,7 +334,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug("ITRON-getGroupIdFromItron url:{} group name:{} result:{}.", url, groupPao.getPaoName(),
                 "success");
             log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())));
-            itronEventLogService.addGroup(String.valueOf(groupPao.getLiteID()), response.getValue().getGroupID(), userName);
+            itronEventLogService.addGroup(String.valueOf(groupPao.getLiteID()), response.getValue().getGroupID());
             if (!response.getValue().getErrors().isEmpty()) {
                 throw new ItronAddEditGroupException(response.getValue());
             }
@@ -353,7 +352,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private void addDeviceToServicePoint(String macAddress, AccountDto account) {
         EditHANDeviceRequest request = DeviceManagerHelper.buildEditRequestWithServicePoint(macAddress, account);
         editDevice(request); 
-        itronEventLogService.addHANDeviceToServicePoint(account.getAccountNumber(), macAddress, userName);
+        itronEventLogService.addHANDeviceToServicePoint(account.getAccountNumber(), macAddress, account.getUserName());
     }
 
     /**
@@ -396,7 +395,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             AddServicePointResponse response =
                 (AddServicePointResponse) Manager.SERVICE_POINT.getTemplate().marshalSendAndReceive(url, request);
 
-            itronEventLogService.addServicePoint(account.getAccountNumber(), userName);
+            itronEventLogService.addServicePoint(account.getAccountNumber(), account.getUserName());
             log.debug(XmlUtils.getPrettyXml(response));
             log.debug("ITRON-addServicePoint url:{} account number:{} result:{}.", url, account.getAccountNumber());
         } catch (Exception e) {

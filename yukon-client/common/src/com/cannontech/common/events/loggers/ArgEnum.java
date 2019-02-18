@@ -51,6 +51,7 @@ public enum ArgEnum {
     loadGroupIds,
     loadGroupName,
     logoutReason,
+    macAddress,
     manual,
     media,
     message,

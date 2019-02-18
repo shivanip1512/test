@@ -59,6 +59,7 @@
     <entry key="yukon.common.events.key">Key</entry>
     <entry key="yukon.common.events.loadGroupIds">Load Group Ids</entry>
     <entry key="yukon.common.events.loadGroupName">Load Group Name</entry>
+    <entry key="yukon.common.events.macAddress">Mac Address</entry>
     <entry key="yukon.common.events.media">Media</entry>
     <entry key="yukon.common.events.message">Message</entry>
     <entry key="yukon.common.events.meterDescription">Meter Description</entry>
@@ -870,11 +871,14 @@
     
     <!-- Itron -->
     <entry key="yukon.common.events.dr.itron.addHANDevice">Device {1} addition request with mac address {2} sent by {3}.</entry>
+    <entry key="yukon.common.events.dr.itron.addHANDevice.2">MAC Address</entry>    
     <entry key="yukon.common.events.dr.itron.addHANDeviceToServicePoint">Device addition request to service point {1} with mac address {2} sent by {3}.</entry>
-    <entry key="yukon.common.events.dr.itron.removeHANDeviceFromServicePoint">Device removal request from service point with mac address {1} sent by {2}.</entry>
+    <entry key="yukon.common.events.dr.itron.removeHANDeviceFromServicePoint">Device removal request from service point with mac address {1} sent.</entry>
     <entry key="yukon.common.events.dr.itron.addServicePoint">Service Point {1} creation request sent by {2}.</entry>
-    <entry key="yukon.common.events.dr.itron.addGroup">Group {1} with group ID {7} creation request sent by {2}.</entry>
-    <entry key="yukon.common.events.dr.itron.addProgram">Program {1} with program ID {7} creation request sent by {2}.</entry>
+    <entry key="yukon.common.events.dr.itron.addGroup">Group {1} with group ID {7} creation request sent.</entry>
+    <entry key="yukon.common.events.dr.itron.addGroup.7">Group Id</entry>
+    <entry key="yukon.common.events.dr.itron.addProgram">Program {1} with program ID {7} creation request sent.</entry>
+    <entry key="yukon.common.events.dr.itron.7">Program Id</entry>
     
     <!-- Nest-->
     <entry key="yukon.common.events.dr.nest.syncStart">Sync Start: Sync Id: {7}, Start Time: {11}</entry>
