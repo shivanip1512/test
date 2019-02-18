@@ -1215,7 +1215,7 @@ public class DevEventLogCreationService {
         RFN_DEVICE(RfnDeviceEventLogService.class, 3),
         STARS(StarsEventLogService.class, 26),
         SYSTEM(SystemEventLogService.class, 35),
-        TOOLS(ToolsEventLogService.class, 26),
+        TOOLS(ToolsEventLogService.class, 27),
         USERS(UsersEventLogService.class, 23),
         VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),
