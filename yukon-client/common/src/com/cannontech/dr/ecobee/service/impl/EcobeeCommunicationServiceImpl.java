@@ -443,6 +443,9 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                 if (reportJob.getStatus() == JobStatus.COMPLETED) {
                     List<String> dataUrls = Arrays.asList(reportJob.getFiles());
                     deviceReadings = downloadRuntimeReport(dataUrls);
+                    if (SelectionType.THERMOSTATS == selectionType) {
+                        ecobeeCommunicationServiceHelper.logMissingSerialNumber(deviceReadings, selectionMatch);
+                    }
                 }
 
                 if (reportJob.getStatus() == JobStatus.ERROR) {
@@ -451,9 +454,6 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                 }
             }
 
-            if (SelectionType.THERMOSTATS == selectionType) {
-                ecobeeCommunicationServiceHelper.logMissingSerialNumber(deviceReadings, selectionMatch);
-            }
         } catch (InterruptedException | ExecutionException e) {
             log.error("Error while processing Runtime Report Job. ", e);
             throw new EcobeeCommunicationException("Error while processing Runtime Report Job.");
