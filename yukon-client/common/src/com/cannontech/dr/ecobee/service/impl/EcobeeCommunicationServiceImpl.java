@@ -437,21 +437,26 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         List<EcobeeDeviceReadings> deviceReadings = new ArrayList<>();
         try {
             RuntimeReportJobResponse response = createRuntimeReportJob(selectionType, selectionMatch, dateRange);
-            ReportJob reportJob = pollForJobCompletion(response.getJobId()).get();
-            
-            if (reportJob != null) {
-                if (reportJob.getStatus() == JobStatus.COMPLETED) {
-                    List<String> dataUrls = Arrays.asList(reportJob.getFiles());
-                    deviceReadings = downloadRuntimeReport(dataUrls);
-                    if (SelectionType.THERMOSTATS == selectionType) {
-                        ecobeeCommunicationServiceHelper.logMissingSerialNumber(deviceReadings, selectionMatch);
+            if (response.getJobId() != null) {
+                ReportJob reportJob = pollForJobCompletion(response.getJobId()).get();
+
+                if (reportJob != null) {
+                    if (reportJob.getStatus() == JobStatus.COMPLETED) {
+                        List<String> dataUrls = Arrays.asList(reportJob.getFiles());
+                        deviceReadings = downloadRuntimeReport(dataUrls);
+                        if (SelectionType.THERMOSTATS == selectionType) {
+                            ecobeeCommunicationServiceHelper.logMissingSerialNumber(deviceReadings, selectionMatch);
+                        }
+                    }
+
+                    if (reportJob.getStatus() == JobStatus.ERROR) {
+                        throw new EcobeeCommunicationException("Recieved error : " + reportJob.getMessage()
+                            + " in response with jobId " + reportJob.getJobId());
                     }
                 }
-
-                if (reportJob.getStatus() == JobStatus.ERROR) {
-                    throw new EcobeeCommunicationException(
-                        "Recieved error : " + reportJob.getMessage() + " in response with jobId " + reportJob.getJobId());
-                }
+            } else {
+                new EcobeeCommunicationException("Recieved error message : " + response.getStatus().getMessage()
+                    + " with code " + response.getStatus().getCode() + " in response while creating job.");
             }
 
         } catch (InterruptedException | ExecutionException e) {
