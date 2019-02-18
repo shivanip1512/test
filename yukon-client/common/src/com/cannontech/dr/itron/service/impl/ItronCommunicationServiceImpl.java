@@ -222,7 +222,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             itronProgramIds.addAll(itronDao.getItronProgramIds(programPaoIds).values());            
         }
         
-        log.debug("Sending enrollment request to itron for account {} groups to enroll {} ", account.getAccountNumber(),
+        log.debug("Sending enrollment request to itron for account {} enrolling itron program ids {} ", account.getAccountNumber(),
             itronProgramIds);
         SetServicePointEnrollmentRequest request =
             ProgramManagerHelper.buildEnrollmentRequest(account.getAccountNumber(), itronProgramIds);
