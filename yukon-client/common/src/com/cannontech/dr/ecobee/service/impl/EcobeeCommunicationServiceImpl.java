@@ -549,13 +549,15 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                             completionFuture.complete(reportJob);
                         }
                     }
+                } else {
+                    completionFuture.completeExceptionally(new EcobeeCommunicationException("No Reported job in response"));
                 }
             } catch (Throwable e) {
                 log.error("Recieved error while polling for runtime report job " + e);
                 completionFuture.completeExceptionally(new EcobeeCommunicationException("Recieved error while polling for runtime report job."));
             }
-
-        }, 2, MINUTES_TO_WAIT_TO_START_CALCULATION, TimeUnit.MINUTES);
+         // provide 2 min delay to check the status of Job
+        }, 2, MINUTES_TO_WAIT_TO_START_CALCULATION, TimeUnit.MINUTES); 
 
         completionFuture.whenComplete((result, thrown) -> {
             checkFuture.cancel(true);
