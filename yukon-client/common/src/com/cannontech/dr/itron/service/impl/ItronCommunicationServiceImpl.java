@@ -2,6 +2,7 @@ package com.cannontech.dr.itron.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,6 +36,8 @@ import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIGroupRespon
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditHANDeviceRequest;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditHANDeviceResponse;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ObjectFactory;
+import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelHANLoadControlProgramEventOnDevicesRequest;
+import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelHANLoadControlProgramEventOnDevicesResponse;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.AddProgramRequest;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.AddProgramResponse;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.SetServicePointEnrollmentRequest;
@@ -110,20 +113,20 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         AddHANDeviceRequest request = null;
         if (account != null) {
             // TODO handle itron error if account already exist implementation pending simulator
-            log.debug("ITRON-addDevice url:{} account:{} mac id:{}.", url, account.getAccountNumber(),
+            log.debug("ITRON-addDevice url:{} account:{} mac address:{}.", url, account.getAccountNumber(),
                 hardware.getMacAddress());
             // check if we haven't created account before
             addServicePoint(account);
             request = DeviceManagerHelper.buildAddRequestWithServicePoint(hardware, account);
         } else {
-            log.debug("ITRON-addDevice url:{} mac id:{}.", url, hardware.getMacAddress());
+            log.debug("ITRON-addDevice url:{} mac address:{}.", url, hardware.getMacAddress());
             request = DeviceManagerHelper.buildAddRequestWithoutServicePoint(hardware);
         }
         AddHANDeviceResponse response = null;
         try {
             log.debug(XmlUtils.getPrettyXml(request));
             response = (AddHANDeviceResponse) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
-            log.debug("ITRON-addDevice url:{} mac id:{} result:{}.", url, response.getMacID(), "success");
+            log.debug("ITRON-addDevice url:{} mac address:{} result:{}.", url, response.getMacID(), "success");
             itronEventLogService.addHANDevice(hardware.getDisplayName(), hardware.getMacAddress(), account.getUserName());
             log.debug(XmlUtils.getPrettyXml(response));
             if (!response.getErrors().isEmpty()) {
@@ -158,25 +161,72 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         log.debug("ITRON-enroll account number {}", account.getAccountNumber());
         List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
         sendEnrollmentRequest(enrollments, account, true);
+        Map<Integer, LiteYukonPAObject> groups = getGroupsForEnrollments(enrollments);
+        sendMacAddresses(account, groups);
+    }
+    
+    @Transactional
+    @Override
+    public void optOut(int accountId, int deviceId, int inventoryId) {
+        CustomerAccount account = customerAccountDao.getById(accountId);
+        List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
+        log.debug("ITRON-optOut account number {}", account.getAccountNumber());
+        int yukonGroupId = getGroupIdByInventoryId(inventoryId, enrollments);
+        long itronGroupId = itronDao.getItronGroupId(yukonGroupId);
+        String macAddress= deviceDao.getDeviceMacAddress(deviceId);
+        String url = Manager.PROGRAM_EVENT.getUrl(settingsUrl);
+        // TODO add event log
+        try {
+            CancelHANLoadControlProgramEventOnDevicesRequest request = ProgramEventManagerHelper.buildOptOutRequest(itronGroupId, macAddress);
+            log.debug(XmlUtils.getPrettyXml(request));
+            log.debug("ITRON-optOut url:{} mac address:{} itron group id:{}.", url, macAddress, itronGroupId);
+            CancelHANLoadControlProgramEventOnDevicesResponse response =
+                (CancelHANLoadControlProgramEventOnDevicesResponse) Manager.PROGRAM_EVENT.getTemplate().marshalSendAndReceive(
+                    url, request);
+            log.debug("ITRON-optOut url:{} mac address:{} itron group id:{} result:{}.", url, macAddress, itronGroupId, "success");
+            log.debug(XmlUtils.getPrettyXml(response));
+        } catch (Exception e) {
+            throw new ItronCommunicationException("Communication error:", e);
+        }
+        Map<Integer, LiteYukonPAObject> groups = new HashMap<>();
+        groups.put(yukonGroupId, getGroup(yukonGroupId));
+        sendMacAddresses(account, groups);
+    }
+    
+    @Transactional
+    @Override
+    public void optIn(int accountId, int inventoryId) {
+        CustomerAccount account = customerAccountDao.getById(accountId);
+        log.debug("ITRON-optIn account number {}", account.getAccountNumber());
+        List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
+        Map<Integer, LiteYukonPAObject> groups = new HashMap<>();
+        int yukonGroupId = getGroupIdByInventoryId(inventoryId, enrollments);
+        groups.put(yukonGroupId, getGroup(yukonGroupId));
+        sendMacAddresses(account, groups);
+    }
 
-        Map<Integer, LiteYukonPAObject> groups = enrollments.stream()
-                .map(enrollment -> getGroup(enrollment.getLmGroupId()))
-                .distinct()
-                .collect(Collectors.toMap(g -> g.getPaoIdentifier().getPaoId(), g->g));
+    /**
+     * 1. Finds all devices in the groups
+     * 2. Excludes all opted out inventory
+     * 3. Finds mac address for each device
+     * 4. For each group sends all mac addresses to itron in batches of 1000
+     */
+    private void sendMacAddresses(CustomerAccount account,  Map<Integer, LiteYukonPAObject> groups) {
         log.debug("ITRON-groups {} associated with account number {}",
             groups.values().stream().map(g -> g.getPaoName()).collect(Collectors.toList()), account.getAccountNumber());
 
         Multimap<Integer, Integer> groupIdsToInventoryIds =
             enrollmentDao.getActiveEnrolledInventoryIdsMapForGroupIds(groups.keySet());
 
+        List<Integer> optOuts = enrollmentDao.getCurrentlyOptedOutInventory(); 
         groups.keySet().forEach(groupId -> {
             Collection<Integer> inventoryIds = groupIdsToInventoryIds.get(groupId);
+            inventoryIds.removeAll(optOuts);
             log.debug("ITRON-{} device(s) in group {}", inventoryIds.size(), groups.get(groupId).getPaoName());
             Map<Integer, Integer> inventoryIdsToDeviceIds = inventoryDao.getDeviceIds(inventoryIds);
             List<String> macAddresses =
                 Lists.newArrayList(deviceDao.getDeviceMacAddresses(inventoryIdsToDeviceIds.values()).values());
-            Lists.partition(macAddresses, 1000).forEach(
-                macAddressesForGroup -> addMacAddressToGroup(groups.get(groupId), macAddresses));
+            macAddresses.forEach(macAddressesForGroup -> sendMacAddresses(groups.get(groupId), macAddresses));
         });
     }
     
@@ -187,6 +237,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         log.debug("ITRON-unenroll account number {}", account.getAccountNumber());
         List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
         sendEnrollmentRequest(enrollments, account, false);
+        Map<Integer, LiteYukonPAObject> groups = getGroupsForEnrollments(enrollments);
+        sendMacAddresses(account, groups);
     }
 
     /**
@@ -290,7 +342,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     /**
      * Sends request to itron to add mac addresses to a group.
      */
-    private void addMacAddressToGroup(LiteYukonPAObject groupPao, List<String> macAddresses) {
+    private void sendMacAddresses(LiteYukonPAObject groupPao, List<String> macAddresses) {
         String url = Manager.DEVICE.getUrl(settingsUrl);
 
         JAXBElement<ESIGroupResponseType> response = null;
@@ -367,7 +419,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         try {
             response = (EditHANDeviceResponse) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
             log.debug(XmlUtils.getPrettyXml(response));
-            log.debug("ITRON-editDevice mac id:{} result:{}", response.getMacID(), "success");
+            log.debug("ITRON-editDevice mac address:{} result:{}", response.getMacID(), "success");
             if (!response.getErrors().isEmpty()) {
                 throw new ItronEditDeviceException(response);
             }
@@ -415,6 +467,23 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 .filter(program -> program.getLiteID() == yukonProgramId)
                 .findFirst().get();
         return programPao;
+    }
+    
+    private int getGroupIdByInventoryId(int inventoryId, List<ProgramEnrollment> enrollments) {
+        int yukonGroupId = enrollments.stream()
+                .filter(enrollment -> enrollment.getInventoryId() == inventoryId)
+                .findFirst().get()
+                .getLmGroupId();
+        return yukonGroupId;
+    }
+    
+
+    private Map<Integer, LiteYukonPAObject> getGroupsForEnrollments(List<ProgramEnrollment> enrollments) {
+        Map<Integer, LiteYukonPAObject> groups =
+            enrollments.stream().map(enrollment -> getGroup(enrollment.getLmGroupId()))
+                .distinct()
+                .collect(Collectors.toMap(g -> g.getPaoIdentifier().getPaoId(), g -> g));
+        return groups;
     }
     
     /**

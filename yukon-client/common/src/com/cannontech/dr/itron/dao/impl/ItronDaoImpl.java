@@ -1,6 +1,5 @@
 package com.cannontech.dr.itron.dao.impl;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +12,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.dr.itron.dao.ItronDao;
 
 public class ItronDaoImpl implements ItronDao {
@@ -72,11 +70,8 @@ public class ItronDaoImpl implements ItronDao {
         sql.append("WHERE YukonProgramId").in(lmProgramIds);
         
         Map<Integer, Long> result = new HashMap<>();
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                result.put(rs.getInt("YukonProgramId"), rs.getLong("ItronProgramId"));
-            }
+        jdbcTemplate.query(sql, (YukonResultSet rs) -> {
+            result.put(rs.getInt("YukonProgramId"), rs.getLong("ItronProgramId"));
         });
         return result;
     }
@@ -88,11 +83,8 @@ public class ItronDaoImpl implements ItronDao {
         sql.append("FROM LMGroupItronMapping");
         sql.append("WHERE YukonGroupId").in(lmGroupIds);
         Map<Integer, Long> result = new HashMap<>();
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                result.put(rs.getInt("YukonGroupId"), rs.getLong("ItronGroupId"));
-            }
+        jdbcTemplate.query(sql, (YukonResultSet rs) -> {
+            result.put(rs.getInt("YukonGroupId"), rs.getLong("ItronGroupId"));
         });
         return result;
     }

@@ -26,11 +26,45 @@ public interface ItronCommunicationService {
 
     /**
      * Attempts to sync Yukon account with Itron
+     * 1. Finds all itron programs and groups for account
+     * 2. If the group or the program is not created with itron, sends request to create
+     * 3. Sends enrollment request to itron to map programs to account
+     * 4. Finds all devices in the groups
+     * 5. Excludes all opted out inventory
+     * 6. Finds mac address for each device
+     * 7. For each group sends all mac addresses to itron
      */
     void enroll(int accountId);
 
     /**
      * Attempts to sync Yukon account with Itron
+     * 1. Finds all itron programs and groups for account
+     * 2. Sends enrollment request to itron to map programs to account
+     * 3. Finds all devices in the groups
+     * 4. Excludes all opted out inventory
+     * 5. Finds mac address for each device
+     * 6. For each group sends all mac addresses to itron
      */
     void unenroll(int accountId);
+
+    /**
+     * Attempts to sync Yukon account with Itron
+     * 1. Finds the group device is enrolled into
+     * 2. Finds all devices in the group
+     * 3. Excludes all opted out inventory
+     * 4. Finds mac address for each device
+     * 5. Sends all mac addresses to itron for the group
+     * 6. Send cancel load control event with itron group id and mac addess to itron
+     */
+    void optOut(int accountId, int deviceId, int inventoryId);
+
+    /**
+     * Attempts to sync Yukon account with Itron
+     * 1. Finds the group device is enrolled into
+     * 2. Finds all devices in the group
+     * 3. Excludes all opted out inventory
+     * 4. Finds mac address for each device
+     * 5. Sends all mac addresses to itron for the group
+     */
+    void optIn(int accountId, int inventoryId);
 }

@@ -123,11 +123,11 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
     
     @Override
-    public Map<Integer, String> getDeviceMacAddresses(Collection<Integer> devicesId) {
+    public Map<Integer, String> getDeviceMacAddresses(Collection<Integer> deviceIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceId, MacAddress");
         sql.append("FROM DeviceMacAddress");
-        sql.append("WHERE DeviceId").in(devicesId);
+        sql.append("WHERE DeviceId").in(deviceIds);
         Map<Integer, String> result = new HashMap<>();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override

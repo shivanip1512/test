@@ -32,10 +32,15 @@ public class ItronCommandStrategy  implements LmHardwareCommandStrategy{
         case IN_SERVICE:
             itronCommunicationService.enroll(command.getDevice().getAccountID());
             break;
-
         case OUT_OF_SERVICE:
-        case TEMP_OUT_OF_SERVICE:
             itronCommunicationService.unenroll(command.getDevice().getAccountID());
+            break;
+        case CANCEL_TEMP_OUT_OF_SERVICE:
+            itronCommunicationService.optIn(command.getDevice().getAccountID(), command.getDevice().getInventoryID());
+            break;
+        case TEMP_OUT_OF_SERVICE:
+            itronCommunicationService.optOut(command.getDevice().getAccountID(), command.getDevice().getDeviceID(),
+                command.getDevice().getInventoryID());
             break;
         default:
             break;
