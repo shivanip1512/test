@@ -48,6 +48,9 @@ import com.cannontech.analysis.gui.ReportBean;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -55,7 +58,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
 public class ReportGenerator extends javax.servlet.http.HttpServlet {
-
+    
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null) {
@@ -78,6 +81,8 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet {
         YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(req);
         TimeZone tz = yukonUserContext.getTimeZone();
 
+        YukonSpringHook.getBean(RolePropertyDao.class).verifyRole(YukonRole.REPORTING,  yukonUserContext.getYukonUser());
+
         // Default energycompany properties in case we can't find one?
         LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
         Integer energyCompanyID =
@@ -94,6 +99,8 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet {
             reportBean = (ReportBean) session.getAttribute(ServletUtil.ATT_REPORT_BEAN);
         }
 
+        verifyAccess(yukonUserContext, reportBean);
+        
         synchronized (reportBean) {
 
             String param; // holder for the requested parameter
@@ -261,6 +268,40 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet {
         resp.setContentLength((int) fileSize);
         FileCopyUtils.copy(new FileInputStream(tempFile), resp.getOutputStream());
         tempFile.delete();
+    }
+
+    private void verifyAccess(YukonUserContext yukonUserContext, ReportBean reportBean) {
+        switch (reportBean.getReportGroup()) {
+        case ADMINISTRATIVE:
+        case SETTLEMENT:
+            YukonSpringHook.getBean(RolePropertyDao.class).verifyProperty(YukonRoleProperty.ADMIN_REPORTS_GROUP, yukonUserContext.getYukonUser());
+            break;
+        case CAP_CONTROL:
+            YukonSpringHook.getBean(RolePropertyDao.class).verifyProperty(YukonRoleProperty.CAP_CONTROL_REPORTS_GROUP, yukonUserContext.getYukonUser());
+            break;
+        case CCURT:
+            YukonSpringHook.getBean(RolePropertyDao.class).verifyProperty(YukonRoleProperty.CI_CURTAILMENT_REPORTS_GROUP, yukonUserContext.getYukonUser());
+            break;
+        case DATABASE:
+            YukonSpringHook.getBean(RolePropertyDao.class).verifyProperty(YukonRoleProperty.DATABASE_REPORTS_GROUP, yukonUserContext.getYukonUser());
+            break;
+        case LOAD_MANAGEMENT:
+            YukonSpringHook.getBean(RolePropertyDao.class).verifyProperty(YukonRoleProperty.LOAD_MANAGEMENT_REPORTS_GROUP, yukonUserContext.getYukonUser());
+            break;
+        case METERING:
+            YukonSpringHook.getBean(RolePropertyDao.class).verifyProperty(YukonRoleProperty.AMR_REPORTS_GROUP, yukonUserContext.getYukonUser());
+            break;
+        case STARS:
+            YukonSpringHook.getBean(RolePropertyDao.class).verifyProperty(YukonRoleProperty.STARS_REPORTS_GROUP, yukonUserContext.getYukonUser());
+            break;
+        case STATISTICAL:
+            YukonSpringHook.getBean(RolePropertyDao.class).verifyProperty(YukonRoleProperty.STATISTICAL_REPORTS_GROUP, yukonUserContext.getYukonUser());
+            break;
+        case OTHER:
+        default:
+            YukonSpringHook.getBean(RolePropertyDao.class).verifyRole(YukonRole.REPORTING, yukonUserContext.getYukonUser());
+            break;
+        }
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
