@@ -548,6 +548,16 @@ DELETE FROM POINT WHERE POINTID IN (
 INSERT INTO DBUpdates VALUES ('YUK-18984', '7.2.0', SYSDATE);
 /* @end YUK-18984 */
 
+/* @start YUK-19500 */
+UPDATE YukonRoleProperty 
+SET 
+    KeyName = 'Java Web Start (Deprecated)', 
+    Description = 'Java Web Start to access client applications is no longer supported.' 
+WHERE RolePropertyId = -10812;
+
+INSERT INTO DBUpdates VALUES ('YUK-19500', '7.2.0', SYSDATE);
+/* @end YUK-19500 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
