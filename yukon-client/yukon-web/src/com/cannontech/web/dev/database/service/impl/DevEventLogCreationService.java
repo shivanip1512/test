@@ -640,12 +640,12 @@ public class DevEventLogCreationService {
                 String programName = "programNameTest";
                 Long programId = 124L;
                 
-                itronEventLogService.addGroup(groupName, groupId, userName);
+                itronEventLogService.addGroup(groupName, groupId);
                 itronEventLogService.addHANDevice(displayName, macAddress, userName);
                 itronEventLogService.addHANDeviceToServicePoint(accountNumber, macAddress, userName);
-                itronEventLogService.addProgram(programName, programId, userName);
+                itronEventLogService.addProgram(programName, programId);
                 itronEventLogService.addServicePoint(accountNumber, userName);
-                itronEventLogService.removeHANDeviceFromServicePoint(macAddress, userName);
+                itronEventLogService.removeHANDeviceFromServicePoint(macAddress);
             }
         });
         executables.put(LogType.METERING, new DevEventLogExecutable() {
