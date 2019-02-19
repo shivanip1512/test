@@ -338,28 +338,6 @@ ADD Success CHAR(1);
 INSERT INTO DBUpdates VALUES ('YUK-19241', '7.2.0', GETDATE());
 /* @end YUK-19241 */
 
-/* @start YUK-19162 */
-CREATE TABLE ScheduledDataImportHistory (
-   EntryId              NUMERIC              NOT NULL,
-   FileName             VARCHAR(100)         NOT NULL,
-   FileImportType       VARCHAR(50)          NOT NULL,
-   ImportDate           DATETIME             NOT NULL,
-   ArchiveFileName      VARCHAR(100)         NOT NULL,
-   ArchiveFilePath      VARCHAR(300)         NOT NULL,
-   ArchiveFileExists    CHAR(1)              NOT NULL,
-   FailedFileName       VARCHAR(100)         NULL,
-   FailedFilePath       VARCHAR(300)         NULL,
-   SuccessCount         NUMERIC              NOT NULL,
-   FailureCount         NUMERIC              NOT NULL,
-   TotalCount           NUMERIC              NOT NULL,
-   JobGroupId           INT                  NOT NULL,
-   CONSTRAINT PK_ScheduledDataImportHistory PRIMARY KEY (EntryId)
-);
-GO
-
-INSERT INTO DBUpdates VALUES ('YUK-19162', '7.2.0', GETDATE());
-/* @end YUK-19162 */
-
 /* @start YUK-19189 */
 INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'LCR-6600S', 1340);
 
