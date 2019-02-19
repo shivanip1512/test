@@ -27,7 +27,7 @@ public class EcobeeMockApiService {
         Instant endInstant = request.getEndDate().plus(Duration.standardMinutes(request.getEndInterval() * 5));
         
         List<RuntimeReport> runtimeReports = new ArrayList<>();
-        for (String serialNumber : request.getSelection().getSerialNumbers()) {
+        for (String serialNumber : request.getSelection().getSelectionMatch()) {
             
             List<RuntimeReportRow> rows = new ArrayList<RuntimeReportRow>();
             for (Instant intervalStart = startInstant; intervalStart.isBefore(endInstant); intervalStart = intervalStart.plus(fiveMinutes)) {

@@ -3,15 +3,15 @@ package com.cannontech.dr.ecobee.message;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public final class ReportJob {
+public final class EcobeeReportJob {
 
     private final String jobId;
-    private final JobStatus status;
+    private final EcobeeJobStatus status;
     private final String message;
     private final String[] files;
 
     @JsonCreator
-    public ReportJob(@JsonProperty("jobId") String jobId, @JsonProperty("status") JobStatus status,
+    public EcobeeReportJob(@JsonProperty("jobId") String jobId, @JsonProperty("status") EcobeeJobStatus status,
             @JsonProperty("message") String message, @JsonProperty("files") String[] files) {
         this.jobId = jobId;
         this.status = status;
@@ -33,7 +33,7 @@ public final class ReportJob {
     }
 
 
-    public JobStatus getStatus() {
+    public EcobeeJobStatus getStatus() {
         return status;
     }
 }

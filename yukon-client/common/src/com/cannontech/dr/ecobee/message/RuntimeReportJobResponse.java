@@ -8,12 +8,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class RuntimeReportJobResponse extends BaseResponse {
     private final String jobId;
-    private final JobStatus jobStatus;
+    private final EcobeeJobStatus jobStatus;
   
 
     @JsonCreator
     public RuntimeReportJobResponse(@JsonProperty("jobId") String jobId,
-            @JsonProperty("jobStatus") JobStatus jobStatus, @JsonProperty("status") Status status) {
+            @JsonProperty("jobStatus") EcobeeJobStatus jobStatus, @JsonProperty("status") Status status) {
         super(status);
         this.jobId = jobId;
         this.jobStatus = jobStatus;
@@ -23,7 +23,7 @@ public final class RuntimeReportJobResponse extends BaseResponse {
         return jobId;
     }
 
-    public JobStatus getJobStatus() {
+    public EcobeeJobStatus getJobStatus() {
         return jobStatus;
     }
 }

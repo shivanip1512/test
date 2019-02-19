@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 @JsonSerialize(using = TO_JOB_STATUS.class)
 @JsonDeserialize(using = FROM_JOB_STATUS.class)
-public enum JobStatus {
+public enum EcobeeJobStatus {
 
     QUEUED("queued"), 
     PROCESSING("processing"), 
@@ -18,21 +18,21 @@ public enum JobStatus {
     ERROR("error");
 
     private String status;
-    private static final ImmutableMap<String, JobStatus> jobStatusStrings;
+    private static final ImmutableMap<String, EcobeeJobStatus> jobStatusStrings;
 
     static {
-        final Builder<String, JobStatus> b = ImmutableMap.builder();
-        for (JobStatus status : values()) {
+        final Builder<String, EcobeeJobStatus> b = ImmutableMap.builder();
+        for (EcobeeJobStatus status : values()) {
             b.put(status.status, status);
         }
         jobStatusStrings = b.build();
     }
 
-    private JobStatus(String status) {
+    private EcobeeJobStatus(String status) {
         this.status = status;
     }
 
-    public static JobStatus fromEcobeeStatusString(String jobStatus) {
+    public static EcobeeJobStatus fromEcobeeStatusString(String jobStatus) {
         return jobStatusStrings.get(jobStatus);
     }
 

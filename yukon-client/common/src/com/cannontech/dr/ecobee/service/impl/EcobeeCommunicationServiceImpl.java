@@ -59,12 +59,12 @@ import com.cannontech.dr.ecobee.message.DrResponse;
 import com.cannontech.dr.ecobee.message.DrRestoreRequest;
 import com.cannontech.dr.ecobee.message.DutyCycleDrRequest;
 import com.cannontech.dr.ecobee.message.HierarchyResponse;
-import com.cannontech.dr.ecobee.message.JobStatus;
+import com.cannontech.dr.ecobee.message.EcobeeJobStatus;
 import com.cannontech.dr.ecobee.message.ListHierarchyRequest;
 import com.cannontech.dr.ecobee.message.MoveDeviceRequest;
 import com.cannontech.dr.ecobee.message.MoveSetRequest;
 import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
-import com.cannontech.dr.ecobee.message.ReportJob;
+import com.cannontech.dr.ecobee.message.EcobeeReportJob;
 import com.cannontech.dr.ecobee.message.RuntimeReportJobRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportJobResponse;
 import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusRequest;
@@ -431,17 +431,17 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     }
 
     @Override
-    public List<EcobeeDeviceReadings> readDeviceData(SelectionType selectionType, Collection<String> selectionMatch,
+    public synchronized List<EcobeeDeviceReadings> readDeviceData(SelectionType selectionType, Collection<String> selectionMatch,
             Range<Instant> dateRange) {
 
         List<EcobeeDeviceReadings> deviceReadings = new ArrayList<>();
         try {
             RuntimeReportJobResponse response = createRuntimeReportJob(selectionType, selectionMatch, dateRange);
             if (response.getJobId() != null) {
-                ReportJob reportJob = pollForJobCompletion(response.getJobId()).get();
+                EcobeeReportJob reportJob = pollForJobCompletion(response.getJobId()).get();
 
                 if (reportJob != null) {
-                    if (reportJob.getStatus() == JobStatus.COMPLETED) {
+                    if (reportJob.getStatus() == EcobeeJobStatus.COMPLETED) {
                         List<String> dataUrls = Arrays.asList(reportJob.getFiles());
                         deviceReadings = downloadRuntimeReport(dataUrls);
                         if (SelectionType.THERMOSTATS == selectionType) {
@@ -449,13 +449,13 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                         }
                     }
 
-                    if (reportJob.getStatus() == JobStatus.ERROR) {
+                    if (reportJob.getStatus() == EcobeeJobStatus.ERROR) {
                         throw new EcobeeCommunicationException("Recieved error : " + reportJob.getMessage()
                             + " in response with jobId " + reportJob.getJobId());
                     }
                 }
             } else {
-                new EcobeeCommunicationException("Recieved error message : " + response.getStatus().getMessage()
+                throw new EcobeeCommunicationException("Recieved error message : " + response.getStatus().getMessage()
                     + " with code " + response.getStatus().getCode() + " in response while creating job.");
             }
 
@@ -531,9 +531,9 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
      * Provide 2 min initial delay for executor
      */
     
-    private CompletableFuture<ReportJob> pollForJobCompletion(String jobId) {
+    private CompletableFuture<EcobeeReportJob> pollForJobCompletion(String jobId) {
         final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        CompletableFuture<ReportJob> completionFuture = new CompletableFuture<>();
+        CompletableFuture<EcobeeReportJob> completionFuture = new CompletableFuture<>();
         final ScheduledFuture<?> checkFuture = scheduledExecutorService.scheduleAtFixedRate(() -> {
             try {
                 RuntimeReportJobStatusResponse jobStatusResponse = getRuntimeReportJobStatus(jobId);
@@ -546,11 +546,11 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                 }
 
                 if (jobStatusResponse != null && CollectionUtils.isNotEmpty(jobStatusResponse.getJobs())) {
-                    ReportJob reportJob = jobStatusResponse.getJobs().get(0);
+                    EcobeeReportJob reportJob = jobStatusResponse.getJobs().get(0);
                     if (reportJob != null) {
                         log.info("Response : RunTime Report Job recieved for JobId: " + jobId + " with status: "
                             + reportJob.getStatus().getEcobeeStatusString());
-                        if (reportJob.getStatus() == JobStatus.COMPLETED || reportJob.getStatus() == JobStatus.ERROR) {
+                        if (reportJob.getStatus() == EcobeeJobStatus.COMPLETED || reportJob.getStatus() == EcobeeJobStatus.ERROR) {
                             completionFuture.complete(reportJob);
                         }
                     }

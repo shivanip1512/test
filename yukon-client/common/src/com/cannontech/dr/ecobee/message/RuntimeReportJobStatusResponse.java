@@ -11,16 +11,16 @@ import com.google.common.collect.ImmutableList;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RuntimeReportJobStatusResponse extends BaseResponse {
 
-    private final List<ReportJob> jobs;
+    private final List<EcobeeReportJob> jobs;
 
     @JsonCreator
-    public RuntimeReportJobStatusResponse(@JsonProperty("jobs") List<ReportJob> jobs,
+    public RuntimeReportJobStatusResponse(@JsonProperty("jobs") List<EcobeeReportJob> jobs,
             @JsonProperty("status") Status status) {
         super(status);
-        this.jobs = jobs != null ? ImmutableList.copyOf(jobs) : ImmutableList.<ReportJob> of();
+        this.jobs = jobs != null ? ImmutableList.copyOf(jobs) : ImmutableList.<EcobeeReportJob> of();
     }
 
-    public List<ReportJob> getJobs() {
+    public List<EcobeeReportJob> getJobs() {
         return jobs;
     }
 

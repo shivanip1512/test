@@ -71,8 +71,8 @@ public class Selection {
         this.selectionMatch = ImmutableSet.copyOf(selectionMatch);
     }
 
-    public Selection(SelectionType selectionType, String serialNumber) {
-        this(selectionType, Collections.singleton(serialNumber));
+    public Selection(SelectionType selectionType, String selectionMatch) {
+        this(selectionType, Collections.singleton(selectionMatch));
     }
 
     public SelectionType getSelectionType() {
@@ -81,7 +81,7 @@ public class Selection {
 
     @JsonGetter("selectionMatch")
     @JsonSerialize(using=TO_BASIC_CSV.class)
-    public Collection<String> getSerialNumbers() {
+    public Collection<String> getSelectionMatch() {
         return selectionMatch;
     }
 
