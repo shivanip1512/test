@@ -453,8 +453,8 @@ public final class FileUtil {
      */
     public static File ungzip(File gzFile) throws IOException {
         String outputDir = gzFile.getParent();
-        File outputFile = File.createTempFile(gzFile.getName().substring(0, gzFile.getName().lastIndexOf('.')), StringUtils.EMPTY,
-            new File(outputDir));
+        File outputFile = File.createTempFile(gzFile.getName().substring(0, gzFile.getName().lastIndexOf('.')),
+            StringUtils.EMPTY, new File(outputDir));
         outputFile.deleteOnExit();
         try (GZIPInputStream in = new GZIPInputStream(new FileInputStream(gzFile));
              FileOutputStream out = new FileOutputStream(outputFile);) {
@@ -464,7 +464,7 @@ public final class FileUtil {
             log.error(message);
             throw new IOException(message, e);
         }
-		gzFile.delete();
+        gzFile.delete();
         return outputFile;
     }
 
@@ -474,7 +474,7 @@ public final class FileUtil {
      * @throws IOException If any error occurs while untaring the file
      */
     public static List<File> untar(File tarFile) throws IOException {
-    	List<File> untarFiles = new ArrayList<>();
+        List<File> untarFiles = new ArrayList<>();
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new FileInputStream(tarFile))) {
             String outputDir = tarFile.getParent();
             TarArchiveEntry tarEntry = null;
@@ -497,7 +497,7 @@ public final class FileUtil {
             log.error(message);
             throw new IOException(message, e);
         }
-		tarFile.delete();
-		return untarFiles;
+        tarFile.delete();
+        return untarFiles;
     }
 }
