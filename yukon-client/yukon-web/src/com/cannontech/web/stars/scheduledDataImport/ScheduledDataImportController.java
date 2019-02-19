@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -81,6 +83,8 @@ import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao.S
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT)
 public class ScheduledDataImportController {
 
+    private static final Logger log = YukonLogManager.getLogger(ScheduledDataImportController.class);
+    
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private ScheduledDataImportService scheduledDataImportService;
@@ -317,6 +321,7 @@ public class ScheduledDataImportController {
             // pull data from the file and push it to the browser
             IOUtils.copy(input, output);
         } catch (FileNotFoundException e) {
+            log.error("Exception while downloading archive file " + e);
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + "fileNotFound"));
             String fromDate = dateFormattingService.format(from, DateFormatEnum.DATEHM, userContext);
             String toDate = dateFormattingService.format(to, DateFormatEnum.DATEHM, userContext);
@@ -326,6 +331,7 @@ public class ScheduledDataImportController {
                 + sorting.getDirection() + "&sort=" + sorting.getSort();
 
         } catch (Exception e) {
+            log.error("Exception while downloading archive file " + e);
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + "ioError"));
             String fromDate = dateFormattingService.format(from, DateFormatEnum.DATEHM, userContext);
             String toDate = dateFormattingService.format(to, DateFormatEnum.DATEHM, userContext);

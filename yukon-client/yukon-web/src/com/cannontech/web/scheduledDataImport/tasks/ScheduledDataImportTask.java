@@ -15,7 +15,6 @@ import com.cannontech.common.smartNotification.model.DataImportAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.jobs.support.YukonTaskBase;
 import com.cannontech.web.dataImport.DataImportHelper;
 import com.cannontech.web.scheduledDataImport.ScheduledDataImportResult;
@@ -46,15 +45,15 @@ public class ScheduledDataImportTask extends YukonTaskBase {
         File importDir = new File(getImportPath());
         if (importDir.exists()) {
             if (ScheduledImportType.fromImportTypeMap(getImportType()) == ScheduledImportType.ASSET_IMPORT) {
-                log.info("Asset Import Task - Initiated");
+                log.info("Asset Import Task - Initiated " + getJob().getId());
                 ScheduledDataImportResult result = scheduledImportService.initiateImport(scheduleName, importPath, errorFileOutputPath);
                 if (!result.getImportResults().isEmpty()) {
                     int groupId = getJob().getJobGroupId();
-                    insertFileHistory(result.getImportResults(), groupId, CtiUtilities.getExportArchiveDirPath() );
+                    insertFileHistory(result.getImportResults(), groupId);
                 }
                 sendSmartNotification(SmartNotificationEventType.ASSET_IMPORT, result.getErrorFiles(),
                     result.getSuccessFiles().size());
-                log.info("Asset Import Task - Completed");
+                log.info("Asset Import Task - Completed " + getJob().getId());
             }
         } else {
             log.warn("No directory found for Import Path " + importPath);
@@ -72,12 +71,14 @@ public class ScheduledDataImportTask extends YukonTaskBase {
                 importWarning -> DataImportAssembler.assemble(Instant.now(), importWarning)).collect(
                     Collectors.toList());
             smartNotificationEventCreationService.send(eventType, smartNotificationEvent);
+            log.debug("Successfully send smart notification messages for asset import");
         }
-
     }
 
-    private void insertFileHistory(List<ScheduledFileImportResult> result, int jobGroupId, String archievePath) {
-        result.stream().forEach(e -> scheduledImportDao.insertEntry(e, jobGroupId, archievePath));
+    private void insertFileHistory(List<ScheduledFileImportResult> result, int jobGroupId) {
+        log.debug("Insert started in ScheduledDataImportHistory");
+        result.stream().forEach(e -> scheduledImportDao.insertEntry(e, jobGroupId));
+        log.debug("Insert completed in ScheduledDataImportHistory");
     }
 
     public String getScheduleName() {

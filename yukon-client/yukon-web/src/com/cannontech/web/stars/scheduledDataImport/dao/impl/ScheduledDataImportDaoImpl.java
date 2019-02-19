@@ -11,6 +11,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.scheduledFileImport.ScheduleImportHistoryEntry;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
@@ -32,7 +33,7 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
         new ScheduledDataImportHistoryRowMapper();
 
     @Override
-    public int insertEntry(ScheduledFileImportResult fileImportResult, int jobGroupId, String archievePath) {
+    public int insertEntry(ScheduledFileImportResult fileImportResult, int jobGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.insertInto("ScheduledDataImportHistory");
         int entryId = nextValueHelper.getNextValue("ScheduledDataImportHistory");
@@ -42,7 +43,6 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
         sink.addValue("FileImportType", fileImportResult.getScheduledImportType());
         sink.addValue("ImportDate", fileImportResult.getImportDate());
         sink.addValue("ArchiveFileName", fileImportResult.getArchiveFileName());
-        sink.addValue("ArchiveFilePath", archievePath);
         sink.addValue("ArchiveFileExists", fileImportResult.isArchiveFileExists());
         sink.addValue("FailedFileName", fileImportResult.getFailedFileName());
         sink.addValue("FailedFilePath", fileImportResult.getFailedFilePath());
@@ -69,7 +69,7 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
         }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EntryId, FileName, ImportDate, ArchiveFileName, ArchiveFilePath,");
+        sql.append("SELECT EntryId, FileName, ImportDate, ArchiveFileName,");
         sql.append("    ArchiveFileExists, FailedFileName, FailedFilePath, SuccessCount, FailureCount");
         sql.append(getAllFileHistorySql(jobGroupId, from, to));
         sql.append("ORDER BY").append(getOrderBy(sortBy, direction));
@@ -138,12 +138,13 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
         String fileName = rs.getString("FileName");
         Instant importDate = rs.getInstant("ImportDate");
         String archiveFileName = rs.getString("ArchiveFileName");
-        String archiveFilePath = rs.getString("ArchiveFilePath");
         boolean archiveFileExists = rs.getBoolean("ArchiveFileExists");
         String failedFileName = rs.getString("FailedFileName");
         String failedFilePath = rs.getString("FailedFilePath");
         int successCount = rs.getInt("SuccessCount");
         int failureCount = rs.getInt("FailureCount");
+        
+        String archiveFilePath = CtiUtilities.getImportArchiveDirPath();
         return new ScheduleImportHistoryEntry(entryId, fileName, importDate, archiveFileName, archiveFilePath,
             archiveFileExists, failedFileName, failedFilePath, successCount, failureCount);
     }

@@ -36,7 +36,7 @@ public interface ScheduledDataImportDao {
     /**
      * Insert record into file import history (ScheduledDataImportHistory)
      */
-    int insertEntry(ScheduledFileImportResult fileImportResult, int jobGroupId, String archievePath);
+    int insertEntry(ScheduledFileImportResult fileImportResult, int jobGroupId);
      
     /**
      * Retrieve the file import history of a job with specified jobGroupId.

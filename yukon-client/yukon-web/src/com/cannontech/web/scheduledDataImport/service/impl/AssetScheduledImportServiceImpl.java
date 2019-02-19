@@ -105,9 +105,11 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
                                 boolean isValidActionColHeader = true;
 
                                 if (action.equalsIgnoreCase(result.CUST_COLUMNS[result.COL_CUST_ACTION])) {
+                                    log.debug("Customer file type detected");
                                     result.setAccountFileUpload(bulkFileUpload);
                                     result.setCustArchiveDir(archiveFile);
                                 } else if (action.equalsIgnoreCase(result.HW_COLUMNS[result.COL_HW_ACTION])) {
+                                    log.debug("Hardware file type detected");
                                     result.setHardwareFileUpload(bulkFileUpload);
                                     result.setHwArchiveDir(archiveFile);
                                 } else {
