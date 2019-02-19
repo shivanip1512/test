@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Duration;
-import org.joda.time.Instant;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -23,10 +24,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,6 +53,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.model.JobState;
@@ -72,8 +72,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.schedule.ScheduleControllerHelper;
 import com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory.ScheduledDataImportTaskJobWrapper;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.web.input.DatePropertyEditorFactory;
-import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.scheduledDataImport.service.ScheduledDataImportService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao.SortBy;
@@ -91,7 +89,6 @@ public class ScheduledDataImportController {
     @Autowired private ToolsEventLogService logService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ScheduleControllerHelper scheduleControllerHelper;
-    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private DateFormattingService dateFormattingService;
 
     private static final String baseKey = "yukon.web.modules.operator.scheduledDataImportDetail.";
@@ -241,31 +238,35 @@ public class ScheduledDataImportController {
 
     @GetMapping("{jobGroupId}/viewHistory")
     public String viewHistory(ModelMap model, @PathVariable int jobGroupId, YukonUserContext userContext,
-            @RequestParam(required = false) Instant from, @RequestParam(required = false) Instant to,
-            @DefaultItemsPerPage(10) PagingParameters paging,
-            @DefaultSort(dir = Direction.desc, sort = "fileName") SortingParameters sorting) throws ServletException {
+            @DefaultItemsPerPage(10) PagingParameters paging, @RequestParam(required = false) Date startDate,
+            @RequestParam(required = false) Date endDate,
+            @DefaultSort(dir = Direction.desc, sort = "fileName") SortingParameters sorting)
+            throws ServletException, ParseException {
 
         SearchResults<ScheduleImportHistoryEntry> searchResults = new SearchResults<>();
 
-        if (to == null) {
-            to = new Instant();
+        if (endDate == null) {
+            endDate = new Date();
         }
 
-        if (from == null) {
-            from = to.minus(Duration.standardDays(7));
+        if (startDate == null) {
+            startDate = new DateTime(endDate).minusDays(7).toDate();
         }
 
-        model.addAttribute("from", from);
-        model.addAttribute("to", to);
-        
-        searchResults = scheduledDataImportService.getImportHistory(jobGroupId, from, to,
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+
+        String toDate = dateFormattingService.format(endDate, DateFormatEnum.DATE, userContext);
+
+        endDate = dateFormattingService.flexibleDateParser(toDate, DateOnlyMode.END_OF_DAY, userContext);
+
+        searchResults = scheduledDataImportService.getImportHistory(jobGroupId, startDate, endDate,
             FileImportHistory.valueOf(sorting.getSort()).getValue(), sorting.getDirection(), paging);
 
         model.addAttribute("results", searchResults);
         model.addAttribute("jobGroupId", jobGroupId);
         model.addAttribute("paging", paging);
         model.addAttribute("sorting", sorting);
-
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         FileImportHistory sortBy = FileImportHistory.valueOf(sorting.getSort());
@@ -281,17 +282,17 @@ public class ScheduledDataImportController {
 
     @GetMapping("downloadArchivedFile")
     public String downloadArchivedFile(HttpServletResponse response, FlashScope flashScope,
-            @RequestParam(required = true) Integer entryId, @RequestParam(required = true) Instant from,
-            @RequestParam(required = true) Instant to, @RequestParam(required = true) Boolean isSuccessFile,
+            @RequestParam(required = true) Integer entryId, @RequestParam(required = true) Date startDate,
+            @RequestParam(required = true) Date endDate, @RequestParam(required = true) Boolean isSuccessFile,
             @DefaultItemsPerPage(10) PagingParameters paging,
             @DefaultSort(dir = Direction.desc, sort = "fileName") SortingParameters sorting,
-            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+            YukonUserContext userContext) {
         String baseKey = "yukon.web.modules.operator.fileImportHistory.";
         String fileName = null;
         String failedFilePath = null;
         String originalFileName = null;
         String jobGroupId = null;
-        
+
         Map<String, String> historyEntry = scheduledDataImportService.getHistoryEntryById(entryId, isSuccessFile);
         if (isSuccessFile) {
             fileName = historyEntry.get("archiveFileName");
@@ -302,12 +303,12 @@ public class ScheduledDataImportController {
         }
         jobGroupId = historyEntry.get("jobGroupId");
 
-        if (to == null) {
-            to = new Instant();
+        if (endDate == null) {
+            endDate = new Date();
         }
 
-        if (from == null) {
-            from = to.minus(Duration.standardDays(7));
+        if (startDate == null) {
+            startDate = new DateTime(endDate).minusDays(7).toDate();
         }
 
         try (InputStream input = new FileInputStream(
@@ -323,22 +324,22 @@ public class ScheduledDataImportController {
         } catch (FileNotFoundException e) {
             log.error("Exception while downloading archive file " + e);
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + "fileNotFound"));
-            String fromDate = dateFormattingService.format(from, DateFormatEnum.DATEHM, userContext);
-            String toDate = dateFormattingService.format(to, DateFormatEnum.DATEHM, userContext);
+            String fromDate = dateFormattingService.format(startDate, DateFormatEnum.DATE, userContext);
+            String toDate = dateFormattingService.format(endDate, DateFormatEnum.DATE, userContext);
 
-            return "redirect:/stars/scheduledDataImport/" + jobGroupId + "/viewHistory?from=" + fromDate + "&to="
-                + toDate + "&page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage() + "&dir="
-                + sorting.getDirection() + "&sort=" + sorting.getSort();
+            return "redirect:/stars/scheduledDataImport/" + jobGroupId + "/viewHistory?startDate=" + fromDate
+                + "&endDate=" + toDate + "&page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage()
+                + "&dir=" + sorting.getDirection() + "&sort=" + sorting.getSort();
 
         } catch (Exception e) {
             log.error("Exception while downloading archive file " + e);
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + "ioError"));
-            String fromDate = dateFormattingService.format(from, DateFormatEnum.DATEHM, userContext);
-            String toDate = dateFormattingService.format(to, DateFormatEnum.DATEHM, userContext);
+            String fromDate = dateFormattingService.format(startDate, DateFormatEnum.DATE, userContext);
+            String toDate = dateFormattingService.format(endDate, DateFormatEnum.DATE, userContext);
 
-            return "redirect:/stars/scheduledDataImport/" + jobGroupId + "/viewHistory?from=" + fromDate + "&to="
-                + toDate + "&page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage() + "&dir="
-                + sorting.getDirection() + "&sort=" + sorting.getSort();
+            return "redirect:/stars/scheduledDataImport/" + jobGroupId + "/viewHistory?startDate=" + fromDate
+                + "&endDate=" + toDate + "&page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage()
+                + "&dir=" + sorting.getDirection() + "&sort=" + sorting.getSort();
         }
         return null;
     }
@@ -369,11 +370,6 @@ public class ScheduledDataImportController {
         
         scheduledDataImport.setImportType(ScheduledImportType.ASSET_IMPORT);
         model.addAttribute("scheduledImportData", scheduledDataImport);
-    }
-
-    @InitBinder
-    public void initBinder(WebDataBinder binder, final YukonUserContext userContext) {
-        datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.CURRENT);
     }
 
     public enum Column implements DisplayableEnum {

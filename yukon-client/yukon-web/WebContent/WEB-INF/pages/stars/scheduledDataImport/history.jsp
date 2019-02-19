@@ -6,17 +6,19 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <cti:standardPage module="operator" page="fileImportHistory">
     <tags:sectionContainer2 nameKey="history">
-
         <div class="dib">
             <form action="<cti:url value="/stars/scheduledDataImport/${jobGroupId}/viewHistory"/>">
                 <div class="dib vam"><i:inline key="yukon.common.dateRange"/>:</div>
                 <div class="dib vam">
-                    <cti:msg var="toTxt" key="yukon.common.to"/>
-                    <dt:dateRange startValue="${from}" endValue="${to}" startName="from" endName="to" 
-                                  wrapperClasses="dib vam" toText="${toTxt}" toStyle="margin-right: 5px; margin-top: 3px;"/>
+                    <dt:date name="startDate" value = "${startDate}" wrapperClass="fn vam"/>
+                    <div class="dib vam" style="margin-right: 3px;">
+                        <i:inline key="yukon.common.to"/>
+                    </div>
+                    <dt:date name="endDate" value = "${endDate}" wrapperClass="fn vam"/>
                 </div>
                 <div class="dib vam">
                     <cti:button nameKey="filter" classes="primary action" type="submit"/>
@@ -24,16 +26,16 @@
             </form>
         </div>
         <hr>
-        <cti:formatDate type="DATEHM" value="${from}" var="from"/>
-        <cti:formatDate type="DATEHM" value="${to}" var="to"/>
+        <cti:formatDate type="DATE" value="${startDate}" var="startDate"/>
+        <cti:formatDate type="DATE" value="${endDate}" var="endDate"/>
         <c:choose>
             <c:when test="${results.hitCount == 0}">
                 <span class="empty-list"><i:inline key=".noImports"/></span>
             </c:when>
             <c:otherwise>
                 <cti:url var="viewHistoryUrl" value="/stars/scheduledDataImport/${jobGroupId}/viewHistory">
-                    <cti:param name="from" value="${from}"/>
-                    <cti:param name="to" value="${to}"/>
+                    <cti:param name="startDate" value="${startDate}"/>
+                    <cti:param name="endDate" value="${endDate}"/>
                 </cti:url>
                 <div id="file-detail" data-url="${viewHistoryUrl}" data-static>
                     <table class="compact-results-table row-highlighting wrbw">
@@ -48,8 +50,8 @@
                         <tbody>
                             <c:forEach var="result" items="${results.resultList}">
                                 <c:url var="fileUrl" value="/stars/scheduledDataImport/downloadArchivedFile">
-                                    <cti:param name="from" value="${from}"/>
-                                    <cti:param name="to" value="${to}"/>
+                                    <cti:param name="startDate" value="${startDate}"/>
+                                    <cti:param name="endDate" value="${endDate}"/>
                                     <cti:param name="dir" value="${sorting.direction}"/>
                                     <cti:param name="sort" value="${sorting.sort}"/>
                                     <cti:param name="itemsPerPage" value="${paging.itemsPerPage}"/>
@@ -58,8 +60,8 @@
                                     <cti:param name="isSuccessFile" value="true"/>
                                 </c:url>
                                 <c:url var="errorFileUrl" value="/stars/scheduledDataImport/downloadArchivedFile">
-                                    <cti:param name="from" value="${from}"/>
-                                    <cti:param name="to" value="${to}"/>
+                                    <cti:param name="startDate" value="${startDate}"/>
+                                    <cti:param name="endDate" value="${endDate}"/>
                                     <cti:param name="dir" value="${sorting.direction}"/>
                                     <cti:param name="sort" value="${sorting.sort}"/>
                                     <cti:param name="itemsPerPage" value="${paging.itemsPerPage}"/>

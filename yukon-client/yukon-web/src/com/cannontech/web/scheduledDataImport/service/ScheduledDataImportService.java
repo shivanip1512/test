@@ -2,9 +2,8 @@ package com.cannontech.web.scheduledDataImport.service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Date;
 import java.util.Map;
-
-import org.joda.time.Instant;
 
 import com.cannontech.common.exception.FileCreationException;
 import com.cannontech.common.model.Direction;
@@ -52,7 +51,7 @@ public interface ScheduledDataImportService {
     /**
      * Retrieve the file import history of a job with specified jobGroupId.
      */
-    SearchResults<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId, Instant from, Instant to,
+    SearchResults<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId, Date startDate, Date endDate,
             SortBy sortBy, Direction direction, PagingParameters paging);
 
     /**

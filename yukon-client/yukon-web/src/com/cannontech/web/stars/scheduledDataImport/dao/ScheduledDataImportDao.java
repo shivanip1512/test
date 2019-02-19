@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.scheduledDataImport.dao;
 
+import java.util.Date;
 import java.util.Map;
 
 import org.joda.time.Instant;
@@ -41,7 +42,7 @@ public interface ScheduledDataImportDao {
     /**
      * Retrieve the file import history of a job with specified jobGroupId.
      */
-    SearchResults<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId, Instant from, Instant to,
+    SearchResults<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId, Date startDate, Date endDate,
             SortBy sortBy, Direction direction, PagingParameters paging);
 
     /**

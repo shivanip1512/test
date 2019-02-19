@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.scheduledDataImport.dao.impl;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,7 +57,7 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
     }
     
     @Override
-    public SearchResults<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId, Instant from, Instant to,
+    public SearchResults<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId, Date startDate, Date endDate,
                                                           SortBy sortBy,
                                                           Direction direction,
                                                           PagingParameters paging) {
@@ -71,7 +72,7 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EntryId, FileName, ImportDate, ArchiveFileName,");
         sql.append("    ArchiveFileExists, FailedFileName, FailedFilePath, SuccessCount, FailureCount");
-        sql.append(getAllFileHistorySql(jobGroupId, from, to));
+        sql.append(getAllFileHistorySql(jobGroupId, startDate, endDate));
         sql.append("ORDER BY").append(getOrderBy(sortBy, direction));
 
         int start = paging.getStartIndex();
@@ -81,7 +82,7 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
         yukonJdbcTemplate.query(sql, rse);
 
         SearchResults<ScheduleImportHistoryEntry> searchResults = new SearchResults<>();
-        searchResults.setBounds(start, count, getAllFileHistoryByFilterCount(jobGroupId, from, to));
+        searchResults.setBounds(start, count, getAllFileHistoryByFilterCount(jobGroupId, startDate, endDate));
         searchResults.setResultList(rse.getResultList());
 
         return searchResults;
@@ -101,20 +102,20 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
         return sql;
     }
 
-    private int getAllFileHistoryByFilterCount(int jobGroupId, Instant from, Instant to) {
+    private int getAllFileHistoryByFilterCount(int jobGroupId, Date startDate, Date endDate) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
-        sql.append(getAllFileHistorySql(jobGroupId, from, to));
+        sql.append(getAllFileHistorySql(jobGroupId, startDate, endDate));
         return yukonJdbcTemplate.queryForInt(sql);
     }
 
-    private SqlStatementBuilder getAllFileHistorySql(int jobGroupId, Instant from, Instant to) {
+    private SqlStatementBuilder getAllFileHistorySql(int jobGroupId, Date startDate, Date endDate) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("FROM ScheduledDataImportHistory");
 
-        if (from != null && to != null) {
-            sql.append("WHERE ImportDate").gte(from);
-            sql.append("AND ImportDate").lte(to);
+        if (startDate != null && endDate != null) {
+            sql.append("WHERE ImportDate").gte(startDate);
+            sql.append("AND ImportDate").lte(endDate);
             sql.append("AND JobGroupId").eq(jobGroupId);
         } else {
             sql.append("WHERE JobGroupId").eq(jobGroupId);

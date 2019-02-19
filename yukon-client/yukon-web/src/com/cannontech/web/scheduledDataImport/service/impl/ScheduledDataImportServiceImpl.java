@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,7 +12,6 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -159,9 +159,9 @@ public class ScheduledDataImportServiceImpl implements ScheduledDataImportServic
     }
 
     @Override
-    public SearchResults<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId, Instant from, Instant to,
+    public SearchResults<ScheduleImportHistoryEntry> getImportHistory(int jobGroupId, Date startDate, Date endDate,
             SortBy sortBy, Direction direction, PagingParameters paging) {
-        return scheduledDataImportDao.getImportHistory(jobGroupId, from, to, sortBy, direction, paging);
+        return scheduledDataImportDao.getImportHistory(jobGroupId, startDate, endDate, sortBy, direction, paging);
     }
 
     @Override
