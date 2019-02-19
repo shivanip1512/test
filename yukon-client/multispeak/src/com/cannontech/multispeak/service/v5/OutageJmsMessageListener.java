@@ -88,7 +88,10 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
         mapBuilder.put(OutageActionType.Outage, EndDeviceStateKind.OUTAGED);
         mapBuilder.put(OutageActionType.Restoration, EndDeviceStateKind.STARTING_UP);
         outageMap = mapBuilder.build();
-        loadOutageSupportedVendors();
+        // To make this call asynchronous, added new thread for calling method.
+        new Thread(() -> {
+            loadOutageSupportedVendors();
+        }).start();
 
     }
 

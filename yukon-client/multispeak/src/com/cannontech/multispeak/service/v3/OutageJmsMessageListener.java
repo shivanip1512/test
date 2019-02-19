@@ -76,7 +76,11 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
         mapBuilder.put(OutageActionType.Outage, OutageEventType.OUTAGE);
         mapBuilder.put(OutageActionType.Restoration, OutageEventType.RESTORATION);
         outageMap = mapBuilder.build();
-        loadOutageSupportedVendors();
+        // To make this call asynchronous, added new thread for calling method.
+        new Thread(() -> {
+            loadOutageSupportedVendors();
+        }).start();
+
     }
 
     private void loadOutageSupportedVendors() {
