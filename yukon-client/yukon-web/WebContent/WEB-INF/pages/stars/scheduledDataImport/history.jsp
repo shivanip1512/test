@@ -6,7 +6,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <cti:standardPage module="operator" page="fileImportHistory">
     <tags:sectionContainer2 nameKey="history">
