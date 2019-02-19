@@ -21,10 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
@@ -136,7 +137,7 @@ public class MapController {
      * Meant for device collections that are not static. Like collections based on 
      * the violations device group of a status point or outage monitor.
      */
-    @RequestMapping("/map/dynamic")
+    @GetMapping("/map/dynamic")
     public String dynamic(ModelMap model, DeviceCollection deviceCollection, String monitorType, Integer monitorId, Boolean violationsOnly) {
         
         model.addAttribute("deviceCollection", deviceCollection);
@@ -169,7 +170,7 @@ public class MapController {
         return "map/map.jsp";
     }
 
-    @RequestMapping(value="/map")
+    @GetMapping("/map")
     public String map(ModelMap model, DeviceCollection deviceCollection, YukonUserContext userContext) {
         
         model.addAttribute("deviceCollection", deviceCollection);
@@ -191,7 +192,7 @@ public class MapController {
         return "map/map.jsp";
     }
     
-    @RequestMapping("/map/device/{id}/info")
+    @GetMapping("/map/device/{id}/info")
     public String info(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         YukonPao pao = databaseCache.getAllPaosMap().get(id);
@@ -283,7 +284,7 @@ public class MapController {
         return "map/info.jsp";
     }
     
-    @RequestMapping(value="/map/device/{id}", method=RequestMethod.DELETE)
+    @DeleteMapping("/map/device/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public @ResponseBody Map<String, String> deleteCoordinates(@PathVariable int id, YukonUserContext userContext, 
                                                     HttpServletResponse response) {
@@ -307,7 +308,7 @@ public class MapController {
         }
     }
     
-    @RequestMapping("/map/locations/{monitorType}/{monitorId}")
+    @GetMapping("/map/locations/{monitorType}/{monitorId}")
     public @ResponseBody Map<String, Object> monitorLocations(@PathVariable String monitorType, 
                                                               @PathVariable int monitorId, Boolean violationsOnly) {
         
@@ -341,7 +342,7 @@ public class MapController {
         return json;
     }
     
-    @RequestMapping("/map/locations")
+    @GetMapping("/map/locations")
     public @ResponseBody FeatureCollection locations(DeviceCollection deviceCollection) {
         
         FeatureCollection locations = paoLocationService.getLocationsAsGeoJson(deviceCollection.getDeviceList());
@@ -349,7 +350,7 @@ public class MapController {
         return locations;
     }
     
-    @RequestMapping("/map/filter/state-groups")
+    @GetMapping("/map/filter/state-groups")
     public @ResponseBody List<LiteStateGroup> states(DeviceCollection deviceCollection, BuiltInAttribute attribute) {
         
         List<LiteStateGroup> stateGroups = attributeService.findStateGroups(deviceCollection.getDeviceList(), attribute);
@@ -357,7 +358,7 @@ public class MapController {
         return stateGroups;
     }
     
-    @RequestMapping(value = "/map/locations/download", method = RequestMethod.GET)
+    @GetMapping("/map/locations/download")
     public void download(DeviceCollection deviceCollection, YukonUserContext userContext, HttpServletResponse response)
             throws IOException {
         List<SimpleDevice> simpleDevices = deviceCollection.getDeviceList();
@@ -412,7 +413,7 @@ public class MapController {
         return dataRows;
     }
     
-    @RequestMapping("/map/filter")
+    @PostMapping("/map/filter")
     public @ResponseBody Map<String, Object> filter(DeviceCollection deviceCollection, @ModelAttribute Filter filter) {
         
         Map<String, Object> json = new HashMap<String, Object>();
