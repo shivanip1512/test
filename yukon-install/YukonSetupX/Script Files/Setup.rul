@@ -275,6 +275,9 @@ begin
 	
 	//prettyfy the version number
 	sOldVersion = CleanupInstalledVersionNum();
+    if(IsInstalledVersionLesser("7.1.2")) then
+        ModifyTomcatConfigSetting();
+    endif;
 	
     //Check to see if upgrade-type install is supported.  This
     //requires the currently installed version to be 5.1.3 or later.
@@ -441,9 +444,6 @@ begin
     // Special maintenance for upgrades for 7.1
     RemoveOldDesktopDebugServers();
     InstallStartStopServicesShortcuts();
-    if(IsInstalledVersionLesser("7.1.2")) then
-        ModifyTomcatConfigSetting();
-	endif;
 	// Adding watchdog service in case of upgrade from version < 7.1.0
     if (!ServiceExistsService(WATCHDOG_NAME)) then
     InstallWatchdogService();
