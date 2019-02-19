@@ -120,19 +120,12 @@
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
-                    <c:forEach var="setting" items="${strategySettings}">
+                    <c:forEach var="targetSettingType" items="${targetSettingTypes}">
                         <tr>
-                        
-                            <td><i:inline key="${setting.key}"/></td>
-                            <td class="tar">
-                                ${setting.value.peakValue}
-                            </td>
-                            <td class="tar">
-                                ${setting.value.offPeakValue}
-                            </td>
-                            <td>
-                                ${setting.key.units}
-                            </td>
+                            <td><i:inline key="${targetSettingType}"/></td>
+                            <td class="tar">${strategy.targetSettings[targetSettingType].peakValue}</td>
+                            <td class="tar">${strategy.targetSettings[targetSettingType].offPeakValue}</td>
+                            <td class="tal">${targetSettingType.units}</td>
                         </tr>
                     </c:forEach>
                 </tbody>

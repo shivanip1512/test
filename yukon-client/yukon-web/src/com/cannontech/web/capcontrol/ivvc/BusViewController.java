@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.AbstractZone;
@@ -36,6 +37,8 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
+import com.cannontech.database.db.capcontrol.StrategyPeakSettingsHelper;
+import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubStation;
@@ -151,7 +154,10 @@ public class BusViewController {
         model.addAttribute("strategyLimits", strategyLimitsHolder);
         model.addAttribute("strategyId", strategyLimitsHolder.getStrategy().getId());
         model.addAttribute("strategyName", strategyLimitsHolder.getStrategy().getName());
-        model.addAttribute("strategySettings", strategyLimitsHolder.getStrategy().getTargetSettings());
+        model.addAttribute("strategy", strategyLimitsHolder.getStrategy());
+        ControlAlgorithm controlAlgorithm = strategyLimitsHolder.getStrategy().getAlgorithm();
+        List<TargetSettingType> targetSettingTypes = StrategyPeakSettingsHelper.getAlgorithmToSettings().get(controlAlgorithm);
+        model.addAttribute("targetSettingTypes",  targetSettingTypes);
     }
     
     private void setupBreadCrumbs(ModelMap model, CapControlCache cache, int subBusId) {
