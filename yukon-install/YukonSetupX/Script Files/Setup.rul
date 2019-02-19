@@ -443,7 +443,11 @@ begin
     
     // Special maintenance for upgrades for 7.1
     RemoveOldDesktopDebugServers();
+    if (IsInstalledVersionLesser("7.1.0")) then
     InstallStartStopServicesShortcuts();
+    endif;
+    // Delete Yukon Client if exist.
+    removeOldYukonClientDirectory();
 	// Adding watchdog service in case of upgrade from version < 7.1.0
     if (!ServiceExistsService(WATCHDOG_NAME)) then
     InstallWatchdogService();
@@ -641,6 +645,8 @@ begin
         sDir = TARGETDIR ^ "\\Runtime";
         DeleteDir(sDir, ALLCONTENTS);
 
+    // Delete Yukon Client if exist.
+    removeOldYukonClientDirectory();
     RemoveActiveMQFolders();
 
     // Added in 11.0, disable the cancel button during uninstall.

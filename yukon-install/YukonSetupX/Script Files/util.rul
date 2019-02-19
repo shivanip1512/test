@@ -832,8 +832,8 @@ begin
 	stopCommandLine = TARGETDIR ^ "\\Server\\bin\\StopYukon.bat";
 	iconPath = TARGETDIR ^ "\\Client\\bin\\YukonLogin.ico";
 	
-	AddFolderIcon ( FOLDER_PROGRAMS ^ "Yukon Client", "Start Yukon", startCommandLine, "", iconPath, 0, "", NULL);
-	AddFolderIcon ( FOLDER_PROGRAMS ^ "Yukon Client", "Stop Yukon", stopCommandLine, "", iconPath, 0, "", NULL);
+	AddFolderIcon ( FOLDER_PROGRAMS ^ "Yukon Clients", "Start Yukon", startCommandLine, "", iconPath, 0, "", NULL);
+	AddFolderIcon ( FOLDER_PROGRAMS ^ "Yukon Clients", "Stop Yukon", stopCommandLine, "", iconPath, 0, "", NULL);
 	
 	AddFolderIcon ( FOLDER_DESKTOP ^ "Yukon Service Control", "Start Yukon", startCommandLine, "", iconPath, 0, "", NULL);
 	AddFolderIcon ( FOLDER_DESKTOP ^ "Yukon Service Control", "Stop Yukon", stopCommandLine, "", iconPath, 0, "", NULL);
@@ -972,4 +972,15 @@ begin
                 RenameFile (sLogPath + sJavaLogNamesArray(nCount) + "_" + formattedDateString + ".log", sLogPath + sJavaLogNamesArray(nCount) + "_0" + "_" + formattedDateString + ".log" );
            endif;
         endfor;
+end;
+
+//----------------------------------------------------------
+// Remove Yukon Client Directory. 
+//----------------------------------------------------------
+export prototype void removeOldYukonClientDirectory();
+function void removeOldYukonClientDirectory()
+string szDir;
+begin
+    szDir = FOLDER_PROGRAMS ^ "\\Yukon Client";
+    DeleteDir(szDir, ALLCONTENTS);
 end;
