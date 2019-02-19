@@ -1,8 +1,5 @@
 package com.cannontech.stars.dr.honeywell;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +16,6 @@ import com.cannontech.common.pao.model.CompleteHoneywellWifiThermostat;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 import com.cannontech.stars.dr.hardware.exception.DeviceMacAddressAlreadyExistsException;
@@ -44,8 +40,6 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private HoneywellWifiThermostatDao honeywellWifiThermostatDao;
 
-    private final Map<Integer, String> inventoryIdToSerialNumber = new HashMap<>();
-    
     @Override
     public void createDevice(Hardware hardware) {
         createDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType(),
@@ -82,17 +76,17 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void preDeleteCleanup(YukonPao pao, InventoryIdentifier inventoryId) {
-        //Get the inventory, while it still exists, and cache the serial number so we can send the honeywell delete request.
-        LiteInventoryBase inventory = inventoryBaseDao.getByInventoryId(inventoryId.getInventoryId());
-        inventoryIdToSerialNumber.put(inventoryId.getInventoryId(), inventory.getManufacturerSerialNumber());
+        // Nothing extra to do
     }
     
     @Override
     public void deleteDevice(YukonPao pao, InventoryIdentifier inventoryId) {
+        // Get the Honeywell details before they're deleted
+        var honeywellPao = honeywellWifiThermostatDao.getHoneywellWifiThermostat(pao.getPaoIdentifier().getPaoId());
+
         paoPersistenceService.deletePao(pao.getPaoIdentifier());
-        //Inventory has been deleted, so get the serial number from the cache and send the honeywell delete request.
-        String serialNumber = inventoryIdToSerialNumber.remove(inventoryId.getInventoryId());
-      //TODO: Code to send deletion msg to the honeywell service
+
+        honeywellCommunicationService.deleteDevice(honeywellPao.getMacAddress(), honeywellPao.getDeviceVendorUserId());
     }
 
     @Override

@@ -12,12 +12,19 @@ import com.cannontech.dr.honeywellWifi.model.HoneywellWifiDutyCycleDrParameters;
 public interface HoneywellCommunicationService {
 
     /**
-     * Registers the specified device with Honeywell WI-FI.
+     * Registers the specified device with Honeywell Wi-Fi.
      * 
      * @param macAddress : Registered honeywell macAddress
      * @param deviceVendorUserId : Device vendor userId
      */
     void registerDevice(String macAddress, Integer deviceVendorUserId);
+    
+    /**
+     * Deletes the specified device from Honeywell Wi-Fi.
+     * @param macAddress
+     * @param deviceVendorUserId
+     */
+    void deleteDevice(String macAddress, Integer deviceVendorUserId);
     
     /**
      * Cancels DREvent for specified devices.

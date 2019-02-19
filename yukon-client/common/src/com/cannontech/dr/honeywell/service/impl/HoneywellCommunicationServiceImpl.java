@@ -2,6 +2,8 @@ package com.cannontech.dr.honeywell.service.impl;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -26,6 +28,7 @@ import java.util.TimeZone;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 import org.jdom2.JDOMException;
@@ -61,6 +64,7 @@ import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class HoneywellCommunicationServiceImpl implements HoneywellCommunicationService {
@@ -80,7 +84,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     private static final String registerDeviceOnACLUrlPart = "WebAPI/api/accessControlList";
     private static final String drEventsForDeviceUrlPart = "WebAPI/api/drEvents/";
     
-    private static final String CONTENT_TYPE = "application/json";
+    private static final String APPLICATION_JSON = "application/json";
 
     @Override
     public void registerDevice(String macAddress, Integer deviceVendorUserId) {
@@ -106,6 +110,41 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             log.debug(response);
 
         } catch (RestClientException | JsonProcessingException ex) {
+            log.error("Unable to register Honeywell device in Access Control List. Message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellCommunicationException("Unable to register honeywell device. Message: \""
+                + ex.getMessage() + "\".");
+        }
+    }
+
+    @Override
+    public void deleteDevice(String macAddress, Integer deviceVendorUserId) {
+        var endpoint = getUrlBase() + registerDeviceOnACLUrlPart;
+        log.debug("Deleting honeyWell device with Mac Address " + macAddress);
+        try {
+            var userId = Integer.toString(deviceVendorUserId);
+            int deviceId = getGatewayDetailsForMacId(macAddress, userId);
+            var builder = new URIBuilder(endpoint);
+            
+            builder.addParameter("userId", Integer.toString(deviceVendorUserId));
+            builder.addParameter("deviceId", Integer.toString(deviceId));
+            builder.addParameter("applicationId", Integer.toString(getApplicationId(userId)));
+            
+            var uri = builder.build();
+            String url = uri.toString();
+
+            HttpHeaders httpHeaders = getHttpHeaders(url, HttpMethod.DELETE, null);
+            httpHeaders.add("UserId", userId);
+
+            HttpEntity<?> requestEntity = new HttpEntity<Object>(httpHeaders);
+
+            HttpEntity<String> response =
+                restTemplate.exchange(uri, HttpMethod.DELETE, requestEntity, String.class);
+            log.debug(response);
+
+        } catch (URISyntaxException ex) {
+            log.error("URI syntax error while creating builder for " + endpoint, ex);
+            throw new HoneywellCommunicationException("Unable to build endpoint to delete honeywell device", ex);
+        } catch (RestClientException ex) {
             log.error("Unable to register Honeywell device in Access Control List. Message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to register honeywell device. Message: \""
                 + ex.getMessage() + "\".");
@@ -281,8 +320,8 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
             PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
 
-            // Step 1:Cannonize url
-            String cannonizedURL = cannonize(url);
+            // Step 1: Canonize url
+            String canonizedURL = canonize(url);
 
             // Step 2: compose a signature data string that contains these items
             // from the request:
@@ -304,10 +343,9 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                 byte[] aMessageDigest = md.digest();
                 String base64String = new String(Base64.encodeBase64(aMessageDigest));
 
-                signatureData += base64String + "\n" + "application/json";
-
+                signatureData += base64String + "\n" + APPLICATION_JSON;
             }
-            signatureData += "\n" + formattedDate + "\n" + cannonizedURL;
+            signatureData += "\n" + formattedDate + "\n" + canonizedURL;
 
             // Step 3: take UTF8 encoded signature data string from Step 2 ,compute its hash value using SHA1
             // algorithm
@@ -331,30 +369,30 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         return signedContent;
     }
 
-    private static String cannonize(String url) {
-        String cannonizedStr = "/";
+    private static String canonize(String url) {
+        String canonizedStr = "/";
         URL urlParser;
         try {
             urlParser = new URL(url);
-            cannonizedStr += urlParser.getHost().toLowerCase() + urlParser.getPath();
+            canonizedStr += urlParser.getHost().toLowerCase() + urlParser.getPath();
             String query = urlParser.getQuery();
             if (query != null) {
-                cannonizedStr += "\n";
+                canonizedStr += "\n";
                 String args3[] = query.split("&");
                 List<String> parameters = Arrays.asList(args3);
                 Collections.sort(parameters);
                 int paramsLeft = parameters.size();
                 for (String param : parameters) {
                     paramsLeft--;
-                    cannonizedStr += param.replace('=', ':');
+                    canonizedStr += param.replace('=', ':');
                     if (paramsLeft > 0)
-                        cannonizedStr += cannonizedStr + "\n";
+                        canonizedStr += canonizedStr + "\n";
                 }
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        return cannonizedStr;
+        return canonizedStr;
     }
 
     private String getUrlBase() {
@@ -399,6 +437,47 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
         }
         return deviceId;
+    }
+    
+    /**
+     * Workaround to retrieve the application ID from the ACL endpoint.
+     * TODO: We will require the user to configure it in GlobalSettings alongside client ID - see YUK-19535.
+     * @param userId the Honeywell user ID
+     * @return The application ID
+     */
+    private int getApplicationId(String userId) {
+        log.debug("Getting Application ID for user ID - " + userId);
+        String url = getUrlBase() + registerDeviceOnACLUrlPart + "?userId=" + userId;
+        try {
+            HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.GET, null);
+
+            newheaders.add("UserId", userId);
+            HttpEntity<?> requestEntity = new HttpEntity<Object>(newheaders);
+            
+            HttpEntity<String> response =
+                restTemplate.exchange(new URI(url), HttpMethod.GET, requestEntity, String.class);
+
+            log.debug(response);
+            String responseString = response.getBody().toString();
+            try {
+                ArrayList<Object> data = (ArrayList<Object>) JsonUtils.fromJson(responseString, ArrayList.class);
+                Map<String, Object> deviceRecord = (Map<String, Object>) Iterables.getFirst(data, null);
+                if (deviceRecord != null) {
+                    return (Integer) deviceRecord.get("applicationId");
+                } else {
+                    throw new HoneywellCommunicationException("No device records in ACL response:" + data);
+                }
+            } catch (IOException e) {
+                log.error("Error occurred deserializing JSON", e);
+                throw new HoneywellCommunicationException("Error occurred deserializing JSON", e);
+            }
+        } catch (RestClientException ex) {
+            log.error("Get application ID for Honeywell failed with message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellCommunicationException("Unable to get application ID. Message: \"" + ex.getMessage() + "\".");
+        } catch (URISyntaxException ex) {
+            log.error("URI syntax error while creating " + url, ex);
+            throw new HoneywellCommunicationException("Unable to build endpoint to delete honeywell device", ex);
+        }
     }
     
     @Override
