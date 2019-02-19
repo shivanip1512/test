@@ -59,11 +59,11 @@ public class EcobeeCommunicationServiceHelper {
                 String serialNumber = getSerialNumber(file.getName());
                 deviceReadings = new EcobeeDeviceReadings(serialNumber, null,readings);
                 CtiUtilities.close(iterator, csvReader);
-                file.delete();
             } catch (Exception e) {
                 log.error("Error while processing runtimereport data.", e);
                 throw new EcobeeCommunicationException("Error occured while processing runtimereport data.");
             }
+            file.delete();
             ecobeeDeviceReadings.add(deviceReadings);
         }
         return ecobeeDeviceReadings;

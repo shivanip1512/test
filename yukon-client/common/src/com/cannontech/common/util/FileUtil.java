@@ -459,12 +459,13 @@ public final class FileUtil {
         try (GZIPInputStream in = new GZIPInputStream(new FileInputStream(gzFile));
              FileOutputStream out = new FileOutputStream(outputFile);) {
             IOUtils.copy(in, out);
-            return outputFile;
         } catch (IOException e) {
             String message = "Unable to unzip the file";
             log.error(message);
             throw new IOException(message, e);
         }
+		gzFile.delete();
+        return outputFile;
     }
 
     /**
@@ -473,10 +474,10 @@ public final class FileUtil {
      * @throws IOException If any error occurs while untaring the file
      */
     public static List<File> untar(File tarFile) throws IOException {
+    	List<File> untarFiles = new ArrayList<>();
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new FileInputStream(tarFile))) {
             String outputDir = tarFile.getParent();
             TarArchiveEntry tarEntry = null;
-            List<File> untarFiles = new ArrayList<>();
             if (new File(outputDir).exists()) {
                 while ((tarEntry = (TarArchiveEntry) tin.getNextEntry()) != null) {
                     File destPath = File.createTempFile(tarEntry.getName(), StringUtils.EMPTY, new File(outputDir));
@@ -491,11 +492,12 @@ public final class FileUtil {
                     untarFiles.add(destPath);
                 }
             }
-            return untarFiles;
         } catch (IOException e) {
             String message = "Unable to untar the file";
             log.error(message);
             throw new IOException(message, e);
         }
+		tarFile.delete();
+		return untarFiles;
     }
 }
