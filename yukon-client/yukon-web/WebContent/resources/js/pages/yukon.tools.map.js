@@ -130,9 +130,9 @@ yukon.tools.map = (function() {
     _updateStyleIfFoundInMappingColors = function(paoId, icon) {
         if (_mappingColors) {
             var color;
-            Object.keys(_mappingColors).map(function (key) {        
+            Object.keys(_mappingColors).map(function (key) {
                 var ids = _mappingColors[key];
-                if (ids.includes(parseInt(paoId, 10))) {
+                if ($.inArray(parseInt(paoId, 10), ids) > -1) {
                     color = key;
                 }
             });
@@ -159,7 +159,7 @@ yukon.tools.map = (function() {
             icon, icons = [],
             source = _getLayer('icons').getSource(),
             fc = monitorId ? data.locations : data,
-            mappingData = $('#mappingColors');
+            mappingData = $('#mappingColorJson');
                         
             if (mappingData.exists()) {
                 _mappingColors = yukon.fromJson(mappingData);
