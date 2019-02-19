@@ -24,7 +24,7 @@ import com.cannontech.spring.YukonSpringHook;
  */
 public class BootstrapUtils {
     private final static String KEYS_DIRECTORY = "/Server/Config/Keys/";
-    private static String serviceStartTime = "";
+    private static String serviceStartTime = StringUtils.EMPTY;
 
     static {
         System.setProperty("java.locale.providers", "COMPAT,SPI");
@@ -225,10 +225,10 @@ public class BootstrapUtils {
     }
 
     public static String getServiceStartTime() {
-        if(serviceStartTime.isEmpty()) {
+        if (serviceStartTime.isEmpty()) {
             Date currentDate = new Date();
             SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-            serviceStartTime = formatter.format(currentDate); 
+            serviceStartTime = formatter.format(currentDate);
         }
         return serviceStartTime;
     }

@@ -211,7 +211,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
 
             File tempFile = new File(fileName);
 
-            if(tempFile.length() < maxFileSize) {
+            if (tempFile.length() < maxFileSize) {
                 isMaxFileSizeReached = false;
             }
 
