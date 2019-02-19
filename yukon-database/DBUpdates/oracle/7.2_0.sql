@@ -558,6 +558,33 @@ WHERE RolePropertyId = -10812;
 INSERT INTO DBUpdates VALUES ('YUK-19500', '7.2.0', SYSDATE);
 /* @end YUK-19500 */
 
+/* @start YUK-19531 if YUK-19162 */
+ALTER TABLE ScheduledDataImportHistory
+DROP COLUMN ArchiveFilePath;
+
+INSERT INTO DBUpdates VALUES ('YUK-19531', '7.2.0', SYSDATE);
+/* @end YUK-19531 */
+
+/* @start YUK-19531 */
+CREATE TABLE ScheduledDataImportHistory  (
+   EntryId              NUMBER                          NOT NULL,
+   FileName             VARCHAR2(100)                   NOT NULL,
+   FileImportType       VARCHAR2(50)                    NOT NULL,
+   ImportDate           DATE                            NOT NULL,
+   ArchiveFileName      VARCHAR2(100)                   NOT NULL,
+   ArchiveFileExists    CHAR(1)                         NOT NULL,
+   FailedFileName       VARCHAR2(100),
+   FailedFilePath       VARCHAR2(300),
+   SuccessCount         NUMBER                          NOT NULL,
+   FailureCount         NUMBER                          NOT NULL,
+   TotalCount           NUMBER                          NOT NULL,
+   JobGroupId           INTEGER                         NOT NULL,
+   CONSTRAINT PK_ScheduledDataImportHistory PRIMARY KEY (EntryId)
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-19531', '7.2.0', SYSDATE);
+/* @end YUK-19531 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

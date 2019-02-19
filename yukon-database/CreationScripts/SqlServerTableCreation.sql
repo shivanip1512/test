@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/18/2019 9:37:59 AM                         */
+/* Created on:     2/19/2019 3:21:55 AM                         */
 /*==============================================================*/
 
 
@@ -8846,7 +8846,6 @@ create table ScheduledDataImportHistory (
    FileImportType       varchar(50)          not null,
    ImportDate           datetime             not null,
    ArchiveFileName      varchar(100)         not null,
-   ArchiveFilePath      varchar(300)         not null,
    ArchiveFileExists    char(1)              not null,
    FailedFileName       varchar(100)         null,
    FailedFilePath       varchar(300)         null,

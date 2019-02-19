@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/18/2019 9:39:40 AM                         */
+/* Created on:     2/19/2019 3:20:13 AM                         */
 /*==============================================================*/
 
 
@@ -8319,7 +8319,6 @@ create table ScheduledDataImportHistory  (
    FileImportType       VARCHAR2(50)                    not null,
    ImportDate           DATE                            not null,
    ArchiveFileName      VARCHAR2(100)                   not null,
-   ArchiveFilePath      VARCHAR2(300)                   not null,
    ArchiveFileExists    CHAR(1)                         not null,
    FailedFileName       VARCHAR2(100),
    FailedFilePath       VARCHAR2(300),
