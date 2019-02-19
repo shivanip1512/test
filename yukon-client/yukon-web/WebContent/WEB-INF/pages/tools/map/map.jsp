@@ -35,7 +35,7 @@
     <input id="filtered-msg" type="hidden" value="<cti:msg2 key=".filtered"/>">
     <input id="unfiltered-msg" type="hidden" value="<cti:msg2 key=".filter.label"/>">
     <%@ include file="/WEB-INF/pages/stars/mapNetwork/mapPopup.jsp" %>
-    <c:if test="${not empty mappingColors}"><cti:toJson id="mappingColors" object="${mappingColors}"/></c:if>
+    <c:if test="${not empty mappingColors}"><cti:toJson id="mappingColorJson" object="${mappingColors}"/></c:if>
     
     <div id="map-container" style="height:100%;width:100%;background:white;">
         <c:if test="${empty dynamic}">
@@ -131,26 +131,28 @@
                         <tr>
                             <c:forEach var="mapCollection" items="${colorCollections}" varStatus="status">
                                 <c:if test="${status.index == 2}">
-                        </tr>
-                        <tr>
-                            </c:if>
-                            <td class="PB0"><c:set var="collection" value="${mapCollection.deviceCollection}" /> <tags:selectedDevices
-                                    deviceCollection="${collection}" labelKey="${mapCollection.labelKey}"
-                                    badgeColor="${mapCollection.color}" /> <c:if test="${collection.deviceCount > 0}">
-                                    <cti:url var="downloadUrl" value="/tools/map/locations/download">
-                                        <cti:mapParam value="${collection.collectionParameters}" />
-                                    </cti:url>
-                                    <cti:url var="filteredActionsUrl" value="/bulk/collectionActions">
-                                        <c:forEach items="${collection.collectionParameters}" var="cp">
-                                            <cti:param name="${cp.key}" value="${cp.value}" />
-                                        </c:forEach>
-                                    </cti:url>
-                                    <cm:dropdown icon="icon-cog">
-                                        <cm:dropdownOption key=".collectionActions" href="${filteredActionsUrl}" icon="icon-cog-go"
-                                            newTab="true" />
-                                        <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
-                                    </cm:dropdown>
-                                </c:if></td>
+                                    </tr>
+                                    <tr>
+                                </c:if>
+                                <td class="PB0">
+                                    <c:set var="collection" value="${mapCollection.deviceCollection}" /> 
+                                    <tags:selectedDevices deviceCollection="${collection}" labelKey="${mapCollection.labelKey}"
+                                        badgeColor="${mapCollection.color}" /> 
+                                    <c:if test="${collection.deviceCount > 0}">
+                                        <cti:url var="downloadUrl" value="/tools/map/locations/download">
+                                            <cti:mapParam value="${collection.collectionParameters}" />
+                                        </cti:url>
+                                        <cti:url var="filteredActionsUrl" value="/bulk/collectionActions">
+                                            <c:forEach items="${collection.collectionParameters}" var="cp">
+                                                <cti:param name="${cp.key}" value="${cp.value}" />
+                                            </c:forEach>
+                                        </cti:url>
+                                        <cm:dropdown icon="icon-cog">
+                                            <cm:dropdownOption key=".collectionActions" href="${filteredActionsUrl}" icon="icon-cog-go" newTab="true" />
+                                            <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
+                                        </cm:dropdown>
+                                    </c:if>
+                                </td>
                             </c:forEach>
                         </tr>
                     </table>
