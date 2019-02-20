@@ -1,6 +1,7 @@
 package com.cannontech.dr.itron.service.impl;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -11,15 +12,19 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPConstants;
 
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.client.support.interceptor.ClientInterceptor;
+import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapMessageFactory;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-import org.springframework.ws.transport.http.HttpComponentsMessageSender;
+import org.springframework.ws.transport.context.TransportContext;
+import org.springframework.ws.transport.context.TransportContextHolder;
+import org.springframework.ws.transport.http.HttpUrlConnection;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.ItronEventLogService;
@@ -64,7 +69,6 @@ import com.google.common.collect.Multimap;
 
 public class ItronCommunicationServiceImpl implements ItronCommunicationService {
     
-    private String settingsUrl;
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private ItronDao itronDao;
     @Autowired private ItronEventLogService itronEventLogService;
@@ -73,6 +77,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Autowired private IDatabaseCache cache;
     @Autowired private DeviceDao deviceDao;
     @Autowired private InventoryDao inventoryDao;
+    @Autowired private GlobalSettingDao settingDao;
 
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
 
@@ -89,27 +94,58 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             this.port = port;
             this.template = createTemplate(path);
         }
-        public WebServiceTemplate getTemplate() {
+        public WebServiceTemplate getTemplate(GlobalSettingDao settingDao) {
+            String userName = settingDao.getString(GlobalSettingType.ITRON_HCM_USERNAME);
+            String password = settingDao.getString(GlobalSettingType.ITRON_HCM_PASSWORD);
+            ClientInterceptor[] interceptors = {new ItronCommunicationInterceptor(userName, password)};
+            template.setInterceptors(interceptors);
             return template;
         }
-        public String getUrl(String url) {
+        public String getUrl(GlobalSettingDao settingDao) {
+            String url = settingDao.getString(GlobalSettingType.ITRON_HCM_API_URL);
             return url + port;
         }  
     }
 
-    @Autowired
-    public ItronCommunicationServiceImpl(GlobalSettingDao settingDao) {
-        settingsUrl = settingDao.getString(GlobalSettingType.ITRON_HCM_API_URL);
-        String userName = settingDao.getString(GlobalSettingType.ITRON_HCM_USERNAME);
-        String password = settingDao.getString(GlobalSettingType.ITRON_HCM_PASSWORD);
-        Lists.newArrayList(Manager.values()).forEach(manager -> manager.getTemplate().setMessageSender(getMessageSender(userName, password)));
+    public static class ItronCommunicationInterceptor implements ClientInterceptor {
+        private String username;
+        private String password;
+
+        public ItronCommunicationInterceptor(String username, String password) {
+            this.username = username;
+            this.password = password;
+        }
+
+        @Override
+        public void afterCompletion(MessageContext arg0, Exception arg1) throws WebServiceClientException {
+        }
+
+        @Override
+        public boolean handleFault(MessageContext arg0) throws WebServiceClientException {
+            return false;
+        }
+
+        @Override
+        public boolean handleRequest(MessageContext arg0) throws WebServiceClientException {
+            TransportContext context = TransportContextHolder.getTransportContext();
+            String userCredentials = username + ":" + password;
+            String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
+            HttpUrlConnection conn = (HttpUrlConnection) context.getConnection();
+            conn.getConnection().setRequestProperty("authorization", basicAuth);
+            conn.getConnection().addRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+            return true;
+        }
+
+        @Override
+        public boolean handleResponse(MessageContext arg0) throws WebServiceClientException {
+            return false;
+        }
     }
-      
+ 
     @Transactional
     @Override
     public void addDevice(Hardware hardware, AccountDto account) {
-        String url = Manager.DEVICE.getUrl(settingsUrl);
-    //    Lists.newArrayList(Manager.values()).forEach(manager -> manager.getTemplate().setMessageSender(getMessageSender("A", "B")));
+        String url = Manager.DEVICE.getUrl(settingDao);
         AddHANDeviceRequest request = null;
         if (account != null) {
             // TODO handle itron error if account already exist implementation pending simulator
@@ -125,16 +161,18 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         AddHANDeviceResponse response = null;
         try {
             log.debug(XmlUtils.getPrettyXml(request));
-            response = (AddHANDeviceResponse) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
+            response = (AddHANDeviceResponse) Manager.DEVICE.getTemplate(settingDao).marshalSendAndReceive(url, request);
             log.debug("ITRON-addDevice url:{} mac address:{} result:{}.", url, response.getMacID(), "success");
-            itronEventLogService.addHANDevice(hardware.getDisplayName(), hardware.getMacAddress(), account.getUserName());
+            //itronEventLogService.addHANDevice(hardware.getDisplayName(), hardware.getMacAddress(), account.getUserName());
             log.debug(XmlUtils.getPrettyXml(response));
             if (!response.getErrors().isEmpty()) {
                 throw new ItronAddDeviceException(response);
             }
         } catch (ItronAddDeviceException e) {
+            log.error(e);
             throw e;
         } catch (Exception e) {
+            log.error("Communication error:" + XmlUtils.getPrettyXml(response), e);
             throw new ItronCommunicationException("Communication error:" + XmlUtils.getPrettyXml(response), e);
         }
     }
@@ -174,18 +212,20 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         int yukonGroupId = getGroupIdByInventoryId(inventoryId, enrollments);
         long itronGroupId = itronDao.getItronGroupId(yukonGroupId);
         String macAddress= deviceDao.getDeviceMacAddress(deviceId);
-        String url = Manager.PROGRAM_EVENT.getUrl(settingsUrl);
+        String url = Manager.PROGRAM_EVENT.getUrl(settingDao);
         // TODO add event log
+        CancelHANLoadControlProgramEventOnDevicesResponse response = null;
         try {
             CancelHANLoadControlProgramEventOnDevicesRequest request = ProgramEventManagerHelper.buildOptOutRequest(itronGroupId, macAddress);
             log.debug(XmlUtils.getPrettyXml(request));
             log.debug("ITRON-optOut url:{} mac address:{} itron group id:{}.", url, macAddress, itronGroupId);
-            CancelHANLoadControlProgramEventOnDevicesResponse response =
-                (CancelHANLoadControlProgramEventOnDevicesResponse) Manager.PROGRAM_EVENT.getTemplate().marshalSendAndReceive(
+            response =
+                (CancelHANLoadControlProgramEventOnDevicesResponse) Manager.PROGRAM_EVENT.getTemplate(settingDao).marshalSendAndReceive(
                     url, request);
             log.debug("ITRON-optOut url:{} mac address:{} itron group id:{} result:{}.", url, macAddress, itronGroupId, "success");
             log.debug(XmlUtils.getPrettyXml(response));
         } catch (Exception e) {
+            log.error("Communication error:" + XmlUtils.getPrettyXml(response), e);
             throw new ItronCommunicationException("Communication error:", e);
         }
         Map<Integer, LiteYukonPAObject> groups = new HashMap<>();
@@ -258,7 +298,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * Sends enrollment requests to Itron
      */
     private void sendEnrollmentRequest(List<ProgramEnrollment> enrollments, CustomerAccount account, boolean enroll) {
-        String url = Manager.PROGRAM.getUrl(settingsUrl);
+        String url = Manager.PROGRAM.getUrl(settingDao);
         List<Long> itronProgramIds = new ArrayList<>();
         
         if (!enrollments.isEmpty()) {
@@ -282,12 +322,13 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         
         try {
             SetServicePointEnrollmentResponse response =
-                (SetServicePointEnrollmentResponse) Manager.PROGRAM.getTemplate().marshalSendAndReceive(url, request);
+                (SetServicePointEnrollmentResponse) Manager.PROGRAM.getTemplate(settingDao).marshalSendAndReceive(url, request);
             // TODO add event log
             log.debug("Response for this call is blank:" + XmlUtils.getPrettyXml(response));
             log.debug("ITRON-sendEnrollmentRequest url:{} account number:{} result:{}.", url, account.getAccountNumber(),
                 "success");
         } catch (Exception e) {
+            log.error("Communication error:", e);
             throw new ItronCommunicationException("Communication error:", e);
         }
     }
@@ -321,20 +362,21 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * Sends Itron program id and receives itron program id
      */
     private long getProgramIdFromItron(LiteYukonPAObject programPao) {
-        String url = Manager.PROGRAM.getUrl(settingsUrl);
+        String url = Manager.PROGRAM.getUrl(settingDao);
         try {
             AddProgramRequest request = new AddProgramRequest();
             request.setProgramName(String.valueOf(programPao.getLiteID()));
             log.debug("ITRON-getProgramIdFromItron url:{} program name:{}.", url, programPao.getPaoName());
             log.debug(XmlUtils.getPrettyXml(request));
             AddProgramResponse response =
-                (AddProgramResponse) Manager.PROGRAM.getTemplate().marshalSendAndReceive(url, request);
+                (AddProgramResponse) Manager.PROGRAM.getTemplate(settingDao).marshalSendAndReceive(url, request);
             log.debug(XmlUtils.getPrettyXml(response));
             log.debug("ITRON-getProgramIdFromItron url:{} program name:{} result:{}.", url, programPao.getPaoName(),
                 "success");
             itronEventLogService.addProgram(response.getProgramName(), response.getProgramID());
             return response.getProgramID();
         } catch (Exception e) {
+            log.error("Communication error:", e);
             throw new ItronCommunicationException("Communication error:", e);
         }
     }
@@ -343,7 +385,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * Sends request to itron to add mac addresses to a group.
      */
     private void sendMacAddresses(LiteYukonPAObject groupPao, List<String> macAddresses) {
-        String url = Manager.DEVICE.getUrl(settingsUrl);
+        String url = Manager.DEVICE.getUrl(settingDao);
 
         JAXBElement<ESIGroupResponseType> response = null;
         try {
@@ -353,7 +395,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug("ITRON-addMacAddressToGroup url:{} group name:{} mac addresses:{}.", url, groupPao.getPaoName(),
                 macAddresses);
             log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));
-            response = (JAXBElement<ESIGroupResponseType>) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
+            response = (JAXBElement<ESIGroupResponseType>) Manager.DEVICE.getTemplate(settingDao).marshalSendAndReceive(url, request);
             log.debug("ITRON-addMacAddressToGroup url:{} group name:{} mac addresses:{} result:{}.", url,
                 groupPao.getPaoName(), macAddresses, "success");
             log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())));
@@ -362,8 +404,10 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 throw new ItronAddEditGroupException(response.getValue());
             }
         } catch (ItronAddEditGroupException e) {
+            log.error(e);
             throw e;
         } catch (Exception e) {
+            log.error("Communication error:" + XmlUtils.getPrettyXml(response), e);
             throw new ItronCommunicationException(
                 "Communication error:" + XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())), e);
         }
@@ -373,7 +417,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * Returns itron group id
      */
     private long getGroupIdFromItron(LiteYukonPAObject groupPao) {
-        String url = Manager.DEVICE.getUrl(settingsUrl);
+        String url = Manager.DEVICE.getUrl(settingDao);
 
         JAXBElement<ESIGroupResponseType> response = null;
         try {
@@ -382,7 +426,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             // TODO add event log
             log.debug("ITRON-getGroupIdFromItron url:{} group name:{}", url, groupPao.getPaoName());
             log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));
-            response = (JAXBElement<ESIGroupResponseType>) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
+            response = (JAXBElement<ESIGroupResponseType>) Manager.DEVICE.getTemplate(settingDao).marshalSendAndReceive(url, request);
             log.debug("ITRON-getGroupIdFromItron url:{} group name:{} result:{}.", url, groupPao.getPaoName(),
                 "success");
             log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())));
@@ -392,8 +436,10 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             }
             return response.getValue().getGroupID();
         } catch (ItronAddEditGroupException e) {
+            log.error(e);
             throw e;
         } catch (Exception e) {
+            log.error("Communication error:" + XmlUtils.getPrettyXml(response), e);
             throw new ItronCommunicationException("Communication error:" + XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())), e);
         }
     }
@@ -411,21 +457,23 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * Sends edit device request to itron
      */
     private void editDevice(EditHANDeviceRequest request) {
-        String url = Manager.DEVICE.getUrl(settingsUrl);
+        String url = Manager.DEVICE.getUrl(settingDao);
         
         log.debug("ITRON-editDevice url {}", url);
         log.debug(XmlUtils.getPrettyXml(request));
         EditHANDeviceResponse response = null;
         try {
-            response = (EditHANDeviceResponse) Manager.DEVICE.getTemplate().marshalSendAndReceive(url, request);
+            response = (EditHANDeviceResponse) Manager.DEVICE.getTemplate(settingDao).marshalSendAndReceive(url, request);
             log.debug(XmlUtils.getPrettyXml(response));
             log.debug("ITRON-editDevice mac address:{} result:{}", response.getMacID(), "success");
             if (!response.getErrors().isEmpty()) {
                 throw new ItronEditDeviceException(response);
             }
         } catch (ItronEditDeviceException e) {
+            log.error(e);
             throw e;
         } catch (Exception e) {
+            log.error("Communication error:" + XmlUtils.getPrettyXml(response), e);
             throw new ItronCommunicationException("Communication error:" + XmlUtils.getPrettyXml(response), e);
         }
     }
@@ -438,19 +486,20 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
          * Note: The newly created Service Point is not available in the user interface until an ESI is
          * associated to it. It is, however, in the database. (see DeviceManagerHelper buildRequest) 
          */
-        String url = Manager.SERVICE_POINT.getUrl(settingsUrl);
+        String url = Manager.SERVICE_POINT.getUrl(settingDao);
 
         AddServicePointRequest request = ServicePointHelper.buildAddRequest(account);
         log.debug("ITRON-addServicePoint url:{} account number:{}.", url, account.getAccountNumber());
         log.debug(XmlUtils.getPrettyXml(request));
         try {
             AddServicePointResponse response =
-                (AddServicePointResponse) Manager.SERVICE_POINT.getTemplate().marshalSendAndReceive(url, request);
+                (AddServicePointResponse) Manager.SERVICE_POINT.getTemplate(settingDao).marshalSendAndReceive(url, request);
 
             itronEventLogService.addServicePoint(account.getAccountNumber(), account.getUserName());
             log.debug(XmlUtils.getPrettyXml(response));
             log.debug("ITRON-addServicePoint url:{} account number:{} result:{}.", url, account.getAccountNumber());
         } catch (Exception e) {
+            log.error("Communication error:", e);
             throw new ItronCommunicationException("Communication error:", e);
         }
     }
@@ -500,17 +549,10 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             WebServiceTemplate template = new WebServiceTemplate(factory);
             template.setMarshaller(marshaller);
             template.setUnmarshaller(marshaller);
-            template.afterPropertiesSet();
             return template;
         } catch(Exception e) {
-            log.error("Unable to initaialize template for path " + path, e);
+            log.error("Unable to initialize template for path " + path, e);
             return null;
         }
-    }
-    
-    private HttpComponentsMessageSender getMessageSender(String userName, String password) {
-        HttpComponentsMessageSender httpComponentsMessageSender = new HttpComponentsMessageSender();
-        httpComponentsMessageSender.setCredentials(new UsernamePasswordCredentials(userName, password));
-        return httpComponentsMessageSender;
     }
 }

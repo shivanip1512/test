@@ -49,9 +49,9 @@ public class ItronSimulatorController {
        // AccountDto account = new AccountDto();
        // account.setAccountNumber("123456789");
         try {
-           // itronCommunicationService.addDevice(hardware, null);
-            LiteYukonPAObject group = new LiteYukonPAObject(354110);
-            group.setPaoName("itron load group test");
+            itronCommunicationService.addDevice(hardware, null);
+           // LiteYukonPAObject group = new LiteYukonPAObject(354110);
+           // group.setPaoName("itron load group test");
         } catch(ItronCommunicationException e) {
             System.out.println(e.getMessage());
         }
