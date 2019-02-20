@@ -275,9 +275,6 @@ begin
 	
 	//prettyfy the version number
 	sOldVersion = CleanupInstalledVersionNum();
-    if(IsInstalledVersionLesser("7.1.2")) then
-        ModifyTomcatConfigSetting();
-    endif;
 	
     //Check to see if upgrade-type install is supported.  This
     //requires the currently installed version to be 5.1.3 or later.
@@ -335,6 +332,9 @@ begin
 	//Try to stop all the services, just in case one's still running
 	StopYukonServices();
 	
+    if(IsInstalledVersionLesser("7.1.2")) then
+        ModifyTomcatConfigSetting();
+    endif;
 	//replace the pre-5.0 DB cparms if they exist in master.cfg
 	sMasterConfig = TARGETDIR + "\\Server\\Config\\master.cfg";
 	ReplaceStringInFile(sMasterConfig, "DB_RWDBDLL", "DB_TYPE");
