@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -124,6 +125,12 @@ public class AttributeServiceImpl implements AttributeService {
         AttributeDefinition attributeDefinition =
             paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
         return attributeDefinition.getPaoPointIdentifier(pao);
+    }
+
+    @Override
+    public Optional<PaoPointIdentifier> findPaoPointIdentifierForAttribute(PaoIdentifier pao, BuiltInAttribute builtInAttribute) {
+        return paoDefinitionDao.findAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute)
+                .map(ad -> ad.getPaoPointIdentifier(pao));
     }
 
     @Override

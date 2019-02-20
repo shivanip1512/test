@@ -3,6 +3,7 @@ package com.cannontech.common.pao.definition.dao;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoType;
@@ -42,6 +43,8 @@ import com.google.common.collect.SetMultimap;
 
      <T extends Attribute> AttributeDefinition getAttributeLookup(PaoType paoType, T attribute)
             throws IllegalUseOfAttribute;
+
+     Optional<AttributeDefinition> findAttributeLookup(PaoType paoType, BuiltInAttribute attribute);
 
     /**
      * Returns the BuiltInAttribute for the pao type and point template or null if no attribute is

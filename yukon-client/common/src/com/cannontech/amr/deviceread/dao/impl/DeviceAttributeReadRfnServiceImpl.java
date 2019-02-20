@@ -390,10 +390,9 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         var paoPointIdentifiers = paoMultiPointIdentifier.getPaoPointIdentifiers(); 
         if (paoPointIdentifiers.size() == 1) {
             var point = Iterables.getOnlyElement(paoPointIdentifiers);
-            var disconnectPoint = attributeService.getPaoPointIdentifierForAttribute(paoMultiPointIdentifier.getPao(), BuiltInAttribute.DISCONNECT_STATUS);
-            if (disconnectPoint.equals(point)) {
-                return true;
-            }
+            return attributeService.findPaoPointIdentifierForAttribute(paoMultiPointIdentifier.getPao(), BuiltInAttribute.DISCONNECT_STATUS)
+                    .map(p -> p.equals(point))
+                    .orElse(false);
         }
         return false;
     }

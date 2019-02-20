@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -161,6 +162,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             throw new IllegalUseOfAttribute("No AttributeLookup exists for " + attribute + " on " + paoType);
         }
         return attributeDefinition;
+    }
+    
+    @Override
+    public Optional<AttributeDefinition> findAttributeLookup(PaoType paoType, BuiltInAttribute attribute) {
+        return Optional.ofNullable(paoAttributeAttrDefinitionMap.get(paoType))
+                .map(lookups -> lookups.get(attribute));
     }
     
     @Override

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 
@@ -65,6 +66,14 @@ public interface AttributeService {
      */
     PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute)
             throws IllegalUseOfAttribute;
+
+    /**
+     * This method returns a PaoPointIdentifier object if the passed in PAO has a point identifier for the specified attribute.
+     * 
+     * @return an optional PaoPointIdentifier
+     */
+    Optional<PaoPointIdentifier> findPaoPointIdentifierForAttribute(PaoIdentifier pao, BuiltInAttribute attribute);
+
 
     List<PointIdentifier> findPointsForDevicesAndAttribute(Iterable<? extends YukonPao> devices, Attribute attributes);
 
