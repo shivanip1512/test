@@ -3,6 +3,7 @@ package com.cannontech.common.pao.definition.dao;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoType;
@@ -37,6 +38,11 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 
     @Override
     public <T extends Attribute> AttributeDefinition getAttributeLookup(PaoType paoType, T attribute) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public Optional<AttributeDefinition> findAttributeLookup(PaoType paoType, BuiltInAttribute attribute) {
         throw new UnsupportedOperationException("not implemented");
     }
 
