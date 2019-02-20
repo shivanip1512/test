@@ -37,38 +37,33 @@ public class YsmJmxQueryService {
     
     public Object get(ObjectName name, String attribute, JMXConnector jmxConnector, BeanTypeForJMXConnector beanType) throws Exception {
         
-        if (config.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE, false)) {
-            try {
-                
-                MBeanServerConnection mbeanConn = jmxConnector.getMBeanServerConnection();
-                Object object = mbeanConn.getAttribute(name, attribute);
-                
-                return object;
-            } catch (InstanceNotFoundException e) {
-                //The requested attribute wasn't found. No need to reconnect in this case.
-                log.debug("Instance not found. Name: " + name + ", Attribute: " + attribute);
-                return null;
-            } catch (Exception e) {
-                try {
-                    // Try to reconnect, maybe YSM or MessageBroker was restarted.
-                    MBeanServerConnection mbeanConn = null;
-                    if (beanType == BeanTypeForJMXConnector.QUEUE) {
-                        messageBrokerJmxConnector = JMXConnectorFactory.connect(messageBrokerServiceUrl, null);
-                        mbeanConn = messageBrokerJmxConnector.getMBeanServerConnection();
-                    } else if (beanType == BeanTypeForJMXConnector.SERVICE) {
-                        serviceManagerJmxConnector = JMXConnectorFactory.connect(serviceManagerServiceUrl, null);
-                        mbeanConn = serviceManagerJmxConnector.getMBeanServerConnection();
-                    }
-                    Object object = mbeanConn.getAttribute(name, attribute);
-                    return object;
-                } catch (Exception e2) {
-                    jmxConnector.close();
-                    log.error("Could not retrieve value.", e2);
-                    return null;
-                }
-            }
-        } else {
+        try {
+            MBeanServerConnection mbeanConn = jmxConnector.getMBeanServerConnection();
+            Object object = mbeanConn.getAttribute(name, attribute);
+            
+            return object;
+        } catch (InstanceNotFoundException e) {
+            //The requested attribute wasn't found. No need to reconnect in this case.
+            log.debug("Instance not found. Name: " + name + ", Attribute: " + attribute);
             return null;
+        } catch (Exception e) {
+            try {
+                // Try to reconnect, maybe YSM or MessageBroker was restarted.
+                MBeanServerConnection mbeanConn = null;
+                if (beanType == BeanTypeForJMXConnector.QUEUE) {
+                    messageBrokerJmxConnector = JMXConnectorFactory.connect(messageBrokerServiceUrl, null);
+                    mbeanConn = messageBrokerJmxConnector.getMBeanServerConnection();
+                } else if (beanType == BeanTypeForJMXConnector.SERVICE) {
+                    serviceManagerJmxConnector = JMXConnectorFactory.connect(serviceManagerServiceUrl, null);
+                    mbeanConn = serviceManagerJmxConnector.getMBeanServerConnection();
+                }
+                Object object = mbeanConn.getAttribute(name, attribute);
+                return object;
+            } catch (Exception e2) {
+                jmxConnector.close();
+                log.error("Could not retrieve value.", e2);
+                return null;
+            }
         }
     }
     
@@ -98,29 +93,27 @@ public class YsmJmxQueryService {
         String hostUri = globalSettingDao.getString(GlobalSettingType.JMS_BROKER_HOST);
         String serverBrokerConnection = config.getString(JMS_SERVER_BROKER_LISTEN_CONNECTION);
 
-        if (config.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE, false)) {
-            try {
-                if (serverBrokerConnection != null) {
-                    hostUri = StringUtils.substringBetween(serverBrokerConnection, "//", ":");
-                }
-                String messageBrokerJMXConnectionUrl = "service:jmx:rmi:///jndi/rmi://" + hostUri + ":1097/jmxrmi";
-                messageBrokerServiceUrl = new JMXServiceURL(messageBrokerJMXConnectionUrl);
-                messageBrokerJmxConnector = JMXConnectorFactory.connect(messageBrokerServiceUrl, null);
-            } catch (IOException e) {
-                log.error("Could not init jmx connection for Yukon Message Broker.");
+        try {
+            if (serverBrokerConnection != null) {
+                hostUri = StringUtils.substringBetween(serverBrokerConnection, "//", ":");
             }
+            String messageBrokerJMXConnectionUrl = "service:jmx:rmi:///jndi/rmi://" + hostUri + ":1097/jmxrmi";
+            messageBrokerServiceUrl = new JMXServiceURL(messageBrokerJMXConnectionUrl);
+            messageBrokerJmxConnector = JMXConnectorFactory.connect(messageBrokerServiceUrl, null);
+        } catch (IOException e) {
+            log.error("Could not init jmx connection for Yukon Message Broker.");
+        }
 
-            try {
-                String clientBrokerConnection = config.getString(JMS_CLIENT_BROKER_CONNECTION);
-                if (clientBrokerConnection != null) {
-                    hostUri = StringUtils.substringBetween(clientBrokerConnection, "//", ":");
-                }
-                String serviceManagerJMXConnectionUrl = "service:jmx:rmi:///jndi/rmi://" + hostUri + ":1093/jmxrmi";
-                serviceManagerServiceUrl = new JMXServiceURL(serviceManagerJMXConnectionUrl);
-                serviceManagerJmxConnector = JMXConnectorFactory.connect(serviceManagerServiceUrl, null);
-            } catch (IOException e) {
-                log.error("Could not init jmx connection for Service Manager.");
+        try {
+            String clientBrokerConnection = config.getString(JMS_CLIENT_BROKER_CONNECTION);
+            if (clientBrokerConnection != null) {
+                hostUri = StringUtils.substringBetween(clientBrokerConnection, "//", ":");
             }
+            String serviceManagerJMXConnectionUrl = "service:jmx:rmi:///jndi/rmi://" + hostUri + ":1093/jmxrmi";
+            serviceManagerServiceUrl = new JMXServiceURL(serviceManagerJMXConnectionUrl);
+            serviceManagerJmxConnector = JMXConnectorFactory.connect(serviceManagerServiceUrl, null);
+        } catch (IOException e) {
+            log.error("Could not init jmx connection for Service Manager.");
         }
     }
 
