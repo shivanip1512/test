@@ -12,6 +12,8 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 import com.cannontech.web.security.csrf.CsrfTokenService;
@@ -23,11 +25,14 @@ public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
     private WebSecurityAnnotationProcessor annotationProcessor;
 
     @Autowired private CsrfTokenService csrfTokenService;
+    @Autowired private ConfigurationSource configSource;
 
     @Override
     public boolean preHandle(HttpServletRequest request, 
             HttpServletResponse response, Object handler) throws Exception {
         boolean ignoreCsrf = false;
+        boolean isDevelopmentMode = configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE, false);
+        
         if (handler instanceof HandlerMethod) {
             HandlerMethod method = (HandlerMethod) handler;
             annotationProcessor.processClass(getClass(method.getBean()));
@@ -39,7 +44,7 @@ public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
         }
 
         if (request.getRequestURI().contains("/soap") || request.getRequestURI().contains("/multispeak")
-            || request.getRequestURI().contains("/updater/update")) {
+            || (isDevelopmentMode && request.getRequestURI().contains("/updater/update"))) {
             ignoreCsrf = true;
         }
         if (!ignoreCsrf) {
