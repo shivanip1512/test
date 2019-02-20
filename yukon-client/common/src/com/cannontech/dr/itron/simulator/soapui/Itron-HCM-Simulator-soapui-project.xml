@@ -5054,12 +5054,12 @@
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:CancelHANLoadControlProgramEventOnDevicesRequest>\r
-         <urn:EventID>?</urn:EventID>\r
-         <urn:EnableRandomization>?</urn:EnableRandomization>\r
+         <urn:EventID>0</urn:EventID>\r
+         <urn:EnableRandomization>false</urn:EnableRandomization>\r
          <!--Zero or more repetitions:-->\r
-         <urn:DeviceGroupID>?</urn:DeviceGroupID>\r
+         <urn:DeviceGroupID>3955</urn:DeviceGroupID>\r
          <!--Zero or more repetitions:-->\r
-         <urn:NicMacID>?</urn:NicMacID>\r
+         <urn:NicMacID>11:11:11:11:11:11</urn:NicMacID>\r
       </urn:CancelHANLoadControlProgramEventOnDevicesRequest>\r
    </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request><con:credentials><con:username>test</con:username><con:password>test</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelHANLoadControlProgramEventOnDevicesRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="bf63b834-1570-4871-8ae9-840b0af3e020" isOneWay="false" action="" name="cancelMessageProgramEvent" bindingOperationName="cancelMessageProgramEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="81d29a8c-fc46-4cc9-86d0-d94eb3624e63" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
@@ -6164,20 +6164,100 @@ requestContext.mac = holder["/soap-env:Envelope/soap-env:Body/itron-dm:AddESIGro
          </urn:Errors>
       </urn:AddESIGroupResponse>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addESIGroupResponse"/></con:response><con:response name="Mock SoapFault Response" id="5d117e17-36c5-4885-b979-419a74a6f9e7" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addESIGroupResponse"/></con:response><con:response name="Mock SoapFault Response - generic" id="2a6f905b-49c3-406e-b002-8c342ec13239" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
   <soapenv:Body>
     <soapenv:Fault>
       <faultcode>soapenv:Client</faultcode>
-      <faultstring>Improperly formatted message.</faultstring>
+      <faultstring>Generic error.</faultstring>
       <!--Optional:-->
-      <faultactor>http://mockError.com/error</faultactor>
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
       <!--Optional:-->
       <detail>
         <urn:ErrorFault>
           <!--1 or more repetitions:-->
           <urn:Error>
-            <urn:ErrorCode>INVALID_MESSAGE</urn:ErrorCode>
-            <urn:ErrorMessage>Improperly formatted message.</urn:ErrorMessage>
+            <urn:ErrorCode>generic</urn:ErrorCode>
+            <urn:ErrorMessage>addESIGroup Error: A generic error has occurred.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addESIGroupResponse"/></con:response><con:response name="Mock SoapFault Response - fatal_error" id="d4e189aa-a754-461f-9ccb-02f78b41eab0" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Fatal error.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>fatal_error</urn:ErrorCode>
+            <urn:ErrorMessage>A fatal error has occurred.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addESIGroupResponse"/></con:response><con:response name="Mock SoapFault Response - Unique.deviceGroup.groupName" id="215c5f42-f180-450c-8abc-b4012db7a80d" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Non-unique group name.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>Unique.deviceGroup.groupName</urn:ErrorCode>
+            <urn:ErrorMessage>addESIGroup Error: Group name must be unique.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addESIGroupResponse"/></con:response><con:response name="Mock SoapFault Response - group.import.error.groupType" id="52b6419d-2e5f-453d-b38b-6a7b5c539d20" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Invalid group type.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>group.import.error.groupType</urn:ErrorCode>
+            <urn:ErrorMessage>addESIGroup Error: Invalid group type.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addESIGroupResponse"/></con:response><con:response name="Mock SoapFault Response - group.import.error.groupEmpty" id="df00d300-a982-44d5-b1ba-a6801a13e1aa" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Group empty.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>group.import.error.groupEmpty</urn:ErrorCode>
+            <urn:ErrorMessage>addESIGroup Error: Imported group cannot be empty.</urn:ErrorMessage>
           </urn:Error>
         </urn:ErrorFault>
         <!--You may enter ANY elements at this point-->
@@ -6223,11 +6303,11 @@ requestContext.mac = holder["/soap-env:Envelope/soap-env:Body/itron-dm:EditHANDe
          <urn:Error>Test_Error_2</urn:Error>
       </urn:EditHANDeviceResponse>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editHANDeviceResponse"/></con:response><con:response name="Mock SoapFault Response" id="39448a1d-5a81-457e-b6d9-5e29c531840c" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editHANDeviceResponse"/></con:response><con:response name="Mock SoapFault Response - generic" id="7badcfe0-d340-421e-8c2c-43b79389141f" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
   <soapenv:Body>
     <soapenv:Fault>
       <faultcode>soapenv:Client</faultcode>
-      <faultstring>Improperly formatted message.</faultstring>
+      <faultstring>Generic error.</faultstring>
       <!--Optional:-->
       <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
       <!--Optional:-->
@@ -6235,8 +6315,188 @@ requestContext.mac = holder["/soap-env:Envelope/soap-env:Body/itron-dm:EditHANDe
         <urn:ErrorFault>
           <!--1 or more repetitions:-->
           <urn:Error>
-            <urn:ErrorCode>INVALID_MESSAGE</urn:ErrorCode>
-            <urn:ErrorMessage>Itron documentation does not detail possible errors.</urn:ErrorMessage>
+            <urn:ErrorCode>generic</urn:ErrorCode>
+            <urn:ErrorMessage>editHANDevice Error: A generic error has occurred.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editHANDeviceResponse"/></con:response><con:response name="Mock SoapFault Response - fatal_error" id="53856b2a-7300-4ed8-a943-56df4aadcf48" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Fatal error.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>fatal_error</urn:ErrorCode>
+            <urn:ErrorMessage>editHANDevice Error: A fatal error has occurred.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editHANDeviceResponse"/></con:response><con:response name="Mock SoapFault Response - authorization_failure" id="4f8ed585-566a-4726-b599-75cacacb6fd3" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Authorization failure.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>authorization_error</urn:ErrorCode>
+            <urn:ErrorMessage>editHANDevice Error: Username or Password is incorrect.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editHANDeviceResponse"/></con:response><con:response name="Mock SoapFault Response - ESIMackID.Pattern.message" id="9c417393-a76d-4968-80d8-c7e23adc63fc" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Invalid ESIMackID Pattern.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>ESIMackID.Pattern.message</urn:ErrorCode>
+            <urn:ErrorMessage>editHANDevice Error: Invalid ESIMackID Pattern.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editHANDeviceResponse"/></con:response><con:response name="Mock SoapFault Response - esiAssociate.hanDevice.notFound" id="ea7de492-85d8-4cce-a5c9-99b527ad07d9" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>HAN device not found.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>esiAssociate.hanDevice.notFound</urn:ErrorCode>
+            <urn:ErrorMessage>editHANDevice Error: HAN device was not found.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editHANDeviceResponse"/></con:response><con:response name="Mock SoapFault Response - esiAssociate.hanDevice.unmodifiable.deviceState" id="3311020d-991b-429f-b803-a64f53ba00dc" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Device unmodifiable.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>esiAssociate.hanDevice.unmodifiable.deviceState</urn:ErrorCode>
+            <urn:ErrorMessage>editHANDevice Error: Device cannot be edited because it is unmodifiable.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editHANDeviceResponse"/></con:response><con:response name="Mock SoapFault Response - esiAssociate.hanDevice.provisioning.inProgress" id="6592211d-74ef-45a7-863e-ff33406733a3" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Provisioning in progress.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>esiAssociate.hanDevice.provisioning.inProgress</urn:ErrorCode>
+            <urn:ErrorMessage>editHANDevice Error: Cannot edit device, provisioning in progress.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editHANDeviceResponse"/></con:response><con:response name="Mock SoapFault Response - esiAssociate.hanDevice.esiNotFound" id="1bcd046f-eb4c-441a-9514-0dab10b22f9c" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>ESI not found.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>esiAssociate.hanDevice.esiNotFound</urn:ErrorCode>
+            <urn:ErrorMessage>editHANDevice Error: ESI not found.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editHANDeviceResponse"/></con:response><con:response name="Mock SoapFault Response - esiAssociate.hanDevice.esiNotValid" id="b8743f27-3da9-4169-b3a5-355c170f2362" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>ESI not valid.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>esiAssociate.hanDevice.esiNotValid</urn:ErrorCode>
+            <urn:ErrorMessage>editHANDevice Error: ESI not valid.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editHANDeviceResponse"/></con:response><con:response name="Mock SoapFault Response - esiAssociate.hanDevice.notESI" id="22c99827-bf42-4f10-9641-a14698c734f4" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Device not ESI.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>esiAssociate.hanDevice.notESI</urn:ErrorCode>
+            <urn:ErrorMessage>editHANDevice Error: Device is not ESI.</urn:ErrorMessage>
           </urn:Error>
         </urn:ErrorFault>
         <!--You may enter ANY elements at this point-->
@@ -6279,20 +6539,120 @@ requestContext.mac = holder["/soap-env:Envelope/soap-env:Body/itron-dm:EditESIGr
          </urn:Errors>
       </urn:EditESIGroupResponse>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editESIGroupResponse"/></con:response><con:response name="Mock SoapFault Response" id="21b96c4c-a084-4a7c-8843-76fa3d508cf0" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editESIGroupResponse"/></con:response><con:response name="Mock SoapFault Response - generic" id="4b64d342-be25-49dd-b3a5-0ebe4d816524" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
   <soapenv:Body>
     <soapenv:Fault>
       <faultcode>soapenv:Client</faultcode>
-      <faultstring>Improperly formatted message.</faultstring>
+      <faultstring>Generic error.</faultstring>
       <!--Optional:-->
-      <faultactor>http://mockError.com/error</faultactor>
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
       <!--Optional:-->
       <detail>
         <urn:ErrorFault>
           <!--1 or more repetitions:-->
           <urn:Error>
-            <urn:ErrorCode>INVALID_MESSAGE</urn:ErrorCode>
-            <urn:ErrorMessage>Improperly formatted message.</urn:ErrorMessage>
+            <urn:ErrorCode>generic</urn:ErrorCode>
+            <urn:ErrorMessage>editESIGroup Error: A generic error has occurred.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editESIGroupResponse"/></con:response><con:response name="Mock SoapFault Response - fatal_error" id="1b57de94-f076-4593-85fc-5444448f0158" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Fatal error.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>fatal_error</urn:ErrorCode>
+            <urn:ErrorMessage>editESIGroup Error: A fatal error has occurred.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editESIGroupResponse"/></con:response><con:response name="Mock SoapFault Response - authorization_failure" id="cdf333f5-a3bd-4dca-addf-df7262730b78" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Authorization failure.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>authorization_failure</urn:ErrorCode>
+            <urn:ErrorMessage>editESIGroup Error: Username or Password is incorrectA generic error has occurred.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editESIGroupResponse"/></con:response><con:response name="Mock SoapFault Response - Unique.deviceGroup.groupName" id="583fbf0a-1a2c-460b-af04-0d3d2ddf82f6" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Non-unique group name.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>Unique.deviceGroup.groupName</urn:ErrorCode>
+            <urn:ErrorMessage>editESIGroup Error: Group name must be unique.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editESIGroupResponse"/></con:response><con:response name="Mock SoapFault Response - group.import.error.groupType" id="f0a51dc5-8ddf-4f10-8693-dbcebcb7ab39" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Invalid group type.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>group.import.error.groupType</urn:ErrorCode>
+            <urn:ErrorMessage>editESIGroup Error: Invalid group type.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editESIGroupResponse"/></con:response><con:response name="Mock SoapFault Response - group.import.error.groupEmpty" id="b34f91eb-b0ab-48c5-ab1d-b4592540da9a" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Group empty.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>group.import.error.groupEmpty</urn:ErrorCode>
+            <urn:ErrorMessage>editESIGroup Error: Imported group cannot be empty.</urn:ErrorMessage>
           </urn:Error>
         </urn:ErrorFault>
         <!--You may enter ANY elements at this point-->
