@@ -578,6 +578,14 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-19531', '7.2.0', GETDATE());
 /* @end YUK-19531 */
 
+/* @start YUK-19534 */
+ALTER TABLE SmartNotificationEventParam
+ALTER COLUMN Value VARCHAR(500) NOT NULL;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-19534', '7.2.0', GETDATE());
+/* @end YUK-19534 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

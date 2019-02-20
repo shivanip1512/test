@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/19/2019 3:20:13 AM                         */
+/* Created on:     2/19/2019 10:46:11 PM                        */
 /*==============================================================*/
 
 
@@ -8455,7 +8455,7 @@ create index INDX_SmartNotifiEvt_Timestamp on SmartNotificationEvent (
 create table SmartNotificationEventParam  (
    EventId              NUMBER                          not null,
    Name                 VARCHAR2(30)                    not null,
-   Value                VARCHAR2(100)                   not null,
+   Value                VARCHAR2(500)                   not null,
    constraint PK_SmartNotificationEventParam primary key (EventId, Name, Value)
 );
 
