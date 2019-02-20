@@ -56,17 +56,6 @@
                                     <cti:param name="itemsPerPage" value="${paging.itemsPerPage}"/>
                                     <cti:param name="page" value="${paging.page}"/>
                                     <cti:param name="entryId" value="${result.entryId}"/>
-                                    <cti:param name="isSuccessFile" value="true"/>
-                                </c:url>
-                                <c:url var="errorFileUrl" value="/stars/scheduledDataImport/downloadArchivedFile">
-                                    <cti:param name="startDate" value="${startDate}"/>
-                                    <cti:param name="endDate" value="${endDate}"/>
-                                    <cti:param name="dir" value="${sorting.direction}"/>
-                                    <cti:param name="sort" value="${sorting.sort}"/>
-                                    <cti:param name="itemsPerPage" value="${paging.itemsPerPage}"/>
-                                    <cti:param name="page" value="${paging.page}"/>
-                                    <cti:param name="entryId" value="${result.entryId}"/>
-                                    <cti:param name="isSuccessFile" value="false"/>
                                 </c:url>
                                 <tr>
                                     <td class="wbba">
@@ -74,7 +63,7 @@
                                             <c:when test="${result.archiveFileExists}">
                                                 <cti:msg2 var="downloadMouseover" key=".downloadMouseover"/>
                                                 <span title="${downloadMouseover}">
-                                                    <a href="${fileUrl}" onclick="yukon.ui.removeAlerts()">${fn:escapeXml(result.fileName)}</a>
+                                                    <a href="${fileUrl}&isSuccessFile=true" onclick="yukon.ui.removeAlerts()">${fn:escapeXml(result.fileName)}</a>
                                                 </span>
                                             </c:when>
                                             <c:otherwise>
@@ -94,7 +83,7 @@
                                             <c:when test="${not empty result.failedFileName}">
                                                 <cti:msg2 var="downloadErrFileMouseover" key=".downloadErrFileMouseover"/>
                                                 <span title="${downloadErrFileMouseover}">
-                                                    <a href="${errorFileUrl}" onclick="yukon.ui.removeAlerts()">${fn:escapeXml(result.failedFileName)}</a>
+                                                    <a href="${fileUrl}&isSuccessFile=false" onclick="yukon.ui.removeAlerts()">${fn:escapeXml(result.failedFileName)}</a>
                                                 </span>
                                             </c:when>
                                             <c:otherwise>
