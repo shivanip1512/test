@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -167,7 +168,8 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     @Override
     public Optional<AttributeDefinition> findAttributeLookup(PaoType paoType, BuiltInAttribute attribute) {
         return Optional.ofNullable(paoAttributeAttrDefinitionMap.get(paoType))
-                .map(lookups -> lookups.get(attribute));
+                .map(lookups -> lookups.get(attribute))
+                .filter(Objects::nonNull);
     }
     
     @Override
