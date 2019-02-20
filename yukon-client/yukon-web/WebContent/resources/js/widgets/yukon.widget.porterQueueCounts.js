@@ -189,9 +189,10 @@ yukon.widget.porterQueueCounts = (function () {
     
     _updateWidgetRefresh = function (widget, data) {
         var dateTime = moment(data.lastUpdateTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
-            refreshButton = widget.find('.js-update-queue-counts');
+            refreshButton = widget.find('.js-update-queue-counts'),
+            nextRefreshDateTime = moment(data.nextRefreshDate.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
         widget.find('.js-last-updated').text(dateTime);
-        refreshButton.prop('title', data.refreshTooltip);
+        refreshButton.prop('title', yg.text.nextRefersh + nextRefreshDateTime);
         refreshButton.attr('disabled', true);
         setTimeout(function() { 
             refreshButton.attr('disabled', false);

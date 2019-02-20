@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.users.model.PreferencePorterQueueCountsZoomOption;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -46,9 +43,6 @@ public class PorterQueueCountsController {
     @Autowired private PorterQueueCountsWidgetService porterQueueCountsWidgetService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private UserPreferenceService userPreferenceService;
-    @Autowired private DateFormattingService dateFormattingService;
-
-    private static final Logger log = YukonLogManager.getLogger(PorterQueueCountsController.class);
     
     private final static String widgetKey = "yukon.web.widgets.";
     
@@ -118,8 +112,7 @@ public class PorterQueueCountsController {
         Instant lastUpdateTime = new Instant();
         json.put("lastUpdateTime", lastUpdateTime);
         Instant nextRun = porterQueueCountsWidgetService.getNextRefreshTime(lastUpdateTime);
-        String nextRefreshDate = dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-        json.put("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
+        json.put("nextRefreshDate", nextRun);
         json.put("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
         json.put("refreshMillis",  porterQueueCountsWidgetService.getRefreshMilliseconds());
         json.put("maxNumSelections", GlobalSettingType.PORTER_QUEUE_COUNTS_TREND_MAX_NUM_PORTS);

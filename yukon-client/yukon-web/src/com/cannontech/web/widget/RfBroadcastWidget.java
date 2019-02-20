@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.Range;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
@@ -23,7 +24,6 @@ import com.cannontech.system.OnOff;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 
 @Controller
@@ -51,17 +51,17 @@ public class RfBroadcastWidget extends AdvancedWidgetControllerBase {
             Instant from = now.withTimeAtStartOfDay().minusDays(5).toInstant();
             List<PerformanceVerificationEventMessageStats> results = rfPerformanceDao.getReports(Range.inclusiveExclusive(from, to));
             Collections.sort(results, (t1, t2) -> t2.getTimeMessageSent().compareTo(t1.getTimeMessageSent()));
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            Instant lastUpdateTime = now.toInstant();
             model.addAttribute("results", results);
-            model.addAttribute("lastAttemptedRefresh", lastUpdateTime);
-
+            Instant lastUpdateTime = now.toInstant();
+            String lastAttemptedRefreshDateTime =
+                    dateFormattingService.format(lastUpdateTime, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+            model.addAttribute("lastAttemptedRefreshDateTime", lastAttemptedRefreshDateTime);
             Instant nextRun = lastUpdateTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH);
-            String nextRefreshDate =
-                dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-
+            String nextRefreshDateTime =
+                    dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+            model.addAttribute("nextRefreshDateTime", nextRefreshDateTime);
             model.addAttribute("forceRefreshInterval", MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH.getMillis());
-            model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             model.addAttribute("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
         }
         model.addAttribute("showRfBroadcastWidget", showRfBroadcastWidget);

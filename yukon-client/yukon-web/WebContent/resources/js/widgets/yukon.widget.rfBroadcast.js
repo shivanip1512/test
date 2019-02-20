@@ -14,14 +14,19 @@ yukon.widget.rfBroadcast = (function () {
     _initialized = false,
     _updateInterval = 900000,
     
-    _refreshWidget = function () {
+    _refreshWidget = function (widgetContainer) {
         $.ajax({
             url: yukon.url('/widget/rfBroadcastWidget/render'),
         }).done(function (data) {
-            $('.js-rf-broadcast-widget').html(data);
-            var refreshButton = $('.js-rf-broadcast-widget').find('.js-update-rf-broadcast');
+            widgetContainer.html(data);
+            var refreshButton = widgetContainer.find('.js-update-rf-broadcast'),
+                lastRefresh = widgetContainer.find('.js-last-attempted-refersh').val(),
+                lastRefershDateTime = moment(new Date(lastRefresh)).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
+                nextRefresh = widgetContainer.find('.js-next-refersh-date-time').val(),
+                nextRefreshDateTime = moment(new Date(nextRefresh)).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
             refreshButton.attr('disabled', true);
-            refreshButton.attr('title', $("#js-refresh-tooltip").val());
+            refreshButton.attr('title', yg.text.nextRefersh + nextRefreshDateTime);
+            widgetContainer.find('.js-last-updated').text(lastRefershDateTime);
             setTimeout(function () {
                 refreshButton.attr('disabled', false);
                 refreshButton.attr('title', $("#js-update-tooltip").val());
@@ -29,9 +34,9 @@ yukon.widget.rfBroadcast = (function () {
         });
     },
     
-    _update = function () {
-        _refreshWidget();
-        setTimeout(_update, _updateInterval);
+    _update = function (widgetContainer) {
+        _refreshWidget(widgetContainer);
+        setTimeout(function () {_update(widgetContainer)}, _updateInterval);
     },
     
     mod = {
@@ -40,10 +45,12 @@ yukon.widget.rfBroadcast = (function () {
         init : function () {
             if (_initialized) return;
             
-            _update();
+            $(".js-rf-broadcast-widget").each(function (index, widgetContainer) {
+                _update($(widgetContainer));
+            });
             
             $(document).on('click', '.js-update-rf-broadcast', function () {
-                _refreshWidget();
+                _refreshWidget($(this).closest(".js-rf-broadcast-widget"));
             });
             _initialized = true;
         },

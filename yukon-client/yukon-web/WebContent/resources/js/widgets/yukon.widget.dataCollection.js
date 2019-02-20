@@ -136,8 +136,13 @@ yukon.widget.dataCollection = (function () {
                     async: false
                 }).done(function (data) {
                     var refreshButton = $(item).find('.js-update-data-collection');
-                    refreshButton.prop('title', data.refreshTooltip);
                     refreshButton.attr('disabled', !data.isRefreshPossible);
+                    if (!data.isRefreshPossible) {
+                        var nextRefreshDateTime = moment(data.nextRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
+                        refreshButton.prop('title', yg.text.nextRefersh + nextRefreshDateTime);
+                    } else {
+                        refreshButton.prop('title', data.refreshTooltip);
+                    }
                     var dateTime = moment(data.lastAttemptedRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
                     $(item).find('.js-last-updated').text(dateTime);
                     if (data.summary != null) {

@@ -39,8 +39,10 @@
                     <cti:url value="/dr/rf/details" var="detailsUrl"/>
                     <a href="${detailsUrl}" target="_blank"><i:inline key="yukon.common.viewDetails"/></a>
                     <span class="fr">
+                        <input type="hidden" class="js-next-refersh-date-time" value="${nextRefreshDateTime}"/>
+                        <input type="hidden" class="js-last-attempted-refersh" value="${lastAttemptedRefreshDateTime}"/>
                         <cti:msg2 key="yukon.web.widgets.lastUpdated" var="lastUpdatedMsg"/>
-                        <span class="fl" style="font-size:11px" title="${lastUpdatedMsg}"><cti:formatDate value="${lastAttemptedRefresh}" type="DATEHMS_12"/></span>
+                        <span class="fl js-last-updated" style="font-size:11px" title="${lastUpdatedMsg}"/>
                         <cti:button renderMode="image" icon="icon-arrow-refresh" classes="js-update-rf-broadcast"/>
                     </span>
                 </div>

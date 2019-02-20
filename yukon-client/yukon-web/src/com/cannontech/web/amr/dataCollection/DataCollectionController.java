@@ -108,8 +108,6 @@ public class DataCollectionController {
         if (nextRun.isAfterNow()) {
             json.put("nextRefresh", nextRun);
             json.put("isRefreshPossible", false);
-            String nextRefreshDate = dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-            json.put("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
         } else {
             json.put("isRefreshPossible", true);
             json.put("refreshTooltip", accessor.getMessage(widgetKey + "forceUpdate"));

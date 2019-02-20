@@ -53,58 +53,57 @@ yukon.widget.assetAvailability = (function () {
         ]
     },
     
-    _update = function (selectionChanged) {
-        $('.js-asset-availability-widget').each (function (index, item) {
-            var controlAreaOrProgramOrScenarioId = $(item).find('input[name=controlAreaOrProgramOrScenarioId]').val(),
-                chart = $(item).find('.js-asset-availability-pie-chart'),
-                errorMessage = $(item).find('.user-message'),
-                errorMessageFound = errorMessage.is(":visible");
+    _update = function (widgetContainer, selectionChanged) {
+        var controlAreaOrProgramOrScenarioId = widgetContainer.find('input[name=controlAreaOrProgramOrScenarioId]').val(),
+            chart = widgetContainer.find('.js-asset-availability-pie-chart'),
+            errorMessage = widgetContainer.find('.user-message'),
+            errorMessageFound = errorMessage.is(":visible");
             
-            if (controlAreaOrProgramOrScenarioId && (!errorMessageFound || selectionChanged)) {
-                $.ajax({
-                    url: yukon.url('/dr/assetAvailability/updateChart'),
-                    data: {
-                        controlAreaOrProgramOrScenarioId: controlAreaOrProgramOrScenarioId
-                    }
-                }).done(function (data) {
-                    var refreshButton = $(item).find('.js-update-asset-availability');
-                    refreshButton.prop('title', data.refreshTooltip);
-                    refreshButton.attr('disabled', true);
-                    var dateTime = moment(data.lastAttemptedRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
-                    $(item).find('.js-last-updated').text(dateTime);
-
-                    setTimeout(function() { 
-                        refreshButton.attr('disabled', false);
-                        refreshButton.prop('title', data.updateTooltip);
-                        }, data.refreshMillis);
-
-                    if (data.summary != null) {
-                        if (chart.is('.js-initialize')) {
-                            _buildChart(chart, data.summary);
-                        } else {
-                            _updateChart(chart, _getData(data.summary));
-                        }
-                        chart.removeClass('dn');
-                    } else {
-                        chart.addClass('dn');
-                    }
-                    errorMessage.addClass('dn');
-                    if (data.errorMessage != null) {
-                        errorMessage.html(data.errorMessage);
-                        errorMessage.removeClass('dn');
-                    }
-                });
-            } else {
-                if (!chart.is('.js-initialize')) {
-                    _updateChart(chart, null);
+        if (controlAreaOrProgramOrScenarioId && (!errorMessageFound || selectionChanged)) {
+            $.ajax({
+                url: yukon.url('/dr/assetAvailability/updateChart'),
+                data: {
+                    controlAreaOrProgramOrScenarioId: controlAreaOrProgramOrScenarioId
                 }
+            }).done(function (data) {
+                var refreshButton = widgetContainer.find('.js-update-asset-availability'),
+                    nextRefreshDateTime = moment(data.nextRefreshTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
+                refreshButton.prop('title', yg.text.nextRefersh + nextRefreshDateTime);
+                refreshButton.attr('disabled', true);
+                var dateTime = moment(data.lastAttemptedRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
+                widgetContainer.find('.js-last-updated').text(dateTime);
+
+                setTimeout(function() { 
+                    refreshButton.attr('disabled', false);
+                    refreshButton.prop('title', data.updateTooltip);
+                    }, data.refreshMillis);
+
+                if (data.summary != null) {
+                    if (chart.is('.js-initialize')) {
+                        _buildChart(chart, data.summary);
+                    } else {
+                        _updateChart(chart, _getData(data.summary));
+                    }
+                    chart.removeClass('dn');
+                } else {
+                    chart.addClass('dn');
+                }
+                errorMessage.addClass('dn');
+                if (data.errorMessage != null) {
+                    errorMessage.html(data.errorMessage);
+                    errorMessage.removeClass('dn');
+                }
+            });
+        } else {
+            if (!chart.is('.js-initialize')) {
+                _updateChart(chart, null);
             }
-        });
+        }
         
         if (_updateTimeout) {
             clearTimeout(_updateTimeout);
         }
-        _updateTimeout = setTimeout(_update, _updateInterval);
+        _updateTimeout = setTimeout(function () {_update(widgetContainer, selectionChanged)}, _updateInterval);
     },
     
     /** Update the existing pie chart. */
@@ -177,12 +176,17 @@ yukon.widget.assetAvailability = (function () {
             
             if (_initialized) return;
             
-            $(document).on('yukon:asset:availability:selection', function (event) {
-                _update(true);
+            $(".js-asset-availability-widget").each(function (index, widgetContainer) {
+                _update($(widgetContainer), false);
+            });
+            
+            $(document).on('yukon:asset:availability:selection', function (event, items, picker) {
+                var widgetContainer = $(picker.inputAreaDiv).closest('.widgetWrapper').find('.js-asset-availability-widget');
+                _update($(widgetContainer), true);
             });
             
             $(document).on('click', '.js-update-asset-availability', function (event) {
-                _update(true);
+                _update($(this).closest('.widgetWrapper').find('.js-asset-availability-widget'), true);
             });
             
             $(document).on('click', '.js-asset-availability-data-pie', function () {
@@ -200,8 +204,6 @@ yukon.widget.assetAvailability = (function () {
                 
                 window.open(yukon.url('/dr/assetAvailability/detail?paobjectId=' + controlAreaOrProgramOrScenarioId + '&statuses=' + statuses));
             });
-            
-            _update(false);
             
             _initialized = true;
         },

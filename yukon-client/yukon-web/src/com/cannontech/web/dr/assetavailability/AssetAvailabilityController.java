@@ -105,9 +105,8 @@ public class AssetAvailabilityController {
 
         json.put("lastAttemptedRefresh", lastUpdateTime);
         Instant nextRun = assetAvailabilityWidgetService.getNextRefreshTime(lastUpdateTime);
+        json.put("nextRefreshTime", nextRun);
         json.put("refreshMillis", assetAvailabilityWidgetService.getRefreshMilliseconds());
-        String nextRefreshDate = dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-        json.put("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
         json.put("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
 
         return json;
