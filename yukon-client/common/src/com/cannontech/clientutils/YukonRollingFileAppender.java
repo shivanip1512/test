@@ -97,7 +97,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
      * The maximum log file size. If this is exceeded, logging will stop for the
      * rest of the day. Default is 1G.
      */
-    private long maxFileSize = YukonLoggingReloader.DEFAULT_MAX_FILE_SIZE;
+    private long maxFileSize = 0;
 
     public long getMaxFileSize() {
         return maxFileSize;
@@ -126,6 +126,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
         systemInfoString = CtiUtilities.getSystemInfoString();
         calendar = Calendar.getInstance();
         prefix = applicationName + "_";
+        maxFileSize = BootstrapUtils.getLogMaxFileSize();
 
     }
 

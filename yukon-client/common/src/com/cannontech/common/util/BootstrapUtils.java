@@ -15,6 +15,7 @@ import javax.naming.InitialContext;
 import org.apache.catalina.loader.ParallelWebappClassLoader;
 import org.apache.commons.lang3.StringUtils;
 
+import com.cannontech.clientutils.YukonLoggingReloader;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -25,6 +26,7 @@ import com.cannontech.spring.YukonSpringHook;
 public class BootstrapUtils {
     private final static String KEYS_DIRECTORY = "/Server/Config/Keys/";
     private static String serviceStartTime = StringUtils.EMPTY;
+    private static long logMaxFileSize = YukonLoggingReloader.DEFAULT_MAX_FILE_SIZE;
 
     static {
         System.setProperty("java.locale.providers", "COMPAT,SPI");
@@ -231,5 +233,13 @@ public class BootstrapUtils {
             serviceStartTime = formatter.format(currentDate);
         }
         return serviceStartTime;
+    }
+
+    public static long getLogMaxFileSize() {
+        return logMaxFileSize;
+    }
+
+    public static void setLogMaxFileSize(long updatedMaxFileSize) {
+        logMaxFileSize = updatedMaxFileSize;
     }
 }

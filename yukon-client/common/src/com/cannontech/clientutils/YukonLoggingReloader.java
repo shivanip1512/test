@@ -8,6 +8,7 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.system.GlobalSettingType;
@@ -41,6 +42,7 @@ public class YukonLoggingReloader {
                                  .stream()
                                  .filter(e -> !"console".equals(e.getKey()))
                                  .forEach(e -> setMaxFileSize(config, e.getValue(), maxFileSize));
+            BootstrapUtils.setLogMaxFileSize(maxFileSize);
         }
     }
 
