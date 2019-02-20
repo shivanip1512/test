@@ -977,8 +977,8 @@ end;
 //----------------------------------------------------------
 // Remove Yukon Client Directory. 
 //----------------------------------------------------------
-export prototype void removeOldYukonClientDirectory();
-function void removeOldYukonClientDirectory()
+export prototype void RemoveOldYukonClientDirectory();
+function void RemoveOldYukonClientDirectory()
 string szDir;
 begin
     szDir = FOLDER_PROGRAMS ^ "\\Yukon Client";

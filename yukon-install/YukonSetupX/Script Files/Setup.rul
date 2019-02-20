@@ -70,7 +70,8 @@ begin
     BackupLoggingConfigFiles(formattedDateString);
     endif;
     RenameInstalledDateJavaServicesAndClientLog(formattedDateString);
-
+    // Delete Yukon Client if exist.
+    RemoveOldYukonClientDirectory();
 	//make sure we have enough space for the selected features
 	TARGETDIR = sDir;
 	FeatureCompareSizeRequired(MEDIA, TARGETDIR, nSize);
@@ -447,7 +448,7 @@ begin
     InstallStartStopServicesShortcuts();
     endif;
     // Delete Yukon Client if exist.
-    removeOldYukonClientDirectory();
+    RemoveOldYukonClientDirectory();
 	// Adding watchdog service in case of upgrade from version < 7.1.0
     if (!ServiceExistsService(WATCHDOG_NAME)) then
     InstallWatchdogService();
@@ -645,8 +646,6 @@ begin
         sDir = TARGETDIR ^ "\\Runtime";
         DeleteDir(sDir, ALLCONTENTS);
 
-    // Delete Yukon Client if exist.
-    removeOldYukonClientDirectory();
     RemoveActiveMQFolders();
 
     // Added in 11.0, disable the cancel button during uninstall.
