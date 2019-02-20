@@ -127,34 +127,17 @@
                     </div>
                 </c:if>
                 <c:if test="${!empty colorCollections}">
-                    <table class="js-color-collections compact-results-table no-stripes">
-                        <tr>
-                            <c:forEach var="mapCollection" items="${colorCollections}" varStatus="status">
-                                <c:if test="${status.index == 2}">
-                                    </tr>
-                                    <tr>
-                                </c:if>
-                                <td class="PB0">
-                                    <c:set var="collection" value="${mapCollection.deviceCollection}" /> 
-                                    <tags:selectedDevices deviceCollection="${collection}" labelKey="${mapCollection.labelKey}"
-                                        badgeColor="${mapCollection.color}" /> 
-                                    <c:if test="${collection.deviceCount > 0}">
-                                        <cti:url var="downloadUrl" value="/tools/map/locations/download">
-                                            <cti:mapParam value="${collection.collectionParameters}" />
-                                        </cti:url>
-                                        <cti:url var="filteredActionsUrl" value="/bulk/collectionActions">
-                                            <c:forEach items="${collection.collectionParameters}" var="cp">
-                                                <cti:param name="${cp.key}" value="${cp.value}" />
-                                            </c:forEach>
-                                        </cti:url>
-                                        <cm:dropdown icon="icon-cog">
-                                            <cm:dropdownOption key=".collectionActions" href="${filteredActionsUrl}" icon="icon-cog-go" newTab="true" />
-                                            <cm:dropdownOption icon="icon-csv" key="yukon.common.download" href="${downloadUrl}" />
-                                        </cm:dropdown>
-                                    </c:if>
+                    <table class="js-color-collections compact-results-table no-stripes" style="margin-left:5px;">
+                        <c:forEach var="index" begin="0" end="${fn:length(colorCollections) - 1}" step="2">
+                            <tr>
+                                <td class="PB0 PT0">
+                                    <tags:mappingCollection mappingColorCollection="${colorCollections[index]}"/>
                                 </td>
-                            </c:forEach>
-                        </tr>
+                                <td class="PB0 PT0">
+                                    <tags:mappingCollection mappingColorCollection="${colorCollections[index + 1]}"/>
+                                </td>
+                            </tr>
+                        </c:forEach>
                     </table>
                 </c:if>
 
