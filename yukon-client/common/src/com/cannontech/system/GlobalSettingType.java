@@ -122,6 +122,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     ITRON_HCM_API_URL(GlobalSettingSubCategory.DR, stringType(), ""),
     ITRON_HCM_USERNAME(GlobalSettingSubCategory.DR, stringType(), ""),
     ITRON_HCM_PASSWORD(GlobalSettingSubCategory.DR, stringType(), ""),
+    ITRON_HCM_DATA_COLLECTION_HOURS(GlobalSettingSubCategory.DR, integerType(), 4),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
