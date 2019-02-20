@@ -145,8 +145,8 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             log.error("URI syntax error while creating builder for " + endpoint, ex);
             throw new HoneywellCommunicationException("Unable to build endpoint to delete honeywell device", ex);
         } catch (RestClientException ex) {
-            log.error("Unable to register Honeywell device in Access Control List. Message: \"" + ex.getMessage() + "\".");
-            throw new HoneywellCommunicationException("Unable to register honeywell device. Message: \""
+            log.error("Unable to delete Honeywell device from Access Control List. Message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellCommunicationException("Unable to delete Honeywell device. Message: \""
                 + ex.getMessage() + "\".");
         }
     }
@@ -441,7 +441,8 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     
     /**
      * Workaround to retrieve the application ID from the ACL endpoint.
-     * TODO: We will require the user to configure it in GlobalSettings alongside client ID - see YUK-19535.
+     * TODO: After YUK-19535, we will require the user to configure application ID in GlobalSettings alongside client ID,
+     * and this method can just be <pre>return settingDao.getString(GlobalSettingType.HONEYWELL_APPLICATIONID);</pre>
      * @param userId the Honeywell user ID
      * @return The application ID
      */
@@ -459,18 +460,16 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
             log.debug(response);
             String responseString = response.getBody().toString();
-            try {
-                ArrayList<Object> data = (ArrayList<Object>) JsonUtils.fromJson(responseString, ArrayList.class);
-                Map<String, Object> deviceRecord = (Map<String, Object>) Iterables.getFirst(data, null);
-                if (deviceRecord != null) {
-                    return (Integer) deviceRecord.get("applicationId");
-                } else {
-                    throw new HoneywellCommunicationException("No device records in ACL response:" + data);
-                }
-            } catch (IOException e) {
-                log.error("Error occurred deserializing JSON", e);
-                throw new HoneywellCommunicationException("Error occurred deserializing JSON", e);
+            ArrayList<Object> data = (ArrayList<Object>) JsonUtils.fromJson(responseString, ArrayList.class);
+            Map<String, Object> deviceRecord = (Map<String, Object>) Iterables.getFirst(data, null);
+            if (deviceRecord != null) {
+                return (Integer) deviceRecord.get("applicationId");
+            } else {
+                throw new HoneywellCommunicationException("No device records in ACL response:" + data);
             }
+        } catch (IOException e) {
+            log.error("Error occurred deserializing JSON", e);
+            throw new HoneywellCommunicationException("Error occurred deserializing JSON", e);
         } catch (RestClientException ex) {
             log.error("Get application ID for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to get application ID. Message: \"" + ex.getMessage() + "\".");
