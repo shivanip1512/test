@@ -16,7 +16,6 @@ import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.dev.service.SystemHealthMetricSimulatorService;
-import com.cannontech.web.dev.service.YsmJmxQueryService;
 import com.cannontech.web.support.service.SystemHealthService;
 import com.cannontech.web.support.systemMetrics.ExtendedQueueData;
 import com.cannontech.web.support.systemMetrics.MetricStatusWithMessages;

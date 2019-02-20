@@ -1,4 +1,4 @@
-package com.cannontech.web.dev.service;
+package com.cannontech.web.support.service.impl;
 
 import static com.cannontech.common.config.MasterConfigString.JMS_SERVER_BROKER_LISTEN_CONNECTION;
 import static com.cannontech.common.config.MasterConfigString.JMS_CLIENT_BROKER_CONNECTION;
@@ -22,7 +22,6 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.web.support.service.impl.BeanTypeForJMXConnector;
 
 public class YsmJmxQueryService {
 
