@@ -25,7 +25,7 @@ yukon.widget.rfBroadcast = (function () {
                 nextRefresh = widgetContainer.find('.js-next-refersh-date-time').val(),
                 nextRefreshDateTime = moment(new Date(nextRefresh)).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
             refreshButton.attr('disabled', true);
-            refreshButton.attr('title', yg.text.nextRefersh + nextRefreshDateTime);
+            refreshButton.attr('title', yg.text.nextRefresh + nextRefreshDateTime);
             widgetContainer.find('.js-last-updated').text(lastRefershDateTime);
             setTimeout(function () {
                 refreshButton.attr('disabled', false);

@@ -139,7 +139,7 @@ yukon.widget.dataCollection = (function () {
                     refreshButton.attr('disabled', !data.isRefreshPossible);
                     if (!data.isRefreshPossible) {
                         var nextRefreshDateTime = moment(data.nextRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
-                        refreshButton.prop('title', yg.text.nextRefersh + nextRefreshDateTime);
+                        refreshButton.prop('title', yg.text.nextRefresh + nextRefreshDateTime);
                     } else {
                         refreshButton.prop('title', data.refreshTooltip);
                     }

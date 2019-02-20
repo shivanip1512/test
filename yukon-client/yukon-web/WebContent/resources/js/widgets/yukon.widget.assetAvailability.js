@@ -68,7 +68,7 @@ yukon.widget.assetAvailability = (function () {
             }).done(function (data) {
                 var refreshButton = widgetContainer.find('.js-update-asset-availability'),
                     nextRefreshDateTime = moment(data.nextRefreshTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
-                refreshButton.prop('title', yg.text.nextRefersh + nextRefreshDateTime);
+                refreshButton.prop('title', yg.text.nextRefresh + nextRefreshDateTime);
                 refreshButton.attr('disabled', true);
                 var dateTime = moment(data.lastAttemptedRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
                 widgetContainer.find('.js-last-updated').text(dateTime);
