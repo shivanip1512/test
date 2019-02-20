@@ -17,10 +17,6 @@
     <pointInfos>
         <pointInfo name="Battery End Of Life" attributes="BATTERY_END_OF_LIFE"/>
         <pointInfo name="Battery Voltage" init="true"/>
-        <pointInfo name="Empty Pipe" attributes="EMPTY_PIPE"/>
-        <pointInfo name="Encoder" attributes="ENCODER"/>
-        <pointInfo name="Exceeding Maximum Flow" attributes="EXCEEDING_MAXIMUM_FLOW"/>
-        <pointInfo name="Meter Functioning Correctly" attributes="METER_FUNCTIONING_CORRECTLY"/>
         <pointInfo name="Meter Read - Checksum error" attributes="METER_READ_CHECKSUM_ERROR"/>
         <pointInfo name="Meter Read - Error reading serial number" attributes="METER_READ_ERROR_READING_SERIAL_NUMBER"/>
         <pointInfo name="Meter Read - Field exceeded maximum digits" attributes="METER_READ_FIELD_EXCEEDED_MAXIMUM_DIGITS"/>
@@ -29,8 +25,6 @@
         <pointInfo name="Meter Read - Parity error" attributes="METER_READ_PARITY_ERROR"/>
         <pointInfo name="Meter Read - Protocol cannot be determined" attributes="METER_READ_PROTOCOL_CANNOT_BE_DETERMINED"/>
         <pointInfo name="Reverse Flow" attributes="REVERSE_FLOW"/>
-        <pointInfo name="Sensor Error" attributes="SENSOR_ERROR"/>
-        <pointInfo name="Storage Mode" attributes="STORAGE_MODE"/>
         <pointInfo name="Suspected Leak" attributes="SUSPECTED_LEAK"/>
         <pointInfo name="Tamper - Cable Cut" attributes="TAMPER_CABLE_CUT"/>
         <pointInfo name="Temperature" init="true"/>
