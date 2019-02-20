@@ -9,13 +9,15 @@ public class JmxHelper {
     static {
         ImmutableMap.Builder<ApplicationId, Integer> builder = ImmutableMap.builder();
         
-        builder.put(ApplicationId.SERVICE_MANAGER, 1099);
+        //Port 1099 is the default, and is best avoided. It is used by NM.
+        //builder.put(ApplicationId.NETWORK_MANAGER, 1099);
         builder.put(ApplicationId.WEBSERVER, 1098);
         builder.put(ApplicationId.MESSAGE_BROKER, 1097);
         builder.put(ApplicationId.SIMULATORS_SERVICE, 1096);
         builder.put(ApplicationId.NOTIFICATION, 1095);
         // JMX for watchdog is set in watchdog.conf wrapper file.
         //builder.put(ApplicationId.WATCHDOG, 1094);
+        builder.put(ApplicationId.SERVICE_MANAGER, 1093);
 
         jmxPorts = builder.build();
     }

@@ -90,7 +90,7 @@ public class YsmJmxQueryService {
 
     /*
      * JMX port for Message Broker : 1097
-     * JMX port for Service Manager Broker : 1099
+     * JMX port for Service Manager Broker : 1093
      */
 
     @PostConstruct
@@ -116,7 +116,7 @@ public class YsmJmxQueryService {
                 if (clientBrokerConnection != null) {
                     hostUri = StringUtils.substringBetween(clientBrokerConnection, "//", ":");
                 }
-                String serviceManagerJMXConnectionUrl = "service:jmx:rmi:///jndi/rmi://" + hostUri + ":1099/jmxrmi";
+                String serviceManagerJMXConnectionUrl = "service:jmx:rmi:///jndi/rmi://" + hostUri + ":1093/jmxrmi";
                 serviceManagerServiceUrl = new JMXServiceURL(serviceManagerJMXConnectionUrl);
                 serviceManagerJmxConnector = JMXConnectorFactory.connect(serviceManagerServiceUrl, null);
             } catch (IOException e) {
