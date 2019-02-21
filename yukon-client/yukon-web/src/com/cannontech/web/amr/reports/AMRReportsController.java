@@ -3,6 +3,7 @@ package com.cannontech.web.amr.reports;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -92,7 +93,7 @@ public class AMRReportsController {
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = reportDefinition.createBean();
         String title = ServletRequestUtils.getStringParameter(request, "title", reportModel.getTitle());
-        mav.addObject("reportTitle", title);
+        mav.addObject("reportTitle", StringEscapeUtils.escapeXml11(title));
         
         // information for bread crumbs
         LitePoint point = pointDao.getLitePoint(pointId);

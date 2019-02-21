@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -119,7 +120,7 @@ public class ReportsController {
         // title
         //-----------------------------------------------------------------------------------------
 
-        mav.addObject("reportTitle", title);
+        mav.addObject("reportTitle", StringEscapeUtils.escapeXml11(title));
         
         
         // column layout lists

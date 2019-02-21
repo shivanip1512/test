@@ -240,7 +240,7 @@ $(document).ready(function(){
                         <span><span class="fl" style="padding-right:10px;"><i:inline key=".singleNotification"/>: </span>
                             <tags:switchButton name="singleNotification" classes="fn vam" onNameKey=".yes.label" offNameKey=".no.label" 
                                 checked="${!empty sendTime}" toggleGroup="singleNotificationToggle" toggleAction="hide"/>
-                             <tags:timeSlider startName="sendTime" startValue="${sendTime}" dataToggleGroup="singleNotificationToggle" stepValue="60" 
+                             <tags:timeSlider startName="sendTime" startValue="${fn:escapeXml(sendTime)}" dataToggleGroup="singleNotificationToggle" stepValue="60" 
                                 displayTimeToLeft="true" timeFormat="HHMM" maxValue="1380"/>
                             <cti:button nameKey="save" type="submit" classes="fn" style="margin-left:20px;"/>
                         </span>

@@ -66,7 +66,7 @@
             <tags:nameValue2 nameKey=".sendTime" rowClass="js-daily ${dailyClass}">
                 <tags:timeSlider startPath="parameters['sendTime']" displayTimeToLeft="true" stepValue="60" timeFormat="HHMM" maxValue="1380"/>
                 <div class="dn warning js-single-notification-warning"><i:inline key=".singleNotificationWarning"/></div>
-                <input type="hidden" id="userSendTime" value="${sendTime}"/>
+                <input type="hidden" id="userSendTime" value="${fn:escapeXml(sendTime)}"/>
             </tags:nameValue2>            
             <tags:nameValue2 nameKey=".media">
                 <tags:selectWithItems path="media" items="${mediaTypes}"/>

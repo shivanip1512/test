@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.geojson.FeatureCollection;
@@ -123,7 +124,6 @@ public class MapController {
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
@@ -138,10 +138,13 @@ public class MapController {
      * the violations device group of a status point or outage monitor.
      */
     @GetMapping("/map/dynamic")
-    public String dynamic(ModelMap model, DeviceCollection deviceCollection, String monitorType, Integer monitorId, Boolean violationsOnly) {
-        
+    public String dynamic(ModelMap model, DeviceCollection deviceCollection, String monitorType, 
+                          Integer monitorId, Boolean violationsOnly, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
         model.addAttribute("deviceCollection", deviceCollection);
-        model.addAttribute("description", deviceCollection.getDescription());
+        String description = accessor.getMessage(deviceCollection.getDescription());
+        model.addAttribute("description", StringEscapeUtils.escapeXml11(description));
         model.addAttribute("dynamic", true);
         model.addAttribute("monitorType", monitorType);
         model.addAttribute("monitorId", monitorId);
@@ -172,15 +175,16 @@ public class MapController {
 
     @GetMapping("/map")
     public String map(ModelMap model, DeviceCollection deviceCollection, YukonUserContext userContext) {
-        
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
         model.addAttribute("deviceCollection", deviceCollection);
-        model.addAttribute("description", deviceCollection.getDescription());
+        String description = accessor.getMessage(deviceCollection.getDescription());
+        model.addAttribute("description", StringEscapeUtils.escapeXml11(description));
         
         Map<AttributeGroup, Set<BuiltInAttribute>> groups = BuiltInAttribute.getAllGroupedStatusTypeAttributes();
         model.addAttribute("attributes", objectFormattingService.sortDisplayableValues(groups, userContext));
         
         Filter filter = new Filter();
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String message = accessor.getMessage(baseKey + "filter.selectedDevices");
         DeviceCollection filteredCollection = deviceGroupCollectionHelper.createDeviceGroupCollection(deviceCollection.iterator(), message);
         Map<String, String> params = filteredCollection.getCollectionParameters();
