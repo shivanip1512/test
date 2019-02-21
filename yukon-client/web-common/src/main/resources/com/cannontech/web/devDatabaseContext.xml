@@ -10,9 +10,7 @@
     
     <tx:annotation-driven transaction-manager="transactionManager"/>
     <context:annotation-config/>
-        
-    <bean class="com.cannontech.web.dev.service.YsmJmxQueryService"/>
-    
+
     <bean id="devDatabasePopulationService" class="com.cannontech.web.dev.database.service.impl.DevDatabasePopulationServiceImpl"/>
     <bean id="devRolePropUpdaterService" class="com.cannontech.web.dev.database.service.impl.DevRolePropUpdaterServiceImpl"/>
     <bean id="devCapControlCreationService" class="com.cannontech.web.dev.database.service.impl.DevCapControlCreationServiceImpl"/>

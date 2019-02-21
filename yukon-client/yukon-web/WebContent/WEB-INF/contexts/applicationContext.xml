@@ -1299,6 +1299,7 @@
     <bean class="com.cannontech.web.updater.point.CachedPointDataCorrelationServiceImpl"/>
     
     <bean class="com.cannontech.web.support.service.impl.SystemHealthServiceImpl"/>
+    <bean class="com.cannontech.web.support.service.impl.YsmJmxQueryService"/>
     <bean class="com.cannontech.web.support.dao.impl.SystemMetricCriteriaDaoImpl"/>
     
     <!-- System Metric Criteria -->
