@@ -586,6 +586,24 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-19534', '7.2.0', GETDATE());
 /* @end YUK-19534 */
 
+/* @end YUK-19545 */
+ALTER TABLE LMGroupItronMapping
+ALTER COLUMN ItronGroupId NUMERIC NULL;
+
+ALTER TABLE LMGroupItronMapping
+ADD VirtualRelayId NUMERIC NULL;
+GO
+
+UPDATE LMGroupItronMapping
+SET VirtualRelayId = 1;
+GO
+
+ALTER TABLE LMGroupItronMapping
+ALTER COLUMN VirtualRelayId NUMERIC NOT NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-19545', '7.2.0', GETDATE());
+/* @end YUK-19545 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

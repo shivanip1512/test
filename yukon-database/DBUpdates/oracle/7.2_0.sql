@@ -571,6 +571,22 @@ MODIFY (Value VARCHAR2(500));
 INSERT INTO DBUpdates VALUES ('YUK-19534', '7.2.0', SYSDATE);
 /* @end YUK-19534 */
 
+/* @start YUK-19545 */
+ALTER TABLE LMGroupItronMapping
+MODIFY ( ItronGroupId NUMBER NULL );
+
+ALTER TABLE LMGroupItronMapping
+ADD VirtualRelayId NUMBER NULL;
+
+UPDATE LMGroupItronMapping
+SET VirtualRelayId = 1;
+
+ALTER TABLE LMGroupItronMapping
+MODIFY ( VirtualRelayId NUMBER NOT NULL );
+
+INSERT INTO DBUpdates VALUES ('YUK-19545', '7.2.0', SYSDATE);
+/* @end YUK-19545 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

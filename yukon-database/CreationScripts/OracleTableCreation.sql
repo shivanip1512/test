@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/19/2019 10:46:11 PM                        */
+/* Created on:     2/21/2019 2:38:06 PM                         */
 /*==============================================================*/
 
 
@@ -6471,7 +6471,8 @@ alter table LMGroupHoneywellWiFi
 /*==============================================================*/
 create table LMGroupItronMapping  (
    YukonGroupId         NUMBER                          not null,
-   ItronGroupId         NUMBER                          not null,
+   ItronGroupId         NUMBER,
+   VirtualRelayId       NUMBER                          not null,
    constraint PK_LMGroupItronMapping primary key (YukonGroupId)
 );
 
