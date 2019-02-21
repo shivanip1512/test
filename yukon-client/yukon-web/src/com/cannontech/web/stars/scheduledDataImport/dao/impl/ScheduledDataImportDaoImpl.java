@@ -179,7 +179,7 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
     public Multimap<Instant, ScheduleImportHistoryEntry> getEntriesWithArchiveByDate() {
         final Multimap<Instant, ScheduleImportHistoryEntry> entries = ArrayListMultimap.create();
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EntryId, FileName, ImportDate, ArchiveFileName, ArchiveFilePath,");
+        sql.append("SELECT EntryId, FileName, ImportDate, ArchiveFileName,");
         sql.append("    ArchiveFileExists, FailedFileName, FailedFilePath, SuccessCount, FailureCount");
         sql.append("FROM ScheduledDataImportHistory");
         sql.append("WHERE  ArchiveFileExists").eq(true);
