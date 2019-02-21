@@ -29,7 +29,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -51,7 +50,6 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES)
 public class MeterProfileController {
     
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private EnergyCompanyDao ecDao;
@@ -191,20 +189,28 @@ public class MeterProfileController {
         helper.creationAttempted(user, fragment.getAccountNumber(), hardware, verifyProperties, result);
 
         if (result.hasErrors()) {
-            model.addAttribute("energyCompanyId", fragment.getEnergyCompanyId());
-            model.addAttribute("mode", PageEditMode.CREATE);
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
-            AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
-            
-            return "operator/hardware/meterProfile.jsp";
+            return setupErrorView(model, fragment);
         }
-        int inventoryId = helper.create(user, hardware, result, request.getSession());
-        
-        AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareCreated"));
-        model.addAttribute("inventoryId", inventoryId);
+        try {
+            int inventoryId = helper.create(user, hardware, result, request.getSession());
+            AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareCreated"));
+            model.addAttribute("inventoryId", inventoryId);
+        } catch (RuntimeException e) {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.error.createDeviceFailed"));
+            return setupErrorView(model, fragment);
+        }
+
         return "redirect:view";
+    }
+    
+    private String setupErrorView(ModelMap model, AccountInfoFragment fragment) {
+        model.addAttribute("energyCompanyId", fragment.getEnergyCompanyId());
+        model.addAttribute("mode", PageEditMode.CREATE);
+        AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
+        return "operator/hardware/meterProfile.jsp";
     }
     
     private String setupModel(ModelMap model, AccountInfoFragment fragment, Hardware hardware) {

@@ -218,6 +218,7 @@
     <entry key="yukon.web.modules.operator.hardware.error.format.eui48.macAddress">Invalid MAC Address format. Expected XX:XX:XX:XX:XX:XX</entry>
     <entry key="yukon.web.modules.operator.hardware.error.format.eui64.macAddress">Invalid MAC Address format. Expected XX:XX:XX:XX:XX:XX:XX:XX</entry>
     <entry key="yukon.web.modules.operator.hardware.error.notFound.inventoryId">This device is not associated with a two way LCR.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.createDeviceFailed">An error occurred trying to create the device.</entry>
     <!-- Rf errors -->
     <entry key="yukon.web.modules.operator.hardware.error.deviceCreationError">Unable to create device. {0}</entry>
     <entry key="yukon.web.modules.operator.hardware.error.readNowFailed">Read Failure: {0}</entry>

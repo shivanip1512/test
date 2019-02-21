@@ -495,15 +495,20 @@ public class OperatorHardwareController {
         hardwareModelHelper.creationAttempted(user, accountInfoFragment.getAccountNumber(), hardware, verifyProperties, bindingResult);
 
         if (!bindingResult.hasErrors()) {
-            int inventoryId = hardwareModelHelper.create(user, hardware, bindingResult, request.getSession());
+            try {
+                int inventoryId = hardwareModelHelper.create(user, hardware, bindingResult, request.getSession());
+                AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareCreated"));
+                model.addAttribute("inventoryId", inventoryId);
+            } catch (RuntimeException e) {
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.error.createDeviceFailed"));
+                return returnToCreateWithErrors(model, hardware, userContext, flashScope, accountInfoFragment, bindingResult);
+            }
 
             if (bindingResult.hasErrors()) {
                 return returnToCreateWithErrors(model, hardware, userContext, flashScope, accountInfoFragment, bindingResult);
             }
 
-            AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareCreated"));
-            model.addAttribute("inventoryId", inventoryId);
             return "redirect:view";
 
         }
@@ -515,7 +520,9 @@ public class OperatorHardwareController {
             FlashScope flashScope, AccountInfoFragment accountInfoFragment, BindingResult bindingResult) {
         model.addAttribute("mode", PageEditMode.CREATE);
         List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-        flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        if (!messages.isEmpty()) {
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        }
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
 
         setupCreateModel(accountInfoFragment, model, hardware.getHardwareType(), userContext);

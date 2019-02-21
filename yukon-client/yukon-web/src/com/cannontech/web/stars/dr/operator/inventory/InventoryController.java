@@ -275,14 +275,19 @@ public class InventoryController {
                 Sets.newHashSet(YukonRoleProperty.INVENTORY_CREATE_HARDWARE), result);
 
         if (!result.hasErrors()) {
-            int inventoryId = hardwareModelHelper.create(user, hardware, result, session);
+            try {
+                int inventoryId = hardwareModelHelper.create(user, hardware, result, session);
+                model.addAttribute("inventoryId", inventoryId);
+            } catch (RuntimeException e) {
+                flash.setError(new YukonMessageSourceResolvable(key + "error.createDeviceFailed"));
+                return returnToCreateWithErrors(model, hardware, userContext, flash, result);
+            }
 
             if (result.hasErrors()) {
                 return returnToCreateWithErrors(model, hardware, userContext, flash, result);
             }
 
             flash.setConfirm(new YukonMessageSourceResolvable(key + "hardwareCreated"));
-            model.addAttribute("inventoryId", inventoryId);
             return "redirect:view";
 
         }
@@ -295,7 +300,9 @@ public class InventoryController {
 
         model.addAttribute("mode", PageEditMode.CREATE);
         List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
-        flash.setMessage(messages, FlashScopeMessageType.ERROR);
+        if (!messages.isEmpty()) {
+            flash.setMessage(messages, FlashScopeMessageType.ERROR);
+        }
         setupCreationModel(model, userContext, hardware.getHardwareType());
 
         return "operator/inventory/inventory.jsp";
