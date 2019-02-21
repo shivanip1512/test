@@ -2070,7 +2070,7 @@
          </urn:D2GAttributes>\r
       </urn:AddHANDeviceRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:username>test_wrong</con:username><con:password>test</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addHANDeviceRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="c5c35c45-8a57-4890-98a2-27dcce812540" isOneWay="false" action="" name="editESIGroup" bindingOperationName="editESIGroup" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="352f446d-e45d-4143-a7a1-b9cb84a2bd99" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:username>test</con:username><con:password>test</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/addHANDeviceRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="c5c35c45-8a57-4890-98a2-27dcce812540" isOneWay="false" action="" name="editESIGroup" bindingOperationName="editESIGroup" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="352f446d-e45d-4143-a7a1-b9cb84a2bd99" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/DeviceManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:EditESIGroupRequest>\r
@@ -6497,6 +6497,34 @@ requestContext.mac = holder["/soap-env:Envelope/soap-env:Body/itron-dm:EditHANDe
           <urn:Error>
             <urn:ErrorCode>esiAssociate.hanDevice.notESI</urn:ErrorCode>
             <urn:ErrorMessage>editHANDevice Error: Device is not ESI.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/editHANDeviceResponse"/></con:response><con:response name="Mock SoapFault Response - generic - fatal_error - authorization_error" id="d7a93eb1-1b30-4613-8a87-03f5744cf02b" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>soapenv:Client</faultcode>
+      <faultstring>Generic multi-error.</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>generic</urn:ErrorCode>
+            <urn:ErrorMessage>editHANDevice Error: A generic error has occurred.</urn:ErrorMessage>
+          </urn:Error>
+          <urn:Error>
+            <urn:ErrorCode>fatal_error</urn:ErrorCode>
+            <urn:ErrorMessage>editHANDevice Error: A fatal error has occurred.</urn:ErrorMessage>
+          </urn:Error>
+          <urn:Error>
+            <urn:ErrorCode>authorization_error</urn:ErrorCode>
+            <urn:ErrorMessage>editHANDevice Error: Username or Password is incorrect.</urn:ErrorMessage>
           </urn:Error>
         </urn:ErrorFault>
         <!--You may enter ANY elements at this point-->
