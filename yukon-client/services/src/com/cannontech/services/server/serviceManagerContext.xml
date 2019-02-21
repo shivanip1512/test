@@ -22,6 +22,8 @@
     
     <bean class="com.cannontech.amr.rfn.dataStreaming.service.impl.DataStreamingStatisticsCollectionService"/>
     
+    <bean class="com.cannontech.dr.itron.service.impl.ItronPeriodicDataCollectionServiceImpl"/>
+
     <bean id="systemMetrics" class="com.cannontech.common.systemMetrics.SystemMetricsImpl"
            init-method="init" destroy-method="destroy">
         <property name="loadAverageAttribute" value="SERVICE_MANAGER_CPU_UTILIZATION"/>
