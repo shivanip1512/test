@@ -8,8 +8,7 @@ public interface ItronEventLogService {
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
     public void addHANDevice(@Arg(ArgEnum.deviceName) String displayName, 
-                             @Arg(ArgEnum.macAddress) String macAddress,
-                             @Arg(ArgEnum.username) String userName);
+                             @Arg(ArgEnum.macAddress) String macAddress);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
     public void addHANDeviceToServicePoint(@Arg(ArgEnum.accountNumber) String accountNumber, 

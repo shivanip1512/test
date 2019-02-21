@@ -642,7 +642,7 @@ public class DevEventLogCreationService {
                 int yukonGroupId = 456;
                 
                 itronEventLogService.addGroup(groupName, groupId);
-                itronEventLogService.addHANDevice(displayName, macAddress, userName);
+                itronEventLogService.addHANDevice(displayName, macAddress);
                 itronEventLogService.addHANDeviceToServicePoint(accountNumber, macAddress, userName);
                 itronEventLogService.addProgram(programName, programId);
                 itronEventLogService.addServicePoint(accountNumber, userName);
