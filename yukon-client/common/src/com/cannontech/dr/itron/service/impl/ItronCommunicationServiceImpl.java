@@ -173,7 +173,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             throw e;
         } catch (Exception e) {
             log.error("Communication error:" + XmlUtils.getPrettyXml(response), e);
-            throw new ItronCommunicationException("Communication error:" + XmlUtils.getPrettyXml(response), e);
+            throw new ItronCommunicationException("A Communication error has occurred trying to connect to Itron.", e);
         }
     }
 

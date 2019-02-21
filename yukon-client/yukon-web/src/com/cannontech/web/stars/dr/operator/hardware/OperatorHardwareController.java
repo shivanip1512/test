@@ -501,7 +501,7 @@ public class OperatorHardwareController {
                 flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareCreated"));
                 model.addAttribute("inventoryId", inventoryId);
             } catch (RuntimeException e) {
-                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.error.createDeviceFailed"));
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.error.createDeviceFailed", e.getMessage()));
                 return returnToCreateWithErrors(model, hardware, userContext, flashScope, accountInfoFragment, bindingResult);
             }
 

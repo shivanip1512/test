@@ -279,7 +279,7 @@ public class InventoryController {
                 int inventoryId = hardwareModelHelper.create(user, hardware, result, session);
                 model.addAttribute("inventoryId", inventoryId);
             } catch (RuntimeException e) {
-                flash.setError(new YukonMessageSourceResolvable(key + "error.createDeviceFailed"));
+                flash.setError(new YukonMessageSourceResolvable(key + "error.createDeviceFailed", e.getMessage()));
                 return returnToCreateWithErrors(model, hardware, userContext, flash, result);
             }
 

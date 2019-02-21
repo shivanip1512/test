@@ -199,7 +199,7 @@ public class MeterProfileController {
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareCreated"));
             model.addAttribute("inventoryId", inventoryId);
         } catch (RuntimeException e) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.error.createDeviceFailed"));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.error.createDeviceFailed", e.getMessage()));
             return setupErrorView(model, fragment);
         }
 
