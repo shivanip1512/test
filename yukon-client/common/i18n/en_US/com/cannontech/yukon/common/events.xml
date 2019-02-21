@@ -880,6 +880,12 @@
     <entry key="yukon.common.events.dr.itron.addProgram">Program {1} with program ID {7} creation request sent.</entry>
     <entry key="yukon.common.events.dr.itron.7">Program Id</entry>
     
+    <entry key="yukon.common.events.dr.itron.addMacAddressesToGroup">Mac Address: {1} has been added to group: {2}.</entry>
+    <entry key="yukon.common.events.dr.itron.getGroupIdFromItron">Retrieving Itron Group Id from group: {1}</entry>
+    <entry key="yukon.common.events.dr.itron.optOut">optOut for Yukon Group Id: {7} with Mac Address: {2} sent by Account Number: {1}.</entry>
+    <entry key="yukon.common.events.dr.itron.sendEnrollmentRequest">Sending enrollment request for account: {1} for Itron Program Id: {7}</entry>
+    <entry key="yukon.common.events.dr.itron.sendEnrollmentRequest.7">Itron Program Id</entry>
+    
     <!-- Nest-->
     <entry key="yukon.common.events.dr.nest.syncStart">Sync Start: Sync Id: {7}, Start Time: {11}</entry>
     <entry key="yukon.common.events.dr.nest.syncResults">Sync Results: Sync Id: {7}, Start Time: {11}, Stop Time: {12}, Auto Count: {8}, Manual Count: {9} </entry>

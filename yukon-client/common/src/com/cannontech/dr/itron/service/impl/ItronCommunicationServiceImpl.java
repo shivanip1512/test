@@ -213,7 +213,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         long itronGroupId = itronDao.getItronGroupId(yukonGroupId);
         String macAddress= deviceDao.getDeviceMacAddress(deviceId);
         String url = Manager.PROGRAM_EVENT.getUrl(settingDao);
-        // TODO add event log
+        itronEventLogService.optOut(account.getAccountNumber(), yukonGroupId, macAddress);
         CancelHANLoadControlProgramEventOnDevicesResponse response = null;
         try {
             CancelHANLoadControlProgramEventOnDevicesRequest request = ProgramEventManagerHelper.buildOptOutRequest(itronGroupId, macAddress);
@@ -323,7 +323,9 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         try {
             SetServicePointEnrollmentResponse response =
                 (SetServicePointEnrollmentResponse) Manager.PROGRAM.getTemplate(settingDao).marshalSendAndReceive(url, request);
-            // TODO add event log
+            itronProgramIds.forEach(itronProgramId -> 
+                itronEventLogService.sendEnrollmentRequest(account.getAccountNumber(), itronProgramId)
+            );
             log.debug("Response for this call is blank:" + XmlUtils.getPrettyXml(response));
             log.debug("ITRON-sendEnrollmentRequest url:{} account number:{} result:{}.", url, account.getAccountNumber(),
                 "success");
@@ -391,7 +393,9 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         try {
             ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupEditRequest(groupPao, macAddresses);
             JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createEditESIGroupRequest(requestType);
-            // TODO add event log
+            macAddresses.forEach(macAddress ->
+                itronEventLogService.addMacAddressToGroup(macAddress, groupPao.getPaoName())
+            );
             log.debug("ITRON-addMacAddressToGroup url:{} group name:{} mac addresses:{}.", url, groupPao.getPaoName(),
                 macAddresses);
             log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));
@@ -423,7 +427,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         try {
             ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupAddRequest(groupPao);
             JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createAddESIGroupRequest(requestType);
-            // TODO add event log
+            itronEventLogService.getGroupIdFromItron(groupPao.getPaoName());
             log.debug("ITRON-getGroupIdFromItron url:{} group name:{}", url, groupPao.getPaoName());
             log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));
             response = (JAXBElement<ESIGroupResponseType>) Manager.DEVICE.getTemplate(settingDao).marshalSendAndReceive(url, request);

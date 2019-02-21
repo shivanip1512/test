@@ -30,18 +30,21 @@ public interface ItronEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
     public void addProgram(@Arg(ArgEnum.programName) String programName, 
                            Long programId);
-    
+
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
-    public void setServicePointEnrollment(@Arg(ArgEnum.customerId) int customerId,
-                                          String itronGroupIds);
-    
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
-    public void addMacAddressToGroup(@Arg(ArgEnum.macAddress) int macAddress,
+    public void addMacAddressToGroup(@Arg(ArgEnum.macAddress) String macAddress,
                                      @Arg(ArgEnum.loadGroupName) String groupName);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
-    public void getGroupIdFromItron(@Arg(ArgEnum.deviceName) String device,
-                                    @Arg(ArgEnum.loadGroupName) String groupName);
+    public void getGroupIdFromItron(@Arg(ArgEnum.loadGroupName) String groupName);
     
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
+    public void optOut(@Arg(ArgEnum.accountNumber) String accountNumber, 
+                       @Arg(ArgEnum.loadGroupIds) int yukonGroupId, 
+                       @Arg(ArgEnum.macAddress) String macAddress);
     
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
+    public void sendEnrollmentRequest(@Arg(ArgEnum.accountNumber) String accountNumber, 
+                                      Long itronProgramId);
+
 }

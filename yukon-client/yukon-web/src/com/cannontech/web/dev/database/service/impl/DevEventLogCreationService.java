@@ -639,6 +639,7 @@ public class DevEventLogCreationService {
                 String accountNumber = "accountNumberTest";
                 String programName = "programNameTest";
                 Long programId = 124L;
+                int yukonGroupId = 456;
                 
                 itronEventLogService.addGroup(groupName, groupId);
                 itronEventLogService.addHANDevice(displayName, macAddress, userName);
@@ -646,6 +647,11 @@ public class DevEventLogCreationService {
                 itronEventLogService.addProgram(programName, programId);
                 itronEventLogService.addServicePoint(accountNumber, userName);
                 itronEventLogService.removeHANDeviceFromServicePoint(macAddress);
+                
+                itronEventLogService.addMacAddressToGroup(macAddress, groupName);
+                itronEventLogService.getGroupIdFromItron(groupName);
+                itronEventLogService.optOut(accountNumber, yukonGroupId, macAddress);
+                itronEventLogService.sendEnrollmentRequest(accountNumber, programId);
             }
         });
         executables.put(LogType.METERING, new DevEventLogExecutable() {
@@ -1205,7 +1211,7 @@ public class DevEventLogCreationService {
         GATEWAY(GatewayEventLogService.class, 9),
         HARDWARE(HardwareEventLogService.class, 23),
         INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),  
-        ITRON(ItronEventLogService.class, 6),
+        ITRON(ItronEventLogService.class, 10),
         METERING(MeteringEventLogService.class, 15),
         MULTISPEAK(MultispeakEventLogService.class, 35),
         NEST(NestEventLogService.class, 12),
