@@ -53,6 +53,10 @@ import com.cannontech.dbtools.updater.DBUpdater;
  * @author: Eric Schmit
  */
 class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, PopupMenuListener {
+
+    static {
+        CtiUtilities.setClientAppName(ApplicationId.DB_TOOLS_FRAME);
+    }
     private static final String DEF_PATH =
         System.getProperty("user.dir") + IRunnableDBTool.FS;
 
@@ -849,7 +853,6 @@ class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, Popu
      */
     public static void main(String[] args) {
         try {
-            CtiUtilities.setClientAppName(ApplicationId.DB_TOOLS_FRAME);
 
             DBToolsFrame aConverterFrame;
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
