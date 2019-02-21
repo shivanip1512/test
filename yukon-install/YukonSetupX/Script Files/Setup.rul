@@ -333,9 +333,6 @@ begin
 	//Try to stop all the services, just in case one's still running
 	StopYukonServices();
 	
-    if(IsInstalledVersionLesser("7.1.2")) then
-        ModifyTomcatConfigSetting();
-    endif;
 	//replace the pre-5.0 DB cparms if they exist in master.cfg
 	sMasterConfig = TARGETDIR + "\\Server\\Config\\master.cfg";
 	ReplaceStringInFile(sMasterConfig, "DB_RWDBDLL", "DB_TYPE");

@@ -332,19 +332,6 @@ begin
 	endfor;
 end;
 
-//-------------------------------------------------------
-// Helper function to modify tomcat connector setting
-// and Server shutdown port.
-//-------------------------------------------------------
-export prototype ModifyTomcatConfigSetting();
-function ModifyTomcatConfigSetting()
-string sCMD, sProg;
-begin
-    sProg = "cmd.exe";
-    sCMD = "/c " + TARGETDIR ^ "\\Client\\bin\\modifyTomcatConfig.bat";
-    LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
-end;
-
 //---------------------------------------------------
 // Helper function to start or stop the Yukon services.
 // TRUE to start services, FALSE to stop them
