@@ -19,18 +19,17 @@ yukon.widget.rfBroadcast = (function () {
             url: yukon.url('/widget/rfBroadcastWidget/render'),
         }).done(function (data) {
             widgetContainer.html(data);
-            var refreshButton = widgetContainer.find('.js-update-rf-broadcast'),
-                lastRefresh = widgetContainer.find('.js-last-attempted-refersh').val(),
-                lastRefershDateTime = moment(new Date(lastRefresh)).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
-                nextRefresh = widgetContainer.find('.js-next-refersh-date-time').val(),
-                nextRefreshDateTime = moment(new Date(nextRefresh)).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
+            var json = $.parseJSON($("#js-widget-json-data").text()),
+                refreshButton = widgetContainer.find('.js-update-rf-broadcast'),
+                lastRefershDateTime = moment(json.lastUpdateTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
+                nextRefreshDateTime = moment(json.nextRun.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
             refreshButton.attr('disabled', true);
             refreshButton.attr('title', yg.text.nextRefresh + nextRefreshDateTime);
             widgetContainer.find('.js-last-updated').text(lastRefershDateTime);
             setTimeout(function () {
                 refreshButton.attr('disabled', false);
-                refreshButton.attr('title', $("#js-update-tooltip").val());
-                }, $("#js-force-update-interval").val());
+                refreshButton.attr('title', json.updateTooltip);
+                }, json.forceRefreshInterval);
         });
     },
     

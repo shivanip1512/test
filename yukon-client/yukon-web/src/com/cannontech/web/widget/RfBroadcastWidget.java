@@ -2,6 +2,7 @@ package com.cannontech.web.widget;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -25,6 +25,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/rfBroadcastWidget/*")
@@ -35,7 +36,6 @@ public class RfBroadcastWidget extends AdvancedWidgetControllerBase {
     private static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH = Duration.standardMinutes(1);
 
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private PerformanceVerificationDao rfPerformanceDao;
 
@@ -52,17 +52,16 @@ public class RfBroadcastWidget extends AdvancedWidgetControllerBase {
             List<PerformanceVerificationEventMessageStats> results = rfPerformanceDao.getReports(Range.inclusiveExclusive(from, to));
             Collections.sort(results, (t1, t2) -> t2.getTimeMessageSent().compareTo(t1.getTimeMessageSent()));
             model.addAttribute("results", results);
+            
+            Map<String, Object> json = Maps.newHashMap();
             Instant lastUpdateTime = now.toInstant();
-            String lastAttemptedRefreshDateTime =
-                    dateFormattingService.format(lastUpdateTime, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-            model.addAttribute("lastAttemptedRefreshDateTime", lastAttemptedRefreshDateTime);
+            json.put("lastUpdateTime", lastUpdateTime);
             Instant nextRun = lastUpdateTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH);
-            String nextRefreshDateTime =
-                    dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-            model.addAttribute("nextRefreshDateTime", nextRefreshDateTime);
-            model.addAttribute("forceRefreshInterval", MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH.getMillis());
+            json.put("nextRun", nextRun);
+            json.put("forceRefreshInterval", MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH.getMillis());
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            model.addAttribute("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
+            json.put("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
+            model.addAttribute("widgetUpdateDate", json);
         }
         model.addAttribute("showRfBroadcastWidget", showRfBroadcastWidget);
         return "rfBroadcastWidget/render.jsp";
