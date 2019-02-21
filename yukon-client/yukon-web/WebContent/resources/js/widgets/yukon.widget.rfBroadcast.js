@@ -23,7 +23,6 @@ yukon.widget.rfBroadcast = (function () {
                 refreshButton = widgetContainer.find('.js-update-rf-broadcast'),
                 lastRefershDateTime = moment(json.lastUpdateTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
                 nextRefreshDateTime = moment(json.nextRun.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
-            refreshButton.attr('disabled', true);
             refreshButton.attr('title', yg.text.nextRefresh + nextRefreshDateTime);
             widgetContainer.find('.js-last-updated').text(lastRefershDateTime);
             setTimeout(function () {
@@ -45,6 +44,9 @@ yukon.widget.rfBroadcast = (function () {
             if (_initialized) return;
             
             $(".js-rf-broadcast-widget").each(function (index, widgetContainer) {
+                var json = $.parseJSON($(widgetContainer).find("#js-widget-json-data").text()),
+                    lastRefershDateTime = moment(json.lastUpdateTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
+                $(widgetContainer).find('.js-last-updated').text(lastRefershDateTime);
                 _update($(widgetContainer));
             });
             

@@ -38,8 +38,9 @@
                     <a href="${detailsUrl}" target="_blank"><i:inline key="yukon.common.viewDetails"/></a>
                     <span class="fr">
                         <cti:msg2 key="yukon.web.widgets.lastUpdated" var="lastUpdatedMsg"/>
-                        <span class="fl js-last-updated" style="font-size:11px" title="${lastUpdatedMsg}"/>
-                        <cti:button renderMode="image" icon="icon-arrow-refresh" classes="js-update-rf-broadcast"/>
+                        <span class="fl js-last-updated" style="font-size:11px" title="${lastUpdatedMsg}"></span>
+                        <cti:button renderMode="image" icon="icon-arrow-refresh" classes="js-update-rf-broadcast"
+                                    disabled="true"></cti:button>
                     </span>
                 </div>
             </div>
