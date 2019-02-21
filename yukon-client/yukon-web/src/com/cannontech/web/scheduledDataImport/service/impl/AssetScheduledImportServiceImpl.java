@@ -81,7 +81,8 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
         ScheduledDataImportResult dataImportResult = new ScheduledDataImportResult();
         if (importPathCheck) {
             try (Stream<Path> paths = Files.walk(Paths.get(importPath))) {
-                paths.filter(path -> (Files.isRegularFile(path) && validateFileType(path))).forEach(path -> {
+                paths.filter(path -> (Files.isRegularFile(path) && validateFileType(path)
+                    && path.toFile().length() > 4)).forEach(path -> {
 
                     Instant startTime = Instant.now();
                     String errorFileName = null;
