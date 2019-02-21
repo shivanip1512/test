@@ -238,30 +238,34 @@ public class ScheduledDataImportController {
 
     @GetMapping("{jobGroupId}/viewHistory")
     public String viewHistory(ModelMap model, @PathVariable int jobGroupId, YukonUserContext userContext,
-            @DefaultItemsPerPage(10) PagingParameters paging, @RequestParam(required = false) Date startDate,
-            @RequestParam(required = false) Date endDate,
+            @DefaultItemsPerPage(10) PagingParameters paging, @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
             @DefaultSort(dir = Direction.desc, sort = "fileName") SortingParameters sorting)
             throws ServletException, ParseException {
 
-        SearchResults<ScheduleImportHistoryEntry> searchResults = new SearchResults<>();
-
-        if (endDate == null) {
-            endDate = new Date();
+        Date to;
+        if (org.apache.commons.lang3.StringUtils.isEmpty(endDate)) {
+            to = new Date();
+        } else {
+            to = dateFormattingService.flexibleDateParser(endDate, DateOnlyMode.START_OF_DAY, userContext);
         }
+        model.addAttribute("endDate", to);
 
-        if (startDate == null) {
-            startDate = new DateTime(endDate).minusDays(7).toDate();
+        Date from;
+        if (org.apache.commons.lang3.StringUtils.isEmpty(startDate)) {
+            from = new DateTime(to).minusDays(7).toDate();
+        } else {
+            from = dateFormattingService.flexibleDateParser(startDate, DateOnlyMode.START_OF_DAY, userContext);
         }
+        model.addAttribute("startDate", from);
 
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
+        String formattedToDateStr = dateFormattingService.format(to, DateFormatEnum.DATE, userContext);
+        Date inclusiveToDate =
+            dateFormattingService.flexibleDateParser(formattedToDateStr, DateOnlyMode.END_OF_DAY, userContext);
 
-        String toDate = dateFormattingService.format(endDate, DateFormatEnum.DATE, userContext);
-
-        endDate = dateFormattingService.flexibleDateParser(toDate, DateOnlyMode.END_OF_DAY, userContext);
-
-        searchResults = scheduledDataImportService.getImportHistory(jobGroupId, startDate, endDate,
-            FileImportHistory.valueOf(sorting.getSort()).getValue(), sorting.getDirection(), paging);
+        SearchResults<ScheduleImportHistoryEntry> searchResults =
+            scheduledDataImportService.getImportHistory(jobGroupId, from, inclusiveToDate,
+                FileImportHistory.valueOf(sorting.getSort()).getValue(), sorting.getDirection(), paging);
 
         model.addAttribute("results", searchResults);
         model.addAttribute("jobGroupId", jobGroupId);
