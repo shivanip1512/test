@@ -8,9 +8,7 @@
     <c:choose>
         <c:when test="${showRfBroadcastWidget}">
             <div class= "js-rf-broadcast-widget">
-                <input type="hidden" id="js-refresh-tooltip" value="${refreshTooltip}"/>
-                <input type="hidden" id="js-update-tooltip" value="${updateTooltip}"/>
-                <input type="hidden" id="js-force-update-interval" value="${forceRefreshInterval}"/>
+                <cti:toJson object="${widgetUpdateDate}" id="js-widget-json-data"/>
                 <table class="compact-results-table">
                     <thead>
                         <th><i:inline key="yukon.web.modules.dr.rf.details.eventTime"/></th>
@@ -39,8 +37,6 @@
                     <cti:url value="/dr/rf/details" var="detailsUrl"/>
                     <a href="${detailsUrl}" target="_blank"><i:inline key="yukon.common.viewDetails"/></a>
                     <span class="fr">
-                        <input type="hidden" class="js-next-refersh-date-time" value="${nextRefreshDateTime}"/>
-                        <input type="hidden" class="js-last-attempted-refersh" value="${lastAttemptedRefreshDateTime}"/>
                         <cti:msg2 key="yukon.web.widgets.lastUpdated" var="lastUpdatedMsg"/>
                         <span class="fl js-last-updated" style="font-size:11px" title="${lastUpdatedMsg}"/>
                         <cti:button renderMode="image" icon="icon-arrow-refresh" classes="js-update-rf-broadcast"/>
