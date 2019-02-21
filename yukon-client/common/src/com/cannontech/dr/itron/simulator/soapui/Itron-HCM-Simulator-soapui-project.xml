@@ -6768,7 +6768,24 @@ requestContext.utilServicePointId = holder["/soap-env:Envelope/soap-env:Body/itr
       </detail>
     </soapenv:Fault>
   </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/addServicePointResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="editServicePoint" id="6f5b900b-c668-43f6-81b7-df24b2acc379" interface="ServicePointManagerSoapBinding" operation="editServicePoint"><con:settings/><con:defaultResponse>Mock Success Response</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Mock Success Response" id="6fb26844-6360-4fb7-8140-bcb630c87ea7" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/addServicePointResponse"/></con:response><con:response name="Mock SoapFault Response - UtilServicePointID.Exists" id="d15e2d25-3f0f-41a1-9b78-8c3453366eef" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+   <SOAP-ENV:Header/>
+   <SOAP-ENV:Body>
+      <SOAP-ENV:Fault>
+         <faultcode>SOAP-ENV:Server</faultcode>
+         <faultstring xml:lang="en">UtilServicePointID '123456-SP' already exists</faultstring>
+         <detail>
+            <ns2:ErrorFault xmlns:ns10="urn:com:ssn:dr:xmlschema:service:v1.5:ProgramEventManager.xsd" xmlns:ns11="urn:com:ssn:dr:xmlschema:service:v1.4:RatePlanManager.xsd" xmlns:ns12="urn:com:ssn:dr:xmlschema:service:v1.3:RatePlanManager.xsd" xmlns:ns13="urn:com:ssn:dr:xmlschema:service:v1.2:ReportManager.xsd" xmlns:ns14="urn:com:ssn:dr:xmlschema:service:v1.1:ReportManager.xsd" xmlns:ns15="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager.xsd" xmlns:ns2="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd" xmlns:ns3="urn:com:ssn:dr:xmlschema:service:v1.0:BasicTypes.xsd" xmlns:ns4="urn:com:ssn:dr:xmlschema:service:v1.0:LocationTypes.xsd" xmlns:ns5="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd" xmlns:ns6="urn:com:ssn:dr:xmlschema:service:v1.7:DeviceManager.xsd" xmlns:ns7="urn:com:ssn:dr:xmlschema:service:v1.1:ProgramManager.xsd" xmlns:ns8="urn:com:ssn:dr:xmlschema:service:v1.0:ProgramManager.xsd" xmlns:ns9="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">
+               <ns2:Error>
+                  <ns2:ErrorCode>UtilServicePointID.Exists</ns2:ErrorCode>
+                  <ns2:ErrorMessage>UtilServicePointID '123456-SP' already exists</ns2:ErrorMessage>
+               </ns2:Error>
+            </ns2:ErrorFault>
+         </detail>
+      </SOAP-ENV:Fault>
+   </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/addServicePointResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="editServicePoint" id="6f5b900b-c668-43f6-81b7-df24b2acc379" interface="ServicePointManagerSoapBinding" operation="editServicePoint"><con:settings/><con:defaultResponse>Mock Success Response</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Mock Success Response" id="6fb26844-6360-4fb7-8140-bcb630c87ea7" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
 //We must declare the namespace alias we will use in the xpath below.
 //If we don't do this, the namespace aliases in the xpath must exactly match those in the request
 holder.declareNamespace('soap-env',"http://schemas.xmlsoap.org/soap/envelope/")
