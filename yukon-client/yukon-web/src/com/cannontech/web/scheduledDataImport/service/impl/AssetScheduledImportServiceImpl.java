@@ -25,10 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.util.FileUtil;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.tools.csv.CSVReader;
@@ -81,29 +81,28 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
         ScheduledDataImportResult dataImportResult = new ScheduledDataImportResult();
         if (importPathCheck) {
             try (Stream<Path> paths = Files.walk(Paths.get(importPath))) {
-                paths.filter(Files::isRegularFile).forEach(path -> {
-                    int successCount = 0, failureCount = 0;
+                paths.filter(path -> (Files.isRegularFile(path) && validateFileType(path))).forEach(path -> {
+
                     Instant startTime = Instant.now();
+                    String errorFileName = null;
+                    AccountImportResult result = new AccountImportResult();
+
+
                     log.info("Scheduled Data Import for type Asset Started at " + startTime.toDate() + " for  "
                         + path.toFile());
-                    logService.importStarted(YukonUserContext.system.getYukonUser(),
-                        accessor.getMessage(baseKey + "dataImportSchedule") + " - "
-                            + accessor.getMessage(typeKey + "ASSET_IMPORT"),
-                        path.getFileName().toString());
+                    logService.importStarted(YukonUserContext.system.getYukonUser(), 
+                                            accessor.getMessage(baseKey + "dataImportSchedule") + " - "
+                                           + accessor.getMessage(typeKey + "ASSET_IMPORT"), path.getFileName().toString());
+                    File archiveFile = dataImportHelper.getArchiveFile(startTime.toDate(), path.toFile(), ".csv");
                     try {
                         String[] columnHeaders = getcolumnHeaders(path.toFile());
-                        if (ArrayUtils.isNotEmpty(columnHeaders)) {
-                            AccountImportResult result = new AccountImportResult();
+                        // both Column COL_HW_ACTION/COL_CUST_ACTION at second position in file
+                        if (ArrayUtils.isNotEmpty(columnHeaders) && columnHeaders.length > 2) {
                             String action = columnHeaders[result.COL_CUST_ACTION] != null ? columnHeaders[result.COL_CUST_ACTION] : columnHeaders[result.COL_HW_ACTION];
-
                             if (action != null) {
                                 BulkFileUpload bulkFileUpload = new BulkFileUpload();
                                 bulkFileUpload.setFile(path.toFile());
-
-                                File archiveFile = dataImportHelper.getArchiveFile(startTime.toDate(), path.toFile(), ".csv");
-                                String errorFileName = null;
                                 boolean isValidActionColHeader = true;
-
                                 if (action.equalsIgnoreCase(result.CUST_COLUMNS[result.COL_CUST_ACTION])) {
                                     log.debug("Customer file type detected");
                                     result.setAccountFileUpload(bulkFileUpload);
@@ -114,10 +113,9 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
                                     result.setHwArchiveDir(archiveFile);
                                 } else {
                                     dataImportResult.getErrorFiles().add(path.toFile().getName());
-                                    log.warn("Column Name HW_ACTION/CUST_ACTION is not correct in File "
-                                        + path.toFile().getName());
                                     isValidActionColHeader = false;
-                                    moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath);
+                                    errorFileName = moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath, archiveFile);
+                                    log.warn("Column Name HW_ACTION/CUST_ACTION is not correct in File " + path.toFile().getName());
                                 }
 
                                 if (isValidActionColHeader) {
@@ -129,31 +127,28 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
                                         dataImportResult.getSuccessFiles().add(path.toFile().getName());
                                     }
                                 }
-                                ScheduledFileImportResult fileImportResult = buildScheduledFileImportResult(result, startTime, path.toFile().getName(),
-                                        archiveFile.getName(), errorFileOutputPath, errorFileName);
-                                dataImportResult.getImportResults().add(fileImportResult);
-                                successCount = fileImportResult.getSuccessCount();
-                                failureCount = fileImportResult.getFailureCount();
 
                             } else {
                                 dataImportResult.getErrorFiles().add(path.toFile().getName());
+                                errorFileName = moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath, archiveFile);
                                 log.warn("HW_ACTION/CUST_ACTION is not present in File " + path.toFile().getName());
-                                moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath);
                             }
 
                         }
 
                     } catch (ScheduledDataImportException | IOException e) {
                         dataImportResult.getErrorFiles().add(path.toFile().getName());
-                        moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath);
+                        errorFileName = moveFiletoErrorFileOutputPath(startTime, path.toFile(), errorFileOutputPath, archiveFile);
                         log.error("Error occured while processing file " + path.toFile().getName() + e);
                     }
-                    log.info("Scheduled Data Import for type Asset completed at " + Instant.now().toDate() + " for  "
-                        + path.toFile());
-                    logService.importCompleted(
-                        accessor.getMessage(baseKey + "dataImportSchedule") + " - "
-                            + accessor.getMessage(typeKey + "ASSET_IMPORT"),
-                        path.getFileName().toString(), successCount, failureCount);
+
+                    ScheduledFileImportResult fileImportResult = buildScheduledFileImportResult(result, startTime,
+                        path.toFile().getName(), archiveFile.getName(), errorFileOutputPath, errorFileName);
+                    dataImportResult.getImportResults().add(fileImportResult);
+
+                    log.info("Scheduled Data Import for type Asset completed at " + Instant.now().toDate() + " for  " + path.toFile());
+                    logService.importCompleted(accessor.getMessage(baseKey + "dataImportSchedule") + " - " + accessor.getMessage(typeKey + "ASSET_IMPORT"),
+                        path.getFileName().toString(), fileImportResult.getSuccessCount(), fileImportResult.getFailureCount());
                 });
             } catch (IOException e) {
                 log.error("Error occured while processing files due to I/O errors: " + e);
@@ -184,17 +179,22 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
     }
 
     /**
-     * Move import file to error output path.
+     * Move import file to error output path and archive directory and return error file Name.
      */
-    private void moveFiletoErrorFileOutputPath(Instant startTime, File filetoProcess, String errorFileOutputPath) {
-
+    private String moveFiletoErrorFileOutputPath(Instant startTime, File filetoProcess, String errorFileOutputPath, File archiveFile) {
+        String fileName = null;
         try {
             FileUtil.verifyDirectory(errorFileOutputPath);
-            String fileName = dataImportHelper.getErrorFileName(startTime.toDate(), filetoProcess, "_ErrorResults_IN_Header_", ".csv");
-            FileUtils.moveFile(filetoProcess, new File(errorFileOutputPath, fileName));
+            fileName = dataImportHelper.getErrorFileName(startTime.toDate(), filetoProcess, "_ErrorResults_IN_Header_", ".csv");
+            FileUtils.copyFile(filetoProcess, new File(errorFileOutputPath, fileName));
+            // Move to archive directory
+            FileUtils.moveFile(filetoProcess, archiveFile);
+           
         } catch (IOException e) {
             log.error("Unable to move file to Error path directory due to I/O issue " + e);
         }
+
+        return fileName;
     }
 
     /**
@@ -264,6 +264,22 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
         return new ScheduledFileImportResult(fileName, ScheduledImportType.ASSET_IMPORT, startTime, archiveFileName,
             true, failedFileName, errorFileOutputPath, successCount, result.getErrors().size());
 
+    }
+
+    /**
+     *  Validate file type and return true if it is valid CSV file
+     */
+    private boolean validateFileType(Path path) {
+
+        try {
+            String contentType = Files.probeContentType(path);
+            if (contentType != null && (contentType.startsWith("text") || contentType.endsWith("excel"))) {
+                return true;
+            }
+        } catch (IOException e) {
+            // do nothing
+        }
+        return false;
     }
 
 }
