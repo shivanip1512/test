@@ -286,15 +286,14 @@ public class AccountImportService {
                 result.setCustLines(new TreeMap<Integer, String[]>());
                 boolean hwInfoContained = false;
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(custFile)));
-
                 String line = null;
                 lineNo = 0;
                 Integer lineNoKey;
                 
                 // Sets up the archive file
-                PrintWriter archive = new PrintWriter(new FileWriter(result.getCustArchiveDir()), true);
-                
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(custFile)));
+                        PrintWriter archive = new PrintWriter(new FileWriter(result.getCustArchiveDir()), true);) {
+
                 while ((line = reader.readLine()) != null) {
                     // This line adds the latest line to the archive file
                     archive.println(line);
@@ -753,11 +752,7 @@ public class AccountImportService {
                         throw new Exception();
                     }
                 }
-                
-                // Closing the buffered reader closes all the i/o behind.
-                // In this case the inputStream is closed b/c the reader is being closed.
-                reader.close();
-                archive.close();
+            }
                 
                 if (!preScan || result.isScheduled()) {
                     result.setNumAcctTotal(custFieldsList.size());
@@ -771,16 +766,15 @@ public class AccountImportService {
             
             if (hwFile != null) {
                 hwFieldsList = Lists.newArrayList();
-                
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(hwFile)));
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(hwFile)));
+                     PrintWriter archive = new PrintWriter(new FileWriter(result.getHwArchiveDir()), true);) {
+
                 String line = null;
                 result.setHwLines(new TreeMap<Integer, String[]>());
                 lineNo = 0;
                 Integer lineNoKey;
                 
                 // Sets up the archive file
-                PrintWriter archive = new PrintWriter(new FileWriter(result.getHwArchiveDir()), true);
-
                 while ((line = reader.readLine()) != null) {
                     // This line adds the latest line to the archive file
                     archive.println(line);
@@ -1020,17 +1014,12 @@ public class AccountImportService {
                         throw new Exception();
                     }
                 }
-                
-                // Closing the buffered reader closes all the i/o behind.
-                // In this case the inputStream is closed b/c the reader is being closed.
-                reader.close();
-                archive.close();
-                
+            }
                 if (!preScan || result.isScheduled()) {
                     result.setNumHwTotal(hwFieldsList.size());
                     boolean isDeleted = hwFile.delete();
                     if (isDeleted == false) {
-                        importLog.println("* "+hwFile.getName()+" was not deleted *");
+                        importLog.println("* " + hwFile.getName() + " was not deleted *");
                     }
                 }
             }

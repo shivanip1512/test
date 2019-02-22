@@ -189,8 +189,15 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
             fileName = dataImportHelper.getErrorFileName(startTime.toDate(), filetoProcess, "_ErrorResults_IN_Header_", ".csv");
             FileUtils.copyFile(filetoProcess, new File(errorFileOutputPath, fileName));
             // Move to archive directory
-            FileUtils.moveFile(filetoProcess, archiveFile);
-           
+            if (!archiveFile.exists()) {
+                FileUtils.moveFile(filetoProcess, archiveFile);
+            } else {
+                boolean isDeleted = filetoProcess.delete();
+                if (isDeleted == false) {
+                    log.error("* " + filetoProcess.getName() + " was not deleted *");
+                }
+            }
+
         } catch (IOException e) {
             log.error("Unable to move file to Error path directory due to I/O issue " + e);
         }
