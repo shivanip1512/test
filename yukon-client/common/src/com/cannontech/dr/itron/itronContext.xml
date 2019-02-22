@@ -5,4 +5,8 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean class="com.cannontech.dr.itron.service.impl.ItronCommunicationServiceImpl"/>
+    <bean class="com.cannontech.dr.itron.service.impl.ProgramEventManagerHelper"/>
+    <bean class="com.cannontech.dr.itron.service.impl.ProgramManagerHelper"/>
+    <bean class="com.cannontech.dr.itron.service.impl.ServicePointManagerHelper"/>
+    <bean class="com.cannontech.dr.itron.service.impl.DeviceManagerHelper"/>
 </beans>

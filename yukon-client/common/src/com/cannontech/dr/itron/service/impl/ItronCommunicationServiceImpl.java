@@ -1,17 +1,20 @@
 package com.cannontech.dr.itron.service.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPConstants;
 
+import org.apache.commons.compress.utils.Sets;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -20,7 +23,9 @@ import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.context.MessageContext;
+import org.springframework.ws.soap.SoapMessage;
 import org.springframework.ws.soap.SoapMessageFactory;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.context.TransportContext;
 import org.springframework.ws.transport.context.TransportContextHolder;
@@ -78,10 +83,13 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Autowired private DeviceDao deviceDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private GlobalSettingDao settingDao;
+    @Autowired private List<SoapFaultParser> soapFaultParsers;
+    
+    private static final Set<String> faultCodesToIgnore = Sets.newHashSet("UtilServicePointID.Exists");
 
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
 
-    private enum Manager {
+    public enum Manager {
         DEVICE("DeviceManagerPort", "com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8"),
         PROGRAM("ProgramManagerPort", "com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1"),
         PROGRAM_EVENT("ProgramEventManagerPort", "com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6"),
@@ -89,10 +97,22 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         
         private WebServiceTemplate template;
         private String port;
+        private Jaxb2Marshaller marshaller;
         
         Manager(String port, String path){
             this.port = port;
-            this.template = createTemplate(path);
+            marshaller = new Jaxb2Marshaller();
+            marshaller.setContextPath(path);
+            try {
+                marshaller.afterPropertiesSet();
+                MessageFactory saajFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
+                SoapMessageFactory factory = new SaajSoapMessageFactory(saajFactory);
+                template = new WebServiceTemplate(factory);
+                template.setMarshaller(marshaller);
+                template.setUnmarshaller(marshaller);
+            } catch(Exception e) {
+                log.error("Unable to create template or marshaller", e);
+            }
         }
         public WebServiceTemplate getTemplate(GlobalSettingDao settingDao) {
             String userName = settingDao.getString(GlobalSettingType.ITRON_HCM_USERNAME);
@@ -101,13 +121,18 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             template.setInterceptors(interceptors);
             return template;
         }
+        
+        public Jaxb2Marshaller getMarshaller() {
+            return marshaller;
+        }
+        
         public String getUrl(GlobalSettingDao settingDao) {
             String url = settingDao.getString(GlobalSettingType.ITRON_HCM_API_URL);
             return url + port;
-        }  
+        }
     }
 
-    public static class ItronCommunicationInterceptor implements ClientInterceptor {
+   private static class ItronCommunicationInterceptor implements ClientInterceptor {
         private String username;
         private String password;
 
@@ -122,7 +147,17 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
 
         @Override
         public boolean handleFault(MessageContext arg0) throws WebServiceClientException {
-            return false;
+            //logs soap fault
+            SoapMessage message = (SoapMessage) arg0.getResponse();
+            ByteArrayOutputStream out = new ByteArrayOutputStream();  
+            try {
+                message.writeTo(out);
+                String msg = out.toString("UTF-8");
+                log.debug(msg);
+            } catch (Exception e) {
+                log.debug("Failed to parse soap fault", e);
+            }  
+            return true;
         }
 
         @Override
@@ -148,10 +183,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         String url = Manager.DEVICE.getUrl(settingDao);
         AddHANDeviceRequest request = null;
         if (account != null) {
-            // TODO handle itron error if account already exist implementation pending simulator
             log.debug("ITRON-addDevice url:{} account:{} mac address:{}.", url, account.getAccountNumber(),
                 hardware.getMacAddress());
-            // check if we haven't created account before
             addServicePoint(account);
             request = DeviceManagerHelper.buildAddRequestWithServicePoint(hardware, account);
         } else {
@@ -168,15 +201,11 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             if (!response.getErrors().isEmpty()) {
                 throw new ItronAddDeviceException(response);
             }
-        } catch (ItronAddDeviceException e) {
-            log.error(e);
-            throw e;
         } catch (Exception e) {
-            log.error("Communication error:" + XmlUtils.getPrettyXml(response), e);
-            throw new ItronCommunicationException("A Communication error has occurred trying to connect to Itron.", e);
+            handleException(e, Manager.DEVICE);
         }
     }
-
+      
     @Transactional
     @Override
     public void removeDeviceFromServicePoint(String macAddress) {
@@ -225,8 +254,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug("ITRON-optOut url:{} mac address:{} itron group id:{} result:{}.", url, macAddress, itronGroupId, "success");
             log.debug(XmlUtils.getPrettyXml(response));
         } catch (Exception e) {
-            log.error("Communication error:" + XmlUtils.getPrettyXml(response), e);
-            throw new ItronCommunicationException("Communication error:", e);
+            handleException(e, Manager.PROGRAM_EVENT);
         }
         Map<Integer, LiteYukonPAObject> groups = new HashMap<>();
         groups.put(yukonGroupId, getGroup(yukonGroupId));
@@ -330,8 +358,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug("ITRON-sendEnrollmentRequest url:{} account number:{} result:{}.", url, account.getAccountNumber(),
                 "success");
         } catch (Exception e) {
-            log.error("Communication error:", e);
-            throw new ItronCommunicationException("Communication error:", e);
+            handleException(e, Manager.PROGRAM);
         }
     }
 
@@ -378,8 +405,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             itronEventLogService.addProgram(response.getProgramName(), response.getProgramID());
             return response.getProgramID();
         } catch (Exception e) {
-            log.error("Communication error:", e);
-            throw new ItronCommunicationException("Communication error:", e);
+            handleException(e, Manager.PROGRAM);
+            return 0;
         }
     }
     
@@ -407,13 +434,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             if (!response.getValue().getErrors().isEmpty()) {
                 throw new ItronAddEditGroupException(response.getValue());
             }
-        } catch (ItronAddEditGroupException e) {
-            log.error(e);
-            throw e;
         } catch (Exception e) {
-            log.error("Communication error:" + XmlUtils.getPrettyXml(response), e);
-            throw new ItronCommunicationException(
-                "Communication error:" + XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())), e);
+            handleException(e, Manager.DEVICE);
         }
     }
     
@@ -439,12 +461,9 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 throw new ItronAddEditGroupException(response.getValue());
             }
             return response.getValue().getGroupID();
-        } catch (ItronAddEditGroupException e) {
-            log.error(e);
-            throw e;
         } catch (Exception e) {
-            log.error("Communication error:" + XmlUtils.getPrettyXml(response), e);
-            throw new ItronCommunicationException("Communication error:" + XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())), e);
+            handleException(e, Manager.DEVICE);
+            return 0;
         }
     }
     
@@ -473,12 +492,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             if (!response.getErrors().isEmpty()) {
                 throw new ItronEditDeviceException(response);
             }
-        } catch (ItronEditDeviceException e) {
-            log.error(e);
-            throw e;
         } catch (Exception e) {
-            log.error("Communication error:" + XmlUtils.getPrettyXml(response), e);
-            throw new ItronCommunicationException("Communication error:" + XmlUtils.getPrettyXml(response), e);
+            handleException(e, Manager.DEVICE);
         }
     }
     
@@ -492,7 +507,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
          */
         String url = Manager.SERVICE_POINT.getUrl(settingDao);
 
-        AddServicePointRequest request = ServicePointHelper.buildAddRequest(account);
+        AddServicePointRequest request = ServicePointManagerHelper.buildAddRequest(account);
         log.debug("ITRON-addServicePoint url:{} account number:{}.", url, account.getAccountNumber());
         log.debug(XmlUtils.getPrettyXml(request));
         try {
@@ -503,8 +518,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug(XmlUtils.getPrettyXml(response));
             log.debug("ITRON-addServicePoint url:{} account number:{} result:{}.", url, account.getAccountNumber());
         } catch (Exception e) {
-            log.error("Communication error:", e);
-            throw new ItronCommunicationException("Communication error:", e);
+            handleException(e, Manager.SERVICE_POINT);
         }
     }
     
@@ -537,26 +551,33 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 .distinct()
                 .collect(Collectors.toMap(g -> g.getPaoIdentifier().getPaoId(), g -> g));
         return groups;
-    }
+    }   
     
     /**
-     * Creates a template
+     * Handles exceptions
+     * 
+     * If this is Communication exception - re-throws exception
+     * If this is a Soap Fault
+     *   Finds a parser
+     *   Parses exception
+     *   If it only contains the codes that we are ignoring, ignores exception
+     *   Otherwise throws an Communication exception with the code and description of the first not ignored error it found
+     *   The full Fault is logged in WS log if debug is turned on
+     *  If this is an unknown exception, creates and throws Communication exception
      */
-    private static WebServiceTemplate createTemplate(String path) {
-        try {
-            Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-            marshaller.setContextPath(path);
-            marshaller.afterPropertiesSet();
-            MessageFactory saajFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
-            SoapMessageFactory factory = new SaajSoapMessageFactory(saajFactory);
-    
-            WebServiceTemplate template = new WebServiceTemplate(factory);
-            template.setMarshaller(marshaller);
-            template.setUnmarshaller(marshaller);
-            return template;
-        } catch(Exception e) {
-            log.error("Unable to initialize template for path " + path, e);
-            return null;
+    private void handleException(Exception e, Manager manager) throws ItronCommunicationException{
+        if (e instanceof ItronCommunicationException) {
+            log.error(e);
+            throw (ItronCommunicationException) e;
+        }
+        if (e instanceof SoapFaultClientException) {
+            soapFaultParsers.stream()
+                .filter(parser -> parser.isSupported(manager))
+                .findFirst().get()
+                .handleSoapFault((SoapFaultClientException) e, faultCodesToIgnore, log);
+        } else {
+            log.error("Communication error:", e);
+            throw new ItronCommunicationException("Communication error:", e);
         }
     }
 }
