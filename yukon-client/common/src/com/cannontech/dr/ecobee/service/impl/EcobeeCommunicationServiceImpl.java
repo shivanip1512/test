@@ -96,7 +96,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     
     private static final Logger log = YukonLogManager.getLogger(EcobeeCommunicationServiceImpl.class);
 
-    private static final int MINUTES_TO_WAIT_TO_START_CALCULATION = 5;
+    private static final int MINUTES_TO_WAIT_TO_START_POLLING = 5;
 
     @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
     @Autowired private @Qualifier("ecobee") RestOperations restTemplate;
@@ -492,7 +492,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         RuntimeReportJobResponse response =
             queryEcobee(url, requestEntity, EcobeeQueryType.DATA_COLLECTION, RuntimeReportJobResponse.class);
 
-        log.debug("Runtime report job has been created. JobId: " + response.getJobId());
+        log.info("Runtime report job has been created. JobId: " + response.getJobId());
 
         return response;
     }
@@ -562,7 +562,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                 completionFuture.completeExceptionally(new EcobeeCommunicationException("Recieved error while polling for runtime report job."));
             }
          // provide 2 min delay to check the status of Job
-        }, 2, MINUTES_TO_WAIT_TO_START_CALCULATION, TimeUnit.MINUTES); 
+        }, 2, MINUTES_TO_WAIT_TO_START_POLLING, TimeUnit.MINUTES); 
 
         completionFuture.whenComplete((result, thrown) -> {
             checkFuture.cancel(true);
