@@ -6762,7 +6762,9 @@ headers.each
 		}
 	}
 }
-</con:onRequestScript><con:mockOperation name="addServicePoint" id="4fe206dd-95b0-4b6f-bf2c-f39143729a4b" interface="ServicePointManagerSoapBinding" operation="addServicePoint"><con:settings/><con:defaultResponse>Mock Success Response</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Mock Success Response" id="48115aff-0ec9-49ee-b00b-7d62965019cc" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
+</con:onRequestScript><con:mockOperation name="addServicePoint" id="4fe206dd-95b0-4b6f-bf2c-f39143729a4b" interface="ServicePointManagerSoapBinding" operation="addServicePoint"><con:settings/><con:defaultResponse>Mock Success Response</con:defaultResponse><con:dispatchStyle>SCRIPT</con:dispatchStyle><con:dispatchPath>return "Mock Success Response";
+//return "Mock Failure Response";
+//return "Mock SoapFault Response";</con:dispatchPath><con:response name="Mock Success Response" id="48115aff-0ec9-49ee-b00b-7d62965019cc" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
 //We must declare the namespace alias we will use in the xpath below.
 //If we don't do this, the namespace aliases in the xpath must exactly match those in the request
 holder.declareNamespace('soap-env',"http://schemas.xmlsoap.org/soap/envelope/")
@@ -6813,7 +6815,9 @@ requestContext.utilServicePointId = holder["/soap-env:Envelope/soap-env:Body/itr
       </SOAP-ENV:Fault>
    </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
-]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/addServicePointResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="editServicePoint" id="6f5b900b-c668-43f6-81b7-df24b2acc379" interface="ServicePointManagerSoapBinding" operation="editServicePoint"><con:settings/><con:defaultResponse>Mock Success Response</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Mock Success Response" id="6fb26844-6360-4fb7-8140-bcb630c87ea7" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
+]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.3:ServicePointManager/ServicePointManagerPortType/addServicePointResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="editServicePoint" id="6f5b900b-c668-43f6-81b7-df24b2acc379" interface="ServicePointManagerSoapBinding" operation="editServicePoint"><con:settings/><con:defaultResponse>Mock Success Response</con:defaultResponse><con:dispatchStyle>SCRIPT</con:dispatchStyle><con:dispatchPath>return "Mock Success Response";
+//return "Mock Failure Response";
+//return "Mock SoapFault Response";</con:dispatchPath><con:response name="Mock Success Response" id="6fb26844-6360-4fb7-8140-bcb630c87ea7" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
 //We must declare the namespace alias we will use in the xpath below.
 //If we don't do this, the namespace aliases in the xpath must exactly match those in the request
 holder.declareNamespace('soap-env',"http://schemas.xmlsoap.org/soap/envelope/")
