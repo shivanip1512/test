@@ -137,6 +137,14 @@ public class ItronPeriodicDataCollectionServiceImpl implements ItronPeriodicData
     private Duration getDataCollectionInterval() {
         int hours = settingsDao.getInteger(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_HOURS);
         
-        return Duration.ofHours(hours);
+        if (hours > 0) {
+            return Duration.ofHours(hours);
+        }
+        
+        if (hours < 0) {
+            log.warn("Invalid data collection interval: " + hours + ", setting to zero");
+        }
+
+        return Duration.ZERO;
     }
 }
