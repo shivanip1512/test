@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import org.apache.http.HttpHost;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.system.GlobalSettingType;
@@ -18,7 +17,6 @@ public class YukonHttpProxy {
     private static final Logger log = YukonLogManager.getLogger(YukonHttpProxy.class);
     private final String host;
     private final int port;
-    @Autowired private static GlobalSettingDao settingDao;
     
     /**
      * @param hostAndPort A String representing the proxy host and port in the format <code>host:port</code>.
@@ -94,11 +92,9 @@ public class YukonHttpProxy {
         System.setProperty("http.nonProxyHosts", hostAddresses);
         log.info("Adding " + hostAddresses + " to JVM proxy bypass list.");
     }
-    
-    
 
-    public static HttpURLConnection getHttpURLConnection(String url) throws Exception {
-        Optional<YukonHttpProxy> proxy = YukonHttpProxy.fromGlobalSetting(settingDao);
+    public static HttpURLConnection getHttpURLConnection(String url, GlobalSettingDao globalSettingDao) throws Exception {
+        Optional<YukonHttpProxy> proxy = YukonHttpProxy.fromGlobalSetting(globalSettingDao);
         HttpURLConnection urlConnection = null;
         try {
             URL connectionUrl = new URL(url);
