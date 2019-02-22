@@ -240,7 +240,7 @@ public class ScheduledDataImportController {
     public String viewHistory(ModelMap model, @PathVariable int jobGroupId, YukonUserContext userContext,
             @DefaultItemsPerPage(10) PagingParameters paging, @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate,
-            @DefaultSort(dir = Direction.desc, sort = "fileName") SortingParameters sorting)
+            @DefaultSort(dir = Direction.desc, sort = "dateTime") SortingParameters sorting)
             throws ServletException, ParseException {
 
         Date to;
@@ -289,7 +289,7 @@ public class ScheduledDataImportController {
             @RequestParam(required = true) Integer entryId, @RequestParam(required = true) Date startDate,
             @RequestParam(required = true) Date endDate, @RequestParam(required = true) Boolean isSuccessFile,
             @DefaultItemsPerPage(10) PagingParameters paging,
-            @DefaultSort(dir = Direction.desc, sort = "fileName") SortingParameters sorting,
+            @DefaultSort(dir = Direction.desc, sort = "dateTime") SortingParameters sorting,
             YukonUserContext userContext) {
         String baseKey = "yukon.web.modules.operator.fileImportHistory.";
         String fileName = null;

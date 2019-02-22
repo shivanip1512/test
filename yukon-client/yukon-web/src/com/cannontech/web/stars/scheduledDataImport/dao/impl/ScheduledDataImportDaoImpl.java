@@ -91,7 +91,7 @@ public class ScheduledDataImportDaoImpl implements ScheduledDataImportDao {
     private SqlStatementBuilder getOrderBy(SortBy sortBy, Direction direction) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         if (sortBy == null) {
-            sql.append(SortBy.FILENAME.getDbString()).append(direction);
+            sql.append(SortBy.DATETIME.getDbString()).append(direction);
         } else if (sortBy == SortBy.TOTAL) {
             sql.append(SortBy.SUCCESS.getDbString());
             sql.append("+");
