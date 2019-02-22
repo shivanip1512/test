@@ -556,7 +556,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                         }
                     }
                 } else {
-                    completionFuture.completeExceptionally(new EcobeeCommunicationException("No Reported job in response"));
+                    completionFuture.completeExceptionally(new EcobeeCommunicationException("No job reported in response"));
                 }
             } catch (Throwable e) {
                 log.error("Recieved error while polling for runtime report job " + e);
