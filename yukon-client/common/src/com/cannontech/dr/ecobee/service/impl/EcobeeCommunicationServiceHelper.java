@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,7 +11,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,23 +23,19 @@ import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.csv.CSVReader;
 import com.google.common.collect.Iterables;
 
 public class EcobeeCommunicationServiceHelper {
     
     private static final Logger log = YukonLogManager.getLogger(EcobeeCommunicationServiceHelper.class);
-    @Autowired private GlobalSettingDao settingDao;
 
     List<EcobeeDeviceReadings> getEcobeeDeviceReadings(List<File> csvFiles) {
         List<EcobeeDeviceReadings> ecobeeDeviceReadings = new ArrayList<>();
@@ -137,26 +130,7 @@ public class EcobeeCommunicationServiceHelper {
         }
         return headerMap;
     }
-    
 
-    public HttpURLConnection getHttpURLConnection(String url) throws Exception {
-        Optional<YukonHttpProxy> proxy = YukonHttpProxy.fromGlobalSetting(settingDao);
-        HttpURLConnection urlConnection = null;
-        try {
-            URL connectionUrl = new URL(url);
-            if (proxy.isPresent()) {
-                urlConnection = (HttpURLConnection) connectionUrl.openConnection(proxy.get().getJavaHttpProxy());
-            } else {
-                urlConnection = (HttpURLConnection) connectionUrl.openConnection();
-            }
-            urlConnection.connect();
-        } catch (Exception e) {
-            log.error("Unable to connect with proxy server or URL is not correct", e);
-            throw new Exception("Unable to connect with proxy server or URL is not correct");
-        }
-        return urlConnection;
-    }
-    
     public void logMissingSerialNumber(List<EcobeeDeviceReadings> deviceReadings, Collection<String> selectionMatch) {
 
         if (CollectionUtils.isNotEmpty(deviceReadings)) {

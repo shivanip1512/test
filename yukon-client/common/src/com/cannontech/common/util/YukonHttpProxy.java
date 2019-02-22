@@ -1,11 +1,14 @@
 package com.cannontech.common.util;
 
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.URL;
 import java.util.Optional;
 
 import org.apache.http.HttpHost;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.system.GlobalSettingType;
@@ -15,6 +18,7 @@ public class YukonHttpProxy {
     private static final Logger log = YukonLogManager.getLogger(YukonHttpProxy.class);
     private final String host;
     private final int port;
+    @Autowired private static GlobalSettingDao settingDao;
     
     /**
      * @param hostAndPort A String representing the proxy host and port in the format <code>host:port</code>.
@@ -90,5 +94,26 @@ public class YukonHttpProxy {
         System.setProperty("http.nonProxyHosts", hostAddresses);
         log.info("Adding " + hostAddresses + " to JVM proxy bypass list.");
     }
+    
+    
+
+    public static HttpURLConnection getHttpURLConnection(String url) throws Exception {
+        Optional<YukonHttpProxy> proxy = YukonHttpProxy.fromGlobalSetting(settingDao);
+        HttpURLConnection urlConnection = null;
+        try {
+            URL connectionUrl = new URL(url);
+            if (proxy.isPresent()) {
+                urlConnection = (HttpURLConnection) connectionUrl.openConnection(proxy.get().getJavaHttpProxy());
+            } else {
+                urlConnection = (HttpURLConnection) connectionUrl.openConnection();
+            }
+            urlConnection.connect();
+        } catch (Exception e) {
+            log.error("Unable to connect with proxy server or URL is not correct", e);
+            throw new Exception("Unable to connect with proxy server or URL is not correct");
+        }
+        return urlConnection;
+    }
+    
 
 }

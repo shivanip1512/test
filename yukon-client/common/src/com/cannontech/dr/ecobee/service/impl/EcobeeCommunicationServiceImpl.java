@@ -46,6 +46,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileUtil;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
@@ -506,7 +507,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         for (String url : dataUrls) {
             try {
                 String decryptedFileName = ecobeeCommunicationServiceHelper.getDecryptedFileName(url);
-                HttpURLConnection connection = ecobeeCommunicationServiceHelper.getHttpURLConnection(url);
+                HttpURLConnection connection = YukonHttpProxy.getHttpURLConnection(url);
 
                 try (BufferedInputStream gpgInputStream = new BufferedInputStream(connection.getInputStream())) {
                     byte byteArray[] = ecobeeSecurityService.decryptEcobeeFile(gpgInputStream);
