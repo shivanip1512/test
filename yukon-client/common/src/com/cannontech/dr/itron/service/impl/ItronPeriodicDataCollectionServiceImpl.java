@@ -99,21 +99,25 @@ public class ItronPeriodicDataCollectionServiceImpl implements ItronPeriodicData
     
     @Override
     public void collectData() {
-        paoDao.getExistingPaoTypes().stream()
-            .filter(PaoType::isItron)
-            .findAny()
-            .ifPresentOrElse(type -> { 
-                    log.info("Itron device type found (" + type + "), beginning data collection");
-                    
-                    var csv = requestRawDataCsv();
-                    
-                    var pointData = parseCsvToPointData(csv);
-                    
-                    sendPointData(pointData);
-                    
-                    log.info("Point data sent");
-                },
-                () -> log.info("No Itron device types found, skipping data collection"));
+        try {
+            paoDao.getExistingPaoTypes().stream()
+                .filter(PaoType::isItron)
+                .findAny()
+                .ifPresentOrElse(type -> { 
+                        log.info("Itron device type found (" + type + "), beginning data collection");
+                        
+                        var csv = requestRawDataCsv();
+                        
+                        var pointData = parseCsvToPointData(csv);
+                        
+                        sendPointData(pointData);
+                        
+                        log.info("Point data sent");
+                    },
+                    () -> log.info("No Itron device types found, skipping data collection"));
+        } catch (Exception e) {
+            log.error("Exception while collecting data", e);
+        }
     }
 
     private Object requestRawDataCsv() {
