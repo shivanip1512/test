@@ -1,15 +1,26 @@
 package com.cannontech.dr.itron.service.impl;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.Set;
 
+import javax.xml.transform.Source;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
+import org.springframework.ws.soap.SoapFaultDetail;
+import org.springframework.ws.soap.SoapFaultDetailElement;
+import org.springframework.ws.soap.client.SoapFaultClientException;
+
+import com.cannontech.common.util.xml.XmlUtils;
+import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.ErrorFault;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AccountType;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServicePointRequest;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServicePointType;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.LocationType;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.LocationTypeEnumeration;
+import com.cannontech.dr.itron.service.impl.ItronCommunicationServiceImpl.Manager;
 import com.cannontech.stars.dr.account.model.AccountDto;
 
-public class ServicePointHelper {
+public class ServicePointManagerHelper implements SoapFaultParser {
     /*
      * <urn:AddServicePointRequest>
      *   <urn:ServicePoint>
@@ -116,4 +127,23 @@ public class ServicePointHelper {
         request.setServicePoint(servicePoint);
         return request;
     }
+   
+   @Override
+   public void handleSoapFault(SoapFaultClientException e, Set<String> faultCodesToIgnore, Logger log) {
+       SoapFaultDetail soapFaultDetail = e.getSoapFault().getFaultDetail();
+       soapFaultDetail.getDetailEntries().forEachRemaining(detail -> {
+           SoapFaultDetailElement detailElementChild =
+               (SoapFaultDetailElement) soapFaultDetail.getDetailEntries().next();
+           Source detailSource = detailElementChild.getSource();
+           ErrorFault fault = (ErrorFault) Manager.PROGRAM.getMarshaller().unmarshal(detailSource);
+           log.debug(XmlUtils.getPrettyXml(fault));
+           fault.getErrors().forEach(error -> checkIfErrorShouldBeIgnored(error.getErrorCode(),
+               error.getErrorMessage(), faultCodesToIgnore, log));
+       });
+   }
+
+   @Override
+   public boolean isSupported(Manager manager) {
+       return Manager.PROGRAM == manager;
+   }
 }
