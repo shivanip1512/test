@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.util.ApplicationId;
+import com.cannontech.common.util.jmx.JmxHelper;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
@@ -96,7 +98,7 @@ public class YsmJmxQueryService {
             if (serverBrokerConnection != null) {
                 hostUri = StringUtils.substringBetween(serverBrokerConnection, "//", ":");
             }
-            String messageBrokerJMXConnectionUrl = "service:jmx:rmi:///jndi/rmi://" + hostUri + ":1097/jmxrmi";
+            String messageBrokerJMXConnectionUrl = buildJmxConnectionUrl(hostUri, ApplicationId.MESSAGE_BROKER);
             messageBrokerServiceUrl = new JMXServiceURL(messageBrokerJMXConnectionUrl);
             messageBrokerJmxConnector = JMXConnectorFactory.connect(messageBrokerServiceUrl, null);
         } catch (IOException e) {
@@ -108,12 +110,16 @@ public class YsmJmxQueryService {
             if (clientBrokerConnection != null) {
                 hostUri = StringUtils.substringBetween(clientBrokerConnection, "//", ":");
             }
-            String serviceManagerJMXConnectionUrl = "service:jmx:rmi:///jndi/rmi://" + hostUri + ":1093/jmxrmi";
+            String serviceManagerJMXConnectionUrl = buildJmxConnectionUrl(hostUri, ApplicationId.SERVICE_MANAGER);
             serviceManagerServiceUrl = new JMXServiceURL(serviceManagerJMXConnectionUrl);
             serviceManagerJmxConnector = JMXConnectorFactory.connect(serviceManagerServiceUrl, null);
         } catch (IOException e) {
             log.error("Could not init jmx connection for Service Manager.");
         }
+    }
+    
+    private String buildJmxConnectionUrl(String hostUri, ApplicationId application) {
+        return "service:jmx:rmi:///jndi/rmi://" + hostUri + ":" + JmxHelper.getApplicationJmxPort(application) + "/jmxrmi";
     }
 
 }
