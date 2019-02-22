@@ -408,7 +408,7 @@
         </exec>   
 
         <!-- Now put these PDB files into the Symbol Store -->
-        <property name="symbol_server" value="\\localhost\SYMBOLS" />
+        <property name="symbol_server" value="p:\YukonSWBuild\SYMBOLS" />
         <exec failonerror="true" dir="yukon-build/symbolserver/" executable="cmd.exe">
         <arg line='/c symstore.exe add /r /f ${basedir}\yukon-server\*.* /s ${symbol_server} /t "Yukon Server" /v "${yukon.build.details}"'/>
         </exec>   

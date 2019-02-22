@@ -206,7 +206,9 @@ pipeline {
 							quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
 							
 							if (params.RELEASE_MODE) {
+                                 bat 'net use p: \\\\pspl0003.eaton.ad.etn.com\\Public /user:eaton\\psplsoftwarebuild 13aq4xHAB'
 								 bat './yukon-build/go.bat init clean svn-info-build symstore build-dist'
+                                 bat 'net use p: /delete'
 							} else {
 								 bat './yukon-build/go.bat clean build-dist-pdb'
 							}
