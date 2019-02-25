@@ -42,6 +42,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -278,8 +279,8 @@ public class InventoryController {
             try {
                 int inventoryId = hardwareModelHelper.create(user, hardware, result, session);
                 model.addAttribute("inventoryId", inventoryId);
-            } catch (RuntimeException e) {
-                flash.setError(new YukonMessageSourceResolvable(key + "error.createDeviceFailed", e.getMessage()));
+            } catch (ItronCommunicationException e) {
+                flash.setError(e.getItronMessage());
                 return returnToCreateWithErrors(model, hardware, userContext, flash, result);
             }
 
@@ -375,8 +376,12 @@ public class InventoryController {
         model.addAttribute("displayName", hardware.getDisplayName());
 
         // Add errors to flash scope
-        List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
-        flash.setMessage(messages, FlashScopeMessageType.ERROR);
+        if (result != null) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
+            if (!messages.isEmpty()) {
+                flash.setMessage(messages, FlashScopeMessageType.ERROR);
+            }
+        }
 
         return "operator/inventory/inventory.jsp";
     }
@@ -388,15 +393,20 @@ public class InventoryController {
     }
 
     @RequestMapping("delete")
-    public String delete(LiteYukonUser user, FlashScope flash, int inventoryId) 
+    public String delete(YukonUserContext userContext, FlashScope flash, int inventoryId, ModelMap model) 
             throws CommandCompletionException, SQLException {
 
         Hardware toDelete = hardwareUiService.getHardware(inventoryId);
-        hardwareEventLogService.hardwareDeletionAttempted(user, toDelete.getDisplayName(), EventSource.OPERATOR);
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
+        hardwareEventLogService.hardwareDeletionAttempted(userContext.getYukonUser(), toDelete.getDisplayName(), EventSource.OPERATOR);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 
-        hardwareService.deleteHardware(user, true, inventoryId);
-        flash.setConfirm(new YukonMessageSourceResolvable(key + "hardwareDeleted"));
+        try {
+            hardwareService.deleteHardware(userContext.getYukonUser(), true, inventoryId);
+            flash.setConfirm(new YukonMessageSourceResolvable(key + "hardwareDeleted"));
+        } catch (ItronCommunicationException e) {
+            flash.setError(e.getItronMessage());
+            return returnToEditWithErrors(userContext, model, flash, toDelete, null);
+        }
 
         return "redirect:home";
     }

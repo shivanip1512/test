@@ -27,6 +27,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
@@ -198,8 +199,8 @@ public class MeterProfileController {
             AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareCreated"));
             model.addAttribute("inventoryId", inventoryId);
-        } catch (RuntimeException e) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.error.createDeviceFailed", e.getMessage()));
+        } catch (ItronCommunicationException e) {
+            flash.setError(e.getItronMessage());
             return setupErrorView(model, fragment);
         }
 
