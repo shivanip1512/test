@@ -2,7 +2,6 @@ package com.cannontech.dr.honeywell.service.impl;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.InvalidKeyException;
@@ -64,7 +63,6 @@ import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class HoneywellCommunicationServiceImpl implements HoneywellCommunicationService {
