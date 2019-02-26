@@ -27,10 +27,10 @@ import com.cannontech.common.util.WebserverUrlResolver;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.support.YukonTaskBase;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.tools.email.EmailHtmlMessage;
 import com.cannontech.tools.email.EmailService;
 import com.google.common.io.Files;
+import com.opencsv.CSVWriter;
 
 /**
  * Abstract parent class of scheduled file exports. This class specifies

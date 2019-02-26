@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.cannontech.common.csvImport.ImportFileFormat;
 import com.cannontech.common.point.PointCalculation;
-import com.cannontech.tools.csv.CSVReader;
+import com.opencsv.CSVReader;
 
 public interface CalculationImportService {
 

@@ -16,7 +16,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.tools.csv.CSVReader;
+import com.opencsv.CSVReader;
 
 public class GpuffConfigurationLookup
 implements ConfigLookup, InitializingBean

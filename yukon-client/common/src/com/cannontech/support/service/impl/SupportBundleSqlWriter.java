@@ -14,8 +14,8 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.tools.zip.ZipWriter;
+import com.opencsv.CSVWriter;
 
 public abstract class SupportBundleSqlWriter extends AbstractSupportBundleWriter {
     private static final Logger log = YukonLogManager.getLogger(SupportBundleSqlWriter.class);

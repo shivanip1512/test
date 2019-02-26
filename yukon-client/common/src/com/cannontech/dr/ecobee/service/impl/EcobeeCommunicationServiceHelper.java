@@ -30,8 +30,8 @@ import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
-import com.cannontech.tools.csv.CSVReader;
 import com.google.common.collect.Iterables;
+import com.opencsv.CSVReader;
 
 public class EcobeeCommunicationServiceHelper {
     

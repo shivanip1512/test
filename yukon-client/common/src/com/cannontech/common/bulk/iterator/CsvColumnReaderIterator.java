@@ -2,7 +2,7 @@ package com.cannontech.common.bulk.iterator;
 
 import java.io.IOException;
 
-import com.cannontech.tools.csv.CSVReader;
+import com.opencsv.CSVReader;
 
 /**
  * Implementation of Iterator which iterates through an InputStream line by line.

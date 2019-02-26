@@ -31,7 +31,6 @@ import com.cannontech.common.util.FileUtil;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.cannontech.web.scheduledDataImport.ScheduledDataImportException;
@@ -41,6 +40,7 @@ import com.cannontech.web.scheduledDataImport.service.ScheduledImportService;
 import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
 import com.cannontech.web.stars.dr.operator.importAccounts.service.AccountImportService;
 import com.google.common.collect.Lists;
+import com.opencsv.CSVReader;
 
 public class AssetScheduledImportServiceImpl implements ScheduledImportService {
 

@@ -13,8 +13,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.web.util.WebFileUtils;
+import com.opencsv.CSVReader;
 
 public class WebFileUtilsTest {
     @Test

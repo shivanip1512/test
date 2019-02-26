@@ -37,9 +37,9 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.Device;
-import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Sets;
+import com.opencsv.CSVReader;
 
 public class DeviceFileUploadCollectionProducer implements DeviceCollectionProducer {
     private final Logger log = YukonLogManager.getLogger(DeviceFileUploadCollectionProducer.class);

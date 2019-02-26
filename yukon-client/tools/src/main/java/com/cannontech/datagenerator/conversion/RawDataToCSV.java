@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.tools.csv.CSVReader;
-import com.cannontech.tools.csv.CSVWriter;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 
 
 public class RawDataToCSV {

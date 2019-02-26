@@ -16,8 +16,8 @@ import org.joda.time.ReadableInstant;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileUtil;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.tools.zip.ZipWriter;
+import com.opencsv.CSVWriter;
 
 public class SupportBundleFileSystemToCsvWriter extends AbstractSupportBundleWriter {
     private static final Logger log =

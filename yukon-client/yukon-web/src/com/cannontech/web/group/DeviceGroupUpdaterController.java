@@ -50,13 +50,13 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.common.exception.FileImportException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.opencsv.CSVReader;
 
 @Controller
 @RequestMapping("/updater/*")

@@ -15,10 +15,10 @@ import com.cannontech.core.roleproperties.RolePropertyValue;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.tools.zip.ZipWriter;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import com.opencsv.CSVWriter;
 
 public class SupportBundleUserGroupRoleWriter extends AbstractSupportBundleWriter {
     private final static Logger log = YukonLogManager.getLogger(SupportBundleUserGroupRoleWriter.class);

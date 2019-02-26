@@ -56,13 +56,13 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.web.input.Input;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputSource;
 import com.cannontech.web.input.InputUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.opencsv.CSVReader;
 
 public abstract class BaseBulkService {
     

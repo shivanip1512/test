@@ -3,7 +3,7 @@ package com.cannontech.common.csvImport;
 import java.io.IOException;
 import java.util.List;
 
-import com.cannontech.tools.csv.CSVReader;
+import com.opencsv.CSVReader;
 
 public class ImportParser {
     private final ImportFileFormat format;

@@ -38,12 +38,12 @@ import com.cannontech.stars.energyCompany.MeteringType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.model.AssetReportDevice;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.operator.inventory.service.AssetReportService;
 import com.google.common.collect.Lists;
+import com.opencsv.CSVWriter;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)

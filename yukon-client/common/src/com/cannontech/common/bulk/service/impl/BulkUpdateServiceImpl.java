@@ -15,7 +15,7 @@ import com.cannontech.common.bulk.service.BulkUpdateService;
 import com.cannontech.common.bulk.service.ParsedBulkUpdateFileInfo;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.tools.csv.CSVReader;
+import com.opencsv.CSVReader;
 
 public class BulkUpdateServiceImpl extends BaseBulkService implements BulkUpdateService {
     

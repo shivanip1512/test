@@ -27,9 +27,9 @@ import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.exception.ImportFileFormatException;
 import com.cannontech.common.exception.NoImportFileException;
 import com.cannontech.common.util.FileUploadUtils;
-import com.cannontech.tools.csv.CSVReader;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.util.ServletUtil;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 
 public class WebFileUtils {
 

@@ -34,10 +34,10 @@ import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.util.MappingIterator;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.common.collection.CollectionProducer;
 import com.google.common.collect.Maps;
+import com.opencsv.CSVReader;
 
 public class FileUploadCollectionProducer implements CollectionProducer<InventoryCollectionType, InventoryCollection> {
     

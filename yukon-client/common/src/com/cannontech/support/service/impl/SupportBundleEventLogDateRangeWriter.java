@@ -14,8 +14,8 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.tools.zip.ZipWriter;
+import com.opencsv.CSVWriter;
 
 public class SupportBundleEventLogDateRangeWriter extends AbstractSupportBundleWriter {
     private final static String databaseZipDir = "Database";

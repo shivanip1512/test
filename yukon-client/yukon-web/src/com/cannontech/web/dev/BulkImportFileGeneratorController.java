@@ -31,12 +31,12 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.tools.zip.ZipWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
+import com.opencsv.CSVWriter;
 
 @Controller
 @RequestMapping("/bulkImportFileGenerator/*")

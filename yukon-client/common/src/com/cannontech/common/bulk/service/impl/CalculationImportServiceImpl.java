@@ -28,8 +28,8 @@ import com.cannontech.common.point.PointCalculation;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.tools.csv.CSVReader;
 import com.google.common.collect.Maps;
+import com.opencsv.CSVReader;
 
 public class CalculationImportServiceImpl implements CalculationImportService {
     @Autowired private PointDao pointDao;

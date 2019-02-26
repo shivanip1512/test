@@ -16,8 +16,8 @@ import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.report.ColumnLayoutData;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.ReportModelMetaInfo;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
+import com.opencsv.CSVWriter;
 
 public class SimpleReportOutputterImpl implements SimpleReportOutputter {
     private SimpleReportService simpleReportService;

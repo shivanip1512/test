@@ -42,14 +42,14 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.tools.csv.CSVReader;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.web.util.WebFileUtils.CSVDataWriter;
 import com.google.common.collect.Lists;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 
 @Controller
 @RequestMapping("/pointImport/*")

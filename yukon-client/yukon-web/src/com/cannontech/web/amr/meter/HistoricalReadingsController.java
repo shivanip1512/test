@@ -84,7 +84,6 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -96,6 +95,7 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.opencsv.CSVWriter;
 
 @Controller
 @RequestMapping("/historicalReadings/*")

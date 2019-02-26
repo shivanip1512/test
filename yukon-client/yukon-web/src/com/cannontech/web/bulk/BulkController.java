@@ -46,12 +46,12 @@ import com.cannontech.common.util.ReverseList;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.pao.PaoPopupHelper;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
+import com.opencsv.CSVReader;
 
 /**
  * Handles request directly off the /bulk/* url.

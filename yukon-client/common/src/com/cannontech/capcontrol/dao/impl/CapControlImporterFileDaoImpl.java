@@ -39,10 +39,10 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.tools.csv.CSVReader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.opencsv.CSVReader;
 
 public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao {
     @Autowired private PaoDefinitionDao paoDefinitionDao; 

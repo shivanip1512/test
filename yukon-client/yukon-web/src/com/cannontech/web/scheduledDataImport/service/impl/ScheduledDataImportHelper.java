@@ -20,9 +20,9 @@ import com.cannontech.common.util.FileUtil;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao;
 import com.google.common.collect.Multimap;
+import com.opencsv.CSVWriter;
 
 public class ScheduledDataImportHelper {
     

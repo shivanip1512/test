@@ -23,7 +23,7 @@ import com.cannontech.common.bulk.service.ParsedBulkImportFileInfo;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.tools.csv.CSVReader;
+import com.opencsv.CSVReader;
 
 public class BulkImportServiceImpl extends BaseBulkService implements BulkImportService {
     

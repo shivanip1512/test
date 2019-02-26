@@ -23,7 +23,7 @@ import com.cannontech.cbc.cyme.profile.CymeType.Season;
 import com.cannontech.cbc.cyme.profile.CymeType.TimeInterval;
 import com.cannontech.cbc.cyme.profile.CymeType.Unit;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.tools.csv.CSVReader;
+import com.opencsv.CSVReader;
 
 public class CymeLoadProfileReaderImpl implements CymeLoadProfileReader {
     
