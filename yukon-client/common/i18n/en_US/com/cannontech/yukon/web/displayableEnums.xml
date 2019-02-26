@@ -411,6 +411,8 @@
     <entry key="yukon.common.setting.SCHEDULED_REQUEST_MAX_RUN_HOURS.description">The maximum number of hours a scheduled request may run before automatically being cancelled.</entry>
     <entry key="yukon.common.setting.HONEYWELL_SERVER_URL">Honeywell API URL</entry>
     <entry key="yukon.common.setting.HONEYWELL_SERVER_URL.description">URL to connect to Honeywell service.</entry>
+    <entry key="yukon.common.setting.HONEYWELL_APPLICATIONID">Honeywell applicationId</entry>
+    <entry key="yukon.common.setting.HONEYWELL_APPLICATIONID.description">ApplicationId issued along with clientId from Honeywell service.</entry>
     <entry key="yukon.common.setting.HONEYWELL_CLIENTID">Honeywell clientId</entry>
     <entry key="yukon.common.setting.HONEYWELL_CLIENTID.description">ClientId to get access token from Honeywell service.</entry>
     <entry key="yukon.common.setting.HONEYWELL_SECRET">Honeywell secret</entry>
