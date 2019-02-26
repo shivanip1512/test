@@ -125,9 +125,9 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             int deviceId = getGatewayDetailsForMacId(macAddress, userId);
             var builder = new URIBuilder(endpoint);
             
-            builder.addParameter("userId", Integer.toString(deviceVendorUserId));
+            builder.addParameter("userId", userId);
             builder.addParameter("deviceId", Integer.toString(deviceId));
-            builder.addParameter("applicationId", Integer.toString(getApplicationId(userId)));
+            builder.addParameter("applicationId", getApplicationId());
             
             var uri = builder.build();
             String url = uri.toString();
@@ -439,44 +439,9 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         return deviceId;
     }
     
-    /**
-     * Workaround to retrieve the application ID from the ACL endpoint.
-     * TODO: After YUK-19535, we will require the user to configure application ID in GlobalSettings alongside client ID,
-     * and this method can just be <pre>return settingDao.getString(GlobalSettingType.HONEYWELL_APPLICATIONID);</pre>
-     * @param userId the Honeywell user ID
-     * @return The application ID
-     */
-    private int getApplicationId(String userId) {
-        log.debug("Getting Application ID for user ID - " + userId);
-        String url = getUrlBase() + registerDeviceOnACLUrlPart + "?userId=" + userId;
-        try {
-            HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.GET, null);
-
-            newheaders.add("UserId", userId);
-            HttpEntity<?> requestEntity = new HttpEntity<Object>(newheaders);
-            
-            HttpEntity<String> response =
-                restTemplate.exchange(new URI(url), HttpMethod.GET, requestEntity, String.class);
-
-            log.debug(response);
-            String responseString = response.getBody().toString();
-            ArrayList<Object> data = (ArrayList<Object>) JsonUtils.fromJson(responseString, ArrayList.class);
-            Map<String, Object> deviceRecord = (Map<String, Object>) Iterables.getFirst(data, null);
-            if (deviceRecord != null) {
-                return (Integer) deviceRecord.get("applicationId");
-            } else {
-                throw new HoneywellCommunicationException("No device records in ACL response:" + data);
-            }
-        } catch (IOException e) {
-            log.error("Error occurred deserializing JSON", e);
-            throw new HoneywellCommunicationException("Error occurred deserializing JSON", e);
-        } catch (RestClientException ex) {
-            log.error("Get application ID for Honeywell failed with message: \"" + ex.getMessage() + "\".");
-            throw new HoneywellCommunicationException("Unable to get application ID. Message: \"" + ex.getMessage() + "\".");
-        } catch (URISyntaxException ex) {
-            log.error("URI syntax error while creating " + url, ex);
-            throw new HoneywellCommunicationException("Unable to build endpoint to delete honeywell device", ex);
-        }
+    private String getApplicationId() {
+        return settingDao.getOptionalString(GlobalSettingType.HONEYWELL_APPLICATIONID)
+                .orElseThrow(()-> new HoneywellCommunicationException("Honeywell Application ID not entered in GlobalSettings"));
     }
     
     @Override
