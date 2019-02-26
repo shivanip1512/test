@@ -28,6 +28,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.event.LMHardwareEvent;
@@ -184,6 +185,8 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
             log.debug(command.getType() + " was sent");
         } catch (CommandCompletionException e) {
             log.error("Unable to send " + command.getType() + " command", e);
+            throw e;
+        } catch (ItronCommunicationException e) {
             throw e;
         } catch (Exception e2) {
             log.error("Unable to send " + command.getType() + " command", e2);

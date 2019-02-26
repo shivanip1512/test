@@ -47,6 +47,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.dao.ExpressComReportedAddressDao;
 import com.cannontech.dr.dao.LmReportedAddress;
 import com.cannontech.dr.dao.SepReportedAddressDao;
+import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
@@ -358,6 +359,8 @@ public class OperatorHardwareConfigController {
                                                  action + "Complete",
                                                  hardware.getDisplayName());
             flashScope.setConfirm(confirmationMessage);
+        } catch (ItronCommunicationException e) {
+          flashScope.setError(e.getItronMessage());  
         } catch (CommandCompletionException wce) {
             MessageSourceResolvable errorMessage = YukonMessageSourceResolvable.createDefaultWithoutCode(wce.getMessage());
             flashScope.setError(errorMessage);
@@ -393,6 +396,8 @@ public class OperatorHardwareConfigController {
             MessageSourceResolvable confirmationMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandSent");
             flashScope.setConfirm(confirmationMessage);
+        } catch (ItronCommunicationException e) {
+            flashScope.setError(e.getItronMessage());
         } catch (CommandCompletionException e) {
             MessageSourceResolvable errorMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandFailed", e.getMessage());
@@ -428,6 +433,8 @@ public class OperatorHardwareConfigController {
             MessageSourceResolvable confirmationMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandSent");
             flashScope.setConfirm(confirmationMessage);
+        } catch (ItronCommunicationException e) {
+            flashScope.setError(e.getItronMessage());
         } catch (CommandCompletionException e) {
             MessageSourceResolvable errorMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandFailed",

@@ -13,8 +13,6 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.dr.itron.service.ItronAddDeviceException;
-import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.account.model.AccountDto;
@@ -51,16 +49,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
         SimpleDevice pao = creationService.createDeviceByDeviceType(hardwareTypeToPaoType.get(hardware.getHardwareType()), hardware.getSerialNumber());
         inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), pao.getDeviceId());
         deviceDao.updateDeviceMacAddress(pao.getDeviceId(), hardware.getMacAddress());
-        try {
-            itronCommunicationService.addDevice(hardware, account);
-        } catch (ItronCommunicationException e) {
-            if (e instanceof ItronAddDeviceException) {
-                ItronAddDeviceException addException = (ItronAddDeviceException) e;
-                String errors = String.join(", ", addException.getResponse().getErrors());
-                throw new RuntimeException(errors);
-            }
-            throw new RuntimeException(e.getMessage());
-        }
+        itronCommunicationService.addDevice(hardware, account);
     }
 
     @Override

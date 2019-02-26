@@ -63,6 +63,7 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.assetavailability.service.impl.NoInventoryException;
+import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -467,8 +468,12 @@ public class OperatorHardwareController {
         model.addAttribute("displayName", hardware.getDisplayName());
 
         // Add errors to flash scope
-        List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-        flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        if (bindingResult != null) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            if (!messages.isEmpty()) {
+                flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            }
+        }
 
         return "operator/hardware/hardware.jsp";
     }
@@ -500,8 +505,8 @@ public class OperatorHardwareController {
                 AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
                 flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareCreated"));
                 model.addAttribute("inventoryId", inventoryId);
-            } catch (RuntimeException e) {
-                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.error.createDeviceFailed", e.getMessage()));
+            } catch (ItronCommunicationException e) {
+                flashScope.setError(e.getItronMessage());
                 return returnToCreateWithErrors(model, hardware, userContext, flashScope, accountInfoFragment, bindingResult);
             }
 
@@ -530,26 +535,33 @@ public class OperatorHardwareController {
     }
 
     @RequestMapping("delete")
-    public String delete(ModelMap model, LiteYukonUser user, FlashScope flashScope,
+    public String delete(ModelMap model, YukonUserContext userContext, FlashScope flashScope,
             AccountInfoFragment accountInfoFragment, int inventoryId, String deleteOption)
                     throws NotAuthorizedException, NotFoundException, CommandCompletionException, SQLException,
                     PersistenceException, WebClientException {
         Hardware hardwareToDelete = hardwareUiService.getHardware(inventoryId);
-        hardwareEventLogService.hardwareDeletionAttempted(user, hardwareToDelete.getDisplayName(), EventSource.OPERATOR);
+        hardwareEventLogService.hardwareDeletionAttempted(userContext.getYukonUser(), hardwareToDelete.getDisplayName(), EventSource.OPERATOR);
 
         hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), accountInfoFragment.getAccountId());
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 
         // Delete this hardware or just take it off the account and put in back in the warehouse
         boolean delete = deleteOption.equalsIgnoreCase("delete");
-        hardwareService.deleteHardware(user, delete, inventoryId);
-
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-        if (delete) {
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareDeleted"));
-        } else {
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareRemoved"));
+        
+        try {
+            hardwareService.deleteHardware(userContext.getYukonUser(), delete, inventoryId);
+            AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
+            if (delete) {
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareDeleted"));
+            } else {
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareRemoved"));
+            }
+        } catch (ItronCommunicationException e) {
+            flashScope.setError(e.getItronMessage());
+            model.addAttribute("hardware", hardwareToDelete);
+            return returnToEditWithErrors(userContext, model, accountInfoFragment, flashScope, hardwareToDelete, null);
         }
+        
         return "redirect:list";
     }
 
@@ -581,11 +593,15 @@ public class OperatorHardwareController {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         LiteInventoryBase liteInventoryBase = inventoryBaseDao.getByInventoryId(inventoryId);
 
-        hardwareUiService.addDeviceToAccount(liteInventoryBase, accountInfoFragment.getAccountId(), fromAccount,
-                energyCompany, user);
-
+        try {
+            hardwareUiService.addDeviceToAccount(liteInventoryBase, accountInfoFragment.getAccountId(), fromAccount,
+                    energyCompany, user);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareAdded"));
+        } catch (ItronCommunicationException e) {
+            flashScope.setError(e.getItronMessage());
+        }
+        
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareAdded"));
 
         return "redirect:list";
     }
@@ -641,18 +657,22 @@ public class OperatorHardwareController {
         }
 
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
-        int inventoryId = hardwareUiService.changeOutInventory(oldInventoryId, newInventoryId, user, isMeter);
+
+        try {
+            int inventoryId = hardwareUiService.changeOutInventory(oldInventoryId, newInventoryId, user, isMeter);
+            model.addAttribute("inventoryId", inventoryId);
+            MessageSourceResolvable message = new YukonMessageSourceResolvable(changeOutMessage);
+            flashScope.setMessage(message, messageType);
+        } catch (ItronCommunicationException e) {
+            flashScope.setError(e.getItronMessage());
+        }
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-
-        MessageSourceResolvable message = new YukonMessageSourceResolvable(changeOutMessage);
-        flashScope.setMessage(message, messageType);
 
         if (redirect.equalsIgnoreCase("list")) {
             return "redirect:list";
         }
 
-        model.addAttribute("inventoryId", inventoryId);
         return "redirect:view";
     }
 
