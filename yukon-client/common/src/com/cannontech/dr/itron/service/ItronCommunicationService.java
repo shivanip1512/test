@@ -1,5 +1,7 @@
 package com.cannontech.dr.itron.service;
 
+import org.joda.time.Instant;
+
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.stars.dr.account.model.AccountDto;
 
@@ -67,4 +69,15 @@ public interface ItronCommunicationService {
      * 5. Sends all mac addresses to itron for the group
      */
     void optIn(int accountId, int inventoryId);
+
+    /**
+     * Sends restore request to Itron
+     */
+    void sendRestore(int yukonGroupId);
+
+    /**
+     * Sends control request to Itron
+     */
+    void sendDREventForGroup(int yukonGroupId, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
+            Instant startTime);
 }

@@ -1,6 +1,7 @@
 package com.cannontech.dr.itron.dao;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.cannontech.core.dao.NotFoundException;
@@ -18,9 +19,9 @@ public interface ItronDao {
     int getItronProgramId(int yukonLmProgramId) throws NotFoundException;
     
     /**
-     * Add a mapping for an Itron group ID and a Yukon LM Group
+     * Adds mapping with Yukon LM Group and virtualRelayId
      */
-    void addGroupMapping(long itronGroupId, int yukonLmGroupId);
+    void addGroupMapping(int yukonLmGroupId, int virtualRelayId);
     
     /**
      * Add a mapping for an Itron program ID and a Yukon LM Program
@@ -36,4 +37,19 @@ public interface ItronDao {
      * Get all Itron group IDs mapped to the specified Yukon LM groups.
      */
     Map<Integer, Long> getItronGroupIds(Collection<Integer> lmGroupIds);
+
+    /**
+     * Returns virtual relay Id for a group
+     */
+    int getVirtualRelayId(int yukonLmGroupId) throws NotFoundException;
+
+    /**
+     * Updates group mapping with Itron group id
+     */
+    void updateGroupMapping(int yukonLmGroupId, long itronGroupId);
+
+    /**
+     * Returns pao ids of groups that do not have corresponding Itron group id
+     */
+    List<Integer> getLmGroupsWithoutItronGroup(Collection<Integer> lmGroupIds);
 }

@@ -17,7 +17,6 @@ import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServi
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServicePointType;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.LocationType;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.LocationTypeEnumeration;
-import com.cannontech.dr.itron.service.impl.ItronCommunicationServiceImpl.Manager;
 import com.cannontech.stars.dr.account.model.AccountDto;
 
 public class ServicePointManagerHelper implements SoapFaultParser {
@@ -135,7 +134,7 @@ public class ServicePointManagerHelper implements SoapFaultParser {
            SoapFaultDetailElement detailElementChild =
                (SoapFaultDetailElement) soapFaultDetail.getDetailEntries().next();
            Source detailSource = detailElementChild.getSource();
-           ErrorFault fault = (ErrorFault) Manager.PROGRAM.getMarshaller().unmarshal(detailSource);
+           ErrorFault fault = (ErrorFault) ItronEndpointManager.SERVICE_POINT.getMarshaller().unmarshal(detailSource);
            log.debug(XmlUtils.getPrettyXml(fault));
            fault.getErrors().forEach(error -> checkIfErrorShouldBeIgnored(error.getErrorCode(),
                error.getErrorMessage(), faultCodesToIgnore, log));
@@ -143,7 +142,7 @@ public class ServicePointManagerHelper implements SoapFaultParser {
    }
 
    @Override
-   public boolean isSupported(Manager manager) {
-       return Manager.PROGRAM == manager;
+   public boolean isSupported(ItronEndpointManager manager) {
+       return ItronEndpointManager.SERVICE_POINT == manager;
    }
 }

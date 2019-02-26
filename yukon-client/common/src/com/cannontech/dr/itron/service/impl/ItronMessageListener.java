@@ -48,6 +48,8 @@ public class ItronMessageListener {
                           ", Ramp In: " + rampIn + ", Ramp Out: " + rampOut + ",Duty Cycle Percent: " + dutyCyclePercent + 
                           ", Duty Cycle Period: " + dutyCyclePeriod + ", criticality: " + criticality);
                 
+                itronCommunicationService.sendDREventForGroup(groupId, dutyCyclePercent, dutyCyclePeriod, criticality,
+                    startTime);
                 controlHistoryService.sendControlHistoryShedMessage(groupId, startTimeUtc, ControlType.ITRON, null,
                     controlDurationSeconds, 0);
             } catch (JMSException e) {
@@ -74,9 +76,8 @@ public class ItronMessageListener {
                     return;
                 }
 
-//                if (result.isSuccess()) {
-//                    controlHistoryService.sendControlHistoryRestoreMessage(groupId, Instant.now());
-//                }
+                itronCommunicationService.sendRestore(groupId);
+                controlHistoryService.sendControlHistoryRestoreMessage(groupId, Instant.now());
             } catch (JMSException e) {
                 log.error("Error parsing Itron restore message from LM", e);
                 return;
