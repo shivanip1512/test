@@ -35,6 +35,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
@@ -370,11 +371,14 @@ public class OptOutController extends AbstractConsumerController {
                                                              EventSource.CONSUMER);
         }
 
-        helper.processOptOut(optOutBackingBean, userContext,
-                             customerAccount, surveyIdsByInventoryId);
+        try {
+            helper.processOptOut(optOutBackingBean, userContext, customerAccount, surveyIdsByInventoryId);
+            MessageSourceResolvable result = new YukonMessageSourceResolvable("yukon.dr.consumer.optoutresult.success");
+            model.addAttribute("result", result);
+        } catch (ItronCommunicationException e) {
+            model.addAttribute("result", e.getItronMessage());
+        }
 
-        MessageSourceResolvable result = new YukonMessageSourceResolvable("yukon.dr.consumer.optoutresult.success");
-        model.addAttribute("result", result);
         return "consumer/optout/optOutResult.jsp";
     }
 

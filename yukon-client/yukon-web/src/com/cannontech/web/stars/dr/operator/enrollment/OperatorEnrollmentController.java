@@ -24,12 +24,12 @@ import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -326,6 +326,8 @@ public class OperatorEnrollmentController {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName(), accessor.getMessage(e.getKey()));
             flashScope.setError(message);
+        } catch (ItronCommunicationException e) {
+            flashScope.setError(e.getItronMessage());
         }
 
     }

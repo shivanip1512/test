@@ -36,6 +36,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -351,9 +352,12 @@ public class OperatorOptOutController {
                                                    EventSource.OPERATOR);
         }
 
-        helper.processOptOut(optOutBackingBean, userContext,
-                             customerAccount, surveyIdsByInventoryId);
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.success"));
+        try {
+            helper.processOptOut(optOutBackingBean, userContext, customerAccount, surveyIdsByInventoryId);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.success"));
+        } catch (ItronCommunicationException e) {
+            flashScope.setError(e.getItronMessage());
+        }
         return "redirect:view";
     }
 

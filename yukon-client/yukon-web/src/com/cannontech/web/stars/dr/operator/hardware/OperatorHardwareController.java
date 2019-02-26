@@ -656,18 +656,22 @@ public class OperatorHardwareController {
         }
 
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
-        int inventoryId = hardwareUiService.changeOutInventory(oldInventoryId, newInventoryId, user, isMeter);
+
+        try {
+            int inventoryId = hardwareUiService.changeOutInventory(oldInventoryId, newInventoryId, user, isMeter);
+            model.addAttribute("inventoryId", inventoryId);
+            MessageSourceResolvable message = new YukonMessageSourceResolvable(changeOutMessage);
+            flashScope.setMessage(message, messageType);
+        } catch (ItronCommunicationException e) {
+            flashScope.setError(e.getItronMessage());
+        }
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-
-        MessageSourceResolvable message = new YukonMessageSourceResolvable(changeOutMessage);
-        flashScope.setMessage(message, messageType);
 
         if (redirect.equalsIgnoreCase("list")) {
             return "redirect:list";
         }
 
-        model.addAttribute("inventoryId", inventoryId);
         return "redirect:view";
     }
 
