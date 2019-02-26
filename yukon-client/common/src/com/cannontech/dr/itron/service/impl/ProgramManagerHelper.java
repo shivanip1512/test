@@ -14,7 +14,6 @@ import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.ErrorFault;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.ServicePointEnrollmentType;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.SetServicePointEnrollmentRequest;
-import com.cannontech.dr.itron.service.impl.ItronCommunicationServiceImpl.Manager;
 
 public class ProgramManagerHelper implements SoapFaultParser {
     
@@ -34,7 +33,7 @@ public class ProgramManagerHelper implements SoapFaultParser {
             SoapFaultDetailElement detailElementChild =
                 (SoapFaultDetailElement) soapFaultDetail.getDetailEntries().next();
             Source detailSource = detailElementChild.getSource();
-            ErrorFault fault = (ErrorFault) Manager.PROGRAM.getMarshaller().unmarshal(detailSource);
+            ErrorFault fault = (ErrorFault) ItronEndpointManager.PROGRAM.getMarshaller().unmarshal(detailSource);
             log.debug(XmlUtils.getPrettyXml(fault));
             fault.getErrors().forEach(error -> checkIfErrorShouldBeIgnored(error.getErrorCode(),
                 error.getErrorMessage(), faultCodesToIgnore, log));
@@ -42,7 +41,7 @@ public class ProgramManagerHelper implements SoapFaultParser {
     }
 
     @Override
-    public boolean isSupported(Manager manager) {
-        return Manager.PROGRAM == manager;
+    public boolean isSupported(ItronEndpointManager manager) {
+        return ItronEndpointManager.PROGRAM == manager;
     }
 }

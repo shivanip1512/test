@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.cannontech.dr.itron.service.ItronCommunicationException;
-import com.cannontech.dr.itron.service.impl.ItronCommunicationServiceImpl.Manager;
 
 interface SoapFaultParser {
    
@@ -25,7 +24,7 @@ interface SoapFaultParser {
     /**
      * Returns true if the manager can parse the fault
      */
-    boolean isSupported(Manager manager);
+    boolean isSupported(ItronEndpointManager manager);
     
     /**
      * Checks if error code is in faults to ignore list

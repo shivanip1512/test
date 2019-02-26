@@ -24,7 +24,6 @@ import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditPrimaryHAN
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ErrorFault;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.NullableString;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.StaticGroupMemberListType;
-import com.cannontech.dr.itron.service.impl.ItronCommunicationServiceImpl.Manager;
 import com.cannontech.stars.dr.account.model.AccountDto;
 
 public class DeviceManagerHelper implements SoapFaultParser {
@@ -156,7 +155,7 @@ public class DeviceManagerHelper implements SoapFaultParser {
             SoapFaultDetailElement detailElementChild =
                 (SoapFaultDetailElement) soapFaultDetail.getDetailEntries().next();
             Source detailSource = detailElementChild.getSource();
-            ErrorFault fault = (ErrorFault) Manager.DEVICE.getMarshaller().unmarshal(detailSource);
+            ErrorFault fault = (ErrorFault) ItronEndpointManager.DEVICE.getMarshaller().unmarshal(detailSource);
             log.debug(XmlUtils.getPrettyXml(fault));
             fault.getErrors().forEach(error -> checkIfErrorShouldBeIgnored(error.getErrorCode(),
                 error.getErrorMessage(), faultCodesToIgnore, log));
@@ -164,7 +163,7 @@ public class DeviceManagerHelper implements SoapFaultParser {
     }
 
     @Override
-    public boolean isSupported(Manager manager) {
-        return Manager.DEVICE == manager;
+    public boolean isSupported(ItronEndpointManager manager) {
+        return ItronEndpointManager.DEVICE == manager;
     }
 }

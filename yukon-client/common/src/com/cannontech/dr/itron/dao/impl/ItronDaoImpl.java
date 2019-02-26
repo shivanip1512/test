@@ -2,6 +2,7 @@ package com.cannontech.dr.itron.dao.impl;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,19 @@ public class ItronDaoImpl implements ItronDao {
             throw new NotFoundException("ItronProgramId with YukonProgramId: " + yukonLmProgramId + " was not found.");
         }
     }
+    
+    @Override
+    public int getVirtualRelayId(int yukonLmGroupId) throws NotFoundException {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT VirtualRelayId");
+        sql.append("FROM LMGroupItronMapping");
+        sql.append("WHERE YukonGroupId").eq(yukonLmGroupId);
+        try {
+            return jdbcTemplate.queryForInt(sql);
+        } catch (EmptyResultDataAccessException ex){
+            throw new NotFoundException("VirtualRelayId with YukonGroupId: " + yukonLmGroupId + " was not found.");
+        }
+    }
 
     @Override
     public void addProgramMapping(long itronProgramId, int yukonLmProgramId) {
@@ -54,14 +68,23 @@ public class ItronDaoImpl implements ItronDao {
     }
 
     @Override
-    public void addGroupMapping(long itronGroupId, int yukonLmGroupId) {
+    public void addGroupMapping(int yukonLmGroupId, int virtualRelayId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink params = sql.insertInto("LMGroupItronMapping");
         params.addValue("YukonGroupId", yukonLmGroupId);
-        params.addValue("ItronGroupId", itronGroupId);
+        params.addValue("VirtualRelayId", virtualRelayId);
         jdbcTemplate.update(sql);
     }
-
+    
+    @Override
+    public void updateGroupMapping(int yukonLmGroupId, long itronGroupId) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        SqlParameterSink params = updateSql.update("LMGroupItronMapping");
+        params.addValue("ItronGroupId", itronGroupId);
+        updateSql.append("WHERE YukonGroupId").eq(yukonLmGroupId);
+        jdbcTemplate.update(updateSql);
+    }
+    
     @Override
     public Map<Integer, Long> getItronProgramIds(Collection<Integer> lmProgramIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -87,5 +110,17 @@ public class ItronDaoImpl implements ItronDao {
             result.put(rs.getInt("YukonGroupId"), rs.getLong("ItronGroupId"));
         });
         return result;
+    }
+    
+    @Override
+    public List<Integer> getLmGroupsWithoutItronGroup(Collection<Integer> lmGroupIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT YukonGroupID");
+        sql.append("FROM LMGroupItronMapping");
+        sql.append("WHERE YukonGroupId").in(lmGroupIds);
+        sql.append("AND ItronGroupId IS NULL");
+        return jdbcTemplate.query(sql, (YukonResultSet rs) -> {
+            return rs.getInt("YukonGroupId");
+        });
     }
 }
