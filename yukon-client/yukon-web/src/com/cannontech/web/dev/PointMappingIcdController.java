@@ -1,6 +1,8 @@
 package com.cannontech.web.dev;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +11,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.JDOMException;
@@ -30,12 +35,19 @@ import com.cannontech.amr.rfn.service.pointmapping.icd.ElsterA3PointDefinition;
 import com.cannontech.amr.rfn.service.pointmapping.icd.PointMappingIcd;
 import com.cannontech.amr.rfn.service.pointmapping.icd.RfnPointMappingParser;
 import com.cannontech.amr.rfn.service.pointmapping.icd.SentinelPointDefinition;
+import com.cannontech.amr.rfn.service.pointmapping.icd.Units;
 import com.cannontech.amr.rfn.service.pointmapping.icd.WaterNodePointDefinition;
 import com.cannontech.amr.rfn.service.pointmapping.icd.YukonPointMappingIcdParser;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.dao.RfnPointMappingDao;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.point.UnitOfMeasure;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,6 +55,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.opencsv.CSVWriter;
 
 @Controller
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
@@ -50,6 +63,7 @@ public class PointMappingIcdController {
 
     @Value("classpath:yukonPointMappingIcd.yaml") private Resource inputFile;
     @Autowired private RfnPointMappingDao rfnPointMappingDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     static final Collector<CharSequence, ?, String> COMMA_NEWLINE = Collectors.joining(",\n"); 
     static final String COLON = ":";
@@ -86,7 +100,7 @@ public class PointMappingIcdController {
             
             ps.title = title;
             ps.id = StringUtils.uncapitalize(
-                        Arrays.stream(title.split("[ -]"))
+                        Arrays.stream(title.split("[ -+]"))
                             .map(StringUtils::lowerCase)
                             .map(StringUtils::capitalize)
                             .collect(Collectors.joining())) + "Points";
@@ -132,6 +146,67 @@ public class PointMappingIcdController {
         }
         public void setYukonPointMappingIcd(String yukonPointMappingIcd) {
             this.yukonPointMappingIcd = yukonPointMappingIcd;
+        }
+    }
+    
+    @RequestMapping("/rfn/icd/csv")
+    public String downloadCsv(HttpServletResponse response, FlashScope flashScope) throws JDOMException, IOException {
+        var parsedRpm = RfnPointMappingParser.getPaoTypePoints(rfnPointMappingDao.getPointMappingFile());
+        
+        Stream<String[]> rpmColumns =
+            parsedRpm.entrySet().stream()
+                .flatMap(paoEntry -> getPaoStream(paoEntry));
+        
+        try (OutputStream output = response.getOutputStream();
+             CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(output));) {
+            //set up the response
+            response.setContentType("text/csv");
+            response.setHeader("Content-Disposition", "attachment; filename=\"rfnPointMapping.csv\"");
+            //pull data from the file and push it to the browser
+            csvWriter.writeNext(new String[] { "Yukon Model", "ICD Model", "Yukon Point Name", "Yukon Attribute Name", "Yukon Unit", "Yukon Multiplier", "RFN Unit", "RFN Modifiers" });
+            csvWriter.writeAll(rpmColumns::iterator, true);
+        } catch(IOException e) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.support.fileExportHistory.ioError"));
+        }
+        
+        return null;
+    }
+
+    private Stream<String[]> getPaoStream(Entry<PaoType, Map<PointMapping, NameScale>> paoEntry) {
+        PaoType paoType = paoEntry.getKey();
+
+        return RfnManufacturerModel.getForType(paoType).stream()
+            .flatMap(rmm ->
+                paoEntry.getValue().entrySet().stream()
+                    .flatMap(e -> getColumns(paoType, rmm, e))
+                );
+    }
+
+    Stream<String[]> getColumns(PaoType paoType, RfnManufacturerModel rmm, Map.Entry<PointMapping, NameScale> e) {
+        try {
+            var name = e.getValue().getName();
+            var yukonMultiplier = e.getValue().getMultiplier();
+            var pd = e.getKey().getPointDefinition();
+            var icdUom = Optional.ofNullable(pd.getUnit());
+            var icdUomName = icdUom.map(Units::getCommonName).orElse("(none)");
+            var icdModifiers = pd.getModifiers();
+            var yukonUom = icdUom.map(Units::getYukonUom).map(UnitOfMeasure::getAbbreviation).orElse("(none)");
+            var point = paoDefinitionDao.getPointIdentifierByDefaultName(paoType, name);
+            var attributes = paoDefinitionDao.findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier.of(paoType, point));
+
+            return attributes.stream()
+                .map(attribute -> 
+                            new String[] { 
+                                    paoType.getDbString(), 
+                                    rmm.getModel() + " " + rmm.getManufacturer(), 
+                                    name, 
+                                    attribute.name(),
+                                    yukonUom, 
+                                    String.valueOf(yukonMultiplier), 
+                                    icdUomName, 
+                                    icdModifiers.toString() });
+        } catch (NotFoundException ex) {
+            return Stream.empty();
         }
     }
     

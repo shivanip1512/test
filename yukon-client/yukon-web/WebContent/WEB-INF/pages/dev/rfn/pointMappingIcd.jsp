@@ -1,11 +1,17 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="dev" page="rfnTest">
 
     <tags:sectionContainer title="Point Mapping ICD">
+        <div class="page-action-area">
+            <form:form method="GET" action="csv">
+                <cti:button label="Download as CSV" type="submit" />
+            </form:form>
+        </div>
         <h2>
             <a data-show-hide="#models">Toggle</a> Models
         </h2>
