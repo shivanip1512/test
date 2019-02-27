@@ -57,7 +57,7 @@ public:
 template <class Map>
 boost::optional<typename Map::mapped_type> mapFind( const Map &m, const typename Map::key_type &key )
 {
-    Map::const_iterator itr = m.find(key);
+    auto itr = m.find(key);
 
     if( itr == m.end() )
     {
@@ -70,7 +70,7 @@ boost::optional<typename Map::mapped_type> mapFind( const Map &m, const typename
 template <class Map, class PtrType=std::enable_if<std::is_pointer<Map::mapped_type>::value, Map::mapped_type>::type>
 PtrType mapFindPtr( const Map &m, const typename Map::key_type &key )
 {
-    Map::const_iterator itr = m.find(key);
+    auto itr = m.find(key);
 
     if( itr == m.end() )
     {
@@ -94,9 +94,9 @@ Value* mapFindPtr( const std::map<Key, std::unique_ptr<Value>>& m, const Key& ke
 }
 
 template <class Map>
-typename Map::mapped_type mapFindOrDefault( Map &m, const typename Map::key_type &key, const typename Map::mapped_type defaultValue )
+typename Map::mapped_type mapFindOrDefault( const Map &m, const typename Map::key_type &key, const typename Map::mapped_type defaultValue )
 {
-    Map::const_iterator itr = m.find(key);
+    auto itr = m.find(key);
 
     if( itr != m.end() )
     {
@@ -110,7 +110,7 @@ typename Map::mapped_type mapFindOrDefault( Map &m, const typename Map::key_type
 template<typename MappedType, class MapViewType, typename KeyType>
 boost::optional<MappedType> bimapFind( const MapViewType &mapView, KeyType key )
 {
-    MapViewType::const_iterator itr = mapView.find(key);
+    auto itr = mapView.find(key);
 
     if( itr == mapView.end() )
     {
@@ -123,7 +123,7 @@ boost::optional<MappedType> bimapFind( const MapViewType &mapView, KeyType key )
 template <class Map>
 boost::optional<typename Map::mapped_type &> mapFindRef( Map &m, const typename Map::key_type &key )
 {
-    Map::iterator itr = m.find(key);
+    auto itr = m.find(key);
 
     if( itr == m.end() )
     {
@@ -136,7 +136,7 @@ boost::optional<typename Map::mapped_type &> mapFindRef( Map &m, const typename 
 template <class Map>
 boost::optional<const typename Map::mapped_type &> mapFindRef( const Map &m, const typename Map::key_type &key )
 {
-    Map::const_iterator itr = m.find(key);
+    auto itr = m.find(key);
 
     if( itr == m.end() )
     {
@@ -147,9 +147,9 @@ boost::optional<const typename Map::mapped_type &> mapFindRef( const Map &m, con
 }
 
 template <class Cont, class UnaryPredicate>
-boost::optional<typename Cont::value_type> findIf(Cont& c, UnaryPredicate pred)
+boost::optional<typename Cont::value_type> findIf(const Cont& c, UnaryPredicate pred)
 {
-    Cont::const_iterator itr = std::find_if(c.begin(), c.end(), pred);
+    auto itr = std::find_if(c.begin(), c.end(), pred);
 
     if( itr == c.end() )
     {
@@ -162,7 +162,7 @@ boost::optional<typename Cont::value_type> findIf(Cont& c, UnaryPredicate pred)
 template <class Cont, class UnaryPredicate>
 boost::optional<typename Cont::reference> findIfRef(Cont& c, UnaryPredicate pred)
 {
-    Cont::iterator itr = std::find_if(c.begin(), c.end(), pred);
+    auto itr = std::find_if(c.begin(), c.end(), pred);
 
     if( itr == c.end() )
     {

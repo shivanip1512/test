@@ -334,7 +334,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, const cha
             {
                 high = *nextHighSerial.begin();
             }
-            trim_left(high, "-");
+            high = trim_left(high, "-");
 
             if( !low.empty() && !high.empty() )
             {
@@ -2167,7 +2167,7 @@ std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, std::string cmd
 
         //PIL likes to see ' around any device, group, etc
         cmd_line.insert(end_index, "'");
-        trim(cmd_line);
+        cmd_line = trim(cmd_line);
         cmd_line.append("'");
 
         size_t index;

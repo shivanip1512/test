@@ -176,29 +176,26 @@ inline void CtiToUpper( std::string& str)
     std::transform(str.begin(),str.end(),str.begin(),::toupper);
 }
 
-inline std::string trim_right ( std::string & source , std::string t = " ")
+[[nodiscard]] inline std::string trim_right ( std::string str , std::string t = " ")
 {
-    std::string str = source;
-    return source = str.erase ( str.find_last_not_of ( t ) + 1 ) ;
+    return str.erase ( str.find_last_not_of ( t ) + 1 ) ;
 }
 
-inline std::string trim_left ( std::string & source ,std::string t = " ")
+[[nodiscard]] inline std::string trim_left ( std::string str ,std::string t = " ")
 {
-    std::string str = source;
-    return source = str.erase ( 0 , source.find_first_not_of ( t ) ) ;
+    return str.erase ( 0 , str.find_first_not_of ( t ) ) ;
 }
 
-inline std::string trim ( std::string & source , std::string t = " ")
+[[nodiscard]] inline std::string trim ( std::string & str , std::string t = " ")
 {
-    std::string str = source;
-    return source = trim_left ( trim_right ( str , t ) , t ) ;
+    return trim_left ( trim_right ( str , t ) , t ) ;
 }
 
-inline std::string &in_place_trim(std::string &source, char trim_char = ' ')
+inline void in_place_trim(std::string &source, char trim_char = ' ')
 {
     //  clever - the "+ 1" turns string::npos into 0 if nothing is found
     source.erase(source.find_last_not_of(trim_char) + 1);
-    return source.erase(0, source.find_first_not_of(trim_char));
+    source.erase(0, source.find_first_not_of(trim_char));
 }
 
 inline bool ci_equal(char ch1, char ch2)
@@ -252,22 +249,22 @@ inline std::string char2string(char c)
 template <class Container>
 inline void delete_container( Container &C )
 {
-    for( Container::iterator itr = C.begin(); itr != C.end(); itr++)
+    for( auto& element : C )
     {
-        delete *itr;
-        *itr = NULL;
+        delete element;
+        element = nullptr;
     }
 }
 
 template <class Container, class Element, class Argument>
 void delete_container_if( Container &C, bool (*predicate)(const Element *, Argument), Argument arg)
 {
-    for( Container::iterator itr = C.begin(); itr != C.end(); itr++)
+    for( auto& element : C )
     {
-        if( predicate(*itr, arg) )
+        if( predicate(element, arg) )
         {
-            delete *itr;
-            *itr = NULL;
+            delete element;
+            element = nullptr;
         }
     }
 }
@@ -276,12 +273,12 @@ void delete_container_if( Container &C, bool (*predicate)(const Element *, Argum
 template <class AssocContainer>
 inline void delete_assoc_container( AssocContainer &AC )
 {
-    for( AssocContainer::iterator itr = AC.begin(); itr != AC.end(); itr++)
+    for( auto& [key, value] : AC )
     {
-        if( (*itr).second != NULL )
+        if( value != NULL )
         {
-            delete (*itr).second;
-            (*itr).second = NULL;
+            delete value;
+            value = nullptr;
         }
     }
 }
@@ -290,9 +287,9 @@ inline void delete_assoc_container( AssocContainer &AC )
 template <class T>
 inline bool list_contains( const std::list<T> &V, T x )
 {
-    for( std::list<T>::const_iterator itr = V.begin(); itr != V.end(); itr++ )
+    for( const auto& element : V )
     {
-        if( **itr == *x )
+        if( *element == *x )
         {
             return true;
         }
@@ -306,7 +303,7 @@ namespace Cti
     template <class Container>
     inline std::string join(const Container &V, std::string sep)
     {
-        return boost::algorithm::join(V | boost::adaptors::transformed(static_cast<std::string(*)(Container::value_type)>(std::to_string)), sep);
+        return boost::algorithm::join(V | boost::adaptors::transformed(static_cast<std::string(*)(typename Container::value_type)>(std::to_string)), sep);
     }
 
     template <>

@@ -163,7 +163,7 @@ CurrentControl CurrentControl::createCurrentControl(XA21LMMESS* lm_msg)
         {
             break;
         }
-        trim(trimmed_name);
+        trimmed_name = trim(trimmed_name);
 
         USHORT intended_state = ntohs(lm_msg->Message.MPC.Group[i].State) ;
         if(intended_state & MPCSHED)

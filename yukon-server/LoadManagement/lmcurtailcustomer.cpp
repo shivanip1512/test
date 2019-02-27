@@ -191,7 +191,7 @@ void CtiLMCurtailCustomer::restore(Cti::RowReader &rdr)
 
     rdr["requireack"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    trim(tempBoolString);
+    tempBoolString = trim(tempBoolString);
 
     setRequireAck(tempBoolString=="y"?TRUE:FALSE);
     setCurtailReferenceId(0);
