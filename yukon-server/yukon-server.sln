@@ -758,6 +758,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_base", "test_base\test
 		{32F5C6FC-FECA-1BAD-9037-A82200006032} = {32F5C6FC-FECA-1BAD-9037-A82200006032}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_libraries", "COMMON\test_libraries.vcxproj", "{E84A1D50-2FE1-49AE-BFBD-D78E6B4AD387}"
+	ProjectSection(ProjectDependencies) = postProject
+		{550FAB56-FECA-1BAD-FD9D-CFD842582452} = {550FAB56-FECA-1BAD-FD9D-CFD842582452}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -1374,6 +1379,14 @@ Global
 		{5FEEEAC3-24F6-4301-8E5A-8250CB6E7A87}.Release|Win32.Build.0 = Release|Win32
 		{5FEEEAC3-24F6-4301-8E5A-8250CB6E7A87}.Release|x64.ActiveCfg = Release|x64
 		{5FEEEAC3-24F6-4301-8E5A-8250CB6E7A87}.Release|x64.Build.0 = Release|x64
+		{E84A1D50-2FE1-49AE-BFBD-D78E6B4AD387}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E84A1D50-2FE1-49AE-BFBD-D78E6B4AD387}.Debug|Win32.Build.0 = Debug|Win32
+		{E84A1D50-2FE1-49AE-BFBD-D78E6B4AD387}.Debug|x64.ActiveCfg = Debug|x64
+		{E84A1D50-2FE1-49AE-BFBD-D78E6B4AD387}.Debug|x64.Build.0 = Debug|x64
+		{E84A1D50-2FE1-49AE-BFBD-D78E6B4AD387}.Release|Win32.ActiveCfg = Release|Win32
+		{E84A1D50-2FE1-49AE-BFBD-D78E6B4AD387}.Release|Win32.Build.0 = Release|Win32
+		{E84A1D50-2FE1-49AE-BFBD-D78E6B4AD387}.Release|x64.ActiveCfg = Release|x64
+		{E84A1D50-2FE1-49AE-BFBD-D78E6B4AD387}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

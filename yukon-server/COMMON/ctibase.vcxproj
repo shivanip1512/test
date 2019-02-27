@@ -462,6 +462,16 @@
     <ClCompile Include="resolvers.cpp">
     </ClCompile>
     <ClCompile Include="resource_helper.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeaderOutputFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="rtdb.cpp">
     </ClCompile>
@@ -481,7 +491,6 @@
     </ClCompile>
     <ClCompile Include="string_util.cpp">
     </ClCompile>
-    <ClCompile Include="ThirdPartyLibraries.cpp" />
     <ClCompile Include="thread.cpp">
     </ClCompile>
     <ClCompile Include="thread_monitor.cpp">

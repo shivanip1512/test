@@ -1,12 +1,10 @@
 #pragma once
 
-#include "dlldefs.h"
-
 #include <vector>
 
 namespace Cti {
 
-class IM_EX_CTIBASE ThirdPartyLibraries
+class ThirdPartyLibraries
 {
 public:
 
@@ -15,22 +13,19 @@ public:
         std::string project;
         std::string path;
         std::string version;
+        uint32_t fileCount;
+        uint64_t totalSize;
         std::string md5;
         std::string sha1;
     };
 
-    static void addLibrary(
-            std::string project,
-            std::string path,
-            std::string version,
-            std::string md5,
-            std::string sha1);
+    ThirdPartyLibraries();
 
-    static std::vector<Library> ThirdPartyLibraries::getLibraries();
+    std::vector<Library> getLibraries();
 
 private:
 
-    static std::vector<Library> _libraries;
+    std::vector<Library> _libraries;
 };
 
 }

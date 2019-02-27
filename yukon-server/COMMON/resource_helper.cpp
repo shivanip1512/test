@@ -1,8 +1,6 @@
-#include "precompiled.h"
-
 #include "resource_helper.h"
 #include "std_helper.h"
-#include "logger.h"
+#include "devicetypes.h"
 
 namespace Cti {
 
@@ -26,29 +24,33 @@ DataBuffer loadResourceFromLibrary( const int resourceId, const char * resourceT
                     {
                         DWORD errorCode = GetLastError();
 
-                        CTILOG_ERROR(dout, "Failed to size resource: " << resourceId << ", "  << resourceType << " in: " << libraryName
-                                << "  (error code: " << errorCode << ")");
+                        throw std::runtime_error((std::ostringstream() 
+                            << "Failed to size resource: " << resourceId << ", "  << resourceType << " in: " << libraryName
+                            << "  (error code: " << errorCode << ")").str());
                     }
                 }
                 else
                 {
-                    CTILOG_ERROR(dout, "Failed to lock resource: " << resourceId << ", "  << resourceType << " in: " << libraryName);
+                    throw std::runtime_error((std::ostringstream()
+                        << "Failed to lock resource: " << resourceId << ", "  << resourceType << " in: " << libraryName).str());
                 }
             }
             else
             {
                 DWORD errorCode = GetLastError();
 
-                CTILOG_ERROR(dout, "Failed to load resource: " << resourceId << ", "  << resourceType << " in: " << libraryName
-                        << "  (error code: " << errorCode << ")");
+                throw std::runtime_error((std::ostringstream()
+                    << "Failed to load resource: " << resourceId << ", "  << resourceType << " in: " << libraryName
+                        << "  (error code: " << errorCode << ")").str());
             }
         }
         else
         {
             DWORD errorCode = GetLastError();
 
-            CTILOG_ERROR(dout, "Failed to find resource: " << resourceId << ", "  << resourceType << " in: " << libraryName
-                    << "  (error code: " << errorCode << ")");
+            throw std::runtime_error((std::ostringstream()
+                << "Failed to find resource: " << resourceId << ", "  << resourceType << " in: " << libraryName
+                    << "  (error code: " << errorCode << ")").str());
 
         }
 
@@ -56,16 +58,18 @@ DataBuffer loadResourceFromLibrary( const int resourceId, const char * resourceT
         {
             DWORD errorCode = GetLastError();
 
-            CTILOG_ERROR(dout, "Failed to unload library: " << libraryName
-                    << "  (error code: " << errorCode << ")");
+            throw std::runtime_error((std::ostringstream()
+                << "Failed to unload library: " << libraryName
+                    << "  (error code: " << errorCode << ")").str());
         }
     }
     else
     {
         DWORD errorCode = GetLastError();
 
-        CTILOG_ERROR(dout, "Failed to load library: " << libraryName
-                << "  (error code: " << errorCode << ")");
+        throw std::runtime_error((std::ostringstream()
+            << "Failed to load library: " << libraryName
+                << "  (error code: " << errorCode << ")").str());
     }
 
     return loadedResource;

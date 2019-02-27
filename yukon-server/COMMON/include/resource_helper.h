@@ -1,15 +1,17 @@
 #pragma once
 
-#include "dlldefs.h"
-#include "devicetypes.h"
+#include <vector>
+#include <string>
+
+enum DeviceTypes;
 
 namespace Cti {
 
-typedef std::vector<unsigned char>  DataBuffer;
+using DataBuffer = std::vector<unsigned char>;
 
-IM_EX_CTIBASE DataBuffer loadResourceFromLibrary( const int resourceID, const char * resourceType, const char * libraryName );
+DataBuffer loadResourceFromLibrary( const int resourceID, const char * resourceType, const char * libraryName );
 
-IM_EX_CTIBASE DeviceTypes resolvePaoIdXmlType( const std::string & type );
+DeviceTypes resolvePaoIdXmlType( const std::string & type );
 
 }
 

@@ -3379,6 +3379,8 @@ C++ :
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
     md5 : ddadc8681194b5e1f626e8a9ecf520cd
     sha1 : ad0b7887fb9f3f5919281b89730dba1e124a191b 
+    fileCount : 806
+    totalSize : 37214610
     updated : 2018-09-11  
     jira : YUK-18778
     notes : 
@@ -3391,6 +3393,8 @@ C++ :
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
     md5 : 921c593c57595a7f21a54d38cae23ee4
     sha1 : 4add89b6cffc9b7fd6470d6faf384e962b2fc924
+    fileCount : 109
+    totalSize : 1361688
     updated : 2018-06-29  
     jira : YUK-18343
     notes : 
@@ -3403,6 +3407,8 @@ C++ :
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
     md5 : fafa96617d4dc202647b172a5d01920b
     sha1 : 4653aa9f5435908f917b49e6d73249f7191dd813 
+    fileCount : 6
+    totalSize : 90808
     updated : 2018-06-29  
     jira : YUK-18343
     notes : Apache Portable Runtime iconv (character encoding conversion)
@@ -3415,6 +3421,8 @@ C++ :
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
     md5 : fc295f616be6eb06a261173eedb70f14
     sha1 : 859d6d63076e83ce90d2a8554651ce6fcfdb5c81 
+    fileCount : 61
+    totalSize : 911527
     updated : 2018-06-29  
     jira : YUK-18343
     notes : Apache Portable Runtime utilities
@@ -3427,6 +3435,8 @@ C++ :
     license URLs : "https://www.boost.org/users/license.html"
     md5 : 1379d54d4f97136be465d39290c67d69
     sha1 : e7cfb297d5831b7c38e2eb24dadd9586bb8e1687
+    fileCount : 13671
+    totalSize : 388382693
     updated : 2018-05-17  
     jira : YUK-18201
     notes : 
@@ -3439,6 +3449,8 @@ C++ :
     license URLs : "/Program Files (x86)/Windows Kits/10/Licenses/10.0.17134.0/sdk_license.rtf"
     md5 : a4faa744b25da67640dc98bc1bf75ac4
     sha1 : 65f02477e7bda599b1f1f4409b4862ff6dbb28ab 
+    fileCount : 3
+    totalSize : 1390461
     updated : 2018-05-17  
     jira : YUK-18201
     notes : 
@@ -3451,6 +3463,8 @@ C++ :
     license URLs : "https://github.com/nlohmann/json/blob/develop/LICENSE.MIT"
     md5 : 26d90a5f5b7b57ab570c7ed0dc299ac4
     sha1 : bc5b8bb0f1e1e79bbb89597acc56f49925814011 
+    fileCount : 1
+    totalSize : 595822
     updated : 2018-05-21  
     jira : YUK-18276
     notes : 
@@ -3463,6 +3477,8 @@ C++ :
     license URLs : "https://github.com/obgm/libcoap/blob/develop/LICENSE"
     md5 : a492ad83041f74579cca49ccb8392868
     sha1 : 7a278ea0ba4cde1cdd70853aa6491020df58bf20
+    fileCount : 48
+    totalSize : 1204481
     updated : 2016-04-12  
     jira : YUK-14919
     notes : Modifications to allow operation as E2E
@@ -3475,6 +3491,8 @@ C++ :
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
     md5 : 5d82af18447f83e657ea20f416d94004
     sha1 : 75b531e36aab7113ddde6f0fa285f072fae6413f 
+    fileCount : 218
+    totalSize : 10789924
     updated : 2018-05-17  
     jira : YUK-18201
     notes : 
@@ -3487,6 +3505,8 @@ C++ :
     license URLs : "n/a"
     md5 : 4a76e50c4921ca9a35c5bb3c010b0cf8
     sha1 : 1a2d0225fe73eb5c42d282d90c5c3b38b7637720 
+    fileCount : 1
+    totalSize : 274489
     updated : 2018-05-17  
     jira : YUK-18201
     notes : "Deprecated, probably unnecessary now since SQLAPI uses ODBC, not DB-Library.  See https://social.msdn.microsoft.com/Forums/sqlserver/en-US/28a2a5df-c33b-45f3-99d3-16e4567f5a03/ntwdblibdll-not-found?forum=sqlgetstarted"
@@ -3499,6 +3519,8 @@ C++ :
     license URLs : "https://github.com/openssl/openssl/blob/e216bf9d7ca761718f34e8b3094fcb32c7a143e4/LICENSE"
     md5 : 69d1c87e884171ed240307a37e6ba6ad
     sha1 : 8f6e5878e16bf7ce2e09cbd3fd5b9b1f2bbb0198
+    fileCount : 108
+    totalSize : 7462719
     updated : 2018-05-17  
     jira : YUK-18201
     notes : Since transitioned to Apache 2.0 license
@@ -3511,6 +3533,8 @@ C++ :
     license URLs : "https://confluence-prod.tcc.etn.com/pages/viewpage.action?pageId=20161384"
     md5 : ce94da8cba284987aca668448bacd9c1
     sha1 : 6640a5c407d8ce7ab299465f0c4095593b346d7d 
+    fileCount : 98
+    totalSize : 13894542
     updated : 2018-06-29
     jira : YUK-18429
     notes : 
@@ -3523,6 +3547,8 @@ C++ :
     license URLs : "http://www.tcl.tk/software/tcltk/license.html"
     md5 : 7a7591165bfb912e32fe3a0c151c5d7a
     sha1 : 9466da9c0ddd328f3d9e5a50abdfedef969cffa5 
+    fileCount : 39
+    totalSize : 5604731
     updated : 2016-04-12  
     jira : YUK-14919
     notes : 
@@ -3535,6 +3561,8 @@ C++ :
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
     md5 : d5fdb4629cf49f79ab5cd3c923b83794
     sha1 : 2b46e80b1b064b8a4db0eba313b22fea37b46ec9 
+    fileCount : 158
+    totalSize : 98314678
     updated : 2018-06-29  
     jira : YUK-18343
     notes : 
@@ -3547,6 +3575,8 @@ C++ :
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
     md5 : 4cc0e94fbe3a97119adc413c9b393534
     sha1 : 6585b74055873c8ae43dd75e39a86797ba6fd888
+    fileCount : 811
+    totalSize : 23832438
     updated : 2018-06-29  
     jira : YUK-18343
     notes :
@@ -3559,6 +3589,8 @@ C++ :
     license URLs : "https://github.com/jbeder/yaml-cpp/blob/master/LICENSE"
     md5 : b3fc8396baab6fced89a506e1c8696d3
     sha1 : d7f24f0acc589ee8149ce6c80599ebf7ba167bf4
+    fileCount : 41
+    totalSize : 21024809
     updated : 2019-01-21  
     jira : YUK-19388
     notes :
