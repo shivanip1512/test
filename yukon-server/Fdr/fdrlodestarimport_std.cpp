@@ -58,14 +58,7 @@ CtiFDR_StandardLodeStar::CtiFDR_StandardLodeStar()
     _fileImportBaseDrivePath(string("c:\\yukon\\server\\import"))
 {
     init();
-    _fileInfoList.empty();
 }
-
-CtiFDR_StandardLodeStar::~CtiFDR_StandardLodeStar()
-{
-    _fileInfoList.erase (_fileInfoList.begin(),_fileInfoList.end());
-}
-
 
 BOOL CtiFDR_StandardLodeStar::init( void )
 {

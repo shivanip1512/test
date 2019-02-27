@@ -61,16 +61,8 @@ CtiFDR_EnhancedLodeStar::CtiFDR_EnhancedLodeStar()
   _lsOrigin(string()),
   _fileImportBaseDrivePath(string("c:\\yukon\\server\\import"))
 {
-
     init();
-    _fileInfoList.empty();
 }
-
-CtiFDR_EnhancedLodeStar::~CtiFDR_EnhancedLodeStar()
-{
-    _fileInfoList.erase (_fileInfoList.begin(),_fileInfoList.end());
-}
-
 
 BOOL CtiFDR_EnhancedLodeStar::init( void )
 {

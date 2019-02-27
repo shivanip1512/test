@@ -16,7 +16,6 @@ public:
     // constructors and destructors
     CtiFDR_StandardLodeStar();
 
-    virtual ~CtiFDR_StandardLodeStar();
     virtual BOOL    init( void );
     virtual BOOL    run( void );
     virtual BOOL    stop( void );

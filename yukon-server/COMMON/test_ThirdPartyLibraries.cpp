@@ -37,7 +37,9 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
 {
     namespace fs = std::filesystem;
 
-    for( const auto library : Cti::ThirdPartyLibraries().getLibraries() )
+    const auto libraries = Cti::ThirdPartyLibraries().getLibraries();
+
+    for( const auto library : libraries )
     {
         BOOST_TEST_CONTEXT(library.project)
         {
