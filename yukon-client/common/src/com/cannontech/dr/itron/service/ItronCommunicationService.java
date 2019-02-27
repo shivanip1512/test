@@ -1,5 +1,7 @@
 package com.cannontech.dr.itron.service;
 
+import java.util.List;
+
 import org.joda.time.Instant;
 
 import com.cannontech.common.inventory.Hardware;
@@ -80,4 +82,12 @@ public interface ItronCommunicationService {
      */
     void sendDREventForGroup(int yukonGroupId, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
             Instant startTime);
+
+    /**
+     * Asks Itron to go get the latest data from the device and update itself, but there doesn't seem to be
+     * any way to know when the data has been retrieved. We may want to send this before requesting
+     * data when we are doing something like a "read now".
+     * 
+     */
+    void updateDeviceLogs(List<Integer> deviceIds);
 }

@@ -1,5 +1,6 @@
 package com.cannontech.dr.itron.service.impl;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +25,7 @@ import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditPrimaryHAN
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ErrorFault;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.NullableString;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.StaticGroupMemberListType;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.UpdateDeviceEventLogsRequest;
 import com.cannontech.stars.dr.account.model.AccountDto;
 
 public class DeviceManagerHelper implements SoapFaultParser {
@@ -146,6 +148,13 @@ public class DeviceManagerHelper implements SoapFaultParser {
         ESIGroupRequestType requestType = new ESIGroupRequestType();
         requestType.setGroupName(String.valueOf(lmGroup.getLiteID()));
         return requestType;
+    }
+    
+
+    public static UpdateDeviceEventLogsRequest buildUpdateDeviceEventLogs(Collection<String> macAddresses) {
+        UpdateDeviceEventLogsRequest request = new UpdateDeviceEventLogsRequest();
+        request.getESIMacIDs().addAll(macAddresses);
+        return request;
     }
     
     @Override

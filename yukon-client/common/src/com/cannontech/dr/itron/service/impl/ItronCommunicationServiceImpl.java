@@ -32,6 +32,8 @@ import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIGroupRespon
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditHANDeviceRequest;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditHANDeviceResponse;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ObjectFactory;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.UpdateDeviceEventLogsRequest;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.UpdateDeviceEventLogsResponse;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.AddHANLoadControlProgramEventRequest;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.AddProgramEventResponseType;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelHANLoadControlProgramEventOnDevicesRequest;
@@ -58,6 +60,7 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
@@ -164,14 +167,13 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         List<ProgramLoadGroup> programsByLMGroupId = applianceAndProgramDao.getProgramsByLMGroupId(yukonGroupId);
         int programId = programsByLMGroupId.get(0).getPaobjectId();
         int itronProgramId = itronDao.getItronProgramId(programId);
-        String programName = programsByLMGroupId.get(0).getProgramName();
         
         LiteYukonPAObject group = getGroup(yukonGroupId);
         LiteYukonPAObject program = getProgram(programId);
        
         try {
             AddHANLoadControlProgramEventRequest request = ProgramEventManagerHelper.buildDrEvent(dutyCyclePercent,
-               dutyCyclePeriod, criticality, startTime, relay, itronProgramId, programName);
+               dutyCyclePeriod, criticality, startTime, relay, itronProgramId, String.valueOf(programId));
             log.debug(XmlUtils.getPrettyXml(request));
             log.debug("ITRON-sendDREventForGroup url:{} yukon group:{} yukon program:{}", url, group.getPaoName(), program.getPaoName());
             JAXBElement<AddProgramEventResponseType> response =
@@ -185,6 +187,28 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.PROGRAM_EVENT);
         }
+    }
+    
+    @Override
+    public void updateDeviceLogs(List<Integer> deviceIds) {
+        String url = ItronEndpointManager.DEVICE.getUrl(settingDao);
+        Map<Integer, String> macAddresses = deviceDao.getDeviceMacAddresses(deviceIds);
+        //One request should have no more then 1000 devices
+        Iterables.partition(macAddresses.values(), 1000).forEach(list -> {
+            try {
+                UpdateDeviceEventLogsRequest request = DeviceManagerHelper.buildUpdateDeviceEventLogs(list);
+                log.debug(XmlUtils.getPrettyXml(request));
+                log.debug("ITRON-updateDeviceLogs url:{} device count:{}", url, list.size());
+                UpdateDeviceEventLogsResponse response =
+                    (UpdateDeviceEventLogsResponse) ItronEndpointManager.DEVICE.getTemplate(
+                        settingDao).marshalSendAndReceive(url, request);
+                log.debug("ITRON-updateDeviceLogs url:{} device count:{} update requested by itron:{} result:{}.", url,
+                    response.isUpdateRequested(), list.size());
+                log.debug(XmlUtils.getPrettyXml(response));
+            } catch (Exception e) {
+                handleException(e, ItronEndpointManager.DEVICE);
+            }
+        });
     }
 
     /**
