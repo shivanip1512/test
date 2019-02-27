@@ -162,11 +162,9 @@ public class PointMappingIcdController {
             //set up the response
             response.setContentType("text/csv");
             response.setHeader("Content-Disposition", "attachment; filename=\"rfnPointMapping.csv\"");
-            //pull data from the file and push it to the browser
+
             csvWriter.writeNext(new String[] { "Yukon Model", "ICD Model", "Yukon Point Name", "Yukon Attribute Name", "Yukon Unit", "Yukon Multiplier", "RFN Unit", "RFN Modifiers" });
             csvWriter.writeAll(rpmColumns::iterator, true);
-        } catch(IOException e) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.support.fileExportHistory.ioError"));
         }
         
         return null;
