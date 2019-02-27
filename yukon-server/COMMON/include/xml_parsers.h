@@ -5,8 +5,21 @@
 
 #include <xercesc/sax2/DefaultHandler.hpp>
 
-#include <boost/bimap.hpp>
+//  forward declarations for bimap
+namespace boost {
+namespace mpl {
+    struct na;
+}
 
+template
+    <
+    class KeyTypeA, class KeyTypeB,
+    class AP1 = ::boost::mpl::na,
+    class AP2 = ::boost::mpl::na,
+    class AP3 = ::boost::mpl::na
+    >
+    class bimap;
+}
 
 namespace Cti
 {
