@@ -2,7 +2,12 @@
 /****     Oracle DBupdates             ****/ 
 /******************************************/ 
 
-/* No Updates */
+/* @start YUK-19587 if YUK-19531 */
+ALTER TABLE ScheduledDataImportHistory 
+DROP COLUMN TotalCount;
+
+INSERT INTO DBUpdates VALUES ('YUK-19587', '7.3.0', SYSDATE);
+/* @end YUK-19587 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
