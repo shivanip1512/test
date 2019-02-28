@@ -2,10 +2,15 @@
 /****     Oracle DBupdates             ****/ 
 /******************************************/ 
 
-/* No Updates */
+/* @start YUK-19587 if YUK-19531 */
+ALTER TABLE ScheduledDataImportHistory 
+DROP COLUMN TotalCount;
+
+INSERT INTO DBUpdates VALUES ('YUK-19587', '7.2.1', SYSDATE);
+/* @end YUK-19587 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('7.2', '02-FEB-2019', 'Latest Update', 0, SYSDATE);*/
+/*INSERT INTO CTIDatabase VALUES ('7.2', '02-FEB-2019', 'Latest Update', 1, SYSDATE);*/

@@ -549,15 +549,15 @@ WHERE RolePropertyId = -10812;
 INSERT INTO DBUpdates VALUES ('YUK-19500', '7.2.0', GETDATE());
 /* @end YUK-19500 */
 
-/* @start YUK-19531 if YUK-19162 */
+/* @start YUK-19531-1 if YUK-19162 */
 ALTER TABLE ScheduledDataImportHistory
 DROP COLUMN ArchiveFilePath;
 GO
 
-INSERT INTO DBUpdates VALUES ('YUK-19531', '7.2.0', GETDATE());
-/* @end YUK-19531 */
+INSERT INTO DBUpdates VALUES ('YUK-19531-1', '7.2.0', GETDATE());
+/* @end YUK-19531-1 */
 
-/* @start YUK-19531 */
+/* @start YUK-19531-1 */
 CREATE TABLE ScheduledDataImportHistory (
    EntryId              NUMERIC              NOT NULL,
    FileName             VARCHAR(100)         NOT NULL,
@@ -569,14 +569,13 @@ CREATE TABLE ScheduledDataImportHistory (
    FailedFilePath       VARCHAR(300)         NULL,
    SuccessCount         NUMERIC              NOT NULL,
    FailureCount         NUMERIC              NOT NULL,
-   TotalCount           NUMERIC              NOT NULL,
    JobGroupId           INT                  NOT NULL,
    CONSTRAINT PK_ScheduledDataImportHistory PRIMARY KEY (EntryId)
 );
 GO
 
-INSERT INTO DBUpdates VALUES ('YUK-19531', '7.2.0', GETDATE());
-/* @end YUK-19531 */
+INSERT INTO DBUpdates VALUES ('YUK-19531-1', '7.2.0', GETDATE());
+/* @end YUK-19531-1 */
 
 /* @start YUK-19534 */
 ALTER TABLE SmartNotificationEventParam

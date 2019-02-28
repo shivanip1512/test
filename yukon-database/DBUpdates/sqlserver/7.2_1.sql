@@ -2,7 +2,12 @@
 /**** SQL Server DBupdates             ****/
 /******************************************/
 
-/* No Updates */
+/* @start YUK-19587 if YUK-19531 */
+ALTER TABLE ScheduledDataImportHistory 
+DROP COLUMN TotalCount;
+
+INSERT INTO DBUpdates VALUES ('YUK-19587', '7.2.1', GETDATE());
+/* @end YUK-19587 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
