@@ -8,9 +8,10 @@ public class JmxHelper {
     
     static {
         ImmutableMap.Builder<ApplicationId, Integer> builder = ImmutableMap.builder();
+
+        //builder.put(ApplicationId.NETWORK_MANAGER, 1100); NM is using port 1100.
         
-        //Port 1099 is the default, and is best avoided. It is used by NM.
-        //builder.put(ApplicationId.NETWORK_MANAGER, 1099);
+        //Port 1099 is the default, and is best avoided.
         builder.put(ApplicationId.WEBSERVER, 1098);
         builder.put(ApplicationId.MESSAGE_BROKER, 1097);
         builder.put(ApplicationId.SIMULATORS_SERVICE, 1096);
