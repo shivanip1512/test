@@ -372,6 +372,13 @@
     <entry key="yukon.web.modules.dev.ecobee.mockTest.assignThermostat">Assign Thermostat</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.saved">Saved Successfully</entry>
     
+    <!-- Ecobee PGP Key Pair -->
+    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair">Ecobee PGP Key Pair</entry>
+    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.pgpPublicKey">PGP Public key</entry>
+    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.pgpPrivateKey">PGP Private Key</entry>
+    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.save.success">Ecobee Key Pair Saved Successfully</entry>
+    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.save.failed">Provide Public and Private Key</entry>
+    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.pageName">Save Ecobee PGP Key Pair</entry>
     
     <!-- Nest Test -->
     <entry key="yukon.web.modules.dev.nest.pageName">Nest Test</entry>

@@ -16,11 +16,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
-
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -31,10 +30,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+import org.jdom2.JDOMException;
+import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -51,9 +58,15 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.cannontech.encryption.CryptoException;
+import com.cannontech.encryption.CryptoUtils;
+import com.cannontech.encryption.EncryptedRouteDao;
+import com.cannontech.encryption.EncryptionKeyType;
+import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.message.DbChangeManager;
@@ -68,6 +81,7 @@ import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckCparm;
@@ -78,6 +92,7 @@ import com.google.common.collect.Maps;
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class DeveloperController {
     private final Logger log = YukonLogManager.getLogger(DeveloperController.class);
+    private static final String homeKey = "yukon.web.modules.dev.ecobeePGPKeyPair.";
 
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
@@ -90,6 +105,7 @@ public class DeveloperController {
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private YukonListDao listDao;
+    @Autowired private EncryptedRouteDao encryptedRouteDao;
 
     private final Map<String, Integer> databaseFields;
     private final Map<String, String> categoryFields;
@@ -269,6 +285,36 @@ public class DeveloperController {
     public String viewDeviceGroupSimulator() {
         return "deviceGroupSimulator.jsp";
     }
+    
+    @GetMapping("/getEcobeePGPKeyPair")
+    public ModelAndView ecobeePGPKeyPair(ModelMap model)
+            throws CryptoException, IOException, JDOMException, DecoderException {
+        Optional<EncryptionKey> encryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.Ecobee);
+        PGPKeyPair keypair = new PGPKeyPair();
+        if (!encryptionKey.isEmpty()) {
+            char[] password = CryptoUtils.getSharedPasskey();
+            AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
+            String aesDecryptedPrivatekey = encrypter.decryptHexStr(encryptionKey.get().getPrivateKey());
+            String aesDecryptedPublickey = encrypter.decryptHexStr(encryptionKey.get().getPublicKey());
+            keypair.setPgpPrivateKey(aesDecryptedPrivatekey);
+            keypair.setPgpPublicKey(aesDecryptedPublickey);
+        }
+        ModelAndView ecobeePGPKeys = new ModelAndView("ecobeePGPKeyPair.jsp", "pgpKeyPair", keypair);
+        return ecobeePGPKeys;
+    }
+
+    @PostMapping(path = "/saveEcobeeKeyPair")
+    public String saveEcobeeKeyPair(@ModelAttribute("pgpKeyPair") PGPKeyPair pgpKeyPair, HttpServletRequest request,
+            FlashScope flash) throws CryptoException, IOException, JDOMException {
+        Instant timestamp = Instant.now();
+        if (!pgpKeyPair.getPgpPublicKey().isBlank() && !pgpKeyPair.getPgpPrivateKey().isBlank()) {
+            saveEncryptionKey(pgpKeyPair.getPgpPublicKey(), pgpKeyPair.getPgpPrivateKey(), timestamp);
+            flash.setConfirm(new YukonMessageSourceResolvable(homeKey + "save.success"));
+            return "redirect:getEcobeePGPKeyPair";
+        }
+        flash.setError(new YukonMessageSourceResolvable(homeKey + "save.failed"));
+        return "ecobeePGPKeyPair.jsp";
+    }
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
@@ -325,6 +371,18 @@ public class DeveloperController {
         return filename;
     }
 
+    private void saveEncryptionKey(String pgpPublicKey, String pgpPrivateKey, Instant timestamp)
+            throws CryptoException, IOException, JDOMException {
+        char[] password = CryptoUtils.getSharedPasskey();
+        AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
+        String aesBasedCryptoPublicKey = new String(Hex.encodeHex(encrypter.encrypt(pgpPublicKey.getBytes())));
+        log.debug("AES based crypto Public key [" + aesBasedCryptoPublicKey + "]");
+        String aesBasedCryptoPrivateKey = new String(Hex.encodeHex(encrypter.encrypt(pgpPrivateKey.getBytes())));
+        log.debug("AES based crypto Private key [" + aesBasedCryptoPrivateKey + "]");
+        encryptedRouteDao.saveOrUpdateEncryptionKey(aesBasedCryptoPrivateKey, aesBasedCryptoPublicKey,
+            EncryptionKeyType.Ecobee, timestamp);
+    }
+    
     public static enum UberLogComponent {
         CAPCONTROL("Capcontrol"),
         DISPATCH("Dispatch"),

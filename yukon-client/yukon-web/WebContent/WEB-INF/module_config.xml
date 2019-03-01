@@ -1635,6 +1635,7 @@
           <page name="setupDatabase" type="BASIC"/>
           <page name="miscellaneousMethod" type="BASIC"/>
           <page name="deviceGroupSimulator" type="BASIC"/>
+          <page name="ecobeePGPKeyPair" type="BASIC"/>
           <page name="systemMetricsSimulator" type="BASIC"/>
           <page name="ivvc.ivvcSimulator" type="BASIC"/>
           <page name="rfnTest" type="BASIC">
