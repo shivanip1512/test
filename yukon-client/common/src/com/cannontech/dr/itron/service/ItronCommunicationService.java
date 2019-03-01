@@ -92,7 +92,7 @@ public interface ItronCommunicationService {
     void updateDeviceLogs(List<Integer> deviceIds);
 
     /**
-     * Downloads devices logs from itron, copies the record to ExportArchive/Itron
+     * Downloads devices logs for all devices from itron, copies the record to ExportArchive/Itron
      */
     List<File> exportDeviceLogs(long startRecordId, long endRecordId);
 }

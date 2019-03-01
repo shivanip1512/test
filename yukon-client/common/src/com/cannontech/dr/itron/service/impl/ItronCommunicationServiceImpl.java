@@ -310,6 +310,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         String url = ItronEndpointManager.REPORT.getUrl(settingDao);
         try {
             ExportDeviceLogRequest request = new ExportDeviceLogRequest();
+            request.setRecordIDRangeStart(startRecordId);
+            request.setRecordIDRangeEnd(endRecordId);
             log.debug("ITRON-exportDeviceLog url:{} startRecordId:{} endRecordId:{}.", url, startRecordId, endRecordId);
             log.debug(XmlUtils.getPrettyXml(request));
             CommandIDResponse response =
