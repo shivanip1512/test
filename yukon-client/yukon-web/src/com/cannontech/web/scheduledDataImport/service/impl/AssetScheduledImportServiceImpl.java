@@ -81,9 +81,10 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
         ScheduledDataImportResult dataImportResult = new ScheduledDataImportResult();
         if (importPathCheck) {
             try (Stream<Path> paths = Files.walk(Paths.get(importPath))) {
-                paths.filter(path -> (Files.isRegularFile(path) && validateFileType(path)
+                paths.filter(path -> (Files.isRegularFile(path) && FileUtil.validateFileType(path)
                     && path.toFile().length() > 4)).forEach(path -> {
-
+                        // Check if a file is empty or not based on byte size (length > 4). (if remove the data from excel,
+                        // it still give you empty string for row)
                     Instant startTime = Instant.now();
                     String errorFileName = null;
                     AccountImportResult result = new AccountImportResult();
@@ -272,22 +273,6 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
         return new ScheduledFileImportResult(fileName, ScheduledImportType.ASSET_IMPORT, startTime, archiveFileName,
             true, failedFileName, errorFileOutputPath, successCount, result.getErrors().size());
 
-    }
-
-    /**
-     *  Validate file type and return true if it is valid CSV file
-     */
-    private boolean validateFileType(Path path) {
-
-        try {
-            String contentType = Files.probeContentType(path);
-            if (contentType != null && (contentType.startsWith("text") || contentType.endsWith("excel"))) {
-                return true;
-            }
-        } catch (IOException e) {
-            // do nothing
-        }
-        return false;
     }
 
 }

@@ -13,6 +13,7 @@ import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -499,5 +500,21 @@ public final class FileUtil {
         }
         tarFile.delete();
         return untarFiles;
+    }
+    
+    /**
+     * Validate file type and return true if it is valid CSV file
+     */
+    public static boolean validateFileType(Path path) {
+
+        try {
+            String contentType = Files.probeContentType(path);
+            if (contentType != null && (contentType.startsWith("text") || contentType.endsWith("excel"))) {
+                return true;
+            }
+        } catch (IOException e) {
+            // do nothing
+        }
+        return false;
     }
 }
