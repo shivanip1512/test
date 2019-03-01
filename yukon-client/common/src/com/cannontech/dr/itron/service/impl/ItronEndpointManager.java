@@ -27,7 +27,8 @@ public enum ItronEndpointManager {
     DEVICE("DeviceManagerPort", "com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8"),
     PROGRAM("ProgramManagerPort", "com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1"),
     PROGRAM_EVENT("ProgramEventManagerPort", "com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6"),
-    SERVICE_POINT("ServicePointManagerPort", "com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3");
+    SERVICE_POINT("ServicePointManagerPort", "com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3"),
+    REPORT("ReportManagerPort", "com.cannontech.dr.itron.model.jaxb.reportManagerTypes_v1_2");
 
     private WebServiceTemplate template;
     private String port;

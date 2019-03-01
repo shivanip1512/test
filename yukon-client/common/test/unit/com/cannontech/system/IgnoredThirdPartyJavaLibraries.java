@@ -52,7 +52,8 @@ public enum IgnoredThirdPartyJavaLibraries {
     ITRON_DEVICE_MANAGER_TYPES("itronDeviceManagerTypes_v1_8.jar", COMPILED_ITRON_WSDL), 
     ITRON_SERVICE_POINT_MANAGER_TYPES("itronServicePointManagerTypes_v1_3.jar", COMPILED_ITRON_WSDL),
     ITRON_PROGRAM_EVENT_MANAGER_TYPES("itronProgramEventManagerTypes_v1_6.jar", COMPILED_ITRON_WSDL), 
-    ITRON_PROGRAM_MANAGER_TYPES("itronProgramManagerTypes_v1_1.jar", COMPILED_ITRON_WSDL);
+    ITRON_PROGRAM_MANAGER_TYPES("itronProgramManagerTypes_v1_1.jar", COMPILED_ITRON_WSDL),
+    ITRON_REPORT_MANAGER_TYPES("itronReportManagerTypes_v1_2.jar", COMPILED_ITRON_WSDL);
 
     enum IgnoreReason {
         YUKON_PROJECT("Yukon project JARs owned by Eaton, third-party license not applicable"),

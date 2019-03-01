@@ -1,7 +1,16 @@
 package com.cannontech.dr.itron.service.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +20,7 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBElement;
 
 import org.apache.commons.compress.utils.Sets;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +31,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.ItronEventLogService;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -42,6 +53,10 @@ import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.AddProgramReq
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.AddProgramResponse;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.SetServicePointEnrollmentRequest;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.SetServicePointEnrollmentResponse;
+import com.cannontech.dr.itron.model.jaxb.reportManagerTypes_v1_2.CommandIDResponse;
+import com.cannontech.dr.itron.model.jaxb.reportManagerTypes_v1_2.ExportDeviceLogRequest;
+import com.cannontech.dr.itron.model.jaxb.reportManagerTypes_v1_2.GetReportGenerationStatusRequest;
+import com.cannontech.dr.itron.model.jaxb.reportManagerTypes_v1_2.GetReportGenerationStatusResponse;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServicePointRequest;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServicePointResponse;
 import com.cannontech.dr.itron.service.ItronAddDeviceException;
@@ -82,6 +97,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private static final Map<Integer, Long> groupPaoIdToItronEventId = new HashMap<>();
 
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
+    public static final String FILE_PATH = CtiUtilities.getItronDirPath();
+    public static final SimpleDateFormat FILE_NAME_DATE_FORMATTER = new SimpleDateFormat("YYYYMMddHHmm");
 
     @Transactional
     @Override
@@ -287,7 +304,91 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         Map<Integer, LiteYukonPAObject> groups = getGroupsForEnrollments(enrollments);
         addMacAddressesToGroup(account, groups);
     }
+    
+    @Override
+    public List<File> exportDeviceLogs(long startRecordId, long endRecordId) {
+        String url = ItronEndpointManager.REPORT.getUrl(settingDao);
+        try {
+            ExportDeviceLogRequest request = new ExportDeviceLogRequest();
+            log.debug("ITRON-exportDeviceLog url:{} startRecordId:{} endRecordId:{}.", url, startRecordId, endRecordId);
+            log.debug(XmlUtils.getPrettyXml(request));
+            CommandIDResponse response =
+                (CommandIDResponse) ItronEndpointManager.REPORT.getTemplate(settingDao).marshalSendAndReceive(url, request);
+            log.debug(XmlUtils.getPrettyXml(response));
+            log.debug("ITRON-exportDeviceLog url:{} startRecordId:{} endRecordId:{} commandId:{} result:{}.", url,
+                startRecordId, endRecordId, response.getCommandID(), "success");
+            return getExportedFiles(response.getCommandID());
+        } catch (Exception e) {
+            handleException(e, ItronEndpointManager.REPORT);
+        }
+        return new ArrayList<>();
+    }
+   
+    /**
+     * Asks Itron for file names and copies files to ExportArchive/Itron
+     */
+    private List<File> getExportedFiles(long commandId) {
+        String url = ItronEndpointManager.REPORT.getUrl(settingDao);
+        try {
+            GetReportGenerationStatusRequest request = new GetReportGenerationStatusRequest();
+            request.setCommandID(commandId);
+            log.debug("ITRON-getReport url:{} commandId:{}.", url, commandId);
+            log.debug(XmlUtils.getPrettyXml(request));
+            GetReportGenerationStatusResponse response = new GetReportGenerationStatusResponse();
+            response.setCompleted(true);
+            response.getReportFileNames().add("https://sample-videos.com/csv/Sample-Spreadsheet-10-rows.csv");
+            response.getReportFileNames().add("https://sample-videos.com/csv/Sample-Spreadsheet-100-rows.csv");
+            response.setFailed(false);
+         /*   while(true) {
+                response = ( GetReportGenerationStatusResponse) ItronEndpointManager.REPORT.getTemplate(settingDao).marshalSendAndReceive(url, request);
+                if(response.isCompleted()) {
+                    break;
+                }
+            }*/
+            log.debug(XmlUtils.getPrettyXml(response));
+            if (response.isFailed()) {
+                ItronCommunicationException exception = new ItronCommunicationException(
+                    "Failed to get file for command id=" + commandId + " error=" + response.getFailureMessage());
+                log.error(exception);
+                throw exception;
+            }
+            
+            log.debug("ITRON-getReport url:{} commandId:{} result:{}.", url, commandId, "success");
+            return downloadReportFiles(response.getReportFileNames(), commandId);
 
+        } catch (Exception e) {
+            handleException(e, ItronEndpointManager.REPORT);
+        }
+        return new ArrayList<>();
+    }
+    
+    /**
+     * Downloads files from itron and copies to ExportArchive/Itron.
+     * The files name is going to be timestamp_coomanId. Command Id can be correlated to log debug statements.
+     * Returns a list of files
+     */
+    private List<File> downloadReportFiles(List<String> fileNames, long commandId) {
+        List<File> files = new ArrayList<>();
+        fileNames.forEach(path -> {
+            try {
+                //test on local
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxy.etn.com", 8080));
+                URLConnection conn = new URL(path).openConnection(proxy);
+              
+                //URLConnection conn = new URL(path).openConnection();
+                File file = new File(FILE_PATH, FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + commandId + ".csv");
+                OutputStream out = new FileOutputStream(file);
+                IOUtils.copy(conn.getInputStream(), out);
+                IOUtils.closeQuietly(out);
+                files.add(file);
+                log.debug("ITRON-downoladed Itron file:{} created file:{} commandId: {}.", path, file.getPath(), commandId);
+            } catch (Exception e) {
+                log.error("Unable to download file: " + path);
+            }
+        });
+        return files;
+    }
+    
     /**
      * Returns the list of enrollments in itron programs for account
      */
@@ -489,6 +590,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * Sends request to itron to add service point
      */
     private void addServicePoint(AccountDto account) {
+        
         /*
          * Note: The newly created Service Point is not available in the user interface until an ESI is
          * associated to it. It is, however, in the database. (see DeviceManagerHelper buildRequest) 

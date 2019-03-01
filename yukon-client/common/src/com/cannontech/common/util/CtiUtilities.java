@@ -74,6 +74,7 @@ public final class CtiUtilities {
 
     public static final String COLLECTION_ACTION_DIR = "CollectionAction";
     public static final String NEST_DIR = "Nest";
+    public static final String ITRON_DIR = "Itron";
 
     public static final String STRING_NONE = "(none)";
     public static final String STRING_DEFAULT = "Default";
@@ -349,6 +350,12 @@ public final class CtiUtilities {
         FileUtil.verifyDirectory(path);
         return path;
     }
+    
+    public final static String getExportArchiveDirPath(String dir) {
+        String path = getExportArchiveDirPath() + System.getProperty("file.separator") + dir;
+        FileUtil.verifyDirectory(path);
+        return path;
+    }
 
     public final static String getImportArchiveDirPath() {
         String path = getArchiveDirPath(IMPORT_ARCHIVE_DIR);
@@ -357,15 +364,15 @@ public final class CtiUtilities {
     }
 
     public final static String getCollectionActionDirPath() {
-        String path = getArchiveDirPath(EXPORT_ARCHIVE_DIR) + System.getProperty("file.separator") + COLLECTION_ACTION_DIR;
-        FileUtil.verifyDirectory(path);
-        return path;
+        return getExportArchiveDirPath(COLLECTION_ACTION_DIR);
     }
 
     public final static String getNestDirPath() {
-        String path = getArchiveDirPath(EXPORT_ARCHIVE_DIR) + System.getProperty("file.separator") + NEST_DIR;
-        FileUtil.verifyDirectory(path);
-        return path;
+        return getExportArchiveDirPath(NEST_DIR);
+    }
+    
+    public final static String getItronDirPath() {
+        return getExportArchiveDirPath(ITRON_DIR);
     }
 
     public final static String getArchiveDirPath(String subDirectory) {
