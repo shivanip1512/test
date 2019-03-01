@@ -1,5 +1,6 @@
 package com.cannontech.dr.itron.service;
 
+import java.io.File;
 import java.util.List;
 
 import org.joda.time.Instant;
@@ -87,7 +88,11 @@ public interface ItronCommunicationService {
      * Asks Itron to go get the latest data from the device and update itself, but there doesn't seem to be
      * any way to know when the data has been retrieved. We may want to send this before requesting
      * data when we are doing something like a "read now".
-     * 
      */
     void updateDeviceLogs(List<Integer> deviceIds);
+
+    /**
+     * Downloads devices logs from itron, copies the record to ExportArchive/Itron
+     */
+    List<File> exportDeviceLogs(long startRecordId, long endRecordId);
 }

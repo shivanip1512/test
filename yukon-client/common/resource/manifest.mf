@@ -4,6 +4,7 @@ Class-Path: ./
  itronServicePointManagerTypes_v1_3.jar 
  itronProgramEventManagerTypes_v1_6.jar 
  itronProgramManagerTypes_v1_1.jar 
+ itronReportManagerTypes_v1_2.jar 
  i18n-en_US.jar 
  commons-lang3-3.4.jar 
  commons-collections4-4.1.jar 

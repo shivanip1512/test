@@ -1,204 +1,204 @@
 <?xml version="1.0" ?>
 <project name="yukon commons" default="all">
-   
-   <property file="../build/build.properties"/>
 
-   <target name="all" depends="clean,build">
-    </target>
-   
-   <target name="build">
-       <mkdir dir="build"/>
+	<property file="../build/build.properties"/>
 
-       <javac srcdir="src"
+	<target name="all" depends="clean,build">
+	</target>
+
+	<target name="build">
+		<mkdir dir="build"/>
+
+		<javac srcdir="src"
               destdir="build"
               target="${yukon.javac.target}" 
               source="${yukon.javac.source}"
               debug="${yukon.javac.debug}">
-          <compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED"/>
-          <compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED"/>
-          <classpath>
-              <fileset dir="${yukon.lib}">
-                <include name="**/*.jar"/>
-              </fileset>
-	      </classpath> 
-     	</javac>
+			<compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED"/>
+			<compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED"/>
+			<classpath>
+				<fileset dir="${yukon.lib}">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
 
 		<jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
-            <manifest>
-                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-            	<attribute name="Permissions" value="all-permissions"/>
-            	<attribute name="Hudson-Build-Details" value="${build.info}"/>
-            </manifest>      
-		    <fileset dir="resource">
+			<manifest>
+				<attribute name="Yukon-Version" value="${yukon.build.version}"/>
+				<attribute name="Yukon-Details" value="${yukon.build.details}"/>
+				<attribute name="Permissions" value="all-permissions"/>
+				<attribute name="Hudson-Build-Details" value="${build.info}"/>
+			</manifest>
+			<fileset dir="resource">
 				<include name="**/*.gif"/>
-		    	<include name="**/*.png"/>
-		 		<include name="**/*.au"/>
+				<include name="**/*.png"/>
+				<include name="**/*.au"/>
 			</fileset>
-		    <fileset dir="src">
-		    	<exclude name="**/*.java"/>
+			<fileset dir="src">
+				<exclude name="**/*.java"/>
 			</fileset>
-       	</jar>
-   	
-        <jar destfile="${yukon.lib}/i18n-en_US.jar" basedir="i18n/en_us" includes="**/*.xml">
-            <manifest>
-                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-            	<attribute name="Permissions" value="all-permissions"/>
-                <attribute name="Hudson-Build-Details" value="${build.info}"/>
-            </manifest> 
-        </jar>
+		</jar>
 
-   </target>
+		<jar destfile="${yukon.lib}/i18n-en_US.jar" basedir="i18n/en_us" includes="**/*.xml">
+			<manifest>
+				<attribute name="Yukon-Version" value="${yukon.build.version}"/>
+				<attribute name="Yukon-Details" value="${yukon.build.details}"/>
+				<attribute name="Permissions" value="all-permissions"/>
+				<attribute name="Hudson-Build-Details" value="${build.info}"/>
+			</manifest>
+		</jar>
 
-   <target name="clean">
-       <delete dir="build"/>        
-    </target>
-    
+	</target>
+
+	<target name="clean">
+		<delete dir="build"/>
+	</target>
+
 	<!-- Target to generate the jaxb classes for the paoDefinition schema -->
-    <target name="generateJaxbClasses">
-        <!-- This task uses the JAXB2 Basics version of the xjc ant task
+	<target name="generateJaxbClasses">
+		<!-- This task uses the JAXB2 Basics version of the xjc ant task
              because the Oracle version has classpath issues with plugins
              and we are using the JAXB 2 Default Value plugin-->
-    	<taskdef name="xjc" classname="org.jvnet.jaxb2_commons.xjc.XJC2Task">
-            <classpath>
-                <fileset dir=".." includes="**/*.jar"/>
-            </classpath>
-        </taskdef>
+		<taskdef name="xjc" classname="org.jvnet.jaxb2_commons.xjc.XJC2Task">
+			<classpath>
+				<fileset dir=".." includes="**/*.jar"/>
+			</classpath>
+		</taskdef>
 
-        <!-- Check to see if yukon-shared is available
+		<!-- Check to see if yukon-shared is available
                as a top-level directory (yukon/yukon-shared) 
                or as a yukon-client project (yukom/yukon-client/yukon-shared) -->
-        <condition property="yukon-shared.resources-path" 
+		<condition property="yukon-shared.resources-path" 
                     value="../../yukon-shared/src/main/resources"
                     else="../yukon-shared/src/main/resources">
-            <available file="../../yukon-shared/src/main/resources" type="dir"/> 
-        </condition>
+			<available file="../../yukon-shared/src/main/resources" type="dir"/>
+		</condition>
 
-        <!-- Update the timestamps on the xsd files so JAXB will always generate new output -->
-        <touch file="${yukon-shared.resources-path}/device/config/configurationCategoryDefinition.xsd"/>
-        <xjc schema="${yukon-shared.resources-path}/device/config/configurationCategoryDefinition.xsd"
+		<!-- Update the timestamps on the xsd files so JAXB will always generate new output -->
+		<touch file="${yukon-shared.resources-path}/device/config/configurationCategoryDefinition.xsd"/>
+		<xjc schema="${yukon-shared.resources-path}/device/config/configurationCategoryDefinition.xsd"
                 package="com.cannontech.common.device.config.model.jaxb" destdir="src" removeOldOutput="yes">
-            <arg value="-extension"/>
-            <arg value="-no-header"/>
-            <arg value="-Xdefault-value"/>
-            <!-- Everything in this "produces" dir should be overwritten on fresh build -->
-            <produces dir="src/com/cannontech/common/device/config/model/jaxb"/>
-        </xjc>
+			<arg value="-extension"/>
+			<arg value="-no-header"/>
+			<arg value="-Xdefault-value"/>
+			<!-- Everything in this "produces" dir should be overwritten on fresh build -->
+			<produces dir="src/com/cannontech/common/device/config/model/jaxb"/>
+		</xjc>
 
-        <touch file="${yukon-shared.resources-path}/pao/definition/pao.xsd"/>
-        <touch file="${yukon-shared.resources-path}/pao/definition/points.xsd"/>
-        <touch file="${yukon-shared.resources-path}/pao/definition/override.xsd"/>
+		<touch file="${yukon-shared.resources-path}/pao/definition/pao.xsd"/>
+		<touch file="${yukon-shared.resources-path}/pao/definition/points.xsd"/>
+		<touch file="${yukon-shared.resources-path}/pao/definition/override.xsd"/>
 
-        <xjc schema="${yukon-shared.resources-path}/pao/definition/pao.xsd"
+		<xjc schema="${yukon-shared.resources-path}/pao/definition/pao.xsd"
                         package="com.cannontech.common.pao.definition.loader.jaxb" destdir="src" removeOldOutput="yes">
-                 <arg value="-extension"/>
-                 <arg value="-no-header"/>
-                 <arg value="-Xdefault-value"/>
-                    <!-- Everything in this "produces" dir should be overwritten on fresh build -->
-                 <produces dir="src/com/cannontech/common/pao/definition/loader/jaxb"/>
-        </xjc>
-        <xjc schema="${yukon-shared.resources-path}/pao/definition/points.xsd"
+			<arg value="-extension"/>
+			<arg value="-no-header"/>
+			<arg value="-Xdefault-value"/>
+			<!-- Everything in this "produces" dir should be overwritten on fresh build -->
+			<produces dir="src/com/cannontech/common/pao/definition/loader/jaxb"/>
+		</xjc>
+		<xjc schema="${yukon-shared.resources-path}/pao/definition/points.xsd"
                         package="com.cannontech.common.pao.definition.loader.jaxb" destdir="src" removeOldOutput="yes">
-                 <arg value="-extension"/>
-                 <arg value="-no-header"/>
-                 <arg value="-Xdefault-value"/>
-                    <!-- Everything in this "produces" dir should be overwritten on fresh build -->
-        </xjc>
-    	<xjc schema="${yukon-shared.resources-path}/pao/definition/override.xsd"
+			<arg value="-extension"/>
+			<arg value="-no-header"/>
+			<arg value="-Xdefault-value"/>
+			<!-- Everything in this "produces" dir should be overwritten on fresh build -->
+		</xjc>
+		<xjc schema="${yukon-shared.resources-path}/pao/definition/override.xsd"
 	    	            package="com.cannontech.common.pao.definition.loader.jaxb" destdir="src" removeOldOutput="yes">
-                 <arg value="-extension"/>
-		    	 <arg value="-no-header"/>
-		    	 <arg value="-Xdefault-value"/>
-		    	 <!-- Everything in this "produces" dir should be overwritten on fresh build -->
-    	</xjc>
-    </target>
-	
-    <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
-    <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
-        <antcall target="executeTests">
-            <param name="halt" value="yes"/>
-            <param name="srcdir" value="test/unit"/>
-            <param name="destdir" value="test/build/unit" />
-        </antcall>
-    </target>
+			<arg value="-extension"/>
+			<arg value="-no-header"/>
+			<arg value="-Xdefault-value"/>
+			<!-- Everything in this "produces" dir should be overwritten on fresh build -->
+		</xjc>
+	</target>
 
-    <!-- Run unit tests - will run all tests even if a failure or error occurs during a test -->
-    <target name="runUnitTestsIgnoreFailures" description="Run all unit tests, do not stop on failure" depends="compileUnitTests">
-        <antcall target="executeTests">
-            <param name="halt" value="no"/>
-            <param name="srcdir" value="test/unit"/>
-            <param name="destdir" value="test/build/unit" />
-        </antcall>
-    </target>
+	<!-- Run unit tests - will stop running if a failure or error occurs during a test -->
+	<target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
+		<antcall target="executeTests">
+			<param name="halt" value="yes"/>
+			<param name="srcdir" value="test/unit"/>
+			<param name="destdir" value="test/build/unit" />
+		</antcall>
+	</target>
 
-    <!-- Compile unit tests - will compile all unit tests -->
-    <target name="compileUnitTests">
-        <antcall target="compileTests">
-            <param name="srcdir" value="test/unit"/>
-            <param name="destdir" value="test/build/unit" />
-        </antcall>
-    </target>
+	<!-- Run unit tests - will run all tests even if a failure or error occurs during a test -->
+	<target name="runUnitTestsIgnoreFailures" description="Run all unit tests, do not stop on failure" depends="compileUnitTests">
+		<antcall target="executeTests">
+			<param name="halt" value="no"/>
+			<param name="srcdir" value="test/unit"/>
+			<param name="destdir" value="test/build/unit" />
+		</antcall>
+	</target>
+
+	<!-- Compile unit tests - will compile all unit tests -->
+	<target name="compileUnitTests">
+		<antcall target="compileTests">
+			<param name="srcdir" value="test/unit"/>
+			<param name="destdir" value="test/build/unit" />
+		</antcall>
+	</target>
 
 
-    <!-- Compile the test classes for testing. This target must be supplied a srcdir and a destdir property -->
-    <target name="compileTests">
-        <delete dir="${destdir}" />
-        <mkdir dir="${destdir}" />
-        <javac srcdir="${srcdir}"
+	<!-- Compile the test classes for testing. This target must be supplied a srcdir and a destdir property -->
+	<target name="compileTests">
+		<delete dir="${destdir}" />
+		<mkdir dir="${destdir}" />
+		<javac srcdir="${srcdir}"
                destdir="${destdir}"
                target="${yukon.javac.target}"
                source="${yukon.javac.source}"
                debug="${yukon.javac.debug}">
-            <classpath>
-                <fileset dir="${yukon.lib}">
-                    <include name="**/*.jar" />
-                </fileset>
-            </classpath>
-        </javac>
-        <copy file="${srcdir}//com/cannontech/common/config/master.cfg"
+			<classpath>
+				<fileset dir="${yukon.lib}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+		<copy file="${srcdir}//com/cannontech/common/config/master.cfg"
         	todir="${destdir}/com/cannontech/common/config"/>
-    	<copy file="${srcdir}//com/cannontech/common/config/configuration.properties"
+		<copy file="${srcdir}//com/cannontech/common/config/configuration.properties"
     	        	todir="${destdir}/com/cannontech/common/config"/>
-    </target>
+	</target>
 
-    <!-- Run tests. This target must be supplied a halt and destdir property -->
-    <target name="executeTests">
+	<!-- Run tests. This target must be supplied a halt and destdir property -->
+	<target name="executeTests">
 
-        <property name="test.results.dir" value="test/testResults"/>
-        <!-- Clear out any old results -->
-        <delete dir="${test.results.dir}" />
-        <mkdir dir="${test.results.dir}" />
+		<property name="test.results.dir" value="test/testResults"/>
+		<!-- Clear out any old results -->
+		<delete dir="${test.results.dir}" />
+		<mkdir dir="${test.results.dir}" />
 
-        <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
-        <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}">
-            <sysproperty key="java.locale.providers" value="COMPAT,SPI"/> 
-            <classpath id="junit.class.path">
-                <pathelement location="${srcdir}"/>
-                <pathelement location="${destdir}"/>
-                <fileset dir="${yukon.lib}">
-                    <include name="**/*.jar" />
-                    <exclude name="**/WebContent/**" />
-                </fileset>
-            </classpath>
-            <formatter type="xml" />
-            <batchtest fork="yes" todir="${test.results.dir}">
-                <fileset dir="${destdir}">
-                    <include name="**/*Test.class" />
-                </fileset>
-            </batchtest>
-        </junit>
+		<!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
+		<junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}">
+			<sysproperty key="java.locale.providers" value="COMPAT,SPI"/>
+			<classpath id="junit.class.path">
+				<pathelement location="${srcdir}"/>
+				<pathelement location="${destdir}"/>
+				<fileset dir="${yukon.lib}">
+					<include name="**/*.jar" />
+					<exclude name="**/WebContent/**" />
+				</fileset>
+			</classpath>
+			<formatter type="xml" />
+			<batchtest fork="yes" todir="${test.results.dir}">
+				<fileset dir="${destdir}">
+					<include name="**/*Test.class" />
+				</fileset>
+			</batchtest>
+		</junit>
 
-        <!-- Create the html reports for test results -->
-        <property name="test.results.dir" value="test/unitTestResults" />
-        <junitreport todir="${test.results.dir}">
-            <fileset dir="${test.results.dir}">
-                <include name="TEST-*.xml" />
-            </fileset>
-            <report todir="${test.results.dir}" />
-        </junitreport>
-    </target>
-	
+		<!-- Create the html reports for test results -->
+		<property name="test.results.dir" value="test/unitTestResults" />
+		<junitreport todir="${test.results.dir}">
+			<fileset dir="${test.results.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report todir="${test.results.dir}" />
+		</junitreport>
+	</target>
+
 	<!-- Target to generate the jaxb classes for the Itron schema -->
 	<target name="generateItronJaxbClasses">
 		<!-- This task uses the JAXB2 Basics version of the xjc ant task
@@ -213,11 +213,11 @@
 		<path id="jaxb-impl">
 			<pathelement path="../third-party/jaxb-impl.jar"/>
 		</path>
-			
+
 		<xjc destdir="src" removeOldOutput="yes" package="com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8">
-		    <arg value="-extension"/>
-		    <arg value="-no-header"/>
-		    <arg value="-Xdefault-value"/>
+			<arg value="-extension"/>
+			<arg value="-no-header"/>
+			<arg value="-Xdefault-value"/>
 			<schema dir="src/com/cannontech/dr/itron/schema" includes="DeviceManagerTypes_v1_8.xsd" />
 			<binding dir="src/com/cannontech/dr/itron/schema" includes="root.xjb"/>
 		</xjc>
@@ -229,11 +229,11 @@
 		<jar destfile="${third-party}/itronDeviceManagerTypes_v1_8.jar" basedir="build" />
 		<delete dir="build"/>
 		<delete dir="src/com/cannontech/dr/itron/model/jaxb/deviceManagerTypes_v1_8"/>
-		
-			
+
+
 		<xjc destdir="src" removeOldOutput="yes" package="com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3">
 			<arg value="-extension"/>
-		    <arg value="-no-header"/>
+			<arg value="-no-header"/>
 			<arg value="-Xdefault-value"/>
 			<schema dir="src/com/cannontech/dr/itron/schema" includes="ServicePointManagerTypes_v1_3.xsd" />
 			<binding dir="src/com/cannontech/dr/itron/schema" includes="root.xjb"/>
@@ -242,12 +242,12 @@
 		<mkdir dir="build" />
 		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3" destdir="build">
 			<classpath refid="jaxb-impl"/>
-		</javac>	
+		</javac>
 		<jar destfile="${third-party}/itronServicePointManagerTypes_v1_3.jar" basedir="build" />
 		<delete dir="build"/>
 		<delete dir="src/com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3"/>
-		
-		
+
+
 		<xjc destdir="src" removeOldOutput="yes" package="com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6">
 			<arg value="-extension"/>
 			<arg value="-no-header"/>
@@ -259,29 +259,43 @@
 		<mkdir dir="build" />
 		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/programEventManagerTypes_v1_6" destdir="build">
 			<classpath refid="jaxb-impl"/>
-		</javac>	
+		</javac>
 		<jar destfile="${third-party}/itronProgramEventManagerTypes_v1_6.jar" basedir="build" />
 		<delete dir="build"/>
 		<delete dir="src/com/cannontech/dr/itron/model/jaxb/programEventManagerTypes_v1_6"/>
-		
-		
+
+
 		<xjc destdir="src" removeOldOutput="yes" package="com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1">
-				<arg value="-extension"/>
-				<arg value="-no-header"/>
-				<arg value="-Xdefault-value"/>
-				<schema dir="src/com/cannontech/dr/itron/schema" includes="ProgramManagerTypes_v1_1.xsd" />
-				<binding dir="src/com/cannontech/dr/itron/schema" includes="root.xjb"/>
+			<arg value="-extension"/>
+			<arg value="-no-header"/>
+			<arg value="-Xdefault-value"/>
+			<schema dir="src/com/cannontech/dr/itron/schema" includes="ProgramManagerTypes_v1_1.xsd" />
+			<binding dir="src/com/cannontech/dr/itron/schema" includes="root.xjb"/>
 		</xjc>
 		<jar destfile="${third-party}/itronProgramManagerTypes_v1_1_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/programManagerTypes_v1_1/**" />
 		<mkdir dir="build" />
 		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/programManagerTypes_v1_1" destdir="build">
 			<classpath refid="jaxb-impl"/>
-		</javac>	
+		</javac>
 		<jar destfile="${third-party}/itronProgramManagerTypes_v1_1.jar" basedir="build" />
 		<delete dir="build"/>
 		<delete dir="src/com/cannontech/dr/itron/model/jaxb/programManagerTypes_v1_1"/>
 
-		<delete dir="src/com/cannontech/dr/itron/model"/>
+		<xjc destdir="src" removeOldOutput="yes" package="com.cannontech.dr.itron.model.jaxb.reportManagerTypes_v1_2">
+			<arg value="-extension"/>
+			<arg value="-no-header"/>
+			<arg value="-Xdefault-value"/>
+			<schema dir="src/com/cannontech/dr/itron/schema" includes="ReportManagerTypes_v1_2.xsd" />
+			<binding dir="src/com/cannontech/dr/itron/schema" includes="root.xjb"/>
+		</xjc>
+		<jar destfile="${third-party}/itronReportManagerTypes_v1_2_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/reportManagerTypes_v1_2/**" />
+		<mkdir dir="build" />
+		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/reportManagerTypes_v1_2" destdir="build">
+			<classpath refid="jaxb-impl"/>
+		</javac>
+		<jar destfile="${third-party}/itronReportManagerTypes_v1_2.jar" basedir="build" />
+		<delete dir="build"/>
+		<delete dir="src/com/cannontech/dr/itron/model/jaxb/reportManagerTypes_v1_2"/>
 	</target>
 
 </project>
