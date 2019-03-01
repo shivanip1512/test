@@ -1535,9 +1535,12 @@ void CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
 
                 if( aPD.getTags() & (TAG_POINT_MUST_ARCHIVE | TAG_POINT_LOAD_PROFILE_DATA) )
                 {
-                    if( isDuplicate && previouslyArchived && gConfigParms.isTrue("DISPATCH_LOG_DUPLICATE_ARCHIVE_SUPPRESSION", true) )
+                    if( isDuplicate && previouslyArchived ) 
                     {
-                        CTILOG_DEBUG(dout, "Suppressing duplicate forced archive for pointid "<< TempPoint->getPointID());
+                        if( gConfigParms.isTrue("DISPATCH_LOG_DUPLICATE_ARCHIVE_SUPPRESSION", true) )
+                        {
+                            CTILOG_DEBUG(dout, "Suppressing duplicate forced archive, id " << TempPoint->getPointID() << ", " << aPD.getValue() << "@" << aPD.getTime());
+                        }
                     }
                     else
                     {
