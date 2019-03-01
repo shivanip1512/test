@@ -92,7 +92,6 @@ import com.google.common.collect.Maps;
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class DeveloperController {
     private final Logger log = YukonLogManager.getLogger(DeveloperController.class);
-    private static final String homeKey = "yukon.web.modules.dev.ecobeePGPKeyPair.";
 
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
@@ -306,6 +305,7 @@ public class DeveloperController {
     @PostMapping(path = "/saveEcobeeKeyPair")
     public String saveEcobeeKeyPair(@ModelAttribute("pgpKeyPair") PGPKeyPair pgpKeyPair, HttpServletRequest request,
             FlashScope flash) throws CryptoException, IOException, JDOMException {
+        final String homeKey = "yukon.web.modules.dev.ecobeePGPKeyPair.";
         Instant timestamp = Instant.now();
         if (!pgpKeyPair.getPgpPublicKey().isBlank() && !pgpKeyPair.getPgpPrivateKey().isBlank()) {
             saveEncryptionKey(pgpKeyPair.getPgpPublicKey(), pgpKeyPair.getPgpPrivateKey(), timestamp);
