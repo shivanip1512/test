@@ -77,7 +77,7 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
       * Also create file in archive directory and delete from import directory.
       */
     private ScheduledDataImportResult initiateAssetImport(YukonUserContext userContext, String scheduleName, String importPath, String errorFileOutputPath) {
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         boolean importPathCheck = importPathSet.add(importPath);
         ScheduledDataImportResult dataImportResult = new ScheduledDataImportResult();
         if (importPathCheck) {
