@@ -7084,6 +7084,16 @@ create table LMHardwareToMeterMapping (
 go
 
 /*==============================================================*/
+/* Table: LMItronCycleGear                                      */
+/*==============================================================*/
+create table LMItronCycleGear (
+   GearId               numeric              not null,
+   CycleOption          nvarchar(20)         not null,
+   constraint PK_LMItronCycleGear primary key (GearId)
+)
+go
+
+/*==============================================================*/
 /* Table: LMMacsScheduleCustomerList                            */
 /*==============================================================*/
 create table LMMacsScheduleCustomerList (
@@ -14118,6 +14128,12 @@ go
 alter table LMHardwareToMeterMapping
    add constraint FK_LMMETMAP_METERHARDBASE foreign key (MeterInventoryID)
       references MeterHardwareBase (InventoryID)
+go
+
+alter table LMItronCycleGear
+   add constraint FK_LMItronCycleGear_LMPDirGear foreign key (GearId)
+      references LMProgramDirectGear (GearID)
+         on delete cascade
 go
 
 alter table LMMacsScheduleCustomerList
