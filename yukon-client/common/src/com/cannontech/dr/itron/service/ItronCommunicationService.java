@@ -2,6 +2,7 @@ package com.cannontech.dr.itron.service;
 
 import java.io.File;
 import java.util.List;
+import java.util.zip.ZipFile;
 
 import org.joda.time.Duration;
 
@@ -92,7 +93,7 @@ public interface ItronCommunicationService {
     void updateDeviceLogs(List<Integer> deviceIds);
 
     /**
-     * Downloads devices logs for all devices from itron, copies the record to ExportArchive/Itron
+     * Downloads devices logs for all devices from itron, copies and zips the files to ExportArchive/Itron
      */
-    List<File> exportDeviceLogs(long startRecordId, long endRecordId);
+    ZipFile exportDeviceLogs(long startRecordId, long endRecordId);
 }
