@@ -7,6 +7,8 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import javax.xml.bind.JAXBElement;
 
@@ -306,7 +311,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     @Override
-    public List<File> exportDeviceLogs(long startRecordId, long endRecordId) {
+    public ZipFile exportDeviceLogs(long startRecordId, long endRecordId) {
         String url = ItronEndpointManager.REPORT.getUrl(settingDao);
         try {
             ExportDeviceLogRequest request = new ExportDeviceLogRequest();
@@ -323,13 +328,13 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.REPORT);
         }
-        return new ArrayList<>();
+        return null;
     }
    
     /**
      * Asks Itron for file names and copies files to ExportArchive/Itron
      */
-    private List<File> getExportedFiles(long commandId) {
+    private ZipFile getExportedFiles(long commandId) {
         String url = ItronEndpointManager.REPORT.getUrl(settingDao);
         try {
             GetReportGenerationStatusRequest request = new GetReportGenerationStatusRequest();
@@ -356,39 +361,65 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             }
             
             log.debug("ITRON-getReport url:{} commandId:{} result:{}.", url, commandId, "success");
-            return downloadReportFiles(response.getReportFileNames(), commandId);
+            return downloadAndZipReportFiles(response.getReportFileNames(), commandId);
 
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.REPORT);
         }
-        return new ArrayList<>();
+        return null;
     }
     
     /**
      * Downloads files from itron and copies to ExportArchive/Itron.
      * The files name is going to be timestamp_coomanId. Command Id can be correlated to log debug statements.
-     * Returns a list of files
+     * Returns a zip file
      */
-    private List<File> downloadReportFiles(List<String> fileNames, long commandId) {
+    private ZipFile downloadAndZipReportFiles(List<String> fileNames, long commandId) {
         List<File> files = new ArrayList<>();
-        fileNames.forEach(path -> {
+        String zipName = FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + commandId + ".zip";
+
+        for (int i = 0; i < fileNames.size(); i++) {
+            File file = null;
             try {
                 //test on local
                 Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxy.etn.com", 8080));
-                URLConnection conn = new URL(path).openConnection(proxy);
+                URLConnection conn = new URL(fileNames.get(i)).openConnection(proxy);
               
                 //URLConnection conn = new URL(path).openConnection();
-                File file = new File(FILE_PATH, FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + commandId + ".csv");
+                file = new File(FILE_PATH,
+                    (i + 1) + "_" + FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + commandId + ".csv");
                 OutputStream out = new FileOutputStream(file);
                 IOUtils.copy(conn.getInputStream(), out);
                 IOUtils.closeQuietly(out);
                 files.add(file);
-                log.debug("ITRON-downoladed Itron file:{} created file:{} commandId: {}.", path, file.getPath(), commandId);
+                log.debug("ITRON-downoladed Itron file:{} created file:{} commandId: {}.", fileNames.get(0),
+                    file.getPath(), commandId);
             } catch (Exception e) {
-                log.error("Unable to download file: " + path);
+                log.error("Unable to download file: " + fileNames.get(0));
             }
-        });
-        return files;
+        }
+        return zipFiles(zipName, files);
+    }
+    
+    private ZipFile zipFiles(String zipName, List<File> files) {
+        try {
+            FileOutputStream fos = new FileOutputStream(new File(FILE_PATH, zipName));
+            ZipOutputStream zos = new ZipOutputStream(fos);
+            for (File file : files) {
+                zos.putNextEntry(new ZipEntry(file.getName()));
+                byte[] bytes = Files.readAllBytes(Paths.get(file.getPath()));
+                zos.write(bytes, 0, bytes.length);
+                zos.closeEntry();
+            }
+            zos.close();
+            String zip = FILE_PATH + System.getProperty("file.separator") + zipName;
+            log.debug("Created zip file:"+zip);
+            files.forEach(file -> file.delete());
+            return new ZipFile(zip);
+        } catch (Exception e) {
+            log.error("Unable to zip files", e);
+            throw new ItronCommunicationException("Unable to zip files", e);
+        }
     }
     
     /**
