@@ -886,6 +886,14 @@
     <entry key="yukon.common.events.dr.itron.sendEnrollmentRequest">Sending enrollment request for account: {1} for Itron Program Id: {7}.</entry>
     <entry key="yukon.common.events.dr.itron.sendEnrollmentRequest.7">Itron Program Id</entry>
     
+    <entry key="yukon.common.events.dr.itron.sendRestore">Send Restore to Yukon Group Id: {7}.</entry>
+    <entry key="yukon.common.events.dr.itron.sendRestore.7">Yukon Group Id</entry>
+    <entry key="yukon.common.events.dr.itron.sendDREventForGroup">Group DR Event was sent with the following settings: Yukon Group Id: {7}, Duty Cycle Percent: {8}, Duty Cycle Period: {9}, Criticality: {10}, Start Time: {11}.</entry>
+    <entry key="yukon.common.events.dr.itron.sendDREventForGroup.7">Yukon Group Id</entry>
+    <entry key="yukon.common.events.dr.itron.sendDREventForGroup.8">Duty Cycle Percent</entry>
+    <entry key="yukon.common.events.dr.itron.sendDREventForGroup.9">Duty Cycle Period</entry>
+    <entry key="yukon.common.events.dr.itron.sendDREventForGroup.10">Criticality</entry>
+
     <!-- Nest-->
     <entry key="yukon.common.events.dr.nest.syncStart">Sync Start: Sync Id: {7}, Start Time: {11}</entry>
     <entry key="yukon.common.events.dr.nest.syncResults">Sync Results: Sync Id: {7}, Start Time: {11}, Stop Time: {12}, Auto Count: {8}, Manual Count: {9} </entry>

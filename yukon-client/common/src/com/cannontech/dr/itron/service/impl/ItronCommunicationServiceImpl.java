@@ -173,6 +173,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Override
     public void sendRestore(int yukonGroupId) {
         long itronGroupId = itronDao.getItronGroupId(yukonGroupId);
+        itronEventLogService.sendRestore(yukonGroupId);
         sendRestore(yukonGroupId, null, itronGroupId);
     }
     
@@ -189,6 +190,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         LiteYukonPAObject program = getProgram(programId);
        
         try {
+            itronEventLogService.sendDREventForGroup(yukonGroupId, dutyCyclePercent, dutyCyclePeriod, criticality, startTime);
             AddHANLoadControlProgramEventRequest request = ProgramEventManagerHelper.buildDrEvent(dutyCyclePercent,
                dutyCyclePeriod, criticality, startTime, relay, itronProgramId, String.valueOf(programId));
             log.debug(XmlUtils.getPrettyXml(request));
