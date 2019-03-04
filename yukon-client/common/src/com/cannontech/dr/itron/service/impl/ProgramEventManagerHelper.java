@@ -1,13 +1,13 @@
 package com.cannontech.dr.itron.service.impl;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Set;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.transform.Source;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Instant;
+import org.joda.time.Duration;
 import org.springframework.ws.soap.SoapFaultDetail;
 import org.springframework.ws.soap.SoapFaultDetailElement;
 import org.springframework.ws.soap.client.SoapFaultClientException;
@@ -19,7 +19,6 @@ import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelHA
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.ErrorFault;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.EventControlType;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.LoadControlProgramEventD2GParamsType;
-import com.cannontech.dr.itron.service.ItronCommunicationException;
 
 public class ProgramEventManagerHelper implements SoapFaultParser {
     
@@ -36,23 +35,27 @@ public class ProgramEventManagerHelper implements SoapFaultParser {
     }
     
     public static AddHANLoadControlProgramEventRequest buildDrEvent(int dutyCyclePercent, int dutyCyclePeriod,
-            int criticality, Instant startTime, int relay, int itronProgramId, String programName) {
+            int criticality, int relay, int itronProgramId, String programName, int rampIn, int rampOut, Duration duration) {
         AddHANLoadControlProgramEventRequest request = new AddHANLoadControlProgramEventRequest();
         AddHANLoadControlProgramEventType event = new AddHANLoadControlProgramEventType();
         event.setProgramID(itronProgramId);
         event.setName(programName);
         event.setDutyCyclePercentage((short) dutyCyclePercent);
-        
-        try {
-            event.setDeploymentDate( DatatypeFactory.newInstance().newXMLGregorianCalendar(startTime.toDateTime().toGregorianCalendar()));
-            event.setStartDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(startTime.toDateTime().toGregorianCalendar()));
-        } catch (DatatypeConfigurationException e) {
-            throw new ItronCommunicationException("Unable to convert start time " + startTime.toDateTime(), e);
-        }
-        
+        event.setRandomizeStartTime(rampIn == 1 ? true : false);
+        event.setRandomizeEndTime(rampOut == 1 ? true : false);
+        //DatatypeFactory.newInstance().newXMLGregorianCalendar(startTime.toDateTime().toGregorianCalendar())
         LoadControlProgramEventD2GParamsType d2GParams = new LoadControlProgramEventD2GParamsType();
         d2GParams.setCriticality((short) criticality);
         d2GParams.setDutyCyclePeriod((short) dutyCyclePeriod);
+        /**
+         * Let's say the duty cycle period is 30 minutes and the event is scheduled for 45 minutes
+         * we "round up" to duty cycle count of 2 (which adds up to an hour)
+         * then LM will send the stop message at 45 minutes and we send that out to end the event
+         */
+        short dutyCycleCount =
+            new BigDecimal(duration.getStandardSeconds()).divide(new BigDecimal(dutyCyclePeriod)).setScale(0,
+                RoundingMode.HALF_UP).shortValue();
+        d2GParams.setDutyCycleCount(dutyCycleCount);
         d2GParams.setVirtualRelayAddress((short) relay);
         d2GParams.setEventControl(EventControlType.STANDARD);
         event.setD2GParams(d2GParams);

@@ -49,7 +49,7 @@ public class ItronMessageListener {
                           ", Duty Cycle Period: " + dutyCyclePeriod + ", criticality: " + criticality);
                 
                 itronCommunicationService.sendDREventForGroup(groupId, dutyCyclePercent, dutyCyclePeriod, criticality,
-                    startTime);
+                    rampIn, rampOut, controlDuration);
                 controlHistoryService.sendControlHistoryShedMessage(groupId, startTimeUtc, ControlType.ITRON, null,
                     controlDurationSeconds, 0);
             } catch (JMSException e) {
