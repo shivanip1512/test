@@ -3,7 +3,7 @@ package com.cannontech.dr.itron.service;
 import java.io.File;
 import java.util.List;
 
-import org.joda.time.Instant;
+import org.joda.time.Duration;
 
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.stars.dr.account.model.AccountDto;
@@ -82,7 +82,7 @@ public interface ItronCommunicationService {
      * Sends control request to Itron
      */
     void sendDREventForGroup(int yukonGroupId, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
-            Instant startTime);
+            int rampIn, int rampOut, Duration controlDuration);
 
     /**
      * Asks Itron to go get the latest data from the device and update itself, but there doesn't seem to be

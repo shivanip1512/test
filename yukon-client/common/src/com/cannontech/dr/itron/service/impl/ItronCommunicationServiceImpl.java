@@ -22,7 +22,7 @@ import javax.xml.bind.JAXBElement;
 import org.apache.commons.compress.utils.Sets;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Instant;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.soap.client.SoapFaultClientException;
@@ -178,7 +178,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     
     @Override
     public void sendDREventForGroup(int yukonGroupId, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
-            Instant startTime) {
+            int rampIn, int rampOut, Duration duration) {
         String url = ItronEndpointManager.PROGRAM_EVENT.getUrl(settingDao);
         int relay = itronDao.getVirtualRelayId(yukonGroupId);
         List<ProgramLoadGroup> programsByLMGroupId = applianceAndProgramDao.getProgramsByLMGroupId(yukonGroupId);
@@ -190,7 +190,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
        
         try {
             AddHANLoadControlProgramEventRequest request = ProgramEventManagerHelper.buildDrEvent(dutyCyclePercent,
-               dutyCyclePeriod, criticality, startTime, relay, itronProgramId, String.valueOf(programId));
+               dutyCyclePeriod, criticality, relay, itronProgramId, String.valueOf(programId), rampIn, rampOut, duration);
             log.debug(XmlUtils.getPrettyXml(request));
             log.debug("ITRON-sendDREventForGroup url:{} yukon group:{} yukon program:{}", url, group.getPaoName(), program.getPaoName());
             JAXBElement<AddProgramEventResponseType> response =
