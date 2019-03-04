@@ -45,5 +45,22 @@ public interface ItronEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
     public void sendEnrollmentRequest(@Arg(ArgEnum.accountNumber) String accountNumber, 
                                       Long itronProgramId);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
+    public void sendRestore(@Arg(ArgEnum.loadGroupIds) int yukonGroupId);
 
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
+    public void sendDREventForGroup(@Arg(ArgEnum.loadGroupIds) int yukonGroupId, 
+                                    int dutyCyclePercent, 
+                                    int dutyCyclePeriod,
+                                    int criticality);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
+    public void exportDeviceLogs(long startRecordId, long endRecordId);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
+    public void getExportedFiles(long commandId);
+
+    
+    
 }
