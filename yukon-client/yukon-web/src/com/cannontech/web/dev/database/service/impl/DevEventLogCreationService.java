@@ -643,7 +643,6 @@ public class DevEventLogCreationService {
                 int dutyCyclePercent = 50;
                 int dutyCyclePeriod = 10;
                 int criticality = 100;
-                Instant startTime = new Instant();
                 
                 itronEventLogService.addGroup(groupName, groupId);
                 itronEventLogService.addHANDevice(displayName, macAddress);
@@ -658,7 +657,10 @@ public class DevEventLogCreationService {
                 itronEventLogService.sendEnrollmentRequest(accountNumber, programId);
                 
                 itronEventLogService.sendRestore(yukonGroupId);
-                itronEventLogService.sendDREventForGroup(yukonGroupId, dutyCyclePercent, dutyCyclePeriod, criticality, startTime);
+                itronEventLogService.sendDREventForGroup(yukonGroupId, dutyCyclePercent, dutyCyclePeriod, criticality);
+                
+                itronEventLogService.exportDeviceLogs(1L, 100L);
+                itronEventLogService.getExportedFiles(124L);
             }
         });
         executables.put(LogType.METERING, new DevEventLogExecutable() {
@@ -1218,7 +1220,7 @@ public class DevEventLogCreationService {
         GATEWAY(GatewayEventLogService.class, 9),
         HARDWARE(HardwareEventLogService.class, 23),
         INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),  
-        ITRON(ItronEventLogService.class, 12),
+        ITRON(ItronEventLogService.class, 14),
         METERING(MeteringEventLogService.class, 15),
         MULTISPEAK(MultispeakEventLogService.class, 35),
         NEST(NestEventLogService.class, 12),

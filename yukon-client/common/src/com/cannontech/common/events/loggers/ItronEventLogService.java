@@ -1,7 +1,5 @@
 package com.cannontech.common.events.loggers;
 
-import org.joda.time.Instant;
-
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
@@ -49,14 +47,19 @@ public interface ItronEventLogService {
                                       Long itronProgramId);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
-    public void sendRestore(int yukonGroupId);
+    public void sendRestore(@Arg(ArgEnum.loadGroupIds) int yukonGroupId);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
-    public void sendDREventForGroup(int yukonGroupId, 
+    public void sendDREventForGroup(@Arg(ArgEnum.loadGroupIds) int yukonGroupId, 
                                     int dutyCyclePercent, 
                                     int dutyCyclePeriod,
-                                    int criticality, 
-                                    @Arg(ArgEnum.startTime) Instant startTime);
+                                    int criticality);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
+    public void exportDeviceLogs(long startRecordId, long endRecordId);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
+    public void getExportedFiles(long commandId);
 
     
     

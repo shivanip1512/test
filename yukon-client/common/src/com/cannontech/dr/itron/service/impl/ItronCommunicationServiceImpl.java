@@ -195,7 +195,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         LiteYukonPAObject program = getProgram(programId);
        
         try {
-            //itronEventLogService.sendDREventForGroup(yukonGroupId, dutyCyclePercent, dutyCyclePeriod, criticality);
+            itronEventLogService.sendDREventForGroup(yukonGroupId, dutyCyclePercent, dutyCyclePeriod, criticality);
             AddHANLoadControlProgramEventRequest request = ProgramEventManagerHelper.buildDrEvent(dutyCyclePercent,
                dutyCyclePeriod, criticality, relay, itronProgramId, String.valueOf(programId), rampIn, rampOut, duration);
             log.debug(XmlUtils.getPrettyXml(request));
@@ -316,6 +316,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     public ZipFile exportDeviceLogs(long startRecordId, long endRecordId) {
         String url = ItronEndpointManager.REPORT.getUrl(settingDao);
         try {
+            itronEventLogService.exportDeviceLogs(startRecordId, endRecordId);
             ExportDeviceLogRequest request = new ExportDeviceLogRequest();
             request.setRecordIDRangeStart(startRecordId);
             request.setRecordIDRangeEnd(endRecordId);
@@ -339,6 +340,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private ZipFile getExportedFiles(long commandId) {
         String url = ItronEndpointManager.REPORT.getUrl(settingDao);
         try {
+            itronEventLogService.getExportedFiles(commandId);
             GetReportGenerationStatusRequest request = new GetReportGenerationStatusRequest();
             request.setCommandID(commandId);
             log.debug("ITRON-getReport url:{} commandId:{}.", url, commandId);
