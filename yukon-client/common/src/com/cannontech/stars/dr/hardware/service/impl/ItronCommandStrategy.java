@@ -1,13 +1,16 @@
 package com.cannontech.stars.dr.hardware.service.impl;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
@@ -21,29 +24,35 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 
 public class ItronCommandStrategy  implements LmHardwareCommandStrategy{
+    private static final Logger log = YukonLogManager.getLogger(ItronCommandStrategy.class);
     
     @Autowired private ItronCommunicationService itronCommunicationService;
 
     @Override
     public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
        
-        switch (command.getType()) {
-        case CONFIG:
-        case IN_SERVICE:
-            itronCommunicationService.enroll(command.getDevice().getAccountID());
-            break;
-        case OUT_OF_SERVICE:
-            itronCommunicationService.unenroll(command.getDevice().getAccountID());
-            break;
-        case CANCEL_TEMP_OUT_OF_SERVICE:
-            itronCommunicationService.optIn(command.getDevice().getAccountID(), command.getDevice().getInventoryID());
-            break;
-        case TEMP_OUT_OF_SERVICE:
-            itronCommunicationService.optOut(command.getDevice().getAccountID(), command.getDevice().getDeviceID(),
-                command.getDevice().getInventoryID());
-            break;
-        default:
-            break;
+        try {
+            switch (command.getType()) {
+            case CONFIG:
+            case IN_SERVICE:
+                itronCommunicationService.enroll(command.getDevice().getAccountID());
+                break;
+            case OUT_OF_SERVICE:
+                itronCommunicationService.unenroll(command.getDevice().getAccountID());
+                break;
+            case CANCEL_TEMP_OUT_OF_SERVICE:
+                itronCommunicationService.optIn(command.getDevice().getAccountID(), command.getDevice().getInventoryID());
+                break;
+            case TEMP_OUT_OF_SERVICE:
+                itronCommunicationService.optOut(command.getDevice().getAccountID(), command.getDevice().getDeviceID(),
+                    command.getDevice().getInventoryID());
+                break;
+            default:
+                break;
+            }
+        } catch (ItronCommunicationException e) {
+            log.error("Error sending command to Itron server.", e);
+            throw new CommandCompletionException("Error sending command to Itron server.", e);
         }
     }
     
