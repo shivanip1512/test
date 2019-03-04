@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/21/2019 2:38:06 PM                         */
+/* Created on:     3/4/2019 10:59:03 AM                         */
 /*==============================================================*/
 
 
@@ -6688,6 +6688,15 @@ create table LMHardwareToMeterMapping  (
 );
 
 /*==============================================================*/
+/* Table: LMItronCycleGear                                      */
+/*==============================================================*/
+create table LMItronCycleGear  (
+   GearId               NUMBER                          not null,
+   CycleOption          NVARCHAR2(20)                   not null,
+   constraint PK_LMItronCycleGear primary key (GearId)
+);
+
+/*==============================================================*/
 /* Table: LMMacsScheduleCustomerList                            */
 /*==============================================================*/
 create table LMMacsScheduleCustomerList  (
@@ -13024,6 +13033,11 @@ alter table LMHardwareToMeterMapping
 alter table LMHardwareToMeterMapping
    add constraint FK_LMMETMAP_METERHARDBASE foreign key (MeterInventoryID)
       references MeterHardwareBase (InventoryID);
+
+alter table LMItronCycleGear
+   add constraint FK_LMItronCycleGear_LMPDirGear foreign key (GearId)
+      references LMProgramDirectGear (GearID)
+      on delete cascade;
 
 alter table LMMacsScheduleCustomerList
    add constraint FK_McSchCstLst_MCSched foreign key (ScheduleID)
