@@ -46,7 +46,7 @@ public class ScheduledDataImportTask extends YukonTaskBase {
         if (importDir.exists()) {
             if (ScheduledImportType.fromImportTypeMap(getImportType()) == ScheduledImportType.ASSET_IMPORT) {
                 log.info("Asset Import Task - Initiated " + getJob().getId());
-                ScheduledDataImportResult result = scheduledImportService.initiateImport(scheduleName, importPath, errorFileOutputPath);
+                ScheduledDataImportResult result = scheduledImportService.initiateImport(getJob().getUserContext(), scheduleName, importPath, errorFileOutputPath);
                 if (!result.getImportResults().isEmpty()) {
                     int groupId = getJob().getJobGroupId();
                     insertFileHistory(result.getImportResults(), groupId);

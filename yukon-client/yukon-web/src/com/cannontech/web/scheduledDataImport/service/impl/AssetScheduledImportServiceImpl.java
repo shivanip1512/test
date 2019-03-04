@@ -28,6 +28,7 @@ import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.scheduledFileImport.ScheduledImportType;
 import com.cannontech.common.util.FileUtil;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -61,21 +62,21 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
     private static volatile DateTime cleanupTime;
 
     @Override
-    public ScheduledDataImportResult initiateImport(String scheduleName, String importPath,
+    public ScheduledDataImportResult initiateImport(YukonUserContext userContext, String scheduleName, String importPath,
             String errorFileOutputPath) {
 
         if (cleanupTime == null || cleanupTime.isBefore(new DateTime().minusDays(1))) {
             cleanupTime = new DateTime();
             dataImportHelper.deleteArchiveFile();
         }
-        return initiateAssetImport(scheduleName, importPath, errorFileOutputPath);
+        return initiateAssetImport(userContext, scheduleName, importPath, errorFileOutputPath);
 
     }
      /**
       * Start asset import based on import path and create error file if there is any import error in file.
       * Also create file in archive directory and delete from import directory.
       */
-    private ScheduledDataImportResult initiateAssetImport(String scheduleName, String importPath, String errorFileOutputPath) {
+    private ScheduledDataImportResult initiateAssetImport(YukonUserContext userContext, String scheduleName, String importPath, String errorFileOutputPath) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
         boolean importPathCheck = importPathSet.add(importPath);
         ScheduledDataImportResult dataImportResult = new ScheduledDataImportResult();
@@ -89,10 +90,9 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
                     String errorFileName = null;
                     AccountImportResult result = new AccountImportResult();
 
-
                     log.info("Scheduled Data Import for type Asset Started at " + startTime.toDate() + " for  "
                         + path.toFile());
-                    logService.importStarted(YukonUserContext.system.getYukonUser(), 
+                    logService.importStarted(userContext.getYukonUser(), 
                                             accessor.getMessage(baseKey + "dataImportSchedule") + " - "
                                            + accessor.getMessage(typeKey + "ASSET_IMPORT"), path.getFileName().toString());
                     File archiveFile = dataImportHelper.getArchiveFile(startTime.toDate(), path.toFile(), ".csv");
@@ -121,7 +121,7 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
                                 }
 
                                 if (isValidActionColHeader) {
-                                    processAssetImport(path.toFile(), startTime, result);
+                                    processAssetImport(userContext, path.toFile(), startTime, result);
                                     if (result.hasErrors()) {
                                         errorFileName = archiveErrorsToCsvFile(startTime, result, columnHeaders, path.toFile(), errorFileOutputPath);
                                         dataImportResult.getErrorFiles().add(path.toFile().getName());
@@ -168,15 +168,15 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
     /**
      *  Process account import based on file and account import inputs.
      */
-    private void processAssetImport(File filetoProcess, Instant startTime, AccountImportResult result) {
-
-        result.setCurrentUser(YukonUserContext.system.getYukonUser());
-        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(YukonUserContext.system.getYukonUser());
+    private void processAssetImport(YukonUserContext userContext, File filetoProcess, Instant startTime, AccountImportResult result) {
+        LiteYukonUser user = userContext.getYukonUser();
+        result.setCurrentUser(user);
+        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
         result.setEnergyCompany(energyCompany);
         result.setPrescan(true);
         result.setScheduled(true);
         result.setOutputLogDir(dataImportHelper.getArchiveFile(startTime.toDate(), filetoProcess, ".log"));
-        importService.processAccountImport(result, YukonUserContext.system, startTime.toDate());
+        importService.processAccountImport(result, userContext, startTime.toDate());
 
     }
 
@@ -212,8 +212,8 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
      */
     private String[] getcolumnHeaders(File file) throws IOException {
         String[] columnHeaders;
-        try (InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file))) {
-            CSVReader csvReader = new CSVReader(inputStreamReader);
+        try (InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file));
+             CSVReader csvReader = new CSVReader(inputStreamReader)) {
             columnHeaders = csvReader.readNext();
         }
         return columnHeaders;
