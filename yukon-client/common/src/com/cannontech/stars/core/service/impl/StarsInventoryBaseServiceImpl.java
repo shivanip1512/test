@@ -51,6 +51,7 @@ import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.exception.DeviceMacAddressNotUpdatableException;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
@@ -140,7 +141,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             }
             
             InventoryIdentifier inventoryIdentifier = inventoryDao.getYukonInventory(liteInv.getInventoryID());
-            if (inventoryIdentifier.getHardwareType().isItron()) {
+            //only add to account if device id exists, otherwise it will be added to account when the device is created
+            if (inventoryIdentifier.getHardwareType().isItron() && liteInv.getDeviceID() > 0) {
                 AccountDto account = accountService.getAccountDto(liteInv.getAccountID(), energyCompany.getEnergyCompanyId());
                 String macAddress = deviceDao.getDeviceMacAddress(liteInv.getDeviceID());
                 itronCommunicationService.addServicePoint(account, macAddress);
@@ -317,6 +319,11 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                     PaoIdentifier honeywellWifiIdentifier = new PaoIdentifier(liteInv.getDeviceID(), paoType);
                     honeywellBuilder.updateDevice(lmHw.getInventoryID(), macAddress, liteInv.getDeviceID(),
                         dto.getDeviceVendorUserId(), honeywellWifiIdentifier);
+                } else if (inventoryIdentifier.getHardwareType().isItron()) {
+                    String existingMacAddress = deviceDao.getDeviceMacAddress(lmHw.getDeviceID());
+                    if (!existingMacAddress.equalsIgnoreCase(dto.getMacAddress())) {
+                        throw new DeviceMacAddressNotUpdatableException();
+                    }
                 }
             }
             // update install event

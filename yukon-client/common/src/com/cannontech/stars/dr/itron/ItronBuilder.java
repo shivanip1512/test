@@ -2,7 +2,6 @@ package com.cannontech.stars.dr.itron;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.device.creation.DeviceCreationService;
@@ -36,7 +35,6 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
     @Autowired private ItronCommunicationService itronCommunicationService;
     @Autowired private AccountService accountService;
     
-    @Transactional
     @Override
     public void createDevice(Hardware hardware) {
         if (deviceDao.isMacAddressExists(hardware.getMacAddress())) {

@@ -31,6 +31,7 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -56,7 +57,6 @@ import com.cannontech.stars.dr.controlHistory.service.StarsControlHistoryService
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
 import com.cannontech.stars.dr.enrollment.exception.EnrollmentSystemConfigurationException;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
@@ -82,7 +82,6 @@ import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ListMultimap;
 
 public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
@@ -103,8 +102,6 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired private StarsControlHistoryService controlHistoryService;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
     @Autowired private YukonListDao listDao;
-    @Autowired private LMHardwareConfigurationDao lmHardwareConfigDao;
-    @Autowired private IDatabaseCache cache;
 
     private final Map<Integer, Object> accountIdMutex = Collections.synchronizedMap(new HashMap<Integer, Object>());
     
@@ -206,6 +203,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             } catch(SystemConfigurationException e) {
                 log.error(e);
                 throw new EnrollmentSystemConfigurationException("System configuration error in enrollment.", e);
+            } catch (ItronCommunicationException e) {
+                log.error(e);
+                throw new EnrollmentException("There was a communication error trying to connect with Itron. Please view the logs for more details.", e);
             } catch (CommandCompletionException e) {
                 log.error(e);
                 throw new EnrollmentException("Error sending enrollment/unenrollment command.", e);
