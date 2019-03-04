@@ -24,7 +24,7 @@ pipeline {
     stages {
         stage('upgrade') {
             agent {
-                label '!master'
+                label 'java||cpp||install'
             }
 
             steps {
