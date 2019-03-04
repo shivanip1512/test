@@ -19,6 +19,7 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
+import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.pao.DisplayablePao;
@@ -35,7 +36,7 @@ import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.itron.service.ItronCommunicationService;
+import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -55,7 +56,9 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedExce
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceNotFoundOnAccountException;
 import com.cannontech.stars.dr.hardware.exception.StarsInvalidDeviceTypeException;
+import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.honeywell.HoneywellBuilder;
+import com.cannontech.stars.dr.itron.ItronBuilder;
 import com.cannontech.stars.dr.nest.NestBuilder;
 import com.cannontech.stars.dr.route.exception.StarsRouteNotFoundException;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
@@ -94,8 +97,9 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private NestBuilder nestBuilder;
     @Autowired private LatitudeLongitudeBulkFieldProcessor latitudeLongitudeBulkFieldProcessor;
-    @Autowired private ItronCommunicationService itronCommunicationService;
-    
+    @Autowired private ItronBuilder itronBuilder;
+    @Autowired private HardwareUiService hardwareUiService;
+
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();
         if (StringUtils.isBlank(acctNum)) {
@@ -303,8 +307,14 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         setInventoryValues(dto, lib, energyCompany);
 
         LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
+        
         // call service to add device on the customer account
-        lib = starsInventoryBaseService.addDeviceToAccount(lib, lsec, user, true);
+        try {
+            lib = starsInventoryBaseService.addDeviceToAccount(lib, lsec, user, true);
+        } catch (ItronCommunicationException e) {
+            throw new StarsClientRequestException("There was a communication error trying to connect with Itron.");
+        }
+
         if (isNewDevice) {
             if (ht.isRf()) {
                 try {
@@ -349,6 +359,14 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                         dto.getDeviceVendorUserId());
                 } catch (DeviceCreationException e) {
                     throw new StarsClientRequestException("Failed to register honeywell wifi device with honeywell server.", e);
+                }
+            } else if (ht.isItron()) {
+                Hardware hardware = hardwareUiService.getHardware(lib.getInventoryID());
+                hardware.setMacAddress(dto.getMacAddress());
+                try {
+                    itronBuilder.createDevice(hardware);
+                } catch (ItronCommunicationException e) {
+                    throw new StarsClientRequestException("There was a communication error trying to connect with Itron.");
                 }
             }
         }
