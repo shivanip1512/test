@@ -24,6 +24,14 @@ ALTER TABLE LMItronCycleGear
     ADD CONSTRAINT FK_LMItronCycleGear_LMPDirGear FOREIGN KEY (GearId)
     REFERENCES LMProgramDirectGear (GearID)
     ON DELETE CASCADE;
+GO
+
+INSERT INTO LMItronCycleGear
+SELECT 
+    PDG.GearId, 
+    'STANDARD' AS CycleOption
+FROM LMProgramDirectGear PDG
+WHERE PDG.ControlMethod = 'ItronCycle';
 
 INSERT INTO DBUpdates VALUES ('YUK-19601', '7.3.0', GETDATE());
 /* @end YUK-19601 */

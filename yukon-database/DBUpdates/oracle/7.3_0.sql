@@ -24,6 +24,13 @@ ALTER TABLE LMItronCycleGear
     REFERENCES LMProgramDirectGear (GearID)
     ON DELETE CASCADE;
 
+INSERT INTO LMItronCycleGear
+SELECT 
+    PDG.GearId, 
+    'STANDARD' AS CycleOption
+FROM LMProgramDirectGear PDG
+WHERE PDG.ControlMethod = 'ItronCycle';
+
 INSERT INTO DBUpdates VALUES ('YUK-19601', '7.3.0', SYSDATE);
 /* @end YUK-19601 */
 
