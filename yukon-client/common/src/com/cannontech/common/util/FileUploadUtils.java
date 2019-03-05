@@ -1,6 +1,8 @@
 package com.cannontech.common.util;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,5 +49,21 @@ public class FileUploadUtils {
         } else if (file.getInputStream().available() <= 0) {
             throw new EmptyImportFileException("yukon.web.import.error.emptyFile");
         }
+    }
+    
+    /**
+     * Validate file type and return true if it is valid CSV file
+     */
+    public static boolean validateCsvFileContentType(Path path) {
+
+        try {
+            String contentType = Files.probeContentType(path);
+            if (contentType != null && (contentType.startsWith("text") || contentType.endsWith("excel"))) {
+                return true;
+            }
+        } catch (IOException e) {
+            // do nothing
+        }
+        return false;
     }
 }

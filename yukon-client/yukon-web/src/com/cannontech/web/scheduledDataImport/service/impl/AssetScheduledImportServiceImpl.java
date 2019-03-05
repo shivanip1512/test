@@ -27,6 +27,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.scheduledFileImport.ScheduledImportType;
+import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.util.FileUtil;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -82,7 +83,7 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
         ScheduledDataImportResult dataImportResult = new ScheduledDataImportResult();
         if (importPathCheck) {
             try (Stream<Path> paths = Files.walk(Paths.get(importPath))) {
-                paths.filter(path -> (Files.isRegularFile(path) && FileUtil.validateFileType(path)
+                paths.filter(path -> (Files.isRegularFile(path) && FileUploadUtils.validateCsvFileContentType(path)
                     && path.toFile().length() > 4)).forEach(path -> {
                         // Check if a file is empty or not based on byte size (length > 4). (if remove the data from excel,
                         // it still give you empty string for row)
