@@ -26,6 +26,8 @@ public:
                            long dutyCyclePercent,
                            long dutyCyclePeriod,
                            long criticality ) override;
+
+    bool doesStopRequireCommandAt( const CtiTime & currentTime ) const override;
 };
 
 typedef boost::shared_ptr<LMGroupItron> LMGroupItronPtr;

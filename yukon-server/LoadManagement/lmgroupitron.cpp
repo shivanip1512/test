@@ -129,3 +129,8 @@ bool LMGroupItron::sendShedControl( long controlMinutes )
     return true;
 }
 
+bool LMGroupItron::doesStopRequireCommandAt( const CtiTime & currentTime ) const
+{
+    return getControlStartTime() < currentTime && currentTime <= getLastStopTimeSent();
+}
+
