@@ -122,6 +122,15 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
     
     @Override
+    public int getDeviceIdFromMacAddress(String macAddress) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId");
+        sql.append("FROM DeviceMacAddress");
+        sql.append("WHERE MacAddress").eq(macAddress);
+        return jdbcTemplate.queryForInt(sql);
+    }
+    
+    @Override
     public Map<Integer, String> getDeviceMacAddresses(Collection<Integer> deviceIds) {
         ChunkingSqlTemplate chunkingSqlTemplate = new ChunkingSqlTemplate(jdbcTemplate);
         SqlStatementBuilder sql = new SqlStatementBuilder();

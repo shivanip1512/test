@@ -221,6 +221,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RELAY_1_RUN_TIME_DATA_LOG_5_MIN("Relay 1 Run Time Data Log 5 Minutes", AttributeGroup.RELAY),
     RELAY_1_RUN_TIME_DATA_LOG_15_MIN("Relay 1 Run Time Data Log 15 Minutes", AttributeGroup.RELAY),
     RELAY_1_RUN_TIME_DATA_LOG_30_MIN("Relay 1 Run Time Data Log 30 Minutes", AttributeGroup.RELAY),
+    RELAY_1_SHED_STATUS("Relay 1 Shed Status", AttributeGroup.RELAY),
     RELAY_1_SHED_TIME_DATA_LOG("Relay 1 Shed Time", AttributeGroup.RELAY),
     RELAY_1_RELAY_STATE("Relay 1 Relay State", AttributeGroup.RELAY),
     RELAY_2_LOAD_SIZE("Relay 2 kW Load Size", AttributeGroup.RELAY),
@@ -229,6 +230,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RELAY_2_RUN_TIME_DATA_LOG_5_MIN("Relay 2 Run Time Data Log 5 Minutes", AttributeGroup.RELAY),
     RELAY_2_RUN_TIME_DATA_LOG_15_MIN("Relay 2 Run Time Data Log 15 Minutes", AttributeGroup.RELAY),
     RELAY_2_RUN_TIME_DATA_LOG_30_MIN("Relay 2 Run Time Data Log 30 Minutes", AttributeGroup.RELAY),
+    RELAY_2_SHED_STATUS("Relay 2 Shed Status", AttributeGroup.RELAY),
     RELAY_2_SHED_TIME_DATA_LOG("Relay 2 Shed Time", AttributeGroup.RELAY),
     RELAY_2_RELAY_STATE("Relay 2 Relay State", AttributeGroup.RELAY),
     RELAY_3_LOAD_SIZE("Relay 3 kW Load Size", AttributeGroup.RELAY),
@@ -237,6 +239,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RELAY_3_RUN_TIME_DATA_LOG_5_MIN("Relay 3 Run Time Data Log 5 Minutes", AttributeGroup.RELAY),
     RELAY_3_RUN_TIME_DATA_LOG_15_MIN("Relay 3 Run Time Data Log 15 Minutes", AttributeGroup.RELAY),
     RELAY_3_RUN_TIME_DATA_LOG_30_MIN("Relay 3 Run Time Data Log 30 Minutes", AttributeGroup.RELAY),
+    RELAY_3_SHED_STATUS("Relay 3 Shed Status", AttributeGroup.RELAY),
     RELAY_3_SHED_TIME_DATA_LOG("Relay 3 Shed Time", AttributeGroup.RELAY),
     RELAY_3_RELAY_STATE("Relay 3 Relay State", AttributeGroup.RELAY),
     RELAY_4_REMAINING_CONTROL("Relay 4 Remaining Control Time", AttributeGroup.RELAY),
@@ -244,6 +247,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RELAY_4_RUN_TIME_DATA_LOG_5_MIN("Relay 4 Run Time Data Log 5 Minutes", AttributeGroup.RELAY),
     RELAY_4_RUN_TIME_DATA_LOG_15_MIN("Relay 4 Run Time Data Log 15 Minutes", AttributeGroup.RELAY),
     RELAY_4_RUN_TIME_DATA_LOG_30_MIN("Relay 4 Run Time Data Log 30 Minutes", AttributeGroup.RELAY),
+    RELAY_4_SHED_STATUS("Relay 4 Shed Status", AttributeGroup.RELAY),
     RELAY_4_SHED_TIME_DATA_LOG("Relay 4 Shed Time", AttributeGroup.RELAY),
     RELAY_4_RELAY_STATE("Relay 4 Relay State", AttributeGroup.RELAY),
     REPORTING_INTERVAL("Reporting Interval", AttributeGroup.OTHER),
@@ -610,6 +614,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     REVERSE_BANDWIDTH("Reverse Bandwidth", AttributeGroup.CAPCONTROL, false),
     REVERSE_SET_POINT("Reverse Set Point", AttributeGroup.CAPCONTROL, false),
     REVERSE_FLOW_INDICATOR("Reverse Flow Indicator", AttributeGroup.CAPCONTROL, false),
+    
+    EVENT_SUPERSEDED("Event Superseded", AttributeGroup.RELAY, false),
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
