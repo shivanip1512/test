@@ -101,7 +101,7 @@ public class DataDownloadServiceImplTest {
                     expectedReadings.add(reading);
                 }
 
-                deviceReadings.add(new EcobeeDeviceReadings(serialNumber, dateRange, expectedReadings));
+                deviceReadings.add(new EcobeeDeviceReadings(serialNumber, expectedReadings));
             }
             
             return deviceReadings;
@@ -157,11 +157,6 @@ public class DataDownloadServiceImplTest {
 
         @Override
         public void sendOverrideControl(String serialNumber) {
-            throw new UnsupportedOperationException("Method not implemented.");
-        }
-
-        @Override
-        public List<EcobeeDeviceReadings> readDeviceData(Collection<String> serialNumbers, Range<Instant> dateRange) {
             throw new UnsupportedOperationException("Method not implemented.");
         }
 

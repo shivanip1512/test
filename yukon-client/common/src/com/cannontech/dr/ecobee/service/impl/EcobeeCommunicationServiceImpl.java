@@ -8,13 +8,12 @@ import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.VALIDATION_ERROR
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.net.HttpURLConnection;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -29,9 +28,6 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.LocalDateTime;
-import org.joda.time.MutableDateTime;
-import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -55,7 +51,6 @@ import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
 import com.cannontech.dr.ecobee.message.BaseResponse;
 import com.cannontech.dr.ecobee.message.CreateSetRequest;
 import com.cannontech.dr.ecobee.message.DeleteSetRequest;
-import com.cannontech.dr.ecobee.message.DeviceDataResponse;
 import com.cannontech.dr.ecobee.message.DrResponse;
 import com.cannontech.dr.ecobee.message.DrRestoreRequest;
 import com.cannontech.dr.ecobee.message.DutyCycleDrRequest;
@@ -70,16 +65,12 @@ import com.cannontech.dr.ecobee.message.RuntimeReportJobRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportJobResponse;
 import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusResponse;
-import com.cannontech.dr.ecobee.message.RuntimeReportRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.UnregisterDeviceRequest;
 import com.cannontech.dr.ecobee.message.partial.DutyCycleDr;
-import com.cannontech.dr.ecobee.message.partial.RuntimeReport;
-import com.cannontech.dr.ecobee.message.partial.RuntimeReportRow;
 import com.cannontech.dr.ecobee.message.partial.Selection;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
-import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
@@ -90,8 +81,6 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 
 public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationService {
     
@@ -110,7 +99,6 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     private static final String modifyThermostatUrlPart = "hierarchy/thermostat?format=json";
     private static final String demandResponseUrlPart = "demandResponse?format=json";
     private static final String createRuntimeReportJobUrlPart = "runtimeReportJob/create";
-    private static final String runtimeReportUrlPart = "runtimeReport?format=json";
     private static final String getRuntimeReportJobStatusUrlPart = "runtimeReportJob/status?format=json";
 
     @Override
@@ -199,61 +187,6 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         }
 
         return response.getSuccess();
-    }
-
-    @Override
-    public List<EcobeeDeviceReadings> readDeviceData(Collection<String> serialNumbers, Range<Instant> dateRange) {
-        log.trace("Reading ecobee devices: " + serialNumbers + " Date range: " + dateRange);
-        
-        MutableDateTime mutableStartDate = new MutableDateTime(dateRange.getMin());
-        mutableStartDate.setMillisOfSecond(0);
-        mutableStartDate.setSecondOfMinute(0);
-        int minuteOfHour = mutableStartDate.getMinuteOfHour();
-        mutableStartDate.setMinuteOfHour(minuteOfHour / 5 * 5);
-        Instant requestStartDate = mutableStartDate.toInstant();
-        Instant requestStopDate = dateRange.getMax();
-
-        String url = getUrlBase() + runtimeReportUrlPart + "&body={bodyJson}";
-        RuntimeReportRequest request =
-                new RuntimeReportRequest(requestStartDate, requestStopDate, serialNumbers, deviceReadColumns);
-
-        DeviceDataResponse response = queryEcobeeGet(url, new HttpEntity<>(new HttpHeaders()), request,
-                                              EcobeeQueryType.DATA_COLLECTION, DeviceDataResponse.class);
-
-        Set<String> missingSerialNumbers = new HashSet<>(serialNumbers);
-        if (response.getReportList() != null) {
-            Iterables.removeAll(missingSerialNumbers, 
-                                Lists.transform(response.getReportList(), RuntimeReport.TO_SERIAL_NUMBER));
-        }
-
-        for (String missingSerialNumber : missingSerialNumbers) {
-            log.error("Unable to read Serial number: " + missingSerialNumber 
-                      + ". It may have been removed from ecobee's system.");
-        }
-
-        List<EcobeeDeviceReadings> deviceData = new ArrayList<>();
-        if (response.getReportList() != null) {
-            for (RuntimeReport runtimeReport : response.getReportList()) {
-                List<RuntimeReportRow> sortedReports = new ArrayList<>(runtimeReport.getRuntimeReports());
-                Collections.sort(sortedReports, RuntimeReportRow.ON_THERMOSTAT_TIME);
-
-                LocalDateTime reportStartDate = sortedReports.get(0).getThermostatTime();
-                Period offsetPeriod = new Period(requestStartDate, reportStartDate.toDateTime(DateTimeZone.UTC));
-                DateTimeZone thermostatDateTime = 
-                        DateTimeZone.forOffsetHoursMinutes(offsetPeriod.getHours(), offsetPeriod.getMinutes());
-
-                List<EcobeeDeviceReading> readings = new ArrayList<>();
-                for (RuntimeReportRow reportRow : sortedReports) {
-                    Instant date = reportRow.getThermostatTime().toDateTime(thermostatDateTime).toInstant();
-                    EcobeeDeviceReading reading = new EcobeeDeviceReading(reportRow.getOutdoorTemp(),
-                        reportRow.getIndoorTemp(), reportRow.getCoolSetPoint(), reportRow.getHeatSetPoint(),
-                        reportRow.getRuntime(), reportRow.getEventName(), date);
-                    readings.add(reading);
-                }
-                deviceData.add(new EcobeeDeviceReadings(runtimeReport.getThermostatIdentifier(), dateRange, readings));
-            }
-        }
-        return deviceData;
     }
 
     @Override
@@ -507,7 +440,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         for (String url : dataUrls) {
             try {
                 String decryptedFileName = ecobeeCommunicationServiceHelper.getDecryptedFileName(url);
-                HttpURLConnection connection = YukonHttpProxy.getHttpURLConnection(url, settingDao);
+                URLConnection connection = YukonHttpProxy.getHttpURLConnection(url, settingDao);
 
                 try (BufferedInputStream gpgInputStream = new BufferedInputStream(connection.getInputStream())) {
                     byte byteArray[] = ecobeeSecurityService.decryptEcobeeFile(gpgInputStream);
@@ -517,7 +450,9 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                     List<File> csvFiles = FileUtil.untar(FileUtil.ungzip(tarGzfile));
                     ecobeeDeviceReadings = ecobeeCommunicationServiceHelper.getEcobeeDeviceReadings(csvFiles);
                 } finally {
-                    connection.disconnect();
+                    if (connection instanceof HttpURLConnection) {
+                        ((HttpURLConnection) connection).disconnect();
+                    }
                 }
             } catch (Exception e) {
                 log.error("Unable to connect with proxy server or URL is not correct", e);

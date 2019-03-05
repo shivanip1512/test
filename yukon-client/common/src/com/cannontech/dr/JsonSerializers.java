@@ -1,29 +1,23 @@
 package com.cannontech.dr;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.dr.ecobee.message.EcobeeJobStatus;
-import com.cannontech.dr.ecobee.message.partial.RuntimeReportRow;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.cannontech.dr.honeywellWifi.azure.event.ConnectionStatus;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatus;
 import com.cannontech.dr.honeywellWifi.azure.event.EventPhase;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -259,78 +253,6 @@ public interface JsonSerializers {
         public Instant deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
                 throws IOException, JsonProcessingException {
             return ecobeeTimeFormatter.parseDateTime(paramJsonParser.getValueAsString()).toInstant();
-        }
-    }
-
-    class FROM_RUNTIME_REPORTS extends JsonDeserializer<RuntimeReportRow> {
-        @Override
-        public RuntimeReportRow deserialize(JsonParser parser, DeserializationContext context) throws IOException,
-                JsonProcessingException {
-            // https://www.ecobee.com/home/developer/api/documentation/v1/operations/get-runtime-report.shtml
-            // "2010-01-01,00:00:00,heatOff,70,92,..."
-            String str = parser.getValueAsString();
-            if (str == null) {
-                return null;
-            }
-            String[] split = str.split(",", -1);
-            if (split.length < 9) {
-                throw new JsonParseException("Unable to parse RuntimeReportRow. The ecobee CSV did not contain the "
-                    + "correct number of fields. ", parser.getCurrentLocation());
-            }
-            // array contains: [date, time, <deviceReadColumns>]
-            // deviceReadColumns defined in EcobeeCommunicationServiceImpl, returned in the same order
-            String dateStr = split[0] + " " + split[1];
-            LocalDateTime thermostatTime = COMBINED_DATE_TIME.parseLocalDateTime(dateStr);
-
-            String eventName = split[2];
-            Float indoorTemp = StringUtils.isEmpty(split[3]) ? null : Float.parseFloat(split[3]);
-            Float outdoorTemp = StringUtils.isEmpty(split[4]) ? null : Float.parseFloat(split[4]);
-            Float coolSetPoint = StringUtils.isEmpty(split[5]) ? null : Float.parseFloat(split[5]);
-            Float heatSetPoint = StringUtils.isEmpty(split[6]) ? null : Float.parseFloat(split[6]);
-            
-            Integer coolRuntime = StringUtils.isEmpty(split[7]) ? null : Integer.parseInt(split[7]);
-            Integer heatRuntime = StringUtils.isEmpty(split[8]) ? null : Integer.parseInt(split[8]);
-            
-            Integer runtime;
-            // Add the values if they're both non-null
-            if (coolRuntime != null && heatRuntime != null) {
-                runtime = coolRuntime + heatRuntime;
-            // If only one is non-null, use that value. Otherwise return null.
-            } else if (coolRuntime == null){
-                runtime = heatRuntime;
-            } else {
-                runtime = coolRuntime;
-            }
-            
-            return new RuntimeReportRow(thermostatTime, eventName, indoorTemp, outdoorTemp, coolSetPoint, heatSetPoint,
-                runtime);
-        }
-    }
-
-    class TO_RUNTIME_REPORTS extends JsonSerializer<RuntimeReportRow> {
-        private static final DateTimeFormatter ecobeeDateFormatter =
-                DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
-        private static final DateTimeFormatter ecobeeTimeFormatter =
-                DateTimeFormat.forPattern("HH:mm:ss").withZoneUTC();
-        @Override
-        public void serialize(RuntimeReportRow reportRow, JsonGenerator jsonGenerator, SerializerProvider provider) 
-                throws IOException, JsonProcessingException {
-            List<String> values = new ArrayList<>();
-
-            values.add(ecobeeDateFormatter.print(reportRow.getThermostatTime()));
-            values.add(ecobeeTimeFormatter.print(reportRow.getThermostatTime()));
-            values.add(reportRow.getEventName());
-            values.add(toStringNullSafe(reportRow.getIndoorTemp()));
-            values.add(toStringNullSafe(reportRow.getOutdoorTemp()));
-            values.add(toStringNullSafe(reportRow.getCoolSetPoint()));
-            values.add(toStringNullSafe(reportRow.getHeatSetPoint()));
-            values.add(Integer.toString(reportRow.getRuntime()));
-            values.add(Integer.toString(0));
-
-            jsonGenerator.writeString(Joiner.on(",").join(values));
-        }
-        private String toStringNullSafe(Float num) {
-            return num == null ? "" : Float.toString(num);
         }
     }
 

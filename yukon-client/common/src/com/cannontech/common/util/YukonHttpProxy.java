@@ -1,9 +1,9 @@
 package com.cannontech.common.util;
 
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Optional;
 
 import org.apache.http.HttpHost;
@@ -93,15 +93,15 @@ public class YukonHttpProxy {
         log.info("Adding " + hostAddresses + " to JVM proxy bypass list.");
     }
 
-    public static HttpURLConnection getHttpURLConnection(String url, GlobalSettingDao globalSettingDao) throws Exception {
+    public static URLConnection getHttpURLConnection(String url, GlobalSettingDao globalSettingDao) throws Exception {
         Optional<YukonHttpProxy> proxy = YukonHttpProxy.fromGlobalSetting(globalSettingDao);
-        HttpURLConnection urlConnection = null;
+        URLConnection urlConnection = null;
         try {
             URL connectionUrl = new URL(url);
             if (proxy.isPresent()) {
-                urlConnection = (HttpURLConnection) connectionUrl.openConnection(proxy.get().getJavaHttpProxy());
+                urlConnection = connectionUrl.openConnection(proxy.get().getJavaHttpProxy());
             } else {
-                urlConnection = (HttpURLConnection) connectionUrl.openConnection();
+                urlConnection = connectionUrl.openConnection();
             }
             urlConnection.connect();
         } catch (Exception e) {

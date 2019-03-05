@@ -247,11 +247,12 @@ import com.cannontech.dr.ecobee.dao.EcobeeQueryType;
 import com.cannontech.dr.ecobee.message.AuthenticationRequest;
 import com.cannontech.dr.ecobee.message.AuthenticationResponse;
 import com.cannontech.dr.ecobee.message.CreateSetRequest;
-import com.cannontech.dr.ecobee.message.DeviceDataResponse;
 import com.cannontech.dr.ecobee.message.DrRestoreRequest;
+import com.cannontech.dr.ecobee.message.EcobeeReportJob;
 import com.cannontech.dr.ecobee.message.MoveDeviceRequest;
 import com.cannontech.dr.ecobee.message.MoveSetRequest;
 import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
+import com.cannontech.dr.ecobee.message.RuntimeReportJobResponse;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.partial.DemandResponseRef;
 import com.cannontech.dr.ecobee.message.partial.Status;
@@ -478,7 +479,6 @@ public class SimpleImmutabilityTest {
             AuthenticationResponse.class,
             CreateSetRequest.class,
             DemandResponseRef.class,
-            DeviceDataResponse.class,
             DrRestoreRequest.class,
             EcobeeDeviceReading.class,
             EcobeeDeviceReadings.class,
@@ -490,6 +490,7 @@ public class SimpleImmutabilityTest {
             EcobeeQueryCount.class,
             EcobeeQueryStatistics.class,
             EcobeeQueryType.class,
+            EcobeeReportJob.class,
             InventoryRelayAppliances.class,
             MoveDeviceRequest.class,
             MoveSetRequest.class,
@@ -505,6 +506,7 @@ public class SimpleImmutabilityTest {
             RfnLcrReadSimulatorDeviceParameters.class,
             RfnLcrReadingType.class,
             RfnLcrRelayDataMap.class,
+            RuntimeReportJobResponse.class,
             StandardResponse.class,
             Status.class,
             ThermostatRampRateValues.class,
