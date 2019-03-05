@@ -5,6 +5,7 @@ import java.util.List;
 import org.joda.time.Instant;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -20,6 +21,26 @@ import com.cannontech.user.YukonUserContext;
  * Dao for fetching asset availability details
  */
 public interface AssetAvailabilityDao {
+
+    public enum SortBy {
+
+        SERIALNUM("SERIAL_NUM"), 
+        TYPE("TYPE"), 
+        LASTCOMM("LAST_COMM"), 
+        LASTRUN("LAST_RUN");
+
+        private final String dbString;
+
+        private SortBy(String dbString) {
+            this.dbString = dbString;
+        }
+
+        public String getDbString() {
+            return dbString;
+        }
+
+    }
+
     /**
      * Creates ApplianceAssetAvailabilityDetails list which have the details of assets
      * 
@@ -69,7 +90,8 @@ public interface AssetAvailabilityDao {
      * @param loadGroupIds -- list of load group ids.
      * @param pagingParameters -- paging details.
      * @param filters -- filter details.
-     * @param sortingParameters -- Sorting details. Sorting order and direction are fetched from this.
+     * @param sortBy -- Sorting details. Sorting order and direction are fetched from this.
+     * @param direction -- Sorting direction details.
      * @param communicatingWindowEnd -- communicating window end time.
      * @param runtimeWindowEnd -- runtime window end time
      * @param currentTime -- current Time.
@@ -78,7 +100,7 @@ public interface AssetAvailabilityDao {
      */
     SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups,
             Iterable<Integer> loadGroupIds, PagingParameters pagingParameters,
-            AssetAvailabilityCombinedStatus[] filterCriteria, SortingParameters sortingParameters,
+            AssetAvailabilityCombinedStatus[] filterCriteria, SortBy sortBy, Direction direction,
             Instant communicatingWindowEnd, Instant runtimeWindowEnd, Instant currentTime,
             YukonUserContext userContext);
 

@@ -103,18 +103,6 @@ public abstract class DemandResponseControllerBase {
         return assetTotal;
     }
 
-    protected SearchResults<ApplianceAssetAvailabilityDetails> getResultsList(DisplayablePao dispPao, YukonUserContext userContext,
-        AssetAvailabilityCombinedStatus[] filters, PagingParameters paging, SortingParameters sortBy) {
-
-    paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), dispPao, Permission.LM_VISIBLE);
-    log.debug("Getting asset availability for " + dispPao.getPaoIdentifier());
-    SearchResults<ApplianceAssetAvailabilityDetails> resultList =
-        assetAvailabilityService.getAssetAvailabilityWithAppliance(dispPao.getPaoIdentifier(), paging, filters, sortBy,
-            userContext);
-
-    return resultList;
-}
-
     /*
      * Used as part of the downloadToCsv feature in the controllers.
      */

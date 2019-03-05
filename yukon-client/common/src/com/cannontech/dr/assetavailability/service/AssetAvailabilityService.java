@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -17,6 +18,7 @@ import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
+import com.cannontech.dr.assetavailability.dao.AssetAvailabilityDao.SortBy;
 import com.cannontech.user.YukonUserContext;
 
 /**
@@ -86,6 +88,6 @@ public interface AssetAvailabilityService {
      */
     SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups,
             PaoIdentifier paoIdentifier, PagingParameters paging, AssetAvailabilityCombinedStatus[] filters,
-            SortingParameters sortBy, YukonUserContext userContext);
+            SortBy sortBy, Direction direction, YukonUserContext userContext);
 
 }

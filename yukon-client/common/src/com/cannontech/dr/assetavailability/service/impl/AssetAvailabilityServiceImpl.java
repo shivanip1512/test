@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -32,6 +33,7 @@ import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategories;
 import com.cannontech.dr.assetavailability.InventoryRelayAppliances;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.dao.AssetAvailabilityDao;
+import com.cannontech.dr.assetavailability.dao.AssetAvailabilityDao.SortBy;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
@@ -178,7 +180,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     @Override
     public SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups,
             PaoIdentifier paoIdentifier, PagingParameters paging, AssetAvailabilityCombinedStatus[] filters,
-            SortingParameters sortBy, YukonUserContext userContext) {
+            SortBy sortBy, Direction direction, YukonUserContext userContext) {
         log.debug("Calculating asset availability for " + paoIdentifier.getPaoType() + " " + paoIdentifier.getPaoId());
         Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(paoIdentifier);
 
@@ -187,7 +189,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         Instant runtimeWindowEnd = now.minus(getRuntimeWindowDuration());
 
         SearchResults<AssetAvailabilityDetails> assetAvailabilityDetails =
-            assetAvailabilityDao.getAssetAvailabilityDetails(subGroups, loadGroupIds, paging, filters, sortBy,
+            assetAvailabilityDao.getAssetAvailabilityDetails(subGroups, loadGroupIds, paging, filters, sortBy, direction,
                 communicatingWindowEnd, runtimeWindowEnd, now, userContext);
 
         return assetAvailabilityDetails;

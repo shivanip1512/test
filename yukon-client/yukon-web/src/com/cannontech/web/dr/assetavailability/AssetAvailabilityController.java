@@ -49,6 +49,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
+import com.cannontech.dr.assetavailability.dao.AssetAvailabilityDao.SortBy;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
@@ -158,9 +159,9 @@ public class AssetAvailabilityController {
             AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext) {
         PaoIdentifier paoIdentifier = cache.getAllPaosMap().get(paobjectId).getPaoIdentifier();
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
-        SearchResults<AssetAvailabilityDetails> searchResults = assetAvailabilityService.getAssetAvailabilityDetails(
+        SearchResults<AssetAvailabilityDetails> searchResults =assetAvailabilityService.getAssetAvailabilityDetails(
             subGroups, paoIdentifier, PagingParameters.EVERYTHING, statuses,
-            SortingParameters.of(AssetAvailabilitySortBy.SERIAL_NUM.toString(), Direction.asc), userContext);
+            AssetAvailabilitySortBy.valueOf("SERIAL_NUM").getValue(), Direction.asc, userContext);
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         List<Integer> deviceIds = searchResults.getResultList().stream().filter(assetAvailabilityDetail -> assetAvailabilityDetail.getDeviceId() != 0)
                                                                         .map(AssetAvailabilityDetails::getDeviceId)
@@ -241,10 +242,10 @@ public class AssetAvailabilityController {
         }
 
         PaoIdentifier paoIdentifier = cache.getAllPaosMap().get(paobjectId).getPaoIdentifier();
-
+        SortBy sortByValue = AssetAvailabilitySortBy.valueOf(sorting.getSort()).getValue();
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         SearchResults<AssetAvailabilityDetails> searchResults = assetAvailabilityService.getAssetAvailabilityDetails(
-            subGroups, paoIdentifier, paging, statuses, sorting, userContext);
+            subGroups, paoIdentifier, paging, statuses, sortByValue, sorting.getDirection(), userContext);
 
         model.addAttribute("searchResults", searchResults);
         
@@ -301,7 +302,7 @@ public class AssetAvailabilityController {
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         SearchResults<AssetAvailabilityDetails> searchResults = assetAvailabilityService.getAssetAvailabilityDetails(
             subGroups, paoIdentifier, PagingParameters.EVERYTHING, statuses,
-            SortingParameters.of(AssetAvailabilitySortBy.SERIAL_NUM.toString(), Direction.asc), userContext);
+            AssetAvailabilitySortBy.valueOf("SERIAL_NUM").getValue(), Direction.asc, userContext);
 
         List<InventoryIdentifier> inventoryIdentifieres = searchResults.getResultList().stream().map(
             assetAvailabilityDetails -> new InventoryIdentifier(assetAvailabilityDetails.getInventoryId(),
@@ -336,8 +337,8 @@ public class AssetAvailabilityController {
 
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
-        SearchResults<AssetAvailabilityDetails> results = assetAvailabilityService.getAssetAvailabilityDetails(
-            subGroups, liteYukonPAObject.getPaoIdentifier(), PagingParameters.EVERYTHING, statuses, null, userContext);
+        SearchResults<AssetAvailabilityDetails> results =assetAvailabilityService.getAssetAvailabilityDetails(
+            subGroups, liteYukonPAObject.getPaoIdentifier(), PagingParameters.EVERYTHING, statuses, null, Direction.asc, userContext);
 
         List<String[]> dataRows = Lists.newArrayList();
 
@@ -365,10 +366,20 @@ public class AssetAvailabilityController {
 
     public enum AssetAvailabilitySortBy implements DisplayableEnum {
 
-        SERIAL_NUM, 
-        TYPE, 
-        LAST_COMM, 
-        LAST_RUN;
+        SERIAL_NUM(SortBy.SERIALNUM),
+        TYPE(SortBy.TYPE),
+        LAST_COMM(SortBy.LASTCOMM),
+        LAST_RUN(SortBy.LASTRUN);
+
+        private final SortBy value;
+
+        private AssetAvailabilitySortBy(SortBy value) {
+            this.value = value;
+        }
+
+        public SortBy getValue() {
+            return value;
+        }
 
         @Override
         public String getFormatKey() {

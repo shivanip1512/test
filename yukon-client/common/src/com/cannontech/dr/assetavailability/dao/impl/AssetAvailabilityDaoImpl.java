@@ -311,10 +311,10 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
 
     public SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups, Iterable<Integer> loadGroupIds,
             PagingParameters pagingParameters, AssetAvailabilityCombinedStatus[] filterCriteria,
-            SortingParameters sortingParameters, Instant communicatingWindowEnd, Instant runtimeWindowEnd,
+            SortBy sortBy, Direction direction, Instant communicatingWindowEnd, Instant runtimeWindowEnd,
             Instant currentTime, YukonUserContext userContext) {
-        String sortingOrder = (sortingParameters == null) ? "SERIAL_NUM" : sortingParameters.getSort();
-        Direction sortingDirection = ((sortingParameters == null) ? Direction.asc : sortingParameters.getDirection());
+        String sortingOrder = (sortBy == null) ? "SERIAL_NUM" : sortBy.getDbString();
+        Direction sortingDirection = ((direction == null) ? Direction.asc : direction);
 
         SqlStatementBuilder sqlPaginateQuery = new SqlStatementBuilder();
         SqlStatementBuilder sqlTotalCountQuery = new SqlStatementBuilder();

@@ -8,6 +8,7 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -68,7 +69,7 @@ public class MockAssetAvailabilityDao implements AssetAvailabilityDao {
     @Override
     public SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups,
             Iterable<Integer> loadGroupIds, PagingParameters pagingParameters,
-            AssetAvailabilityCombinedStatus[] filterCriteria, SortingParameters sortingParameters,
+            AssetAvailabilityCombinedStatus[] filterCriteria, SortBy sortBy,Direction direction,
             Instant communicatingWindowEnd, Instant runtimeWindowEnd, Instant currentTime,
             YukonUserContext userContext) {
         List<AssetAvailabilityDetails> resultList = new ArrayList<AssetAvailabilityDetails>();
