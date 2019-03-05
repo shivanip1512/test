@@ -9,4 +9,6 @@
     <bean class="com.cannontech.dr.itron.service.impl.ProgramManagerHelper"/>
     <bean class="com.cannontech.dr.itron.service.impl.ServicePointManagerHelper"/>
     <bean class="com.cannontech.dr.itron.service.impl.DeviceManagerHelper"/>
+
+    <bean class="com.cannontech.dr.itron.service.impl.ItronDeviceDataParser"/>
 </beans>

@@ -33,6 +33,8 @@ public class ItronPeriodicDataCollectionServiceImpl implements ItronPeriodicData
     @Autowired GlobalSettingDao settingsDao;
     @Autowired AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired PaoDao paoDao;
+    @Autowired ItronDeviceDataParser itronDeviceDataParser;
+
     private Duration interval = Duration.ZERO;
     private ScheduledFuture<?> scheduledTask;
 
