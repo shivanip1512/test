@@ -290,7 +290,7 @@ public class DeveloperController {
             throws CryptoException, IOException, JDOMException, DecoderException {
         Optional<EncryptionKey> encryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.Ecobee);
         PGPKeyPair keypair = new PGPKeyPair();
-        if (!encryptionKey.isEmpty()) {
+        if (encryptionKey.isPresent()) {
             char[] password = CryptoUtils.getSharedPasskey();
             AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
             String aesDecryptedPrivatekey = encrypter.decryptHexStr(encryptionKey.get().getPrivateKey());
@@ -303,7 +303,7 @@ public class DeveloperController {
     }
 
     @PostMapping(path = "/saveEcobeeKeyPair")
-    public String saveEcobeeKeyPair(@ModelAttribute("pgpKeyPair") PGPKeyPair pgpKeyPair, HttpServletRequest request,
+    public String saveEcobeeKeyPair(@ModelAttribute("pgpKeyPair") PGPKeyPair pgpKeyPair,
             FlashScope flash) throws CryptoException, IOException, JDOMException {
         final String homeKey = "yukon.web.modules.dev.ecobeePGPKeyPair.";
         Instant timestamp = Instant.now();
