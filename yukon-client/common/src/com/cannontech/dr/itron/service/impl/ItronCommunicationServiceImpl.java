@@ -374,32 +374,34 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     /**
-     * Downloads files from itron and copies to ExportArchive/Itron.
-     * The files name is going to be timestamp_coomanId. Command Id can be correlated to log debug statements.
+     * Downloads files from itron.
+     * The files name is going to be filenumber_timestamp_commandId. Command Id can be correlated to log debug statements.
+     * Zips the copied files and stores them in \Yukon\ExportArchive\Itron, the name of the zipped file is timestamp_commandId.zip. 
      * Returns a zip file
      */
-    private ZipFile downloadAndZipReportFiles(List<String> fileNames, long commandId) {
+    private ZipFile downloadAndZipReportFiles(List<String> fileURLs, long commandId) {
         List<File> files = new ArrayList<>();
         String zipName = FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + commandId + ".zip";
 
-        for (int i = 0; i < fileNames.size(); i++) {
+        for (int i = 0; i < fileURLs.size(); i++) {
+            String fileURL = fileURLs.get(i);
             File file = null;
             try {
-                //test on local
+                // test on local
                 Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxy.etn.com", 8080));
-                URLConnection conn = new URL(fileNames.get(i)).openConnection(proxy);
-              
-                //URLConnection conn = new URL(path).openConnection();
-                file = new File(FILE_PATH,
-                    (i + 1) + "_" + FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + commandId + ".csv");
+                URLConnection conn = new URL(fileURL).openConnection(proxy);
+
+                // URLConnection conn = new URL(path).openConnection();
+                String fileName =(i + 1) + "_" + FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + commandId + ".csv";
+                file = new File(FILE_PATH, fileName);
                 OutputStream out = new FileOutputStream(file);
                 IOUtils.copy(conn.getInputStream(), out);
                 IOUtils.closeQuietly(out);
                 files.add(file);
-                log.debug("ITRON-downoladed Itron file:{} created file:{} commandId: {}.", fileNames.get(0),
-                    file.getPath(), commandId);
+                log.debug("ITRON-downoladed Itron file:{} created file:{} commandId: {}.", fileURL, fileName,
+                    commandId);
             } catch (Exception e) {
-                log.error("Unable to download file: " + fileNames.get(0));
+                log.error("Unable to download file: " + fileURL);
             }
         }
         return zipFiles(zipName, files);
