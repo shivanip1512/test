@@ -207,6 +207,7 @@ public:
 	static const Attribute  Relay1RunTime5Min;
 	static const Attribute  Relay1RunTime15Min;
 	static const Attribute  Relay1RunTime30Min;
+    static const Attribute  Relay1ShedStatus;
     static const Attribute  Relay1ShedTime;
 	static const Attribute  Relay1RelayState;
     static const Attribute  Relay2kWLoadSize;
@@ -215,6 +216,7 @@ public:
 	static const Attribute  Relay2RunTime5Min;
 	static const Attribute  Relay2RunTime15Min;
 	static const Attribute  Relay2RunTime30Min;
+    static const Attribute  Relay2ShedStatus;
     static const Attribute  Relay2ShedTime;
 	static const Attribute  Relay2RelayState;
     static const Attribute  Relay3kWLoadSize;
@@ -223,6 +225,7 @@ public:
 	static const Attribute  Relay3RunTime5Min;
 	static const Attribute  Relay3RunTime15Min;
 	static const Attribute  Relay3RunTime30Min;
+    static const Attribute  Relay3ShedStatus;
     static const Attribute  Relay3ShedTime;
 	static const Attribute  Relay3RelayState;
     static const Attribute  Relay4RemainingControlTime;
@@ -230,6 +233,7 @@ public:
 	static const Attribute  Relay4RunTime5Min;
 	static const Attribute  Relay4RunTime15Min;
 	static const Attribute  Relay4RunTime30Min;
+    static const Attribute  Relay4ShedStatus;
     static const Attribute  Relay4ShedTime;
 	static const Attribute  Relay4RelayState;
     static const Attribute  ReportingInterval;
@@ -597,6 +601,8 @@ public:
     static const Attribute  ReverseBandwidth;
     static const Attribute  ReverseSetPoint;
     static const Attribute  ReverseFlowIndicator;
+
+    static const Attribute  EventSuperseded;
 };
 
 
