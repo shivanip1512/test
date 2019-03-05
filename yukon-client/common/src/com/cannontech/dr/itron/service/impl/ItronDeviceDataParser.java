@@ -16,12 +16,17 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.ItronDataEventType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.tools.csv.CSVReader;
+import com.cannontech.yukon.IDatabaseCache;
 
 enum ItronDataCategory {
     EVENT_CAT_NIC_EVENT,
@@ -32,6 +37,9 @@ public class ItronDeviceDataParser {
     
     @Autowired private AsyncDynamicDataSource dataSource;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private IDatabaseCache serverDatabaseCache;
+    @Autowired private AttributeService attributeService;
     
     private static final Logger log = YukonLogManager.getLogger(ItronDeviceDataParser.class);
 
@@ -87,13 +95,9 @@ public class ItronDeviceDataParser {
               row = csvReader.readNext();
           }
           csvReader.close();
-          setRecordId(maxRecordId);
       }
       
       return new ItronData(pointDataList, maxRecordId);
-    }
-
-    private void setRecordId(long maxRecordId) {
     }
 
     private PointData generatePointData(String[] rowData) {
@@ -131,8 +135,11 @@ public class ItronDeviceDataParser {
             ItronDataEventType event = ItronDataEventType.getFromHex(eventId);//This could be null if the mapping doesn't exist.
             if (event != null) {
                 ByteBuffer wrapped = ByteBuffer.wrap(decoded);
+                int deviceId = deviceDao.getDeviceIdFromMacAddress(source);
+                LiteYukonPAObject lpo = serverDatabaseCache.getAllPaosMap().get(deviceId);
                 //building the point
-                PointData pointData = event.getPointData(wrapped);
+                LitePoint lp = attributeService.getPointForAttribute(lpo, event.getAttribute(wrapped));
+                PointData pointData = event.getPointData(wrapped, lp);
                 pointData.setTimeStamp(new DateTime(eventTime).toDate());
                 return pointData;
             }
@@ -161,8 +168,5 @@ public class ItronDeviceDataParser {
     private long getMaxRecordId() {
         return persistedSystemValueDao.getLongValue(PersistedSystemValueKey.ITRON_DATA_LAST_RECORD_ID);
     }
-    
-    
-    
     
 }

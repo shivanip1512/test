@@ -180,4 +180,11 @@ public interface DeviceDao {
      * Returns a map for device ids and Mac addresses
      */
     Map<Integer, String> getDeviceMacAddresses(Collection<Integer> deviceIds);
+    
+    /**
+     * 
+     * @param macAddress
+     * @return
+     */
+    int getDeviceIdFromMacAddress(String macAddress);
 }

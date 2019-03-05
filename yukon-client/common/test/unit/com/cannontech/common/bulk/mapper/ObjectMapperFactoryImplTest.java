@@ -526,5 +526,10 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         public Map<Integer, String> getDeviceMacAddresses(Collection<Integer> deviceIds) {
             throw new MethodNotImplementedException();
         }
+
+        @Override
+        public int getDeviceIdFromMacAddress(String macAddress) {
+            throw new MethodNotImplementedException();
+        }
     }
 }
