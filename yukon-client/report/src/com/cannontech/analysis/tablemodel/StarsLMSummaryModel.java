@@ -43,6 +43,9 @@ public class StarsLMSummaryModel extends ReportModelBase<StarsLMSummary>
 	public final static int RECEIVERS_OUT_OF_SERVICE_COUNT_COLUMN = 4;
 	public final static int ADJUSTED_TOTAL_CAPACITY_COLUMN = 5;
 
+	public final static int RECEIVERS_COUNT_COLUMN_WITHOUT_CAPACTITY = 1;
+	public final static int RECEIVERS_OUT_OF_SERVICE_COUNT_COLUMN_WITHOUT_CAPACITY = 2;
+	
 	/** String values for column representation */
 	public final static String GROUP_NAME_STRING = "Group Name";
 	public final static String GROUP_CAPACITY_STRING = "Group Capacity";
@@ -295,32 +298,41 @@ public class StarsLMSummaryModel extends ReportModelBase<StarsLMSummary>
 		 return (dateTimeFormat.format(new Date()));
 	 }
 	 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
-	 */
-	public Object getAttribute(int columnIndex, Object o)
-	{
-		if ( o instanceof StarsLMSummary)
-		{
-			StarsLMSummary summary = ((StarsLMSummary)o);
-			switch( columnIndex)
-			{
-				case GROUP_NAME_COLUMN:
-				    return summary.getGroupName();
-				case GROUP_CAPACITY_COLUMN:
-					return summary.getGroupCapacity();
-				case RECEIVERS_COUNT_COLUMN:
-				    return summary.getNumberOfReceivers();
-				case RECEIVERS_TOTAL_CAPACITY_COLUMN:
-				    return summary.getTotalReceiversCapactiy();
-				case RECEIVERS_OUT_OF_SERVICE_COUNT_COLUMN:
-					return summary.getNumberOfReceiversOutOfService();
-				case ADJUSTED_TOTAL_CAPACITY_COLUMN:
-					return summary.getAdjustedGroupCapacity();
-			}
-		}
-		return null;
-	}
+    /*
+     * (non-Javadoc)
+     * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
+     */
+    public Object getAttribute(int columnIndex, Object o) {
+        if (o instanceof StarsLMSummary) {
+            StarsLMSummary summary = ((StarsLMSummary) o);
+            if (isShowCapacity()) {
+                switch (columnIndex) {
+                case GROUP_NAME_COLUMN:
+                    return summary.getGroupName();
+                case GROUP_CAPACITY_COLUMN:
+                    return summary.getGroupCapacity();
+                case RECEIVERS_COUNT_COLUMN:
+                    return summary.getNumberOfReceivers();
+                case RECEIVERS_TOTAL_CAPACITY_COLUMN:
+                    return summary.getTotalReceiversCapactiy();
+                case RECEIVERS_OUT_OF_SERVICE_COUNT_COLUMN:
+                    return summary.getNumberOfReceiversOutOfService();
+                case ADJUSTED_TOTAL_CAPACITY_COLUMN:
+                    return summary.getAdjustedGroupCapacity();
+                }
+            } else {    // these indexes should match the getColumnNames index.
+                switch (columnIndex) {
+                    case GROUP_NAME_COLUMN:
+                        return summary.getGroupName();
+                    case RECEIVERS_COUNT_COLUMN_WITHOUT_CAPACTITY:
+                        return summary.getNumberOfReceivers();
+                    case RECEIVERS_OUT_OF_SERVICE_COUNT_COLUMN_WITHOUT_CAPACITY:
+                        return summary.getNumberOfReceiversOutOfService();
+                }
+            }
+        }
+        return null;
+    }
 
     /*
      * (non-Javadoc)
