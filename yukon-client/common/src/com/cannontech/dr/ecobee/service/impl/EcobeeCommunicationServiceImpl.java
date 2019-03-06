@@ -440,7 +440,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         for (String url : dataUrls) {
             try {
                 String decryptedFileName = ecobeeCommunicationServiceHelper.getDecryptedFileName(url);
-                URLConnection connection = YukonHttpProxy.getHttpURLConnection(url, settingDao);
+                URLConnection connection = YukonHttpProxy.getURLConnection(url, settingDao);
 
                 try (BufferedInputStream gpgInputStream = new BufferedInputStream(connection.getInputStream())) {
                     byte byteArray[] = ecobeeSecurityService.decryptEcobeeFile(gpgInputStream);

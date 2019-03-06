@@ -93,7 +93,7 @@ public class YukonHttpProxy {
         log.info("Adding " + hostAddresses + " to JVM proxy bypass list.");
     }
 
-    public static URLConnection getHttpURLConnection(String url, GlobalSettingDao globalSettingDao) throws Exception {
+    public static URLConnection getURLConnection(String url, GlobalSettingDao globalSettingDao) throws Exception {
         Optional<YukonHttpProxy> proxy = YukonHttpProxy.fromGlobalSetting(globalSettingDao);
         URLConnection urlConnection = null;
         try {
