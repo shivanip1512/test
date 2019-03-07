@@ -82,7 +82,7 @@ public interface ItronCommunicationService {
      * Sends control request to Itron
      */
     void sendDREventForGroup(int yukonGroupId, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
-            int rampIn, int rampOut, Duration controlDuration);
+            boolean rampIn, boolean rampOut, Duration controlDuration);
 
     /**
      * Downloads devices logs for all devices from itron, copies and zips the files to ExportArchive/Itron

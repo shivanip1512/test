@@ -38,8 +38,8 @@ public class ItronMessageListener {
                 int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
                 Instant startTimeUtc = new Instant(DateTimeZone.getDefault().convertLocalToUTC(startTime.getMillis(), false));
                 
-                int rampIn = msg.readByte();
-                int rampOut = msg.readByte();
+                boolean rampIn = msg.readByte() == 1 ? true : false;
+                boolean rampOut = msg.readByte() == 1 ? true : false;
                 int dutyCyclePercent = msg.readByte();
                 int dutyCyclePeriod = msg.readInt();
                 int criticality = msg.readByte();
@@ -47,11 +47,11 @@ public class ItronMessageListener {
                 log.debug("Parsed message - Group Id: " + groupId + ", startTime: " + startTime + ", endTime: " + endTime + 
                           ", Ramp In: " + rampIn + ", Ramp Out: " + rampOut + ",Duty Cycle Percent: " + dutyCyclePercent + 
                           ", Duty Cycle Period: " + dutyCyclePeriod + ", criticality: " + criticality);
-                
+                                
                 itronCommunicationService.sendDREventForGroup(groupId, dutyCyclePercent, dutyCyclePeriod, criticality,
                     rampIn, rampOut, controlDuration);
                 controlHistoryService.sendControlHistoryShedMessage(groupId, startTimeUtc, ControlType.ITRON, null,
-                    controlDurationSeconds, 0);
+                    controlDurationSeconds, dutyCyclePercent);
             } catch (JMSException e) {
                 log.error("Error parsing Itron control message from LM", e);
                 return;

@@ -29,7 +29,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.ItronDataEventType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.opencsv.CSVReader;
 
@@ -57,7 +57,7 @@ public class ItronDeviceDataParser {
         
         Enumeration<? extends ZipEntry> entries = zip.entries();
         while(entries.hasMoreElements()){
-            Multimap<PaoIdentifier, PointData> pointValues = ArrayListMultimap.create();
+            Multimap<PaoIdentifier, PointData> pointValues = HashMultimap.create();
             try {
                 InputStream stream = zip.getInputStream(entries.nextElement());
                 parseData(stream, pointValues);

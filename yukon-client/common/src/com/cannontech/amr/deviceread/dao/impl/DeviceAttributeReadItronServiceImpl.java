@@ -79,7 +79,7 @@ public class DeviceAttributeReadItronServiceImpl implements DeviceAttributeReadS
                     .map(device -> device.getPao())
                     .collect(Collectors.toList());
             
-            //we parsed itron files and didn't fine devices below or we were not able to create the point data
+            //we parsed itron files and didn't find devices below or we were not able to create the point data
             failedDevices.forEach(device -> {
                 DeviceError deviceError = DeviceError.UNKNOWN;
                 DeviceErrorDescription error = deviceErrorTranslatorDao.translateErrorCode(deviceError);
