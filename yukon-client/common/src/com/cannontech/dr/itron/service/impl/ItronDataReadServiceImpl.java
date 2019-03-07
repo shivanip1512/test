@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
@@ -25,7 +26,7 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
 
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private ItronDeviceDataParser itronDeviceDataParser;
-    @Autowired private ItronCommunicationService itronCommunicationService;
+    @Autowired private ItronCommunicationService communicationService;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     
     public static int maxRows = 1000;
@@ -34,8 +35,8 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
     public void collectData() {
         try {
             while (true) {
-                long startRecordId = getStartId();
-                ZipFile zip = itronCommunicationService.exportDeviceLogs(startRecordId, getEndId(startRecordId));
+                Range<Long> range = getRecordRange();
+                ZipFile zip = communicationService.exportDeviceLogs(range.getMin(), range.getMax());
                 if (zip == null) {
                     break;
                 }
@@ -48,7 +49,8 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
     
     @Override
     public void collectDataForRead(int deviceId) {
-        ZipFile zip = itronCommunicationService.exportDeviceLogsForItronGroup(getStartId(), null, Lists.newArrayList(deviceId));
+        Range<Long> range = getRecordRange();
+        ZipFile zip = communicationService.exportDeviceLogsForItronGroup(range.getMin(), null, Lists.newArrayList(deviceId));
         itronDeviceDataParser.parseAndSend(zip, null);
     }
 
@@ -56,9 +58,8 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
     public  Multimap<PaoIdentifier, PointValueHolder> collectDataForRead(List<Integer> deviceIds) {
         Multimap<PaoIdentifier, PointValueHolder> pointValues = HashMultimap.create();
         while (true) {
-            long startRecordId = getStartId();
-            ZipFile zip = itronCommunicationService.exportDeviceLogsForItronGroup(startRecordId,
-                getEndId(startRecordId), deviceIds);
+            Range<Long> range = getRecordRange();
+            ZipFile zip = communicationService.exportDeviceLogsForItronGroup(range.getMin(), range.getMax(), deviceIds);
             if (zip == null) {
                 break;
             }
@@ -68,12 +69,12 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
         return pointValues;
     }
     
-    private long getEndId(long startRecordId) {
-        return startRecordId + maxRows;
-    }
-
-    private long getStartId() {
+    /**
+     * Returns range of record ids to export
+     */
+    private Range<Long> getRecordRange() {
         long startRecordId = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.ITRON_DATA_LAST_RECORD_ID) + 1;
-        return startRecordId;
+        long endRecordId = startRecordId + maxRows;
+        return new Range<Long>(startRecordId, true, endRecordId, true);
     }
 }
