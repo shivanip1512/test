@@ -218,6 +218,9 @@ INIT_ATTRIBUTE( Relay1RunTime15Min,                                 "RELAY_1_RUN
 INIT_ATTRIBUTE( Relay1RunTime30Min,                                 "RELAY_1_RUN_TIME_DATA_LOG_30_MIN" )
 INIT_ATTRIBUTE( Relay1ShedStatus,                                   "RELAY_1_SHED_STATUS" );
 INIT_ATTRIBUTE( Relay1ShedTime,                                     "RELAY_1_SHED_TIME_DATA_LOG" );
+INIT_ATTRIBUTE( Relay1ShedTime5Min,                                 "RELAY_1_SHED_TIME_DATA_LOG_5_MIN" )
+INIT_ATTRIBUTE( Relay1ShedTime15Min,                                "RELAY_1_SHED_TIME_DATA_LOG_15_MIN" )
+INIT_ATTRIBUTE( Relay1ShedTime30Min,                                "RELAY_1_SHED_TIME_DATA_LOG_30_MIN" )
 INIT_ATTRIBUTE( Relay1RelayState,                                   "RELAY_1_RELAY_STATE" );
 INIT_ATTRIBUTE( Relay2kWLoadSize,                                   "RELAY_2_LOAD_SIZE" );
 INIT_ATTRIBUTE( Relay2RemainingControlTime,                         "RELAY_2_REMAINING_CONTROL" );
@@ -227,6 +230,9 @@ INIT_ATTRIBUTE( Relay2RunTime15Min,                                 "RELAY_2_RUN
 INIT_ATTRIBUTE( Relay2RunTime30Min,                                 "RELAY_2_RUN_TIME_DATA_LOG_30_MIN" )
 INIT_ATTRIBUTE( Relay2ShedStatus,                                   "RELAY_2_SHED_STATUS" );
 INIT_ATTRIBUTE( Relay2ShedTime,                                     "RELAY_2_SHED_TIME_DATA_LOG" );
+INIT_ATTRIBUTE( Relay2ShedTime5Min,                                 "RELAY_2_SHED_TIME_DATA_LOG_5_MIN" )
+INIT_ATTRIBUTE( Relay2ShedTime15Min,                                "RELAY_2_SHED_TIME_DATA_LOG_15_MIN" )
+INIT_ATTRIBUTE( Relay2ShedTime30Min,                                "RELAY_2_SHED_TIME_DATA_LOG_30_MIN" )
 INIT_ATTRIBUTE( Relay2RelayState,                                   "RELAY_2_RELAY_STATE" );
 INIT_ATTRIBUTE( Relay3kWLoadSize,                                   "RELAY_3_LOAD_SIZE" );
 INIT_ATTRIBUTE( Relay3RemainingControlTime,                         "RELAY_3_REMAINING_CONTROL" );
@@ -236,6 +242,9 @@ INIT_ATTRIBUTE( Relay3RunTime15Min,                                 "RELAY_3_RUN
 INIT_ATTRIBUTE( Relay3RunTime30Min,                                 "RELAY_3_RUN_TIME_DATA_LOG_30_MIN" )
 INIT_ATTRIBUTE( Relay3ShedStatus,                                   "RELAY_3_SHED_STATUS" );
 INIT_ATTRIBUTE( Relay3ShedTime,                                     "RELAY_3_SHED_TIME_DATA_LOG" );
+INIT_ATTRIBUTE( Relay3ShedTime5Min,                                 "RELAY_3_SHED_TIME_DATA_LOG_5_MIN" )
+INIT_ATTRIBUTE( Relay3ShedTime15Min,                                "RELAY_3_SHED_TIME_DATA_LOG_15_MIN" )
+INIT_ATTRIBUTE( Relay3ShedTime30Min,                                "RELAY_3_SHED_TIME_DATA_LOG_30_MIN" )
 INIT_ATTRIBUTE( Relay3RelayState,                                   "RELAY_3_RELAY_STATE" );
 INIT_ATTRIBUTE( Relay4RemainingControlTime,                         "RELAY_4_REMAINING_CONTROL" );
 INIT_ATTRIBUTE( Relay4RunTime,                                      "RELAY_4_RUN_TIME_DATA_LOG" );
@@ -244,6 +253,9 @@ INIT_ATTRIBUTE( Relay4RunTime15Min,                                 "RELAY_4_RUN
 INIT_ATTRIBUTE( Relay4RunTime30Min,                                 "RELAY_4_RUN_TIME_DATA_LOG_30_MIN" )
 INIT_ATTRIBUTE( Relay4ShedStatus,                                   "RELAY_4_SHED_STATUS" );
 INIT_ATTRIBUTE( Relay4ShedTime,                                     "RELAY_4_SHED_TIME_DATA_LOG" );
+INIT_ATTRIBUTE( Relay4ShedTime5Min,                                 "RELAY_4_SHED_TIME_DATA_LOG_5_MIN" )
+INIT_ATTRIBUTE( Relay4ShedTime15Min,                                "RELAY_4_SHED_TIME_DATA_LOG_15_MIN" )
+INIT_ATTRIBUTE( Relay4ShedTime30Min,                                "RELAY_4_SHED_TIME_DATA_LOG_30_MIN" )
 INIT_ATTRIBUTE( Relay4RelayState,                                   "RELAY_4_RELAY_STATE" );
 INIT_ATTRIBUTE( ReportingInterval,                                  "REPORTING_INTERVAL" );
 INIT_ATTRIBUTE( ReverseInductivekVArh,                              "REVERSE_INDUCTIVE_KVARH" );
