@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.Instant;
-import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Assert;
@@ -15,18 +14,15 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.ecobee.message.AuthenticationRequest;
 import com.cannontech.dr.ecobee.message.CreateSetRequest;
 import com.cannontech.dr.ecobee.message.DeleteSetRequest;
-import com.cannontech.dr.ecobee.message.DeviceDataResponse;
 import com.cannontech.dr.ecobee.message.DrRestoreRequest;
 import com.cannontech.dr.ecobee.message.DutyCycleDrRequest;
+import com.cannontech.dr.ecobee.message.EcobeeJobStatus;
 import com.cannontech.dr.ecobee.message.HierarchyResponse;
 import com.cannontech.dr.ecobee.message.ListHierarchyRequest;
 import com.cannontech.dr.ecobee.message.MoveDeviceRequest;
 import com.cannontech.dr.ecobee.message.MoveSetRequest;
 import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
-import com.cannontech.dr.ecobee.message.RuntimeReportRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
-import com.cannontech.dr.ecobee.message.partial.RuntimeReport;
-import com.cannontech.dr.ecobee.message.partial.RuntimeReportRow;
 import com.cannontech.dr.ecobee.message.partial.Selection;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
@@ -76,42 +72,6 @@ public class JsonSerializationTest {
         MoveDeviceRequest testRequest = testSerialization(request);
 
         Assert.assertEquals(request, testRequest);
-    }
-
-    @Test
-    public void test_RuntimeReportRequest() throws IOException {
-        DateTimeFormatter timeFormater = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZoneUTC();
-        Instant startDate = timeFormater.parseDateTime("2014-05-28 10:10").toInstant();
-        Instant endDate = timeFormater.parseDateTime("2012-01-01 20:25").toInstant();
-
-        RuntimeReportRequest request =
-            new RuntimeReportRequest(startDate, endDate, ImmutableList.of("123abc321", "321abc123"), ImmutableList.of(
-                "bogusColumn1", "anotherBogusColumn"));
-        RuntimeReportRequest testRequest = testSerialization(request);
-
-        Assert.assertEquals(request, testRequest);
-    }
-
-    @Test
-    public void test_DeviceDataResponse() throws IOException {
-        int numRows = 15;
-        int numThermostats = 20;
-
-        List<RuntimeReport> reportList = new ArrayList<>();
-        for (int i = 0; i < numThermostats; i++) {
-            List<RuntimeReportRow> runtimeReports = new ArrayList<>();
-            for (int j = 0; j < numRows; j++) {
-                LocalDateTime reportTime = new LocalDateTime(2014, 5, 25, 10, 35);
-                RuntimeReportRow reportRow = new RuntimeReportRow(reportTime, "", 75f, 95f, 75.4f, .56456f, 123);
-                runtimeReports.add(reportRow);
-            }
-            reportList.add(new RuntimeReport(Integer.toString(i), numRows, runtimeReports));
-        }
-        Status status = new Status(3, "code 3");
-        DeviceDataResponse response = new DeviceDataResponse(status, reportList);
-        DeviceDataResponse testResponse = testSerialization(response);
-
-        Assert.assertEquals(response, testResponse);
     }
 
     @Test
@@ -191,6 +151,12 @@ public class JsonSerializationTest {
         HierarchyResponse testResponse = testSerialization(response);
 
         Assert.assertEquals(response, testResponse);
+    }
+    @Test
+    public void test_jobStatus() throws IOException {
+        EcobeeJobStatus status = EcobeeJobStatus.COMPLETED;
+        EcobeeJobStatus teststatus = testSerialization(status);
+        Assert.assertEquals(status, teststatus);
     }
 
     /**

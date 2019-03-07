@@ -1,28 +1,21 @@
 package com.cannontech.web.dev;
 
-import java.io.IOException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.config.MasterConfigBoolean;
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.ecobee.message.AuthenticationRequest;
 import com.cannontech.dr.ecobee.message.AuthenticationResponse;
 import com.cannontech.dr.ecobee.message.BaseResponse;
-import com.cannontech.dr.ecobee.message.DeviceDataResponse;
-import com.cannontech.dr.ecobee.message.DeviceRequest;
 import com.cannontech.dr.ecobee.message.DrRequest;
 import com.cannontech.dr.ecobee.message.DrResponse;
 import com.cannontech.dr.ecobee.message.HierarchyResponse;
 import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
-import com.cannontech.dr.ecobee.message.RuntimeReportRequest;
 import com.cannontech.dr.ecobee.message.SetRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.partial.Status;
@@ -36,15 +29,6 @@ public class EcobeeMockApiController {
     @Autowired private EcobeeMockApiService ecobeeMockApiService;
     @Autowired private EcobeeDataConfiguration ecobeeDataConfiguration;
     
-    @IgnoreCsrfCheck
-    @RequestMapping(value = "runtimeReport", method = RequestMethod.GET)
-    public @ResponseBody DeviceDataResponse runtimeReport(@RequestParam("body") String bodyJson) throws IOException {
-        RuntimeReportRequest request = JsonUtils.fromJson(bodyJson, RuntimeReportRequest.class);
-        
-        DeviceDataResponse response = ecobeeMockApiService.getRuntimeReport(request);
-        
-        return response;
-    }
 
     @IgnoreCsrfCheck
     @RequestMapping(value = "hierarchy/set", method = RequestMethod.POST)

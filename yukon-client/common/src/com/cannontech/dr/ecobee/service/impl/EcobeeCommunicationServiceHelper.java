@@ -50,7 +50,7 @@ public class EcobeeCommunicationServiceHelper {
                 Iterator<String[]> iterator = csvReader.readAll().iterator();
                 List<EcobeeDeviceReading> readings = getEcobeeDeviceReading(iterator);
                 String serialNumber = getSerialNumber(file.getName());
-                deviceReadings = new EcobeeDeviceReadings(serialNumber, null,readings);
+                deviceReadings = new EcobeeDeviceReadings(serialNumber, readings);
                 CtiUtilities.close(iterator, csvReader);
             } catch (Exception e) {
                 log.error("Error while processing runtimereport data.", e);

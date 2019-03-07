@@ -33,8 +33,6 @@ public interface EcobeeCommunicationService {
     
     
     static final List<String> deviceReadColumns = ImmutableList.of(
-        // If the order is changed here or something is added or removed we need to update
-        // JsonSerializers.RuntimeReportRow and RuntimeReport
         "zoneCalendarEvent", //currently running event
         "zoneAveTemp", // indoor temp
         "outdoorTemp", // outdoor temp
@@ -67,15 +65,6 @@ public interface EcobeeCommunicationService {
      */
     boolean moveDeviceToSet(String serialNumber, String setPath) throws EcobeeDeviceDoesNotExistException, 
             EcobeeSetDoesNotExistException;
-
-    /**
-     * Requests device data for the specified devices over a limited date range.
-     * @param serialNumbers Must contain no more than 25 serial numbers. Any devices specified that do not exist in the
-     * Ecobee API will be ignored.
-     * @param dateRange Must span no more than 7 days.
-     * @throws EcobeeCommunicationException if Yukon cannot connect to the Ecobee API.
-     */
-    List<EcobeeDeviceReadings> readDeviceData(Collection<String> serialNumbers, Range<Instant> dateRange);
 
     /**
      * Creates a new manaagement hierarchy set with teh specified name, directly beneath the root set "/"
