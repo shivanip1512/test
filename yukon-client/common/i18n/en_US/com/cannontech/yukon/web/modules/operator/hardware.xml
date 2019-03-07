@@ -98,9 +98,11 @@
     <entry key="yukon.web.modules.operator.hardware.hardwareUpdated">Hardware Updated</entry>
     <entry key="yukon.web.modules.operator.hardware.hardwareDeleted">Hardware Deleted</entry>
     <entry key="yukon.web.modules.operator.hardware.hardwareRemoved">Hardware Removed From Account</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareRemovedError">An error has occurred trying to remove the hardware from the account. Please view the logs for more detail.</entry>
     <entry key="yukon.web.modules.operator.hardware.hardwareCreated">Hardware Created</entry>
     <entry key="yukon.web.modules.operator.hardware.hardwareAdded">Hardware Added</entry>
     <entry key="yukon.web.modules.operator.hardware.hardwareChangeOut">Hardware Change Out Successful</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareChangeOutError">An error occurred during Hardware Change Out. Please view the logs for more detail.</entry>
     <entry key="yukon.web.modules.operator.hardware.hardwareChangeOut.gateway">Hardware Change Out Successful. This gateway will need to be commissioned. Devices will need to be assigned to this gateway and commissioned as well.</entry>
     <entry key="yukon.web.modules.operator.hardware.hardwareChangeOut.zigbeeDevice">Hardware Change Out Successful. This device will need to be assigned to a gateway and commissioned.</entry>
     <entry key="yukon.web.modules.operator.hardware.installCode">Install Code</entry>

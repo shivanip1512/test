@@ -375,6 +375,9 @@ public class OptOutController extends AbstractConsumerController {
             helper.processOptOut(optOutBackingBean, userContext, customerAccount, surveyIdsByInventoryId);
             MessageSourceResolvable result = new YukonMessageSourceResolvable("yukon.dr.consumer.optoutresult.success");
             model.addAttribute("result", result);
+        } catch (CommandCompletionException e) {
+            MessageSourceResolvable result = new YukonMessageSourceResolvable("yukon.dr.consumer.optoutresult.failure");
+            model.addAttribute("result", result);
         } catch (ItronCommunicationException e) {
             model.addAttribute("result", e.getItronMessage());
         }

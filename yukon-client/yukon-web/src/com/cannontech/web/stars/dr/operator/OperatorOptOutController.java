@@ -355,6 +355,8 @@ public class OperatorOptOutController {
         try {
             helper.processOptOut(optOutBackingBean, userContext, customerAccount, surveyIdsByInventoryId);
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.success"));
+        } catch (CommandCompletionException e) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.error"));
         } catch (ItronCommunicationException e) {
             flashScope.setError(e.getItronMessage());
         }
