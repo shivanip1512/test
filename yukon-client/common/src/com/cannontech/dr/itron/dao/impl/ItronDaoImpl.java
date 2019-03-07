@@ -11,6 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.dr.itron.dao.ItronDao;
@@ -30,6 +31,14 @@ public class ItronDaoImpl implements ItronDao {
         } catch (EmptyResultDataAccessException ex){
             throw new NotFoundException("ItronGroupId with YukonGroupId: " + yukonLmGroupId + " was not found.");
         }
+    }
+    
+    @Override
+    public List<Long> getAllItronGroupIds() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ItronGroupId");
+        sql.append("FROM LMGroupItronMapping");
+        return jdbcTemplate.query(sql, TypeRowMapper.LONG);
     }
 
     @Override

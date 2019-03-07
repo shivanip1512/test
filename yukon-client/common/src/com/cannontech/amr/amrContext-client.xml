@@ -100,6 +100,7 @@
     <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadServiceImpl"/>
     <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadRfnServiceImpl"/>
     <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadPlcServiceImpl"/>
+    <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadItronServiceImpl"/>
     <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadEcobeeServiceImpl"/>
     <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceCommandServiceImpl"/>
     <bean class="com.cannontech.amr.deviceread.dao.CommandHelper"/>

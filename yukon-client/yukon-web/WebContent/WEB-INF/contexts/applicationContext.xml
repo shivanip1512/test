@@ -1042,6 +1042,7 @@
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.EcobeeHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.PlcHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.RfHardwareReadNowStrategy"/>
+    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ItronHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ZigBeeHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareShedRestoreLoadServiceImpl"/>
 

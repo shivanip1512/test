@@ -6,7 +6,7 @@
 
 <script type="text/javascript">
 $(function() {
-    <c:if test="${hardware.hardwareType.rf or hardware.hardwareType.twoWayPlcLcr or hardware.hardwareType.ecobee}">
+    <c:if test="${hardware.hardwareType.rf or hardware.hardwareType.twoWayPlcLcr or hardware.hardwareType.ecobee or hardware.hardwareType.itron}">
         setupClickHandler('#readNow', '<cti:url value="/stars/operator/hardware/readNow"/>');
     </c:if>
     
@@ -73,7 +73,7 @@ $(function() {
         </cti:url>
         <a href="${pointsUrl}"><i:inline key="yukon.common.showAll"/></a>
         <c:if test="${hardware.hardwareType.rf or hardware.hardwareType.twoWayPlcLcr 
-                        or hardware.hardwareType.ecobee}">
+                        or hardware.hardwareType.ecobee or hardware.hardwareType.itron}">
             <cti:button id="readNow" nameKey="readNow" busy="true" icon="icon-read"/>
         </c:if>
         
