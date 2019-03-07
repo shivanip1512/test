@@ -245,17 +245,37 @@
         <stategroup value="RelayState"/>
     </point>
     <point offset="4" type="Status">
-        <name>Relay 2 Relay State</name>
+        <name>Relay 1 Shed Status</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="RelayState"/>
     </point>
     <point offset="5" type="Status">
-        <name>Relay 3 Relay State</name>
+        <name>Relay 2 Relay State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="RelayState"/>
     </point>
     <point offset="6" type="Status">
+        <name>Relay 2 Shed Status</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="RelayState"/>
+    </point>
+    <point offset="7" type="Status">
+        <name>Relay 3 Relay State</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="RelayState"/>
+    </point>
+    <point offset="8" type="Status">
+        <name>Relay 3 Shed Status</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="RelayState"/>
+    </point>
+    <point offset="9" type="Status">
         <name>Relay 4 Relay State</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="RelayState"/>
+    </point>
+    <point offset="10" type="Status">
+        <name>Relay 4 Shed Status</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="RelayState"/>
     </point>
