@@ -1,45 +1,62 @@
 package com.cannontech.dr.itron.service.impl;
 
-import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.ScheduledExecutor;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.dr.itron.service.ItronPeriodicDataCollectionService;
-import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
-
 import java.time.Duration;
-import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-public class ItronPeriodicDataCollectionServiceImpl implements ItronPeriodicDataCollectionService {
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.dr.itron.service.ItronDataReadService;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
-    private static final Logger log = YukonLogManager.getLogger(ItronPeriodicDataCollectionServiceImpl.class);
+public class ItronPeriodicDataCollectionService {
+
+    private static final Logger log = YukonLogManager.getLogger(ItronPeriodicDataCollectionService.class);
 
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
-    @Autowired GlobalSettingDao settingsDao;
-    @Autowired AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private GlobalSettingDao settingsDao;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private ItronDataReadService itronDataReadService;
     @Autowired PaoDao paoDao;
-    @Autowired ItronDeviceDataParser itronDeviceDataParser;
+    @Autowired private ConfigurationSource configSource;
     
     private Duration interval = Duration.ZERO;
     private ScheduledFuture<?> scheduledTask;
+    public static int maxRows = 1000;
+
 
     @PostConstruct
     public void init() {
+        
+        //no Itron devices on the system
+        if(!paoDao.getExistingPaoTypes().stream()
+                .filter(PaoType::isItron)
+                .findAny().isPresent()) {
+            return;
+        }
+        
+        //no simulator, enabling this will produce errors
+        boolean isDevelopmentMode = configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE, false);
+        if(isDevelopmentMode) {
+            return;
+        }
+        
         scheduleDataCollection(getDataCollectionInterval());
         
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, this::databaseChangeEvent);
@@ -92,52 +109,12 @@ public class ItronPeriodicDataCollectionServiceImpl implements ItronPeriodicData
         
         log.info("Collection set to " + format(interval) + ", starting in " + format(delay) + ".");
         
-        scheduledTask = scheduledExecutor.scheduleAtFixedRate(this::collectData, delay.toSeconds(), interval.toSeconds(), TimeUnit.SECONDS);
+        scheduledTask = scheduledExecutor.scheduleAtFixedRate(() -> itronDataReadService.collectData(),
+            delay.toSeconds(), interval.toSeconds(), TimeUnit.SECONDS);
     }
     
     private static String format(Duration d) {
         return DurationFormatUtils.formatDurationWords(d.toMillis(), true, true);
-    }
-    
-    @Override
-    public void collectData() {
-        try {
-            paoDao.getExistingPaoTypes().stream()
-                .filter(PaoType::isItron)
-                .findAny()
-                .ifPresentOrElse(type -> { 
-                        log.info("Itron device type found (" + type + "), beginning data collection");
-                        
-                        var csv = requestRawDataCsv();
-                        
-                        var pointData = parseCsvToPointData(csv);
-                        
-                        sendPointData(pointData);
-                        
-                        log.info("Point data sent");
-                    },
-                    () -> log.info("No Itron device types found, skipping data collection"));
-        } catch (Exception e) {
-            log.error("Exception while collecting data", e);
-        }
-    }
-
-    private Object requestRawDataCsv() {
-        log.debug("Requesting raw data CSV from Itron");
-        
-        return null;
-    }
-
-    private Iterable<PointData> parseCsvToPointData(Object csv) {
-        log.debug("Parsing raw data CSV into point data");
-        
-        return Collections.emptyList();
-    }
-
-    private void sendPointData(Iterable<PointData> pointDatas) {
-        log.debug("Sending Itron point data to Dispatch");
-        
-        asyncDynamicDataSource.putValues(pointDatas);
     }
     
     private Duration getDataCollectionInterval() {

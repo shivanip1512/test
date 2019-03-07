@@ -16,6 +16,7 @@ public enum PersistedSystemValueKey {
     INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME(null, new InstantType()),
     NEST_SYNC_TIME(null, new InstantType()), 
     ITRON_DATA_LAST_RECORD_ID(-1, InputTypeFactory.longType()),
+    ITRON_READ_GROUP_ID(-1, InputTypeFactory.longType()),
     ;
     
     private final Object defaultValue;

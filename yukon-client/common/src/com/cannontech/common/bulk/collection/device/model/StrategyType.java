@@ -6,5 +6,6 @@ package com.cannontech.common.bulk.collection.device.model;
 public enum StrategyType {
     NM, 
     PORTER, 
-    ECOBEE
+    ECOBEE,
+    ITRON
 }

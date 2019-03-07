@@ -1,6 +1,5 @@
 package com.cannontech.dr.itron.service.impl;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -13,7 +12,6 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.util.xml.XmlUtils;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddD2GAttributeType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceRequest;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.DeviceIdentifierAttributeType;
@@ -25,7 +23,6 @@ import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditPrimaryHAN
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ErrorFault;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.NullableString;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.StaticGroupMemberListType;
-import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.UpdateDeviceEventLogsRequest;
 import com.cannontech.stars.dr.account.model.AccountDto;
 
 public class DeviceManagerHelper implements SoapFaultParser {
@@ -135,26 +132,19 @@ public class DeviceManagerHelper implements SoapFaultParser {
         return request;
     }
     
-    public static ESIGroupRequestType buildGroupEditRequest(LiteYukonPAObject lmGroup, List<String> macAddresses) {
+    public static ESIGroupRequestType buildGroupEditRequest(String lmGroupId, List<String> macAddresses) {
         ESIGroupRequestType requestType = new ESIGroupRequestType();
-        requestType.setGroupName(String.valueOf(lmGroup.getLiteID()));
+        requestType.setGroupName(lmGroupId);
         StaticGroupMemberListType type = new StaticGroupMemberListType();
         type.getMacIDs().addAll(macAddresses);
         requestType.setStaticGroupMemberList(type);
         return requestType;
     }
 
-    public static ESIGroupRequestType buildGroupAddRequest(LiteYukonPAObject lmGroup) {
+    public static ESIGroupRequestType buildGroupAddRequest(String lmGroupId) {
         ESIGroupRequestType requestType = new ESIGroupRequestType();
-        requestType.setGroupName(String.valueOf(lmGroup.getLiteID()));
+        requestType.setGroupName(lmGroupId);
         return requestType;
-    }
-    
-
-    public static UpdateDeviceEventLogsRequest buildUpdateDeviceEventLogs(Collection<String> macAddresses) {
-        UpdateDeviceEventLogsRequest request = new UpdateDeviceEventLogsRequest();
-        request.getESIMacIDs().addAll(macAddresses);
-        return request;
     }
     
     @Override

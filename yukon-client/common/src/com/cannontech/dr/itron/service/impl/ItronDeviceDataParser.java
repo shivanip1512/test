@@ -1,13 +1,14 @@
 package com.cannontech.dr.itron.service.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Enumeration;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -16,16 +17,20 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.ItronDataEventType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.opencsv.CSVReader;
 
 enum ItronDataCategory {
@@ -43,46 +48,40 @@ public class ItronDeviceDataParser {
     
     private static final Logger log = YukonLogManager.getLogger(ItronDeviceDataParser.class);
 
-    private class ItronData {
-        private List<PointData> pointData;
-        private long maxRecordId;
-        
-        ItronData(List<PointData> pointData, long maxRecordId) {
-            this.setPointData(pointData);
-            this.setMaxRecordId(maxRecordId);
+    public void parseAndSend(ZipFile zip, Multimap<PaoIdentifier, PointValueHolder> allPointValues){
+        if(zip == null) {
+            log.error("Unable to parse Itron file, no file found");
+            //nothing to parse
+            return;
         }
         
-        public List<PointData> getPointData() {
-            return pointData;
-        }
-        public long getMaxRecordId() {
-            return maxRecordId;       
-        }
-
-        public void setMaxRecordId(long maxRecordId) {
-            this.maxRecordId = maxRecordId;
-        }
-
-        public void setPointData(List<PointData> pointData) {
-            this.pointData = pointData;
-        }
-    }
-    
-    void parseAndSend(File file) throws FileNotFoundException, IOException {
-        long maxRecordId = getMaxRecordId();
-        ItronData data = parseData(file, maxRecordId);
-        dataSource.putValues(data.getPointData());
-        setMaxRecordId(data.getMaxRecordId());
+        Enumeration<? extends ZipEntry> entries = zip.entries();
+        while(entries.hasMoreElements()){
+            Multimap<PaoIdentifier, PointData> pointValues = ArrayListMultimap.create();
+            try {
+                InputStream stream = zip.getInputStream(entries.nextElement());
+                parseData(stream, pointValues);
+                dataSource.putValues(pointValues.values());
+                if(allPointValues != null) {
+                    allPointValues.putAll(pointValues);
+                }
+            } catch (Exception e) {
+                log.error("Unable to parse Itron file", e);
+            }
+        }       
     }
 
-    private void setMaxRecordId(long maxRecordId) {
-        persistedSystemValueDao.setValue(PersistedSystemValueKey.ITRON_DATA_LAST_RECORD_ID, maxRecordId);
-    }
-
-    private ItronData parseData(File file, long maxRecordId) throws FileNotFoundException, IOException {
-      List<PointData> pointDataList = new ArrayList<>();
+    private void parseData(InputStream stream, Multimap<PaoIdentifier, PointData> pointValues) throws Exception {
+        
+      if(true) {
+          System.out.println(read(stream));
+          System.out.println("------------------------------------");
+          return;
+      }
       
-      try (InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file))) {
+      long maxRecordId = getMaxRecordId();
+      
+      try (InputStreamReader inputStreamReader = new InputStreamReader(stream)) {
           CSVReader csvReader = new CSVReader(inputStreamReader);
           csvReader.readNext(); //First read to get column headers
           String[] row = csvReader.readNext(); //Get first row of csv;
@@ -90,17 +89,17 @@ public class ItronDeviceDataParser {
               int currentRecordId = Integer.parseInt(row[0]);
               if (currentRecordId > maxRecordId) {
                   maxRecordId = currentRecordId;
-                  pointDataList.add(generatePointData(row));
+                  generatePointData(row, pointValues);
               }
               row = csvReader.readNext();
           }
           csvReader.close();
       }
       
-      return new ItronData(pointDataList, maxRecordId);
+      setMaxRecordId(maxRecordId);
     }
 
-    private PointData generatePointData(String[] rowData) {
+    private void generatePointData(String[] rowData, Multimap<PaoIdentifier, PointData> pointValues) {
         ItronDataCategory category = ItronDataCategory.valueOf(rowData[1]);
         String eventTime = rowData[3];//ISO 8601 YYYY-MM-DD
         String source = rowData[5];//Mac address
@@ -141,9 +140,11 @@ public class ItronDeviceDataParser {
                 LitePoint lp = attributeService.getPointForAttribute(lpo, event.getAttribute(wrapped));
                 PointData pointData = event.getPointData(wrapped, lp);
                 pointData.setTimeStamp(new DateTime(eventTime).toDate());
-                return pointData;
+                pointValues.put(lpo.getPaoIdentifier(), pointData);
             }
-        case EVENT_CAT_PROGRAM_EVENTS:
+        }
+        
+      /*  case EVENT_CAT_PROGRAM_EVENTS:
             for(int i = 0; i < text.length; i+=2) {
                 String[] tuple = text[i].split(":");
                 if(tuple[0].trim().toLowerCase().startsWith("Load Control Event")) {
@@ -158,15 +159,26 @@ public class ItronDeviceDataParser {
                 }
             }
             break;
-        }
+        }*/
         
-        PointData pointData = new PointData();
-        pointData.setTimeStamp(new DateTime(eventTime).toDate());
-        return pointData;
     }
 
     private long getMaxRecordId() {
         return persistedSystemValueDao.getLongValue(PersistedSystemValueKey.ITRON_DATA_LAST_RECORD_ID);
     }
     
+
+    private void setMaxRecordId(long maxRecordId) {
+        persistedSystemValueDao.setValue(PersistedSystemValueKey.ITRON_DATA_LAST_RECORD_ID, maxRecordId);
+    }
+    
+    /**
+     * Used for testing
+     */
+    public static String read(InputStream input) throws IOException {
+        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
+            return buffer.lines().collect(Collectors.joining("\n"));
+        }
+    }
+
 }

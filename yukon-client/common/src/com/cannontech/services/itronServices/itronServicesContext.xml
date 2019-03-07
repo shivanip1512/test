@@ -21,6 +21,6 @@
         <jms:listener destination="yukon.notif.stream.dr.ItronRestoreMessage" ref="itronMessageListener" method="handleRestoreMessage"/>
     </jms:listener-container>
     
-    <bean class="com.cannontech.dr.itron.service.impl.ItronPeriodicDataCollectionServiceImpl"/>
+    <bean class="com.cannontech.dr.itron.service.impl.ItronPeriodicDataCollectionService"/>
 
 </beans>

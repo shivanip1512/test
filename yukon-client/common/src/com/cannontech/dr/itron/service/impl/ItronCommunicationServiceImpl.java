@@ -2,9 +2,9 @@ package com.cannontech.dr.itron.service.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -37,8 +38,11 @@ import com.cannontech.common.events.loggers.ItronEventLogService;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PersistedSystemValueDao;
+import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.dao.ItronDao;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceRequest;
@@ -80,7 +84,6 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
@@ -97,6 +100,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private ApplianceAndProgramDao applianceAndProgramDao;
     @Autowired private List<SoapFaultParser> soapFaultParsers;
+    @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     
     private static final Set<String> faultCodesToIgnore = Sets.newHashSet("UtilServicePointID.Exists");
     private static final Map<Integer, Long> groupPaoIdToItronEventId = new HashMap<>();
@@ -104,6 +108,11 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
     public static final String FILE_PATH = CtiUtilities.getItronDirPath();
     public static final SimpleDateFormat FILE_NAME_DATE_FORMATTER = new SimpleDateFormat("YYYYMMddHHmm");
+    
+    enum ExportType {
+        READ,
+        ALL
+    }
 
     @Transactional
     @Override
@@ -213,28 +222,59 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         }
     }
     
-    @Override
-    public void updateDeviceLogs(List<Integer> deviceIds) {
-        String url = ItronEndpointManager.DEVICE.getUrl(settingDao);
-        Map<Integer, String> macAddresses = deviceDao.getDeviceMacAddresses(deviceIds);
-        //One request should have no more then 1000 devices
-        Iterables.partition(macAddresses.values(), 1000).forEach(list -> {
-            try {
-                UpdateDeviceEventLogsRequest request = DeviceManagerHelper.buildUpdateDeviceEventLogs(list);
-                log.debug(XmlUtils.getPrettyXml(request));
-                log.debug("ITRON-updateDeviceLogs url:{} device count:{}", url, list.size());
-                UpdateDeviceEventLogsResponse response =
-                    (UpdateDeviceEventLogsResponse) ItronEndpointManager.DEVICE.getTemplate(
-                        settingDao).marshalSendAndReceive(url, request);
-                log.debug("ITRON-updateDeviceLogs url:{} device count:{} update requested by itron:{} result:{}.", url,
-                    response.isUpdateRequested(), list.size());
-                log.debug(XmlUtils.getPrettyXml(response));
-            } catch (Exception e) {
-                handleException(e, ItronEndpointManager.DEVICE);
-            }
-        });
+    /** 
+     * Sends message to Itron to update device logs for all itron groups
+     */
+    private void updateDeviceLogs() {
+        List<Long> itronIds = itronDao.getAllItronGroupIds();
+        UpdateDeviceEventLogsRequest updateLogsRequest = new UpdateDeviceEventLogsRequest();
+        updateLogsRequest.getGroupIDs().addAll(itronIds);
+        updateDeviceLogs(updateLogsRequest);
+    }
+    
+    /**
+     * 1. Finds Itron group id used for reads
+     *    - Asks Itron to create a group if it doesn't exist
+     * 2. Sends message to Itron to add the devices we are attempting to read to the group
+     * 3. Sends message to Itron to update device logs
+     */
+    private long updateDeviceLogsBeforeRead(List<Integer> deviceIds) {
+        String readGroup = "ITRON_READ_GROUP";
+        Long itronReadGroupId = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.ITRON_READ_GROUP_ID);
+        if(itronReadGroupId == null) {
+            itronReadGroupId = getGroupIdFromItron(readGroup);
+            persistedSystemValueDao.setValue(PersistedSystemValueKey.ITRON_READ_GROUP_ID, itronReadGroupId);
+        }
+        //add new mac addresses to group
+        List<String> macAddresses = Lists.newArrayList(deviceDao.getDeviceMacAddresses(deviceIds).values());
+        addMacAddressesToGroup(readGroup, macAddresses);
+
+        //update logs
+        UpdateDeviceEventLogsRequest updateLogsRequest = new UpdateDeviceEventLogsRequest();
+        updateLogsRequest.getGroupIDs().add(itronReadGroupId);
+        updateDeviceLogs(updateLogsRequest);
+        return itronReadGroupId;
     }
 
+    /**
+     * Asks Itron to go get the latest data from the device and update itself.
+     */
+    void updateDeviceLogs(UpdateDeviceEventLogsRequest request) {
+        String url = ItronEndpointManager.DEVICE.getUrl(settingDao);
+        try {
+            log.debug(XmlUtils.getPrettyXml(request));
+            log.debug("ITRON-updateDeviceLogs url:{} groups:{}", url, request.getGroupIDs());
+            UpdateDeviceEventLogsResponse response =
+                (UpdateDeviceEventLogsResponse) ItronEndpointManager.DEVICE.getTemplate(
+                    settingDao).marshalSendAndReceive(url, request);
+            log.debug("ITRON-updateDeviceLogs url:{} groups:{} result:{}.", url, response.isUpdateRequested(),
+                request.getGroupIDs(), "success");
+            log.debug(XmlUtils.getPrettyXml(response));
+        } catch (Exception e) {
+            handleException(e, ItronEndpointManager.DEVICE);
+        }
+    }
+    
     /**
      * Sends restore message to Itron
      */
@@ -297,7 +337,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             Map<Integer, Integer> inventoryIdsToDeviceIds = inventoryDao.getDeviceIds(inventoryIds);
             List<String> macAddresses =
                 Lists.newArrayList(deviceDao.getDeviceMacAddresses(inventoryIdsToDeviceIds.values()).values());
-            macAddresses.forEach(macAddressesForGroup -> addMacAddressesToGroup(groups.get(groupId), macAddresses));
+            macAddresses.forEach(macAddressesForGroup -> addMacAddressesToGroup(String.valueOf(groupId), macAddresses));
         });
     }
     
@@ -313,21 +353,45 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     @Override
-    public ZipFile exportDeviceLogs(long startRecordId, long endRecordId) {
+    public ZipFile exportDeviceLogs(Long startRecordId, Long endRecordId) {
+        updateDeviceLogs();
+        
+        ExportDeviceLogRequest request = new ExportDeviceLogRequest();
+        request.setRecordIDRangeStart(startRecordId);
+        if(endRecordId != null) {
+            request.setRecordIDRangeEnd(endRecordId);
+        }
+        itronEventLogService.exportDeviceLogs(startRecordId, endRecordId);
+        return exportDeviceLogs(request, ExportType.ALL);
+    }
+    
+    @Override
+    public synchronized ZipFile exportDeviceLogsForItronGroup(Long startRecordId, Long endRecordId, List<Integer> deviceId) {
+        long itronReadGroup = updateDeviceLogsBeforeRead(deviceId);
+        
+        ExportDeviceLogRequest request = new ExportDeviceLogRequest();
+        request.setRecordIDRangeStart(startRecordId);
+        if (endRecordId != null) {
+            request.setRecordIDRangeEnd(endRecordId);
+        }
+        request.getDeviceGroupIDs().add(itronReadGroup);
+        return exportDeviceLogs(request, ExportType.READ);
+    }
+
+    private ZipFile exportDeviceLogs(ExportDeviceLogRequest request, ExportType type) {
         String url = ItronEndpointManager.REPORT.getUrl(settingDao);
         try {
-            itronEventLogService.exportDeviceLogs(startRecordId, endRecordId);
-            ExportDeviceLogRequest request = new ExportDeviceLogRequest();
-            request.setRecordIDRangeStart(startRecordId);
-            request.setRecordIDRangeEnd(endRecordId);
-            log.debug("ITRON-exportDeviceLog url:{} startRecordId:{} endRecordId:{}.", url, startRecordId, endRecordId);
+            log.debug("ITRON-exportDeviceLog url:{} startRecordId:{} endRecordId:{} group:{}.", url,
+                request.getRecordIDRangeStart(), request.getRecordIDRangeEnd(), request.getDeviceGroupIDs());
             log.debug(XmlUtils.getPrettyXml(request));
             CommandIDResponse response =
-                (CommandIDResponse) ItronEndpointManager.REPORT.getTemplate(settingDao).marshalSendAndReceive(url, request);
+                (CommandIDResponse) ItronEndpointManager.REPORT.getTemplate(settingDao).marshalSendAndReceive(url,
+                    request);
             log.debug(XmlUtils.getPrettyXml(response));
-            log.debug("ITRON-exportDeviceLog url:{} startRecordId:{} endRecordId:{} commandId:{} result:{}.", url,
-                startRecordId, endRecordId, response.getCommandID(), "success");
-            return getExportedFiles(response.getCommandID());
+            log.debug("ITRON-exportDeviceLog url:{} startRecordId:{} endRecordId:{} group:{} commandId:{} result:{}.",
+                url, request.getRecordIDRangeStart(), request.getRecordIDRangeEnd(), request.getDeviceGroupIDs(),
+                response.getCommandID(), "success");
+            return getExportedFiles(response.getCommandID(), type);
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.REPORT);
         }
@@ -337,7 +401,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     /**
      * Asks Itron for file names and copies files to ExportArchive/Itron
      */
-    private ZipFile getExportedFiles(long commandId) {
+    private ZipFile getExportedFiles(long commandId, ExportType type) {
         String url = ItronEndpointManager.REPORT.getUrl(settingDao);
         try {
             itronEventLogService.getExportedFiles(commandId);
@@ -345,17 +409,14 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             request.setCommandID(commandId);
             log.debug("ITRON-getReport url:{} commandId:{}.", url, commandId);
             log.debug(XmlUtils.getPrettyXml(request));
-            GetReportGenerationStatusResponse response = new GetReportGenerationStatusResponse();
-            response.setCompleted(true);
-            response.getReportFileNames().add("https://sample-videos.com/csv/Sample-Spreadsheet-10-rows.csv");
-            response.getReportFileNames().add("https://sample-videos.com/csv/Sample-Spreadsheet-100-rows.csv");
-            response.setFailed(false);
-         /*   while(true) {
-                response = ( GetReportGenerationStatusResponse) ItronEndpointManager.REPORT.getTemplate(settingDao).marshalSendAndReceive(url, request);
-                if(response.isCompleted()) {
+            GetReportGenerationStatusResponse response;
+            while (true) {
+                response = (GetReportGenerationStatusResponse) ItronEndpointManager.REPORT.getTemplate(
+                    settingDao).marshalSendAndReceive(url, request);
+                if (response.isCompleted()) {
                     break;
                 }
-            }*/
+            }
             log.debug(XmlUtils.getPrettyXml(response));
             if (response.isFailed()) {
                 ItronCommunicationException exception = new ItronCommunicationException(
@@ -364,8 +425,15 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 throw exception;
             }
             
-            log.debug("ITRON-getReport url:{} commandId:{} result:{}.", url, commandId, "success");
-            return downloadAndZipReportFiles(response.getReportFileNames(), commandId);
+            log.debug("ITRON-getReport url:{} commandId:{} files:{} result:{}.", url, commandId,
+                response.getReportFileNames(), "success");
+            
+            if(response.getReportFileNames().isEmpty()) {
+                // no files to parse, we got all the data
+                return null;    
+            }
+            
+            return downloadAndZipReportFiles(response.getReportFileNames(), commandId, type);
 
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.REPORT);
@@ -376,24 +444,19 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     /**
      * Downloads files from itron.
      * The files name is going to be filenumber_timestamp_commandId. Command Id can be correlated to log debug statements.
-     * Zips the copied files and stores them in \Yukon\ExportArchive\Itron, the name of the zipped file is timestamp_commandId.zip. 
+     * Zips the copied files and stores them in \Yukon\ExportArchive\Itron, the name of the zipped file is [READ/ALL]_timestamp_commandId.zip. 
      * Returns a zip file
      */
-    private ZipFile downloadAndZipReportFiles(List<String> fileURLs, long commandId) {
+    private ZipFile downloadAndZipReportFiles(List<String> fileURLs, long commandId, ExportType type) {
         List<File> files = new ArrayList<>();
-        String zipName = FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + commandId + ".zip";
-
+        String zipName = type + "_" + FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + commandId + ".zip";
         for (int i = 0; i < fileURLs.size(); i++) {
             String fileURL = fileURLs.get(i);
-            File file = null;
             try {
-                // test on local
-                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxy.etn.com", 8080));
-                URLConnection conn = new URL(fileURL).openConnection(proxy);
-
-                // URLConnection conn = new URL(path).openConnection();
-                String fileName =(i + 1) + "_" + FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + commandId + ".csv";
-                file = new File(FILE_PATH, fileName);
+                URLConnection conn = getConnection(fileURL);
+                String fileName =
+                    (i + 1) + "_" + FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + commandId + ".csv";
+                File file = new File(FILE_PATH, fileName);
                 OutputStream out = new FileOutputStream(file);
                 IOUtils.copy(conn.getInputStream(), out);
                 IOUtils.closeQuietly(out);
@@ -405,6 +468,17 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             }
         }
         return zipFiles(zipName, files);
+    }
+
+    private URLConnection getConnection(String fileURL) throws IOException, MalformedURLException {
+        URLConnection conn;
+        Optional<YukonHttpProxy> proxy = YukonHttpProxy.fromGlobalSetting(settingDao);
+        if (proxy.isPresent()) {
+            conn = new URL(fileURL).openConnection(proxy.get().getJavaHttpProxy());
+        } else {
+            conn = new URL(fileURL).openConnection();
+        }
+        return conn;
     }
     
     private ZipFile zipFiles(String zipName, List<File> files) {
@@ -499,7 +573,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
        // ---
         
         List<Integer> lmGroupsWithoutItronGroup = itronDao.getLmGroupsWithoutItronGroup(groupPaoIds);
-        lmGroupsWithoutItronGroup.forEach(paoId -> itronDao.updateGroupMapping(paoId, getGroupIdFromItron(getGroup(paoId))));
+        lmGroupsWithoutItronGroup.forEach(paoId -> itronDao.updateGroupMapping(paoId, getGroupIdFromItron(String.valueOf(paoId))));
+        
     }
     
     /**
@@ -539,25 +614,25 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     /**
      * Sends request to itron to add mac addresses to a group.
      */
-    private void addMacAddressesToGroup(LiteYukonPAObject groupPao, List<String> macAddresses) {
+    private void addMacAddressesToGroup(String lmGroupId, List<String> macAddresses) {
         String url = ItronEndpointManager.DEVICE.getUrl(settingDao);
 
         try {
-            ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupEditRequest(groupPao, macAddresses);
+            ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupEditRequest(lmGroupId, macAddresses);
             JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createEditESIGroupRequest(requestType);
             macAddresses.forEach(macAddress ->
-                itronEventLogService.addMacAddressToGroup(macAddress, groupPao.getPaoName())
+                itronEventLogService.addMacAddressToGroup(macAddress, lmGroupId)
             );
-            log.debug("ITRON-addMacAddressToGroup url:{} group name:{} mac addresses:{}.", url, groupPao.getPaoName(),
+            log.debug("ITRON-addMacAddressToGroup url:{} lm group id:{} mac addresses:{}.", url, lmGroupId,
                 macAddresses);
             log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));
             JAXBElement<ESIGroupResponseType> response =
                 (JAXBElement<ESIGroupResponseType>) ItronEndpointManager.DEVICE.getTemplate(settingDao).marshalSendAndReceive(url,
                     request);
-            log.debug("ITRON-addMacAddressToGroup url:{} group name:{} mac addresses:{} result:{}.", url,
-                groupPao.getPaoName(), macAddresses, "success");
+            log.debug("ITRON-addMacAddressToGroup url:{} lm group id:{} mac addresses:{} result:{}.", url,
+                lmGroupId, macAddresses, "success");
             log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())));
-            itronEventLogService.addGroup(String.valueOf(groupPao.getLiteID()), response.getValue().getGroupID());
+            itronEventLogService.addGroup(lmGroupId, response.getValue().getGroupID());
             if (!response.getValue().getErrors().isEmpty()) {
                 throw new ItronAddEditGroupException(response.getValue());
             }
@@ -569,22 +644,22 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     /**
      * Returns itron group id
      */
-    private long getGroupIdFromItron(LiteYukonPAObject groupPao) {
+    private long getGroupIdFromItron(String lmGroupId) {
         String url = ItronEndpointManager.DEVICE.getUrl(settingDao);
 
         try {
-            ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupAddRequest(groupPao);
+            ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupAddRequest(lmGroupId);
             JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createAddESIGroupRequest(requestType);
-            itronEventLogService.getGroupIdFromItron(groupPao.getPaoName());
-            log.debug("ITRON-getGroupIdFromItron url:{} group name:{}", url, groupPao.getPaoName());
+            itronEventLogService.getGroupIdFromItron(lmGroupId);
+            log.debug("ITRON-getGroupIdFromItron url:{} lm group id:{}", url, lmGroupId);
             log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));
             JAXBElement<ESIGroupResponseType> response =
                 (JAXBElement<ESIGroupResponseType>) ItronEndpointManager.DEVICE.getTemplate(settingDao).marshalSendAndReceive(url,
                     request);
-            log.debug("ITRON-getGroupIdFromItron url:{} group name:{} result:{}.", url, groupPao.getPaoName(),
+            log.debug("ITRON-getGroupIdFromItron url:{} lm group id:{} result:{}.", url, lmGroupId,
                 "success");
             log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())));
-            itronEventLogService.addGroup(String.valueOf(groupPao.getLiteID()), response.getValue().getGroupID());
+            itronEventLogService.addGroup(lmGroupId, response.getValue().getGroupID());
             if (!response.getValue().getErrors().isEmpty()) {
                 throw new ItronAddEditGroupException(response.getValue());
             }

@@ -1,6 +1,5 @@
 package com.cannontech.dr.itron.service;
 
-import java.io.File;
 import java.util.List;
 import java.util.zip.ZipFile;
 
@@ -86,14 +85,13 @@ public interface ItronCommunicationService {
             int rampIn, int rampOut, Duration controlDuration);
 
     /**
-     * Asks Itron to go get the latest data from the device and update itself, but there doesn't seem to be
-     * any way to know when the data has been retrieved. We may want to send this before requesting
-     * data when we are doing something like a "read now".
-     */
-    void updateDeviceLogs(List<Integer> deviceIds);
-
-    /**
      * Downloads devices logs for all devices from itron, copies and zips the files to ExportArchive/Itron
      */
-    ZipFile exportDeviceLogs(long startRecordId, long endRecordId);
+    ZipFile exportDeviceLogs(Long startRecordId, Long endRecordId);
+
+    /**
+     * Downloads devices logs for an itron device group, copies and zips the files to ExportArchive/Itron
+     */
+
+    ZipFile exportDeviceLogsForItronGroup(Long startRecordId, Long endRecordId, List<Integer> deviceId);
 }

@@ -52,4 +52,9 @@ public interface ItronDao {
      * Returns pao ids of groups that do not have corresponding Itron group id
      */
     List<Integer> getLmGroupsWithoutItronGroup(Collection<Integer> lmGroupIds);
+
+    /**
+     * Returns the list of all itron group ids
+     */
+    List<Long> getAllItronGroupIds();
 }

@@ -4,5 +4,6 @@ public enum HardwareStrategyType {
     PLC,
     RF,
     ZIGBEE,
-    ECOBEE
+    ECOBEE,
+    ITRON
 }
