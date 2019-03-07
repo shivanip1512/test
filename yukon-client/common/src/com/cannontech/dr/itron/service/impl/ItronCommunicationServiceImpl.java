@@ -193,7 +193,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     
     @Override
     public void sendDREventForGroup(int yukonGroupId, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
-            int rampIn, int rampOut, Duration duration) {
+            boolean rampIn, boolean rampOut, Duration duration) {
         String url = ItronEndpointManager.PROGRAM_EVENT.getUrl(settingDao);
         int relay = itronDao.getVirtualRelayId(yukonGroupId);
         List<ProgramLoadGroup> programsByLMGroupId = applianceAndProgramDao.getProgramsByLMGroupId(yukonGroupId);
