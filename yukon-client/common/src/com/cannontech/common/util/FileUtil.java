@@ -1,5 +1,7 @@
 package com.cannontech.common.util;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
@@ -18,14 +20,17 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -501,4 +506,46 @@ public final class FileUtil {
         return untarFiles;
     }
 
+    /**
+     * Clean all the content in the passed directory path.
+     */
+    public static void cleanUpDirectory(String path) {
+        Arrays.stream(new File(path).listFiles()).forEach(File::delete);
+    }
+
+    /**
+     * Create tar.gz file based on source and destination.
+     * @param source - Path of the source directory.
+     * @param dest - Path of the destination directory.
+     * @param includedFilesExtn- extension of the files like ".csv" , ".log" etc., which needs to include during tar process. 
+     *        If includedFilesExtn = *, include all the files present in the source directory.
+     */
+    public static void createTarGZFile(String source, String dest, String includedFilesExtn) throws IOException {
+        TarArchiveOutputStream tarOs = null;
+        try {
+            // Using input name to create output name
+            FileOutputStream fos = new FileOutputStream(dest);
+            GZIPOutputStream gos = new GZIPOutputStream(new BufferedOutputStream(fos));
+            tarOs = new TarArchiveOutputStream(gos);
+            File folder = new File(source);
+            File[] fileNames = folder.listFiles();
+            for (File file : fileNames) {
+                if (file.isFile() && (file.getName().endsWith(includedFilesExtn) || "*".equalsIgnoreCase(includedFilesExtn))) {
+                    tarOs.putArchiveEntry(new TarArchiveEntry(file, file.getAbsolutePath()));
+                    FileInputStream fis = new FileInputStream(file);
+                    BufferedInputStream bis = new BufferedInputStream(fis);
+                    // Write content of the file
+                    IOUtils.copy(bis, tarOs);
+                    tarOs.closeArchiveEntry();
+                    fis.close();
+                    file.delete();
+                }
+            }
+        } catch (IOException e) {
+            log.error("Error while creating tar.gz file.", e);
+            throw e;
+        } finally {
+            tarOs.close();
+        }
+    }
 }

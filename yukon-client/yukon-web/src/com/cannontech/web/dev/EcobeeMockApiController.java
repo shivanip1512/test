@@ -30,6 +30,7 @@ import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusResponse;
 import com.cannontech.dr.ecobee.message.SetRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.partial.Status;
+import com.cannontech.dr.ecobee.service.EcobeeStatusCode;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 
@@ -99,7 +100,7 @@ public class EcobeeMockApiController {
     public @ResponseBody RuntimeReportJobResponse createRuntimeReportJob(@RequestBody RuntimeReportJobRequest request) {
         int code = ecobeeDataConfiguration.getRuntimeReport();
         RuntimeReportJobResponse response = null;
-        if (code == 0) {
+        if (code == EcobeeStatusCode.SUCCESS.getCode()) {
             response = ecobeeMockApiService.createRuntimeReportJob(request);
         } else {
             Status status = new Status(code, "Some error has occurred");
