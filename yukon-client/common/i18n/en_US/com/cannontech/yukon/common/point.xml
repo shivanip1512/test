@@ -207,6 +207,9 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_RELAY_STATE">Relay 1 Relay State</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_SHED_STATUS">Relay 1 Shed Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_SHED_TIME_DATA_LOG">Relay 1 Shed Time Data Log</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_SHED_TIME_DATA_LOG_5_MIN">Relay 1 Shed Time Data Log 5 Minutes</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_SHED_TIME_DATA_LOG_15_MIN">Relay 1 Shed Time Data Log 15 Minutes</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_SHED_TIME_DATA_LOG_30_MIN">Relay 1 Shed Time Data Log 30 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_LOAD_SIZE">Relay 2 kW Load Size</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_REMAINING_CONTROL">Relay 2 Remaining Control Time</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_RUN_TIME_DATA_LOG">Relay 2 Run Time Data Log</entry>
@@ -216,6 +219,9 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_RELAY_STATE">Relay 2 Relay State</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_SHED_STATUS">Relay 2 Shed Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_SHED_TIME_DATA_LOG">Relay 2 Shed Time Data Log</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_SHED_TIME_DATA_LOG_5_MIN">Relay 2 Shed Time Data Log 5 Minutes</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_SHED_TIME_DATA_LOG_15_MIN">Relay 2 Shed Time Data Log 15 Minutes</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_SHED_TIME_DATA_LOG_30_MIN">Relay 2 Shed Time Data Log 30 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_LOAD_SIZE">Relay 3 kW Load Size</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_REMAINING_CONTROL">Relay 3 Remaining Control Time</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_RUN_TIME_DATA_LOG">Relay 3 Run Time Data Log</entry>
@@ -225,6 +231,9 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_RELAY_STATE">Relay 3 Relay State</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_SHED_STATUS">Relay 3 Shed Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_SHED_TIME_DATA_LOG">Relay 3 Shed Time Data Log</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_SHED_TIME_DATA_LOG_5_MIN">Relay 3 Shed Time Data Log 5 Minutes</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_SHED_TIME_DATA_LOG_15_MIN">Relay 3 Shed Time Data Log 15 Minutes</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_SHED_TIME_DATA_LOG_30_MIN">Relay 3 Shed Time Data Log 30 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_REMAINING_CONTROL">Relay 4 Remaining Control Time</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_RUN_TIME_DATA_LOG">Relay 4 Run Time Data Log</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_RUN_TIME_DATA_LOG_5_MIN">Relay 4 Run Time Data Log 5 Minutes</entry>
@@ -233,6 +242,9 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_RELAY_STATE">Relay 4 Relay State</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_SHED_STATUS">Relay 4 Shed Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_SHED_TIME_DATA_LOG">Relay 4 Shed Time Data Log</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_SHED_TIME_DATA_LOG_5_MIN">Relay 4 Shed Time Data Log 5 Minutes</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_SHED_TIME_DATA_LOG_15_MIN">Relay 4 Shed Time Data Log 15 Minutes</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_SHED_TIME_DATA_LOG_30_MIN">Relay 4 Shed Time Data Log 30 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REPORTING_INTERVAL">Reporting Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_POWER_FLAG">Reverse Power Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RFN_TEMPERATURE_ALARM">RFN High Temperature Alarm</entry>

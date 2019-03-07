@@ -209,7 +209,10 @@ public:
 	static const Attribute  Relay1RunTime30Min;
     static const Attribute  Relay1ShedStatus;
     static const Attribute  Relay1ShedTime;
-	static const Attribute  Relay1RelayState;
+    static const Attribute  Relay1ShedTime5Min;
+    static const Attribute  Relay1ShedTime15Min;
+    static const Attribute  Relay1ShedTime30Min;
+    static const Attribute  Relay1RelayState;
     static const Attribute  Relay2kWLoadSize;
     static const Attribute  Relay2RemainingControlTime;
     static const Attribute  Relay2RunTime;
@@ -218,7 +221,10 @@ public:
 	static const Attribute  Relay2RunTime30Min;
     static const Attribute  Relay2ShedStatus;
     static const Attribute  Relay2ShedTime;
-	static const Attribute  Relay2RelayState;
+    static const Attribute  Relay2ShedTime5Min;
+    static const Attribute  Relay2ShedTime15Min;
+    static const Attribute  Relay2ShedTime30Min;
+    static const Attribute  Relay2RelayState;
     static const Attribute  Relay3kWLoadSize;
     static const Attribute  Relay3RemainingControlTime;
     static const Attribute  Relay3RunTime;
@@ -227,7 +233,10 @@ public:
 	static const Attribute  Relay3RunTime30Min;
     static const Attribute  Relay3ShedStatus;
     static const Attribute  Relay3ShedTime;
-	static const Attribute  Relay3RelayState;
+    static const Attribute  Relay3ShedTime5Min;
+    static const Attribute  Relay3ShedTime15Min;
+    static const Attribute  Relay3ShedTime30Min;
+    static const Attribute  Relay3RelayState;
     static const Attribute  Relay4RemainingControlTime;
     static const Attribute  Relay4RunTime;
 	static const Attribute  Relay4RunTime5Min;
@@ -235,7 +244,10 @@ public:
 	static const Attribute  Relay4RunTime30Min;
     static const Attribute  Relay4ShedStatus;
     static const Attribute  Relay4ShedTime;
-	static const Attribute  Relay4RelayState;
+    static const Attribute  Relay4ShedTime5Min;
+    static const Attribute  Relay4ShedTime15Min;
+    static const Attribute  Relay4ShedTime30Min;
+    static const Attribute  Relay4RelayState;
     static const Attribute  ReportingInterval;
     static const Attribute  ReverseInductivekVArh;
     static const Attribute  ReversePowerFlag;

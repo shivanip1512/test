@@ -1041,6 +1041,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return honeywellTypes;
     }
     
+    public static ImmutableSet<PaoType> getItronTypes() {
+        return itronTypes;
+    }
+    
     public static ImmutableSet<PaoType> getNestTypes() {
         return nestTypes;
     }

@@ -32,36 +32,54 @@
         <decimalplaces value="0"/>
     </point>
     <point offset="11" type="Analog">
-        <name>Relay 1 Shed Time Data Log</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="MINUTES"/>
-        <decimalplaces value="0"/>
-    </point>
-    <point offset="12" type="Analog">
         <name>Relay 1 Run Time Data Log 5 Minutes</name>
         <multiplier value="1"/>
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
     </point>
-    <point offset="14" type="Analog">
+    <point offset="12" type="Analog">
         <name>Relay 1 Run Time Data Log 15 Minutes</name>
         <multiplier value="1"/>
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
     </point>
-     <point offset="15" type="Analog">
+    <point offset="13" type="Analog">
         <name>Relay 1 Run Time Data Log 30 Minutes</name>
         <multiplier value="1"/>
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
     </point>
+    <point offset="14" type="Analog">
+        <name>Relay 1 Shed Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="15" type="Analog">
+        <name>Relay 1 Shed Time Data Log 5 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="16" type="Analog">
+        <name>Relay 1 Shed Time Data Log 15 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
     <point offset="17" type="Analog">
+        <name>Relay 1 Shed Time Data Log 30 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="18" type="Analog">
         <name>Total LUF Event Count</name>
         <multiplier value="1"/>
         <unitofmeasure value="COUNTS"/>
         <decimalplaces value="0"/>
     </point>
-    <point offset="18" type="Analog">
+    <point offset="19" type="Analog">
         <name>Total LUV Event Count</name>
         <multiplier value="1"/>
         <unitofmeasure value="COUNTS"/>
@@ -74,55 +92,91 @@
         <decimalplaces value="0"/>
     </point>
     <point offset="21" type="Analog">
-        <name>Relay 2 Shed Time Data Log</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="MINUTES"/>
-        <decimalplaces value="0"/>
-    </point>
-    <point offset="22" type="Analog">
         <name>Relay 2 Run Time Data Log 5 Minutes</name>
         <multiplier value="1"/>
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
     </point>
-    <point offset="23" type="Analog">
+    <point offset="22" type="Analog">
         <name>Relay 2 Run Time Data Log 15 Minutes</name>
         <multiplier value="1"/>
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
     </point>
-     <point offset="24" type="Analog">
+    <point offset="23" type="Analog">
         <name>Relay 2 Run Time Data Log 30 Minutes</name>
         <multiplier value="1"/>
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
     </point>
-    <point offset="30" type="Analog">
-        <name>Relay 3 Shed Time Data Log</name>
+    <point offset="24" type="Analog">
+        <name>Relay 2 Shed Time Data Log</name>
         <multiplier value="1"/>
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
     </point>
-    <point offset="31" type="Analog">
+    <point offset="25" type="Analog">
+        <name>Relay 2 Shed Time Data Log 5 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="26" type="Analog">
+        <name>Relay 2 Shed Time Data Log 15 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="27" type="Analog">
+        <name>Relay 2 Shed Time Data Log 30 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="30" type="Analog">
         <name>Relay 3 Run Time Data Log</name>
         <multiplier value="1"/>
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
     </point>
-     <point offset="32" type="Analog">
+    <point offset="31" type="Analog">
         <name>Relay 3 Run Time Data Log 5 Minutes</name>
         <multiplier value="1"/>
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
     </point>
-    <point offset="33" type="Analog">
+    <point offset="32" type="Analog">
         <name>Relay 3 Run Time Data Log 15 Minutes</name>
         <multiplier value="1"/>
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
     </point>
-     <point offset="34" type="Analog">
+    <point offset="33" type="Analog">
         <name>Relay 3 Run Time Data Log 30 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="34" type="Analog">
+        <name>Relay 3 Shed Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="35" type="Analog">
+        <name>Relay 3 Shed Time Data Log 5 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="36" type="Analog">
+        <name>Relay 3 Shed Time Data Log 15 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="37" type="Analog">
+        <name>Relay 3 Shed Time Data Log 30 Minutes</name>
         <multiplier value="1"/>
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
@@ -134,25 +188,43 @@
         <decimalplaces value="0"/>
     </point>
     <point offset="41" type="Analog">
-        <name>Relay 4 Shed Time Data Log</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="MINUTES"/>
-        <decimalplaces value="0"/>
-    </point>
-     <point offset="42" type="Analog">
         <name>Relay 4 Run Time Data Log 5 Minutes</name>
         <multiplier value="1"/>
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
     </point>
-    <point offset="43" type="Analog">
+    <point offset="42" type="Analog">
         <name>Relay 4 Run Time Data Log 15 Minutes</name>
         <multiplier value="1"/>
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
     </point>
-     <point offset="44" type="Analog">
+    <point offset="43" type="Analog">
         <name>Relay 4 Run Time Data Log 30 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="44" type="Analog">
+        <name>Relay 4 Shed Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="45" type="Analog">
+        <name>Relay 4 Shed Time Data Log 5 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="46" type="Analog">
+        <name>Relay 4 Shed Time Data Log 15 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="47" type="Analog">
+        <name>Relay 4 Shed Time Data Log 30 Minutes</name>
         <multiplier value="1"/>
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
