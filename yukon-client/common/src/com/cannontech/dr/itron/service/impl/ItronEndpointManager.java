@@ -71,7 +71,6 @@ public enum ItronEndpointManager {
     private class ItronCommunicationInterceptor implements ClientInterceptor {
         private String username;
         private String password;
-        private Logger log;
 
         public ItronCommunicationInterceptor(String username, String password) {
             this.username = username;
