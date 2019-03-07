@@ -8,7 +8,7 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="All Common Tests.launch" kind="src" path="test/unit"/>
+	<classpathentry excluding="*.launch" kind="src" path="test/unit"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/sqljdbc42.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
