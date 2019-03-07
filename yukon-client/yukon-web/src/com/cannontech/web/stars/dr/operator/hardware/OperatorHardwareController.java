@@ -79,6 +79,7 @@ import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.digi.model.ZigbeeDeviceDto;
+import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
@@ -556,6 +557,10 @@ public class OperatorHardwareController {
             } else {
                 flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareRemoved"));
             }
+        } catch (EnrollmentException | CommandCompletionException e) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareRemovedError"));
+            model.addAttribute("hardware", hardwareToDelete);
+            return returnToEditWithErrors(userContext, model, accountInfoFragment, flashScope, hardwareToDelete, null);
         } catch (ItronCommunicationException e) {
             flashScope.setError(e.getItronMessage());
             model.addAttribute("hardware", hardwareToDelete);
@@ -663,6 +668,9 @@ public class OperatorHardwareController {
             model.addAttribute("inventoryId", inventoryId);
             MessageSourceResolvable message = new YukonMessageSourceResolvable(changeOutMessage);
             flashScope.setMessage(message, messageType);
+        } catch (EnrollmentException e) {
+            MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareChangeOutError");
+            flashScope.setError(message);
         } catch (ItronCommunicationException e) {
             flashScope.setError(e.getItronMessage());
         }

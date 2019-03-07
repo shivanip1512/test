@@ -50,6 +50,7 @@
 	<entry key="yukon.web.modules.operator.optOut.main.optOut">Opt Out…</entry>
 
 	<entry key="yukon.web.modules.operator.optOut.main.success">Opt Out Successful</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.error">An error occurred during Opt Out. Please view the logs for more details.</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.noInventorySelected">No device selected</entry>
 
     <!-- Validation -->

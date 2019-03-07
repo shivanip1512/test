@@ -168,7 +168,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         addMacAddressesToGroup(account, groups);
     }
     
-    @Transactional
     @Override
     public void optOut(int accountId, int deviceId, int inventoryId) {
         CustomerAccount account = customerAccountDao.getById(accountId);
