@@ -81,7 +81,7 @@ public interface ItronCommunicationService {
     /**
      * Sends control request to Itron
      */
-    void sendDREventForGroup(int yukonGroupId, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
+    void sendDREventForGroup(int yukonGroupId, int dutyCycleType, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
             boolean rampIn, boolean rampOut, Duration controlDuration);
 
     /**

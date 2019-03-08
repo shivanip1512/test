@@ -7,6 +7,7 @@ import java.util.Vector;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.device.lm.ItronCycleGear;
 import com.cannontech.database.data.device.lm.BeatThePeakGear;
 import com.cannontech.database.db.NestedDBPersistent;
 
@@ -206,13 +207,15 @@ public abstract class LMProgramDirectGear
 				gear.setGearID(gID);
 				gear.setDbConnection(conn);
 				
-				//need to make sure we get the Thermostat/Beat the Peak specific information from its separate table
+				//need to make sure we get the Thermostat/Beat the Peak/Itron specific information from its separate table
 				if (gear instanceof LMThermostatGear) {
 					gear.retrieve();
 				}
 				else if(gear instanceof BeatThePeakGear){
 				    gear.retrieve();
                 } else if (gear instanceof LMNestGear) {
+                    gear.retrieve();
+                } else if (gear instanceof ItronCycleGear) {
                     gear.retrieve();
                 } else {
 					gear.setGearName(name);

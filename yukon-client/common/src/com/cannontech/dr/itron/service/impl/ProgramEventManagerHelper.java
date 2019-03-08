@@ -2,6 +2,7 @@ package com.cannontech.dr.itron.service.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.transform.Source;
@@ -19,9 +20,15 @@ import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelHA
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.ErrorFault;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.EventControlType;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.LoadControlProgramEventD2GParamsType;
+import com.google.common.collect.ImmutableMap;
 
 public class ProgramEventManagerHelper implements SoapFaultParser {
     
+    private static Map<Integer, EventControlType> eventControlTypes = ImmutableMap.of(
+        0, EventControlType.STANDARD,            // Standard
+        1, EventControlType.ADVANCED_OPTION_1,   // True Cycle
+        2, EventControlType.ADVANCED_OPTION_2 ); // Smart Cycle
+
     public static CancelHANLoadControlProgramEventOnDevicesRequest buildRestoreRequest(Long itronGroupId, long eventID, String macAddress) {
         CancelHANLoadControlProgramEventOnDevicesRequest request = new CancelHANLoadControlProgramEventOnDevicesRequest();
         if(itronGroupId != null) {
@@ -34,7 +41,7 @@ public class ProgramEventManagerHelper implements SoapFaultParser {
         return request;
     }
     
-    public static AddHANLoadControlProgramEventRequest buildDrEvent(int dutyCyclePercent, int dutyCyclePeriod,
+    public static AddHANLoadControlProgramEventRequest buildDrEvent(int dutyCyclePercent, int dutyCycleType, int dutyCyclePeriod,
             int criticality, int relay, int itronProgramId, String programName, boolean rampIn, boolean rampOut, Duration duration) {
         AddHANLoadControlProgramEventRequest request = new AddHANLoadControlProgramEventRequest();
         AddHANLoadControlProgramEventType event = new AddHANLoadControlProgramEventType();
@@ -57,7 +64,7 @@ public class ProgramEventManagerHelper implements SoapFaultParser {
                 RoundingMode.HALF_UP).shortValue();
         d2GParams.setDutyCycleCount(dutyCycleCount);
         d2GParams.setVirtualRelayAddress((short) relay);
-        d2GParams.setEventControl(EventControlType.STANDARD);
+        d2GParams.setEventControl(eventControlTypes.get(dutyCycleType));
         event.setD2GParams(d2GParams);
         request.setHANLoadControlProgramEvent(event);
         return request;
