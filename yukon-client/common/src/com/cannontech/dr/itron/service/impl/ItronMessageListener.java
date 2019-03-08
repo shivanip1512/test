@@ -40,15 +40,16 @@ public class ItronMessageListener {
                 
                 boolean rampIn = msg.readByte() == 1 ? true : false;
                 boolean rampOut = msg.readByte() == 1 ? true : false;
+                int dutyCycleType = msg.readByte();
                 int dutyCyclePercent = msg.readByte();
                 int dutyCyclePeriod = msg.readInt();
-                int criticality = msg.readByte();
+                int criticality = msg.readInt();
                 
                 log.debug("Parsed message - Group Id: " + groupId + ", startTime: " + startTime + ", endTime: " + endTime + 
-                          ", Ramp In: " + rampIn + ", Ramp Out: " + rampOut + ",Duty Cycle Percent: " + dutyCyclePercent + 
-                          ", Duty Cycle Period: " + dutyCyclePeriod + ", criticality: " + criticality);
+                          ", Ramp In: " + rampIn + ", Ramp Out: " + rampOut + ", Duty Cycle Type: " + dutyCycleType + 
+                          ", Duty Cycle Percent: " + dutyCyclePercent + ", Duty Cycle Period: " + dutyCyclePeriod + ", criticality: " + criticality);
                                 
-                itronCommunicationService.sendDREventForGroup(groupId, dutyCyclePercent, dutyCyclePeriod, criticality,
+                itronCommunicationService.sendDREventForGroup(groupId, dutyCycleType, dutyCyclePercent, dutyCyclePeriod, criticality,
                     rampIn, rampOut, controlDuration);
                 controlHistoryService.sendControlHistoryShedMessage(groupId, startTimeUtc, ControlType.ITRON, null,
                     controlDurationSeconds, dutyCyclePercent);

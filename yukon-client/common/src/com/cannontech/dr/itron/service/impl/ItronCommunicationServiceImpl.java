@@ -191,7 +191,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     @Override
-    public void sendDREventForGroup(int yukonGroupId, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
+    public void sendDREventForGroup(int yukonGroupId, int dutyCycleType, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
             boolean rampIn, boolean rampOut, Duration duration) {
         String url = ItronEndpointManager.PROGRAM_EVENT.getUrl(settingDao);
         int relay = itronDao.getVirtualRelayId(yukonGroupId);
@@ -204,7 +204,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
        
         try {
             itronEventLogService.sendDREventForGroup(yukonGroupId, dutyCyclePercent, dutyCyclePeriod, criticality);
-            AddHANLoadControlProgramEventRequest request = ProgramEventManagerHelper.buildDrEvent(dutyCyclePercent,
+            AddHANLoadControlProgramEventRequest request = ProgramEventManagerHelper.buildDrEvent(dutyCyclePercent, dutyCycleType,
                dutyCyclePeriod, criticality, relay, itronProgramId, String.valueOf(programId), rampIn, rampOut, duration);
             log.debug(XmlUtils.getPrettyXml(request));
             log.debug("ITRON-sendDREventForGroup url:{} yukon group:{} yukon program:{}", url, group.getPaoName(), program.getPaoName());

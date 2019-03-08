@@ -61,6 +61,8 @@ public class ItronCycleGearPanel extends GenericGearPanel {
     private JCheckBox checkBoxRampOut;
     private javax.swing.JLabel labelCyclePeriod = null;
     private javax.swing.JComboBox<Integer> comboBoxCyclePeriod = null;
+    private javax.swing.JLabel labelCycleType = null;
+    private javax.swing.JComboBox<String> comboBoxCycleType = null;
 
     public ItronCycleGearPanel() {
         initialize();
@@ -81,6 +83,31 @@ public class ItronCycleGearPanel extends GenericGearPanel {
     @Override
     public void caretUpdate(CaretEvent e) {
         fireInputUpdate();
+    }
+    
+    private javax.swing.JComboBox<String> getJComboBoxCycleType() {
+        if (comboBoxCycleType == null) {
+            try {
+                comboBoxCycleType = new javax.swing.JComboBox<>();
+                comboBoxCycleType.setName("JComboBoxCycleType");
+                comboBoxCycleType.setPreferredSize(new java.awt.Dimension(136, 23));
+                comboBoxCycleType.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+                comboBoxCycleType.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+                // user code begin {1}
+                comboBoxCycleType.addItem("Standard Cycle");
+                comboBoxCycleType.addItem("True Cycle");
+                comboBoxCycleType.addItem("Smart Cycle");
+
+                // default value
+                comboBoxCycleType.setSelectedItem("Standard Cycle");
+                // user code end
+            } catch (java.lang.Throwable ivjExc) {
+                // user code begin {2}
+                // user code end
+                handleException(ivjExc);
+            }
+        }
+        return comboBoxCycleType;
     }
 
     private JCheckBox getCheckBoxRampIn() {
@@ -401,6 +428,29 @@ public class ItronCycleGearPanel extends GenericGearPanel {
         return controlPercentLabel;
     }
 
+    private javax.swing.JLabel getJLabelCycleType() {
+        if (labelCycleType == null) {
+            try {
+                labelCycleType = new javax.swing.JLabel();
+                labelCycleType.setName("JLabelCycleType");
+                labelCycleType.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+                labelCycleType.setText("Duty Cycle Type:");
+                labelCycleType.setMaximumSize(new java.awt.Dimension(112, 14));
+                labelCycleType.setPreferredSize(new java.awt.Dimension(112, 14));
+                labelCycleType.setFont(new java.awt.Font("dialog", 0, 12));
+                labelCycleType.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+                labelCycleType.setMinimumSize(new java.awt.Dimension(112, 14));
+                // user code begin {1}
+                // user code end
+            } catch (java.lang.Throwable ivjExc) {
+                // user code begin {2}
+                // user code end
+                handleException(ivjExc);
+            }
+        }
+        return labelCycleType;
+    }
+
     private javax.swing.JLabel getJLabelCyclePeriod() {
         if (labelCyclePeriod == null) {
             try {
@@ -667,6 +717,7 @@ public class ItronCycleGearPanel extends GenericGearPanel {
         gear.setCriticality(toInteger(getJCSpinFieldCriticality().getValue()));
         com.cannontech.database.data.device.lm.ItronCycleGear sGear = gear;
         sGear.setCyclePeriod((Integer) getJComboBoxCyclePeriod().getSelectedItem());
+        sGear.setCycleType((String) getJComboBoxCycleType().getSelectedItem());
         return gear;
     }
 
@@ -694,6 +745,7 @@ public class ItronCycleGearPanel extends GenericGearPanel {
         getCheckBoxRampIn().addActionListener(this);
         getCheckBoxRampOut().addActionListener(this);
         getJComboBoxCyclePeriod().addActionListener(this);
+        getJComboBoxCycleType().addActionListener(this);
     }
 
     private void initialize() {
@@ -713,6 +765,8 @@ public class ItronCycleGearPanel extends GenericGearPanel {
             GridBagConstraints constraintLabelCriticality = new GridBagConstraints();
             java.awt.GridBagConstraints constraintJLabelCyclePeriod = new java.awt.GridBagConstraints();
             java.awt.GridBagConstraints constraintJComboBoxCyclePeriod = new java.awt.GridBagConstraints();
+            java.awt.GridBagConstraints constraintJLabelCycleType = new java.awt.GridBagConstraints();
+            java.awt.GridBagConstraints constraintJComboBoxCycleType = new java.awt.GridBagConstraints();
 
             constraintJCheckBoxRampIn.insets = new Insets(0, 0, 5, 0);
             constraintJCheckBoxRampIn.ipady = -3;
@@ -776,6 +830,17 @@ public class ItronCycleGearPanel extends GenericGearPanel {
             constraintJComboBoxCyclePeriod.gridwidth = 2;
             constraintJComboBoxCyclePeriod.gridy = 6;
             constraintJComboBoxCyclePeriod.gridx = 2;
+            
+            constraintJLabelCycleType.insets = new java.awt.Insets(0, 0, 5, 5);
+            constraintJLabelCycleType.anchor = java.awt.GridBagConstraints.WEST;
+            constraintJLabelCycleType.gridy = 0;
+            constraintJLabelCycleType.gridx = 1;
+
+            constraintJComboBoxCycleType.insets = new java.awt.Insets(0, 0, 5, 5);
+            constraintJComboBoxCycleType.anchor = java.awt.GridBagConstraints.WEST;
+            constraintJComboBoxCycleType.gridwidth = 2;
+            constraintJComboBoxCycleType.gridy = 0;
+            constraintJComboBoxCycleType.gridx = 2;
 
             constraintLabelCriticality.insets = new java.awt.Insets(0, 0, 5, 5);
             constraintLabelCriticality.anchor = java.awt.GridBagConstraints.WEST;
@@ -802,6 +867,8 @@ public class ItronCycleGearPanel extends GenericGearPanel {
             this.add(getJCSpinFieldCriticality(), constraintJCSpinFieldCriticality);
             this.add(getJLabelCyclePeriod(), constraintJLabelCyclePeriod);
             this.add(getJComboBoxCyclePeriod(), constraintJComboBoxCyclePeriod);
+            this.add(getJLabelCycleType(), constraintJLabelCycleType);
+            this.add(getJComboBoxCycleType(), constraintJComboBoxCycleType);
         } catch (Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -911,6 +978,7 @@ public class ItronCycleGearPanel extends GenericGearPanel {
         getJCSpinFieldCriticality().setValue(gear.getCriticality());
         com.cannontech.database.data.device.lm.ItronCycleGear hGear = gear;
         getJComboBoxCyclePeriod().setSelectedItem(hGear.getCyclePeriod());
+        getJComboBoxCycleType().setSelectedItem(gear.getCycleType());
     }
 
     @Override
