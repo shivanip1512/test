@@ -8,11 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Direction;
@@ -20,8 +18,6 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.core.authorization.service.PaoAuthorizationService;
-import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -41,17 +37,15 @@ import com.google.common.collect.Lists;
 
 @CheckRole(YukonRole.DEMAND_RESPONSE)
 public abstract class DemandResponseControllerBase {
-    
-    private static final Logger log = YukonLogManager.getLogger(DemandResponseControllerBase.class);
-    
+
     @Autowired private AssetAvailabilityChartService assetAvailabilityChartService;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private PaoAuthorizationService paoAuthorizationService;
-    
-    protected static final TypeReference<Set<AssetAvailabilityCombinedStatus>> assetAvailStatusType
-        = new TypeReference<Set<AssetAvailabilityCombinedStatus>>() {};
+
+    protected static final TypeReference<Set<AssetAvailabilityCombinedStatus>> assetAvailStatusType =
+        new TypeReference<Set<AssetAvailabilityCombinedStatus>>() {
+        };
 
     protected static Map<AssetAvailabilityCombinedStatus, String> colorMap;
     static {
