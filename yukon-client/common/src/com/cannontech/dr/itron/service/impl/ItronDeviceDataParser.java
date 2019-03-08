@@ -1,12 +1,8 @@
 package com.cannontech.dr.itron.service.impl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
 import java.util.Enumeration;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -30,13 +26,9 @@ import com.cannontech.dr.itron.ItronDataEventType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-
-enum ItronDataCategory {
-    EVENT_CAT_NIC_EVENT,
-    EVENT_CAT_PROGRAM_EVENTS
-}
 
 public class ItronDeviceDataParser {
     
@@ -48,19 +40,19 @@ public class ItronDeviceDataParser {
     
     private static final Logger log = YukonLogManager.getLogger(ItronDeviceDataParser.class);
 
-    public void parseAndSend(ZipFile zip, Multimap<PaoIdentifier, PointValueHolder> allPointValues){
+    public Multimap<PaoIdentifier, PointValueHolder> parseAndSend(ZipFile zip){
         if(zip == null) {
             log.error("Unable to parse Itron file, no file found");
             //nothing to parse
-            return;
+            return null;
         }
-        
+        Multimap<PaoIdentifier, PointValueHolder> allPointValues = ArrayListMultimap.create();
         Enumeration<? extends ZipEntry> entries = zip.entries();
         while(entries.hasMoreElements()){
             Multimap<PaoIdentifier, PointData> pointValues = HashMultimap.create();
             try {
                 InputStream stream = zip.getInputStream(entries.nextElement());
-                parseData(stream, pointValues);
+                pointValues = parseData(stream);
                 dataSource.putValues(pointValues.values());
                 if(allPointValues != null) {
                     allPointValues.putAll(pointValues);
@@ -68,17 +60,16 @@ public class ItronDeviceDataParser {
             } catch (Exception e) {
                 log.error("Unable to parse Itron file", e);
             }
-        }       
+        }
+        return allPointValues;
     }
-
-    private void parseData(InputStream stream, Multimap<PaoIdentifier, PointData> pointValues) throws Exception {
+    /**
+     * Functional core of the parsing functionality of this file.
+     */
+    private Multimap<PaoIdentifier, PointData> parseData(InputStream stream) throws Exception {
         
-      if(true) {
-          System.out.println(read(stream));
-          System.out.println("------------------------------------");
-          return;
-      }
-      
+      Multimap<PaoIdentifier, PointData> pointValues = ArrayListMultimap.create();
+
       long maxRecordId = getMaxRecordId();
       
       try (InputStreamReader inputStreamReader = new InputStreamReader(stream)) {
@@ -89,7 +80,7 @@ public class ItronDeviceDataParser {
               int currentRecordId = Integer.parseInt(row[0]);
               if (currentRecordId > maxRecordId) {
                   maxRecordId = currentRecordId;
-                  generatePointData(row, pointValues);
+                  pointValues = generatePointData(row);
               }
               row = csvReader.readNext();
           }
@@ -97,9 +88,16 @@ public class ItronDeviceDataParser {
       }
       
       setMaxRecordId(maxRecordId);
+      return pointValues;
     }
 
-    private void generatePointData(String[] rowData, Multimap<PaoIdentifier, PointData> pointValues) {
+    /**
+     * Bulk of parsing logic is done here for the parser. 
+     * @param rowData - parses single row of a csv entry
+     * @param pointValues - return pointValues using this object
+     */
+    private Multimap<PaoIdentifier, PointData> generatePointData(String[] rowData) {
+        Multimap<PaoIdentifier, PointData> pointValues = ArrayListMultimap.create();
         ItronDataCategory category = ItronDataCategory.valueOf(rowData[1]);
         String eventTime = rowData[3];//ISO 8601 YYYY-MM-DD
         String source = rowData[5];//Mac address
@@ -110,7 +108,7 @@ public class ItronDeviceDataParser {
         switch(category) {
         case EVENT_CAT_NIC_EVENT:
             byte[] decoded = null;
-            for(int i = 0; i < text.length; i+=2) {
+            for(int i = 0; i < text.length; i++) {
                 String[] tuple = text[i].split(":");
                 if(tuple[0].trim().toLowerCase().equals("log event id")) {
                     //sample: text = log event ID: 32907 (0x808b)
@@ -121,8 +119,8 @@ public class ItronDeviceDataParser {
                     //sample: payload: data(0500000000)
                     //sample: payload: Event ID (5250009) data(00501BD900)
                     //tuple (payload, magicString data(0500000000);
-                    String[] second = tuple[1].split("data(");
-                    String hexString = second[1].trim().replaceAll("[^0-9]+", "");
+                    String[] second = tuple[1].split("data\\(");
+                    String hexString = second[1].trim().replaceAll("[^0-9a-fA-F]+", "");
                     try {
                         decoded = Hex.decodeHex(hexString.toCharArray());
                     } catch (DecoderException e) {
@@ -133,12 +131,11 @@ public class ItronDeviceDataParser {
             
             ItronDataEventType event = ItronDataEventType.getFromHex(eventId);//This could be null if the mapping doesn't exist.
             if (event != null) {
-                ByteBuffer wrapped = ByteBuffer.wrap(decoded);
                 int deviceId = deviceDao.getDeviceIdFromMacAddress(source);
                 LiteYukonPAObject lpo = serverDatabaseCache.getAllPaosMap().get(deviceId);
                 //building the point
-                LitePoint lp = attributeService.getPointForAttribute(lpo, event.getAttribute(wrapped));
-                PointData pointData = event.getPointData(wrapped, lp);
+                LitePoint lp = attributeService.getPointForAttribute(lpo, event.getAttribute(decoded));
+                PointData pointData = event.getPointData(decoded, lp);
                 pointData.setTimeStamp(new DateTime(eventTime).toDate());
                 pointValues.put(lpo.getPaoIdentifier(), pointData);
             }
@@ -161,24 +158,27 @@ public class ItronDeviceDataParser {
             break;
         }*/
         
+        
+        return pointValues;
     }
 
+    /**
+     * Get persisted itron record Id
+     */
     private long getMaxRecordId() {
         return persistedSystemValueDao.getLongValue(PersistedSystemValueKey.ITRON_DATA_LAST_RECORD_ID);
     }
     
-
+    /**
+     * Set persisted itron record Id
+     */
     private void setMaxRecordId(long maxRecordId) {
         persistedSystemValueDao.setValue(PersistedSystemValueKey.ITRON_DATA_LAST_RECORD_ID, maxRecordId);
     }
-    
-    /**
-     * Used for testing
-     */
-    public static String read(InputStream input) throws IOException {
-        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
-            return buffer.lines().collect(Collectors.joining("\n"));
-        }
-    }
 
+}
+
+enum ItronDataCategory {
+    EVENT_CAT_NIC_EVENT,
+    EVENT_CAT_PROGRAM_EVENTS
 }

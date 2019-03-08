@@ -40,7 +40,7 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
                 if (zip == null) {
                     break;
                 }
-                itronDeviceDataParser.parseAndSend(zip, null);
+                itronDeviceDataParser.parseAndSend(zip);
             }
         } catch (Exception e) {
             log.error("Exception while collecting data", e);
@@ -51,7 +51,7 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
     public void collectDataForRead(int deviceId) {
         Range<Long> range = getRecordRange();
         ZipFile zip = communicationService.exportDeviceLogsForItronGroup(range.getMin(), null, Lists.newArrayList(deviceId));
-        itronDeviceDataParser.parseAndSend(zip, null);
+        itronDeviceDataParser.parseAndSend(zip);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
             if (zip == null) {
                 break;
             }
-            itronDeviceDataParser.parseAndSend(zip, pointValues);
+            pointValues = itronDeviceDataParser.parseAndSend(zip);
         }
       
         return pointValues;
