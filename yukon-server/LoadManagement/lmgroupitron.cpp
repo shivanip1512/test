@@ -27,6 +27,7 @@ CtiLMGroupBase* LMGroupItron::replicate() const
 bool LMGroupItron::sendCycleControl( long controlDurationSeconds,
                                      bool rampInOption,
                                      bool rampOutOption,
+                                     long cycleOption,
                                      long dutyCyclePercent,
                                      long dutyCyclePeriod,
                                      long criticality )
@@ -46,6 +47,7 @@ bool LMGroupItron::sendCycleControl( long controlDurationSeconds,
             controlDurationSeconds,
             rampInOption,
             rampOutOption,
+            cycleOption,
             dutyCyclePercent,
             dutyCyclePeriod,
             criticality ) );
@@ -114,6 +116,7 @@ bool LMGroupItron::sendShedControl( long controlMinutes )
             controlMinutes * 60,
             false,
             false,
+            0,      // hardcoding to 'Standard Cycling' gear type
             100,
             controlMinutes * 60,
             100 ) );
