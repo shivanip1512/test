@@ -18,7 +18,7 @@ public enum ItronCycleType {
     
     public static ItronCycleType of(String name) {
         for(ItronCycleType type : values()) {
-            if (type.name == name) {
+            if (type.name.equals(name)) {
                 return type;
             }
         }
