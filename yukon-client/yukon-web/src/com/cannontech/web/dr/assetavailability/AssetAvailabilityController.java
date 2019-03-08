@@ -159,9 +159,9 @@ public class AssetAvailabilityController {
             AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext) {
         PaoIdentifier paoIdentifier = cache.getAllPaosMap().get(paobjectId).getPaoIdentifier();
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
-        SearchResults<AssetAvailabilityDetails> searchResults =assetAvailabilityService.getAssetAvailabilityDetails(
+        SearchResults<AssetAvailabilityDetails> searchResults = assetAvailabilityService.getAssetAvailabilityDetails(
             subGroups, paoIdentifier, PagingParameters.EVERYTHING, statuses,
-            AssetAvailabilitySortBy.valueOf("SERIAL_NUM").getValue(), Direction.asc, userContext);
+            AssetAvailabilitySortBy.SERIAL_NUM.getValue(), Direction.asc, userContext);
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         List<Integer> deviceIds = searchResults.getResultList().stream().filter(assetAvailabilityDetail -> assetAvailabilityDetail.getDeviceId() != 0)
                                                                         .map(AssetAvailabilityDetails::getDeviceId)
@@ -302,7 +302,7 @@ public class AssetAvailabilityController {
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         SearchResults<AssetAvailabilityDetails> searchResults = assetAvailabilityService.getAssetAvailabilityDetails(
             subGroups, paoIdentifier, PagingParameters.EVERYTHING, statuses,
-            AssetAvailabilitySortBy.valueOf("SERIAL_NUM").getValue(), Direction.asc, userContext);
+            AssetAvailabilitySortBy.SERIAL_NUM.getValue(), Direction.asc, userContext);
 
         List<InventoryIdentifier> inventoryIdentifieres = searchResults.getResultList().stream().map(
             assetAvailabilityDetails -> new InventoryIdentifier(assetAvailabilityDetails.getInventoryId(),
@@ -337,7 +337,7 @@ public class AssetAvailabilityController {
 
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
-        SearchResults<AssetAvailabilityDetails> results =assetAvailabilityService.getAssetAvailabilityDetails(
+        SearchResults<AssetAvailabilityDetails> results = assetAvailabilityService.getAssetAvailabilityDetails(
             subGroups, liteYukonPAObject.getPaoIdentifier(), PagingParameters.EVERYTHING, statuses, null, Direction.asc, userContext);
 
         List<String[]> dataRows = Lists.newArrayList();

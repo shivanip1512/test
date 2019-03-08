@@ -45,7 +45,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
             SortingParameters sortingParameters, Instant communicatingWindowEnd, Instant runtimeWindowEnd,
             Instant currentTime, YukonUserContext userContext) {
 
-        String sortingOrder = (sortingParameters == null) ? "SERIAL_NUM" : sortingParameters.getSort();
+        String sortingOrder = (sortingParameters == null) ? AssetAvailabilityDao.SortBy.SERIALNUM.getDbString() : sortingParameters.getSort();
         Direction sortingDirection = ((sortingParameters == null) ? Direction.asc : sortingParameters.getDirection());
         
         /*
@@ -313,9 +313,8 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
             PagingParameters pagingParameters, AssetAvailabilityCombinedStatus[] filterCriteria,
             SortBy sortBy, Direction direction, Instant communicatingWindowEnd, Instant runtimeWindowEnd,
             Instant currentTime, YukonUserContext userContext) {
-        String sortingOrder = (sortBy == null) ? "SERIAL_NUM" : sortBy.getDbString();
+        String sortingOrder = (sortBy == null) ? AssetAvailabilityDao.SortBy.SERIALNUM.getDbString() : sortBy.getDbString();
         Direction sortingDirection = ((direction == null) ? Direction.asc : direction);
-
         SqlStatementBuilder sqlPaginateQuery = new SqlStatementBuilder();
         SqlStatementBuilder sqlTotalCountQuery = new SqlStatementBuilder();
         SqlStatementBuilder sqlCommon = new SqlStatementBuilder();

@@ -69,7 +69,7 @@ public class MockAssetAvailabilityDao implements AssetAvailabilityDao {
     @Override
     public SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups,
             Iterable<Integer> loadGroupIds, PagingParameters pagingParameters,
-            AssetAvailabilityCombinedStatus[] filterCriteria, SortBy sortBy,Direction direction,
+            AssetAvailabilityCombinedStatus[] filterCriteria, SortBy sortBy, Direction direction,
             Instant communicatingWindowEnd, Instant runtimeWindowEnd, Instant currentTime,
             YukonUserContext userContext) {
         List<AssetAvailabilityDetails> resultList = new ArrayList<AssetAvailabilityDetails>();
