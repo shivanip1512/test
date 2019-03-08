@@ -11,6 +11,7 @@ struct ItronControlInterface
     virtual bool sendCycleControl( long controlDurationSeconds,
                                    bool rampInOption,
                                    bool rampOutOption,
+                                   long cycleOption,
                                    long dutyCyclePercent,
                                    long dutyCyclePeriod,
                                    long criticality ) = 0;

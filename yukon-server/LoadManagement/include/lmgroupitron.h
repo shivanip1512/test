@@ -23,6 +23,7 @@ public:
     bool sendCycleControl( long controlDurationSeconds,
                            bool rampInOption,
                            bool rampOutOption,
+                           long cycleOption,
                            long dutyCyclePercent,
                            long dutyCyclePeriod,
                            long criticality ) override;

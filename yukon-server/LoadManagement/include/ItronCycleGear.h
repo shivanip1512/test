@@ -34,6 +34,12 @@ public:
     long getGroupCapacityReduction() const;
 
     double calculateLoadReduction( double groupCapacity ) const;
+
+    long getCyclingOption() const;
+
+private:
+
+    long _cyclingOption;
 };
 
 }

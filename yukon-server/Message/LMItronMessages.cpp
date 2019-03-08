@@ -14,6 +14,7 @@ LMItronCyclingControlMessage::LMItronCyclingControlMessage( int groupId,
                                                             int controlDuration,
                                                             bool rampInOption,
                                                             bool rampOutOption,
+                                                            long cycleOption,
                                                             long dutyCyclePercent,
                                                             long dutyCyclePeriod,
                                                             long criticality )
@@ -22,6 +23,7 @@ LMItronCyclingControlMessage::LMItronCyclingControlMessage( int groupId,
         _stopTime( startTime + controlDuration ),
         _rampIn( rampInOption ),
         _rampOut( rampOutOption ),
+        _cycleOption( cycleOption ),
         _dutyCyclePercent( dutyCyclePercent ),
         _dutyCyclePeriod( dutyCyclePeriod ),
         _criticality( criticality )
@@ -36,9 +38,10 @@ void LMItronCyclingControlMessage::streamInto(cms::StreamMessage & message) cons
     message.writeLong( _stopTime );
     message.writeByte( _rampIn );
     message.writeByte( _rampOut );
+    message.writeByte( _cycleOption );
     message.writeByte( _dutyCyclePercent );
     message.writeInt( _dutyCyclePeriod );
-    message.writeByte( _criticality );
+    message.writeInt( _criticality );
 }
 
 LMItronRestoreMessage::LMItronRestoreMessage( int groupId,

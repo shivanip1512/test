@@ -17,6 +17,7 @@ public:
                                   int controlDuration,
                                   bool rampInOption,
                                   bool rampOutOption,
+                                  long cycleOption,
                                   long dutyCyclePercent,
                                   long dutyCyclePeriod,
                                   long criticality );
@@ -30,6 +31,7 @@ private:
     long long _stopTime;
     bool _rampIn;
     bool _rampOut;
+    long _cycleOption;
     long _dutyCyclePercent;
     long _dutyCyclePeriod;
     long _criticality;

@@ -8,10 +8,30 @@
 
 namespace Cti::LoadManagement {
 
-ItronCycleGear::ItronCycleGear( Cti::RowReader & rdr )
-    :   CtiLMProgramDirectGear( rdr )
+namespace
 {
-    // empty
+    static const std::map<std::string, long>    cycleOptionResolver
+    {
+        { "STANDARD",       0 },
+        { "TRUE_CYCLE",     1 },
+        { "SMART_CYCLE",    2 }
+    };
+}
+
+ItronCycleGear::ItronCycleGear( Cti::RowReader & rdr )
+    :   CtiLMProgramDirectGear( rdr ),
+        _cyclingOption( -1 )
+{
+    const std::string dbKey = rdr[ "CycleOption" ].as<std::string>();
+    
+    if ( auto result = Cti::mapFind( cycleOptionResolver, dbKey ) )
+    {
+        _cyclingOption = *result;
+    }
+    else
+    {
+        CTILOG_ERROR( dout, "Gear: '" << getGearName() << "' has an unknown cycle option: '" << dbKey << "'" );
+    }
 }
 
 
@@ -32,6 +52,7 @@ bool ItronCycleGear::attemptControl( CtiLMGroupPtr  currentLMGroup,
         return itronGroup->sendCycleControl( controlSeconds,
                                              isRampIn(),
                                              isRampOut(),
+                                             getCyclingOption(),
                                              getDutyCyclePercentage(),
                                              getDutyCyclePeriod(),
                                              getCriticality() );
@@ -98,6 +119,11 @@ double ItronCycleGear::calculateLoadReduction( double groupCapacity ) const
     const double loadScalar = ( getPercentReduction() == 0 ) ? 1.0 : getPercentReduction() / 100.0;
 
     return loadScalar * groupCapacity;
+}
+
+long ItronCycleGear::getCyclingOption() const
+{
+    return _cyclingOption;
 }
 
 
