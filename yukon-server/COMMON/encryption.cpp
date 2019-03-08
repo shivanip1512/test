@@ -112,14 +112,11 @@ namespace
 
         Buffer  plainText( cipherText.size(), 0 );
 
-        const EVP_CIPHER * cipher = EVP_aes_128_cbc();
-        EVP_CIPHER_CTX  context;
-        EVP_CIPHER_CTX_init( &context );
-        EVP_DecryptInit( &context, cipher, &aesKey[ 0 ], &initVector[ 0 ] );
-        EVP_DecryptInit_ex( &context, NULL, NULL, NULL, NULL );
-        EVP_DecryptUpdate( &context, &plainText[ 0 ], &updateLen, &cipherText[ 0 ], cipherText.size() );
-        EVP_DecryptFinal_ex( &context, &plainText[ updateLen ], &finalLen );
-        EVP_CIPHER_CTX_cleanup( &context );
+        EVP_CIPHER_CTX *context = EVP_CIPHER_CTX_new();
+        EVP_DecryptInit_ex( context, EVP_aes_128_cbc(), NULL, &aesKey[ 0 ], &initVector[ 0 ] );
+        EVP_DecryptUpdate( context, &plainText[ 0 ], &updateLen, &cipherText[ 0 ], cipherText.size() );
+        EVP_DecryptFinal_ex( context, &plainText[ updateLen ], &finalLen );
+        EVP_CIPHER_CTX_free( context );
 
         plainText.resize( updateLen + finalLen );
 

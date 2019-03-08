@@ -66,8 +66,8 @@ SQLAPI_BIN      = $(SQLAPI)\bin
 MICROSOFT_SQL_DLL = ntwdblib.dll
 
 OPENSSL_BIN     = $(OPENSSL)\$(CONFIGURATION)\bin
-OPENSSL_DLL_1   = libeay32.dll
-OPENSSL_DLL_2   = ssleay32.dll
+OPENSSL_DLL_1   = libcrypto-1_1.dll
+OPENSSL_DLL_2   = libssl-1_1.dll
 
 TCL_BIN         = $(TCL)\$(CONFIGURATION)\bin
 !IF "$(CONFIGURATION)"=="DEBUG"

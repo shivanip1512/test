@@ -152,7 +152,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmdd.lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmdd.lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -201,7 +201,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmd.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmd.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -253,7 +253,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
@@ -308,7 +308,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\ssleay32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libeay32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

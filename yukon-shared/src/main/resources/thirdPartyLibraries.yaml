@@ -3513,16 +3513,16 @@ C++ :
     
   - project : OpenSSL
     path : OPENSSL
-    version : 1.0.2j
+    version : 1.1.1b
     project URL : "https://www.openssl.org/"
     license : BSD-style
     license URLs : "https://github.com/openssl/openssl/blob/e216bf9d7ca761718f34e8b3094fcb32c7a143e4/LICENSE"
-    md5 : 69d1c87e884171ed240307a37e6ba6ad
-    sha1 : 8f6e5878e16bf7ce2e09cbd3fd5b9b1f2bbb0198
-    fileCount : 108
-    totalSize : 7462719
-    updated : 2018-05-17  
-    jira : YUK-18201
+    md5 : 0bd27948da5349412bc71ee81e325f6e
+    sha1 : f499c17bd8b6bd597d017e44c17bc3e20da07f49
+    fileCount : 117
+    totalSize : 9953865
+    updated : 2019-03-08  
+    jira : YUK-19524
     notes : Since transitioned to Apache 2.0 license
     
   - project : SQLAPI 
