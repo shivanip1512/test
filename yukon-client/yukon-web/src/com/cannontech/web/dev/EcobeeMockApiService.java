@@ -143,9 +143,7 @@ public class EcobeeMockApiService {
         for (String serialNumber : selectionMatch) {
             String fileName = serialNumber + "-" + jobId + ".csv";
             String csvFile = dirPath + fileName;
-            CSVWriter csvWriter = null;
-            try {
-                csvWriter = new CSVWriter(new FileWriter(csvFile));
+            try(CSVWriter csvWriter = new CSVWriter(new FileWriter(csvFile))) {
                 csvWriter.writeNext(ecobeeDataHeader);
                 Instant startTime = request.getStartDate();
                 Instant endTime = request.getEndDate();
@@ -153,8 +151,6 @@ public class EcobeeMockApiService {
                                         intervalStart.plus(fiveMinutes)) {
                     csvWriter.writeNext(generateEcobeeReading(intervalStart));
                 }
-            } finally {
-                csvWriter.close();
             }
         }
         // Further process CSV file for .tar.gz.gpg
@@ -196,8 +192,14 @@ public class EcobeeMockApiService {
         // Static setpoint values
         String zoneCoolTemp = "70";
         String zoneHeatTemp = "80";
-        String compCool1 = StringUtils.EMPTY;
-        String compHeat1 = StringUtils.EMPTY;
+        int randomValue = (int) (Math.random() * (300 - 0));
+        String compCool1 = "0";
+        String compHeat1 = "0";
+        if (randomValue % 2 == 0) {
+            compCool1 = String.valueOf(randomValue);
+        } else {
+            compHeat1 = String.valueOf(randomValue);
+        }
         return new String[] {date, time, zoneCalendarEvent, zoneAveTemp, outdoorTemp, zoneCoolTemp, zoneHeatTemp,
             compCool1, compHeat1};
     }

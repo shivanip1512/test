@@ -521,31 +521,27 @@ public final class FileUtil {
      *        If includedFilesExtn = *, include all the files present in the source directory.
      */
     public static void createTarGZFile(String source, String dest, String includedFilesExtn) throws IOException {
-        TarArchiveOutputStream tarOs = null;
-        try {
-            // Using input name to create output name
-            FileOutputStream fos = new FileOutputStream(dest);
-            GZIPOutputStream gos = new GZIPOutputStream(new BufferedOutputStream(fos));
-            tarOs = new TarArchiveOutputStream(gos);
+        try (FileOutputStream fos = new FileOutputStream(dest);
+             GZIPOutputStream gos = new GZIPOutputStream(new BufferedOutputStream(fos));
+             TarArchiveOutputStream tarOs = new TarArchiveOutputStream(gos)) {
             File folder = new File(source);
             File[] fileNames = folder.listFiles();
             for (File file : fileNames) {
-                if (file.isFile() && (file.getName().endsWith(includedFilesExtn) || "*".equalsIgnoreCase(includedFilesExtn))) {
+                if (file.isFile()
+                    && (file.getName().endsWith(includedFilesExtn) || "*".equalsIgnoreCase(includedFilesExtn))) {
                     tarOs.putArchiveEntry(new TarArchiveEntry(file, file.getAbsolutePath()));
-                    FileInputStream fis = new FileInputStream(file);
-                    BufferedInputStream bis = new BufferedInputStream(fis);
-                    // Write content of the file
-                    IOUtils.copy(bis, tarOs);
-                    tarOs.closeArchiveEntry();
-                    fis.close();
+                    try (FileInputStream fis = new FileInputStream(file)) {
+                        BufferedInputStream bis = new BufferedInputStream(fis);
+                        // Write content of the file
+                        IOUtils.copy(bis, tarOs);
+                        tarOs.closeArchiveEntry();
+                    }
                     file.delete();
                 }
             }
         } catch (IOException e) {
             log.error("Error while creating tar.gz file.", e);
             throw e;
-        } finally {
-            tarOs.close();
         }
     }
 }
