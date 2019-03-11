@@ -93,17 +93,11 @@ public class ItronCycleGearPanel extends GenericGearPanel {
                 comboBoxCycleType.setPreferredSize(new java.awt.Dimension(136, 23));
                 comboBoxCycleType.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
                 comboBoxCycleType.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-                // user code begin {1}
                 comboBoxCycleType.addItem("Standard Cycle");
                 comboBoxCycleType.addItem("True Cycle");
                 comboBoxCycleType.addItem("Smart Cycle");
-
-                // default value
                 comboBoxCycleType.setSelectedItem("Standard Cycle");
-                // user code end
             } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
                 handleException(ivjExc);
             }
         }
@@ -440,11 +434,7 @@ public class ItronCycleGearPanel extends GenericGearPanel {
                 labelCycleType.setFont(new java.awt.Font("dialog", 0, 12));
                 labelCycleType.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
                 labelCycleType.setMinimumSize(new java.awt.Dimension(112, 14));
-                // user code begin {1}
-                // user code end
             } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
                 handleException(ivjExc);
             }
         }

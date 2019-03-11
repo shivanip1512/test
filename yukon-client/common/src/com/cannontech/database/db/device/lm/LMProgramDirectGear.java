@@ -208,15 +208,9 @@ public abstract class LMProgramDirectGear
 				gear.setDbConnection(conn);
 				
 				//need to make sure we get the Thermostat/Beat the Peak/Itron specific information from its separate table
-				if (gear instanceof LMThermostatGear) {
+				if (gear instanceof LMThermostatGear || gear instanceof BeatThePeakGear || gear instanceof LMNestGear || 
+				        gear instanceof ItronCycleGear) {
 					gear.retrieve();
-				}
-				else if(gear instanceof BeatThePeakGear){
-				    gear.retrieve();
-                } else if (gear instanceof LMNestGear) {
-                    gear.retrieve();
-                } else if (gear instanceof ItronCycleGear) {
-                    gear.retrieve();
                 } else {
 					gear.setGearName(name);
 					gear.setGearNumber(gearNum);
