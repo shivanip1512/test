@@ -2,10 +2,7 @@ package com.cannontech.dr.itron.service.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -16,7 +13,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -108,7 +104,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
     public static final String FILE_PATH = CtiUtilities.getItronDirPath();
     public static final SimpleDateFormat FILE_NAME_DATE_FORMATTER = new SimpleDateFormat("YYYYMMddHHmm");
-    
+        
     enum ExportType {
         READ,
         ALL
@@ -452,7 +448,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         for (int i = 0; i < fileURLs.size(); i++) {
             String fileURL = fileURLs.get(i);
             try {
-                URLConnection conn = getConnection(fileURL);
+                URLConnection conn =  YukonHttpProxy.getURLConnection(fileURL, settingDao);
                 String fileName =
                     (i + 1) + "_" + FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + commandId + ".csv";
                 File file = new File(FILE_PATH, fileName);
@@ -467,17 +463,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             }
         }
         return zipFiles(zipName, files);
-    }
-
-    private URLConnection getConnection(String fileURL) throws IOException, MalformedURLException {
-        URLConnection conn;
-        Optional<YukonHttpProxy> proxy = YukonHttpProxy.fromGlobalSetting(settingDao);
-        if (proxy.isPresent()) {
-            conn = new URL(fileURL).openConnection(proxy.get().getJavaHttpProxy());
-        } else {
-            conn = new URL(fileURL).openConnection();
-        }
-        return conn;
     }
     
     private ZipFile zipFiles(String zipName, List<File> files) {

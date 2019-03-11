@@ -49,10 +49,9 @@ public class ItronDeviceDataParser {
         Multimap<PaoIdentifier, PointValueHolder> allPointValues = HashMultimap.create();
         Enumeration<? extends ZipEntry> entries = zip.entries();
         while(entries.hasMoreElements()){
-            Multimap<PaoIdentifier, PointData> pointValues = HashMultimap.create();
             try {
                 InputStream stream = zip.getInputStream(entries.nextElement());
-                pointValues.putAll(parseData(stream));
+                Multimap<PaoIdentifier, PointData> pointValues = parseData(stream);
                 dataSource.putValues(pointValues.values());
                 allPointValues.putAll(pointValues);
             } catch (Exception e) {
