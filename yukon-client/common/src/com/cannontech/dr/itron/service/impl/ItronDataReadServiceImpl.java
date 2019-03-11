@@ -63,7 +63,7 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
             if (zip == null) {
                 break;
             }
-            pointValues = itronDeviceDataParser.parseAndSend(zip);
+            pointValues.putAll(itronDeviceDataParser.parseAndSend(zip));
         }
       
         return pointValues;
