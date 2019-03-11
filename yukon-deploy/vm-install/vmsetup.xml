@@ -350,7 +350,7 @@
 		<echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
 	        <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
 	            <fileset dir="${basedir}/yukon-deploy/vm-install/copy-to-vm">
-	                <include name="*"/>
+	                <include name="**"/>
 	            	<exclude name="master.cfg"/>
 	            </fileset>
 	        </scp>
