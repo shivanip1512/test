@@ -1084,46 +1084,32 @@ Java :
     jira : YUK-18346
     notes : Jackson Annotations
   
-  - filename : jackson-core-2.9.6.jar
+  - filename : jackson-core-2.9.8.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.9.6
+    version : 2.9.8
     project URL : "http://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.9.6"
-    md5 : f3cf83b839fac92307cad542c2ded5c4
-    sha1 : 4e393793c37c77e042ccc7be5a914ae39251b365
-    updated : 2018-06-22
-    jira : YUK-18346
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.9.8"
+    md5 : 65831e4f46f29db904708e4b9cc72843
+    sha1 : 0f5a654e4675769c716e5b387830d19b501ca191
+    updated : 2019-03-12
+    jira : YUK-19573
     notes : Jackson Core
   
-  - filename : jackson-core-asl-1.9.2.jar
-    yukon group : Azure
-    project : Jackson
-    version : 1.9.2
-    project URL : "http://jackson.codehaus.org/"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-core-asl/1.9.2"
-    md5 : 3a569b4b918f23392e63028b896cb9c4
-    sha1 : 8493982bba1727106d767034bd0d8e77bc1931a9
-    updated : 2016-09-28
-    jira : YUK-15740
-    notes : ASL is Apache Software License (vs the 1.9.2 LGPL release)
-  
-  - filename : jackson-databind-2.9.6.jar
+  - filename : jackson-databind-2.9.8.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.9.6
+    version : 2.9.8
     project URL : "http://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.9.6"
-    md5 : c6634d654c2df15a987bc37ec8d2b6b2
-    sha1 : cfa4f316351a91bfd95cb0644c6a2c95f52db1fc
-    updated : 2018-06-22
-    jira : YUK-18346
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.9.8"
+    md5 : 39271d9bb1cb7ec563925953b1fa9ff7
+    sha1 : 11283f21cc480aa86c4df7a0a3243ec508372ed2
+    updated : 2019-03-12
+    jira : YUK-19573
     notes : Jackson Databind
   
   - filename : jackson-dataformat-csv-2.9.6.jar
@@ -1153,20 +1139,6 @@ Java :
     updated : 2016-09-28
     jira : YUK-15740
     notes : Jackson JAX-RS provider for JSON
-  
-  - filename : jackson-mapper-asl-1.9.2.jar
-    yukon group : Azure
-    project : Jackson
-    version : 1.9.2
-    project URL : "http://jackson.codehaus.org/"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-mapper-asl/1.9.2"
-    md5 : 246dc2edd781021dce648e59dc839d85
-    sha1 : 95400a7922ce75383866eb72f6ef4a7897923945
-    updated : 2016-09-28
-    jira : YUK-15740
-    notes : Jackson Data Mapper
   
   - filename : jackson-xc-1.9.2.jar
     yukon group : Azure
