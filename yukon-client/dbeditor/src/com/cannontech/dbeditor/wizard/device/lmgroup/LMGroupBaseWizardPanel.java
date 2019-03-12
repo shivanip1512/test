@@ -19,6 +19,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
+import com.cannontech.database.data.device.lm.LMGroupItron;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -54,6 +55,9 @@ public class LMGroupBaseWizardPanel extends com.cannontech.common.gui.util.DataI
     private JLabel jLabelErrorMessage = null;	
 	private JLabel priorityLabel = null;
 	private JComboBox<Object> priorityCombo = null;
+	private javax.swing.JComboBox<Integer> ivjRelayComboBox = null;
+	private javax.swing.JPanel ivjRelayPanel = null;
+	private javax.swing.JLabel ivjRelayLabel = null;
 	
 /**
  * Constructor
@@ -110,6 +114,9 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
     }
 	if (e.getSource() == getJCheckBoxMonthly()) {
         connEtoC10(e);
+    }
+    if (e.getSource() == getRelayComboBox()) {
+        this.fireInputUpdate();
     }
 	if (e.getSource() == getPriorityCombo()) {
 		this.fireInputUpdate();
@@ -1126,6 +1133,12 @@ public Object getValue(Object val)
         
 		createExtraObjects( lmGroup, smartDB );
 
+	    if (lmGroup.getPaoType() == PaoType.LM_GROUP_ITRON) {
+	        int relay = (int) getRelayComboBox().getSelectedItem();
+	        LMGroupItron itronGroup = (LMGroupItron) val;
+	        itronGroup.setRelay(relay);
+	    }
+	    
 		return smartDB;
 	}
 	
@@ -1159,6 +1172,7 @@ private void initConnections() throws java.lang.Exception {
 	getJCheckBoxAnnual().addActionListener(this);
 	getJCheckBoxMonthly().addActionListener(this);
 	getPriorityCombo().addActionListener(this);
+	getRelayComboBox().addActionListener(this);
 }
 /**
  * Initialize the class.
@@ -1213,6 +1227,18 @@ private void initialize() {
 		errorLabelConstraints.weighty = 1.0;
 		errorLabelConstraints.insets = new Insets(0, 6, 0, 0);
 		add(getJLabelErrorMessage(), errorLabelConstraints);
+		
+        java.awt.GridBagConstraints constraintsRelayPanel = new java.awt.GridBagConstraints();
+        constraintsRelayPanel.gridx = 1;
+        constraintsRelayPanel.gridy = 5;
+        constraintsRelayPanel.fill = java.awt.GridBagConstraints.BOTH;
+        constraintsRelayPanel.anchor = java.awt.GridBagConstraints.WEST;
+        constraintsRelayPanel.weightx = 1.0;
+        constraintsRelayPanel.weighty = 1.0;
+        constraintsRelayPanel.ipadx = -10;
+        constraintsRelayPanel.ipady = -9;
+        constraintsRelayPanel.insets = new java.awt.Insets(8, 6, 3, 4);
+        add(getRelayPanel(), constraintsRelayPanel);
 		
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
@@ -1314,6 +1340,8 @@ public void setSwitchType(PaoType deviceType)
           deviceType == PaoType.LM_GROUP_NEST ||
 	      deviceType == PaoType.LM_GROUP_RFN_EXPRESSCOMM) );
 	
+	getRelayPanel().setVisible(deviceType == PaoType.LM_GROUP_ITRON);
+	
 
 	//dont show the following options if this group is a MACRO
 	getJLabelKWCapacity().setVisible( 
@@ -1381,6 +1409,12 @@ public void setValue(Object val)
 		setSelectedPriority(priority);
 	}
 	
+	if( lmGroup.getPaoType() == PaoType.LM_GROUP_ITRON) {
+	    LMGroupItron itronGroup = (LMGroupItron) val;
+	    int relay = itronGroup.getRelay();
+	    getRelayComboBox().setSelectedItem(relay);
+	}
+	
 	//show the needed entry fields only
 	setSwitchType(lmGroup.getPaoType());	
 }
@@ -1432,5 +1466,68 @@ private void setSelectedPriority(int priority) {
 	}
 	
 }
+
+    private javax.swing.JComboBox<Integer> getRelayComboBox() {
+        if (ivjRelayComboBox == null) {
+            try {
+                ivjRelayComboBox = new javax.swing.JComboBox<>();
+                ivjRelayComboBox.setName("RelayComboBox");
+                ivjRelayComboBox.setPreferredSize(new java.awt.Dimension(210, 25));
+                ivjRelayComboBox.setMinimumSize(new java.awt.Dimension(210, 25));
+
+                for (int i = 1; i <= 8; i++) {
+                    getRelayComboBox().addItem(i);
+                }
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjRelayComboBox;
+    }
+
+    private javax.swing.JPanel getRelayPanel() {
+        if (ivjRelayPanel == null) {
+            try {
+                ivjRelayPanel = new javax.swing.JPanel();
+                ivjRelayPanel.setName("RelayPanel");
+                ivjRelayPanel.setLayout(new java.awt.GridBagLayout());
+
+                java.awt.GridBagConstraints comboBox = new java.awt.GridBagConstraints();
+                comboBox.gridx = 2;
+                comboBox.gridy = 1;
+                comboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                comboBox.anchor = java.awt.GridBagConstraints.WEST;
+                comboBox.weightx = 1.0;
+                comboBox.ipadx = -5;
+                comboBox.ipady = -5;
+                comboBox.insets = new java.awt.Insets(5, 6, 22, 51);
+                getRelayPanel().add(getRelayComboBox(), comboBox);
+
+                java.awt.GridBagConstraints label = new java.awt.GridBagConstraints();
+                label.gridx = 1;
+                label.gridy = 1;
+                label.anchor = java.awt.GridBagConstraints.WEST;
+                label.insets = new java.awt.Insets(5, 11, 23, 6);
+                getRelayPanel().add(getRelayLabel(), label);
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjRelayPanel;
+    }
+    
+    private javax.swing.JLabel getRelayLabel() {
+        if (ivjRelayLabel == null) {
+            try {
+                ivjRelayLabel = new javax.swing.JLabel();
+                ivjRelayLabel.setName("RelayLabel");
+                ivjRelayLabel.setFont(new java.awt.Font("dialog", 0, 14));
+                ivjRelayLabel.setText("Relay:");
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjRelayLabel;
+    }
 
 }

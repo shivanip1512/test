@@ -546,19 +546,9 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private void updateGroupMappingWithItronId(List<ProgramEnrollment> enrollments) {    
        List<Integer> groupPaoIds = enrollments.stream()
                .map(enrollment -> enrollment.getLmGroupId())
-               .collect(Collectors.toList());
-       
-      // ---
-       // TODO remove the group creation as the group will be created from db editor
-        Map<Integer, Long> groupPaoIdtoItronId = itronDao.getItronGroupIds(groupPaoIds);
-        groupPaoIds.stream()
-            .filter(paoId -> !groupPaoIdtoItronId.containsKey(paoId))
-            .forEach(paoId -> itronDao.addGroupMapping(paoId, 1));
-       // ---
-        
+               .collect(Collectors.toList()); 
         List<Integer> lmGroupsWithoutItronGroup = itronDao.getLmGroupsWithoutItronGroup(groupPaoIds);
-        lmGroupsWithoutItronGroup.forEach(paoId -> itronDao.updateGroupMapping(paoId, getGroupIdFromItron(String.valueOf(paoId))));
-        
+        lmGroupsWithoutItronGroup.forEach(paoId -> itronDao.updateGroupMapping(paoId, getGroupIdFromItron(String.valueOf(paoId))));  
     }
     
     /**
