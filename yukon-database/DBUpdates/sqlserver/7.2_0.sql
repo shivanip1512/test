@@ -558,6 +558,7 @@ INSERT INTO DBUpdates VALUES ('YUK-19531-1', '7.2.0', GETDATE());
 /* @end YUK-19531-1 */
 
 /* @start YUK-19531-1 */
+/* @error ignore-begin */
 CREATE TABLE ScheduledDataImportHistory (
    EntryId              NUMERIC              NOT NULL,
    FileName             VARCHAR(100)         NOT NULL,
@@ -573,6 +574,7 @@ CREATE TABLE ScheduledDataImportHistory (
    CONSTRAINT PK_ScheduledDataImportHistory PRIMARY KEY (EntryId)
 );
 GO
+/* @error ignore-end */
 
 INSERT INTO DBUpdates VALUES ('YUK-19531-1', '7.2.0', GETDATE());
 /* @end YUK-19531-1 */
