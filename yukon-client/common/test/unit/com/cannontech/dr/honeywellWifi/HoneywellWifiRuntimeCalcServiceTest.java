@@ -42,7 +42,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatus;
 import com.cannontech.dr.service.impl.DatedRuntimeStatus;
-import com.cannontech.dr.service.impl.RuntimeStatus;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -377,11 +376,11 @@ public class HoneywellWifiRuntimeCalcServiceTest {
                                                                       "getRuntimeStatusFromPoint", pointValue2);
         
         assertThat("status 0 date", status0.getDate(), equalTo(date1));
-        assertThat("status 0 heating == running", status0.getRuntimeStatus(), equalTo(RuntimeStatus.RUNNING));
+        assertThat("status 0 heating == running", status0.isActive(), equalTo(true));
         assertThat("status 1 date", status1.getDate(), equalTo(date2));
-        assertThat("status 1 cooling == running", status1.getRuntimeStatus(), equalTo(RuntimeStatus.RUNNING));
+        assertThat("status 1 cooling == running", status1.isActive(), equalTo(true));
         assertThat("status 2 date", status2.getDate(), equalTo(date3));
-        assertThat("status 2 off == stopped", status2.getRuntimeStatus(), equalTo(RuntimeStatus.STOPPED));
+        assertThat("status 2 off == stopped", status2.isActive(), equalTo(false));
     }
     
     @Test

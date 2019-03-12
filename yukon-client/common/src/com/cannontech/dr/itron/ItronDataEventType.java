@@ -55,6 +55,10 @@ public enum ItronDataEventType {
     public int getFirstByteIndex() {
         return firstByteIndex;
     }
+    
+    public Integer getValue() {
+        return value;
+    }
     /**
      * 
      * @param byteArray - this is a byte array that has been converted from a 5 byte hex string.
@@ -101,12 +105,7 @@ public enum ItronDataEventType {
     
     public PointData getPointData(byte[] byteArray, LitePoint lp) {
         PointData pointData = new PointData();
-        if (this.value != null) {
-            pointData.setValue(this.value);
-        } else {
-            long payloadValue = decode(byteArray);
-            pointData.setValue(payloadValue);
-        }
+        pointData.setValue(value != null ? value : decode(byteArray));
         pointData.setId(lp.getLiteID());
         pointData.setType(lp.getPointType());
         pointData.setPointQuality(PointQuality.Normal);
