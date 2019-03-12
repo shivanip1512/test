@@ -3,27 +3,27 @@ package com.cannontech.dr.service.impl;
 import org.joda.time.DateTime;
 
 /**
- * Object representation of DR device relay state at a particular point in time, for calculating runtime.
+ * Object representation of DR device shed state at a particular point in time, for calculating shedtime.
  */
-public class DatedRuntimeStatus extends DatedStatus {
-    private final RuntimeStatus runtimeStatus;
+public class DatedShedtimeStatus extends DatedStatus {
+    private final ShedtimeStatus shedtimeStatus;
     
-    public DatedRuntimeStatus(RuntimeStatus runtimeStatus, DateTime date) {
+    public DatedShedtimeStatus(ShedtimeStatus status, DateTime date) {
         super(date);
-        this.runtimeStatus = runtimeStatus;
+        this.shedtimeStatus = status;
     }
     
     @Override
     public boolean isActive() {
-        return runtimeStatus == RuntimeStatus.RUNNING;
+        return shedtimeStatus == ShedtimeStatus.SHED;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((getDate() == null) ? 0 : getDate().hashCode());
-        result = prime * result + ((runtimeStatus == null) ? 0 : runtimeStatus.hashCode());
+        result = prime * result + ((shedtimeStatus == null) ? 0 : shedtimeStatus.hashCode());
         return result;
     }
 
@@ -38,7 +38,7 @@ public class DatedRuntimeStatus extends DatedStatus {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        DatedRuntimeStatus other = (DatedRuntimeStatus) obj;
+        DatedShedtimeStatus other = (DatedShedtimeStatus) obj;
         if (getDate() == null) {
             if (other.getDate() != null) {
                 return false;
@@ -46,7 +46,7 @@ public class DatedRuntimeStatus extends DatedStatus {
         } else if (!getDate().equals(other.getDate())) {
             return false;
         }
-        if (runtimeStatus != other.runtimeStatus) {
+        if (shedtimeStatus != other.shedtimeStatus) {
             return false;
         }
         return true;
@@ -54,6 +54,6 @@ public class DatedRuntimeStatus extends DatedStatus {
 
     @Override
     public String toString() {
-        return "DatedRuntimeStatus [runtimeStatus=" + runtimeStatus + ", date=" + getDate() + "]";
+        return "DatedShedtimeStatus [shedtimeStatus=" + shedtimeStatus + ", date=" + getDate() + "]";
     }
 }
