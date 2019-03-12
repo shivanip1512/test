@@ -20,6 +20,14 @@ Function DatabaseBackup () {
                     -Username $databaseLogin -Password $databasePassword -ServerInstance $databaseServer
 }
 
+<#
+.SYNOPSIS
+    Reset the Yukon database to the snapshot named yukon_snapshot
+.DESCRIPTION 
+    Requires specific configuration of your database. Only works with localhost.
+.EXAMPLE
+    Reset-DatabaseSnapshot
+#>
 Function Reset-DatabaseSnapshot () {
     Invoke-Sqlcmd   -Query  "USE MASTER; "`
                             "RESTORE DATABASE yukon "`
@@ -27,6 +35,14 @@ Function Reset-DatabaseSnapshot () {
                     -Username "yukon" -Password "yukon" -ServerInstance "localhost"
 }
 
+<#
+.SYNOPSIS
+    Creates the yukon_snapshot for use with Reset-DatabaseSnapshot
+.DESCRIPTION 
+    For the Yukon database on Localhost, creates yukon_snapshot snapshot
+.EXAMPLE
+    New-DatabaseSnapshot
+#>
 Function New-DatabaseSnapshot () {
     Invoke-Sqlcmd   -Query  "CREATE DATABASE yukon_snapshot "`
                             "ON (NAME = yukon, FILENAME = 'C:\database\yukon.snap') "`
@@ -35,5 +51,3 @@ Function New-DatabaseSnapshot () {
 GO
 
 }
-
-RESTORE DATABASE test FROM DATABASE_SNAPSHOT = 'test_Snapshot'

@@ -31,5 +31,5 @@ Expand-Installer
 Install-Yukon
 Update-YukonDatabase -DatabaseType $($DatabaseType)
 Start-YukonServices
-ConfigureAndStartEIM
-InstallAndStartSimulators
+Start-EIM
+Start-Simulators

@@ -6,7 +6,7 @@
 .EXAMPLE
     ConfigureAndStartEIM
 #>
-Function ConfigureAndStartEIM() {
+Function Start-EIM() {
     $TARGETDIR = 'C:/Program Files/Apache Software Foundation/Tomcat 9.0'
     If(Test-Path -Path $TARGETDIR){
         Write-Host "Found EIM folder, installing"
@@ -34,7 +34,7 @@ Function ConfigureAndStartEIM() {
 .EXAMPLE
     InstallAndStartSimulators
 #>
-Function InstallAndStartSimulators() {
+Function Start-Simulators() {
     Write-Host "Installing Java Simulators"
     Start-Process -FilePath "C:\Yukon\Client\Bin\install_simulators.bat" -WorkingDirectory "C:\Yukon\Client\Bin\" -Wait -NoNewWindow
     Start-Service "YukonSimulatorsService"
@@ -83,6 +83,14 @@ Function StopAllServices () {
     Stop-Service "Apache Tomcat 9.0 Tomcat9"
 }
 
+<# 
+.SYNOPSIS
+    Runs DBUpdater to update the database
+.DESCRIPTION 
+    This runs DB Updater on this system to update the database. The database type is used to choose which scripts to run. This requires a valid master.cfg pointing to the database.
+.EXAMPLE
+    Update-YukonDatabase -DatabaseType "sqlserver"
+#>
 Function Update-YukonDatabase () {
     Param (
         [string]$DatabaseType
@@ -138,6 +146,14 @@ Function RunSetupExe() {
     Start-Sleep -s 15
 }
 
+<#
+.SYNOPSIS
+    Removes all installed Yukon features
+.DESCRIPTION 
+    Removes simulators, EIM, and runs Yukon uninstaller.
+.EXAMPLE
+    Uninstall-Yukon
+#>
 Function Uninstall-Yukon() {
     StopAllServices
     Write-Host "Uninstall Java Simulator"
@@ -154,6 +170,14 @@ Function Uninstall-Yukon() {
     $result = Start-Process C:\Yukon\YukonInstall\setup.exe -ArgumentList "-uninst -s -f1C:\uninstall.iss" -Wait -PassThru
 }
 
+<#
+.SYNOPSIS
+    Starts all Yukon services that are set to start automatically
+.DESCRIPTION 
+    Runs the standard Yukon startup script. Requires Yukon to be installed.
+.EXAMPLE
+    Start-YukonServices
+#>
 Function Start-YukonServices() {
     Write-Host "Starting All Services"
     C:\Yukon\Server\Bin\RestartYukonServices.ps1 -Operation start -ExitWhenComplete
