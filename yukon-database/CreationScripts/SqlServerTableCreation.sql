@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/4/2019 11:00:43 AM                         */
+/* Created on:     3/12/2019 1:14:24 AM                         */
 /*==============================================================*/
 
 
@@ -10509,7 +10509,7 @@ insert into YukonListEntry values (1752,1025,0,'Poor (0-3)"',0);
 insert into YukonListEntry values (1753,1025,0,'Fair (3-5)"',0);
 insert into YukonListEntry values (1754,1025,0,'Average (6-8)"',0);
 insert into YukonListEntry values (1755,1025,0,'Good (9-11)"',0);
-insert into YukonListEntry values (1756,1025,0,'Excellant (12+)"',0);
+insert into YukonListEntry values (1756,1025,0,'Excellent (12+)"',0);
 insert into YukonListEntry values (1760,1026,0,' ',0);
 insert into YukonListEntry values (1761,1026,0,'Poor',0);
 insert into YukonListEntry values (1762,1026,0,'Fair',0);

@@ -34,6 +34,14 @@ WHERE PDG.ControlMethod = 'ItronCycle';
 INSERT INTO DBUpdates VALUES ('YUK-19601', '7.3.0', SYSDATE);
 /* @end YUK-19601 */
 
+/* @start YUK-19324 */
+UPDATE YukonListEntry 
+SET EntryText = 'Excellent (12+)"' 
+WHERE EntryID = 1756 AND EntryText = 'Excellant (12+)"';
+
+INSERT INTO DBUpdates VALUES ('YUK-19324', '7.3.0', SYSDATE);
+/* @end YUK-19324 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
