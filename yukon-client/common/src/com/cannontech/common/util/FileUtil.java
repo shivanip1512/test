@@ -507,9 +507,9 @@ public final class FileUtil {
     }
 
     /**
-     * Clean all the content in the passed directory path.
+     * Delete all the content in the passed directory path.
      */
-    public static void cleanUpDirectory(String path) {
+    public static void deleteAllFilesInDirectory(String path) {
         Arrays.stream(new File(path).listFiles()).forEach(File::delete);
     }
 

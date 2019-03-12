@@ -138,7 +138,7 @@ public class EcobeeMockApiService {
         String dirPath = CtiUtilities.getYukonBase()+ "\\Simulator\\";
         new File(dirPath).mkdirs();
         // Cleanup old mock data files
-        FileUtil.cleanUpDirectory(dirPath);
+        FileUtil.deleteAllFilesInDirectory(dirPath);
         Collection<String> selectionMatch = getSelectionMatch(request);
         for (String serialNumber : selectionMatch) {
             String fileName = serialNumber + "-" + jobId + ".csv";
@@ -192,7 +192,8 @@ public class EcobeeMockApiService {
         // Static setpoint values
         String zoneCoolTemp = "70";
         String zoneHeatTemp = "80";
-        int randomValue = (int) (Math.random() * (300 - 0));
+        // Generate a random value (>0 and <300) either for compCool1 or compHeat1.
+        int randomValue = (int) (Math.random() * (300));
         String compCool1 = "0";
         String compHeat1 = "0";
         if (randomValue % 2 == 0) {
