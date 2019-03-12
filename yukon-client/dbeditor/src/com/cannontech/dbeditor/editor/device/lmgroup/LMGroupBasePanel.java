@@ -28,6 +28,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
+import com.cannontech.database.data.device.lm.LMGroupItron;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -55,6 +56,9 @@ public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPa
     private JLabel priorityLabel;
     private JComboBox<?> priorityCombo;
     private LMGroup lmGroup;
+    private javax.swing.JComboBox<Integer> ivjRelayComboBox = null;
+    private javax.swing.JPanel ivjRelayPanel = null;
+    private javax.swing.JLabel ivjRelayLabel = null;
 
     public LMGroupBasePanel() {
         initialize();
@@ -96,6 +100,9 @@ public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPa
             connEtoC10(e);
         }
         if (e.getSource() == getPriorityCombo()) {
+            this.fireInputUpdate();
+        }
+        if (e.getSource() == getRelayComboBox()) {
             this.fireInputUpdate();
         }
 
@@ -851,6 +858,12 @@ public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPa
                 .setProtocolPriority(getSelectedPriority());
         }
 
+        if (lmGroup.getPaoType() == PaoType.LM_GROUP_ITRON) {
+            int relay = (int) getRelayComboBox().getSelectedItem();
+            LMGroupItron itronGroup = (LMGroupItron) val;
+            itronGroup.setRelay(relay);
+        }
+        
         return lmGroup;
 
     }
@@ -914,7 +927,7 @@ public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPa
         getJCheckBoxAnnual().addActionListener(this);
         getJCheckBoxMonthly().addActionListener(this);
         getPriorityCombo().addActionListener(this);
-
+        getRelayComboBox().addActionListener(this);
     }
 
     /**
@@ -961,6 +974,18 @@ public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPa
             constraintsJPanelAllHistory.weighty = 1.0;
             constraintsJPanelAllHistory.insets = new java.awt.Insets(4, 6, 25, 4);
             add(getJPanelAllHistory(), constraintsJPanelAllHistory);
+            
+            java.awt.GridBagConstraints constraintsRelayPanel = new java.awt.GridBagConstraints();
+            constraintsRelayPanel.gridx = 1;
+            constraintsRelayPanel.gridy = 5;
+            constraintsRelayPanel.fill = java.awt.GridBagConstraints.BOTH;
+            constraintsRelayPanel.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsRelayPanel.weightx = 1.0;
+            constraintsRelayPanel.weighty = 1.0;
+            constraintsRelayPanel.ipadx = -10;
+            constraintsRelayPanel.ipady = -9;
+            constraintsRelayPanel.insets = new java.awt.Insets(8, 6, 3, 4);
+            add(getRelayPanel(), constraintsRelayPanel);
             initConnections();
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
@@ -1047,6 +1072,8 @@ public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPa
                           || paoType == PaoType.LM_GROUP_ITRON
                           || paoType == PaoType.LM_GROUP_NEST
                           || paoType == PaoType.LM_GROUP_RFN_EXPRESSCOMM));
+        
+        getRelayPanel().setVisible(paoType == PaoType.LM_GROUP_ITRON);
 
         // dont show the following options if this group is a MACRO
         getJLabelKWCapacity() .setVisible(!(paoType == PaoType.MACRO_GROUP));
@@ -1102,8 +1129,79 @@ public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPa
             int priority = ((LMGroupExpressCom) lmGroup).getLMGroupExpressComm().getProtocolPriority();
             setSelectedPriority(priority);
         }
-
+        if( lmGroup.getPaoType() == PaoType.LM_GROUP_ITRON) {
+            LMGroupItron itronGroup = (LMGroupItron) val;
+            int relay = itronGroup.getRelay();
+            getRelayComboBox().setSelectedItem(relay);
+        }
+        
         // show the needed entry fields only
         setSwitchType(lmGroup.getPaoType());
+    }
+    
+
+    private javax.swing.JComboBox<Integer> getRelayComboBox() {
+        if (ivjRelayComboBox == null) {
+            try {
+                ivjRelayComboBox = new javax.swing.JComboBox<>();
+                ivjRelayComboBox.setName("RelayComboBox");
+                ivjRelayComboBox.setPreferredSize(new java.awt.Dimension(210, 25));
+                ivjRelayComboBox.setMinimumSize(new java.awt.Dimension(210, 25));
+
+                for (int i = 1; i <= 8; i++) {
+                    getRelayComboBox().addItem(i);
+                }
+
+                // user code end
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjRelayComboBox;
+    }
+
+    private javax.swing.JPanel getRelayPanel() {
+        if (ivjRelayPanel == null) {
+            try {
+                ivjRelayPanel = new javax.swing.JPanel();
+                ivjRelayPanel.setName("RelayPanel");
+                ivjRelayPanel.setLayout(new java.awt.GridBagLayout());
+
+                java.awt.GridBagConstraints comboBox = new java.awt.GridBagConstraints();
+                comboBox.gridx = 2;
+                comboBox.gridy = 1;
+                comboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                comboBox.anchor = java.awt.GridBagConstraints.WEST;
+                comboBox.weightx = 1.0;
+                comboBox.ipadx = -5;
+                comboBox.ipady = -5;
+                comboBox.insets = new java.awt.Insets(5, 6, 22, 51);
+                getRelayPanel().add(getRelayComboBox(), comboBox);
+
+                java.awt.GridBagConstraints label = new java.awt.GridBagConstraints();
+                label.gridx = 1;
+                label.gridy = 1;
+                label.anchor = java.awt.GridBagConstraints.WEST;
+                label.insets = new java.awt.Insets(5, 11, 23, 6);
+                getRelayPanel().add(getRelayLabel(), label);
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjRelayPanel;
+    }
+    
+    private javax.swing.JLabel getRelayLabel() {
+        if (ivjRelayLabel == null) {
+            try {
+                ivjRelayLabel = new javax.swing.JLabel();
+                ivjRelayLabel.setName("RelayLabel");
+                ivjRelayLabel.setFont(new java.awt.Font("dialog", 0, 14));
+                ivjRelayLabel.setText("Relay:");
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjRelayLabel;
     }
 }
