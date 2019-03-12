@@ -159,6 +159,8 @@
     <entry key="yukon.common.pao.LM_GROUP_ECOBEE">ecobee Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_EMETCON">Emetcon Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_EXPRESSCOMM">Expresscom Group</entry>
+    <entry key="yukon.common.pao.LM_GROUP_HONEYWELL">Honeywell Group</entry>
+    <entry key="yukon.common.pao.LM_GROUP_ITRON">Itron Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_RFN_EXPRESSCOMM">RFN Expresscom Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_GOLAY">Golay Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_MCT">MCT Group</entry>
@@ -172,6 +174,8 @@
     <entry key="yukon.common.pao.LM_CURTAIL_PROGRAM">LM Curtail Program</entry>
     <entry key="yukon.common.pao.LM_DIRECT_PROGRAM">LM Direct Program</entry>
     <entry key="yukon.common.pao.LM_ENERGY_EXCHANGE_PROGRAM">LM Energy Exchange Program</entry>
+    <entry key="yukon.common.pao.LM_HONEYWELL_PROGRAM">LM Honeywell Program</entry>
+    <entry key="yukon.common.pao.LM_ITRON_PROGRAM">LM Itron Program</entry>
     <entry key="yukon.common.pao.LM_SEP_PROGRAM">LM SEP Program</entry>
     <entry key="yukon.common.pao.LM_ECOBEE_PROGRAM">LM ecobee Program</entry>
     <entry key="yukon.common.pao.LM_CONTROL_AREA">LM Control Area</entry>
