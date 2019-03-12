@@ -53,7 +53,7 @@ public class RuntimeCalcServiceImpl implements RuntimeCalcService {
                                                            DatedRuntimeStatus currentStatus) {
         
         // Only record runtime if the status was running during this period
-        boolean isRuntime = (previousStatus.getRuntimeStatus() == RuntimeStatus.RUNNING);
+        boolean isRuntime = previousStatus.isActive();
         
         Map<DateTime, Integer> hourlyRuntimeSeconds = new HashMap<>();
         
