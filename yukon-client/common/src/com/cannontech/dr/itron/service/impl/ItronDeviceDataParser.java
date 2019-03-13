@@ -13,6 +13,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.EmptyImportFileException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.DeviceDao;
@@ -40,23 +41,33 @@ public class ItronDeviceDataParser {
     
     private static final Logger log = YukonLogManager.getLogger(ItronDeviceDataParser.class);
 
-    public Multimap<PaoIdentifier, PointValueHolder> parseAndSend(ZipFile zip){
+    public Multimap<PaoIdentifier, PointValueHolder> parseAndSend(ZipFile zip) throws EmptyImportFileException {
         if(zip == null) {
             log.error("Unable to parse Itron file, no file found");
             //nothing to parse
             return null;
         }
+        boolean hasData = false;
         Multimap<PaoIdentifier, PointValueHolder> allPointValues = HashMultimap.create();
         Enumeration<? extends ZipEntry> entries = zip.entries();
         while(entries.hasMoreElements()){
             try {
-                InputStream stream = zip.getInputStream(entries.nextElement());
-                Multimap<PaoIdentifier, PointData> pointValues = parseData(stream);
-                dataSource.putValues(pointValues.values());
-                allPointValues.putAll(pointValues);
+                ZipEntry file = entries.nextElement();
+                InputStream stream = zip.getInputStream(file);
+                try {
+                    Multimap<PaoIdentifier, PointData> pointValues = parseData(stream);
+                    dataSource.putValues(pointValues.values());
+                    allPointValues.putAll(pointValues);
+                    hasData = true;
+                } catch (EmptyImportFileException e) {
+                    log.info(file.getName() + " in zip " + zip.getName() + " is empty.", e);
+                }
             } catch (Exception e) {
                 log.error("Unable to parse Itron file", e);
             }
+        }
+        if(!hasData) {
+            throw new EmptyImportFileException("Zip " + zip.getName() + " has only empty files.");
         }
         return allPointValues;
     }
@@ -73,6 +84,10 @@ public class ItronDeviceDataParser {
           CSVReader csvReader = new CSVReader(inputStreamReader);
           csvReader.readNext(); //First read to get column headers
           String[] row = csvReader.readNext(); //Get first row of csv;
+          if(row == null) {
+              csvReader.close();
+              throw new EmptyImportFileException("File is empty");
+          }
           while (row != null) { 
               int currentRecordId = Integer.parseInt(row[0]);
               if (currentRecordId > maxRecordId) {
