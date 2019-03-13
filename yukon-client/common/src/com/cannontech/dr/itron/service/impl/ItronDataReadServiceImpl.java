@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.EmptyImportFileException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -40,7 +41,12 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
                 if (zip == null) {
                     break;
                 }
-                itronDeviceDataParser.parseAndSend(zip);
+                try {
+                    itronDeviceDataParser.parseAndSend(zip);
+                } catch (EmptyImportFileException e) {
+                    log.info(e);
+                    break;
+                }
             }
         } catch (Exception e) {
             log.error("Exception while collecting data", e);
@@ -51,7 +57,11 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
     public void collectDataForRead(int deviceId) {
         Range<Long> range = getRecordRange();
         ZipFile zip = communicationService.exportDeviceLogsForItronGroup(range.getMin(), null, Lists.newArrayList(deviceId));
-        itronDeviceDataParser.parseAndSend(zip);
+        try {
+            itronDeviceDataParser.parseAndSend(zip);
+        } catch (EmptyImportFileException e) {
+            log.info(e);
+        }
     }
 
     @Override
@@ -63,7 +73,12 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
             if (zip == null) {
                 break;
             }
-            pointValues.putAll(itronDeviceDataParser.parseAndSend(zip));
+            try {
+                pointValues.putAll(itronDeviceDataParser.parseAndSend(zip));
+            } catch (EmptyImportFileException e) {
+                log.info(e);
+                break;
+            }
         }
       
         return pointValues;

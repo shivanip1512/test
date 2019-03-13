@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -104,6 +105,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
     public static final String FILE_PATH = CtiUtilities.getItronDirPath();
     public static final SimpleDateFormat FILE_NAME_DATE_FORMATTER = new SimpleDateFormat("YYYYMMddHHmm");
+    private static final String READ_GROUP = "ITRON_READ_GROUP";
         
     enum ExportType {
         READ,
@@ -234,15 +236,14 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * 3. Sends message to Itron to update device logs
      */
     private long updateDeviceLogsBeforeRead(List<Integer> deviceIds) {
-        String readGroup = "ITRON_READ_GROUP";
         Long itronReadGroupId = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.ITRON_READ_GROUP_ID);
         if(itronReadGroupId == null) {
-            itronReadGroupId = getGroupIdFromItron(readGroup);
+            itronReadGroupId = getGroupIdFromItron(READ_GROUP);
             persistedSystemValueDao.setValue(PersistedSystemValueKey.ITRON_READ_GROUP_ID, itronReadGroupId);
         }
         //add new mac addresses to group
         List<String> macAddresses = Lists.newArrayList(deviceDao.getDeviceMacAddresses(deviceIds).values());
-        addMacAddressesToGroup(readGroup, macAddresses);
+        addMacAddressesToGroup(READ_GROUP, macAddresses);
 
         //update logs
         UpdateDeviceEventLogsRequest updateLogsRequest = new UpdateDeviceEventLogsRequest();
@@ -404,13 +405,11 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             request.setCommandID(commandId);
             log.debug("ITRON-getReport url:{} commandId:{}.", url, commandId);
             log.debug(XmlUtils.getPrettyXml(request));
-            GetReportGenerationStatusResponse response;
-            while (true) {
+            GetReportGenerationStatusResponse response = null;
+            while (response == null || !response.isCompleted()) {
                 response = (GetReportGenerationStatusResponse) ItronEndpointManager.REPORT.getTemplate(
                     settingDao).marshalSendAndReceive(url, request);
-                if (response.isCompleted()) {
-                    break;
-                }
+                TimeUnit.SECONDS.sleep(10);
             }
             log.debug(XmlUtils.getPrettyXml(response));
             if (response.isFailed()) {

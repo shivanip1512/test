@@ -57,15 +57,17 @@ public class DeviceAttributeReadItronServiceImpl implements DeviceAttributeReadS
     public void initiateRead(Iterable<PaoMultiPointIdentifier> devices, DeviceAttributeReadCallback callback,
             CommandRequestExecution execution, LiteYukonUser user) {
         try {
-            if(callback.getResult() != null) {
-                callback.getResult().addCancellationCallback(new CollectionActionCancellationCallback(getStrategy(), callback));
+            if (callback.getResult() != null) {
+                callback.getResult().addCancellationCallback(
+                    new CollectionActionCancellationCallback(getStrategy(), callback));
             }
-            
-            List<Integer> deviceIds = StreamSupport.stream(devices.spliterator(), false)
-                .map(device -> device.getPao().getPaoId())
-                .collect(Collectors.toList());
+
+            List<Integer> deviceIds =
+                StreamSupport.stream(devices.spliterator(), false).map(device -> device.getPao().getPaoId()).collect(
+                    Collectors.toList());
             // All devices succeeded.
-            Multimap<PaoIdentifier, PointValueHolder> devicesToPointValues = itronDataReadService.collectDataForRead(deviceIds);
+            Multimap<PaoIdentifier, PointValueHolder> devicesToPointValues =
+                itronDataReadService.collectDataForRead(deviceIds);
             for (PaoIdentifier pao : devicesToPointValues.keySet()) {
                 for (PointValueHolder pointValue : devicesToPointValues.values()) {
                     callback.receivedValue(pao, pointValue);
@@ -73,22 +75,20 @@ public class DeviceAttributeReadItronServiceImpl implements DeviceAttributeReadS
                 commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution, pao.getPaoId(), 0);
                 callback.receivedLastValue(pao, "");
             }
+
+            DeviceError deviceError = DeviceError.UNKNOWN;
+            DeviceErrorDescription error = deviceErrorTranslatorDao.translateErrorCode(deviceError);
+            SpecificDeviceErrorDescription deviceErrorDescription =
+                new SpecificDeviceErrorDescription(error, deviceError.getDescriptionResolvable());
             
-            List<PaoIdentifier> failedDevices = StreamSupport.stream(devices.spliterator(), false)
-                    .filter(device -> !devicesToPointValues.keys().contains(device.getPao()))
-                    .map(device -> device.getPao())
-                    .collect(Collectors.toList());
-            
-            //we parsed itron files and didn't find devices below or we were not able to create the point data
-            failedDevices.forEach(device -> {
-                DeviceError deviceError = DeviceError.UNKNOWN;
-                DeviceErrorDescription error = deviceErrorTranslatorDao.translateErrorCode(deviceError);
-                SpecificDeviceErrorDescription deviceErrorDescription =
-                    new SpecificDeviceErrorDescription(error, deviceError.getDescriptionResolvable());
-                commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution, device.getPaoId(), deviceError.getCode());
-                callback.receivedError(device, deviceErrorDescription);
-            });
-            
+            StreamSupport.stream(devices.spliterator(), false)
+                .filter( device -> !devicesToPointValues.keys().contains(device.getPao()))
+                .map(PaoMultiPointIdentifier::getPao).forEach(device -> {
+                        commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution, device.getPaoId(),
+                            deviceError.getCode());
+                        callback.receivedError(device, deviceErrorDescription);
+                    });
+
         } catch (ItronCommunicationException error) {
             DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.TIMEOUT);
             MessageSourceResolvable detail = YukonMessageSourceResolvable.createSingleCodeWithArguments(
@@ -108,8 +108,6 @@ public class DeviceAttributeReadItronServiceImpl implements DeviceAttributeReadS
     @Override
     public void cancel(CollectionActionResult result, LiteYukonUser user) {
         // doesn't support cancellation
-        result.getCancellationCallbacks(getStrategy()).forEach(callback -> {
-            callback.cancel();
-        });
+        result.getCancellationCallbacks(getStrategy()).forEach(CollectionActionCancellationCallback::cancel);
     }
 }
