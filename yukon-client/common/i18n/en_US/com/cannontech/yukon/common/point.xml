@@ -198,6 +198,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.PROFILE_CHANNEL_2">Profile Channel 2</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PROFILE_CHANNEL_3">Profile Channel 3</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECORDING_INTERVAL">Recording Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_CALL_FOR_COOL">Relay 1 Call for Cool</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_LOAD_SIZE">Relay 1 kW Load Size</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_REMAINING_CONTROL">Relay 1 Remaining Control Time</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_RUN_TIME_DATA_LOG">Relay 1 Run Time Data Log</entry>
@@ -210,6 +211,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_SHED_TIME_DATA_LOG_5_MIN">Relay 1 Shed Time Data Log 5 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_SHED_TIME_DATA_LOG_15_MIN">Relay 1 Shed Time Data Log 15 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_SHED_TIME_DATA_LOG_30_MIN">Relay 1 Shed Time Data Log 30 Minutes</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_CALL_FOR_COOL">Relay 2 Call for Cool</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_LOAD_SIZE">Relay 2 kW Load Size</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_REMAINING_CONTROL">Relay 2 Remaining Control Time</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_RUN_TIME_DATA_LOG">Relay 2 Run Time Data Log</entry>
@@ -222,6 +224,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_SHED_TIME_DATA_LOG_5_MIN">Relay 2 Shed Time Data Log 5 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_SHED_TIME_DATA_LOG_15_MIN">Relay 2 Shed Time Data Log 15 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_SHED_TIME_DATA_LOG_30_MIN">Relay 2 Shed Time Data Log 30 Minutes</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_CALL_FOR_COOL">Relay 3 Call for Cool</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_LOAD_SIZE">Relay 3 kW Load Size</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_REMAINING_CONTROL">Relay 3 Remaining Control Time</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_RUN_TIME_DATA_LOG">Relay 3 Run Time Data Log</entry>
@@ -234,6 +237,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_SHED_TIME_DATA_LOG_5_MIN">Relay 3 Shed Time Data Log 5 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_SHED_TIME_DATA_LOG_15_MIN">Relay 3 Shed Time Data Log 15 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_SHED_TIME_DATA_LOG_30_MIN">Relay 3 Shed Time Data Log 30 Minutes</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_CALL_FOR_COOL">Relay 4 Call for Cool</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_REMAINING_CONTROL">Relay 4 Remaining Control Time</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_RUN_TIME_DATA_LOG">Relay 4 Run Time Data Log</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_RUN_TIME_DATA_LOG_5_MIN">Relay 4 Run Time Data Log 5 Minutes</entry>
@@ -662,6 +666,29 @@
     <entry key="yukon.common.attribute.builtInAttribute.POWER_QUALITY_RESPONSE_ENABLED">Power Quality Response Enabled</entry>
     
     <entry key="yukon.common.attribute.builtInAttribute.EVENT_SUPERSEDED">Event Superseded</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.MEMORY_MAP_LOST">Memory Map Lost</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TIME_SYNC">Time Sync</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.COLD_START">Cold Start</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.MAX_CONTROL_EXCEEDED">Max Control Exceeded</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NETWORK_TIMEOUT_CANCEL">Network Timeout Cancel</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CONFIGURATION_UPDATED_HASH">Configuration Updated Hash</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CONFIGURATION_PROCESSED">Configuration Processed</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TIME_LOST">Time Lost</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SELF_CHECK_FAIL">Self Check Fail</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.INACTIVE_APPLIANCE">Inactive Appliance</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RADIO_LINK_QUALITY">Radio Link Quality</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.INCORRECT_TLS_IDENTITY">Incorrect TLS Identity</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KEY_UPDATE">Key Update</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KEY_UPDATE_FAIL">Key Update Fail</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TLS_FAIL">TLS Fail</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.BAD_HDLC">Bad HDLC</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TLS_ALERT">TLS Alert</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.OPTIMIZE_INTELLIGENT_CONTROL">Optimize Intelligent Control</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FLUSH_LOG">Flush Log</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SNAP_TO_GOLD">Snap To Gold</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.EVENT_RECEIVED">Event Received</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOAD_STATUS">Load Status</entry>
+
     
     <!-- BuiltInAttribute see note above about changing values -->
 
