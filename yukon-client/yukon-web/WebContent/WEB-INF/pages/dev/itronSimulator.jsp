@@ -4,11 +4,16 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dev" page="itronSimulator">
+
+    <div class="user-message warning">Note: The Test button is currently not hooked up to any Itron messaging. 
+    You will need to use Soap UI to simulate Itron messaging. 
+    Load the Itron HCM Simulator into Soap UI and start each of the Mock Services to test.</div>
+
         
     <form:form action="saveSettings" method="post" modelAttribute="settings">
     <cti:csrfToken/>
 
-        <div class="column-12-12">
+<%--         <div class="column-12-12">
             <div class="column one">
                 <tags:sectionContainer title="Settings">
                     <tags:nameValueContainer>
@@ -90,12 +95,12 @@
                     </tags:nameValueContainer>
                 </tags:sectionContainer>
             </div>
-        </div>
+        </div> --%>
     
     
     
         <div class="page-action-area">
-            <cti:button label="Save Settings" type="submit" busy="true"/>
+<%--             <cti:button label="Save Settings" type="submit" busy="true"/>
             <c:choose>
                 <c:when test="${simulatorRunning}">
                     <cti:button label="Stop" type="button" href="stop" busy="true"/>
@@ -103,7 +108,7 @@
                 <c:otherwise>
                     <cti:button label="Start" type="button" href="start" busy="true"/>
                 </c:otherwise>
-            </c:choose>
+            </c:choose> --%>
             <cti:button label="Test" type="button" href="test" busy="true"/>
         </div>
         
