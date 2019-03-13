@@ -24,6 +24,7 @@ public class YukonValidationUtils extends ValidationUtils {
     public static final String BASIC_URL_PATH_REGEX = "\\A" + BASIC_URL_PATH_FRAGMENT + "\\Z";
     public static final String BASIC_RESTFUL_URL_REGEX = "\\Ahttps?\\://([a-zA-Z0-9_\\-]+\\.)*[a-zA-Z0-9]+(\\:[0-9]+)?"
         + BASIC_URL_PATH_FRAGMENT + "\\Z";
+    public static final String BASIC_BLACKLISTED_CHAR_LIST = "[!#$%&'*();+=<>?{}/~-]";
 
     public static boolean isUrlPath(String input) {
         if (input == null) {
@@ -56,6 +57,15 @@ public class YukonValidationUtils extends ValidationUtils {
         return false;
     }
 
+    public static boolean checkBlacklistedCharacter(Errors errors, String field, String fieldValue) {
+        Matcher hasBlacklistedChar = Pattern.compile(BASIC_BLACKLISTED_CHAR_LIST).matcher(fieldValue);
+        if (fieldValue != null && hasBlacklistedChar.find()) {
+            errors.rejectValue(field, "yukon.web.error.isBlacklistedCharacter");
+            return true;
+        }
+        return false;
+    }
+
     public static boolean checkIsBlank(Errors errors, String field, String fieldValue, boolean fieldAllowsNull) {
         // Skips error message when the field allows null and the field value is null,
         // otherwise validates using isBlank.
@@ -73,6 +83,7 @@ public class YukonValidationUtils extends ValidationUtils {
                                                       boolean fieldAllowsNull, int max) {
         checkIsBlank(errors, field, fieldValue, fieldAllowsNull);
         checkExceedsMaxLength(errors, field, fieldValue, max);
+        checkBlacklistedCharacter(errors, field, fieldValue);
     }
 
     public static void checkIsPositiveShort(Errors errors, String field, Short fieldValue) {

@@ -100,6 +100,7 @@ public class ScheduledDataImportController {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scheduleName", "yukon.web.error.isBlank");
             if (!errors.hasFieldErrors("scheduleName")) {
                 YukonValidationUtils.checkExceedsMaxLength(errors, "scheduleName", importData.getScheduleName(), 100);
+                YukonValidationUtils.checkBlacklistedCharacter(errors, "scheduleName", importData.getScheduleName());
             }
         }
     };

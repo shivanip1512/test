@@ -30,6 +30,7 @@
     <entry key="yukon.web.error.fieldErrorsExist">Errors found, check fields.</entry>
     <entry key="yukon.web.error.i18nKeyMissing">An internationalized key is missing: {0}</entry>
     <entry key="yukon.web.error.dataArchivingIntervalTooLarge">Data Archiving Interval cannot be larger than Interval Data Gathering Duration.</entry>
+    <entry key="yukon.web.error.isBlacklistedCharacter">Field cannot not be blank or contains special or blacklisted characters.</entry>
 
     <entry key="yukon.web.error.noJs">For full functionality of this site it is necessary to enable JavaScript. Please contact your administrator to enable JavaScript in your web browser.</entry>
     
