@@ -418,6 +418,13 @@ number nResult, nNewVersion, nVMajor, nVMinor, nVBuild;
 string sCMD, sProg, sVTemp, sDateString, formattedDateString;
 BOOL bOpt, bOptYes, bOptNo;
 begin
+
+    if(IsInstalledVersionLesser("7.1.2")) then
+        sProg = "cmd.exe";
+        sCMD = "/c " + TARGETDIR ^ "\\Client\\bin\\modifyTomcatConfig.bat " + TOMCATBACKUPFILE;
+        LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_WAIT);
+    endif;
+
 	//get the DWORD representing the new version number
 	VerProductStrToNum (nNewVersion, IFX_PRODUCT_VERSION);
 	//get the version parts: major.minor.build
@@ -431,7 +438,7 @@ begin
 	NumToStr(sVTemp, nVMinor);
 	RegDBSetItem(REGDB_UNINSTALL_MINOR_VERSION, sVTemp);
 	NumToStr(sVTemp, nNewVersion);
-	RegDBSetItem(REGDB_UNINSTALL_VERSION, sVTemp); 
+	RegDBSetItem(REGDB_UNINSTALL_VERSION, sVTemp);
 	//reapply old settings to newly updated services
 	LoadServiceSettings();
 	
@@ -465,12 +472,6 @@ begin
        MessageBox("Unable to clear ActiveMQ cache. Please manually delete the \\Yukon\\Server\\web\\bin\\activemq-data\\ folder and the \\Yukon\\Client\\bin\\activemq-data\\ folder to fully clear previous cache prior to starting services.", WARNING);
     endif;
 
-    if(IsInstalledVersionLesser("7.1.2")) then
-        sProg = "cmd.exe";
-        sCMD = "/c " + TARGETDIR ^ "\\Client\\bin\\modifyTomcatConfig.bat " + TOMCATBACKUPFILE;
-        LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_WAIT);
-    endif;
-
 	Dialog_DBToolsFrame:
 	Disable(BACKBUTTON);
 	Disable(CANCELBUTTON); //You just installed.  There's no going back.
@@ -492,10 +493,6 @@ begin
     endif;
     Enable(BACKBUTTON);
 	CleanupTomcatWebapps();
-
-    if(IsInstalledVersionLesser("7.1.2")) then
-        CopyFile(TOMCATBACKUPFILE, TARGETDIR + "\\Server\\web\\conf\\server.xml");
-    endif;
 
     if(IsInstalledVersionLesser("7.1.0")) then 
         GetSystemInfo(DATE, nResult, sDateString);
@@ -521,6 +518,10 @@ begin
 		endif;
 	endif;			
 	
+    if(IsInstalledVersionLesser("7.1.2")) then
+        CopyFile(TOMCATBACKUPFILE, TARGETDIR + "\\Server\\web\\conf\\server.xml");
+    endif;
+    
 	//if files were locked, a reboot is required
 	if (BATCH_INSTALL) then
     	SdFinishReboot("Yukon Application Suite", 
