@@ -136,9 +136,8 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
                 Predicate<Map.Entry<DateTime, Integer>> filter = null;
                 if (startOfCalcRange != null) {
                     filter = entry -> {
-                        return entry.getKey().isAfter(startOfCalcRange)
-                               || entry.getKey().equals(startOfCalcRange)
-                               || entry.getKey().isBefore(getStartOfHour(endOfCalcRange.toDateTime()));
+                        return !entry.getKey().isBefore(startOfCalcRange)
+                               && entry.getKey().isBefore(getStartOfHour(endOfCalcRange.toDateTime()));
                     };
                 }
                 

@@ -49,7 +49,7 @@ public class RuntimeCalcServiceImpl implements RuntimeCalcService {
      * Calculates interval runtimes for all intervals at least partly between two dated states. If the previousState is 
      * STOPPED, all intervals in the return object will have 0 runtime. Intervals at the start and end of the measurement period
      * will reflect only the runtime that occurred within the measurement period, not the full runtime for that intervals.
-     * @param interval 
+     * @param interval The interval at which to generate activity logs.  
      * @param previousState The datedRuntimeStatus at the start of the measurement period.
      * @param currentState The datedRuntimeStatus at the end of the measurement period.
      * @return The map of intervals and runtime, in seconds, that occurred between the start and end of the measurement 
