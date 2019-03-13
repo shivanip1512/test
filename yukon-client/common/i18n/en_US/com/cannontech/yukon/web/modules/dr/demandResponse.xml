@@ -480,15 +480,10 @@
 <entry key="yukon.web.modules.dr.home.ecobee.configure.downloadInitiated">Download Initiated</entry>
 
 <entry key="yukon.web.modules.dr.ecobee.details.pageName">Ecobee Details</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.initiateDownload.label">Initiate Download</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.queryStats.title">Query Statistics</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.title">Sync Issues ({0})</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.stats.tooltip">(Current Total) / (Monthly Limit)</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.dataDownloads.title">Data Downloads (5 most recent)</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.dataDownloads.helpText">
-    Click on the "Initiate Download" button to select the date range and the Load Group to download the data for. 
-    It could take up-to 7 minutes to read the data with these inputs. Click on the button next to the progress bar to download the file.
-</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.title">Download (maximum 7-day date range)</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.loadGroupPicker">Select a Load Group</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.none">No recent downloads.</entry>
