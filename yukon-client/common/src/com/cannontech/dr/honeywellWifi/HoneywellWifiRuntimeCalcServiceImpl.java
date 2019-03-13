@@ -138,7 +138,7 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
                     filter = entry -> {
                         return entry.getKey().isAfter(startOfCalcRange)
                                || entry.getKey().equals(startOfCalcRange)
-                               || entry.getKey().isAfter(getStartOfHour(endOfCalcRange.toDateTime()));
+                               || entry.getKey().isBefore(getStartOfHour(endOfCalcRange.toDateTime()));
                     };
                 }
                 

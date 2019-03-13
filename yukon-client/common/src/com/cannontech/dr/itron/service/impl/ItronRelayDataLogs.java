@@ -33,21 +33,21 @@ enum ItronRelayDataLogs {
     
     private int relayNumber;
     private LogType type;
-    private BuiltInAttribute relayState;
+    private BuiltInAttribute relayStatus;
     private Map<BuiltInAttribute, RelayLogInterval> intervalAttributes;
 
     ItronRelayDataLogs(int relayNumber, LogType type, BuiltInAttribute relay, BuiltInAttribute log5, BuiltInAttribute log15, BuiltInAttribute log30, BuiltInAttribute log60) {
         this.relayNumber = relayNumber;
         this.type = type;
-        this.relayState = relay;
+        this.relayStatus = relay;
         this.intervalAttributes = ImmutableMap.of(log5, RelayLogInterval.LOG_5_MINUTE, 
                                                   log15, RelayLogInterval.LOG_15_MINUTE, 
                                                   log30, RelayLogInterval.LOG_30_MINUTE, 
                                                   log60, RelayLogInterval.LOG_60_MINUTE);
     }
 
-    public BuiltInAttribute getRelayStateAttribute() {
-        return relayState;
+    public BuiltInAttribute getRelayStatusAttribute() {
+        return relayStatus;
     }
     
     public Map<BuiltInAttribute, RelayLogInterval> getDataLogIntervals() {
@@ -58,9 +58,9 @@ enum ItronRelayDataLogs {
         return type == RUN_TIME;
     }
 
-    public static Set<BuiltInAttribute> getRelayStateAttributes() {
+    public static Set<BuiltInAttribute> getRelayStatusAttributes() {
         return Arrays.stream(values())
-                .map(ItronRelayDataLogs::getRelayStateAttribute)
+                .map(ItronRelayDataLogs::getRelayStatusAttribute)
                 .collect(Collectors.toSet());
     }
 
