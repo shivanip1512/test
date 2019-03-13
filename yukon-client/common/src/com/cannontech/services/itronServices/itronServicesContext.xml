@@ -22,5 +22,7 @@
     </jms:listener-container>
     
     <bean class="com.cannontech.dr.itron.service.impl.ItronPeriodicDataCollectionService"/>
+    
+    <bean class="com.cannontech.dr.itron.service.impl.ItronRuntimeCalcServiceImpl"/>
 
 </beans>

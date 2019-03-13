@@ -8,12 +8,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import com.cannontech.dr.service.RelayLogInterval;
 import com.cannontech.dr.service.RuntimeCalcService;
 
 public class RuntimeCalcServiceTest {
@@ -268,4 +271,33 @@ public class RuntimeCalcServiceTest {
         assertThat("hourly runtimes size", hourlyRuntimeSeconds.size(), equalTo(3));
     }
     
+    @Test
+    public void test_getActiveSecondsWithinInterval() {
+        
+        var start = dtFormatter.parseDateTime("03/12/2019 09:30:00");
+        var end = start.plus(RelayLogInterval.LOG_5_MINUTE.getDuration());
+
+        var activeSeconds = ReflectionTestUtils.invokeMethod(runtimeCalcService, "getActiveSecondsWithinInterval", true, start, end);
+        
+        assertThat("Active seconds", activeSeconds, equalTo(300));
+
+        var inactiveSeconds = ReflectionTestUtils.invokeMethod(runtimeCalcService, "getActiveSecondsWithinInterval", false, start, end);
+        
+        assertThat("Inactive seconds", inactiveSeconds, equalTo(0));
+    }
+    
+    @Test
+    public void test_getActiveSecondsWithinInterval_overDST() {
+        
+        var start = new DateTime(2019, 3, 10, 1, 30, 0, DateTimeZone.forID("America/Chicago"));
+        var end = start.plus(RelayLogInterval.LOG_30_MINUTE.getDuration());
+
+        var endExpected = new DateTime(2019, 3, 10, 3, 00, 0, DateTimeZone.forID("America/Chicago"));
+
+        assertThat("End date calculated across DST", end, equalTo(endExpected));
+        
+        var seconds = ReflectionTestUtils.invokeMethod(runtimeCalcService, "getActiveSecondsWithinInterval", true, start, end);
+        
+        assertThat("Active seconds calculated across DST", seconds, equalTo(1800));
+    }
 }
