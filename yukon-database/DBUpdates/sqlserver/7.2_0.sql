@@ -550,9 +550,11 @@ INSERT INTO DBUpdates VALUES ('YUK-19500', '7.2.0', GETDATE());
 /* @end YUK-19500 */
 
 /* @start YUK-19531-1 if YUK-19162 */
+/* @error ignore-begin */
 ALTER TABLE ScheduledDataImportHistory
 DROP COLUMN ArchiveFilePath;
 GO
+/* @error ignore-end */
 
 INSERT INTO DBUpdates VALUES ('YUK-19531-1', '7.2.0', GETDATE());
 /* @end YUK-19531-1 */
@@ -587,7 +589,7 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-19534', '7.2.0', GETDATE());
 /* @end YUK-19534 */
 
-/* @end YUK-19545 */
+/* @start YUK-19545 */
 ALTER TABLE LMGroupItronMapping
 ALTER COLUMN ItronGroupId NUMERIC NULL;
 
