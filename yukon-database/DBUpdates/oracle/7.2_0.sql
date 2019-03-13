@@ -538,8 +538,10 @@ INSERT INTO DBUpdates VALUES ('YUK-19500', '7.2.0', SYSDATE);
 /* @end YUK-19500 */
 
 /* @start YUK-19531-1 if YUK-19162 */
+/* @error ignore-begin */
 ALTER TABLE ScheduledDataImportHistory
 DROP COLUMN ArchiveFilePath;
+/* @error ignore-end */
 
 INSERT INTO DBUpdates VALUES ('YUK-19531-1', '7.2.0', SYSDATE);
 /* @end YUK-19531-1 */
