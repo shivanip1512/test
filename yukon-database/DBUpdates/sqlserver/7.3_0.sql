@@ -39,7 +39,7 @@ INSERT INTO DBUpdates VALUES ('YUK-19601', '7.3.0', GETDATE());
 /* @start YUK-19324 */
 UPDATE YukonListEntry 
 SET EntryText = 'Excellent (12+)"' 
-WHERE EntryID = 1756 AND EntryText = 'Excellant (12+)"';
+WHERE EntryText = 'Excellant (12+)"';
 GO
 
 INSERT INTO DBUpdates VALUES ('YUK-19324', '7.3.0', GETDATE());
