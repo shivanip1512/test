@@ -7,9 +7,9 @@ package com.cannontech.dr.itron.service;
 public interface ItronRuntimeCalcService {
 
     /**
-     * Loads runtime status data for each Itron LCR, between the last recorded runtime for that device
-     * and the start of the previous hour (or last time we received Itron data). Uses this runtime status data
-     * to calculate the runtime for that period, for each device.
+     * Loads relay status data (runtime and shedtime) for each Itron LCR, between the time of the last recorded data logs for that device
+     * and the latest point data update from the device. Uses the relay status data to calculate the runtime and shedtime for that period, 
+     * at any defined log point intervals, for each device.
      */
     public void calculateDataLogs();
 }
