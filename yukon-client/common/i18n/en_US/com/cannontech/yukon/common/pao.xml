@@ -161,6 +161,7 @@
     <entry key="yukon.common.pao.LM_GROUP_EXPRESSCOMM">Expresscom Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_HONEYWELL">Honeywell Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_ITRON">Itron Group</entry>
+    <entry key="yukon.common.pao.LM_GROUP_NEST">Nest Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_RFN_EXPRESSCOMM">RFN Expresscom Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_GOLAY">Golay Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_MCT">MCT Group</entry>
@@ -176,6 +177,7 @@
     <entry key="yukon.common.pao.LM_ENERGY_EXCHANGE_PROGRAM">LM Energy Exchange Program</entry>
     <entry key="yukon.common.pao.LM_HONEYWELL_PROGRAM">LM Honeywell Program</entry>
     <entry key="yukon.common.pao.LM_ITRON_PROGRAM">LM Itron Program</entry>
+    <entry key="yukon.common.pao.LM_NEST_PROGRAM">LM Nest Program</entry>
     <entry key="yukon.common.pao.LM_SEP_PROGRAM">LM SEP Program</entry>
     <entry key="yukon.common.pao.LM_ECOBEE_PROGRAM">LM ecobee Program</entry>
     <entry key="yukon.common.pao.LM_CONTROL_AREA">LM Control Area</entry>
@@ -249,6 +251,13 @@
     <entry key="yukon.common.pao.ECOBEE_3">ecobee3</entry>
     <entry key="yukon.common.pao.ECOBEE_3_LITE">ecobee3 Lite</entry>
     <entry key="yukon.common.pao.ECOBEE_SMART">ecobee Smart</entry>
+    
+    <entry key="yukon.common.pao.HONEYWELL_9000">Honeywell Wi-Fi 9000</entry>
+    <entry key="yukon.common.pao.HONEYWELL_VISIONPRO_8000">Honeywell Wi-Fi VisionPRO 8000</entry>
+    <entry key="yukon.common.pao.HONEYWELL_FOCUSPRO">Honeywell Wi-Fi FocusPRO</entry>
+    <entry key="yukon.common.pao.HONEYWELL_THERMOSTAT">Honeywell Wi-Fi Thermostat</entry>
+    
+    <entry key="yukon.common.pao.NEST">Nest Thermostat</entry>
     
     <entry key="yukon.common.pao.RFN_RELAY">RFN Relay</entry>
 </properties>
