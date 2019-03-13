@@ -280,6 +280,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFG301(DeviceTypes.RFG301, "RFG-301", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     NEST(DeviceTypes.NEST, "Nest", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
+    
+    // WHEN ADDING A NEW PAO TYPE, REMEMBER TO ADD A NEW I18N ENTRY TO 
+    // common/i18n/en_US/com/cannontech/yukon/common/pao.xml
     ;
     
     private final int deviceTypeId;
