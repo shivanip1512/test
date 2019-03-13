@@ -52,9 +52,9 @@ yukon.dr.ecobee = (function () {
             });
             
             $(document).on('yukon_dr_ecobee_download_start', function (ev) {
-                yukon.ui.busy(".js-download");
                 if (0 < loadGroupPicker.selectedItems.length) {
                     loadGroupPicker.endAction.call(loadGroupPicker, loadGroupPicker.selectedItems);
+                    yukon.ui.busy(".js-initiate-download");
                 } else {
                     // removed possibly accumulated inputs from previous selections
                     $('[name="loadGroupIds"]').remove();
@@ -325,8 +325,9 @@ yukon.dr.ecobee = (function () {
                 yukon.ui.timeSlider.init();
             });
             
+            // If any operation to read the data to download is in progress, the Initiate Download button should be busy.
             if($(".js-data-downloads").find("div.progress-bar-info").exists()) {
-                yukon.ui.busy(".js-download");
+                yukon.ui.busy(".js-initiate-download");
             }
         },
         /**
@@ -397,7 +398,7 @@ yukon.dr.ecobee = (function () {
                     btn.disable();
                 }
                 if(!$(".js-data-downloads").find("div.progress-bar-info").exists()) {
-                    yukon.ui.unbusy(".js-download");
+                    yukon.ui.unbusy(".js-initiate-download");
                 }
             }
             
