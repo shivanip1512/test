@@ -3,6 +3,7 @@ package com.cannontech.dr.rfn.test;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,13 +23,10 @@ public class BuiltInAttributeGroupedAttributesTest {
     @Test
     public void attributeGroupMembershipTest() {
         Map<AttributeGroup, Set<BuiltInAttribute>> allGroupedAttributes = BuiltInAttribute.getAllGroupedAttributes();
-        List<BuiltInAttribute> allAttributesInAGroup = Lists.newArrayList();
+        List<BuiltInAttribute> allAttributesInAGroup = allGroupedAttributes.values().stream()
+                .flatMap(Set::stream)
+                .collect(Collectors.toList());
 
-        for (AttributeGroup group : allGroupedAttributes.keySet()) {
-            for (BuiltInAttribute attribute : allGroupedAttributes.get(group)) {
-                    allAttributesInAGroup.add(attribute);
-            }
-        }
         for (BuiltInAttribute attribute : BuiltInAttribute.values()) {
             if (!allAttributesInAGroup.contains(attribute)) {
                 Assert.fail("The attribute: " + attribute.name() + " is in BuiltInAttribute.values() " + 

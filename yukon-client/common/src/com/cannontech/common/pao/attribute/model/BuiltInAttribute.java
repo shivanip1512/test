@@ -725,6 +725,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         groupedDataAttributesBuilder.put(AttributeGroup.BLINK_AND_OUTAGE, lookupByGroup.get(AttributeGroup.BLINK_AND_OUTAGE));
         groupedDataAttributesBuilder.put(AttributeGroup.CURRENT, lookupByGroup.get(AttributeGroup.CURRENT));
         groupedDataAttributesBuilder.put(AttributeGroup.DEMAND, lookupByGroup.get(AttributeGroup.DEMAND));
+        groupedDataAttributesBuilder.put(AttributeGroup.ESTIMATED_LOAD, lookupByGroup.get(AttributeGroup.ESTIMATED_LOAD));
+        groupedDataAttributesBuilder.put(AttributeGroup.ITRON, lookupByGroup.get(AttributeGroup.ITRON));
         groupedDataAttributesBuilder.put(AttributeGroup.OTHER, lookupByGroup.get(AttributeGroup.OTHER));
         groupedDataAttributesBuilder.put(AttributeGroup.PROFILE, lookupByGroup.get(AttributeGroup.PROFILE));
         groupedDataAttributesBuilder.put(AttributeGroup.REACTIVE, lookupByGroup.get(AttributeGroup.REACTIVE));
@@ -732,7 +734,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         groupedDataAttributesBuilder.put(AttributeGroup.STATUS, lookupByGroup.get(AttributeGroup.STATUS));
         groupedDataAttributesBuilder.put(AttributeGroup.USAGE, lookupByGroup.get(AttributeGroup.USAGE));
         groupedDataAttributesBuilder.put(AttributeGroup.VOLTAGE, lookupByGroup.get(AttributeGroup.VOLTAGE));
-        groupedDataAttributesBuilder.put(AttributeGroup.ESTIMATED_LOAD, lookupByGroup.get(AttributeGroup.ESTIMATED_LOAD));
 
         groupedDataAttributes = groupedDataAttributesBuilder.build();
         
@@ -876,6 +877,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         allGroupedBuilder.put(AttributeGroup.STATUS, lookupByGroup.get(AttributeGroup.STATUS));
         allGroupedBuilder.put(AttributeGroup.USAGE, lookupByGroup.get(AttributeGroup.USAGE));
         allGroupedBuilder.put(AttributeGroup.ESTIMATED_LOAD, lookupByGroup.get(AttributeGroup.ESTIMATED_LOAD));
+        allGroupedBuilder.put(AttributeGroup.ITRON, lookupByGroup.get(AttributeGroup.ITRON));
 
         allGroupedBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, lookupByGroup.get(AttributeGroup.RFN_HARDWARE_EVENT));
         allGroupedBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT, lookupByGroup.get(AttributeGroup.RFN_SOFTWARE_EVENT));
