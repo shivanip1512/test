@@ -30,7 +30,7 @@
     <div class="column-12-12">
         <div class="column one">
             <tags:sectionContainer2 nameKey="dataDownloads" id="data-downloads">
-                <table class="name-value-table with-form-controls ${fn:length(downloads) <= 0 ? 'dn' : ''}" id="downloads-table">
+                <table class="js-data-downloads name-value-table with-form-controls ${fn:length(downloads) <= 0 ? 'dn' : ''}" id="downloads-table">
                     <thead></thead>
                     <tfoot></tfoot>
                     <tbody>
@@ -43,7 +43,7 @@
                 </table>
                 <span class="empty-list ${fn:length(downloads) > 0 ? 'dn' : ''}"><i:inline key=".download.none"/></span>
                 <div class="action-area">
-                    <cti:button nameKey="download" data-popup="#ecobee-download-popup" icon="icon-page-white-excel"/>
+                    <cti:button nameKey="initiateDownload" data-popup="#ecobee-download-popup" classes="js-download"/>
                     <div data-dialog 
                         id="ecobee-download-popup"
                         data-url="ecobee/download/settings" 
