@@ -3541,16 +3541,16 @@ C++ :
     
   - project : Apache Xerces-C++ XML Parser 
     path : XERCES
-    version : 3.2.1
+    version : 3.2.2
     project URL : "http://xerces.apache.org/xerces-c/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : 4cc0e94fbe3a97119adc413c9b393534
-    sha1 : 6585b74055873c8ae43dd75e39a86797ba6fd888
-    fileCount : 811
-    totalSize : 23832438
-    updated : 2018-06-29  
-    jira : YUK-18343
+    md5 : 8f4f653d5ed16aebfb8fbe8e30203883
+    sha1 : d15633b4d5e52319098aec427b4ec9c7519c2a43
+    fileCount : 473
+    totalSize : 18790332
+    updated : 2019-03-12  
+    jira : YUK-19155
     notes :
     
   - project : yaml-cpp 
