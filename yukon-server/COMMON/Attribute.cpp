@@ -210,6 +210,7 @@ INIT_ATTRIBUTE( ProfileChannel2,                                    "PROFILE_CHA
 INIT_ATTRIBUTE( ProfileChannel3,                                    "PROFILE_CHANNEL_3" );
 INIT_ATTRIBUTE( RecordingInterval,                                  "RECORDING_INTERVAL" );
 INIT_ATTRIBUTE( RelativeHumidity,                                   "HUMIDITY" );
+INIT_ATTRIBUTE( Relay1CallForCool,                                  "RELAY_1_CALL_FOR_COOL" );
 INIT_ATTRIBUTE( Relay1kWLoadSize,                                   "RELAY_1_LOAD_SIZE" );
 INIT_ATTRIBUTE( Relay1RemainingControlTime,                         "RELAY_1_REMAINING_CONTROL" );
 INIT_ATTRIBUTE( Relay1RunTime,                                      "RELAY_1_RUN_TIME_DATA_LOG" );
@@ -222,6 +223,7 @@ INIT_ATTRIBUTE( Relay1ShedTime5Min,                                 "RELAY_1_SHE
 INIT_ATTRIBUTE( Relay1ShedTime15Min,                                "RELAY_1_SHED_TIME_DATA_LOG_15_MIN" )
 INIT_ATTRIBUTE( Relay1ShedTime30Min,                                "RELAY_1_SHED_TIME_DATA_LOG_30_MIN" )
 INIT_ATTRIBUTE( Relay1RelayState,                                   "RELAY_1_RELAY_STATE" );
+INIT_ATTRIBUTE( Relay2CallForCool,                                  "RELAY_2_CALL_FOR_COOL" );
 INIT_ATTRIBUTE( Relay2kWLoadSize,                                   "RELAY_2_LOAD_SIZE" );
 INIT_ATTRIBUTE( Relay2RemainingControlTime,                         "RELAY_2_REMAINING_CONTROL" );
 INIT_ATTRIBUTE( Relay2RunTime,                                      "RELAY_2_RUN_TIME_DATA_LOG" );
@@ -234,6 +236,7 @@ INIT_ATTRIBUTE( Relay2ShedTime5Min,                                 "RELAY_2_SHE
 INIT_ATTRIBUTE( Relay2ShedTime15Min,                                "RELAY_2_SHED_TIME_DATA_LOG_15_MIN" )
 INIT_ATTRIBUTE( Relay2ShedTime30Min,                                "RELAY_2_SHED_TIME_DATA_LOG_30_MIN" )
 INIT_ATTRIBUTE( Relay2RelayState,                                   "RELAY_2_RELAY_STATE" );
+INIT_ATTRIBUTE( Relay3CallForCool,                                  "RELAY_3_CALL_FOR_COOL" );
 INIT_ATTRIBUTE( Relay3kWLoadSize,                                   "RELAY_3_LOAD_SIZE" );
 INIT_ATTRIBUTE( Relay3RemainingControlTime,                         "RELAY_3_REMAINING_CONTROL" );
 INIT_ATTRIBUTE( Relay3RunTime,                                      "RELAY_3_RUN_TIME_DATA_LOG" );
@@ -246,6 +249,7 @@ INIT_ATTRIBUTE( Relay3ShedTime5Min,                                 "RELAY_3_SHE
 INIT_ATTRIBUTE( Relay3ShedTime15Min,                                "RELAY_3_SHED_TIME_DATA_LOG_15_MIN" )
 INIT_ATTRIBUTE( Relay3ShedTime30Min,                                "RELAY_3_SHED_TIME_DATA_LOG_30_MIN" )
 INIT_ATTRIBUTE( Relay3RelayState,                                   "RELAY_3_RELAY_STATE" );
+INIT_ATTRIBUTE( Relay4CallForCool,                                  "RELAY_4_CALL_FOR_COOL" );
 INIT_ATTRIBUTE( Relay4RemainingControlTime,                         "RELAY_4_REMAINING_CONTROL" );
 INIT_ATTRIBUTE( Relay4RunTime,                                      "RELAY_4_RUN_TIME_DATA_LOG" );
 INIT_ATTRIBUTE( Relay4RunTime5Min,                                  "RELAY_4_RUN_TIME_DATA_LOG_5_MIN" )
@@ -624,6 +628,28 @@ INIT_ATTRIBUTE( ReverseSetPoint,                                    "REVERSE_SET
 INIT_ATTRIBUTE( ReverseFlowIndicator,                               "REVERSE_FLOW_INDICATOR" );
 
 INIT_ATTRIBUTE( EventSuperseded,                                    "EVENT_SUPERSEDED" );
+INIT_ATTRIBUTE( MemoryMapLost,                                      "MEMORY_MAP_LOST" );
+INIT_ATTRIBUTE( TimeSync,                                           "TIME_SYNC" );
+INIT_ATTRIBUTE( ColdStart,                                          "COLD_START" );
+INIT_ATTRIBUTE( MaxControlExceeded,                                 "MAX_CONTROL_EXCEEDED" );
+INIT_ATTRIBUTE( NetworkTimeoutCancel,                               "NETWORK_TIMEOUT_CANCEL" );
+INIT_ATTRIBUTE( ConfigurationUpdatedHash,                           "CONFIGURATION_UPDATED_HASH" );
+INIT_ATTRIBUTE( ConfigurationProcessed,                             "CONFIGURATION_PROCESSED" );
+INIT_ATTRIBUTE( TimeLost,                                           "TIME_LOST" );
+INIT_ATTRIBUTE( SelfCheckFail,                                      "SELF_CHECK_FAIL" );
+INIT_ATTRIBUTE( InactiveAppliance,                                  "INACTIVE_APPLIANCE" );
+INIT_ATTRIBUTE( RadioLinkQuality,                                   "RADIO_LINK_QUALITY" );
+INIT_ATTRIBUTE( IncorrectTLSIdentity,                               "INCORRECT_TLS_IDENTITY" );
+INIT_ATTRIBUTE( KeyUpdate,                                          "KEY_UPDATE" );
+INIT_ATTRIBUTE( KeyUpdateFail,                                      "KEY_UPDATE_FAIL" );
+INIT_ATTRIBUTE( TLSFail,                                            "TLS_FAIL" );
+INIT_ATTRIBUTE( BadHDLC,                                            "BAD_HDLC" );
+INIT_ATTRIBUTE( TLSAlert,                                           "TLS_ALERT" );
+INIT_ATTRIBUTE( OptimizeIntelligentControl,                         "OPTIMIZE_INTELLIGENT_CONTROL" );
+INIT_ATTRIBUTE( FlushLog,                                           "FLUSH_LOG" );
+INIT_ATTRIBUTE( SnapToGold,                                         "SNAP_TO_GOLD" );
+INIT_ATTRIBUTE( EventReceived,                                      "EVENT_RECEIVED" );
+INIT_ATTRIBUTE( LoadStatus,                                         "LOAD_STATUS" );
 
 AttributeNotFound::AttributeNotFound(const std::string &name)
 {

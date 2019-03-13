@@ -201,6 +201,7 @@ public:
     static const Attribute  ProfileChannel3;
     static const Attribute  RecordingInterval;
     static const Attribute  RelativeHumidity;
+    static const Attribute  Relay1CallForCool;
     static const Attribute  Relay1kWLoadSize;
     static const Attribute  Relay1RemainingControlTime;
     static const Attribute  Relay1RunTime;
@@ -213,6 +214,7 @@ public:
     static const Attribute  Relay1ShedTime15Min;
     static const Attribute  Relay1ShedTime30Min;
     static const Attribute  Relay1RelayState;
+    static const Attribute  Relay2CallForCool;
     static const Attribute  Relay2kWLoadSize;
     static const Attribute  Relay2RemainingControlTime;
     static const Attribute  Relay2RunTime;
@@ -225,6 +227,7 @@ public:
     static const Attribute  Relay2ShedTime15Min;
     static const Attribute  Relay2ShedTime30Min;
     static const Attribute  Relay2RelayState;
+    static const Attribute  Relay3CallForCool;
     static const Attribute  Relay3kWLoadSize;
     static const Attribute  Relay3RemainingControlTime;
     static const Attribute  Relay3RunTime;
@@ -237,6 +240,7 @@ public:
     static const Attribute  Relay3ShedTime15Min;
     static const Attribute  Relay3ShedTime30Min;
     static const Attribute  Relay3RelayState;
+    static const Attribute  Relay4CallForCool;
     static const Attribute  Relay4RemainingControlTime;
     static const Attribute  Relay4RunTime;
 	static const Attribute  Relay4RunTime5Min;
@@ -615,6 +619,28 @@ public:
     static const Attribute  ReverseFlowIndicator;
 
     static const Attribute  EventSuperseded;
+    static const Attribute  MemoryMapLost;
+    static const Attribute  TimeSync;
+    static const Attribute  ColdStart;
+    static const Attribute  MaxControlExceeded;
+    static const Attribute  NetworkTimeoutCancel;
+    static const Attribute  ConfigurationUpdatedHash;
+    static const Attribute  ConfigurationProcessed;
+    static const Attribute  TimeLost;
+    static const Attribute  SelfCheckFail;
+    static const Attribute  InactiveAppliance;
+    static const Attribute  RadioLinkQuality;
+    static const Attribute  IncorrectTLSIdentity;
+    static const Attribute  KeyUpdate;
+    static const Attribute  KeyUpdateFail;
+    static const Attribute  TLSFail;
+    static const Attribute  BadHDLC;
+    static const Attribute  TLSAlert;
+    static const Attribute  OptimizeIntelligentControl;
+    static const Attribute  FlushLog;
+    static const Attribute  SnapToGold;
+    static const Attribute  EventReceived;
+    static const Attribute  LoadStatus;
 };
 
 
