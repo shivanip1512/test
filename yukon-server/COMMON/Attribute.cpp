@@ -146,6 +146,11 @@ INIT_ATTRIBUTE( PeakkVARateA,                                       "PEAK_KVA_RA
 INIT_ATTRIBUTE( PeakkVARateB,                                       "PEAK_KVA_RATE_B" );
 INIT_ATTRIBUTE( PeakkVARateC,                                       "PEAK_KVA_RATE_C" );
 INIT_ATTRIBUTE( PeakkVARateD,                                       "PEAK_KVA_RATE_D" );
+INIT_ATTRIBUTE( PeakkVAFrozen,                                      "PEAK_KVA_FROZEN");
+INIT_ATTRIBUTE( PeakkVAFrozenRateA,                                 "PEAK_KVA_FROZEN_RATE_A");
+INIT_ATTRIBUTE( PeakkVAFrozenRateB,                                 "PEAK_KVA_FROZEN_RATE_B");
+INIT_ATTRIBUTE( PeakkVAFrozenRateC,                                 "PEAK_KVA_FROZEN_RATE_C");
+INIT_ATTRIBUTE( PeakkVAFrozenRateD,                                 "PEAK_KVA_FROZEN_RATE_D");
 INIT_ATTRIBUTE( PeakkVACoincidental,                                "PEAK_KVA_COIN" );
 INIT_ATTRIBUTE( ReceivedPeakkVA,                                    "RECEIVED_PEAK_KVA" );
 INIT_ATTRIBUTE( ReceivedPeakkVARateA,                               "RECEIVED_PEAK_KVA_RATE_A" );

@@ -137,6 +137,11 @@ public:
     static const Attribute  PeakkVARateB;
     static const Attribute  PeakkVARateC;
     static const Attribute  PeakkVARateD;
+    static const Attribute  PeakkVAFrozen;
+    static const Attribute  PeakkVAFrozenRateA;
+    static const Attribute  PeakkVAFrozenRateB;
+    static const Attribute  PeakkVAFrozenRateC;
+    static const Attribute  PeakkVAFrozenRateD;
     static const Attribute  PeakkVACoincidental;
     static const Attribute  ReceivedPeakkVA;
     static const Attribute  ReceivedPeakkVARateA;
