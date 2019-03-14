@@ -47,10 +47,66 @@
         
     </div>
     
+    <!-- Add Subgroup Dialog -->
+    <cti:msgScope paths="deviceGroups.editor.operationsContainer">
+        <cti:msg2 var="invalidGroupNameError" key=".invalidGroupNameError" javaScriptEscape="true"/>
+        <cti:msg2 var="addSubgroupText" key=".addSubgroupText"/>
+        <cti:msg2 var="subgroupNameLabel" key=".subgroupNameLabel" />
+        <cti:msg2 var="subgroupTypeLabel" key=".subgroupTypeLabel" />
+        <cti:msg2 var="subgroupTypeBasicLabel" key=".subgroupType.basicLabel" />
+        <cti:msg2 var="subgroupTypeComposedLabel" key=".subgroupType.composedLabel" />
+        <cti:msg2 var="subgroupEmptyGroupTitle" key=".subgroup.emptyGroupTitle" />
+        <cti:msg2 var="subgroupComposedGroupTitle" key=".subgroup.composedGroupTitle" />
+        <cti:msg2 var="subgroupNameSaveText" key=".subgroupNameSaveText" />
+    </cti:msgScope>
+                                
+    <div id="addSubGroupPopup" title="${addSubgroupText}" class="groupEditorPopup dn">
+        <form id="addSubGroupForm" method="post" action="<cti:url value="/group/editor/addChild"/>">
+            <cti:csrfToken/>
+            <div class="js-invalid-group-name error dn">${invalidGroupNameError}</div>
+            <input type="hidden" id="addPopupGroupName" name="groupName">
+            <tags:nameValueContainer>
+                <tags:nameValue name="${subgroupNameLabel}" nameColumnWidth="120px">
+                    <input id="childGroupName" name="childGroupName" type="text" maxlength="60"/>
+                </tags:nameValue>
+                <tags:nameValue name="${subgroupTypeLabel}">
+                    <select name="subGroupType">
+                        <option value="STATIC" title="${subgroupEmptyGroupTitle}">${subgroupTypeBasicLabel}</option>
+                        <option value="COMPOSED" title="${subgroupComposedGroupTitle}">${subgroupTypeComposedLabel}</option>
+                    </select>
+                </tags:nameValue>
+            </tags:nameValueContainer>
+            <div class="action-area">
+                <cti:button id="addSubGroupSaveButton" label="${subgroupNameSaveText}" classes="js-add-sub-grp-save primary action" busy="true"/>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Edit Group Name Dialog -->
+    <cti:msgScope paths="deviceGroups.editor.operationsContainer">
+        <cti:msg2 var="editGroupNameText" key=".editGroupNameText" />
+        <cti:msg2 var="newGroupNameText" key=".newGroupNameText" />
+        <cti:msg2 var="changeNameButtonText" key=".newGroupNameSaveText" />
+    </cti:msgScope>
+    
+    <div id="editGroupNamePopup" title="${editGroupNameText}" class="groupEditorPopup dn">
+        <form id="editGroupNameForm" method="post" action="<cti:url value="/group/editor/updateGroupName"/>" >
+            <div class="js-invalid-group-name error dn">${invalidGroupNameError}</div>
+            <cti:csrfToken/>    
+            <input type="hidden" id="editPopupGroupName" name="groupName">
+            <tags:nameValueContainer>
+                <tags:nameValue name="${newGroupNameText}">
+                    <input id="newGroupName" name="newGroupName" type="text" maxlength="60"/>
+                </tags:nameValue>
+            </tags:nameValueContainer>
+            <div class="action-area">
+                <cti:button id="editGroupNameSaveButton" label="${changeNameButtonText}" classes="js-edit-grp-name-save primary action" busy="true"/>
+            </div>
+        </form>
+    </div>
+    
     <cti:includeScript link="/resources/js/pages/yukon.tools.group.editor.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.device.selection.js"/>
     <cti:includeScript link="JQUERY_FILE_UPLOAD"/>
-    
-  
     
 </cti:standardPage>

@@ -34,6 +34,7 @@
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.editGroupLabel">Edit Group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameText">Edit Group Name</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.editGroup.title">Click to edit group name</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameText">New Name</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameSaveText">Change Name</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.invalidGroupNameError">Group names may not be blank or contain slashes.</entry>
@@ -104,7 +105,7 @@
 <entry key="yukon.web.deviceGroups.editor.membersContainer.devices">devices</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.cannotDeleteGroupLinkTitle">Cannot Delete Group</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.groupContainsCountLabel">This group contains {0} devices.</entry>
-<entry key="yukon.web.deviceGroups.editor.membersContainer.showDeviceslabel">Show Devices</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.showDevicesButton.label">Show Devices</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.showDevicesLimitText">Limited to {0} devices.</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.confirmRemove.title">Remove All Devices</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.confirmRemove.message">Are you sure you want to remove all the devices from this group?</entry>
