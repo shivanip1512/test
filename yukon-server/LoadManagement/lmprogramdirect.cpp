@@ -4935,8 +4935,7 @@ BOOL CtiLMProgramDirect::handleTimedControl(CtiTime currentTime, LONG secondsFro
         ret_val = updateGroupsRampingOut(multiPilMsg, multiDispatchMsg, currentTime); // consider if any groups have ramped out
     }
 
-    CtiTime now;
-    bool is_control_time = (now < getDirectStopTime() && now > getDirectStartTime());
+    bool is_control_time = (currentTime < getDirectStopTime() && currentTime > getDirectStartTime());
     bool inactive = (getProgramState() == CtiLMProgramBase::InactiveState);
     bool disabled = getDisableFlag();
     bool is_ramping_out = getIsRampingOut();
