@@ -352,14 +352,10 @@ public class RfnPointMappingTest {
                 .put(PaoType.RFN430A3T, "Peak Demand Daily")
                 
                 .put(PaoType.RFN430KV, "Average Delivered Power Factor")
-                .put(PaoType.RFN430KV, "Average Delivered Power Factor")
                 .put(PaoType.RFN430KV, "Average Received Power Factor")
-                .put(PaoType.RFN430KV, "Average Received Power Factor")
-                .put(PaoType.RFN430KV, "Delivered kVA")
                 .put(PaoType.RFN430KV, "Delivered kVA")
                 .put(PaoType.RFN430KV, "Delivered kVAr")
                 .put(PaoType.RFN430KV, "Peak Demand Daily")
-                .put(PaoType.RFN430KV, "Received kVA")
                 .put(PaoType.RFN430KV, "Received kVA")
                 .put(PaoType.RFN430KV, "Received kVAr")
                 .put(PaoType.RFN430KV, "Received kW")
@@ -384,7 +380,6 @@ public class RfnPointMappingTest {
                 .put(PaoType.RFN520FAX, "Delivered Peak kVAr")
                 .put(PaoType.RFN520FAX, "Delivered kVAh")
                 .put(PaoType.RFN520FAX, "Delivered kVArh")
-                .put(PaoType.RFN520FAX, "Delivered kVArh")
                 .put(PaoType.RFN520FAX, "Net kVAh")
                 .put(PaoType.RFN520FAX, "Net kVArh")
                 .put(PaoType.RFN520FAX, "Power Factor Degrees")
@@ -402,7 +397,6 @@ public class RfnPointMappingTest {
                 .put(PaoType.RFN520FAXD, "Delivered Peak kVAr Frozen")
                 .put(PaoType.RFN520FAXD, "Delivered Peak kVAr")
                 .put(PaoType.RFN520FAXD, "Delivered kVAh")
-                .put(PaoType.RFN520FAXD, "Delivered kVArh")
                 .put(PaoType.RFN520FAXD, "Delivered kVArh")
                 .put(PaoType.RFN520FAXD, "Net kVAh")
                 .put(PaoType.RFN520FAXD, "Net kVArh")
@@ -433,7 +427,6 @@ public class RfnPointMappingTest {
                 .put(PaoType.RFN530FAX, "Delivered Peak kVAr Frozen")
                 .put(PaoType.RFN530FAX, "Delivered Peak kVAr")
                 .put(PaoType.RFN530FAX, "Delivered kVAh")
-                .put(PaoType.RFN530FAX, "Delivered kVArh")
                 .put(PaoType.RFN530FAX, "Delivered kVArh")
                 .put(PaoType.RFN530FAX, "Net kVAh")
                 .put(PaoType.RFN530FAX, "Net kVArh")
@@ -956,6 +949,6 @@ public class RfnPointMappingTest {
                 .put(PaoType.RFN530S4X, "kVAr (Quadrants 2 3)")
                 .put(PaoType.RFN530S4X, "kVAr (Quadrants 2 4)")
                 .put(PaoType.RFN530S4X, "kVArh Leading (Q1 + Q3)")
-                .build();
+               .build();
     }
 }
