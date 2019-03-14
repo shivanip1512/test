@@ -91,6 +91,11 @@
         <pointInfo name="Peak kW (Rate B kW)" attributes="PEAK_DEMAND_RATE_B"/>
         <pointInfo name="Peak kW (Rate C kW)" attributes="PEAK_DEMAND_RATE_C"/>
         <pointInfo name="Peak kW (Rate D kW)" attributes="PEAK_DEMAND_RATE_D"/>
+        <pointInfo name="Peak kW Frozen" attributes="PEAK_DEMAND_FROZEN"/>
+        <pointInfo name="Peak kW Frozen (Rate A kW)" attributes="PEAK_DEMAND_FROZEN_RATE_A"/>
+        <pointInfo name="Peak kW Frozen (Rate B kW)" attributes="PEAK_DEMAND_FROZEN_RATE_B"/>
+        <pointInfo name="Peak kW Frozen (Rate C kW)" attributes="PEAK_DEMAND_FROZEN_RATE_C"/>
+        <pointInfo name="Peak kW Frozen (Rate D kW)" attributes="PEAK_DEMAND_FROZEN_RATE_D"/>
         <pointInfo name="Phase Angle Displacement" attributes="PHASE_ANGLE_DISPLACEMENT"/>
         <pointInfo name="Phase Loss" attributes="PHASE_LOSS"/>
         <pointInfo name="Polarity Cross-phase and Energy Flow Diagnostic" attributes="POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC"/>

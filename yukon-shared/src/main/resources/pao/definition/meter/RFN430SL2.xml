@@ -51,6 +51,10 @@
         <pointInfo name="Delivered Peak kVA (Rate B kVA)" attributes="PEAK_KVA_RATE_B"/>
         <pointInfo name="Delivered Peak kVA (Rate C kVA)" attributes="PEAK_KVA_RATE_C"/>
         <pointInfo name="Delivered Peak kVA (Rate D kVA)" attributes="PEAK_KVA_RATE_D"/>
+        <pointInfo name="Delivered Peak kVA Frozen (Rate A kVA)" attributes="PEAK_KVA_FROZEN_RATE_A"/>
+        <pointInfo name="Delivered Peak kVA Frozen (Rate B kVA)" attributes="PEAK_KVA_FROZEN_RATE_B"/>
+        <pointInfo name="Delivered Peak kVA Frozen (Rate C kVA)" attributes="PEAK_KVA_FROZEN_RATE_C"/>
+        <pointInfo name="Delivered Peak kVA Frozen (Rate D kVA)" attributes="PEAK_KVA_FROZEN_RATE_D"/>
         <pointInfo name="Demand at Peak kVa Coincidental" attributes="DEMAND_PEAK_KVA_COIN"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Demand Reads And Reset" attributes="DEMAND_READS_AND_RESET"/>
@@ -86,6 +90,7 @@
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
         <pointInfo name="Peak kVA" attributes="PEAK_KVA"/>
+        <pointInfo name="Peak kVA Frozen" attributes="PEAK_KVA_FROZEN"/>
         <pointInfo name="Peak kVA Lagging"/>
         <pointInfo name="Peak kVA Lagging Rate A"/>
         <pointInfo name="Peak kVA Lagging Rate B"/>
@@ -97,6 +102,11 @@
         <pointInfo name="Peak kW (Rate B kW)" attributes="PEAK_DEMAND_RATE_B"/>
         <pointInfo name="Peak kW (Rate C kW)" attributes="PEAK_DEMAND_RATE_C"/>
         <pointInfo name="Peak kW (Rate D kW)" attributes="PEAK_DEMAND_RATE_D"/>
+        <pointInfo name="Peak kW Frozen" attributes="PEAK_DEMAND_FROZEN"/>
+        <pointInfo name="Peak kW Frozen (Rate A kW)" attributes="PEAK_DEMAND_FROZEN_RATE_A"/>
+        <pointInfo name="Peak kW Frozen (Rate B kW)" attributes="PEAK_DEMAND_FROZEN_RATE_B"/>
+        <pointInfo name="Peak kW Frozen (Rate C kW)" attributes="PEAK_DEMAND_FROZEN_RATE_C"/>
+        <pointInfo name="Peak kW Frozen (Rate D kW)" attributes="PEAK_DEMAND_FROZEN_RATE_D"/>
         <pointInfo name="Phase Angle Displacement" attributes="PHASE_ANGLE_DISPLACEMENT"/>
         <pointInfo name="Phase Loss" attributes="PHASE_LOSS"/>
         <pointInfo name="Polarity Cross-phase and Energy Flow Diagnostic" attributes="POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC"/>

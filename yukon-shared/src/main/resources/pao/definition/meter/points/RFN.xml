@@ -1856,6 +1856,36 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVAR"/>
         <decimalplaces value="3"/>
     </point>
+    <point offset="382" type="Analog">
+        <name>Peak kVA Frozen</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="383" type="Analog">
+        <name>Delivered Peak kVA Frozen (Rate A kVA)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="384" type="Analog">
+        <name>Delivered Peak kVA Frozen (Rate B kVA)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="385" type="Analog">
+        <name>Delivered Peak kVA Frozen (Rate C kVA)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="386" type="Analog">
+        <name>Delivered Peak kVA Frozen (Rate D kVA)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="0" type="CalcAnalog">
         <name>Total Outage Count</name>

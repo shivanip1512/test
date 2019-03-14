@@ -681,6 +681,8 @@ Itron Sentinel:
     - Peak Volt-amperes Delivered:                                    { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max                             ], Models: *_1234, Itron name: "Max Volt-amperes Delivered" }
     - Coincident Cumulative Delivered Volt-amperes:                   { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *Coin1, *Cuml              ], Models: *_1234, Mapped: false, Itron name: "Cumulative Volt-amperes Delivered" }
     - Coincident Continuous Cumulative Delivered Volt-amperes:        { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *Coin2, *Cont              ], Models: *_1234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Delivered" }
+    - Frozen Peak Delivered Volt-amperes:                             { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *Prev                      ], Models: *__234, Itron name: "Previous Delivered Volt-amperes" }
+    - Time of Frozen Peak Delivered Volt-amperes:                     { Unit: *s,     Modifiers: [ *Coin1, *Prev                              ], Models: *__234}
     - Peak Volt-amperes Lagging:                                      { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max                        ], Models: *_1234, Itron name: "Max Volt-amperes Lagging" }
     - Coincident Cumulative Volt-ampers Lagging:                      { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *Coin1, *Cuml         ], Models: *_1234, Mapped: false, Itron name: "Cumulative Volt-amperes Lagging Delivered" }
     - Coincident Continuous Cumulative Volt-amperes Lagging:          { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *Coin2, *Cont         ], Models: *_1234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Lagging Delivered" }
@@ -693,6 +695,8 @@ Itron Sentinel:
     - Coincident Power Factor:                                        { Unit: *PF,    Modifiers: [ *Coin4                                     ], Models: *_1234, Itron name: "PF at Max Watts Delivered" }
     - Coincident Var Quadrant 1:                                      { Unit: *Var,   Modifiers: [ *Q1, *Coin5                                ], Models: *_1234, Mapped: false, Itron name: "VAR Q1 at Max Watts Delivered" }
     - Coincident Var Delivered:                                       { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Coin6                           ], Models: *_1234, Mapped: false, Itron name: "VAR Delivered at Max Watts Delivered" }
+    - Frozen Peak Delivered Demand:                                   { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *Prev                      ], Models: *_1234, Itron name: "Previous Delivered Watt" }
+    - Time of Frozen Peak Delivered Demand:                           { Unit: *s,     Modifiers: [ *Coin1, *Prev                              ], Models: *_1234}
     - Peak Received Demand:                                           { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max                             ], Models: *_1234, Itron name: "Max Watts Received" }
     - Coincident Time of Peak Received Demand:                        { Unit: *s,     Modifiers: [ *Coin1                                     ], Models: *_1234, Itron name: "Time of Max Watts Received" }
     - Coincident Cumulative Received Demand:                          { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *Coin2, *Cuml              ], Models: *_1234, Mapped: false, Itron name: "Cumulative Watts Received" }
@@ -714,6 +718,8 @@ Itron Sentinel:
     - Peak Volt-amperes Delivered Rate A:                             { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateA                     ], Models: *_1234, Itron name: "Max Volt-amperes Delivered Rate A" }
     - Coincident Cumulative Delivered Volt-amperes Rate A:            { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateA, *Coin1, *Cuml      ], Models: *_1234, Mapped: false, Itron name: "Cumulative Volt-amperes Delivered Rate A" }
     - Coincident Continuous Cumulative Delivered Volt-amperes Rate A: { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateA, *Coin2, *Cont      ], Models: *_1234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Delivered Rate A" }
+    - Frozen Peak Delivered Volt-amperes Rate A:                      { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateA, *Prev              ], Models: *__234, Itron name: "Previous Delivered Volt-amperes" }
+    - Time of Frozen Peak Delivered Volt-amperes Rate A:              { Unit: *s,     Modifiers: [ *Coin1, *RateA, *Prev                      ], Models: *__234}
     - Peak Volt-amperes Lagging Rate A:                               { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA                ], Models: *_1234, Itron name: "Max Volt-amperes Lagging Rate A" }
     - Coincident Cumulative Volt-ampers Lagging Rate A:               { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA, *Coin1, *Cuml ], Models: *_1234, Mapped: false, Itron name: "Cumulative Volt-amperes Lagging Delivered Rate A" }
     - Coincident Continuous Cumulative Volt-amperes Lagging Rate A:   { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateA, *Coin2, *Cont ], Models: *_1234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Lagging Delivered Rate A" }
@@ -726,6 +732,8 @@ Itron Sentinel:
     - Coincident Power Factor Rate A:                                 { Unit: *PF,    Modifiers: [ *RateA, *Coin4                             ], Models: *_1234, Mapped: false, Itron name: "PF at Max Watts Delivered Rate A" }
     - Coincident Var Quadrant 1 Rate A:                               { Unit: *Var,   Modifiers: [ *Q1, *RateA, *Coin5                        ], Models: *_1234, Mapped: false, Itron name: "VAR Q1 at Max Watts Delivered Rate A" }
     - Coincident Var Delivered Rate A:                                { Unit: *Var,   Modifiers: [ *Q1, *Q2, *RateA, *Coin6                   ], Models: *_1234, Mapped: false, Itron name: "VAR Delivered at Max Watts Delivered Rate A" }
+    - Frozen Peak Delivered Demand Rate A:                            { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateA, *Prev              ], Models: *_1234, Itron name: "Previous Delivered Watt" }
+    - Time of Frozen Peak Delivered Demand Rate A:                    { Unit: *s,     Modifiers: [ *Coin1, *RateA, *Prev                      ], Models: *_1234}
     - Peak Received Demand Rate A:                                    { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateA                     ], Models: *_1234, Mapped: false, Itron name: "Max Watts Received Rate A" }
     - Coincident Time of Peak Received Demand Rate A:                 { Unit: *s,     Modifiers: [ *Coin1, *RateA                             ], Models: *_1234, Itron name: "Time of Max Watts Received Rate A" }
     - Coincident Cumulative Received Demand Rate A:                   { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *Coin2, *Cuml, *RateA      ], Models: *_1234, Mapped: false, Itron name: "Cumulative Watts Received Rate A" }
@@ -747,6 +755,8 @@ Itron Sentinel:
     - Peak Volt-amperes Delivered Rate B:                             { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateB                     ], Models: *_1234, Itron name: "Max Volt-amperes Delivered Rate B" }
     - Coincident Cumulative Delivered Volt-amperes Rate B:            { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateB, *Coin1, *Cuml      ], Models: *_1234, Mapped: false, Itron name: "Cumulative Volt-amperes Delivered Rate B" }
     - Coincident Continuous Cumulative Delivered Volt-amperes Rate B: { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateB, *Coin2, *Cont      ], Models: *_1234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Delivered Rate B" }
+    - Frozen Peak Delivered Volt-amperes Rate B:                      { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateB, *Prev              ], Models: *__234, Itron name: "Previous Delivered Volt-amperes" }
+    - Time of Frozen Peak Delivered Volt-amperes Rate B:              { Unit: *s,     Modifiers: [ *Coin1, *RateB, *Prev                      ], Models: *__234}
     - Peak Volt-amperes Lagging Rate B:                               { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB                ], Models: *_1234, Itron name: "Max Volt-amperes Lagging Rate B" }
     - Coincident Cumulative Volt-ampers Lagging Rate B:               { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB, *Coin1, *Cuml ], Models: *_1234, Mapped: false, Itron name: "Cumulative Volt-amperes Lagging Delivered Rate B" }
     - Coincident Continuous Cumulative Volt-amperes Lagging Rate B:   { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateB, *Coin2, *Cont ], Models: *_1234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Lagging Delivered Rate B" }
@@ -759,6 +769,8 @@ Itron Sentinel:
     - Coincident Power Factor Rate B:                                 { Unit: *PF,    Modifiers: [ *RateB, *Coin4                             ], Models: *_1234, Mapped: false, Itron name: "PF at Max Watts Delivered Rate B" }
     - Coincident Var Quadrant 1 Rate B:                               { Unit: *Var,   Modifiers: [ *Q1, *RateB, *Coin5                        ], Models: *_1234, Mapped: false, Itron name: "VAR Q1 at Max Watts Delivered Rate B" }
     - Coincident Var Delivered Rate B:                                { Unit: *Var,   Modifiers: [ *Q1, *Q2, *RateB, *Coin6                   ], Models: *_1234, Mapped: false, Itron name: "VAR Delivered at Max Watts Delivered Rate B" }
+    - Frozen Peak Delivered Demand Rate B:                            { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateB, *Prev              ], Models: *_1234, Itron name: "Previous Delivered Watt" }
+    - Time of Frozen Peak Delivered Demand Rate B:                    { Unit: *s,     Modifiers: [ *Coin1, *RateB, *Prev                      ], Models: *_1234}
     - Peak Received Demand Rate B:                                    { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateB                     ], Models: *_1234, Mapped: false, Itron name: "Max Watts Received Rate B" }
     - Coincident Time of Peak Received Demand Rate B:                 { Unit: *s,     Modifiers: [ *Coin1, *RateB                             ], Models: *_1234, Itron name: "Time of Max Watts Received Rate B" }
     - Coincident Cumulative Received Demand Rate B:                   { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *Coin2, *Cuml, *RateB      ], Models: *_1234, Mapped: false, Itron name: "Cumulative Watts Received Rate B" }
@@ -780,6 +792,8 @@ Itron Sentinel:
     - Peak Volt-amperes Delivered Rate C:                             { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateC                     ], Models: *_1234, Itron name: "Max Volt-amperes Delivered Rate C" }
     - Coincident Cumulative Delivered Volt-amperes Rate C:            { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateC, *Coin1, *Cuml      ], Models: *_1234, Mapped: false, Itron name: "Cumulative Volt-amperes Delivered Rate C" }
     - Coincident Continuous Cumulative Delivered Volt-amperes Rate C: { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateC, *Coin2, *Cont      ], Models: *_1234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Delivered Rate C" }
+    - Frozen Peak Delivered Volt-amperes Rate C:                      { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateC, *Prev              ], Models: *__234, Itron name: "Previous Delivered Volt-amperes" }
+    - Time of Frozen Peak Delivered Volt-amperes Rate C:              { Unit: *s,     Modifiers: [ *Coin1, *RateC, *Prev                      ], Models: *__234}
     - Peak Volt-amperes Lagging Rate C:                               { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC                ], Models: *_1234, Itron name: "Max Volt-amperes Lagging Rate C" }
     - Coincident Cumulative Volt-ampers Lagging Rate C:               { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC, *Coin1, *Cuml ], Models: *_1234, Mapped: false, Itron name: "Cumulative Volt-amperes Lagging Delivered Rate C" }
     - Coincident Continuous Cumulative Volt-amperes Lagging Rate C:   { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateC, *Coin2, *Cont ], Models: *_1234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Lagging Delivered Rate C" }
@@ -792,6 +806,8 @@ Itron Sentinel:
     - Coincident Power Factor Rate C:                                 { Unit: *PF,    Modifiers: [ *RateC, *Coin4                             ], Models: *_1234, Mapped: false, Itron name: "PF at Max Watts Delivered Rate C" }
     - Coincident Var Quadrant 1 Rate C:                               { Unit: *Var,   Modifiers: [ *Q1, *RateC, *Coin5                        ], Models: *_1234, Mapped: false, Itron name: "VAR Q1 at Max Watts Delivered Rate C" }
     - Coincident Var Delivered Rate C:                                { Unit: *Var,   Modifiers: [ *Q1, *Q2, *RateC, *Coin6                   ], Models: *_1234, Mapped: false, Itron name: "VAR Delivered at Max Watts Delivered Rate C" }
+    - Frozen Peak Delivered Demand Rate C:                            { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateC, *Prev              ], Models: *_1234, Itron name: "Previous Delivered Watt" }
+    - Time of Frozen Peak Delivered Demand Rate C:                    { Unit: *s,     Modifiers: [ *Coin1, *RateC, *Prev                      ], Models: *_1234}
     - Peak Received Demand Rate C:                                    { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateC                     ], Models: *_1234, Mapped: false, Itron name: "Max Watts Received Rate C" }
     - Coincident Time of Peak Received Demand Rate C:                 { Unit: *s,     Modifiers: [ *Coin1, *RateC                             ], Models: *_1234, Itron name: "Time of Max Watts Received Rate C" }
     - Coincident Cumulative Received Demand Rate C:                   { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *Coin2, *Cuml, *RateC      ], Models: *_1234, Mapped: false, Itron name: "Cumulative Watts Received Rate C" }
@@ -813,6 +829,8 @@ Itron Sentinel:
     - Peak Volt-amperes Delivered Rate D:                             { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateD                     ], Models: *_1234, Itron name: "Max Volt-amperes Delivered Rate D" }
     - Coincident Cumulative Delivered Volt-amperes Rate D:            { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateD, *Coin1, *Cuml      ], Models: *_1234, Mapped: false, Itron name: "Cumulative Volt-amperes Delivered Rate D" }
     - Coincident Continuous Cumulative Delivered Volt-amperes Rate D: { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateD, *Coin2, *Cont      ], Models: *_1234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Delivered Rate D" }
+    - Frozen Peak Delivered Volt-amperes Rate D:                      { Unit: *VA,    Modifiers: [ *Q1, *Q4, *Max, *RateD, *Prev              ], Models: *__234, Itron name: "Previous Delivered Volt-amperes" }
+    - Time of Frozen Peak Delivered Volt-amperes Rate D:              { Unit: *s,     Modifiers: [ *Coin1, *RateD, *Prev                      ], Models: *__234}
     - Peak Volt-amperes Lagging Rate D:                               { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD                ], Models: *_1234, Itron name: "Max Volt-amperes Lagging Rate D" }
     - Coincident Cumulative Volt-ampers Lagging Rate D:               { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD, *Coin1, *Cuml ], Models: *_1234, Mapped: false, Itron name: "Cumulative Volt-amperes Lagging Delivered Rate D" }
     - Coincident Continuous Cumulative Volt-amperes Lagging Rate D:   { Unit: *VA,    Modifiers: [ *Q1, *Q2, *Q4, *Max, *RateD, *Coin2, *Cont ], Models: *_1234, Mapped: false, Itron name: "Continuous Cumulative Volt-amperes Lagging Delivered Rate D" }
@@ -825,6 +843,8 @@ Itron Sentinel:
     - Coincident Power Factor Rate D:                                 { Unit: *PF,    Modifiers: [ *RateD, *Coin4                             ], Models: *_1234, Mapped: false, Itron name: "PF at Max Watts Delivered Rate D" }
     - Coincident Var Quadrant 1 Rate D:                               { Unit: *Var,   Modifiers: [ *Q1, *RateD, *Coin5                        ], Models: *_1234, Mapped: false, Itron name: "VAR Q1 at Max Watts Delivered Rate D" }
     - Coincident Var Delivered Rate D:                                { Unit: *Var,   Modifiers: [ *Q1, *Q2, *RateD, *Coin6                   ], Models: *_1234, Mapped: false, Itron name: "VAR Delivered at Max Watts Delivered Rate D" }
+    - Frozen Peak Delivered Demand Rate D:                            { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateD, *Prev              ], Models: *_1234, Itron name: "Previous Delivered Watt" }
+    - Time of Frozen Peak Delivered Demand Rate D:                    { Unit: *s,     Modifiers: [ *Coin1, *RateD, *Prev                      ], Models: *_1234}
     - Peak Received Demand Rate D:                                    { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *RateD                     ], Models: *_1234, Mapped: false, Itron name: "Max Watts Received Rate D" }
     - Coincident Time of Peak Received Demand Rate D:                 { Unit: *s,     Modifiers: [ *Coin1, *RateD                             ], Models: *_1234, Itron name: "Time of Max Watts Received Rate D" }
     - Coincident Cumulative Received Demand Rate D:                   { Unit: *W,     Modifiers: [ *Q2, *Q3, *Max, *Coin2, *Cuml, *RateD      ], Models: *_1234, Mapped: false, Itron name: "Cumulative Watts Received Rate D" }

@@ -2620,6 +2620,17 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
+        <point name="Peak kW Frozen"> 
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
         <point name="Received Peak kW">
             <uom>W</uom>
             <multiplier value=".001"/>
@@ -2701,6 +2712,18 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
+        <point name="Peak kW Frozen (Rate A kW)">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
         <point name="Rate B kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -2755,6 +2778,18 @@
                 <modifier>TOU Rate B</modifier>
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Peak kW Frozen (Rate B kW)">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Previous</modifier>
             </modifiers>
         </point>
         <point name="Rate C kWh">
@@ -2813,6 +2848,18 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
+        <point name="Peak kW Frozen (Rate C kW)">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
         <point name="Rate D kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -2867,6 +2914,18 @@
                 <modifier>TOU Rate D</modifier>
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Peak kW Frozen (Rate D kW)">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Previous</modifier>
             </modifiers>
         </point>
 
@@ -3218,6 +3277,65 @@
         <paoType value="RFN430SL3"/>
         <paoType value="RFN430SL4"/>
         
+        <point name="Peak kVA Frozen">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Peak kVA Frozen (Rate A kVA)">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Previous</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Peak kVA Frozen (Rate B kVA)">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Previous</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Peak kVA Frozen (Rate C kVA)">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Previous</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Peak kVA Frozen (Rate D kVA)">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Previous</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+        </point>
         <point name="Delivered kVArh"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>

@@ -422,6 +422,11 @@
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVARH_RATE_D">Sum kVArh Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA">Peak kVA</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_COIN">Peak kVA Coincidental</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_FROZEN">Peak kVA Frozen</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_FROZEN_RATE_A">Peak kVA Frozen Rate A</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_FROZEN_RATE_B">Peak kVA Frozen Rate B</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_FROZEN_RATE_C">Peak kVA Frozen Rate C</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_FROZEN_RATE_D">Peak kVA Frozen Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_RATE_A">Peak kVA Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_RATE_B">Peak kVA Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_RATE_C">Peak kVA Rate C</entry>
