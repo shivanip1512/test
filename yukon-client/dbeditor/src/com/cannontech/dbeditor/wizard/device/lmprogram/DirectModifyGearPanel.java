@@ -302,6 +302,7 @@ private JComboBox<GearControlMethod> getJComboBoxGearType() {
                 ivjJComboBoxGearType.removeItem(GearControlMethod.HoneywellCycle);
                 ivjJComboBoxGearType.removeItem(GearControlMethod.NestCriticalCycle);
                 ivjJComboBoxGearType.removeItem(GearControlMethod.NestStandardCycle);
+                ivjJComboBoxGearType.removeItem(GearControlMethod.ItronCycle);
             }
 	            
         } catch (java.lang.Throwable ivjExc) {
