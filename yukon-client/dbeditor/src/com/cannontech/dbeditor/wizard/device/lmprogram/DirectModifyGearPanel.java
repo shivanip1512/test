@@ -292,17 +292,19 @@ private JComboBox<GearControlMethod> getJComboBoxGearType() {
                 ivjJComboBoxGearType.addItem(GearControlMethod.NestCriticalCycle);
                 ivjJComboBoxGearType.addItem(GearControlMethod.NestStandardCycle);
             } else {
-                for(GearControlMethod gearControlMethod : GearControlMethod.values()) {
-                    ivjJComboBoxGearType.addItem(gearControlMethod);
-                }
-                // Remove SepCycle and SepTempOffset from the combobox for non SEP programs.
-                ivjJComboBoxGearType.removeItem(GearControlMethod.SepCycle);
-                ivjJComboBoxGearType.removeItem(GearControlMethod.SepTemperatureOffset);
-                ivjJComboBoxGearType.removeItem(GearControlMethod.EcobeeCycle);
-                ivjJComboBoxGearType.removeItem(GearControlMethod.HoneywellCycle);
-                ivjJComboBoxGearType.removeItem(GearControlMethod.NestCriticalCycle);
-                ivjJComboBoxGearType.removeItem(GearControlMethod.NestStandardCycle);
-                ivjJComboBoxGearType.removeItem(GearControlMethod.ItronCycle);
+                // programType = LM_CURTAIL_PROGRAM, LM_DIRECT_PROGRAM, LM_ENERGY_EXCHANGE_PROGRAM
+                ivjJComboBoxGearType.addItem(GearControlMethod.TimeRefresh);
+                ivjJComboBoxGearType.addItem(GearControlMethod.SmartCycle);
+                ivjJComboBoxGearType.addItem(GearControlMethod.MasterCycle);
+                ivjJComboBoxGearType.addItem(GearControlMethod.Rotation);
+                ivjJComboBoxGearType.addItem(GearControlMethod.Latching);
+                ivjJComboBoxGearType.addItem(GearControlMethod.TrueCycle);
+                ivjJComboBoxGearType.addItem(GearControlMethod.MagnitudeCycle);
+                ivjJComboBoxGearType.addItem(GearControlMethod.TargetCycle);
+                ivjJComboBoxGearType.addItem(GearControlMethod.ThermostatRamping);
+                ivjJComboBoxGearType.addItem(GearControlMethod.SimpleThermostatRamping);
+                ivjJComboBoxGearType.addItem(GearControlMethod.BeatThePeak);
+                ivjJComboBoxGearType.addItem(GearControlMethod.NoControl);
             }
 	            
         } catch (java.lang.Throwable ivjExc) {
