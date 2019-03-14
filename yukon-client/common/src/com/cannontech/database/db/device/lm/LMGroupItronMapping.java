@@ -25,6 +25,7 @@ public class LMGroupItronMapping extends com.cannontech.database.db.DBPersistent
         delete(TABLE_NAME, CONSTRAINT_COLUMNS[0], yukonGroupId);
     }
     
+    @Override
     public void retrieve() throws java.sql.SQLException {
         Object constraintValues[] = { yukonGroupId };
         Object results[] = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
