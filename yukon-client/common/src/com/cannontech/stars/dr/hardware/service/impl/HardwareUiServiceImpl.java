@@ -257,7 +257,11 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 hardware.setMacAddress(honeywellWifiThermostat.getMacAddress());
                 hardware.setDeviceVendorUserId(honeywellWifiThermostat.getDeviceVendorUserId());
             } else if (hardwareType.isItron()) {
-                hardware.setMacAddress(deviceDao.getDeviceMacAddress(deviceId));
+                try {
+                    hardware.setMacAddress(deviceDao.getDeviceMacAddress(deviceId));
+                } catch (Exception e) {
+                    //ignore if this method is called before the mac address was added to the table
+                }
             }
             hardwareTypeExtensionService.retrieveDevice(hardware);
             
