@@ -35,27 +35,9 @@
                         
                         <%-- EDIT NAME --%>
                         <cti:msg2 var="editGroupNameText" key=".editGroupNameText" />
-                        <cti:msg2 var="newGroupNameText" key=".newGroupNameText" />
-                        <cti:msg2 var="changeNameButtonText" key=".newGroupNameSaveText" />
-                        <a title="Click to edit group name" href="javascript:void(0);" class="js-edit-grp-name">${editGroupNameText}</a>
-                        <div id="editGroupNamePopup" title="${editGroupNameText}" class="groupEditorPopup dn">
-                            <form id="editGroupNameForm" method="post" action="<cti:url value="/group/editor/updateGroupName"/>" >
-                                <div class="js-invalid-group-name error dn">${invalidGroupNameError}</div>
-                                <cti:csrfToken/>    
-                                <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
-                                <tags:nameValueContainer>
-                                    <tags:nameValue name="${newGroupNameText}">
-                                        <input id="newGroupName" name="newGroupName" type="text" value="${fn:escapeXml(group.name)}" maxlength="60"/>
-                                    </tags:nameValue>
-                                </tags:nameValueContainer>
-                                <div class="action-area">
-                                    <cti:button id="editGroupNameSaveButton" 
-                                            label="${changeNameButtonText}" 
-                                            onclick="yukon.tools.group.editor.checkAndSubmitNewName('newGroupName', 'editGroupNameForm', 'editGroupNameSaveButton');"
-                                            classes="primary action"/>
-                                </div>
-                            </form>
-                        </div>
+                        <cti:msg2 var="editGroupTitle" key=".editGroup.title" />
+                        <a title="${editGroupTitle}" href="javascript:void(0);" class="js-edit-grp-name" 
+                            data-group-full-name="${fn:escapeXml(group.fullName)}" data-group-name="${fn:escapeXml(group.name)}">${editGroupNameText}</a>
                         
                         &nbsp;|&nbsp;
                         <%-- REMOVE --%>
@@ -126,39 +108,8 @@
                         <c:choose>
                             <c:when test="${group.modifiable}">
                                 <cti:msg2 var="addSubgroupLinkTitle" key=".addSubgroupLinkTitle" />
-                                <cti:msg2 var="subgroupNameLabel" key=".subgroupNameLabel" />
-                                <cti:msg2 var="subgroupTypeLabel" key=".subgroupTypeLabel" />
-                                <cti:msg2 var="subgroupTypeBasicLabel" key=".subgroupType.basicLabel" />
-                                <cti:msg2 var="subgroupTypeComposedLabel" key=".subgroupType.composedLabel" />
-                                <cti:msg2 var="subgroupEmptyGroupTitle" key=".subgroup.emptyGroupTitle" />
-                                <cti:msg2 var="subgroupComposedGroupTitle" key=".subgroup.composedGroupTitle" />
-                                <cti:msg2 var="subgroupNameSaveText" key=".subgroupNameSaveText" />
-                                
-                                <a title="${addSubgroupLinkTitle}" class="js-add-sub-grp" href="javascript:void(0);">${addSubgroupText}</a>
-                                <div id="addSubGroupPopup" title="${addSubgroupText}" class="groupEditorPopup dn">
-                                    <form id="addSubGroupForm" method="post" action="<cti:url value="/group/editor/addChild"/>">
-                                        <cti:csrfToken/>
-                                        <div class="js-invalid-group-name error dn">${invalidGroupNameError}</div>
-                                        <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
-                                        <tags:nameValueContainer>
-                                            <tags:nameValue name="${subgroupNameLabel}" nameColumnWidth="120px">
-                                                <input id="childGroupName" name="childGroupName" type="text" maxlength="60"/>
-                                            </tags:nameValue>
-                                            <tags:nameValue name="${subgroupTypeLabel}">
-                                                <select name="subGroupType">
-                                                    <option value="STATIC" title="${subgroupEmptyGroupTitle}">${subgroupTypeBasicLabel}</option>
-                                                    <option value="COMPOSED" title="${subgroupComposedGroupTitle}">${subgroupTypeComposedLabel}</option>
-                                                </select>
-                                            </tags:nameValue>
-                                        </tags:nameValueContainer>
-                                        <div class="action-area">
-                                            <cti:button id="addSubGroupSaveButton" 
-                                                label="${subgroupNameSaveText}" 
-                                                onclick="yukon.tools.group.editor.checkAndSubmitNewName('childGroupName', 'addSubGroupForm', 'addSubGroupSaveButton');"
-                                                classes="primary action"/>
-                                        </div>
-                                    </form>
-                                </div>
+                                <a title="${addSubgroupLinkTitle}" class="js-add-sub-grp" href="javascript:void(0);" 
+                                    data-group-name="${fn:escapeXml(group.fullName)}">${addSubgroupText}</a>
                             </c:when>
                             <c:otherwise>
                                 <cti:msg2 var="cannotAddSubgroupText" key=".cannotAddSubgroupText"/>
@@ -358,8 +309,8 @@
                             <c:if test="${childDeviceCount > 0}">
                                 <div class="action-area">
                                     <cti:msg2 var="showDevicesLimitText" key=".showDevicesLimitText" arguments="${maxGetDevicesSize}"/>
-                                    <cti:msg2 var="showDeviceslabel" key=".showDeviceslabel"/>
-                                    <button id="showDevicesButton" onclick="yukon.tools.group.editor.showDevices('${group.fullName}')" value="${showDeviceslabel}" title="${showDevicesLimitText}"><span class="b-label">${showDeviceslabel}</span></button>
+                                    <cti:button id="showDevicesButton" nameKey="showDevicesButton" classes="js-show-devices" 
+                                        data-group-name="${fn:escapeXml(group.fullName)}" title="${showDevicesLimitText}"/>
                                 </div>
                             </c:if>
                         </c:when>
