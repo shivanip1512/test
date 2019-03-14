@@ -150,7 +150,7 @@ public class EcobeeCommunicationServiceHelper {
         
         String decryptedFileName = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
         log.info("Encrypted file : " + url.substring(url.lastIndexOf('/') + 1, url.length())
-            + "received for Job ID : " + decryptedFileName.substring(0, decryptedFileName.indexOf("-")));
+            + " received for Job ID : " + decryptedFileName.substring(0, decryptedFileName.indexOf("-")));
         return decryptedFileName;
     }
 

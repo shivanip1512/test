@@ -384,12 +384,12 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                     }
 
                     if (reportJob.getStatus() == EcobeeJobStatus.ERROR) {
-                        throw new EcobeeCommunicationException("Recieved error : " + reportJob.getMessage()
+                        throw new EcobeeCommunicationException("Received error : " + reportJob.getMessage()
                             + " in response with jobId " + reportJob.getJobId());
                     }
                 }
             } else {
-                throw new EcobeeCommunicationException("Recieved error message : " + response.getStatus().getMessage()
+                throw new EcobeeCommunicationException("Received error message : " + response.getStatus().getMessage()
                     + " with code " + response.getStatus().getCode() + " in response while creating job.");
             }
 
@@ -476,7 +476,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
                 if (jobStatusResponse.getStatus().getCode() != EcobeeStatusCode.SUCCESS.getCode()) {
                     completionFuture.completeExceptionally(
-                        new EcobeeCommunicationException("Recieved error message : " + jobStatusResponse.getStatus().getMessage()
+                        new EcobeeCommunicationException("Received error message : " + jobStatusResponse.getStatus().getMessage()
                             + " with code " + jobStatusResponse.getStatus().getCode()
                             + " in response while polling for runtime report job."));
                 }
@@ -484,7 +484,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                 if (jobStatusResponse != null && CollectionUtils.isNotEmpty(jobStatusResponse.getJobs())) {
                     EcobeeReportJob reportJob = jobStatusResponse.getJobs().get(0);
                     if (reportJob != null) {
-                        log.info("Response : RunTime Report Job recieved for JobId: " + jobId + " with status: "
+                        log.info("Response : RunTime Report Job received for JobId: " + jobId + " with status: "
                             + reportJob.getStatus().getEcobeeStatusString());
                         if (reportJob.getStatus() == EcobeeJobStatus.COMPLETED || reportJob.getStatus() == EcobeeJobStatus.ERROR) {
                             completionFuture.complete(reportJob);
@@ -494,8 +494,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                     completionFuture.completeExceptionally(new EcobeeCommunicationException("No job reported in response"));
                 }
             } catch (Throwable e) {
-                log.error("Recieved error while polling for runtime report job " + e);
-                completionFuture.completeExceptionally(new EcobeeCommunicationException("Recieved error while polling for runtime report job."));
+                log.error("Received error while polling for runtime report job " + e);
+                completionFuture.completeExceptionally(new EcobeeCommunicationException("Received error while polling for runtime report job."));
             }
          // provide 2 min delay to check the status of Job
         }, 2, MINUTES_TO_WAIT_TO_START_POLLING, TimeUnit.MINUTES); 

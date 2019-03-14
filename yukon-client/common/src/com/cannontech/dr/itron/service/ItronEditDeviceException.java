@@ -8,7 +8,7 @@ public class ItronEditDeviceException extends ItronCommunicationException {
     private EditHANDeviceResponse response;    
     
     public ItronEditDeviceException(EditHANDeviceResponse response) {
-        super("Error recieved from Itron:" + XmlUtils.getPrettyXml(response));
+        super("Error received from Itron:" + XmlUtils.getPrettyXml(response));
         this.response = response;
     }
 
