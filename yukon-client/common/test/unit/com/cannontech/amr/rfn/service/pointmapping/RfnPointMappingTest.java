@@ -36,7 +36,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.common.stream.Try;
-import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -285,670 +285,672 @@ public class RfnPointMappingTest {
     }
     
     private static Multimap<PaoType, String> getMissingRfnPointMappingPoints() {
-        return ImmutableMultimap.<PaoType, String>builder()
-                .put(PaoType.RFN420FD, "Amps Phase B")
-                .put(PaoType.RFN420FD, "Amps Phase C")
-                .put(PaoType.RFN420FD, "Avg Volts Phase B")
-                .put(PaoType.RFN420FD, "Avg Volts Phase C")
-                .put(PaoType.RFN420FD, "Max Volts Phase B")
-                .put(PaoType.RFN420FD, "Max Volts Phase C")
-                .put(PaoType.RFN420FD, "Min Volts Phase B")
-                .put(PaoType.RFN420FD, "Min Volts Phase C")
-                .put(PaoType.RFN420FD, "Power Factor Degrees Phase B")
-                .put(PaoType.RFN420FD, "Power Factor Degrees Phase C")
-                .put(PaoType.RFN420FD, "Volt Degrees Phase B")
-                .put(PaoType.RFN420FD, "Volt Degrees Phase C")
-                .put(PaoType.RFN420FD, "Volts Phase B")
-                .put(PaoType.RFN420FD, "Volts Phase C")
-                
-                .put(PaoType.RFN420FRD, "Amps Phase B")
-                .put(PaoType.RFN420FRD, "Amps Phase C")
-                .put(PaoType.RFN420FRD, "Avg Volts Phase B")
-                .put(PaoType.RFN420FRD, "Avg Volts Phase C")
-                .put(PaoType.RFN420FRD, "Max Volts Phase B")
-                .put(PaoType.RFN420FRD, "Max Volts Phase C")
-                .put(PaoType.RFN420FRD, "Min Volts Phase B")
-                .put(PaoType.RFN420FRD, "Min Volts Phase C")
-                .put(PaoType.RFN420FRD, "Power Factor Degrees Phase B")
-                .put(PaoType.RFN420FRD, "Power Factor Degrees Phase C")
-                .put(PaoType.RFN420FRD, "Volt Degrees Phase B")
-                .put(PaoType.RFN420FRD, "Volt Degrees Phase C")
-                .put(PaoType.RFN420FRD, "Volts Phase B")
-                .put(PaoType.RFN420FRD, "Volts Phase C")
-                
-                .put(PaoType.RFN420FRX, "Amps Phase B")
-                .put(PaoType.RFN420FRX, "Amps Phase C")
-                .put(PaoType.RFN420FRX, "Avg Volts Phase B")
-                .put(PaoType.RFN420FRX, "Avg Volts Phase C")
-                .put(PaoType.RFN420FRX, "Max Volts Phase B")
-                .put(PaoType.RFN420FRX, "Max Volts Phase C")
-                .put(PaoType.RFN420FRX, "Min Volts Phase B")
-                .put(PaoType.RFN420FRX, "Min Volts Phase C")
-                .put(PaoType.RFN420FRX, "Power Factor Degrees Phase B")
-                .put(PaoType.RFN420FRX, "Power Factor Degrees Phase C")
-                .put(PaoType.RFN420FRX, "Volt Degrees Phase B")
-                .put(PaoType.RFN420FRX, "Volt Degrees Phase C")
-                .put(PaoType.RFN420FRX, "Volts Phase B")
-                .put(PaoType.RFN420FRX, "Volts Phase C")
-                
-                .put(PaoType.RFN420FX, "Amps Phase B")
-                .put(PaoType.RFN420FX, "Amps Phase C")
-                .put(PaoType.RFN420FX, "Avg Volts Phase B")
-                .put(PaoType.RFN420FX, "Avg Volts Phase C")
-                .put(PaoType.RFN420FX, "Max Volts Phase B")
-                .put(PaoType.RFN420FX, "Max Volts Phase C")
-                .put(PaoType.RFN420FX, "Min Volts Phase B")
-                .put(PaoType.RFN420FX, "Min Volts Phase C")
-                .put(PaoType.RFN420FX, "Power Factor Degrees Phase B")
-                .put(PaoType.RFN420FX, "Power Factor Degrees Phase C")
-                .put(PaoType.RFN420FX, "Volt Degrees Phase B")
-                .put(PaoType.RFN420FX, "Volt Degrees Phase C")
-                .put(PaoType.RFN420FX, "Volts Phase B")
-                .put(PaoType.RFN420FX, "Volts Phase C")
-                
-                .put(PaoType.RFN430A3D, "Peak Demand Daily")
-                .put(PaoType.RFN430A3K, "Peak Demand Daily")
-                .put(PaoType.RFN430A3R, "Peak Demand Daily")
-                .put(PaoType.RFN430A3T, "Peak Demand Daily")
-                
-                .put(PaoType.RFN430KV, "Average Delivered Power Factor")
-                .put(PaoType.RFN430KV, "Average Received Power Factor")
-                .put(PaoType.RFN430KV, "Delivered kVA")
-                .put(PaoType.RFN430KV, "Delivered kVAr")
-                .put(PaoType.RFN430KV, "Peak Demand Daily")
-                .put(PaoType.RFN430KV, "Received kVA")
-                .put(PaoType.RFN430KV, "Received kVAr")
-                .put(PaoType.RFN430KV, "Received kW")
-                
-                .put(PaoType.RFN430SL4, "Net Delivered kVARh")
-                .put(PaoType.RFN430SL4, "Net Received kVARh")
-                .put(PaoType.RFN430SL4, "Rate A Net Received kVARh")
-                .put(PaoType.RFN430SL4, "Rate B Net Received kVARh")
-                .put(PaoType.RFN430SL4, "Rate C Net Received kVARh")
-                .put(PaoType.RFN430SL4, "Rate D Net Received kVARh")
-                
-                .put(PaoType.RFN440_2131TD, "Forward Inductive kVARh")
-                .put(PaoType.RFN440_2131TD, "Reverse Inductive kVARh")
-                .put(PaoType.RFN440_2132TD, "Forward Inductive kVARh")
-                .put(PaoType.RFN440_2132TD, "Reverse Inductive kVARh")
-                .put(PaoType.RFN440_2133TD, "Forward Inductive kVARh")
-                .put(PaoType.RFN440_2133TD, "Reverse Inductive kVARh")
-                
-                .put(PaoType.RFN520FAX, "Delivered Peak kVA Frozen")
-                .put(PaoType.RFN520FAX, "Delivered Peak kVA")
-                .put(PaoType.RFN520FAX, "Delivered Peak kVAr Frozen")
-                .put(PaoType.RFN520FAX, "Delivered Peak kVAr")
-                .put(PaoType.RFN520FAX, "Delivered kVAh")
-                .put(PaoType.RFN520FAX, "Delivered kVArh")
-                .put(PaoType.RFN520FAX, "Net kVAh")
-                .put(PaoType.RFN520FAX, "Net kVArh")
-                .put(PaoType.RFN520FAX, "Power Factor Degrees")
-                .put(PaoType.RFN520FAX, "Received kVAh")
-                .put(PaoType.RFN520FAX, "Received kVArh")
-                .put(PaoType.RFN520FAX, "Sum Peak kVA Frozen")
-                .put(PaoType.RFN520FAX, "Sum Peak kVA")
-                .put(PaoType.RFN520FAX, "Sum Peak kVAr Frozen")
-                .put(PaoType.RFN520FAX, "Sum Peak kVAr")
-                .put(PaoType.RFN520FAX, "Sum kVAh")
-                .put(PaoType.RFN520FAX, "Sum kVArh")
-                
-                .put(PaoType.RFN520FAXD, "Delivered Peak kVA Frozen")
-                .put(PaoType.RFN520FAXD, "Delivered Peak kVA")
-                .put(PaoType.RFN520FAXD, "Delivered Peak kVAr Frozen")
-                .put(PaoType.RFN520FAXD, "Delivered Peak kVAr")
-                .put(PaoType.RFN520FAXD, "Delivered kVAh")
-                .put(PaoType.RFN520FAXD, "Delivered kVArh")
-                .put(PaoType.RFN520FAXD, "Net kVAh")
-                .put(PaoType.RFN520FAXD, "Net kVArh")
-                .put(PaoType.RFN520FAXD, "Power Factor Degrees")
-                .put(PaoType.RFN520FAXD, "Received kVAh")
-                .put(PaoType.RFN520FAXD, "Received kVArh")
-                .put(PaoType.RFN520FAXD, "Sum Peak kVA Frozen")
-                .put(PaoType.RFN520FAXD, "Sum Peak kVA")
-                .put(PaoType.RFN520FAXD, "Sum Peak kVAr Frozen")
-                .put(PaoType.RFN520FAXD, "Sum Peak kVAr")
-                .put(PaoType.RFN520FAXD, "Sum kVAh")
-                .put(PaoType.RFN520FAXD, "Sum kVArh")
-                
-                .put(PaoType.RFN520FRX, "Delivered Peak kVA Frozen")
-                .put(PaoType.RFN520FRX, "Delivered Peak kVAr Frozen")
-                .put(PaoType.RFN520FRX, "Power Factor Degrees")
-                .put(PaoType.RFN520FRX, "Sum Peak kVA Frozen")
-                .put(PaoType.RFN520FRX, "Sum Peak kVAr Frozen")
-                
-                .put(PaoType.RFN520FRXD, "Delivered Peak kVA Frozen")
-                .put(PaoType.RFN520FRXD, "Delivered Peak kVAr Frozen")
-                .put(PaoType.RFN520FRXD, "Power Factor Degrees")
-                .put(PaoType.RFN520FRXD, "Sum Peak kVA Frozen")
-                .put(PaoType.RFN520FRXD, "Sum Peak kVAr Frozen")
-                
-                .put(PaoType.RFN530FAX, "Delivered Peak kVA Frozen")
-                .put(PaoType.RFN530FAX, "Delivered Peak kVA")
-                .put(PaoType.RFN530FAX, "Delivered Peak kVAr Frozen")
-                .put(PaoType.RFN530FAX, "Delivered Peak kVAr")
-                .put(PaoType.RFN530FAX, "Delivered kVAh")
-                .put(PaoType.RFN530FAX, "Delivered kVArh")
-                .put(PaoType.RFN530FAX, "Net kVAh")
-                .put(PaoType.RFN530FAX, "Net kVArh")
-                .put(PaoType.RFN530FAX, "Peak Demand Daily")
-                .put(PaoType.RFN530FAX, "Power Factor Degrees Phase A")
-                .put(PaoType.RFN530FAX, "Power Factor Degrees Phase B")
-                .put(PaoType.RFN530FAX, "Power Factor Degrees Phase C")
-                .put(PaoType.RFN530FAX, "Received kVAh")
-                .put(PaoType.RFN530FAX, "Received kVArh")
-                .put(PaoType.RFN530FAX, "Sum Peak kVA Frozen")
-                .put(PaoType.RFN530FAX, "Sum Peak kVA")
-                .put(PaoType.RFN530FAX, "Sum Peak kVAr Frozen")
-                .put(PaoType.RFN530FAX, "Sum Peak kVAr")
-                .put(PaoType.RFN530FAX, "Sum kVAh")
-                .put(PaoType.RFN530FAX, "Sum kVArh")
-                
-                .put(PaoType.RFN530FRX, "Delivered Peak kVA Frozen")
-                .put(PaoType.RFN530FRX, "Delivered Peak kVAr Frozen")
-                .put(PaoType.RFN530FRX, "Peak Demand Daily")
-                .put(PaoType.RFN530FRX, "Power Factor Degrees Phase A")
-                .put(PaoType.RFN530FRX, "Power Factor Degrees Phase B")
-                .put(PaoType.RFN530FRX, "Power Factor Degrees Phase C")
-                .put(PaoType.RFN530FRX, "Sum Peak kVA Frozen")
-                .put(PaoType.RFN530FRX, "Sum Peak kVAr Frozen")
-                
-                .put(PaoType.RFN530S4EAX, "Avg Voltage Phase A")
-                .put(PaoType.RFN530S4EAX, "Avg Voltage Phase B")
-                .put(PaoType.RFN530S4EAX, "Avg Voltage Phase C")
-                .put(PaoType.RFN530S4EAX, "Delivered Peak kVA (Rate A kVA)")
-                .put(PaoType.RFN530S4EAX, "Delivered Peak kVA (Rate B kVA)")
-                .put(PaoType.RFN530S4EAX, "Delivered Peak kVA (Rate C kVA)")
-                .put(PaoType.RFN530S4EAX, "Delivered Peak kVA (Rate D kVA)")
-                .put(PaoType.RFN530S4EAX, "Delivered Peak kVAr (Rate A kVAr)")
-                .put(PaoType.RFN530S4EAX, "Delivered Peak kVAr (Rate B kVAr)")
-                .put(PaoType.RFN530S4EAX, "Delivered Peak kVAr (Rate C kVAr)")
-                .put(PaoType.RFN530S4EAX, "Delivered Peak kVAr (Rate D kVAr)")
-                .put(PaoType.RFN530S4EAX, "Delivered Peak kVAr")
-                .put(PaoType.RFN530S4EAX, "Delivered kVA")
-                .put(PaoType.RFN530S4EAX, "Delivered kVAh (Rate A kVAh)")
-                .put(PaoType.RFN530S4EAX, "Delivered kVAh (Rate B kVAh)")
-                .put(PaoType.RFN530S4EAX, "Delivered kVAh (Rate C kVAh)")
-                .put(PaoType.RFN530S4EAX, "Delivered kVAh (Rate D kVAh)")
-                .put(PaoType.RFN530S4EAX, "Delivered kVAh")
-                .put(PaoType.RFN530S4EAX, "Delivered kVAr")
-                .put(PaoType.RFN530S4EAX, "Delivered kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4EAX, "Delivered kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4EAX, "Delivered kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4EAX, "Delivered kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4EAX, "Delivered kVArh")
-                .put(PaoType.RFN530S4EAX, "Delivered kW")
-                .put(PaoType.RFN530S4EAX, "Delivered kWh")
-                .put(PaoType.RFN530S4EAX, "Max Voltage Phase A")
-                .put(PaoType.RFN530S4EAX, "Max Voltage Phase B")
-                .put(PaoType.RFN530S4EAX, "Max Voltage Phase C")
-                .put(PaoType.RFN530S4EAX, "Min Voltage Phase A")
-                .put(PaoType.RFN530S4EAX, "Min Voltage Phase B")
-                .put(PaoType.RFN530S4EAX, "Min Voltage Phase C")
-                .put(PaoType.RFN530S4EAX, "Net Peak kW (Rate A kW)")
-                .put(PaoType.RFN530S4EAX, "Net Peak kW (Rate B kW)")
-                .put(PaoType.RFN530S4EAX, "Net Peak kW (Rate C kW)")
-                .put(PaoType.RFN530S4EAX, "Net Peak kW (Rate D kW)")
-                .put(PaoType.RFN530S4EAX, "Net Peak kW")
-                .put(PaoType.RFN530S4EAX, "Net kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4EAX, "Net kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4EAX, "Net kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4EAX, "Net kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4EAX, "Net kVArh")
-                .put(PaoType.RFN530S4EAX, "Net kWh (Rate A kWh)")
-                .put(PaoType.RFN530S4EAX, "Net kWh (Rate B kWh)")
-                .put(PaoType.RFN530S4EAX, "Net kWh (Rate C kWh)")
-                .put(PaoType.RFN530S4EAX, "Net kWh (Rate D kWh)")
-                .put(PaoType.RFN530S4EAX, "Peak Demand Daily")
-                .put(PaoType.RFN530S4EAX, "Peak kVA")
-                .put(PaoType.RFN530S4EAX, "Peak kW (Rate A kW)")
-                .put(PaoType.RFN530S4EAX, "Peak kW (Rate B kW)")
-                .put(PaoType.RFN530S4EAX, "Peak kW (Rate C kW)")
-                .put(PaoType.RFN530S4EAX, "Peak kW (Rate D kW)")
-                .put(PaoType.RFN530S4EAX, "Peak kW Frozen (Rate A kW)")
-                .put(PaoType.RFN530S4EAX, "Peak kW Frozen (Rate B kW)")
-                .put(PaoType.RFN530S4EAX, "Peak kW Frozen (Rate C kW)")
-                .put(PaoType.RFN530S4EAX, "Peak kW Frozen (Rate D kW)")
-                .put(PaoType.RFN530S4EAX, "Peak kW Frozen")
-                .put(PaoType.RFN530S4EAX, "Peak kW")
-                .put(PaoType.RFN530S4EAX, "Power Factor Degrees Phase A")
-                .put(PaoType.RFN530S4EAX, "Power Factor Degrees Phase B")
-                .put(PaoType.RFN530S4EAX, "Power Factor Degrees Phase C")
-                .put(PaoType.RFN530S4EAX, "Rate A kWh")
-                .put(PaoType.RFN530S4EAX, "Rate B kWh")
-                .put(PaoType.RFN530S4EAX, "Rate C kWh")
-                .put(PaoType.RFN530S4EAX, "Rate D kWh")
-                .put(PaoType.RFN530S4EAX, "Received Peak kVA (Rate A kVA)")
-                .put(PaoType.RFN530S4EAX, "Received Peak kVA (Rate B kVA)")
-                .put(PaoType.RFN530S4EAX, "Received Peak kVA (Rate C kVA)")
-                .put(PaoType.RFN530S4EAX, "Received Peak kVA (Rate D kVA)")
-                .put(PaoType.RFN530S4EAX, "Received Peak kVA")
-                .put(PaoType.RFN530S4EAX, "Received Peak kVAr (Rate A kVAr)")
-                .put(PaoType.RFN530S4EAX, "Received Peak kVAr (Rate B kVAr)")
-                .put(PaoType.RFN530S4EAX, "Received Peak kVAr (Rate C kVAr)")
-                .put(PaoType.RFN530S4EAX, "Received Peak kVAr (Rate D kVAr)")
-                .put(PaoType.RFN530S4EAX, "Received Peak kVAr")
-                .put(PaoType.RFN530S4EAX, "Received Peak kW (Rate A kW)")
-                .put(PaoType.RFN530S4EAX, "Received Peak kW (Rate B kW)")
-                .put(PaoType.RFN530S4EAX, "Received Peak kW (Rate C kW)")
-                .put(PaoType.RFN530S4EAX, "Received Peak kW (Rate D kW)")
-                .put(PaoType.RFN530S4EAX, "Received Peak kW")
-                .put(PaoType.RFN530S4EAX, "Received kVA")
-                .put(PaoType.RFN530S4EAX, "Received kVAh (Rate A kVAh)")
-                .put(PaoType.RFN530S4EAX, "Received kVAh (Rate B kVAh)")
-                .put(PaoType.RFN530S4EAX, "Received kVAh (Rate C kVAh)")
-                .put(PaoType.RFN530S4EAX, "Received kVAh (Rate D kVAh)")
-                .put(PaoType.RFN530S4EAX, "Received kVAh")
-                .put(PaoType.RFN530S4EAX, "Received kVAr")
-                .put(PaoType.RFN530S4EAX, "Received kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4EAX, "Received kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4EAX, "Received kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4EAX, "Received kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4EAX, "Received kVArh")
-                .put(PaoType.RFN530S4EAX, "Received kW")
-                .put(PaoType.RFN530S4EAX, "Received kWh (Rate A kWh)")
-                .put(PaoType.RFN530S4EAX, "Received kWh (Rate B kWh)")
-                .put(PaoType.RFN530S4EAX, "Received kWh (Rate C kWh)")
-                .put(PaoType.RFN530S4EAX, "Received kWh (Rate D kWh)")
-                .put(PaoType.RFN530S4EAX, "Sum Peak kVA (Rate A kVA)")
-                .put(PaoType.RFN530S4EAX, "Sum Peak kVA (Rate B kVA)")
-                .put(PaoType.RFN530S4EAX, "Sum Peak kVA (Rate C kVA)")
-                .put(PaoType.RFN530S4EAX, "Sum Peak kVA (Rate D kVA)")
-                .put(PaoType.RFN530S4EAX, "Sum Peak kVA")
-                .put(PaoType.RFN530S4EAX, "Sum Peak kVAr (Rate A kVAr)")
-                .put(PaoType.RFN530S4EAX, "Sum Peak kVAr (Rate B kVAr)")
-                .put(PaoType.RFN530S4EAX, "Sum Peak kVAr (Rate C kVAr)")
-                .put(PaoType.RFN530S4EAX, "Sum Peak kVAr (Rate D kVAr)")
-                .put(PaoType.RFN530S4EAX, "Sum Peak kVAr")
-                .put(PaoType.RFN530S4EAX, "Sum Peak kW (Rate A kW)")
-                .put(PaoType.RFN530S4EAX, "Sum Peak kW (Rate B kW)")
-                .put(PaoType.RFN530S4EAX, "Sum Peak kW (Rate C kW)")
-                .put(PaoType.RFN530S4EAX, "Sum Peak kW (Rate D kW)")
-                .put(PaoType.RFN530S4EAX, "Sum kVA")
-                .put(PaoType.RFN530S4EAX, "Sum kVAh (Rate A kVAh)")
-                .put(PaoType.RFN530S4EAX, "Sum kVAh (Rate B kVAh)")
-                .put(PaoType.RFN530S4EAX, "Sum kVAh (Rate C kVAh)")
-                .put(PaoType.RFN530S4EAX, "Sum kVAh (Rate D kVAh)")
-                .put(PaoType.RFN530S4EAX, "Sum kVAh")
-                .put(PaoType.RFN530S4EAX, "Sum kVAr")
-                .put(PaoType.RFN530S4EAX, "Sum kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4EAX, "Sum kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4EAX, "Sum kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4EAX, "Sum kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4EAX, "Sum kVArh")
-                .put(PaoType.RFN530S4EAX, "Sum kW")
-                .put(PaoType.RFN530S4EAX, "Sum kWh (Rate A kWh)")
-                .put(PaoType.RFN530S4EAX, "Sum kWh (Rate B kWh)")
-                .put(PaoType.RFN530S4EAX, "Sum kWh (Rate C kWh)")
-                .put(PaoType.RFN530S4EAX, "Sum kWh (Rate D kWh)")
-                .put(PaoType.RFN530S4EAX, "kVAh Leading (Q1 + Q3)")
-                .put(PaoType.RFN530S4EAX, "kVArh Leading (Q1 + Q3)")
-                
-                .put(PaoType.RFN530S4EAXR, "Avg Voltage Phase A")
-                .put(PaoType.RFN530S4EAXR, "Avg Voltage Phase B")
-                .put(PaoType.RFN530S4EAXR, "Avg Voltage Phase C")
-                .put(PaoType.RFN530S4EAXR, "Delivered Peak kVA (Rate A kVA)")
-                .put(PaoType.RFN530S4EAXR, "Delivered Peak kVA (Rate B kVA)")
-                .put(PaoType.RFN530S4EAXR, "Delivered Peak kVA (Rate C kVA)")
-                .put(PaoType.RFN530S4EAXR, "Delivered Peak kVA (Rate D kVA)")
-                .put(PaoType.RFN530S4EAXR, "Delivered Peak kVAr (Rate A kVAr)")
-                .put(PaoType.RFN530S4EAXR, "Delivered Peak kVAr (Rate B kVAr)")
-                .put(PaoType.RFN530S4EAXR, "Delivered Peak kVAr (Rate C kVAr)")
-                .put(PaoType.RFN530S4EAXR, "Delivered Peak kVAr (Rate D kVAr)")
-                .put(PaoType.RFN530S4EAXR, "Delivered Peak kVAr")
-                .put(PaoType.RFN530S4EAXR, "Delivered kVA")
-                .put(PaoType.RFN530S4EAXR, "Delivered kVAh (Rate A kVAh)")
-                .put(PaoType.RFN530S4EAXR, "Delivered kVAh (Rate B kVAh)")
-                .put(PaoType.RFN530S4EAXR, "Delivered kVAh (Rate C kVAh)")
-                .put(PaoType.RFN530S4EAXR, "Delivered kVAh (Rate D kVAh)")
-                .put(PaoType.RFN530S4EAXR, "Delivered kVAh")
-                .put(PaoType.RFN530S4EAXR, "Delivered kVAr")
-                .put(PaoType.RFN530S4EAXR, "Delivered kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Delivered kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Delivered kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Delivered kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Delivered kVArh")
-                .put(PaoType.RFN530S4EAXR, "Delivered kW")
-                .put(PaoType.RFN530S4EAXR, "Delivered kWh")
-                .put(PaoType.RFN530S4EAXR, "Max Voltage Phase A")
-                .put(PaoType.RFN530S4EAXR, "Max Voltage Phase B")
-                .put(PaoType.RFN530S4EAXR, "Max Voltage Phase C")
-                .put(PaoType.RFN530S4EAXR, "Min Voltage Phase A")
-                .put(PaoType.RFN530S4EAXR, "Min Voltage Phase B")
-                .put(PaoType.RFN530S4EAXR, "Min Voltage Phase C")
-                .put(PaoType.RFN530S4EAXR, "Net Peak kW (Rate A kW)")
-                .put(PaoType.RFN530S4EAXR, "Net Peak kW (Rate B kW)")
-                .put(PaoType.RFN530S4EAXR, "Net Peak kW (Rate C kW)")
-                .put(PaoType.RFN530S4EAXR, "Net Peak kW (Rate D kW)")
-                .put(PaoType.RFN530S4EAXR, "Net Peak kW")
-                .put(PaoType.RFN530S4EAXR, "Net kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Net kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Net kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Net kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Net kVArh")
-                .put(PaoType.RFN530S4EAXR, "Peak Demand Daily")
-                .put(PaoType.RFN530S4EAXR, "Peak kVA")
-                .put(PaoType.RFN530S4EAXR, "Peak kW (Rate A kW)")
-                .put(PaoType.RFN530S4EAXR, "Peak kW (Rate B kW)")
-                .put(PaoType.RFN530S4EAXR, "Peak kW (Rate C kW)")
-                .put(PaoType.RFN530S4EAXR, "Peak kW (Rate D kW)")
-                .put(PaoType.RFN530S4EAXR, "Peak kW Frozen (Rate A kW)")
-                .put(PaoType.RFN530S4EAXR, "Peak kW Frozen (Rate B kW)")
-                .put(PaoType.RFN530S4EAXR, "Peak kW Frozen (Rate C kW)")
-                .put(PaoType.RFN530S4EAXR, "Peak kW Frozen (Rate D kW)")
-                .put(PaoType.RFN530S4EAXR, "Peak kW Frozen")
-                .put(PaoType.RFN530S4EAXR, "Peak kW")
-                .put(PaoType.RFN530S4EAXR, "Power Factor Degrees Phase A")
-                .put(PaoType.RFN530S4EAXR, "Power Factor Degrees Phase B")
-                .put(PaoType.RFN530S4EAXR, "Power Factor Degrees Phase C")
-                .put(PaoType.RFN530S4EAXR, "Rate A kWh")
-                .put(PaoType.RFN530S4EAXR, "Rate B kWh")
-                .put(PaoType.RFN530S4EAXR, "Rate C kWh")
-                .put(PaoType.RFN530S4EAXR, "Rate D kWh")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kVA (Rate A kVA)")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kVA (Rate B kVA)")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kVA (Rate C kVA)")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kVA (Rate D kVA)")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kVA")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kVAr (Rate A kVAr)")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kVAr (Rate B kVAr)")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kVAr (Rate C kVAr)")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kVAr (Rate D kVAr)")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kVAr")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kW (Rate A kW)")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kW (Rate B kW)")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kW (Rate C kW)")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kW (Rate D kW)")
-                .put(PaoType.RFN530S4EAXR, "Received Peak kW")
-                .put(PaoType.RFN530S4EAXR, "Received kVA")
-                .put(PaoType.RFN530S4EAXR, "Received kVAh (Rate A kVAh)")
-                .put(PaoType.RFN530S4EAXR, "Received kVAh (Rate B kVAh)")
-                .put(PaoType.RFN530S4EAXR, "Received kVAh (Rate C kVAh)")
-                .put(PaoType.RFN530S4EAXR, "Received kVAh (Rate D kVAh)")
-                .put(PaoType.RFN530S4EAXR, "Received kVAh")
-                .put(PaoType.RFN530S4EAXR, "Received kVAr")
-                .put(PaoType.RFN530S4EAXR, "Received kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Received kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Received kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Received kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Received kVArh")
-                .put(PaoType.RFN530S4EAXR, "Received kW")
-                .put(PaoType.RFN530S4EAXR, "Received kWh (Rate A kWh)")
-                .put(PaoType.RFN530S4EAXR, "Received kWh (Rate B kWh)")
-                .put(PaoType.RFN530S4EAXR, "Received kWh (Rate C kWh)")
-                .put(PaoType.RFN530S4EAXR, "Received kWh (Rate D kWh)")
-                .put(PaoType.RFN530S4EAXR, "Sum Peak kVA (Rate A kVA)")
-                .put(PaoType.RFN530S4EAXR, "Sum Peak kVA (Rate B kVA)")
-                .put(PaoType.RFN530S4EAXR, "Sum Peak kVA (Rate C kVA)")
-                .put(PaoType.RFN530S4EAXR, "Sum Peak kVA (Rate D kVA)")
-                .put(PaoType.RFN530S4EAXR, "Sum Peak kVA")
-                .put(PaoType.RFN530S4EAXR, "Sum Peak kVAr (Rate A kVAr)")
-                .put(PaoType.RFN530S4EAXR, "Sum Peak kVAr (Rate B kVAr)")
-                .put(PaoType.RFN530S4EAXR, "Sum Peak kVAr (Rate C kVAr)")
-                .put(PaoType.RFN530S4EAXR, "Sum Peak kVAr (Rate D kVAr)")
-                .put(PaoType.RFN530S4EAXR, "Sum Peak kVAr")
-                .put(PaoType.RFN530S4EAXR, "Sum kVA")
-                .put(PaoType.RFN530S4EAXR, "Sum kVAh (Rate A kVAh)")
-                .put(PaoType.RFN530S4EAXR, "Sum kVAh (Rate B kVAh)")
-                .put(PaoType.RFN530S4EAXR, "Sum kVAh (Rate C kVAh)")
-                .put(PaoType.RFN530S4EAXR, "Sum kVAh (Rate D kVAh)")
-                .put(PaoType.RFN530S4EAXR, "Sum kVAh")
-                .put(PaoType.RFN530S4EAXR, "Sum kVAr")
-                .put(PaoType.RFN530S4EAXR, "Sum kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Sum kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Sum kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Sum kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4EAXR, "Sum kVArh")
-                .put(PaoType.RFN530S4EAXR, "Sum kW")
-                .put(PaoType.RFN530S4EAXR, "kVAh Leading (Q1 + Q3)")
-                .put(PaoType.RFN530S4EAXR, "kVArh Leading (Q1 + Q3)")
-                
-                .put(PaoType.RFN530S4ERX, "Avg Voltage Phase A")
-                .put(PaoType.RFN530S4ERX, "Avg Voltage Phase B")
-                .put(PaoType.RFN530S4ERX, "Avg Voltage Phase C")
-                .put(PaoType.RFN530S4ERX, "Delivered Peak kVA (Rate A kVA)")
-                .put(PaoType.RFN530S4ERX, "Delivered Peak kVA (Rate B kVA)")
-                .put(PaoType.RFN530S4ERX, "Delivered Peak kVA (Rate C kVA)")
-                .put(PaoType.RFN530S4ERX, "Delivered Peak kVA (Rate D kVA)")
-                .put(PaoType.RFN530S4ERX, "Delivered Peak kVAr (Rate A kVAr)")
-                .put(PaoType.RFN530S4ERX, "Delivered Peak kVAr (Rate B kVAr)")
-                .put(PaoType.RFN530S4ERX, "Delivered Peak kVAr (Rate C kVAr)")
-                .put(PaoType.RFN530S4ERX, "Delivered Peak kVAr (Rate D kVAr)")
-                .put(PaoType.RFN530S4ERX, "Delivered Peak kVAr")
-                .put(PaoType.RFN530S4ERX, "Delivered kVA")
-                .put(PaoType.RFN530S4ERX, "Delivered kVAh (Rate A kVAh)")
-                .put(PaoType.RFN530S4ERX, "Delivered kVAh (Rate B kVAh)")
-                .put(PaoType.RFN530S4ERX, "Delivered kVAh (Rate C kVAh)")
-                .put(PaoType.RFN530S4ERX, "Delivered kVAh (Rate D kVAh)")
-                .put(PaoType.RFN530S4ERX, "Delivered kVAh")
-                .put(PaoType.RFN530S4ERX, "Delivered kVAr")
-                .put(PaoType.RFN530S4ERX, "Delivered kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4ERX, "Delivered kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4ERX, "Delivered kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4ERX, "Delivered kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4ERX, "Delivered kVArh")
-                .put(PaoType.RFN530S4ERX, "Delivered kW")
-                .put(PaoType.RFN530S4ERX, "Delivered kWh")
-                .put(PaoType.RFN530S4ERX, "Max Voltage Phase A")
-                .put(PaoType.RFN530S4ERX, "Max Voltage Phase B")
-                .put(PaoType.RFN530S4ERX, "Max Voltage Phase C")
-                .put(PaoType.RFN530S4ERX, "Min Voltage Phase A")
-                .put(PaoType.RFN530S4ERX, "Min Voltage Phase B")
-                .put(PaoType.RFN530S4ERX, "Min Voltage Phase C")
-                .put(PaoType.RFN530S4ERX, "Net Peak kW (Rate A kW)")
-                .put(PaoType.RFN530S4ERX, "Net Peak kW (Rate B kW)")
-                .put(PaoType.RFN530S4ERX, "Net Peak kW (Rate C kW)")
-                .put(PaoType.RFN530S4ERX, "Net Peak kW (Rate D kW)")
-                .put(PaoType.RFN530S4ERX, "Net Peak kW")
-                .put(PaoType.RFN530S4ERX, "Net kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4ERX, "Net kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4ERX, "Net kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4ERX, "Net kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4ERX, "Net kWh (Rate A kWh)")
-                .put(PaoType.RFN530S4ERX, "Net kWh (Rate B kWh)")
-                .put(PaoType.RFN530S4ERX, "Net kWh (Rate C kWh)")
-                .put(PaoType.RFN530S4ERX, "Net kWh (Rate D kWh)")
-                .put(PaoType.RFN530S4ERX, "Peak Demand Daily")
-                .put(PaoType.RFN530S4ERX, "Peak kVA")
-                .put(PaoType.RFN530S4ERX, "Peak kW (Rate A kW)")
-                .put(PaoType.RFN530S4ERX, "Peak kW (Rate B kW)")
-                .put(PaoType.RFN530S4ERX, "Peak kW (Rate C kW)")
-                .put(PaoType.RFN530S4ERX, "Peak kW (Rate D kW)")
-                .put(PaoType.RFN530S4ERX, "Peak kW Frozen (Rate A kW)")
-                .put(PaoType.RFN530S4ERX, "Peak kW Frozen (Rate B kW)")
-                .put(PaoType.RFN530S4ERX, "Peak kW Frozen (Rate C kW)")
-                .put(PaoType.RFN530S4ERX, "Peak kW Frozen (Rate D kW)")
-                .put(PaoType.RFN530S4ERX, "Peak kW Frozen")
-                .put(PaoType.RFN530S4ERX, "Peak kW")
-                .put(PaoType.RFN530S4ERX, "Power Factor Degrees Phase A")
-                .put(PaoType.RFN530S4ERX, "Power Factor Degrees Phase B")
-                .put(PaoType.RFN530S4ERX, "Power Factor Degrees Phase C")
-                .put(PaoType.RFN530S4ERX, "Rate A kWh")
-                .put(PaoType.RFN530S4ERX, "Rate B kWh")
-                .put(PaoType.RFN530S4ERX, "Rate C kWh")
-                .put(PaoType.RFN530S4ERX, "Rate D kWh")
-                .put(PaoType.RFN530S4ERX, "Received Peak kVA (Rate A kVA)")
-                .put(PaoType.RFN530S4ERX, "Received Peak kVA (Rate B kVA)")
-                .put(PaoType.RFN530S4ERX, "Received Peak kVA (Rate C kVA)")
-                .put(PaoType.RFN530S4ERX, "Received Peak kVA (Rate D kVA)")
-                .put(PaoType.RFN530S4ERX, "Received Peak kVA")
-                .put(PaoType.RFN530S4ERX, "Received Peak kVAr (Rate A kVAr)")
-                .put(PaoType.RFN530S4ERX, "Received Peak kVAr (Rate B kVAr)")
-                .put(PaoType.RFN530S4ERX, "Received Peak kVAr (Rate C kVAr)")
-                .put(PaoType.RFN530S4ERX, "Received Peak kVAr (Rate D kVAr)")
-                .put(PaoType.RFN530S4ERX, "Received Peak kVAr")
-                .put(PaoType.RFN530S4ERX, "Received Peak kW (Rate A kW)")
-                .put(PaoType.RFN530S4ERX, "Received Peak kW (Rate B kW)")
-                .put(PaoType.RFN530S4ERX, "Received Peak kW (Rate C kW)")
-                .put(PaoType.RFN530S4ERX, "Received Peak kW (Rate D kW)")
-                .put(PaoType.RFN530S4ERX, "Received Peak kW")
-                .put(PaoType.RFN530S4ERX, "Received kVA")
-                .put(PaoType.RFN530S4ERX, "Received kVAh (Rate A kVAh)")
-                .put(PaoType.RFN530S4ERX, "Received kVAh (Rate B kVAh)")
-                .put(PaoType.RFN530S4ERX, "Received kVAh (Rate C kVAh)")
-                .put(PaoType.RFN530S4ERX, "Received kVAh (Rate D kVAh)")
-                .put(PaoType.RFN530S4ERX, "Received kVAh")
-                .put(PaoType.RFN530S4ERX, "Received kVAr")
-                .put(PaoType.RFN530S4ERX, "Received kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4ERX, "Received kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4ERX, "Received kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4ERX, "Received kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4ERX, "Received kVArh")
-                .put(PaoType.RFN530S4ERX, "Received kW")
-                .put(PaoType.RFN530S4ERX, "Received kWh (Rate A kWh)")
-                .put(PaoType.RFN530S4ERX, "Received kWh (Rate B kWh)")
-                .put(PaoType.RFN530S4ERX, "Received kWh (Rate C kWh)")
-                .put(PaoType.RFN530S4ERX, "Received kWh (Rate D kWh)")
-                .put(PaoType.RFN530S4ERX, "Sum Peak kVA (Rate A kVA)")
-                .put(PaoType.RFN530S4ERX, "Sum Peak kVA (Rate B kVA)")
-                .put(PaoType.RFN530S4ERX, "Sum Peak kVA (Rate C kVA)")
-                .put(PaoType.RFN530S4ERX, "Sum Peak kVA (Rate D kVA)")
-                .put(PaoType.RFN530S4ERX, "Sum Peak kVAr (Rate A kVAr)")
-                .put(PaoType.RFN530S4ERX, "Sum Peak kVAr (Rate B kVAr)")
-                .put(PaoType.RFN530S4ERX, "Sum Peak kVAr (Rate C kVAr)")
-                .put(PaoType.RFN530S4ERX, "Sum Peak kVAr (Rate D kVAr)")
-                .put(PaoType.RFN530S4ERX, "Sum Peak kW (Rate A kW)")
-                .put(PaoType.RFN530S4ERX, "Sum Peak kW (Rate B kW)")
-                .put(PaoType.RFN530S4ERX, "Sum Peak kW (Rate C kW)")
-                .put(PaoType.RFN530S4ERX, "Sum Peak kW (Rate D kW)")
-                .put(PaoType.RFN530S4ERX, "Sum kVA")
-                .put(PaoType.RFN530S4ERX, "Sum kVAh (Rate A kVAh)")
-                .put(PaoType.RFN530S4ERX, "Sum kVAh (Rate B kVAh)")
-                .put(PaoType.RFN530S4ERX, "Sum kVAh (Rate C kVAh)")
-                .put(PaoType.RFN530S4ERX, "Sum kVAh (Rate D kVAh)")
-                .put(PaoType.RFN530S4ERX, "Sum kVAr")
-                .put(PaoType.RFN530S4ERX, "Sum kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4ERX, "Sum kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4ERX, "Sum kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4ERX, "Sum kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4ERX, "Sum kW")
-                .put(PaoType.RFN530S4ERX, "Sum kWh (Rate A kWh)")
-                .put(PaoType.RFN530S4ERX, "Sum kWh (Rate B kWh)")
-                .put(PaoType.RFN530S4ERX, "Sum kWh (Rate C kWh)")
-                .put(PaoType.RFN530S4ERX, "Sum kWh (Rate D kWh)")
-                .put(PaoType.RFN530S4ERX, "kVAh Leading (Q1 + Q3)")
-                .put(PaoType.RFN530S4ERX, "kVArh Leading (Q1 + Q3)")
-                
-                .put(PaoType.RFN530S4ERXR, "Avg Voltage Phase A")
-                .put(PaoType.RFN530S4ERXR, "Avg Voltage Phase B")
-                .put(PaoType.RFN530S4ERXR, "Avg Voltage Phase C")
-                .put(PaoType.RFN530S4ERXR, "Delivered Peak kVA (Rate A kVA)")
-                .put(PaoType.RFN530S4ERXR, "Delivered Peak kVA (Rate B kVA)")
-                .put(PaoType.RFN530S4ERXR, "Delivered Peak kVA (Rate C kVA)")
-                .put(PaoType.RFN530S4ERXR, "Delivered Peak kVA (Rate D kVA)")
-                .put(PaoType.RFN530S4ERXR, "Delivered Peak kVAr (Rate A kVAr)")
-                .put(PaoType.RFN530S4ERXR, "Delivered Peak kVAr (Rate B kVAr)")
-                .put(PaoType.RFN530S4ERXR, "Delivered Peak kVAr (Rate C kVAr)")
-                .put(PaoType.RFN530S4ERXR, "Delivered Peak kVAr (Rate D kVAr)")
-                .put(PaoType.RFN530S4ERXR, "Delivered Peak kVAr")
-                .put(PaoType.RFN530S4ERXR, "Delivered kVA")
-                .put(PaoType.RFN530S4ERXR, "Delivered kVAh (Rate A kVAh)")
-                .put(PaoType.RFN530S4ERXR, "Delivered kVAh (Rate B kVAh)")
-                .put(PaoType.RFN530S4ERXR, "Delivered kVAh (Rate C kVAh)")
-                .put(PaoType.RFN530S4ERXR, "Delivered kVAh (Rate D kVAh)")
-                .put(PaoType.RFN530S4ERXR, "Delivered kVAh")
-                .put(PaoType.RFN530S4ERXR, "Delivered kVAr")
-                .put(PaoType.RFN530S4ERXR, "Delivered kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4ERXR, "Delivered kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4ERXR, "Delivered kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4ERXR, "Delivered kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4ERXR, "Delivered kVArh")
-                .put(PaoType.RFN530S4ERXR, "Delivered kW")
-                .put(PaoType.RFN530S4ERXR, "Delivered kWh")
-                .put(PaoType.RFN530S4ERXR, "Max Voltage Phase A")
-                .put(PaoType.RFN530S4ERXR, "Max Voltage Phase B")
-                .put(PaoType.RFN530S4ERXR, "Max Voltage Phase C")
-                .put(PaoType.RFN530S4ERXR, "Min Voltage Phase A")
-                .put(PaoType.RFN530S4ERXR, "Min Voltage Phase B")
-                .put(PaoType.RFN530S4ERXR, "Min Voltage Phase C")
-                .put(PaoType.RFN530S4ERXR, "Net Peak kW (Rate A kW)")
-                .put(PaoType.RFN530S4ERXR, "Net Peak kW (Rate B kW)")
-                .put(PaoType.RFN530S4ERXR, "Net Peak kW (Rate C kW)")
-                .put(PaoType.RFN530S4ERXR, "Net Peak kW (Rate D kW)")
-                .put(PaoType.RFN530S4ERXR, "Net Peak kW")
-                .put(PaoType.RFN530S4ERXR, "Peak Demand Daily")
-                .put(PaoType.RFN530S4ERXR, "Peak kVA")
-                .put(PaoType.RFN530S4ERXR, "Peak kW (Rate A kW)")
-                .put(PaoType.RFN530S4ERXR, "Peak kW (Rate B kW)")
-                .put(PaoType.RFN530S4ERXR, "Peak kW (Rate C kW)")
-                .put(PaoType.RFN530S4ERXR, "Peak kW (Rate D kW)")
-                .put(PaoType.RFN530S4ERXR, "Peak kW Frozen (Rate A kW)")
-                .put(PaoType.RFN530S4ERXR, "Peak kW Frozen (Rate B kW)")
-                .put(PaoType.RFN530S4ERXR, "Peak kW Frozen (Rate C kW)")
-                .put(PaoType.RFN530S4ERXR, "Peak kW Frozen (Rate D kW)")
-                .put(PaoType.RFN530S4ERXR, "Peak kW Frozen")
-                .put(PaoType.RFN530S4ERXR, "Peak kW")
-                .put(PaoType.RFN530S4ERXR, "Power Factor Degrees Phase A")
-                .put(PaoType.RFN530S4ERXR, "Power Factor Degrees Phase B")
-                .put(PaoType.RFN530S4ERXR, "Power Factor Degrees Phase C")
-                .put(PaoType.RFN530S4ERXR, "Rate A kWh")
-                .put(PaoType.RFN530S4ERXR, "Rate B kWh")
-                .put(PaoType.RFN530S4ERXR, "Rate C kWh")
-                .put(PaoType.RFN530S4ERXR, "Rate D kWh")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kVA (Rate A kVA)")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kVA (Rate B kVA)")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kVA (Rate C kVA)")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kVA (Rate D kVA)")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kVA")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kVAr (Rate A kVAr)")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kVAr (Rate B kVAr)")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kVAr (Rate C kVAr)")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kVAr (Rate D kVAr)")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kVAr")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kW (Rate A kW)")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kW (Rate B kW)")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kW (Rate C kW)")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kW (Rate D kW)")
-                .put(PaoType.RFN530S4ERXR, "Received Peak kW")
-                .put(PaoType.RFN530S4ERXR, "Received kVA")
-                .put(PaoType.RFN530S4ERXR, "Received kVAh (Rate A kVAh)")
-                .put(PaoType.RFN530S4ERXR, "Received kVAh (Rate B kVAh)")
-                .put(PaoType.RFN530S4ERXR, "Received kVAh (Rate C kVAh)")
-                .put(PaoType.RFN530S4ERXR, "Received kVAh (Rate D kVAh)")
-                .put(PaoType.RFN530S4ERXR, "Received kVAh")
-                .put(PaoType.RFN530S4ERXR, "Received kVAr")
-                .put(PaoType.RFN530S4ERXR, "Received kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4ERXR, "Received kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4ERXR, "Received kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4ERXR, "Received kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4ERXR, "Received kVArh")
-                .put(PaoType.RFN530S4ERXR, "Received kW")
-                .put(PaoType.RFN530S4ERXR, "Received kWh (Rate A kWh)")
-                .put(PaoType.RFN530S4ERXR, "Received kWh (Rate B kWh)")
-                .put(PaoType.RFN530S4ERXR, "Received kWh (Rate C kWh)")
-                .put(PaoType.RFN530S4ERXR, "Received kWh (Rate D kWh)")
-                .put(PaoType.RFN530S4ERXR, "Sum kVA")
-                .put(PaoType.RFN530S4ERXR, "Sum kVAr")
-                .put(PaoType.RFN530S4ERXR, "Sum kW")
-                .put(PaoType.RFN530S4ERXR, "kVAh Leading (Q1 + Q3)")
-                .put(PaoType.RFN530S4ERXR, "kVArh Leading (Q1 + Q3)")
-                
-                .put(PaoType.RFN530S4X, "Average Power Factor")
-                .put(PaoType.RFN530S4X, "Net kVA")
-                .put(PaoType.RFN530S4X, "Net kVAr")
-                .put(PaoType.RFN530S4X, "Net kVArh (Rate A kVArh)")
-                .put(PaoType.RFN530S4X, "Net kVArh (Rate B kVArh)")
-                .put(PaoType.RFN530S4X, "Net kVArh (Rate C kVArh)")
-                .put(PaoType.RFN530S4X, "Net kVArh (Rate D kVArh)")
-                .put(PaoType.RFN530S4X, "Net kVArh")
-                .put(PaoType.RFN530S4X, "Net kW")
-                .put(PaoType.RFN530S4X, "Net kWh (Rate A kWh)")
-                .put(PaoType.RFN530S4X, "Net kWh (Rate B kWh)")
-                .put(PaoType.RFN530S4X, "Net kWh (Rate C kWh)")
-                .put(PaoType.RFN530S4X, "Net kWh (Rate D kWh)")
-                .put(PaoType.RFN530S4X, "Peak Demand Daily")
-                .put(PaoType.RFN530S4X, "Power Factor Degrees Phase A")
-                .put(PaoType.RFN530S4X, "Power Factor Degrees Phase B")
-                .put(PaoType.RFN530S4X, "Power Factor Degrees Phase C")
-                .put(PaoType.RFN530S4X, "kVA (Quadrants 1 2)")
-                .put(PaoType.RFN530S4X, "kVA (Quadrants 1 3)")
-                .put(PaoType.RFN530S4X, "kVA (Quadrants 2 4)")
-                .put(PaoType.RFN530S4X, "kVA (Quadrants 3 4)")
-                .put(PaoType.RFN530S4X, "kVAh Leading (Q1 + Q3)")
-                .put(PaoType.RFN530S4X, "kVAr (Quadrants 1 3)")
-                .put(PaoType.RFN530S4X, "kVAr (Quadrants 1 4)")
-                .put(PaoType.RFN530S4X, "kVAr (Quadrants 2 3)")
-                .put(PaoType.RFN530S4X, "kVAr (Quadrants 2 4)")
-                .put(PaoType.RFN530S4X, "kVArh Leading (Q1 + Q3)")
-               .build();
+        var missing = ArrayListMultimap.<PaoType, String>create();
+        
+        missing.put(PaoType.RFN420FD, "Amps Phase B");
+        missing.put(PaoType.RFN420FD, "Amps Phase C");
+        missing.put(PaoType.RFN420FD, "Avg Volts Phase B");
+        missing.put(PaoType.RFN420FD, "Avg Volts Phase C");
+        missing.put(PaoType.RFN420FD, "Max Volts Phase B");
+        missing.put(PaoType.RFN420FD, "Max Volts Phase C");
+        missing.put(PaoType.RFN420FD, "Min Volts Phase B");
+        missing.put(PaoType.RFN420FD, "Min Volts Phase C");
+        missing.put(PaoType.RFN420FD, "Power Factor Degrees Phase B");
+        missing.put(PaoType.RFN420FD, "Power Factor Degrees Phase C");
+        missing.put(PaoType.RFN420FD, "Volt Degrees Phase B");
+        missing.put(PaoType.RFN420FD, "Volt Degrees Phase C");
+        missing.put(PaoType.RFN420FD, "Volts Phase B");
+        missing.put(PaoType.RFN420FD, "Volts Phase C");
+        
+        missing.put(PaoType.RFN420FRD, "Amps Phase B");
+        missing.put(PaoType.RFN420FRD, "Amps Phase C");
+        missing.put(PaoType.RFN420FRD, "Avg Volts Phase B");
+        missing.put(PaoType.RFN420FRD, "Avg Volts Phase C");
+        missing.put(PaoType.RFN420FRD, "Max Volts Phase B");
+        missing.put(PaoType.RFN420FRD, "Max Volts Phase C");
+        missing.put(PaoType.RFN420FRD, "Min Volts Phase B");
+        missing.put(PaoType.RFN420FRD, "Min Volts Phase C");
+        missing.put(PaoType.RFN420FRD, "Power Factor Degrees Phase B");
+        missing.put(PaoType.RFN420FRD, "Power Factor Degrees Phase C");
+        missing.put(PaoType.RFN420FRD, "Volt Degrees Phase B");
+        missing.put(PaoType.RFN420FRD, "Volt Degrees Phase C");
+        missing.put(PaoType.RFN420FRD, "Volts Phase B");
+        missing.put(PaoType.RFN420FRD, "Volts Phase C");
+        
+        missing.put(PaoType.RFN420FRX, "Amps Phase B");
+        missing.put(PaoType.RFN420FRX, "Amps Phase C");
+        missing.put(PaoType.RFN420FRX, "Avg Volts Phase B");
+        missing.put(PaoType.RFN420FRX, "Avg Volts Phase C");
+        missing.put(PaoType.RFN420FRX, "Max Volts Phase B");
+        missing.put(PaoType.RFN420FRX, "Max Volts Phase C");
+        missing.put(PaoType.RFN420FRX, "Min Volts Phase B");
+        missing.put(PaoType.RFN420FRX, "Min Volts Phase C");
+        missing.put(PaoType.RFN420FRX, "Power Factor Degrees Phase B");
+        missing.put(PaoType.RFN420FRX, "Power Factor Degrees Phase C");
+        missing.put(PaoType.RFN420FRX, "Volt Degrees Phase B");
+        missing.put(PaoType.RFN420FRX, "Volt Degrees Phase C");
+        missing.put(PaoType.RFN420FRX, "Volts Phase B");
+        missing.put(PaoType.RFN420FRX, "Volts Phase C");
+        
+        missing.put(PaoType.RFN420FX, "Amps Phase B");
+        missing.put(PaoType.RFN420FX, "Amps Phase C");
+        missing.put(PaoType.RFN420FX, "Avg Volts Phase B");
+        missing.put(PaoType.RFN420FX, "Avg Volts Phase C");
+        missing.put(PaoType.RFN420FX, "Max Volts Phase B");
+        missing.put(PaoType.RFN420FX, "Max Volts Phase C");
+        missing.put(PaoType.RFN420FX, "Min Volts Phase B");
+        missing.put(PaoType.RFN420FX, "Min Volts Phase C");
+        missing.put(PaoType.RFN420FX, "Power Factor Degrees Phase B");
+        missing.put(PaoType.RFN420FX, "Power Factor Degrees Phase C");
+        missing.put(PaoType.RFN420FX, "Volt Degrees Phase B");
+        missing.put(PaoType.RFN420FX, "Volt Degrees Phase C");
+        missing.put(PaoType.RFN420FX, "Volts Phase B");
+        missing.put(PaoType.RFN420FX, "Volts Phase C");
+        
+        missing.put(PaoType.RFN430A3D, "Peak Demand Daily");
+        missing.put(PaoType.RFN430A3K, "Peak Demand Daily");
+        missing.put(PaoType.RFN430A3R, "Peak Demand Daily");
+        missing.put(PaoType.RFN430A3T, "Peak Demand Daily");
+        
+        missing.put(PaoType.RFN430KV, "Average Delivered Power Factor");
+        missing.put(PaoType.RFN430KV, "Average Received Power Factor");
+        missing.put(PaoType.RFN430KV, "Delivered kVA");
+        missing.put(PaoType.RFN430KV, "Delivered kVAr");
+        missing.put(PaoType.RFN430KV, "Peak Demand Daily");
+        missing.put(PaoType.RFN430KV, "Received kVA");
+        missing.put(PaoType.RFN430KV, "Received kVAr");
+        missing.put(PaoType.RFN430KV, "Received kW");
+        
+        missing.put(PaoType.RFN430SL4, "Net Delivered kVARh");
+        missing.put(PaoType.RFN430SL4, "Net Received kVARh");
+        missing.put(PaoType.RFN430SL4, "Rate A Net Received kVARh");
+        missing.put(PaoType.RFN430SL4, "Rate B Net Received kVARh");
+        missing.put(PaoType.RFN430SL4, "Rate C Net Received kVARh");
+        missing.put(PaoType.RFN430SL4, "Rate D Net Received kVARh");
+        
+        missing.put(PaoType.RFN440_2131TD, "Forward Inductive kVARh");
+        missing.put(PaoType.RFN440_2131TD, "Reverse Inductive kVARh");
+        missing.put(PaoType.RFN440_2132TD, "Forward Inductive kVARh");
+        missing.put(PaoType.RFN440_2132TD, "Reverse Inductive kVARh");
+        missing.put(PaoType.RFN440_2133TD, "Forward Inductive kVARh");
+        missing.put(PaoType.RFN440_2133TD, "Reverse Inductive kVARh");
+        
+        missing.put(PaoType.RFN520FAX, "Delivered Peak kVA Frozen");
+        missing.put(PaoType.RFN520FAX, "Delivered Peak kVA");
+        missing.put(PaoType.RFN520FAX, "Delivered Peak kVAr Frozen");
+        missing.put(PaoType.RFN520FAX, "Delivered Peak kVAr");
+        missing.put(PaoType.RFN520FAX, "Delivered kVAh");
+        missing.put(PaoType.RFN520FAX, "Delivered kVArh");
+        missing.put(PaoType.RFN520FAX, "Net kVAh");
+        missing.put(PaoType.RFN520FAX, "Net kVArh");
+        missing.put(PaoType.RFN520FAX, "Power Factor Degrees");
+        missing.put(PaoType.RFN520FAX, "Received kVAh");
+        missing.put(PaoType.RFN520FAX, "Received kVArh");
+        missing.put(PaoType.RFN520FAX, "Sum Peak kVA Frozen");
+        missing.put(PaoType.RFN520FAX, "Sum Peak kVA");
+        missing.put(PaoType.RFN520FAX, "Sum Peak kVAr Frozen");
+        missing.put(PaoType.RFN520FAX, "Sum Peak kVAr");
+        missing.put(PaoType.RFN520FAX, "Sum kVAh");
+        missing.put(PaoType.RFN520FAX, "Sum kVArh");
+        
+        missing.put(PaoType.RFN520FAXD, "Delivered Peak kVA Frozen");
+        missing.put(PaoType.RFN520FAXD, "Delivered Peak kVA");
+        missing.put(PaoType.RFN520FAXD, "Delivered Peak kVAr Frozen");
+        missing.put(PaoType.RFN520FAXD, "Delivered Peak kVAr");
+        missing.put(PaoType.RFN520FAXD, "Delivered kVAh");
+        missing.put(PaoType.RFN520FAXD, "Delivered kVArh");
+        missing.put(PaoType.RFN520FAXD, "Net kVAh");
+        missing.put(PaoType.RFN520FAXD, "Net kVArh");
+        missing.put(PaoType.RFN520FAXD, "Power Factor Degrees");
+        missing.put(PaoType.RFN520FAXD, "Received kVAh");
+        missing.put(PaoType.RFN520FAXD, "Received kVArh");
+        missing.put(PaoType.RFN520FAXD, "Sum Peak kVA Frozen");
+        missing.put(PaoType.RFN520FAXD, "Sum Peak kVA");
+        missing.put(PaoType.RFN520FAXD, "Sum Peak kVAr Frozen");
+        missing.put(PaoType.RFN520FAXD, "Sum Peak kVAr");
+        missing.put(PaoType.RFN520FAXD, "Sum kVAh");
+        missing.put(PaoType.RFN520FAXD, "Sum kVArh");
+        
+        missing.put(PaoType.RFN520FRX, "Delivered Peak kVA Frozen");
+        missing.put(PaoType.RFN520FRX, "Delivered Peak kVAr Frozen");
+        missing.put(PaoType.RFN520FRX, "Power Factor Degrees");
+        missing.put(PaoType.RFN520FRX, "Sum Peak kVA Frozen");
+        missing.put(PaoType.RFN520FRX, "Sum Peak kVAr Frozen");
+        
+        missing.put(PaoType.RFN520FRXD, "Delivered Peak kVA Frozen");
+        missing.put(PaoType.RFN520FRXD, "Delivered Peak kVAr Frozen");
+        missing.put(PaoType.RFN520FRXD, "Power Factor Degrees");
+        missing.put(PaoType.RFN520FRXD, "Sum Peak kVA Frozen");
+        missing.put(PaoType.RFN520FRXD, "Sum Peak kVAr Frozen");
+        
+        missing.put(PaoType.RFN530FAX, "Delivered Peak kVA Frozen");
+        missing.put(PaoType.RFN530FAX, "Delivered Peak kVA");
+        missing.put(PaoType.RFN530FAX, "Delivered Peak kVAr Frozen");
+        missing.put(PaoType.RFN530FAX, "Delivered Peak kVAr");
+        missing.put(PaoType.RFN530FAX, "Delivered kVAh");
+        missing.put(PaoType.RFN530FAX, "Delivered kVArh");
+        missing.put(PaoType.RFN530FAX, "Net kVAh");
+        missing.put(PaoType.RFN530FAX, "Net kVArh");
+        missing.put(PaoType.RFN530FAX, "Peak Demand Daily");
+        missing.put(PaoType.RFN530FAX, "Power Factor Degrees Phase A");
+        missing.put(PaoType.RFN530FAX, "Power Factor Degrees Phase B");
+        missing.put(PaoType.RFN530FAX, "Power Factor Degrees Phase C");
+        missing.put(PaoType.RFN530FAX, "Received kVAh");
+        missing.put(PaoType.RFN530FAX, "Received kVArh");
+        missing.put(PaoType.RFN530FAX, "Sum Peak kVA Frozen");
+        missing.put(PaoType.RFN530FAX, "Sum Peak kVA");
+        missing.put(PaoType.RFN530FAX, "Sum Peak kVAr Frozen");
+        missing.put(PaoType.RFN530FAX, "Sum Peak kVAr");
+        missing.put(PaoType.RFN530FAX, "Sum kVAh");
+        missing.put(PaoType.RFN530FAX, "Sum kVArh");
+        
+        missing.put(PaoType.RFN530FRX, "Delivered Peak kVA Frozen");
+        missing.put(PaoType.RFN530FRX, "Delivered Peak kVAr Frozen");
+        missing.put(PaoType.RFN530FRX, "Peak Demand Daily");
+        missing.put(PaoType.RFN530FRX, "Power Factor Degrees Phase A");
+        missing.put(PaoType.RFN530FRX, "Power Factor Degrees Phase B");
+        missing.put(PaoType.RFN530FRX, "Power Factor Degrees Phase C");
+        missing.put(PaoType.RFN530FRX, "Sum Peak kVA Frozen");
+        missing.put(PaoType.RFN530FRX, "Sum Peak kVAr Frozen");
+        
+        missing.put(PaoType.RFN530S4EAX, "Avg Voltage Phase A");
+        missing.put(PaoType.RFN530S4EAX, "Avg Voltage Phase B");
+        missing.put(PaoType.RFN530S4EAX, "Avg Voltage Phase C");
+        missing.put(PaoType.RFN530S4EAX, "Delivered Peak kVA (Rate A kVA)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered Peak kVA (Rate B kVA)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered Peak kVA (Rate C kVA)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered Peak kVA (Rate D kVA)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered Peak kVAr (Rate A kVAr)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered Peak kVAr (Rate B kVAr)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered Peak kVAr (Rate C kVAr)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered Peak kVAr (Rate D kVAr)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered Peak kVAr");
+        missing.put(PaoType.RFN530S4EAX, "Delivered kVA");
+        missing.put(PaoType.RFN530S4EAX, "Delivered kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered kVAh");
+        missing.put(PaoType.RFN530S4EAX, "Delivered kVAr");
+        missing.put(PaoType.RFN530S4EAX, "Delivered kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Delivered kVArh");
+        missing.put(PaoType.RFN530S4EAX, "Delivered kW");
+        missing.put(PaoType.RFN530S4EAX, "Delivered kWh");
+        missing.put(PaoType.RFN530S4EAX, "Max Voltage Phase A");
+        missing.put(PaoType.RFN530S4EAX, "Max Voltage Phase B");
+        missing.put(PaoType.RFN530S4EAX, "Max Voltage Phase C");
+        missing.put(PaoType.RFN530S4EAX, "Min Voltage Phase A");
+        missing.put(PaoType.RFN530S4EAX, "Min Voltage Phase B");
+        missing.put(PaoType.RFN530S4EAX, "Min Voltage Phase C");
+        missing.put(PaoType.RFN530S4EAX, "Net Peak kW (Rate A kW)");
+        missing.put(PaoType.RFN530S4EAX, "Net Peak kW (Rate B kW)");
+        missing.put(PaoType.RFN530S4EAX, "Net Peak kW (Rate C kW)");
+        missing.put(PaoType.RFN530S4EAX, "Net Peak kW (Rate D kW)");
+        missing.put(PaoType.RFN530S4EAX, "Net Peak kW");
+        missing.put(PaoType.RFN530S4EAX, "Net kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Net kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Net kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Net kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Net kVArh");
+        missing.put(PaoType.RFN530S4EAX, "Net kWh (Rate A kWh)");
+        missing.put(PaoType.RFN530S4EAX, "Net kWh (Rate B kWh)");
+        missing.put(PaoType.RFN530S4EAX, "Net kWh (Rate C kWh)");
+        missing.put(PaoType.RFN530S4EAX, "Net kWh (Rate D kWh)");
+        missing.put(PaoType.RFN530S4EAX, "Peak Demand Daily");
+        missing.put(PaoType.RFN530S4EAX, "Peak kVA");
+        missing.put(PaoType.RFN530S4EAX, "Peak kW (Rate A kW)");
+        missing.put(PaoType.RFN530S4EAX, "Peak kW (Rate B kW)");
+        missing.put(PaoType.RFN530S4EAX, "Peak kW (Rate C kW)");
+        missing.put(PaoType.RFN530S4EAX, "Peak kW (Rate D kW)");
+        missing.put(PaoType.RFN530S4EAX, "Peak kW Frozen (Rate A kW)");
+        missing.put(PaoType.RFN530S4EAX, "Peak kW Frozen (Rate B kW)");
+        missing.put(PaoType.RFN530S4EAX, "Peak kW Frozen (Rate C kW)");
+        missing.put(PaoType.RFN530S4EAX, "Peak kW Frozen (Rate D kW)");
+        missing.put(PaoType.RFN530S4EAX, "Peak kW Frozen");
+        missing.put(PaoType.RFN530S4EAX, "Peak kW");
+        missing.put(PaoType.RFN530S4EAX, "Power Factor Degrees Phase A");
+        missing.put(PaoType.RFN530S4EAX, "Power Factor Degrees Phase B");
+        missing.put(PaoType.RFN530S4EAX, "Power Factor Degrees Phase C");
+        missing.put(PaoType.RFN530S4EAX, "Rate A kWh");
+        missing.put(PaoType.RFN530S4EAX, "Rate B kWh");
+        missing.put(PaoType.RFN530S4EAX, "Rate C kWh");
+        missing.put(PaoType.RFN530S4EAX, "Rate D kWh");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kVA (Rate A kVA)");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kVA (Rate B kVA)");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kVA (Rate C kVA)");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kVA (Rate D kVA)");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kVA");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kVAr (Rate A kVAr)");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kVAr (Rate B kVAr)");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kVAr (Rate C kVAr)");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kVAr (Rate D kVAr)");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kVAr");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kW (Rate A kW)");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kW (Rate B kW)");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kW (Rate C kW)");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kW (Rate D kW)");
+        missing.put(PaoType.RFN530S4EAX, "Received Peak kW");
+        missing.put(PaoType.RFN530S4EAX, "Received kVA");
+        missing.put(PaoType.RFN530S4EAX, "Received kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530S4EAX, "Received kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530S4EAX, "Received kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530S4EAX, "Received kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530S4EAX, "Received kVAh");
+        missing.put(PaoType.RFN530S4EAX, "Received kVAr");
+        missing.put(PaoType.RFN530S4EAX, "Received kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Received kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Received kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Received kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Received kVArh");
+        missing.put(PaoType.RFN530S4EAX, "Received kW");
+        missing.put(PaoType.RFN530S4EAX, "Received kWh (Rate A kWh)");
+        missing.put(PaoType.RFN530S4EAX, "Received kWh (Rate B kWh)");
+        missing.put(PaoType.RFN530S4EAX, "Received kWh (Rate C kWh)");
+        missing.put(PaoType.RFN530S4EAX, "Received kWh (Rate D kWh)");
+        missing.put(PaoType.RFN530S4EAX, "Sum Peak kVA (Rate A kVA)");
+        missing.put(PaoType.RFN530S4EAX, "Sum Peak kVA (Rate B kVA)");
+        missing.put(PaoType.RFN530S4EAX, "Sum Peak kVA (Rate C kVA)");
+        missing.put(PaoType.RFN530S4EAX, "Sum Peak kVA (Rate D kVA)");
+        missing.put(PaoType.RFN530S4EAX, "Sum Peak kVA");
+        missing.put(PaoType.RFN530S4EAX, "Sum Peak kVAr (Rate A kVAr)");
+        missing.put(PaoType.RFN530S4EAX, "Sum Peak kVAr (Rate B kVAr)");
+        missing.put(PaoType.RFN530S4EAX, "Sum Peak kVAr (Rate C kVAr)");
+        missing.put(PaoType.RFN530S4EAX, "Sum Peak kVAr (Rate D kVAr)");
+        missing.put(PaoType.RFN530S4EAX, "Sum Peak kVAr");
+        missing.put(PaoType.RFN530S4EAX, "Sum Peak kW (Rate A kW)");
+        missing.put(PaoType.RFN530S4EAX, "Sum Peak kW (Rate B kW)");
+        missing.put(PaoType.RFN530S4EAX, "Sum Peak kW (Rate C kW)");
+        missing.put(PaoType.RFN530S4EAX, "Sum Peak kW (Rate D kW)");
+        missing.put(PaoType.RFN530S4EAX, "Sum kVA");
+        missing.put(PaoType.RFN530S4EAX, "Sum kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530S4EAX, "Sum kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530S4EAX, "Sum kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530S4EAX, "Sum kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530S4EAX, "Sum kVAh");
+        missing.put(PaoType.RFN530S4EAX, "Sum kVAr");
+        missing.put(PaoType.RFN530S4EAX, "Sum kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Sum kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Sum kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Sum kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4EAX, "Sum kVArh");
+        missing.put(PaoType.RFN530S4EAX, "Sum kW");
+        missing.put(PaoType.RFN530S4EAX, "Sum kWh (Rate A kWh)");
+        missing.put(PaoType.RFN530S4EAX, "Sum kWh (Rate B kWh)");
+        missing.put(PaoType.RFN530S4EAX, "Sum kWh (Rate C kWh)");
+        missing.put(PaoType.RFN530S4EAX, "Sum kWh (Rate D kWh)");
+        missing.put(PaoType.RFN530S4EAX, "kVAh Leading (Q1 + Q3)");
+        missing.put(PaoType.RFN530S4EAX, "kVArh Leading (Q1 + Q3)");
+        
+        missing.put(PaoType.RFN530S4EAXR, "Avg Voltage Phase A");
+        missing.put(PaoType.RFN530S4EAXR, "Avg Voltage Phase B");
+        missing.put(PaoType.RFN530S4EAXR, "Avg Voltage Phase C");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered Peak kVA (Rate A kVA)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered Peak kVA (Rate B kVA)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered Peak kVA (Rate C kVA)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered Peak kVA (Rate D kVA)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered Peak kVAr (Rate A kVAr)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered Peak kVAr (Rate B kVAr)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered Peak kVAr (Rate C kVAr)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered Peak kVAr (Rate D kVAr)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered Peak kVAr");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered kVA");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered kVAh");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered kVAr");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered kVArh");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered kW");
+        missing.put(PaoType.RFN530S4EAXR, "Delivered kWh");
+        missing.put(PaoType.RFN530S4EAXR, "Max Voltage Phase A");
+        missing.put(PaoType.RFN530S4EAXR, "Max Voltage Phase B");
+        missing.put(PaoType.RFN530S4EAXR, "Max Voltage Phase C");
+        missing.put(PaoType.RFN530S4EAXR, "Min Voltage Phase A");
+        missing.put(PaoType.RFN530S4EAXR, "Min Voltage Phase B");
+        missing.put(PaoType.RFN530S4EAXR, "Min Voltage Phase C");
+        missing.put(PaoType.RFN530S4EAXR, "Net Peak kW (Rate A kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Net Peak kW (Rate B kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Net Peak kW (Rate C kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Net Peak kW (Rate D kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Net Peak kW");
+        missing.put(PaoType.RFN530S4EAXR, "Net kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Net kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Net kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Net kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Net kVArh");
+        missing.put(PaoType.RFN530S4EAXR, "Peak Demand Daily");
+        missing.put(PaoType.RFN530S4EAXR, "Peak kVA");
+        missing.put(PaoType.RFN530S4EAXR, "Peak kW (Rate A kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Peak kW (Rate B kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Peak kW (Rate C kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Peak kW (Rate D kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Peak kW Frozen (Rate A kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Peak kW Frozen (Rate B kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Peak kW Frozen (Rate C kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Peak kW Frozen (Rate D kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Peak kW Frozen");
+        missing.put(PaoType.RFN530S4EAXR, "Peak kW");
+        missing.put(PaoType.RFN530S4EAXR, "Power Factor Degrees Phase A");
+        missing.put(PaoType.RFN530S4EAXR, "Power Factor Degrees Phase B");
+        missing.put(PaoType.RFN530S4EAXR, "Power Factor Degrees Phase C");
+        missing.put(PaoType.RFN530S4EAXR, "Rate A kWh");
+        missing.put(PaoType.RFN530S4EAXR, "Rate B kWh");
+        missing.put(PaoType.RFN530S4EAXR, "Rate C kWh");
+        missing.put(PaoType.RFN530S4EAXR, "Rate D kWh");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kVA (Rate A kVA)");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kVA (Rate B kVA)");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kVA (Rate C kVA)");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kVA (Rate D kVA)");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kVA");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kVAr (Rate A kVAr)");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kVAr (Rate B kVAr)");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kVAr (Rate C kVAr)");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kVAr (Rate D kVAr)");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kVAr");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kW (Rate A kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kW (Rate B kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kW (Rate C kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kW (Rate D kW)");
+        missing.put(PaoType.RFN530S4EAXR, "Received Peak kW");
+        missing.put(PaoType.RFN530S4EAXR, "Received kVA");
+        missing.put(PaoType.RFN530S4EAXR, "Received kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530S4EAXR, "Received kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530S4EAXR, "Received kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530S4EAXR, "Received kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530S4EAXR, "Received kVAh");
+        missing.put(PaoType.RFN530S4EAXR, "Received kVAr");
+        missing.put(PaoType.RFN530S4EAXR, "Received kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Received kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Received kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Received kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Received kVArh");
+        missing.put(PaoType.RFN530S4EAXR, "Received kW");
+        missing.put(PaoType.RFN530S4EAXR, "Received kWh (Rate A kWh)");
+        missing.put(PaoType.RFN530S4EAXR, "Received kWh (Rate B kWh)");
+        missing.put(PaoType.RFN530S4EAXR, "Received kWh (Rate C kWh)");
+        missing.put(PaoType.RFN530S4EAXR, "Received kWh (Rate D kWh)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum Peak kVA (Rate A kVA)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum Peak kVA (Rate B kVA)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum Peak kVA (Rate C kVA)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum Peak kVA (Rate D kVA)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum Peak kVA");
+        missing.put(PaoType.RFN530S4EAXR, "Sum Peak kVAr (Rate A kVAr)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum Peak kVAr (Rate B kVAr)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum Peak kVAr (Rate C kVAr)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum Peak kVAr (Rate D kVAr)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum Peak kVAr");
+        missing.put(PaoType.RFN530S4EAXR, "Sum kVA");
+        missing.put(PaoType.RFN530S4EAXR, "Sum kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum kVAh");
+        missing.put(PaoType.RFN530S4EAXR, "Sum kVAr");
+        missing.put(PaoType.RFN530S4EAXR, "Sum kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4EAXR, "Sum kVArh");
+        missing.put(PaoType.RFN530S4EAXR, "Sum kW");
+        missing.put(PaoType.RFN530S4EAXR, "kVAh Leading (Q1 + Q3)");
+        missing.put(PaoType.RFN530S4EAXR, "kVArh Leading (Q1 + Q3)");
+        
+        missing.put(PaoType.RFN530S4ERX, "Avg Voltage Phase A");
+        missing.put(PaoType.RFN530S4ERX, "Avg Voltage Phase B");
+        missing.put(PaoType.RFN530S4ERX, "Avg Voltage Phase C");
+        missing.put(PaoType.RFN530S4ERX, "Delivered Peak kVA (Rate A kVA)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered Peak kVA (Rate B kVA)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered Peak kVA (Rate C kVA)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered Peak kVA (Rate D kVA)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered Peak kVAr (Rate A kVAr)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered Peak kVAr (Rate B kVAr)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered Peak kVAr (Rate C kVAr)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered Peak kVAr (Rate D kVAr)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered Peak kVAr");
+        missing.put(PaoType.RFN530S4ERX, "Delivered kVA");
+        missing.put(PaoType.RFN530S4ERX, "Delivered kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered kVAh");
+        missing.put(PaoType.RFN530S4ERX, "Delivered kVAr");
+        missing.put(PaoType.RFN530S4ERX, "Delivered kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Delivered kVArh");
+        missing.put(PaoType.RFN530S4ERX, "Delivered kW");
+        missing.put(PaoType.RFN530S4ERX, "Delivered kWh");
+        missing.put(PaoType.RFN530S4ERX, "Max Voltage Phase A");
+        missing.put(PaoType.RFN530S4ERX, "Max Voltage Phase B");
+        missing.put(PaoType.RFN530S4ERX, "Max Voltage Phase C");
+        missing.put(PaoType.RFN530S4ERX, "Min Voltage Phase A");
+        missing.put(PaoType.RFN530S4ERX, "Min Voltage Phase B");
+        missing.put(PaoType.RFN530S4ERX, "Min Voltage Phase C");
+        missing.put(PaoType.RFN530S4ERX, "Net Peak kW (Rate A kW)");
+        missing.put(PaoType.RFN530S4ERX, "Net Peak kW (Rate B kW)");
+        missing.put(PaoType.RFN530S4ERX, "Net Peak kW (Rate C kW)");
+        missing.put(PaoType.RFN530S4ERX, "Net Peak kW (Rate D kW)");
+        missing.put(PaoType.RFN530S4ERX, "Net Peak kW");
+        missing.put(PaoType.RFN530S4ERX, "Net kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Net kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Net kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Net kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Net kWh (Rate A kWh)");
+        missing.put(PaoType.RFN530S4ERX, "Net kWh (Rate B kWh)");
+        missing.put(PaoType.RFN530S4ERX, "Net kWh (Rate C kWh)");
+        missing.put(PaoType.RFN530S4ERX, "Net kWh (Rate D kWh)");
+        missing.put(PaoType.RFN530S4ERX, "Peak Demand Daily");
+        missing.put(PaoType.RFN530S4ERX, "Peak kVA");
+        missing.put(PaoType.RFN530S4ERX, "Peak kW (Rate A kW)");
+        missing.put(PaoType.RFN530S4ERX, "Peak kW (Rate B kW)");
+        missing.put(PaoType.RFN530S4ERX, "Peak kW (Rate C kW)");
+        missing.put(PaoType.RFN530S4ERX, "Peak kW (Rate D kW)");
+        missing.put(PaoType.RFN530S4ERX, "Peak kW Frozen (Rate A kW)");
+        missing.put(PaoType.RFN530S4ERX, "Peak kW Frozen (Rate B kW)");
+        missing.put(PaoType.RFN530S4ERX, "Peak kW Frozen (Rate C kW)");
+        missing.put(PaoType.RFN530S4ERX, "Peak kW Frozen (Rate D kW)");
+        missing.put(PaoType.RFN530S4ERX, "Peak kW Frozen");
+        missing.put(PaoType.RFN530S4ERX, "Peak kW");
+        missing.put(PaoType.RFN530S4ERX, "Power Factor Degrees Phase A");
+        missing.put(PaoType.RFN530S4ERX, "Power Factor Degrees Phase B");
+        missing.put(PaoType.RFN530S4ERX, "Power Factor Degrees Phase C");
+        missing.put(PaoType.RFN530S4ERX, "Rate A kWh");
+        missing.put(PaoType.RFN530S4ERX, "Rate B kWh");
+        missing.put(PaoType.RFN530S4ERX, "Rate C kWh");
+        missing.put(PaoType.RFN530S4ERX, "Rate D kWh");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kVA (Rate A kVA)");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kVA (Rate B kVA)");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kVA (Rate C kVA)");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kVA (Rate D kVA)");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kVA");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kVAr (Rate A kVAr)");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kVAr (Rate B kVAr)");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kVAr (Rate C kVAr)");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kVAr (Rate D kVAr)");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kVAr");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kW (Rate A kW)");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kW (Rate B kW)");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kW (Rate C kW)");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kW (Rate D kW)");
+        missing.put(PaoType.RFN530S4ERX, "Received Peak kW");
+        missing.put(PaoType.RFN530S4ERX, "Received kVA");
+        missing.put(PaoType.RFN530S4ERX, "Received kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530S4ERX, "Received kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530S4ERX, "Received kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530S4ERX, "Received kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530S4ERX, "Received kVAh");
+        missing.put(PaoType.RFN530S4ERX, "Received kVAr");
+        missing.put(PaoType.RFN530S4ERX, "Received kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Received kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Received kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Received kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Received kVArh");
+        missing.put(PaoType.RFN530S4ERX, "Received kW");
+        missing.put(PaoType.RFN530S4ERX, "Received kWh (Rate A kWh)");
+        missing.put(PaoType.RFN530S4ERX, "Received kWh (Rate B kWh)");
+        missing.put(PaoType.RFN530S4ERX, "Received kWh (Rate C kWh)");
+        missing.put(PaoType.RFN530S4ERX, "Received kWh (Rate D kWh)");
+        missing.put(PaoType.RFN530S4ERX, "Sum Peak kVA (Rate A kVA)");
+        missing.put(PaoType.RFN530S4ERX, "Sum Peak kVA (Rate B kVA)");
+        missing.put(PaoType.RFN530S4ERX, "Sum Peak kVA (Rate C kVA)");
+        missing.put(PaoType.RFN530S4ERX, "Sum Peak kVA (Rate D kVA)");
+        missing.put(PaoType.RFN530S4ERX, "Sum Peak kVAr (Rate A kVAr)");
+        missing.put(PaoType.RFN530S4ERX, "Sum Peak kVAr (Rate B kVAr)");
+        missing.put(PaoType.RFN530S4ERX, "Sum Peak kVAr (Rate C kVAr)");
+        missing.put(PaoType.RFN530S4ERX, "Sum Peak kVAr (Rate D kVAr)");
+        missing.put(PaoType.RFN530S4ERX, "Sum Peak kW (Rate A kW)");
+        missing.put(PaoType.RFN530S4ERX, "Sum Peak kW (Rate B kW)");
+        missing.put(PaoType.RFN530S4ERX, "Sum Peak kW (Rate C kW)");
+        missing.put(PaoType.RFN530S4ERX, "Sum Peak kW (Rate D kW)");
+        missing.put(PaoType.RFN530S4ERX, "Sum kVA");
+        missing.put(PaoType.RFN530S4ERX, "Sum kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530S4ERX, "Sum kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530S4ERX, "Sum kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530S4ERX, "Sum kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530S4ERX, "Sum kVAr");
+        missing.put(PaoType.RFN530S4ERX, "Sum kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Sum kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Sum kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Sum kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4ERX, "Sum kW");
+        missing.put(PaoType.RFN530S4ERX, "Sum kWh (Rate A kWh)");
+        missing.put(PaoType.RFN530S4ERX, "Sum kWh (Rate B kWh)");
+        missing.put(PaoType.RFN530S4ERX, "Sum kWh (Rate C kWh)");
+        missing.put(PaoType.RFN530S4ERX, "Sum kWh (Rate D kWh)");
+        missing.put(PaoType.RFN530S4ERX, "kVAh Leading (Q1 + Q3)");
+        missing.put(PaoType.RFN530S4ERX, "kVArh Leading (Q1 + Q3)");
+        
+        missing.put(PaoType.RFN530S4ERXR, "Avg Voltage Phase A");
+        missing.put(PaoType.RFN530S4ERXR, "Avg Voltage Phase B");
+        missing.put(PaoType.RFN530S4ERXR, "Avg Voltage Phase C");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered Peak kVA (Rate A kVA)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered Peak kVA (Rate B kVA)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered Peak kVA (Rate C kVA)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered Peak kVA (Rate D kVA)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered Peak kVAr (Rate A kVAr)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered Peak kVAr (Rate B kVAr)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered Peak kVAr (Rate C kVAr)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered Peak kVAr (Rate D kVAr)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered Peak kVAr");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered kVA");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered kVAh");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered kVAr");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered kVArh");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered kW");
+        missing.put(PaoType.RFN530S4ERXR, "Delivered kWh");
+        missing.put(PaoType.RFN530S4ERXR, "Max Voltage Phase A");
+        missing.put(PaoType.RFN530S4ERXR, "Max Voltage Phase B");
+        missing.put(PaoType.RFN530S4ERXR, "Max Voltage Phase C");
+        missing.put(PaoType.RFN530S4ERXR, "Min Voltage Phase A");
+        missing.put(PaoType.RFN530S4ERXR, "Min Voltage Phase B");
+        missing.put(PaoType.RFN530S4ERXR, "Min Voltage Phase C");
+        missing.put(PaoType.RFN530S4ERXR, "Net Peak kW (Rate A kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Net Peak kW (Rate B kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Net Peak kW (Rate C kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Net Peak kW (Rate D kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Net Peak kW");
+        missing.put(PaoType.RFN530S4ERXR, "Peak Demand Daily");
+        missing.put(PaoType.RFN530S4ERXR, "Peak kVA");
+        missing.put(PaoType.RFN530S4ERXR, "Peak kW (Rate A kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Peak kW (Rate B kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Peak kW (Rate C kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Peak kW (Rate D kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Peak kW Frozen (Rate A kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Peak kW Frozen (Rate B kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Peak kW Frozen (Rate C kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Peak kW Frozen (Rate D kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Peak kW Frozen");
+        missing.put(PaoType.RFN530S4ERXR, "Peak kW");
+        missing.put(PaoType.RFN530S4ERXR, "Power Factor Degrees Phase A");
+        missing.put(PaoType.RFN530S4ERXR, "Power Factor Degrees Phase B");
+        missing.put(PaoType.RFN530S4ERXR, "Power Factor Degrees Phase C");
+        missing.put(PaoType.RFN530S4ERXR, "Rate A kWh");
+        missing.put(PaoType.RFN530S4ERXR, "Rate B kWh");
+        missing.put(PaoType.RFN530S4ERXR, "Rate C kWh");
+        missing.put(PaoType.RFN530S4ERXR, "Rate D kWh");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kVA (Rate A kVA)");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kVA (Rate B kVA)");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kVA (Rate C kVA)");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kVA (Rate D kVA)");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kVA");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kVAr (Rate A kVAr)");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kVAr (Rate B kVAr)");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kVAr (Rate C kVAr)");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kVAr (Rate D kVAr)");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kVAr");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kW (Rate A kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kW (Rate B kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kW (Rate C kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kW (Rate D kW)");
+        missing.put(PaoType.RFN530S4ERXR, "Received Peak kW");
+        missing.put(PaoType.RFN530S4ERXR, "Received kVA");
+        missing.put(PaoType.RFN530S4ERXR, "Received kVAh (Rate A kVAh)");
+        missing.put(PaoType.RFN530S4ERXR, "Received kVAh (Rate B kVAh)");
+        missing.put(PaoType.RFN530S4ERXR, "Received kVAh (Rate C kVAh)");
+        missing.put(PaoType.RFN530S4ERXR, "Received kVAh (Rate D kVAh)");
+        missing.put(PaoType.RFN530S4ERXR, "Received kVAh");
+        missing.put(PaoType.RFN530S4ERXR, "Received kVAr");
+        missing.put(PaoType.RFN530S4ERXR, "Received kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4ERXR, "Received kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4ERXR, "Received kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4ERXR, "Received kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4ERXR, "Received kVArh");
+        missing.put(PaoType.RFN530S4ERXR, "Received kW");
+        missing.put(PaoType.RFN530S4ERXR, "Received kWh (Rate A kWh)");
+        missing.put(PaoType.RFN530S4ERXR, "Received kWh (Rate B kWh)");
+        missing.put(PaoType.RFN530S4ERXR, "Received kWh (Rate C kWh)");
+        missing.put(PaoType.RFN530S4ERXR, "Received kWh (Rate D kWh)");
+        missing.put(PaoType.RFN530S4ERXR, "Sum kVA");
+        missing.put(PaoType.RFN530S4ERXR, "Sum kVAr");
+        missing.put(PaoType.RFN530S4ERXR, "Sum kW");
+        missing.put(PaoType.RFN530S4ERXR, "kVAh Leading (Q1 + Q3)");
+        missing.put(PaoType.RFN530S4ERXR, "kVArh Leading (Q1 + Q3)");
+        
+        missing.put(PaoType.RFN530S4X, "Average Power Factor");
+        missing.put(PaoType.RFN530S4X, "Net kVA");
+        missing.put(PaoType.RFN530S4X, "Net kVAr");
+        missing.put(PaoType.RFN530S4X, "Net kVArh (Rate A kVArh)");
+        missing.put(PaoType.RFN530S4X, "Net kVArh (Rate B kVArh)");
+        missing.put(PaoType.RFN530S4X, "Net kVArh (Rate C kVArh)");
+        missing.put(PaoType.RFN530S4X, "Net kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530S4X, "Net kVArh");
+        missing.put(PaoType.RFN530S4X, "Net kW");
+        missing.put(PaoType.RFN530S4X, "Net kWh (Rate A kWh)");
+        missing.put(PaoType.RFN530S4X, "Net kWh (Rate B kWh)");
+        missing.put(PaoType.RFN530S4X, "Net kWh (Rate C kWh)");
+        missing.put(PaoType.RFN530S4X, "Net kWh (Rate D kWh)");
+        missing.put(PaoType.RFN530S4X, "Peak Demand Daily");
+        missing.put(PaoType.RFN530S4X, "Power Factor Degrees Phase A");
+        missing.put(PaoType.RFN530S4X, "Power Factor Degrees Phase B");
+        missing.put(PaoType.RFN530S4X, "Power Factor Degrees Phase C");
+        missing.put(PaoType.RFN530S4X, "kVA (Quadrants 1 2)");
+        missing.put(PaoType.RFN530S4X, "kVA (Quadrants 1 3)");
+        missing.put(PaoType.RFN530S4X, "kVA (Quadrants 2 4)");
+        missing.put(PaoType.RFN530S4X, "kVA (Quadrants 3 4)");
+        missing.put(PaoType.RFN530S4X, "kVAh Leading (Q1 + Q3)");
+        missing.put(PaoType.RFN530S4X, "kVAr (Quadrants 1 3)");
+        missing.put(PaoType.RFN530S4X, "kVAr (Quadrants 1 4)");
+        missing.put(PaoType.RFN530S4X, "kVAr (Quadrants 2 3)");
+        missing.put(PaoType.RFN530S4X, "kVAr (Quadrants 2 4)");
+        missing.put(PaoType.RFN530S4X, "kVArh Leading (Q1 + Q3)");
+        
+        return missing;
     }
 }
