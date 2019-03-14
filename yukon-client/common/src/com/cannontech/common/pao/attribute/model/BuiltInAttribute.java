@@ -1,14 +1,12 @@
 package com.cannontech.common.pao.attribute.model;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.common.i18n.Displayable;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -676,7 +674,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     private static Map<AttributeGroup, Set<BuiltInAttribute>> allGroupedAttributes;
 
-    private final static ImmutableSetMultimap<AttributeGroup, BuiltInAttribute> lookupByGroup;
+    private static final ImmutableSetMultimap<AttributeGroup, BuiltInAttribute> lookupByGroup;
     
     private static Map<AttributeGroup, Set<BuiltInAttribute>> allGroupedStatusTypeAttributes;
     
@@ -833,7 +831,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         groupedRfnEventBuilder.put(AttributeGroup.RFN_VOLTAGE_EVENT, lookupByGroup.get(AttributeGroup.RFN_VOLTAGE_EVENT));
         groupedRfnEventBuilder.put(AttributeGroup.RFN_CURRENT_EVENT, lookupByGroup.get(AttributeGroup.RFN_CURRENT_EVENT));
         groupedRfnEventBuilder.put(AttributeGroup.RFN_DEMAND_EVENT, lookupByGroup.get(AttributeGroup.RFN_DEMAND_EVENT));
-        groupedRfnEventBuilder.put(AttributeGroup.RFN_OTHER_EVENT, lookupByGroup.get(AttributeGroup.RFN_OTHER_EVENT));;
+        groupedRfnEventBuilder.put(AttributeGroup.RFN_OTHER_EVENT, lookupByGroup.get(AttributeGroup.RFN_OTHER_EVENT));
         groupedRfnEventBuilder.put(AttributeGroup.RFN_METERING_EVENT, lookupByGroup.get(AttributeGroup.RFN_METERING_EVENT));
 
         groupedRfnEventAttributes = groupedRfnEventBuilder.build();
@@ -1035,13 +1033,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     }
 
     public static void sort(List<BuiltInAttribute> attributes, final MessageSourceAccessor accessor) {
-        Comparator<Displayable> comparator = new Comparator<Displayable>() {
-            @Override
-            public int compare(Displayable o1, Displayable o2) {
-                return accessor.getMessage(o1.getMessage()).compareTo(accessor.getMessage(o2.getMessage()));
-            }
-        };
-        Collections.sort(attributes, comparator);
+        Collections.sort(attributes, (o1, o2) -> accessor.getMessage(o1.getMessage()).compareTo(accessor.getMessage(o2.getMessage())));
     }
 
     /**
