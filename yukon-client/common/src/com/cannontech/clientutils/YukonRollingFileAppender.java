@@ -60,7 +60,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
     /**
      * tells whether the maxFileSize has been reached
      */
-    private static boolean isMaxFileSizeReached = false;
+    private boolean isMaxFileSizeReached = false;
 
     /**
      * The directory in which log files are created.
@@ -223,7 +223,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
                 // day.
                 isMaxFileSizeReached = true;
                 try (FileWriter fwriter = new FileWriter(tempFile, true)) {
-                    String output = "The maximum file size of " + maxFileSize
+                    String output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS").format(new Date()) + " The maximum file size of " + maxFileSize
                         + " bytes has been reached, logging has been turned off for today.\n";
                     fwriter.write("\n");
                     fwriter.write(output);
