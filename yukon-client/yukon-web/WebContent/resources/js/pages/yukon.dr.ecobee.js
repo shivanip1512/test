@@ -55,13 +55,12 @@ yukon.dr.ecobee = (function () {
                 
                 if (0 < loadGroupPicker.selectedItems.length) {
                     loadGroupPicker.endAction.call(loadGroupPicker, loadGroupPicker.selectedItems);
-                    yukon.ui.busy(".js-initiate-download");
                 } else {
                     // removed possibly accumulated inputs from previous selections
                     $('[name="loadGroupIds"]').remove();
                     // submit knowing the request will fail, clean up in error function
                 }
-                
+                yukon.ui.busy(".js-request-runtime-report");
                 $('#ecobee-download-popup form').ajaxSubmit({
                     url: 'ecobee/download/start', 
                     type: 'post',
@@ -83,6 +82,7 @@ yukon.dr.ecobee = (function () {
                         }
                     },
                     error: function(xhr, status, error, $form) {
+                        yukon.ui.unbusy(".js-request-runtime-report");
                         var errList = xhr.responseJSON,
                             i,
                             errorType,
@@ -327,8 +327,8 @@ yukon.dr.ecobee = (function () {
             });
             
             // If any operation to read the data to download is in progress, the Initiate Download button should be busy.
-            if($(".js-data-downloads").find("div.progress-bar-info").exists()) {
-                yukon.ui.busy(".js-initiate-download");
+            if ($(".js-data-downloads").find("div.progress-bar-info").exists()) {
+                yukon.ui.busy(".js-request-runtime-report");
             }
         },
         /**
@@ -398,9 +398,11 @@ yukon.dr.ecobee = (function () {
                     bar.addClass('progress-bar-danger');
                     btn.disable();
                 }
-                if(!$(".js-data-downloads").find("div.progress-bar-info").exists()) {
-                    yukon.ui.unbusy(".js-initiate-download");
-                }
+            }
+            if ($(".js-data-downloads").find("div.progress-bar-info").exists()) {
+                yukon.ui.busy(".js-request-runtime-report");
+            } else {
+                yukon.ui.unbusy(".js-request-runtime-report");
             }
             
             row.find('.js-percent-done').html(status.percentDone);

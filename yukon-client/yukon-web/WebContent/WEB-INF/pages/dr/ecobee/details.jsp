@@ -43,7 +43,8 @@
                 </table>
                 <span class="empty-list ${fn:length(downloads) > 0 ? 'dn' : ''}"><i:inline key=".download.none"/></span>
                 <div class="action-area">
-                    <cti:button nameKey="initiateDownload" data-popup="#ecobee-download-popup" classes="js-initiate-download"/>
+                    <cti:button nameKey="requestRuntimeReport" data-popup="#ecobee-download-popup" 
+                                classes="js-request-runtime-report" icon="icon-report-go"/>
                     <div data-dialog 
                         id="ecobee-download-popup"
                         data-url="ecobee/download/settings" 

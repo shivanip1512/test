@@ -38,12 +38,9 @@
         <cti:url var="downloadUrl" value="/dr/ecobee/download">
             <cti:param name="key" value="${key}"/>
         </cti:url>
-        <cti:button nameKey="download"
-            href="${downloadUrl}" 
-            classes="fr js-ec-download" 
-            renderMode="buttonImage" 
-            icon="icon-page-white-excel" 
-            disabled="${download.complete && download.successful ? 'false' : 'true'}"/>
+        <cti:msg2 key=".downloadReport" var="downloadReportToolTip"/>
+        <cti:button href="${downloadUrl}" classes="fr js-ec-download" renderMode="buttonImage" icon="icon-page-white-excel" 
+                    disabled="${download.complete && download.successful ? 'false' : 'true'}" title="${downloadReportToolTip}"/>
     </td>
 </tr>
 </cti:msgScope>
