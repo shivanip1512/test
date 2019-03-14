@@ -408,8 +408,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 .stream()
                 .filter(x -> x.getName().equals(defaultPointName))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("Could not find point identifier for" 
-                                                         + type + "/" + defaultPointName))
+                .orElseThrow(() -> new NotFoundException("Could not find point identifier for " + type + "/" + defaultPointName))
                 .getPointIdentifier();
     }
 
