@@ -15,12 +15,14 @@ public class LMGroupItronMapping extends com.cannontech.database.db.DBPersistent
         super();
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
         Object addValues[] = { yukonGroupId, null, virtualRelayId};
         add(TABLE_NAME, addValues);
 
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
         delete(TABLE_NAME, CONSTRAINT_COLUMNS[0], yukonGroupId);
     }
