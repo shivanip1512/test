@@ -500,6 +500,11 @@ begin
         formattedDateString = FormatDatePattern(sDateString);
         RenameInstalledDateJavaServicesAndClientLog(formattedDateString);
     endif;
+
+    if(IsInstalledVersionLesser("7.1.2")) then
+        CopyFile(TOMCATBACKUPFILE, TARGETDIR + "\\Server\\web\\conf\\server.xml");
+    endif;
+
 	Dialog_StartServices:
 	
 	//only give the option to start services if services were installed
@@ -518,9 +523,6 @@ begin
 		endif;
 	endif;			
 	
-    if(IsInstalledVersionLesser("7.1.2")) then
-        CopyFile(TOMCATBACKUPFILE, TARGETDIR + "\\Server\\web\\conf\\server.xml");
-    endif;
     
 	//if files were locked, a reboot is required
 	if (BATCH_INSTALL) then
