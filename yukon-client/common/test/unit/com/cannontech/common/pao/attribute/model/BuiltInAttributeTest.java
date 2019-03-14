@@ -25,7 +25,7 @@ public class BuiltInAttributeTest {
      * group.
      */
     @Test
-    public void attributeGroupMembershipTest() {
+    public void testAttributeGroupMembership() {
         Map<AttributeGroup, Set<BuiltInAttribute>> allGroupedAttributes = BuiltInAttribute.getAllGroupedAttributes();
         List<BuiltInAttribute> allAttributesInAGroup = allGroupedAttributes.values().stream()
                 .flatMap(Set::stream)
