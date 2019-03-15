@@ -42,6 +42,12 @@ WHERE EntryText = 'Excellant (12+)"';
 INSERT INTO DBUpdates VALUES ('YUK-19324', '7.3.0', SYSDATE);
 /* @end YUK-19324 */
 
+/* @start YUK-19624 */
+INSERT INTO State VALUES(-28, 3, 'On', 0, 6, 0);
+
+INSERT INTO DBUpdates VALUES ('YUK-19624', '7.3.0', SYSDATE);
+/* @end YUK-19624 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

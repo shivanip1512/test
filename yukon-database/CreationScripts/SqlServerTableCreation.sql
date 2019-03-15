@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/12/2019 1:14:24 AM                         */
+/* Created on:     3/15/2019 2:05:15 PM                         */
 /*==============================================================*/
 
 
@@ -9061,6 +9061,7 @@ go
 INSERT INTO State VALUES(-28, 0, 'Heat', 1, 6, 0);
 INSERT INTO State VALUES(-28, 1, 'Cool', 4, 6, 0);
 INSERT INTO State VALUES(-28, 2, 'Off', 9, 6, 0);
+INSERT INTO State VALUES(-28, 3, 'On', 0, 6, 0);
 INSERT INTO State VALUES(-27, 0, 'Yes', 0, 6, 0);
 INSERT INTO State VALUES(-27, 1, 'No', 1, 6, 0);
 INSERT INTO State VALUES(-26, 0, 'Time of Day', 0, 6, 0);

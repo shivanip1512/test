@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/12/2019 1:12:01 AM                         */
+/* Created on:     3/15/2019 2:06:10 PM                         */
 /*==============================================================*/
 
 
@@ -8517,6 +8517,7 @@ create table State  (
 INSERT INTO State VALUES(-28, 0, 'Heat', 1, 6, 0);
 INSERT INTO State VALUES(-28, 1, 'Cool', 4, 6, 0);
 INSERT INTO State VALUES(-28, 2, 'Off', 9, 6, 0);
+INSERT INTO State VALUES(-28, 3, 'On', 0, 6, 0);
 INSERT INTO State VALUES(-27, 0, 'Yes', 0, 6, 0);
 INSERT INTO State VALUES(-27, 1, 'No', 1, 6, 0);
 INSERT INTO State VALUES(-26, 0, 'Time of Day', 0, 6, 0);
