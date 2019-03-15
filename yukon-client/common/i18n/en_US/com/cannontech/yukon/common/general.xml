@@ -31,6 +31,7 @@
 <entry key="yukon.common.attributeGroups.RFN_VOLTAGE_EVENT">Voltage Events</entry>
 <entry key="yukon.common.attributeGroups.GATEWAY_STATISTICS">Gateway Statistics</entry>
 <entry key="yukon.common.attributeGroups.CAPCONTROL">CapControl</entry>
+<entry key="yukon.common.attributeGroups.ITRON">Itron</entry>
 <entry key="yukon.common.attributeGroups.STATUS">Status</entry>
 <entry key="yukon.common.attributeGroups.USAGE">Usage</entry>
 <entry key="yukon.common.attributeGroups.VOLTAGE">Voltage</entry>
