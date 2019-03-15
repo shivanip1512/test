@@ -3,6 +3,8 @@ package com.cannontech.dr.itron.service.impl;
 import java.util.List;
 import java.util.zip.ZipFile;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,7 +35,12 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private ConfigurationSource configurationSource;
     
-    public int recordsPerRead = configurationSource.getInteger(MasterConfigInteger.ITRON_RECORD_IDS_PER_READ, 5000);
+    public int recordsPerRead;
+    
+    @PostConstruct
+    public void init(){
+        recordsPerRead = configurationSource.getInteger(MasterConfigInteger.ITRON_RECORD_IDS_PER_READ, 5000);
+    }
     
     @Override
     public void collectData() {
