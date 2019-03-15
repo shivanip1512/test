@@ -62,6 +62,8 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeListType;
+import com.cannontech.web.common.flashScope.FlashScopeMessage;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.deviceConfiguration.enumeration.DnpTimeOffset.Offsets;
 import com.cannontech.web.editor.CapControlCBC;
@@ -161,14 +163,26 @@ public class RtuController {
         return "/rtu/list.jsp";
     }
     
+    @SuppressWarnings("unchecked")
     @RequestMapping(value = "rtu/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.VIEW);
+        boolean errorFlag = false;
+        for (FlashScopeMessage flashScopeMessage : flash.pullMessages()) {
+            flash.setMessage((List<MessageSourceResolvable>) flashScopeMessage.getMessages(),
+                flashScopeMessage.getType());
+            if (flashScopeMessage.getType() == FlashScopeMessageType.ERROR) {
+                errorFlag = true;
+            }
+        }
         RtuDnp rtu = rtuDnpService.getRtuDnp(id);
         getPointsForModel(rtu.getId(), model);
-        List<MessageSourceResolvable> duplicatePointMessages =
+        List<MessageSourceResolvable> allErrorMessages =
             rtuService.generateDuplicatePointsErrorMessages(rtu.getId(), request);
-        flash.setError(duplicatePointMessages, FlashScopeListType.NONE);
+        if (errorFlag) {
+            flash.pullMessages().forEach(flashScopeMessage -> allErrorMessages.addAll(flashScopeMessage.getMessages()));
+        }
+        flash.setError(allErrorMessages, FlashScopeListType.NONE);
         setDeviceScanRate(rtu);
         return setupModel(rtu, model);
     }
@@ -195,12 +209,7 @@ public class RtuController {
             return "redirect:/stars/rtu-list";
         } else {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.failure"));
-            model.addAttribute("mode", PageEditMode.VIEW);
-            RtuDnp rtu = rtuDnpService.getRtuDnp(rtuDnp.getId());
-            getPointsForModel(rtu.getId(), model);
-            setDeviceScanRate(rtu);
-            model.addAttribute("rtu", rtu);
-            return setupModel(rtu, model);
+            return "redirect:/stars/rtu/" + rtuDnp.getId();
         }
     }
 
