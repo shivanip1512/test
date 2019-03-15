@@ -51,9 +51,9 @@ public class YukonLoggingReloader {
      */
     private void setMaxFileSize(Configuration config, Appender appender, long maxFileSize) {
         ((YukonRollingFileAppender) appender).setMaxFileSize(maxFileSize);
-        log.info(appender.getName() + " appender updated with max file size : " + maxFileSize/gigaBytesToByteMultiplier + "GB");
         appender.start();
         config.addAppender(appender);
+        log.info(appender.getName() + " appender updated with max file size : " + maxFileSize/gigaBytesToByteMultiplier + "GB");
     }
 
     private long getMaxFileSize() {
