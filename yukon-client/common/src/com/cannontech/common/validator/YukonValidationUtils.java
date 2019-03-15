@@ -24,7 +24,7 @@ public class YukonValidationUtils extends ValidationUtils {
     public static final String BASIC_URL_PATH_REGEX = "\\A" + BASIC_URL_PATH_FRAGMENT + "\\Z";
     public static final String BASIC_RESTFUL_URL_REGEX = "\\Ahttps?\\://([a-zA-Z0-9_\\-]+\\.)*[a-zA-Z0-9]+(\\:[0-9]+)?"
         + BASIC_URL_PATH_FRAGMENT + "\\Z";
-    public static final String BASIC_BLACKLISTED_CHAR_LIST = "[!#$%&'*();+=<>?{}/~-]";
+    public static final String BASIC_BLACKLISTED_CHAR_LIST = "[\\\\!#$%&'*();+=<>?{}\"|,/]";
 
     public static boolean isUrlPath(String input) {
         if (input == null) {
