@@ -30,7 +30,6 @@ yukon.map.network = (function () {
     _primaryRouteLayerIndex = 1,
     _parentLayerIndex = 2,
     _iconLayerIndex = 3,
-    _deviceIconLayerIndex = 4,
     
     _devicePoints = [],
     _deviceIcon,
@@ -108,7 +107,7 @@ yukon.map.network = (function () {
         _deviceIcon = icon;
         
         var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: [_deviceIcon]})});
-        iconsLayer.setZIndex(_deviceIconLayerIndex);
+        iconsLayer.setZIndex(_iconLayerIndex);
         _map.addLayer(iconsLayer);
         
         _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
@@ -180,7 +179,6 @@ yukon.map.network = (function () {
         _deviceFocusIconLayer = null;
         //set focus device back to normal style
         if (_deviceFocusCurrentIcon != null) {
-            //var normalStyle = _deviceFocusCurrentIcon.getStyle().clone();
             var normalStyle = _deviceFocusCurrentIcon.getStyle();
             normalStyle.getImage().setScale(1);
             _deviceFocusCurrentIcon.setStyle(normalStyle);
@@ -365,7 +363,7 @@ yukon.map.network = (function () {
             icon.setStyle(style);
             
             //the first device in the route will be the focus device
-            if (isFocusDevice && x == 0) {
+            if (x == 0) {
                 var largerStyle = icon.getStyle().clone();
                 largerStyle.getImage().setScale(_largerScale);
                 icon.setStyle(largerStyle);
