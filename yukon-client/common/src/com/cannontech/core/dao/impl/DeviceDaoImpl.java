@@ -63,7 +63,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private MeterDao meterDao;
 
-    public static final YukonRowMapper<SimpleDevice> SIMPLE_DEVICE_MAPPER = new YukonRowMapper<SimpleDevice>() {
+    public static final YukonRowMapper<SimpleDevice> SIMPLE_DEVICE_MAPPER = new YukonRowMapper<>() {
         @Override
         public SimpleDevice mapRow(YukonResultSet rs) throws SQLException {
             int deviceId = rs.getInt("paobjectId");
@@ -89,7 +89,7 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public void updateDeviceMacAddress(int deviceId, String macAddress) {
-        if (!Validator.isMacAddress(macAddress)) {
+        if (!Validator.isMacAddress(macAddress, true)) {
             throw new StarsInvalidArgumentException("MAC Address is invalid");
         }
 
@@ -205,7 +205,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     public List<SimpleDevice> getYukonDeviceObjectByIds(Iterable<Integer> ids) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
 
-        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -224,7 +224,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     public List<SimpleDevice> getDevicesForPaoTypes(Iterable<PaoType> types) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
 
-        SqlFragmentGenerator<PaoType> sqlGenerator = new SqlFragmentGenerator<PaoType>() {
+        SqlFragmentGenerator<PaoType> sqlGenerator = new SqlFragmentGenerator<>() {
             @Override
             public SqlFragmentSource generate(List<PaoType> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -480,7 +480,7 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader() {
-        return new PaoLoader<DeviceCollectionReportDevice>() {
+        return new PaoLoader<>() {
             @Override
             public Map<PaoIdentifier, DeviceCollectionReportDevice> getForPaos(Iterable<PaoIdentifier> identifiers) {
                 Map<PaoIdentifier, String> namesForYukonDevices = getNamesForYukonDevices(identifiers);
@@ -502,7 +502,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     public Map<PaoIdentifier, String> getNamesForYukonDevices(Iterable<PaoIdentifier> identifiers) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
 
-        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -514,7 +514,7 @@ public final class DeviceDaoImpl implements DeviceDao {
             }
         };
 
-        Function<PaoIdentifier, Integer> inputTypeToSqlGeneratorTypeMapper = new Function<PaoIdentifier, Integer>() {
+        Function<PaoIdentifier, Integer> inputTypeToSqlGeneratorTypeMapper = new Function<>() {
             @Override
             public Integer apply(PaoIdentifier from) {
                 return from.getPaoId();
@@ -522,7 +522,7 @@ public final class DeviceDaoImpl implements DeviceDao {
         };
 
         RowMapper<Entry<Integer, String>> rowMapper =
-            new RowMapper<Entry<Integer, String>>() {
+            new RowMapper<>() {
                 @Override
                 public Entry<Integer, String> mapRow(ResultSet rs, int rowNum) throws SQLException {
                     return Maps.immutableEntry(rs.getInt("deviceid"), rs.getString("paoname"));

@@ -5,11 +5,14 @@ import java.util.regex.Pattern;
 
 /**
  * Attempts to validate different types of data.
- *
  */
 public class Validator
 {
-
+    //"standard" 48-bit, 6-octet MAC Address. E.g. xx:xx:xx:xx:xx:xx
+    private static final Pattern shortMacPattern = Pattern.compile("([\\da-fA-F]{2}:){5}[\\da-fA-F]{2}");
+    //IPv6, 64-bit, 8-octet MAC Address. E.g. xx:xx:xx:xx:xx:xx:xx:xx
+    private static final Pattern longMacPattern = Pattern.compile("([\\da-fA-F]{2}:){7}[\\da-fA-F]{2}");
+    
 	public static boolean isAddress(String address)
 	{
 		if (isNull(address))
@@ -57,7 +60,7 @@ public class Validator
 
 	public static boolean isDigit(char c)
 	{
-		int x = (int)c;
+		int x = c;
 
 		if ((x >= 48) && (x <= 57))
 		{
@@ -237,14 +240,24 @@ public class Validator
 		return true;
 	}
 
-
+	/**
+	 * Validate a EUI 48 MAC Address string (48-bytes, e.g. xx:xx:xx:xx:xx:xx).
+	 * To allow 64-bit addresses, use <code>isMacAddress(String macAddress, boolean allowLongAddress)</code>
+	 */
 	public static boolean isMacAddress(String macAddress) {
-        String  regex = "([\\da-fA-F]{2}:){5}[\\da-fA-F]{2}";
-        String in = macAddress;
-        Pattern p = Pattern.compile(regex);
-        Matcher m = p.matcher(in);
+	    return isMacAddress(macAddress, false);
+	}
+	
+	/**
+	 * Validate a MAC Address string - either 48 or 64 bytes
+	 * (e.g. xx:xx:xx:xx:xx:xx or xx:xx:xx:xx:xx:xx:xx:xx)
+	 * @param allowLongAddress Permit 48-byte and 64-byte address strings.
+	 */
+	public static boolean isMacAddress(String macAddress, boolean allowLongAddress) {
+        Matcher shortMac = shortMacPattern.matcher(macAddress);
+        Matcher longMac = longMacPattern.matcher(macAddress);
         
-        return m.matches();
+        return shortMac.matches() || (longMac.matches() && allowLongAddress);
 	}
 	
 	public static boolean isInstallCode(String installCode) {
