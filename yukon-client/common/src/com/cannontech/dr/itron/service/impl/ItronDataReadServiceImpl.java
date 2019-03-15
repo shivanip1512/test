@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.exception.EmptyImportFileException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.Range;
@@ -29,8 +31,9 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
     @Autowired private ItronDeviceDataParser itronDeviceDataParser;
     @Autowired private ItronCommunicationService communicationService;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
+    @Autowired private ConfigurationSource configurationSource;
     
-    public static int maxRows = 1000;
+    public int recordsPerRead = configurationSource.getInteger(MasterConfigInteger.ITRON_RECORD_IDS_PER_READ, 5000);
     
     @Override
     public void collectData() {
@@ -89,7 +92,7 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
      */
     private Range<Long> getRecordRange() {
         long startRecordId = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.ITRON_DATA_LAST_RECORD_ID) + 1;
-        long endRecordId = startRecordId + maxRows;
+        long endRecordId = startRecordId + recordsPerRead;
         return new Range<Long>(startRecordId, true, endRecordId, true);
     }
 }
