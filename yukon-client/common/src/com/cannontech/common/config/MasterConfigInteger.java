@@ -14,6 +14,8 @@ public enum MasterConfigInteger {
     DB_JAVA_MAXCONS,                 // Maximum number of active database connections per PoolManager
     
     INFRASTRUCTURE_WARNING_MINIMUM_TIME_BETWEEN_RUNS,
-    INFRASTRUCTURE_WARNING_RUN_FREQUENCY_MINUTES
+    INFRASTRUCTURE_WARNING_RUN_FREQUENCY_MINUTES,
+    
+    ITRON_RECORD_IDS_PER_READ
     ;
 }
