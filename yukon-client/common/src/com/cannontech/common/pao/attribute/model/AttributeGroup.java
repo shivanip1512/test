@@ -5,8 +5,10 @@ import com.cannontech.common.i18n.DisplayableEnum;
 public enum AttributeGroup implements DisplayableEnum {
     // Data/readings attribute groups.
     BLINK_AND_OUTAGE,
+    CAPCONTROL,
     CURRENT,
     DEMAND,
+    ITRON,
     OTHER,
     PROFILE,
     REACTIVE,
@@ -27,8 +29,6 @@ public enum AttributeGroup implements DisplayableEnum {
     RFN_VOLTAGE_EVENT,
     
     GATEWAY_STATISTICS,
-    CAPCONTROL,
-    ITRON,
     ;
     
     private static final String groupPrefix = "yukon.common.attributeGroups.";
