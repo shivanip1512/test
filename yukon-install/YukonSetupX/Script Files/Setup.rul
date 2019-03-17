@@ -502,6 +502,7 @@ begin
     endif;
 
     if(IsInstalledVersionLesser("7.1.2")) then
+        Delay (3);
         CopyFile(TOMCATBACKUPFILE, TARGETDIR + "\\Server\\web\\conf\\server.xml");
     endif;
 
