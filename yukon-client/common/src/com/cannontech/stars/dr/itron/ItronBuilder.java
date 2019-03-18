@@ -46,7 +46,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
         }
         SimpleDevice pao = creationService.createDeviceByDeviceType(hardwareTypeToPaoType.get(hardware.getHardwareType()), hardware.getSerialNumber());
         inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), pao.getDeviceId());
-        deviceDao.updateDeviceMacAddress(pao.getDeviceId(), hardware.getMacAddress());
+        deviceDao.updateDeviceMacAddress(pao.getDeviceType(), pao.getDeviceId(), hardware.getMacAddress());
         itronCommunicationService.addDevice(hardware, account);
     }
 

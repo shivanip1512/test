@@ -992,6 +992,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return itronTypes.contains(this);
     }
     
+    public boolean isLongMacAddressSupported() {
+        return itronTypes.contains(this);
+    }
+    
     public boolean isRfElectric() {
         return rfElectricTypes.contains(this);
     }
@@ -1045,6 +1049,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     }
     
     public static ImmutableSet<PaoType> getItronTypes() {
+        return itronTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getLongMacSupportedTypes() {
         return itronTypes;
     }
     

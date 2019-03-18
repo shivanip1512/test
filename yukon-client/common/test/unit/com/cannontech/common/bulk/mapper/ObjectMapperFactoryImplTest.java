@@ -508,7 +508,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 
         @Override
-        public void updateDeviceMacAddress(int deviceId, String macAddress) {
+        public void updateDeviceMacAddress(PaoType type, int deviceId, String macAddress) {
             throw new MethodNotImplementedException();
         }
 

@@ -14,6 +14,7 @@ import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.stars.util.StarsInvalidArgumentException;
 
 public interface DeviceDao {
     
@@ -164,7 +165,7 @@ public interface DeviceDao {
      * Creates or updates device's Mac address
      * @throws StarsInvalidArgumentException if the address is invalid
      */
-    void updateDeviceMacAddress(int deviceId, String macAddress);
+    void updateDeviceMacAddress(PaoType type, int deviceId, String macAddress);
 
     /**
      * Returns Mac address

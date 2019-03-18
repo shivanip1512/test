@@ -86,12 +86,10 @@ public final class DeviceDaoImpl implements DeviceDao {
     public void enableDevice(YukonDevice device) {
         enableDisableDevice(device, YNBoolean.NO);
     }
-
+    
     @Override
-    public void updateDeviceMacAddress(int deviceId, String macAddress) {
-        if (!Validator.isMacAddress(macAddress, true)) {
-            throw new StarsInvalidArgumentException("MAC Address is invalid");
-        }
+    public void updateDeviceMacAddress(PaoType type, int deviceId, String macAddress) {
+        validateMacAddress(type, macAddress);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceId");
@@ -110,6 +108,12 @@ public final class DeviceDaoImpl implements DeviceDao {
             params.addValue("MacAddress", macAddress);
         }
         jdbcTemplate.update(updateCreateSql);
+    }
+    
+    private void validateMacAddress(PaoType type, String macAddress) {
+        if (!Validator.isMacAddress(macAddress, type.isLongMacAddressSupported())) {
+            throw new StarsInvalidArgumentException("MAC Address is invalid");
+        }
     }
     
     @Override
