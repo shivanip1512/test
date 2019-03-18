@@ -39,7 +39,7 @@ public interface ItronCommunicationService {
      * 6. Finds mac address for each device
      * 7. For each group sends all mac addresses to itron
      */
-    void enroll(int accountId);
+    void enroll(int accountId, int groupId);
 
     /**
      * Attempts to sync Yukon account with Itron
@@ -50,7 +50,7 @@ public interface ItronCommunicationService {
      * 5. Finds mac address for each device
      * 6. For each group sends all mac addresses to itron
      */
-    void unenroll(int accountId);
+    void unenroll(int accountId, int groupId);
 
     /**
      * Attempts to sync Yukon account with Itron

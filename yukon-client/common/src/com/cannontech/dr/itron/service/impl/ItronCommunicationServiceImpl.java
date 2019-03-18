@@ -157,13 +157,29 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     
     @Transactional
     @Override
-    public void enroll(int accountId) {
+    public void enroll(int accountId, int groupId) {
         CustomerAccount account = customerAccountDao.getById(accountId);
         log.debug("ITRON-enroll account number {}", account.getAccountNumber());
+        sendEnrollmentRequest(account, true);
+        addMacAddressesToGroup(account, getGroup(groupId));
+    }
+    
+    @Transactional
+    @Override
+    public void unenroll(int accountId, int groupId) {
+        CustomerAccount account = customerAccountDao.getById(accountId);
+        log.debug("ITRON-unenroll account number {}", account.getAccountNumber());
+        sendEnrollmentRequest(account, false);
+        addMacAddressesToGroup(account, getGroup(groupId));
+    }
+    
+    @Override
+    public void optIn(int accountId, int inventoryId) {
+        CustomerAccount account = customerAccountDao.getById(accountId);
+        log.debug("ITRON-optIn account number {}", account.getAccountNumber());
         List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
-        sendEnrollmentRequest(enrollments, account, true);
-        Map<Integer, LiteYukonPAObject> groups = getGroupsForEnrollments(enrollments);
-        addMacAddressesToGroup(account, groups);
+        int yukonGroupId = getGroupIdByInventoryId(inventoryId, enrollments);
+        addMacAddressesToGroup(account, getGroup(yukonGroupId));
     }
     
     @Override
@@ -175,9 +191,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         String macAddress= deviceDao.getDeviceMacAddress(deviceId);
         sendRestore(yukonGroupId, macAddress, null);
         itronEventLogService.optOut(account.getAccountNumber(), yukonGroupId, macAddress);
-        Map<Integer, LiteYukonPAObject> groups = new HashMap<>();
-        groups.put(yukonGroupId, getGroup(yukonGroupId));
-        addMacAddressesToGroup(account, groups);
+        addMacAddressesToGroup(account, getGroup(yukonGroupId));
     }
     
     @Transactional
@@ -300,54 +314,33 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         }
     }
     
-    @Transactional
-    @Override
-    public void optIn(int accountId, int inventoryId) {
-        CustomerAccount account = customerAccountDao.getById(accountId);
-        log.debug("ITRON-optIn account number {}", account.getAccountNumber());
-        List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
-        Map<Integer, LiteYukonPAObject> groups = new HashMap<>();
-        int yukonGroupId = getGroupIdByInventoryId(inventoryId, enrollments);
-        groups.put(yukonGroupId, getGroup(yukonGroupId));
-        addMacAddressesToGroup(account, groups);
-    }
-
     /**
-     * 1. Finds all devices in the groups
+     * 1. Finds all devices in the group
      * 2. Excludes all opted out inventory
      * 3. Finds mac address for each device
      * 4. For each group sends all mac addresses to itron
      */
-    private void addMacAddressesToGroup(CustomerAccount account,  Map<Integer, LiteYukonPAObject> groups) {
-        log.debug("ITRON-groups {} associated with account number {}",
-            groups.values().stream().map(g -> g.getPaoName()).collect(Collectors.toList()), account.getAccountNumber());
+    private void addMacAddressesToGroup(CustomerAccount account, LiteYukonPAObject group) {
+        log.debug("ITRON-group {} is associated with account number {}", group.getPaoName(),
+            account.getAccountNumber());
 
         Multimap<Integer, Integer> groupIdsToInventoryIds =
-            enrollmentDao.getActiveEnrolledInventoryIdsMapForGroupIds(groups.keySet());
+            enrollmentDao.getActiveEnrolledInventoryIdsMapForGroupIds(Lists.newArrayList(group.getLiteID()));
 
-        List<Integer> optOuts = enrollmentDao.getCurrentlyOptedOutInventory(); 
-        groups.keySet().forEach(groupId -> {
-            Collection<Integer> inventoryIds = groupIdsToInventoryIds.get(groupId);
-            inventoryIds.removeAll(optOuts);
-            log.debug("ITRON-{} device(s) in group {}", inventoryIds.size(), groups.get(groupId).getPaoName());
+        List<Integer> optOuts = enrollmentDao.getCurrentlyOptedOutInventory();
+
+        Collection<Integer> inventoryIds = groupIdsToInventoryIds.get(group.getLiteID());
+        inventoryIds.removeAll(optOuts);
+        
+        if (!inventoryIds.isEmpty()) {
+            log.debug("ITRON-{} device(s) in group {}", inventoryIds.size(), group.getPaoName());
             Map<Integer, Integer> inventoryIdsToDeviceIds = inventoryDao.getDeviceIds(inventoryIds);
             List<String> macAddresses =
                 Lists.newArrayList(deviceDao.getDeviceMacAddresses(inventoryIdsToDeviceIds.values()).values());
-            macAddresses.forEach(macAddressesForGroup -> addMacAddressesToGroup(String.valueOf(groupId), macAddresses));
-        });
+            addMacAddressesToGroup(String.valueOf(group.getLiteID()), macAddresses);
+        }
     }
-    
-    @Transactional
-    @Override
-    public void unenroll(int accountId) {
-        CustomerAccount account = customerAccountDao.getById(accountId);
-        log.debug("ITRON-unenroll account number {}", account.getAccountNumber());
-        List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
-        sendEnrollmentRequest(enrollments, account, false);
-        Map<Integer, LiteYukonPAObject> groups = getGroupsForEnrollments(enrollments);
-        addMacAddressesToGroup(account, groups);
-    }
-    
+        
     @Override
     public ZipFile exportDeviceLogs(Long startRecordId, Long endRecordId) {
         updateDeviceLogs();
@@ -501,7 +494,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     /**
      * Sends enrollment requests to Itron
      */
-    private void sendEnrollmentRequest(List<ProgramEnrollment> enrollments, CustomerAccount account, boolean enroll) {
+    private void sendEnrollmentRequest(CustomerAccount account, boolean enroll) {
+        List<ProgramEnrollment> enrollments = getItronProgramEnrollments(account.getAccountId());
         String url = ItronEndpointManager.PROGRAM.getUrl(settingDao);
         List<Long> itronProgramIds = new ArrayList<>();
         
@@ -720,16 +714,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 .getLmGroupId();
         return yukonGroupId;
     }
-    
-
-    private Map<Integer, LiteYukonPAObject> getGroupsForEnrollments(List<ProgramEnrollment> enrollments) {
-        Map<Integer, LiteYukonPAObject> groups =
-            enrollments.stream().map(enrollment -> getGroup(enrollment.getLmGroupId()))
-                .distinct()
-                .collect(Collectors.toMap(g -> g.getPaoIdentifier().getPaoId(), g -> g));
-        return groups;
-    }   
-    
+       
     /**
      * Handles exceptions
      * 

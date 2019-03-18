@@ -15,6 +15,7 @@ import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.HardwareStrategyType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandStrategy;
@@ -35,10 +36,12 @@ public class ItronCommandStrategy  implements LmHardwareCommandStrategy{
             switch (command.getType()) {
             case CONFIG:
             case IN_SERVICE:
-                itronCommunicationService.enroll(command.getDevice().getAccountID());
+                itronCommunicationService.enroll(command.getDevice().getAccountID(),
+                    (int) command.getParams().get(LmHardwareCommandParam.GROUP_ID));
                 break;
             case OUT_OF_SERVICE:
-                itronCommunicationService.unenroll(command.getDevice().getAccountID());
+                itronCommunicationService.unenroll(command.getDevice().getAccountID(),
+                    (int) command.getParams().get(LmHardwareCommandParam.GROUP_ID));
                 break;
             case CANCEL_TEMP_OUT_OF_SERVICE:
                 itronCommunicationService.optIn(command.getDevice().getAccountID(), command.getDevice().getInventoryID());
