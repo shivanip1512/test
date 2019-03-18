@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros">
     <CPP_LIBRARIES>$(DEV_ENVIRONMENT)\libraries</CPP_LIBRARIES>
     <XERCES>$(CPP_LIBRARIES)\apache\xerces-c\3.2.2-vc141-1</XERCES>
-    <TCL>$(CPP_LIBRARIES)\tcl\8.6.4-vc140-1</TCL>
+    <TCL>$(CPP_LIBRARIES)\tcl\8.6.9-vc141-1</TCL>
     <BOOST>$(CPP_LIBRARIES)\boost\1.67.0-vc141</BOOST>
     <SQLAPI>$(CPP_LIBRARIES)\sqlapi\4.2.2-vc141-1</SQLAPI>
     <ACTIVEMQ>$(CPP_LIBRARIES)\apache\activemq-cpp\3.9.4-vc141</ACTIVEMQ>
