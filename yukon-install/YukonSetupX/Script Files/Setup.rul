@@ -10,7 +10,8 @@ prototype LONG kernel32.GetEnvironmentVariable(BYVAL STRING, BYREF STRING, BYREF
 
 //constants
 #define SYS32			"C:\\WINDOWS\\System32\\"
-#define SERVICE_WARNING	"Setup detected a Yukon service still running.\nPlease make sure that all Yukon services are stopped before continuing."   
+#define SERVICE_WARNING	"Setup detected a Yukon service still running.\nPlease make sure that all Yukon services are stopped before continuing."
+STRING TOMCATBACKUPFILE;   
 
 //---------------------------------------------------------------------------
 // FirstUIBefore event is sent when installation is run for the first
@@ -346,7 +347,7 @@ begin
 	
     //YUK-15645 Remove JVM setting while upgrading to 6.5.6 version (or new version ) from lower version.
     RemoveJvmParams();
-    
+	TOMCATBACKUPFILE = TARGETDIR + "\\Server\\Config\\Backup\\server_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml";    
 	CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml");
 	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml");
     // Take backup of logging config files if installedVersion < "7.1.0"
@@ -417,6 +418,13 @@ number nResult, nNewVersion, nVMajor, nVMinor, nVBuild;
 string sCMD, sProg, sVTemp, sDateString, formattedDateString;
 BOOL bOpt, bOptYes, bOptNo;
 begin
+
+    if(IsInstalledVersionLesser("7.1.2")) then
+        sProg = "cmd.exe";
+        sCMD = "/c " + TARGETDIR ^ "\\Client\\bin\\modifyTomcatConfig.bat " + TOMCATBACKUPFILE;
+        LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_WAIT);
+    endif;
+
 	//get the DWORD representing the new version number
 	VerProductStrToNum (nNewVersion, IFX_PRODUCT_VERSION);
 	//get the version parts: major.minor.build
@@ -490,6 +498,11 @@ begin
         // Format date pattern in YYYYMMDD
         formattedDateString = FormatDatePattern(sDateString);
         RenameInstalledDateJavaServicesAndClientLog(formattedDateString);
+    endif;
+    
+    if(IsInstalledVersionLesser("7.1.2")) then
+        Delay (5);
+        CopyFile(TOMCATBACKUPFILE, TARGETDIR + "\\Server\\web\\conf\\server.xml");
     endif;
 	Dialog_StartServices:
 	

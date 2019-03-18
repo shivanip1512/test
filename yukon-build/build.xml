@@ -166,7 +166,7 @@
             <fileset dir="${basedir}/yukon-client/export/conf" />
             <fileset dir="${basedir}/yukon-client/notification/conf" />
             <fileset dir="${basedir}/yukon-client/simulators/conf"/>
-            <fileset dir="${basedir}/yukon-client/tools/src/main/resources" includes="*.bat" />
+            <fileset dir="${basedir}/yukon-client/tools/src/main/resources" includes="*.bat,*.ps1" />
             <fileset file="${basedir}/yukon-client/trending/resource/GraphIcon.ico"/>
             <fileset file="${basedir}/yukon-client/tdc/resource/tdcIcon.ico"/>
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonSetup.ico"/>
