@@ -361,8 +361,12 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                     throw new StarsClientRequestException("Failed to register honeywell wifi device with honeywell server.", e);
                 }
             } else if (ht.isItron()) {
+                String macAddress = dto.getMacAddress();
+                if (StringUtils.isBlank(macAddress) || !Validator.isMacAddress(macAddress, true)) {
+                    throw new StarsInvalidArgumentException("Valid MAC Address is required");
+                }
                 Hardware hardware = hardwareUiService.getHardware(lib.getInventoryID());
-                hardware.setMacAddress(dto.getMacAddress());
+                hardware.setMacAddress(macAddress);
                 try {
                     itronBuilder.createDevice(hardware);
                 } catch (ItronCommunicationException e) {

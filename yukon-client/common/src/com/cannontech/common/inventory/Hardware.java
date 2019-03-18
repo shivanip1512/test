@@ -50,7 +50,8 @@ public class Hardware {
     private Integer gatewayId;
     private String firmwareVersion;
     private int commissionedId;
-    /* ZigBee/Honeywell fields */
+    
+    /* ZigBee/Itron/Honeywell fields */
     private String macAddress;
     
     /* Honeywell field */

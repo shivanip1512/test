@@ -46,7 +46,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
         }
         SimpleDevice pao = creationService.createDeviceByDeviceType(hardwareTypeToPaoType.get(hardware.getHardwareType()), hardware.getSerialNumber());
         inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), pao.getDeviceId());
-        deviceDao.updateDeviceMacAddress(pao.getDeviceId(), hardware.getMacAddress());
+        deviceDao.updateDeviceMacAddress(pao.getDeviceType(), pao.getDeviceId(), hardware.getMacAddress());
         itronCommunicationService.addDevice(hardware, account);
     }
 
@@ -92,8 +92,8 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
         String macAddress = hardware.getMacAddress();
         if (StringUtils.isBlank(macAddress)) {
             errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required");
-        } else if (!Validator.isMacAddress(macAddress)) {
-            errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.format.eui48");
+        } else if (!Validator.isMacAddress(macAddress, true)) {
+            errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.format.eui64");
         }
     }
 }
