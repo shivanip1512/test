@@ -12,6 +12,7 @@
         <pointInfo name="Control Status" init="true" attributes="CONTROL_STATUS"/>
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
 
+        <pointInfo name="Relay 1 Call for Cool" init="true" attributes="RELAY_1_CALL_FOR_COOL"/>
         <pointInfo name="Relay 1 Relay State" init="true" attributes="RELAY_1_RELAY_STATE"/>
         <pointInfo name="Relay 1 Run Time Data Log" attributes="RELAY_1_RUN_TIME_DATA_LOG"/>
         <pointInfo name="Relay 1 Run Time Data Log 5 Minutes" attributes="RELAY_1_RUN_TIME_DATA_LOG_5_MIN"/>
@@ -23,6 +24,7 @@
         <pointInfo name="Relay 1 Shed Time Data Log 15 Minutes" init="true" attributes="RELAY_1_SHED_TIME_DATA_LOG_15_MIN"/>
         <pointInfo name="Relay 1 Shed Time Data Log 30 Minutes" attributes="RELAY_1_SHED_TIME_DATA_LOG_30_MIN"/>
 
+        <pointInfo name="Relay 2 Call for Cool" init="true" attributes="RELAY_2_CALL_FOR_COOL"/>
         <pointInfo name="Relay 2 Relay State" init="true" attributes="RELAY_2_RELAY_STATE"/>
         <pointInfo name="Relay 2 Run Time Data Log" attributes="RELAY_2_RUN_TIME_DATA_LOG"/>
         <pointInfo name="Relay 2 Run Time Data Log 5 Minutes" attributes="RELAY_2_RUN_TIME_DATA_LOG_5_MIN"/>
@@ -34,6 +36,7 @@
         <pointInfo name="Relay 2 Shed Time Data Log 15 Minutes" init="true" attributes="RELAY_2_SHED_TIME_DATA_LOG_15_MIN"/>
         <pointInfo name="Relay 2 Shed Time Data Log 30 Minutes" attributes="RELAY_2_SHED_TIME_DATA_LOG_30_MIN"/>
 
+        <pointInfo name="Relay 3 Call for Cool" init="true" attributes="RELAY_3_CALL_FOR_COOL"/>
         <pointInfo name="Relay 3 Relay State" init="true" attributes="RELAY_3_RELAY_STATE"/>
         <pointInfo name="Relay 3 Run Time Data Log" attributes="RELAY_3_RUN_TIME_DATA_LOG"/>
         <pointInfo name="Relay 3 Run Time Data Log 5 Minutes" attributes="RELAY_3_RUN_TIME_DATA_LOG_5_MIN"/>
@@ -45,6 +48,7 @@
         <pointInfo name="Relay 3 Shed Time Data Log 15 Minutes" init="true" attributes="RELAY_3_SHED_TIME_DATA_LOG_15_MIN"/>
         <pointInfo name="Relay 3 Shed Time Data Log 30 Minutes" attributes="RELAY_3_SHED_TIME_DATA_LOG_30_MIN"/>
 
+        <pointInfo name="Relay 4 Call for Cool" init="true" attributes="RELAY_4_CALL_FOR_COOL"/>
         <pointInfo name="Relay 4 Relay State" init="true" attributes="RELAY_4_RELAY_STATE"/>
         <pointInfo name="Relay 4 Run Time Data Log" attributes="RELAY_4_RUN_TIME_DATA_LOG"/>
         <pointInfo name="Relay 4 Run Time Data Log 5 Minutes" attributes="RELAY_4_RUN_TIME_DATA_LOG_5_MIN"/>
@@ -59,5 +63,31 @@
         <pointInfo name="Service Status" init="true" attributes="SERVICE_STATUS"/>
         <pointInfo name="Total LUF Event Count" attributes="TOTAL_LUF_COUNT"/>
         <pointInfo name="Total LUV Event Count" attributes="TOTAL_LUV_COUNT"/>
+        
+        <pointInfo name="Memory Map Lost" attributes="MEMORY_MAP_LOST"/>
+        <pointInfo name="Max Control Exceeded" attributes="MAX_CONTROL_EXCEEDED"/>
+        <pointInfo name="Network Timeout Cancel" attributes="NETWORK_TIMEOUT_CANCEL"/>
+        <pointInfo name="Configuration Updated Hash" attributes="CONFIGURATION_UPDATED_HASH"/>
+        <pointInfo name="TLS Fail" attributes="TLS_FAIL"/>
+        <pointInfo name="Bad HDLC" attributes="BAD_HDLC"/>
+        <pointInfo name="Flush Log" attributes="FLUSH_LOG"/>
+        
+        <pointInfo name="Event Superseded" attributes="EVENT_SUPERSEDED"/>
+        <pointInfo name="Firmware Update" attributes="FIRMWARE_VERSION"/>
+        <pointInfo name="Time Sync" attributes="TIME_SYNC"/>
+        <pointInfo name="Cold Start" attributes="COLD_START"/>
+        <pointInfo name="Configuration Processed" attributes="CONFIGURATION_PROCESSED"/>
+        <pointInfo name="Time Lost" attributes="TIME_LOST"/>
+        <pointInfo name="Self Check Fail" attributes="SELF_CHECK_FAIL"/>
+        <pointInfo name="Inactive Appliance" attributes="INACTIVE_APPLIANCE"/>
+        <pointInfo name="Radio Link Quality" attributes="RADIO_LINK_QUALITY"/>
+        <pointInfo name="Incorrect TLS Identity" attributes="INCORRECT_TLS_IDENTITY"/>
+        <pointInfo name="Key Update" attributes="KEY_UPDATE"/>
+        <pointInfo name="Key Update Fail" attributes="KEY_UPDATE_FAIL"/>
+        <pointInfo name="TLS Alert" attributes="TLS_ALERT"/>
+        <pointInfo name="Optimize Intelligent Control" attributes="OPTIMIZE_INTELLIGENT_CONTROL"/>
+        <pointInfo name="Snap To Gold" attributes="SNAP_TO_GOLD"/>
+        <pointInfo name="Event Received" attributes="EVENT_RECEIVED"/>
+        <pointInfo name="Load Status" attributes="LOAD_STATUS"/>        
     </pointInfos>
 </pao>
