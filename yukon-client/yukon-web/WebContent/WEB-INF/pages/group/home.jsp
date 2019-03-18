@@ -49,7 +49,7 @@
     
     <!-- Add Subgroup Dialog -->
     <cti:msgScope paths="deviceGroups.editor.operationsContainer">
-        <cti:msg2 var="invalidGroupNameError" key=".invalidGroupNameError" javaScriptEscape="true"/>
+        <cti:msg2 var="invalidGroupNameError" key=".invalidGroupNameError"/>
         <cti:msg2 var="addSubgroupText" key=".addSubgroupText"/>
         <cti:msg2 var="subgroupNameLabel" key=".subgroupNameLabel" />
         <cti:msg2 var="subgroupTypeLabel" key=".subgroupTypeLabel" />

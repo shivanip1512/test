@@ -13,7 +13,7 @@ yukon.tools.group.editor = (function () {
     var _initialized = false,
 
     // js implementation of DeviceGroupUtil.isValidName(name).
-    isValidGroupName = function (name) {
+    _isValidGroupName = function (name) {
         if(name == null || name.trim() == '' || (name.indexOf('/') != -1) || (name.indexOf('\\') != -1) || (name.length > 60)) {
             return false;
         }
@@ -56,7 +56,7 @@ yukon.tools.group.editor = (function () {
         
         checkAndSubmitNewName : function (nameId, formId, buttonId) {
             var newName = $("#" + nameId).val();
-            if(!isValidGroupName(newName)) {
+            if(!_isValidGroupName(newName)) {
                 $(".js-invalid-group-name").removeClass('dn');
                 $("#" + nameId).focus();
                 yukon.ui.unbusy('#' + buttonId);
