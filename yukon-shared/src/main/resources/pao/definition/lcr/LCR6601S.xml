@@ -52,7 +52,7 @@
         <pointInfo name="Flush Log" attributes="FLUSH_LOG"/>
         
         <pointInfo name="Event Superseded" attributes="EVENT_SUPERSEDED"/>
-        <pointInfo name="Firmware Update" attributes="FIRMWARE_VERSION"/>
+        <pointInfo name="Firmware Version" attributes="FIRMWARE_VERSION"/>
         <pointInfo name="Time Sync" attributes="TIME_SYNC"/>
         <pointInfo name="Cold Start" attributes="COLD_START"/>
         <pointInfo name="Configuration Processed" attributes="CONFIGURATION_PROCESSED"/>
@@ -65,7 +65,7 @@
         <pointInfo name="Key Update Fail" attributes="KEY_UPDATE_FAIL"/>
         <pointInfo name="TLS Alert" attributes="TLS_ALERT"/>
         <pointInfo name="Optimize Intelligent Control" attributes="OPTIMIZE_INTELLIGENT_CONTROL"/>
-        <pointInfo name="Snap To Gold" attributes="SNAP_TO_GOLD"/>
+        <pointInfo name="Snap to Gold" attributes="SNAP_TO_GOLD"/>
         <pointInfo name="Event Received" attributes="EVENT_RECEIVED"/>
         <pointInfo name="Load Status" attributes="LOAD_STATUS"/>
     </pointInfos>

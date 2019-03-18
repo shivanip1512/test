@@ -232,103 +232,103 @@
     <point offset="48" type="Analog">
         <name>Event Superseded</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="49" type="Analog">
         <name>Firmware Version</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="50" type="Analog">
         <name>Time Sync</name>
         <multiplier value="1"/>
-        <unitofmeasure value="MS"
+        <unitofmeasure value="MS"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="51" type="Analog">
         <name>Cold Start</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="52" type="Analog">
         <name>Configuration Processed</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="53" type="Analog">
         <name>Time Lost</name>
         <multiplier value="1"/>
-        <unitofmeasure value="MS"
+        <unitofmeasure value="MS"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="54" type="Analog">
         <name>Self Check Fail</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="55" type="Analog">
         <name>Inactive Appliance</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="56" type="Analog">
         <name>Radio Link Quality</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="57" type="Analog">
         <name>Incorrect TLS Identity</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="58" type="Analog">
         <name>Key Update</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="59" type="Analog">
         <name>Key Update Fail</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="60" type="Analog">
         <name>TLS Alert</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="61" type="Analog">
         <name>Optimize Intelligent Control</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="62" type="Analog">
         <name>Snap to Gold</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="63" type="Analog">
         <name>Event Received</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     <point offset="64" type="Analog">
         <name>Load Status</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"
+        <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
     
