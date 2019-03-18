@@ -1060,6 +1060,11 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         return attributeGroup;
     }
 
+    /**
+     * Indicates whether a given attribute supports RFN interval recording, or only supports
+     * midnight/billing readings.
+     * @return
+     */
     public boolean isIntervalApplicable() {
         return !nonIntervalAttributes.contains(this);
     }
