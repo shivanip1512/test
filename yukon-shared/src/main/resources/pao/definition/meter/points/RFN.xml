@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--Highest Status OFFSET=1000 @ 2016-08-12-->
-<!--Highest Analog OFFSET=381 @ 2018-07-10-->
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
 <!-- Point Name naming convention: 
 [Net|Sum] [Delivered|Received] [Coincident] [Cumulative] [Peak] [UOM] [(Quadrants # #)] [Frozen] [Rate #|Phase X|Channel #]
@@ -11,6 +9,12 @@ Note: [Delivered] - can be omitted/assumed where it make sense; Peak kW or kVar 
 Note: For attributes that reference the modifiers of "Quadrant" directly, the modifiers will follow the UOM in format "(Quadrants # #)". Example: kVA (Quadrants 1 2)
 Note: Look at BuiltInAttribute as that follows the same convention. 
 -->
+    <highestOffsets>
+        <analog offset="388"/>
+        <calcAnalog offset="0"/>
+        <demandAccumulator offset="251"/>
+        <status offset="1000"/>
+    </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Analog">
         <name>Delivered kWh</name>
