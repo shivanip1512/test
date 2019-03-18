@@ -1736,13 +1736,13 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVARH"/>
         <decimalplaces value="3"/>
     </point>
-    <point offset="362" type="Analog">
+    <point offset="387" type="Analog">
         <name>Net kW</name>
         <multiplier value="1"/>
         <unitofmeasure value="KW"/>
         <decimalplaces value="3"/>
     </point>
-    <point offset="363" type="Analog">
+    <point offset="388" type="Analog">
         <name>kVAr (Quadrants 1 3)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVAR"/>
