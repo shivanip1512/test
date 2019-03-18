@@ -60,6 +60,7 @@ import com.cannontech.stars.dr.enrollment.exception.EnrollmentSystemConfiguratio
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
@@ -110,7 +111,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     public ProgramEnrollmentResultEnum applyEnrollmentRequests(final CustomerAccount account,
                                                                final List<ProgramEnrollment> requests,
                                                                final LiteYukonUser user) {
-
+        
+        List<ProgramEnrollment> originalEnrollments = enrollmentDao.getActiveEnrollmentsByAccountId(account.getAccountId());
+        
         final int accountId = account.getAccountId();
         // Don't allow concurrent threads to handle requests for the same account to avoid
         // duplicate simultaneous requests which create duplicate entries in the database.
@@ -180,6 +183,10 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                 command.setType(LmHardwareCommandType.CONFIG);
                                 command.setUser(user);
                                 
+                                if(hardwareType.isItron()) {
+                                    addLmGroupId(requests, command, liteHw.getInventoryID());
+                                }
+                                
                                 lmHardwareCommandService.sendConfigCommand(command);
                             }
                         } else if (inventoryBaseDao.getDeviceStatus(liteHw.getInventoryID())
@@ -187,8 +194,12 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                             LmHardwareCommand command = new LmHardwareCommand();
                             command.setDevice(liteHw);
                             command.setType(LmHardwareCommandType.IN_SERVICE);
-                            command.setUser(user);
-
+                            command.setUser(user);  
+                            
+                            if(hardwareType.isItron()) {
+                                addLmGroupId(requests, command, liteHw.getInventoryID());
+                            }
+                            
                             lmHardwareCommandService.sendInServiceCommand(command);
                         }
                     } else if (!suppressMessages) {
@@ -196,6 +207,10 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         command.setDevice(liteHw);
                         command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
                         command.setUser(user);
+                        
+                        if(hardwareType.isItron()) {
+                            addLmGroupId(originalEnrollments, command, liteHw.getInventoryID());
+                        }
                         
                         lmHardwareCommandService.sendOutOfServiceCommand(command);
                     }
@@ -229,6 +244,17 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     ProgramEnrollmentResultEnum.SUCCESS_HARDWARE_CONFIG : ProgramEnrollmentResultEnum.SUCCESS;
             return result;
         }
+    }
+    
+    /**
+     * Find group id and adds to the command.
+     */
+    private void addLmGroupId(List<ProgramEnrollment> requests, LmHardwareCommand command, int inventoryId) {
+        Integer groupId = requests.stream()
+                .filter(entrollment -> entrollment.getInventoryId() == inventoryId)
+                .findFirst().get()
+                .getLmGroupId();
+        command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupId);
     }
 
     private StarsOperation createStarsOperation(CustomerAccount customerAccount,
