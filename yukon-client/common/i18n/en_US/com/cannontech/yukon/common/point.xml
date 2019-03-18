@@ -685,7 +685,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.TLS_ALERT">TLS Alert</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OPTIMIZE_INTELLIGENT_CONTROL">Optimize Intelligent Control</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FLUSH_LOG">Flush Log</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.SNAP_TO_GOLD">Snap To Gold</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SNAP_TO_GOLD">Snap to Gold</entry>
     <entry key="yukon.common.attribute.builtInAttribute.EVENT_RECEIVED">Event Received</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_STATUS">Load Status</entry>
 
