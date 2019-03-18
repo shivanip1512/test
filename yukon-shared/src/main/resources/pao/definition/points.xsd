@@ -1,10 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.0">
     <xs:include schemaLocation="point.xsd" />
+
+    <xs:complexType name="offset">
+        <xs:attribute name="offset" type="xs:int" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="highestOffsets" >
+        <xs:sequence>
+            <xs:element name="analog" type="offset" minOccurs="0"/>
+            <xs:element name="calcAnalog" type="offset" minOccurs="0"/>
+            <xs:element name="calcStatus" type="offset" minOccurs="0"/>
+            <xs:element name="demandAccumulator" type="offset" minOccurs="0"/>
+            <xs:element name="pulseAccumulator" type="offset" minOccurs="0"/>
+            <xs:element name="status" type="offset" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
     <xs:element name="points">
         <xs:complexType>
-            <xs:sequence minOccurs="0" maxOccurs="unbounded">
-                <xs:element name="point" type="point" />
+            <xs:sequence>
+                <xs:element name="highestOffsets" type="highestOffsets"/>
+                <xs:element name="point" type="point" maxOccurs="unbounded"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
