@@ -783,6 +783,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 PEAK_KVA_RATE_D,
                 PEAK_KVAR,
                 PEAK_KVAR_COIN,
+                PEAK_KVAR_Q14,
+                PEAK_KVAR_Q23,
                 PEAK_KVAR_RATE_A,
                 PEAK_KVAR_RATE_B,
                 PEAK_KVAR_RATE_C,
