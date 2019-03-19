@@ -545,7 +545,9 @@
 	<classpathentry kind="lib" path="/third-party/azure-tracing-util-0.9.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-lang-2.6.jar"/>
 	<classpathentry kind="lib" path="/third-party/gson-1.7.2.jar"/>
+	<classpathentry kind="lib" path="/third-party/jackson-core-asl-1.9.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/jackson-jaxrs-1.9.2.jar"/>
+	<classpathentry kind="lib" path="/third-party/jackson-mapper-asl-1.9.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/jackson-xc-1.9.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/javax.inject-1.jar"/>
 	<classpathentry kind="lib" path="/third-party/jersey-client-1.13.jar"/>
