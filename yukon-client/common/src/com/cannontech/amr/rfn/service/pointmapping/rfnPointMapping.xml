@@ -1521,7 +1521,7 @@
                 <modifier>Max</modifier>
                 <modifier>Cumulative</modifier>
             </modifiers>
-            <baseUom>Var</baseUom>
+            <baseUom>W</baseUom>
             <baseModifiers match="equal">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
@@ -1540,7 +1540,7 @@
                 <modifier>Cumulative</modifier>
                 <modifier>Harmonic</modifier>
             </modifiers>
-            <baseUom>Var</baseUom>
+            <baseUom>W</baseUom>
             <baseModifiers match="equal">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
@@ -1558,7 +1558,7 @@
                 <modifier>Quadrant 3</modifier>
                 <modifier>Max</modifier>
             </modifiers>
-            <baseUom>Var</baseUom>
+            <baseUom>W</baseUom>
             <baseModifiers match="equal">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
@@ -1576,7 +1576,7 @@
                 <modifier>Max</modifier>
                 <modifier>Harmonic</modifier>
             </modifiers>
-            <baseUom>Var</baseUom>
+            <baseUom>W</baseUom>
             <baseModifiers match="equal">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
