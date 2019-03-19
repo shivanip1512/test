@@ -3,19 +3,20 @@ package com.cannontech.dr.itron.service.impl;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.EmptyImportFileException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
@@ -147,9 +148,15 @@ public class ItronDeviceDataParser {
                 //building the point
                 boolean pointExists = attributeService.createPointForAttribute(lpo, event.getAttribute(decoded));
                 LitePoint lp = attributeService.findPointForAttribute(lpo, event.getAttribute(decoded));
-                PointData pointData = event.getPointData(decoded, lp);
-                pointData.setTimeStamp(new DateTime(eventTime).toDate());
-                pointValues.put(lpo.getPaoIdentifier(), pointData);
+                double currentValue = dataSource.getPointValue(lp.getLiteID()).getValue(); //Should I be using liteId or pointId?
+                Optional<PointData> optionalPointData = event.getPointData(decoded, currentValue, eventTime);
+                optionalPointData.ifPresent(pointData -> {
+                    pointData.setId(lp.getLiteID());
+                    pointData.setType(lp.getPointType());
+                    pointData.setPointQuality(PointQuality.Normal);
+                    pointData.setTagsPointMustArchive(true);
+                    pointValues.put(lpo.getPaoIdentifier(), pointData);
+                });
             }
         }
         
