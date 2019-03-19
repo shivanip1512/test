@@ -163,20 +163,28 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
     @Override
     public Multimap<Integer, Integer> getLcrEnrolledInMultipleGroup(Set<Integer> lcrs) {
 
-        final Multimap<Integer, Integer> lcrEnrolledInMultipleGroups = HashMultimap.create();
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT inv.deviceId, hdconf.AddressingGroupId");
-        sql.append("FROM InventoryBase inv ");
-        sql.append("  JOIN LMHardwareConfiguration hdconf ON inv.InventoryId = hdconf.InventoryId");
-        sql.append("  AND inv.InventoryID IN");
-        sql.append("      ( SELECT InventoryID");
-        sql.append("        FROM LMHardwareConfiguration");
-        sql.append("       GROUP BY InventoryID");
-        sql.append("       HAVING COUNT(InventoryID) > 1)");
-        sql.append("  AND inv.DeviceId != 0");
-        sql.append("  AND inv.DeviceId").in(lcrs);
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT DISTINCT inv.deviceId, hdconf.AddressingGroupId");
+                sql.append("FROM InventoryBase inv ");
+                sql.append("  JOIN LMHardwareConfiguration hdconf ON inv.InventoryId = hdconf.InventoryId");
+                sql.append("  AND inv.InventoryID IN");
+                sql.append("      ( SELECT InventoryID");
+                sql.append("        FROM LMHardwareConfiguration");
+                sql.append("       GROUP BY InventoryID");
+                sql.append("       HAVING COUNT(InventoryID) > 1)");
+                sql.append("  AND inv.DeviceId != 0");
+                sql.append("  AND inv.DeviceId").in(subList);
+                return sql;
+            }
+        };
 
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+        final Multimap<Integer, Integer> lcrEnrolledInMultipleGroups = HashMultimap.create();
+        
+        ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(jdbcTemplate);
+        chunkingTemplate.query(sqlGenerator, lcrs, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 lcrEnrolledInMultipleGroups.put(rs.getInt("deviceId"), rs.getInt("AddressingGroupId"));
