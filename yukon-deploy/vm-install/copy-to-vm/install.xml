@@ -55,19 +55,19 @@
 	<target name="start_eim">
 		<!-- IF the tomcat program file folder exists, set up the EIM, otherwise exit without error -->
 		<if>
-			<available file="C:/Program Files/Apache Software Foundation/Tomcat 6.0" type="dir" />
+			<available file="C:/Program Files/Apache Software Foundation/Tomcat 9.0" type="dir" />
 			<then>
 				<echo message="Found EIM folder, installing" />	
                 
-				<mkdir dir="C:/Program Files/Apache Software Foundation/Tomcat 6.0/conf/Catalina"/>
-				<mkdir dir="C:/Program Files/Apache Software Foundation/Tomcat 6.0/conf/Catalina/localhost"/>
+				<mkdir dir="C:/Program Files/Apache Software Foundation/Tomcat 9.0/conf/Catalina"/>
+				<mkdir dir="C:/Program Files/Apache Software Foundation/Tomcat 9.0/conf/Catalina/localhost"/>
 				
-				<copy todir="C:/Program Files/Apache Software Foundation/Tomcat 6.0/conf/Catalina/localhost" preservelastmodified="true">
+				<copy todir="C:/Program Files/Apache Software Foundation/Tomcat 9.0/conf/Catalina/localhost" preservelastmodified="true">
 		            <fileset file="C:/Yukon/Server/Extras/Enterprise Integration Module/api.xml" />
 		        </copy>
             
     			<exec dir="" executable="cmd"> <arg value="/c"/> <arg value="NET"/> <arg value="START"/>
-    		        <arg value="Apache Tomcat 6.0 Tomcat6"/> </exec>
+    		        <arg value="Apache Tomcat 9.0 Tomcat9"/> </exec>
 			</then>
 			<else>
 				<echo message="No EIM folder found, skipping" />
@@ -145,7 +145,7 @@
         </exec>
     	
     	<echo message="Uninstall EIM"/>
-    	<delete dir="C:/Program Files/Apache Software Foundation/Tomcat 6.0/conf/Catalina"/>
+    	<delete dir="C:/Program Files/Apache Software Foundation/Tomcat 9.0/conf/Catalina"/>
     	
     	<echo message="Uninstall Yukon"/>
         <exec dir="" executable="cmd" failifexecutionfails="false">

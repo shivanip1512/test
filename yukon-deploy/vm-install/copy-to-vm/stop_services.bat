@@ -14,7 +14,7 @@ net stop "YukonWebApplicationService" &
 net stop "Yukon Real-Time Scan Service" & 
 net stop "YukonMessageBroker" &
 net stop "YukonServiceMgr" &
-net stop "Apache Tomcat 6.0 Tomcat6" &
+net stop "Apache Tomcat 9.0 Tomcat9" &
 
 :: Wait for 30 sec
 ping -n 30 127.0.0.1 > NUL
@@ -36,7 +36,7 @@ CALL :terminateIfStillRunning "YukonNotificationServer"
 CALL :terminateIfStillRunning "Yukon Port Control Service"
 CALL :terminateIfStillRunning "Yukon Calc-Logic Service"
 CALL :terminateIfStillRunning "Yukon Real-Time Scan Service"
-CALL :terminateIfStillRunning "Apache Tomcat 6.0 Tomcat6" 
+CALL :terminateIfStillRunning "Apache Tomcat 9.0 Tomcat9" 
 
 :terminateIfStillRunning
 sc QUERY "%~1" | find /I "STATE" | find "STOPPED"
