@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
-        <analog offset="20002"/>
+        <analog offset="167"/>
+        <analogOutput offset="10468"/>
         <pulseAccumulator offset="5"/>
-        <status offset="10040"/>
+        <status offset="127"/>
+        <statusOutput offset="10040"/>
+        <systemAnalog offset="20002"/>
+        <systemStatus offset="2000"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Analog">

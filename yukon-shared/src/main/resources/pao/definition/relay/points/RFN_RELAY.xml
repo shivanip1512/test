@@ -2,7 +2,7 @@
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
         <analog offset="24"/>
-        <status offset="1000"/>
+        <status offset="64"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="20" type="Analog">

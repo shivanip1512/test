@@ -3,7 +3,8 @@
     <highestOffsets>
         <demandAccumulator offset="6"/>
         <pulseAccumulator offset="9"/>
-        <status offset="2000"/>
+        <status offset="16"/>
+        <systemStatus offset="2000"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -DemandAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="DemandAccumulator">

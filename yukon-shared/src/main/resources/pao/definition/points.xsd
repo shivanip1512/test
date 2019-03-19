@@ -9,11 +9,16 @@
     <xs:complexType name="highestOffsets" >
         <xs:sequence>
             <xs:element name="analog" type="offset" minOccurs="0"/>
+            <xs:element name="analogOutput" type="offset" minOccurs="0"/>
             <xs:element name="calcAnalog" type="offset" minOccurs="0"/>
             <xs:element name="calcStatus" type="offset" minOccurs="0"/>
             <xs:element name="demandAccumulator" type="offset" minOccurs="0"/>
             <xs:element name="pulseAccumulator" type="offset" minOccurs="0"/>
             <xs:element name="status" type="offset" minOccurs="0"/>
+            <xs:element name="statusOutput" type="offset" minOccurs="0"/>
+            <xs:element name="systemAnalog" type="offset" minOccurs="0"/>
+            <xs:element name="systemPulseAccumulator" type="offset" minOccurs="0"/>
+            <xs:element name="systemStatus" type="offset" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
 

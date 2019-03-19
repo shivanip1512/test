@@ -4,7 +4,8 @@
         <analog offset="823"/>
         <demandAccumulator offset="25"/>
         <pulseAccumulator offset="761"/>
-        <status offset="2000"/>
+        <status offset="57"/>
+        <systemStatus offset="2000"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="100" type="Analog">
