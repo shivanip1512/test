@@ -80,7 +80,7 @@ bool LMGroupItron::sendStopControl( bool stopImmediately )
     CtiTime utcNow( now - now.secondOffsetToGMT() );
 
     ActiveMQConnectionManager::enqueueMessage(
-        OutboundQueue::NestRestore,
+        OutboundQueue::ItronRestore,
         std::make_unique<LMItronRestoreMessage>(
             getPAOId(),
             utcNow.seconds() ) );
@@ -134,6 +134,8 @@ bool LMGroupItron::sendShedControl( long controlMinutes )
 
 bool LMGroupItron::doesStopRequireCommandAt( const CtiTime & currentTime ) const
 {
-    return getControlStartTime() < currentTime && currentTime <= getLastStopTimeSent();
+    // Always send the restore at the end of control.
+
+    return true;
 }
 
