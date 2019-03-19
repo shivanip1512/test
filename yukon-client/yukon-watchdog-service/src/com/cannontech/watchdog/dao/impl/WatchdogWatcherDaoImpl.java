@@ -36,7 +36,7 @@ public class WatchdogWatcherDaoImpl implements WatchdogWatcherDao {
         sql.append("WHERE deviceId = (");
         sql.append("SELECT MAX(PAObjectID)");
         sql.append("FROM YukonPAObject");
-        sql.append("WHERE Type").eq_k(PaoType.RFN_GATEWAY);
+        sql.append("WHERE Type").in_k(PaoType.getRfGatewayTypes());
         sql.append(")");
 
         try {
