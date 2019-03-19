@@ -59,9 +59,9 @@ public class ProgramEventManagerHelper implements SoapFaultParser {
          * we "round up" to duty cycle count of 2 (which adds up to an hour)
          * then LM will send the stop message at 45 minutes and we send that out to end the event
          */
+        
         short dutyCycleCount =
-            new BigDecimal(duration.getStandardSeconds()).divide(new BigDecimal(dutyCyclePeriod)).setScale(0,
-                RoundingMode.HALF_UP).shortValue();
+            new BigDecimal(duration.getStandardSeconds()).divide(new BigDecimal(dutyCyclePeriod), RoundingMode.HALF_UP).shortValue();
         d2GParams.setDutyCycleCount(dutyCycleCount);
         d2GParams.setVirtualRelayAddress((short) relay);
         d2GParams.setEventControl(eventControlTypes.get(dutyCycleType));
