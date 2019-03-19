@@ -52,8 +52,6 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
 
     private static volatile YukonRollingFileAppender instance;
 
-    public final static int LOG_RETENTION_DAYS = 90;
-
     protected final static String filenameDateFormat = "yyyyMMdd";
 
     private final static String REMOTE_LOGGING_DIRECTORY = CtiUtilities.getConfigDirPath() + "Yukon/Log/";
@@ -110,7 +108,12 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
     /**
      * logRetentionDays is used to delete archive files.
      */
-    private int logRetentionDays = LOG_RETENTION_DAYS;
+    private int logRetentionDays;
+
+    public void setLogRetentionDays(int logRetentionDays) {
+        this.logRetentionDays = logRetentionDays;
+        cleanUpOldLogFiles();
+    }
 
     /**
      * Name of the current logging file.
@@ -127,6 +130,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
         calendar = Calendar.getInstance();
         prefix = applicationName + "_";
         maxFileSize = BootstrapUtils.getLogMaxFileSize();
+        logRetentionDays = BootstrapUtils.getLogRetentionDays();
 
     }
 
@@ -336,14 +340,10 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
                 }
             }
             if (fileDate == null) {
-                try {
-                    /* Use the files creation date */
-                    fileDate = FileUtil.getCreationDate(file);
-                } catch (IOException e) {
-                    fileDate = new Date(file.lastModified());
-                }
+                return false;
+            } else {
+                return fileDate.before(retentionDate.getTime());
             }
-            return fileDate.before(retentionDate.getTime());
         }
     }
 

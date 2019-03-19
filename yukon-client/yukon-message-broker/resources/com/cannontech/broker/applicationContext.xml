@@ -19,6 +19,7 @@
     
     <bean id="configurationSource" class="com.cannontech.common.config.MasterConfigHelper" factory-method="getConfiguration"/>
     <bean id="globalSettingDao" class="com.cannontech.system.dao.impl.GlobalSettingDaoImpl"/>
+    <bean class="com.cannontech.broker.logging.YukonBrokerLoggingReloader"/>
     
     <bean id="connectionFactoryTarget" class="com.cannontech.services.jms.YukonJmsConnectionFactory" lazy-init="true" autowire-candidate="false"/>
         

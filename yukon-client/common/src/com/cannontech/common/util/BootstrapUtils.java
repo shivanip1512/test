@@ -27,6 +27,7 @@ public class BootstrapUtils {
     private final static String KEYS_DIRECTORY = "/Server/Config/Keys/";
     private static String serviceStartTime = StringUtils.EMPTY;
     private static long logMaxFileSize = YukonLoggingReloader.DEFAULT_MAX_FILE_SIZE;
+    private static int logRetentionDays = 0;
 
     static {
         System.setProperty("java.locale.providers", "COMPAT,SPI");
@@ -241,5 +242,13 @@ public class BootstrapUtils {
 
     public static void setLogMaxFileSize(long updatedMaxFileSize) {
         logMaxFileSize = updatedMaxFileSize;
+    }
+
+    public static int getLogRetentionDays() {
+        return logRetentionDays;
+    }
+
+    public static void setLogRetentionDays(int updatedLogRetentionDays) {
+        logRetentionDays = updatedLogRetentionDays;
     }
 }
