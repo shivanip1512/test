@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -76,12 +77,47 @@ public class PaoDefinitionFilesTest {
                         Assert.fail(MessageFormat.format("Duplicate point type+offset for {0}, {1} {2}", resource, x.getType(), x.getOffset())); 
                         return null; 
                     };
-                
+                    
+                /**
+                 * Special case points to exclude from highestOffsets
+                 */
+                Predicate<Point> excludeOutlierPoints = p -> { 
+                    switch (p.getType()) {
+                    case "Status":
+                        switch (p.getOffset()) {
+                        case 1000:  //  Exclude Outage Status
+                        case 3000:  //  Exclude Phase Status
+                        case 9999:  //  Exclude Device Reset Indicator
+                            return false;
+                        }
+                    }
+                    return true;
+                };
+
+                Function<Point, String> getEffectivePointType = p -> {
+                        if (p.getOffset() >= 20000) {
+                            return "System" + p.getType();
+                        } else if (p.getOffset() > 10000) {
+                            switch (p.getType()) {
+                            case "Analog":
+                                return "AnalogOutput";
+                            case "Status":
+                                return "StatusOutput";
+                            default:
+                                return "Unexpected";
+                            }
+                        } else if (p.getOffset() >= 2000) {
+                            return "System" + p.getType();
+                        }
+                        return p.getType();
+                    };
+
                 Map<String, Integer> calculatedMaxOffsetByType =
                         points.getPoint().stream()
+                            .filter(excludeOutlierPoints)
                             .collect(
                                 Collectors.groupingBy(
-                                    Point::getType, 
+                                    getEffectivePointType, 
                                     Collectors.collectingAndThen(
                                         Collectors.toMap(
                                             Point::getOffset, 
@@ -93,24 +129,27 @@ public class PaoDefinitionFilesTest {
                 
                 var highestOffsets = points.getHighestOffsets();
                 
-                if (highestOffsets != null) {
-                    var rawOffsetsByType = Maps.<String, Offset>newHashMap();
-                    rawOffsetsByType.put("Analog", highestOffsets.getAnalog());
-                    rawOffsetsByType.put("CalcAnalog", highestOffsets.getCalcAnalog());
-                    rawOffsetsByType.put("CalcStatus", highestOffsets.getCalcStatus());
-                    rawOffsetsByType.put("DemandAccumulator", highestOffsets.getDemandAccumulator());
-                    rawOffsetsByType.put("PulseAccumulator", highestOffsets.getPulseAccumulator());
-                    rawOffsetsByType.put("Status", highestOffsets.getStatus());
+                var rawOffsetsByType = Maps.<String, Offset>newHashMap();
+                rawOffsetsByType.put("Analog", highestOffsets.getAnalog());
+                rawOffsetsByType.put("AnalogOutput", highestOffsets.getAnalogOutput());
+                rawOffsetsByType.put("CalcAnalog", highestOffsets.getCalcAnalog());
+                rawOffsetsByType.put("CalcStatus", highestOffsets.getCalcStatus());
+                rawOffsetsByType.put("DemandAccumulator", highestOffsets.getDemandAccumulator());
+                rawOffsetsByType.put("PulseAccumulator", highestOffsets.getPulseAccumulator());
+                rawOffsetsByType.put("Status", highestOffsets.getStatus());
+                rawOffsetsByType.put("StatusOutput", highestOffsets.getStatusOutput());
+                rawOffsetsByType.put("SystemAnalog", highestOffsets.getSystemAnalog());
+                rawOffsetsByType.put("SystemPulseAccumulator", highestOffsets.getSystemPulseAccumulator());
+                rawOffsetsByType.put("SystemStatus", highestOffsets.getSystemStatus());
 
-                    Map<String, Integer> declaredMaxOffsetByType =
-                            Maps.transformValues(
-                                Maps.filterValues(
-                                    rawOffsetsByType,
-                                    Objects::nonNull),
-                                Offset::getOffset);
-                    
-                    Assert.assertEquals(resource + "\nhighestOffsets", calculatedMaxOffsetByType, declaredMaxOffsetByType);
-                }
+                Map<String, Integer> declaredMaxOffsetByType =
+                        Maps.transformValues(
+                            Maps.filterValues(
+                                rawOffsetsByType,
+                                Objects::nonNull),
+                            Offset::getOffset);
+                
+                Assert.assertEquals(resource + "\nhighestOffsets", mapToString(calculatedMaxOffsetByType), mapToString(declaredMaxOffsetByType));
             }
         } catch (IOException | JAXBException | SAXException | ParserConfigurationException e) {
             throw new PaoConfigurationException(
@@ -118,6 +157,13 @@ public class PaoDefinitionFilesTest {
         }
     }
     
+    private String mapToString(Map<String, Integer> namedIntMap) {
+        return namedIntMap.entrySet().stream()
+                .sorted((a, b) -> a.getKey().compareTo(b.getKey()))
+                .map(e -> e.getKey() + "=" + e.getValue())
+                .collect(Collectors.joining(", ", "{", "}"));
+    }
+
     private void validateXmlSchema(InputStream stream, URL schemaUrl)
             throws IOException, SAXException, ParserConfigurationException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
