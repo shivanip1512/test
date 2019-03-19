@@ -149,7 +149,7 @@ public class ItronDeviceDataParser {
                 boolean pointExists = attributeService.createPointForAttribute(lpo, event.getAttribute(decoded));
                 LitePoint lp = attributeService.findPointForAttribute(lpo, event.getAttribute(decoded));
                 double currentValue = dataSource.getPointValue(lp.getLiteID()).getValue(); //Should I be using liteId or pointId?
-                Optional<PointData> optionalPointData = event.getPointData(decoded, currentValue, eventTime);
+                Optional<PointData> optionalPointData = event.getPointData(decoded, currentValue, eventTime , lp);
                 optionalPointData.ifPresent(pointData -> {
                     pointData.setId(lp.getLiteID());
                     pointData.setType(lp.getPointType());
