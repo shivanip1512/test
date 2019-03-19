@@ -131,27 +131,30 @@
         Please restart the Yukon Service Manager to resume processing.
     </entry>
     <entry key="yukon.web.modules.amr.validation.advanced.acceptAllText">
-        This will insert the OK tag for the any RawPointHistory value that has the identical
-        set of tags as are checked. This has the same effect as the Accept selection
-        on the Review page.
+	    <![CDATA[
+        Accept all flagged readings having exact match of all tags checked. This has the same
+        effect as the Accept selection on the Review page.<BR>Note: Checking all boxes will result
+        in no changes as it is not possible for a reading to have exact match on all tags.
+        ]]>
     </entry>
     <entry key="yukon.web.modules.amr.validation.advanced.deleteAllText">
         <![CDATA[
-        This will delete any RawPointHistory value that has the identical set of tags as are selected tags 
-        (but has not already been marked as Accepted). This has the same effect as the Delete selection
-        on the Review page. <strong class="warning">Archived usage readings will be removed completely from 
-        the database. This cannot be undone!</strong>
+        Delete all flagged readings having exact match of all tags checked, which have not already been
+        Accepted. This has the same effect as the Delete selection on the Review page.
+        <strong class="warning">Archived readings will be completely deleted from the database. This cannot be undone!</strong>
         ]]>
     </entry>
     <entry key="yukon.web.modules.amr.validation.advanced.recalculateTags1">
         <![CDATA[
-        The following options will reset the validation engine so that it reprocesses all readings from the 
-        beginning or from <strong class="warning">12</strong> months ago.
+        The following options will reset the validation engine so that it reprocesses all archived readings
+        from previous <strong class="warning">12</strong> months or from the beginning of time.
         ]]>
     </entry>
     <entry key="yukon.web.modules.amr.validation.advanced.recalculateTags2">
-        Before selecting one of these options, shut down the Yukon Service Manager service.
-        After pressing the Reset button, the service may be restarted.
+    <![CDATA[
+        <strong class="warning">Before selecting one of these options, shut down the Yukon Service Manager service.
+        After pressing the Reset button, the service may be restarted.</strong>
+        ]]>
     </entry>
     <entry key="yukon.web.modules.amr.validation.advanced.deleteTagsOneYear">Delete previous 12 months of tags: </entry>
     <entry key="yukon.web.modules.amr.validation.advanced.deleteAllTags">Delete all tags: </entry>
