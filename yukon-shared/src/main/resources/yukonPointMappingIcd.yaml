@@ -479,14 +479,14 @@ Elster A3:
     - Total Cumulative Peak Demand Coincident to Peak Demand Total:    { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *Coin2, *Cuml         ], Models: *DTKR, Other names: [ "Total cumulative kW" ] }
     - Coincident Peak Var:                                             { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *Coin3                ], Models: *___R }
     - Coincident Peak Power Factor:                                    { Unit: *PF,     Modifiers: [ *Q2, *Q3, *Q4, *Coin4                 ], Models: *__KR, Mapped: false, Other names: [ "Coincident power factor" ] }
+    - Coincident Cumulative Peak Var with Watt-hours Delivered:        { Unit: *Var,    Modifiers: [ *Q1, *Q4, *Max, *Coin5, *Cuml         ], Models: *__KR }
+    - Coincident Peak Var with Watt-hours Received:                    { Unit: *Var,    Modifiers: [ *Q2, *Q3, *Max, *Coin6                ], Models: *__KR }
     - Peak Var:                                                        { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max                        ], Models: *___R }
     - Coincident Time of Peak Var:                                     { Unit: *s,      Modifiers: [ *Coin1                                ], Models: *___R }
     - Coincident Cumulative Peak Var:                                  { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *Coin2, *Cuml         ], Models: *___R }
     - Coincident Peak Var with Watt-hours Delivered:                   { Unit: *Var,    Modifiers: [ *Q1, *Q4, *Max, *Coin3                ], Models: *___R, Mapped: false }
     - Peak Var with Watt-hours Delivered:                              { Unit: *Var,    Modifiers: [ *Q1, *Q4, *Max                        ], Models: *__KR, Other names: [ "VAR w/WH Del" ] }
     - Coincident Time of Peak Var with Watt-hours Delivered:           { Unit: *s,      Modifiers: [ *Coin1                                ], Models: *___R }
-    - Coincident Cumulative Peak Var with Watt-hours Delivered:        { Unit: *Var,    Modifiers: [ *Q1, *Q4, *Max, *Coin2, *Cuml         ], Models: *__KR }
-    - Coincident Peak Var with Watt-hours Received:                    { Unit: *Var,    Modifiers: [ *Q2, *Q3, *Max, *Coin3                ], Models: *__KR }
     - Peak Var with Watt-hours Received:                               { Unit: *Var,    Modifiers: [ *Q2, *Q3, *Max                        ], Models: *__KR, Other names: [ "VAR w/WH Rec" ] }
     - Coincident Time of Peak Var with Watt-hours Received:            { Unit: *s,      Modifiers: [ *Coin1                                ], Models: *___R }
     - Coincident Cumulative Peak Var with Watt-hours Received:         { Unit: *Var,    Modifiers: [ *Q2, *Q3, *Max, *Coin2, *Cuml         ], Models: *__KR }
