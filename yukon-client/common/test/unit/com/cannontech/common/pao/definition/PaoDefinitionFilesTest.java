@@ -5,11 +5,13 @@ import java.io.InputStream;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Map.Entry;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -20,6 +22,7 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,10 +36,9 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 import com.cannontech.common.pao.definition.loader.PaoConfigurationException;
-import com.cannontech.common.pao.definition.loader.jaxb.Offset;
+import com.cannontech.common.pao.definition.loader.jaxb.HighestOffsets;
 import com.cannontech.common.pao.definition.loader.jaxb.Point;
 import com.cannontech.common.pao.definition.loader.jaxb.Points;
-import com.google.common.collect.Maps;
 
 public class PaoDefinitionFilesTest {
 
@@ -127,28 +129,8 @@ public class PaoDefinitionFilesTest {
                                             .reduce(Integer::max)
                                             .get())));
                 
-                var highestOffsets = points.getHighestOffsets();
-                
-                var rawOffsetsByType = Maps.<String, Offset>newHashMap();
-                rawOffsetsByType.put("Analog", highestOffsets.getAnalog());
-                rawOffsetsByType.put("AnalogOutput", highestOffsets.getAnalogOutput());
-                rawOffsetsByType.put("CalcAnalog", highestOffsets.getCalcAnalog());
-                rawOffsetsByType.put("CalcStatus", highestOffsets.getCalcStatus());
-                rawOffsetsByType.put("DemandAccumulator", highestOffsets.getDemandAccumulator());
-                rawOffsetsByType.put("PulseAccumulator", highestOffsets.getPulseAccumulator());
-                rawOffsetsByType.put("Status", highestOffsets.getStatus());
-                rawOffsetsByType.put("StatusOutput", highestOffsets.getStatusOutput());
-                rawOffsetsByType.put("SystemAnalog", highestOffsets.getSystemAnalog());
-                rawOffsetsByType.put("SystemPulseAccumulator", highestOffsets.getSystemPulseAccumulator());
-                rawOffsetsByType.put("SystemStatus", highestOffsets.getSystemStatus());
+                var declaredMaxOffsetByType = getDeclaredOffsets(points.getHighestOffsets());
 
-                Map<String, Integer> declaredMaxOffsetByType =
-                        Maps.transformValues(
-                            Maps.filterValues(
-                                rawOffsetsByType,
-                                Objects::nonNull),
-                            Offset::getOffset);
-                
                 Assert.assertEquals(resource + "\nhighestOffsets", mapToString(calculatedMaxOffsetByType), mapToString(declaredMaxOffsetByType));
             }
         } catch (IOException | JAXBException | SAXException | ParserConfigurationException e) {
@@ -157,7 +139,23 @@ public class PaoDefinitionFilesTest {
         }
     }
     
-    private String mapToString(Map<String, Integer> namedIntMap) {
+    private static Map<String, Integer> getDeclaredOffsets(HighestOffsets highestOffsets) {
+        return Stream.of(Pair.of("Analog", highestOffsets.getAnalog()),
+                         Pair.of("AnalogOutput", highestOffsets.getAnalogOutput()),
+                         Pair.of("CalcAnalog", highestOffsets.getCalcAnalog()),
+                         Pair.of("CalcStatus", highestOffsets.getCalcStatus()),
+                         Pair.of("DemandAccumulator", highestOffsets.getDemandAccumulator()),
+                         Pair.of("PulseAccumulator", highestOffsets.getPulseAccumulator()),
+                         Pair.of("Status", highestOffsets.getStatus()),
+                         Pair.of("StatusOutput", highestOffsets.getStatusOutput()),
+                         Pair.of("SystemAnalog", highestOffsets.getSystemAnalog()),
+                         Pair.of("SystemPulseAccumulator", highestOffsets.getSystemPulseAccumulator()),
+                         Pair.of("SystemStatus", highestOffsets.getSystemStatus()))
+                .filter(e -> e.getValue() != null)
+                .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getOffset()));
+    }
+
+    private static String mapToString(Map<String, Integer> namedIntMap) {
         return namedIntMap.entrySet().stream()
                 .sorted((a, b) -> a.getKey().compareTo(b.getKey()))
                 .map(e -> e.getKey() + "=" + e.getValue())
