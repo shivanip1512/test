@@ -197,7 +197,6 @@
         <java classname="com.cannontech.web.support.development.database.service.impl.DevBuildDatabasePopulationService" jvm="C:\Yukon\Runtime\bin\java" fork="false" failonerror="false" classpathref="dbpopulation.classPath">
             <jvmarg value="-Dcatalina.base=C:\Yukon\Server\web"/>
             <jvmarg value="-Dcatalina.home=C:\Yukon\Server\web"/>
-            <jvmarg value="-Djava.endorsed.dirs=C:\Yukon\Server\web\common\endorsed"/>
             <jvmarg value="-Djava.io.tmpdir=C:\Yukon\Server\web\temp"/>
             <jvmarg value="-XX:MaxPermSize=128m"/>
             <jvmarg value="-Xms256m"/>
@@ -207,7 +206,6 @@
         <java classname="com.cannontech.web.dev.database.service.impl.DevBuildDatabasePopulationService" jvm="C:\Yukon\Runtime\bin\java" fork="true" failonerror="false" classpathref="dbpopulation.classPath">
             <jvmarg value="-Dcatalina.base=C:\Yukon\Server\web"/>
             <jvmarg value="-Dcatalina.home=C:\Yukon\Server\web"/>
-            <jvmarg value="-Djava.endorsed.dirs=C:\Yukon\Server\web\common\endorsed"/>
             <jvmarg value="-Djava.io.tmpdir=C:\Yukon\Server\web\temp"/>
             <jvmarg value="-XX:MaxPermSize=128m"/>
             <jvmarg value="-Xms256m"/>
@@ -385,7 +383,6 @@
                <arg value="-DignoreError=true"/>
                <jvmarg value="-Dcatalina.base=C:\Yukon\Server\web"/>
                <jvmarg value="-Dcatalina.home=C:\Yukon\Server\web"/>
-               <jvmarg value="-Djava.endorsed.dirs=C:\Yukon\Server\web\common\endorsed"/>
                <jvmarg value="-Djava.io.tmpdir=C:\Yukon\Server\web\temp"/>
                <jvmarg value="-XX:MaxPermSize=128m"/>
                <jvmarg value="-Xms256m"/>
@@ -407,7 +404,6 @@
                    <arg value="-DignoreError=true"/>
                    <jvmarg value="-Dcatalina.base=C:\Yukon\Server\web"/>
                    <jvmarg value="-Dcatalina.home=C:\Yukon\Server\web"/>
-                   <jvmarg value="-Djava.endorsed.dirs=C:\Yukon\Server\web\common\endorsed"/>
                    <jvmarg value="-Djava.io.tmpdir=C:\Yukon\Server\web\temp"/>
                    <jvmarg value="-XX:MaxPermSize=128m"/>
                    <jvmarg value="-Xms256m"/>
