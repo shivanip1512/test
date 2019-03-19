@@ -13,6 +13,7 @@ import org.joda.time.DateTime;
 
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.ByteUtil;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -173,9 +174,9 @@ public enum ItronDataEventType {
         }
     }
     
-    public Optional<PointData> getPointData(byte[] byteArray, double currentValue, String eventTime) {
+    public Optional<PointData> getPointData(byte[] byteArray, double currentValue, String eventTime, LitePoint lp) {
         if (this.isVoltageType()) {
-            return getPointDataForMinMaxVoltage(byteArray, eventTime);
+            return getPointDataForMinMaxVoltage(byteArray, eventTime, lp);
         }
         PointData pointData = new PointData();
         
@@ -191,61 +192,61 @@ public enum ItronDataEventType {
      * @return returns pointData for Min and Max Voltage. Since these two points need two events to be completed,
      *  a partial point is created when only one of the two required events are there
      */
-    private Optional<PointData> getPointDataForMinMaxVoltage(byte[] byteArray, String dt) {
-        //Check to see if point exist for YYYY-MM-DD-
+    private Optional<PointData> getPointDataForMinMaxVoltage(byte[] byteArray, String dt, LitePoint lp) {
+        //Check to see if point exist for key: YYYY-MM-DD- + lp + other Partial Point
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd"); // Quoted "Z" to indicate UTC, no timezone offset
-        String nowAsISO = df.format(new DateTime(dt));
+        String keyPrefix = df.format(new DateTime(dt)) + lp.getLiteID();
         PointData pointData;
         switch (this) {
         case MIN_VOLTAGE://if min time is found in cache grab point, clear from cache, generate and return point otherwise create partial point and return empty optional
-            pointData = voltageCache.getIfPresent(nowAsISO + MIN_VOLTAGE_TIME.name());
+            pointData = voltageCache.getIfPresent(keyPrefix + MIN_VOLTAGE_TIME.name());
             if (pointData == null) {
                 //make new point data and put in cache as nowAsISO + MIN_VOLTAGE;
                 pointData = new PointData();
                 pointData.setValue(decode(byteArray));
-                voltageCache.put(nowAsISO + this.name(), pointData);
+                voltageCache.put(keyPrefix + this.name(), pointData);
                 break;
             } else {
-                voltageCache.invalidate(nowAsISO + MIN_VOLTAGE_TIME.name());
+                voltageCache.invalidate(keyPrefix + MIN_VOLTAGE_TIME.name());
                 pointData.setValue(decode(byteArray));
                 return Optional.of(pointData);
             }
         case MIN_VOLTAGE_TIME://if min time is found in cache grab point, clear from cache, generate and return point otherwise create partial point and return empty optional
-            pointData = voltageCache.getIfPresent(nowAsISO + MIN_VOLTAGE.name());
+            pointData = voltageCache.getIfPresent(keyPrefix + MIN_VOLTAGE.name());
             if (pointData == null) {
                 //make new point data and put in cache as nowAsISO + MIN_VOLTAGE;
                 pointData = new PointData();
                 pointData.setTime(new Date(decode(byteArray)));
-                voltageCache.put(nowAsISO + this.name(), pointData);
+                voltageCache.put(keyPrefix + this.name(), pointData);
                 break;
             } else {
-                voltageCache.invalidate(nowAsISO + MIN_VOLTAGE.name());
+                voltageCache.invalidate(keyPrefix + MIN_VOLTAGE.name());
                 pointData.setTime(new Date(decode(byteArray)));
                 return Optional.of(pointData);
             }
         case MAX_VOLTAGE://if min time is found in cache grab point, clear from cache, generate and return point otherwise create partial point and return empty optional
-            pointData = voltageCache.getIfPresent(nowAsISO + MAX_VOLTAGE_TIME.name());
+            pointData = voltageCache.getIfPresent(keyPrefix + MAX_VOLTAGE_TIME.name());
             if (pointData == null) {
                 //make new point data and put in cache as nowAsISO + MAX_VOLTAGE;
                 pointData = new PointData();
                 pointData.setValue(decode(byteArray));
-                voltageCache.put(nowAsISO + this.name(), pointData);
+                voltageCache.put(keyPrefix + this.name(), pointData);
                 break;
             } else {
-                voltageCache.invalidate(nowAsISO + MAX_VOLTAGE_TIME.name());
+                voltageCache.invalidate(keyPrefix + MAX_VOLTAGE_TIME.name());
                 pointData.setValue(decode(byteArray));
                 return Optional.of(pointData);
             }
         case MAX_VOLTAGE_TIME://if min time is found in cache grab point, clear from cache, generate and return point otherwise create partial point and return empty optional
-            pointData = voltageCache.getIfPresent(nowAsISO + MAX_VOLTAGE.name());
+            pointData = voltageCache.getIfPresent(keyPrefix + MAX_VOLTAGE.name());
             if (pointData == null) {
                 //make new point data and put in cache as nowAsISO + MAX_VOLTAGE_TIME;
                 pointData = new PointData();
                 pointData.setTime(new Date(decode(byteArray)));
-                voltageCache.put(nowAsISO + this.name(), pointData);
+                voltageCache.put(keyPrefix + this.name(), pointData);
                 break;
             } else {
-                voltageCache.invalidate(nowAsISO + MAX_VOLTAGE.name());
+                voltageCache.invalidate(keyPrefix + MAX_VOLTAGE.name());
                 pointData.setTime(new Date(decode(byteArray)));
                 return Optional.of(pointData);
             }
