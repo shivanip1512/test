@@ -49,6 +49,7 @@ template <size_t ColumnCount>
 class IM_EX_CTIBASE DatabaseBulkUpdater : public DatabaseBulkWriter<ColumnCount>
 {
 public:
+    DatabaseBulkUpdater(const DbClientType clientType, TempTableColumns schema, const unsigned primaryKeyCount, const std::string& tempTableName, const std::string& destTableName, const std::string& foreignKeyTableName);
     DatabaseBulkUpdater(const DbClientType clientType, TempTableColumns schema, const std::string& tempTableName, const std::string& destTableName, const std::string& foreignKeyTableName);
 
 protected:
@@ -59,6 +60,7 @@ protected:
 
 private:
     const std::string _idColumn;
+    const boost::sub_range<const std::array<ColumnDefinition, ColumnCount>> _primaryKeyColumns;
     const boost::sub_range<const std::array<ColumnDefinition, ColumnCount>> _valueColumns;
     const std::string _fkTable;
 };

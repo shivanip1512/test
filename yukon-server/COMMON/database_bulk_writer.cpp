@@ -273,11 +273,18 @@ std::string DatabaseBulkInserter<ColumnCount>::getFinalizeSql() const
 
 
 template <size_t ColumnCount>
-DatabaseBulkUpdater<ColumnCount>::DatabaseBulkUpdater(const DbClientType clientType, TempTableColumns schema, const std::string& tempTableName, const std::string& destTableName, const std::string& foreignKeyTableName) 
+DatabaseBulkUpdater<ColumnCount>::DatabaseBulkUpdater(const DbClientType clientType, TempTableColumns schema, const unsigned primaryKeyCount, const std::string& tempTableName, const std::string& destTableName, const std::string& foreignKeyTableName) 
     :   DatabaseBulkWriter{ clientType, schema, tempTableName, destTableName },
         _idColumn{ _schema[0].name },
-        _valueColumns{ _schema.begin() + 1, _schema.end() },
+        _primaryKeyColumns{ _schema.begin(), _schema.begin() + primaryKeyCount },
+        _valueColumns{ _schema.begin() + primaryKeyCount, _schema.end() },
         _fkTable{ foreignKeyTableName }
+{}
+
+
+template <size_t ColumnCount>
+DatabaseBulkUpdater<ColumnCount>::DatabaseBulkUpdater(const DbClientType clientType, TempTableColumns schema, const std::string& tempTableName, const std::string& destTableName, const std::string& foreignKeyTableName) 
+    :   DatabaseBulkUpdater{ clientType, schema, 1, tempTableName, destTableName, foreignKeyTableName }
 {}
 
 
@@ -285,6 +292,11 @@ template <size_t ColumnCount>
 std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql() const
 {
     const auto columnNames = boost::join(_schema | columnName, ", ");
+
+    const auto matchCondition =
+        boost::adaptors::transformed(
+            [this](const ColumnDefinition &cd) {
+                return _destTable + "." + cd.name + " = t." + cd.name; });
 
     const auto mergeUpdate =
         boost::adaptors::transformed(
@@ -298,6 +310,7 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql() const
 
     const auto mergeUpdates = boost::join(_valueColumns | mergeUpdate, ", ");
     const auto mergeInserts = boost::join(_schema | mergeInsert, ", ");
+    const auto matchConditions = boost::join(_primaryKeyColumns | matchCondition, " AND ");
 
     switch( _clientType )
     {
@@ -306,7 +319,7 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql() const
             return
                 "MERGE " + _destTable +
                 " USING (SELECT " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
-                " ON " + _destTable + "." + _idColumn + " = t." + _idColumn +
+                " ON " + matchConditions +
                 " WHEN MATCHED THEN"
                 " UPDATE SET " + mergeUpdates +
                 " WHEN NOT MATCHED THEN"
@@ -318,7 +331,7 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql() const
             return
                 "MERGE INTO " + _destTable +
                 " USING (SELECT " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
-                " ON (" + _destTable + "." + _idColumn + " = t." + _idColumn + ")" +
+                " ON (" + matchConditions + ")" +
                 " WHEN MATCHED THEN"
                 " UPDATE SET " + mergeUpdates +
                 " WHEN NOT MATCHED THEN"
@@ -364,6 +377,7 @@ std::set<long> DatabaseBulkUpdater<ColumnCount>::getRejectedRows(DatabaseConnect
 template DatabaseBulkInserter<5>;
 template DatabaseBulkUpdater<7>;
 template DatabaseBulkUpdater<5>;
+template DatabaseBulkUpdater<11>;
 
 
 }

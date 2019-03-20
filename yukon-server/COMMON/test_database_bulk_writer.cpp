@@ -235,5 +235,64 @@ BOOST_AUTO_TEST_CASE(test_bulk_updater_get_rejected_rows_sql)
     }
 }
 
+struct test_TwoPrimaryKeyBulkUpdater : Cti::Database::DatabaseBulkUpdater<5>
+{
+    test_TwoPrimaryKeyBulkUpdater(DbClientType clientType)
+        : DatabaseBulkUpdater( clientType,
+            { Cti::Database::ColumnDefinition
+                { "ColumnA", "SqlServerTypeA", "OracleTypeA" },
+                { "ColumnB", "SqlServerTypeB", "OracleTypeB" },
+                { "ColumnC", "SqlServerTypeC", "OracleTypeC" },
+                { "ColumnD", "SqlServerTypeD", "OracleTypeD" },
+                { "ColumnE", "SqlServerTypeE", "OracleTypeE" } },
+            2,  // ColumnA and ColumnB are primary keys
+            "TemporaryTableName", "DestinationTableName", "ForeignKeyTableName")
+    {}
+
+    using DatabaseBulkUpdater::getFinalizeSql;
+    using DatabaseBulkUpdater::getRejectedRowsSql;
+};
+
+BOOST_AUTO_TEST_CASE(test_2_primary_key_bulk_updater_finalize_sql)
+{
+    {
+        test_TwoPrimaryKeyBulkUpdater bu { test_BulkUpdater::DbClientType::SqlServer };
+
+        BOOST_CHECK_EQUAL(
+            bu.getFinalizeSql(),
+            "MERGE DestinationTableName"
+            " USING ("
+                "SELECT Temp_TemporaryTableName.*"
+                " FROM Temp_TemporaryTableName"
+                " JOIN ForeignKeyTableName"
+                " ON Temp_TemporaryTableName.ColumnA=ForeignKeyTableName.ColumnA) t"
+            " ON DestinationTableName.ColumnA = t.ColumnA AND DestinationTableName.ColumnB = t.ColumnB"
+            " WHEN MATCHED THEN"
+            " UPDATE SET ColumnC = t.ColumnC, ColumnD = t.ColumnD, ColumnE = t.ColumnE"
+            " WHEN NOT MATCHED THEN"
+            " INSERT (ColumnA, ColumnB, ColumnC, ColumnD, ColumnE)"
+            " VALUES (t.ColumnA, t.ColumnB, t.ColumnC, t.ColumnD, t.ColumnE);");
+    }
+
+    {
+        test_TwoPrimaryKeyBulkUpdater bu { test_BulkUpdater::DbClientType::Oracle };
+
+        BOOST_CHECK_EQUAL(
+            bu.getFinalizeSql(),
+            "MERGE INTO DestinationTableName"
+            " USING ("
+                "SELECT Temp_TemporaryTableName.*"
+                " FROM Temp_TemporaryTableName"
+                " JOIN ForeignKeyTableName"
+                " ON Temp_TemporaryTableName.ColumnA=ForeignKeyTableName.ColumnA) t"
+            " ON (DestinationTableName.ColumnA = t.ColumnA AND DestinationTableName.ColumnB = t.ColumnB)"
+            " WHEN MATCHED THEN"
+            " UPDATE SET ColumnC = t.ColumnC, ColumnD = t.ColumnD, ColumnE = t.ColumnE"
+            " WHEN NOT MATCHED THEN"
+            " INSERT (ColumnA, ColumnB, ColumnC, ColumnD, ColumnE)"
+            " VALUES (t.ColumnA, t.ColumnB, t.ColumnC, t.ColumnD, t.ColumnE)");
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

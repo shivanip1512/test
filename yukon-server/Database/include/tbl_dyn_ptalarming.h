@@ -7,6 +7,8 @@
 #include "yukon.h"
 #include "row_reader.h"
 #include "database_connection.h"
+#include "database_util.h"
+#include "row_writer.h"
 #include "loggable.h"
 
 
@@ -14,7 +16,7 @@
 #define CTITABLEDYNAMICPOINTALARMING_MAX_DESCRIPTION    120
 
 
-class IM_EX_CTIYUKONDB CtiTableDynamicPointAlarming : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
+class IM_EX_CTIYUKONDB CtiTableDynamicPointAlarming : public CtiMemDBObject, private boost::noncopyable, public Cti::RowSource
 {
     LONG        _pointID;
     UINT        _alarmCondition;       // 0-31     Telling us which alarm this represents  Directly tied to point type & found in class CtiTablePointAlarming
@@ -84,5 +86,9 @@ public:
     CtiTableDynamicPointAlarming& setUser(const std::string &str);
 
     virtual std::string toString() const override;
+
+    void fillRowWriter(Cti::RowWriter& writer) const override;
+
+    static std::array<Cti::Database::ColumnDefinition, 11> getTempTableSchema();
 };
 

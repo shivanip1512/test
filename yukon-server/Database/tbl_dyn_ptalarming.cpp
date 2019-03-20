@@ -349,3 +349,39 @@ std::string CtiTableDynamicPointAlarming::toString() const
 
     return itemList.toString();
 }
+
+void CtiTableDynamicPointAlarming::fillRowWriter(Cti::RowWriter& writer) const
+{
+    writer
+        << getPointID()
+        << getAlarmCondition()
+        << getCategoryID()
+        << getAlarmDBTime()
+        << getAction()
+        << getDescription()
+        << getTags()
+        << getLogID()
+        << getSOE()
+        << getLogType()
+        << getUser();
+}
+
+std::array<Cti::Database::ColumnDefinition, 11> CtiTableDynamicPointAlarming::getTempTableSchema()
+{
+    return
+    {
+        Cti::Database::ColumnDefinition
+            { "PointID",        "numeric",      "NUMBER"        },
+            { "AlarmCondition", "numeric",      "NUMBER"        },
+            { "CategoryID",     "numeric",      "NUMBER"        },
+            { "AlarmTime",      "datetime",     "DATE"          },
+            { "Action",         "varchar(60)",  "VARCHAR2(60)"  },
+            { "Description",    "varchar(120)", "VARCHAR2(120)" },
+            { "Tags",           "numeric",      "NUMBER"        },
+            { "LogID",          "numeric",      "NUMBER"        },
+            { "SOE_TAG",        "numeric",      "NUMBER"        },
+            { "Type",           "numeric",      "NUMBER"        },
+            { "UserName",       "varchar(64)",  "VARCHAR2(64)"  }
+    };
+}
+
