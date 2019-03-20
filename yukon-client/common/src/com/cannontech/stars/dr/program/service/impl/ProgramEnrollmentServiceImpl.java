@@ -392,7 +392,6 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
     /**
      * This is a transplant from the ProgramSignUpAction class which has now been deleted:
-     * @throws SystemConfigurationException 
      */
     private List<LiteLmHardwareBase> updateProgramEnrollment(StarsProgramSignUp progSignUp,
             LiteAccountInfo liteAcctInfo, LiteInventoryBase liteInv, EnergyCompany ec, LiteYukonUser currentUser) {
