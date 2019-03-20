@@ -8,9 +8,12 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.AccountNotFoundException;
@@ -18,6 +21,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.itron.dao.ItronDao;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -36,6 +40,7 @@ import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
 import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEventLoggingData;
@@ -59,6 +64,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
+    private final static Logger log = YukonLogManager.getLogger(EnrollmentHelperServiceImpl.class);
     
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private ApplianceDao applianceDao;
@@ -78,6 +84,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private AssignedProgramDao assignedProgramDao;
     @Autowired private PaoDao paoDao;
+    @Autowired private ItronDao itronDao;
 
     @Override
     public void updateProgramEnrollments(List<ProgramEnrollment> programEnrollments, 
@@ -129,6 +136,9 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                 enrollments.add(enrollment);
                 addedEnrollments.add(enrollment);
             }
+
+            LoadGroup loadGroup = loadGroupDao.getById(enrollment.getLmGroupId());
+            verifyRelay(loadGroup, enrollment);
         }
         programEnrollmentService.applyEnrollmentRequests(customerAccount, enrollments, userContext.getYukonUser());
         
@@ -226,7 +236,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
             LoadGroup loadGroup = getLoadGroupByName(enrollmentHelper.getLoadGroupName(), program);
 
             programEnrollment = new ProgramEnrollment(enrollmentHelper, lmHardwareBase, applianceCategory, program, loadGroup);
-
+            
+            verifyRelay(loadGroup, programEnrollment);
         }
         
         // Adding or Removing the new program enrollment to the active enrollment list, which is needed
@@ -246,6 +257,29 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         
         // Logging the new enrollment changes.
         logEnrollmentChange(user, enrollmentEnum, enrollmentHelper);
+    }
+    
+    /**
+     * This method will verify the relay selected for enrollment is valid
+     * @param loadGroup the load group for enrollment
+     * @param enrollment the Program Enrollment 
+     */
+    private void verifyRelay(LoadGroup loadGroup, ProgramEnrollment enrollment) {
+        int enrollmentRelay = enrollment.getRelay();
+        //For Itron, the relay should match the relay specified in the Group
+        if (loadGroup.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_ITRON) {
+            int relayFromGroup = itronDao.getVirtualRelayId(loadGroup.getLoadGroupId());
+            //if no relay was provided, set it to the relay specified in the Itron group
+            if (enrollmentRelay == 0) {
+                enrollment.setRelay(relayFromGroup);
+                return;
+            }
+            //error if relay does not match group
+            if (enrollmentRelay != relayFromGroup) {
+                log.error("Relay selected for enrollment does not match the relay selected for Itron Load Group: " + loadGroup.getName());
+                throw new EnrollmentException("Relay selected for enrollment does not match the Load Group: " + loadGroup.getName() + ".");
+            }
+        }
     }
 
     /**

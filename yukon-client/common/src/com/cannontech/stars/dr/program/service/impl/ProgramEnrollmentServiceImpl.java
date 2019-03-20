@@ -25,14 +25,12 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.device.commands.exception.SystemConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.itron.dao.ItronDao;
 import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
@@ -105,7 +103,6 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired private StarsControlHistoryService controlHistoryService;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
     @Autowired private YukonListDao listDao;
-    @Autowired private ItronDao itronDao;
 
     private final Map<Integer, Object> accountIdMutex = Collections.synchronizedMap(new HashMap<Integer, Object>());
     
@@ -334,7 +331,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Override
     public List<LiteLmHardwareBase> applyEnrollmentRequests(CustomerAccount customerAccount,
                                                              List<ProgramEnrollment> programEnrollmentList,
-                                                             LiteInventoryBase liteInv, LiteYukonUser user) throws SystemConfigurationException {
+                                                             LiteInventoryBase liteInv, LiteYukonUser user) {
         int customerAccountId = customerAccount.getAccountId();
         EnergyCompany ec = ecDao.getEnergyCompanyByAccountId(customerAccount.getAccountId());
         LiteAccountInfo liteCustomerAccount = starsCustAccountInformationDao.getByAccountId(customerAccountId);
@@ -398,7 +395,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
      * @throws SystemConfigurationException 
      */
     private List<LiteLmHardwareBase> updateProgramEnrollment(StarsProgramSignUp progSignUp,
-            LiteAccountInfo liteAcctInfo, LiteInventoryBase liteInv, EnergyCompany ec, LiteYukonUser currentUser) throws SystemConfigurationException {
+            LiteAccountInfo liteAcctInfo, LiteInventoryBase liteInv, EnergyCompany ec, LiteYukonUser currentUser) {
         LiteStarsEnergyCompany lsec = StarsDatabaseCache.getInstance().getEnergyCompany(ec.getId());
         StarsSULMPrograms programs = progSignUp.getStarsSULMPrograms();
         List<LiteLmHardwareBase> hwsToConfig = new ArrayList<>();
@@ -434,21 +431,6 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             if (!program.hasApplianceCategoryID()) {
                 LiteLMProgramWebPublishing liteProg = lsec.getProgram(program.getProgramID());
                 program.setApplianceCategoryID(liteProg.getApplianceCategoryID());
-            }
-            
-            //check that relays match itron group
-            LoadGroup lg = loadGroupDao.getById(program.getAddressingGroupID());
-            if (lg.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_ITRON) {
-                int relay = itronDao.getVirtualRelayId(program.getAddressingGroupID());
-                //if no relay was provided, set it to the relay specified in the Itron group
-                if (program.getLoadNumber() == 0) {
-                    program.setLoadNumber(relay);
-                }
-                //error if relay does not match group
-                if (relay != program.getLoadNumber()) {
-                    throw new SystemConfigurationException("Relay selected for enrollment does not match the Load Group.");
-                }
-
             }
             
             Map<Integer, LiteStarsAppliance> hwAppMap = progHwAppMap.get(program.getProgramID());
