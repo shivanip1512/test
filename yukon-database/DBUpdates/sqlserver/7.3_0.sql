@@ -51,6 +51,22 @@ INSERT INTO State VALUES(-28, 3, 'On', 0, 6, 0);
 INSERT INTO DBUpdates VALUES ('YUK-19624', '7.3.0', GETDATE());
 /* @end YUK-19624 */
 
+/* @start YUK-19667 */
+UPDATE POINT
+SET POINTOFFSET = 387
+WHERE POINTOFFSET = 362
+AND POINTTYPE = 'Analog'
+AND POINTNAME = 'Net kW';
+
+UPDATE POINT
+SET POINTOFFSET = 388
+WHERE POINTOFFSET = 363
+AND POINTTYPE = 'Analog'
+AND POINTNAME = 'kVAr (Quadrants 1 3)';
+
+INSERT INTO DBUpdates VALUES ('YUK-19667', '7.3.0', GETDATE());
+/* @end YUK-19667 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
