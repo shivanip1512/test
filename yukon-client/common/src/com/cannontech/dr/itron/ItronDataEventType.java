@@ -28,6 +28,7 @@ public enum ItronDataEventType {
     CONFIGURATION_UPDATED_HASH(0x808A, BuiltInAttribute.CONFIGURATION_UPDATED_HASH, 0, 0, 1),
     TLS_FAIL(0x801F, BuiltInAttribute.TLS_FAIL, 0, 0, 1),
     BAD_HDLC(0x8020, BuiltInAttribute.BAD_HDLC, 0, 0, 1),
+    FLUSH_LOG(0x8095, BuiltInAttribute.FLUSH_LOG, 0, 0, 1),
     
     //Events where the Relay Number for the Attribute is obtained from the payload.
     LOAD_ON(0x8014, null, 0, 1, 3),
