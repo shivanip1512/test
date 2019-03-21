@@ -64,6 +64,13 @@ AND POINTNAME = 'kVAr (Quadrants 1 3)';
 INSERT INTO DBUpdates VALUES ('YUK-19667', '7.3.0', SYSDATE);
 /* @end YUK-19667 */
 
+/* @start YUK-19697 */
+DELETE FROM GlobalSetting
+WHERE Name IN ('NEST_USERNAME', 'NEST_PASSWORD', 'NEST_SERVER_URL');
+
+INSERT INTO DBUpdates VALUES ('YUK-19697', '7.3.0', SYSDATE);
+/* @end YUK-19697 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
