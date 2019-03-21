@@ -54,7 +54,6 @@ import com.cannontech.dr.service.impl.DatedRuntimeStatus;
 import com.cannontech.dr.service.impl.RuntimeCalcServiceImpl;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -187,7 +186,7 @@ public class ItronRuntimeCalcServiceImplTest {
 
         ReflectionTestUtils.setField(itronRuntimeCalcService, "pointDao", mockPointDao);
         
-        var<Integer> lcr6600s_pointIds = Sets.newHashSet(Lists.transform(lcr6600s_points, LitePoint::getPointID));
+        Set<Integer> lcr6600s_pointIds = Sets.newHashSet(Lists.transform(lcr6600s_points, LitePoint::getPointID));
         
         DateTime radioLinkQuality = DateTime.parse("2019-03-20T12:06:17.922Z");
         DateTime recentRelayState = DateTime.parse("2019-03-20T11:13:27.000Z");
