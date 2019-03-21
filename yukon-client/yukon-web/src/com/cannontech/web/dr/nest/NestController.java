@@ -67,6 +67,7 @@ import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+@CheckGlobalSettingStringExist(GlobalSettingType.NEST_USERNAME)
 @Controller
 public class NestController {
     
