@@ -34,6 +34,7 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
 			PaoType.LM_ECOBEE_PROGRAM,
 			PaoType.LM_HONEYWELL_PROGRAM,
             PaoType.LM_ITRON_PROGRAM,
+            PaoType.LM_NEST_PROGRAM,
 			PaoType.LM_ENERGY_EXCHANGE_PROGRAM },
 
 		//LMProgramCurtailmentPanel
@@ -43,19 +44,19 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
 
 		//LMProgramDirectPanel
         { PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM,
-                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_ITRON_PROGRAM },
+                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM, PaoType.LM_ITRON_PROGRAM },
 		//LMProgramControlWindowPanel
         { PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM,
-                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_ITRON_PROGRAM },
+                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM, PaoType.LM_ITRON_PROGRAM },
 		//LMProgramListPanel
         { PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM,
-                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_ITRON_PROGRAM },
+                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM, PaoType.LM_ITRON_PROGRAM },
 		//LMProgramDirectCustomerListPanel
         { PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM,
-                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_ITRON_PROGRAM },
+                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM, PaoType.LM_ITRON_PROGRAM },
 		//LMProgramDirectMemberControlPanel
         { PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM, PaoType.LM_ECOBEE_PROGRAM,
-                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_ITRON_PROGRAM },
+                PaoType.LM_HONEYWELL_PROGRAM, PaoType.LM_NEST_PROGRAM, PaoType.LM_ITRON_PROGRAM },
 		
 		//LMProgramEnergyExchangePanel
 		{ PaoType.LM_ENERGY_EXCHANGE_PROGRAM},

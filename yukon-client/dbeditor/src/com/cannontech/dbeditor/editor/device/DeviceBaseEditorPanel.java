@@ -2850,7 +2850,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             if (paoType.getPaoClass() == PaoClass.VIRTUAL ||
                     paoType.getPaoClass() == PaoClass.RFMESH ||
                     paoType.isEcobee() ||
-                    paoType.isHoneywell()) {
+                    paoType.isHoneywell() || 
+                    paoType.isNest()) {
                 getCommunicationPanel().setVisible(false);
             }
 

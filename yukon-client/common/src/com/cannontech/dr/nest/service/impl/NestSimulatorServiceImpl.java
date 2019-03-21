@@ -207,7 +207,7 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
         
     private InputStream getFileInputStream(NestFileType type) {
         InputStream inputStream = null;
-        String nestUrl = "";//settingDao.getString(GlobalSettingType.NEST_SERVER_URL);
+        String nestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL);
         String stringUrl = nestUrl + "/download";
         log.debug("Nest Url:"+stringUrl);
         // curl https://enterprise-api.nest.com/api/v1/users/pending/latest.csv -v -x proxy.etn.com:8080 -H "Authorization:Basic U2FtdWVsVEpvaG5zdG9uQGVhdG9uLmNvbTo3MjRiYzkwMWQ3MDE0YWUyNjA5OGJhZjk1ZjVjMTRiNA=="
