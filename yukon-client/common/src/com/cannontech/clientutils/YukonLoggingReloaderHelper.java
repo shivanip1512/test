@@ -43,6 +43,7 @@ public abstract class YukonLoggingReloaderHelper {
                 log.info(appender.getName() + " appender updated with max file size : " + value / gigaBytesToByteMultiplier + "GB");
             } else if (type == GlobalSettingType.LOG_RETENTION_DAYS) {
                 appender.setLogRetentionDays((int) value);
+                log.info(appender.getName() + " is upgated with log retention days : " + value + " Days.");
             }
             appender.start();
             config.addAppender(appender);
