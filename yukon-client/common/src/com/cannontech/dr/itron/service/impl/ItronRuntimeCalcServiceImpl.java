@@ -58,7 +58,6 @@ import com.cannontech.dr.service.impl.ShedtimeStatus;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
@@ -99,7 +98,7 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
                     attributeService.findPaoMultiPointIdentifiersForAttributes(itronDevices, ItronRelayDataLogs.getRelayStatusAttributes()).stream()
                         .collect(StreamUtils.mapToSelf(PaoMultiPointIdentifier::getPao));
 
-            for (YukonPao device : itronDevices) {
+            itronDevices.forEach(device -> {
                 try {
                     var dataLogPoints = Optional.ofNullable(deviceDataLogPoints.get(device.getPaoIdentifier()))
                             .map(PaoMultiPointIdentifier::getPaoPointIdentifiers)
@@ -114,7 +113,8 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
                 } catch (IllegalArgumentException ex) {
                     log.warn("Skipping runtime/shedtime calculations for " + device, ex);
                 }
-            }
+            });
+
             log.info("Finished calculating runtime/shedtime for Itron devices");
         } catch (Exception e) {
             log.error("Error occurred in Itron runtime/shedtime calculation", e);
@@ -133,7 +133,7 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
         //  Get the most recent timestamp from all available point data on the device.
         Instant endOfRange = 
                 getLatestTimestamp(recentData.values())
-                    .map(RelayLogInterval.LOG_60_MINUTE::start)  //  round down to a 60 minute interval
+                    .map(RelayLogInterval.LOG_60_MINUTE::start)  //  round down to a 60 minute interval to allow full calculation of all interval lengths
                     .map(DateTime::toInstant)
                     .orElse(null);
         
@@ -162,9 +162,9 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
         var logRange = Range.inclusive(startOfRange, endOfRange); 
 
         //  Get all relay state information in RPH since the last data log update, and split it by point ID
-        Multimap<Integer, PointValueHolder> relayStatusData = 
+        Map<Integer, List<PointValueHolder>> relayStatusData = 
                 rphDao.getPointData(relayStatusPointIds, logRange, false, Order.FORWARD).stream()
-                    .collect(StreamUtils.toMultimap(PointValueHolder::getId, x -> x)); 
+                    .collect(Collectors.groupingBy(PointValueHolder::getId)); 
 
         for (var relayInfo : ItronRelayDataLogs.values()) {
             calculateRelayDataLogs(device, logRange, relayStatusData, relayInfo, relayStatusIdLookup, dataLogIdLookup);
@@ -181,7 +181,7 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
      * @param dataLogIdLookup A mapping of the point IDs of the device's data log PaoPointIdentifiers
      */
     private void calculateRelayDataLogs(YukonPao device, Range<Instant> logRange,
-            Multimap<Integer, PointValueHolder> relayStatusData, ItronRelayDataLogs relayInfo, 
+            Map<Integer, List<PointValueHolder>> relayStatusData, ItronRelayDataLogs relayInfo, 
             Map<PaoPointIdentifier, Integer> relayStatusIdLookup, Map<PaoPointIdentifier, Integer> dataLogIdLookup) {
         BuiltInAttribute relayStatusAttribute = relayInfo.getRelayStatusAttribute();
         
@@ -209,7 +209,7 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
             //  and use the point ID to insert the runtime/shedtime
             .ifPresent(relayStatusPointId -> {
                 //  Add the preceding relay state reading from RawPointHistory if available.
-                Iterable<PointValueHolder> relayStatuses = addPrecedingRelayStatus(relayStatusData.get(relayStatusPointId), logRange.getMin());
+                Iterable<PointValueHolder> relayStatuses = addBoundaryValues(relayStatusData.get(relayStatusPointId), logRange);
 
                 if (relayInfo.isRuntime()) {
                     //  Transform the raw relay state data into runtime status 
@@ -226,16 +226,18 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
     }
 
     /**
-     * Gets the status point entry directly preceding the start of the range, if the start of the range is specified.
-     * This is needed to calculate runtime for the portion of the hour prior to the "first" status.
+     * Gets the status point entry preceding the range, if the start of the range is specified, and extends the last status out to the end of the range.
+     * This is needed to calculate runtime for the portion of the hour prior to the "first" status, and the portion of the hour after the status.
      * @param relayStatuses The existing raw relay statuses.
-     * @param startOfRange The beginning of the range, or null if none.
+     * @param logRange The beginning of the range, or null if none.
      * @return The activity data with the new entry added, if retrieved.
      */
-    private Iterable<PointValueHolder> addPrecedingRelayStatus(Iterable<PointValueHolder> relayStatuses, Instant startOfRange) {
+    private Iterable<PointValueHolder> addBoundaryValues(Iterable<PointValueHolder> relayStatuses, Range<Instant> logRange) {
         PointValueHolder firstStatus = Iterables.getFirst(relayStatuses, null);
+        PointValueHolder lastStatus = Iterables.getLast(relayStatuses, null);
         
-        if (startOfRange != null && firstStatus != null) {
+        //  Get the entry preceding the range, if the start of the range is defined
+        if (firstStatus != null && logRange.getMin() != null) {
             int pointId = firstStatus.getId();
             Date centerDate = firstStatus.getPointDataTimeStamp();
             Range<Date> dateRange = new Range<>(null, true, centerDate, false);
@@ -245,7 +247,36 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
                     Order.REVERSE, 1);
             relayStatuses = Iterables.concat(precedingValue, relayStatuses);
         }
+        //  Extend the last status to the end of the range, which must be defined
+        if (lastStatus != null && lastStatus.getPointDataTimeStamp().getTime() != logRange.getMax().getMillis()) {
+            var trailingValue = List.of(cloneWithNewTime(lastStatus, logRange.getMax()));
+            relayStatuses = Iterables.concat(relayStatuses, trailingValue);
+        }
         return relayStatuses;
+    }
+
+    private PointValueHolder cloneWithNewTime(PointValueHolder lastStatus, Instant instant) {
+        return new PointValueHolder() {
+            @Override
+            public int getId() {
+                return lastStatus.getId();
+            }
+
+            @Override
+            public Date getPointDataTimeStamp() {
+                return new Date(instant.getMillis());
+            }
+
+            @Override
+            public int getType() {
+                return lastStatus.getType();
+            }
+
+            @Override
+            public double getValue() {
+                return lastStatus.getValue();
+            }
+        };
     }
     
     /**
@@ -257,9 +288,8 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
      */
     private void insertRelayShedtime(YukonPao device, Map<Integer, RelayLogInterval> dataLogIntervals, Iterable<? extends DatedStatus> statuses, 
             Range<Instant> logRange) {
-        dataLogIntervals.forEach((relayDataLogPointId, interval) -> {
-            insertRelayDataLogs(device, statuses, logRange, relayDataLogPointId, interval);
-        });
+        dataLogIntervals.forEach((relayDataLogPointId, interval) ->
+            insertRelayDataLogs(device, statuses, logRange, relayDataLogPointId, interval));
     }
 
     /**
@@ -313,6 +343,7 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
         
         List<PointData> pointDatas = runtimeSeconds.entrySet().stream()
                 .filter(entry -> logRange.intersects(entry.getKey().toInstant()))
+                .sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))  //  send oldest to newest
                 .map(entry -> makeRelayLogPointData(relayDataLogPointId, entry.getKey().toDate(), entry.getValue()))
                 .collect(Collectors.toList());
         try {
