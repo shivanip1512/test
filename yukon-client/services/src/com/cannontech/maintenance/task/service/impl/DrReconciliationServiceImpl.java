@@ -60,6 +60,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import com.google.common.collect.Sets;
 
 public class DrReconciliationServiceImpl implements DrReconciliationService {
     @Autowired private DrReconciliationDao drReconciliationDao;
@@ -88,9 +89,12 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
      */
     private List<Integer> getOutOfServiceExpectedLcrs() {
         if (!isSuppressMessage()) {
+            log.trace("Finding Out of Service Expected LCRs");
             List<Integer> oosExpectedLcrInventoryIds = drReconciliationDao.getOutOfServiceExpectedLcrs();
+            log.debug("Found " + oosExpectedLcrInventoryIds.size()  + " Out of Service Expected LCRs");
             return oosExpectedLcrInventoryIds;
         }
+        
         return Collections.emptyList();
     }
 
@@ -99,9 +103,12 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
      */
     private List<Integer> getInServiceExpectedLcrs() {
         if (!isSuppressMessage()) {
+            log.trace("Finding In Service Expected LCRs");
             List<Integer> inServiceExpectedLcrInventoryIds = drReconciliationDao.getInServiceExpectedLcrs();
+            log.debug("Found " + inServiceExpectedLcrInventoryIds.size() + " In Service Expected LCRs");
             return inServiceExpectedLcrInventoryIds;
         }
+        
         return Collections.emptyList();
     }
 
@@ -133,6 +140,8 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         // Get LCR enrolled in multiple group
         Multimap<Integer, Integer> lcrInMultipleGroups =
             drReconciliationDao.getLcrEnrolledInMultipleGroup(conflictingLCR);
+        
+        log.debug("Found " + lcrInMultipleGroups.size() + " LCR to Group Combinations for LCRs with multiple groups");
 
         final List<Integer> groupConflictingLCR = new ArrayList<>();
 
@@ -157,6 +166,9 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             }
         });
         conflictingLCR.removeAll(groupConflictingLCR);
+        
+        log.debug("Found " + groupConflictingLCR.size() + " incompatible enrollments");
+        
         return conflictingLCR;
     }
 
@@ -342,24 +354,24 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
 
         ScheduledFuture<?> futureSchdTwelveMin, futureSchdOneMin;
         BlockingQueue<LCRCommandHolder> queue = new ArrayBlockingQueue<>(10000);
-        Map<Integer, List<Integer>> lcrsToSendCommand = new HashMap<>(2);
+        Map<Integer, Set<Integer>> lcrsToSendCommand = new HashMap<>(2);
 
         // Get LCR's which are expected to be out of service, we need to send OOS messages to them.
         List<Integer> sendOOS = getOutOfServiceExpectedLcrs();
-        List<Integer> sendOOSDevice = Lists.newArrayList(inventoryDao.getDeviceIds(sendOOS).values());
+        Set<Integer> sendOOSDevice = Sets.newHashSet(inventoryDao.getDeviceIds(sendOOS).values());
         lcrsToSendCommand.put(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL, sendOOSDevice);
 
         // Get LCR's which are expected to be in service, we need to send IN service message to them.
         List<Integer> sendInService = getInServiceExpectedLcrs();
-        List<Integer> sendInServiceDevice = Lists.newArrayList(inventoryDao.getDeviceIds(sendInService).values());
+        Set<Integer> sendInServiceDevice = Sets.newHashSet(inventoryDao.getDeviceIds(sendInService).values());
         lcrsToSendCommand.put(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL, sendInServiceDevice);
 
         compareExpectedServiceStatusWithReportedLcrs(lcrsToSendCommand);
-        log.debug("Devices suspected for sending In service command " + sendInServiceDevice);
-        log.debug("Devices suspected for sending Out of service command " + sendOOSDevice);
 
         // Get LCR's with incorrect addressing, we need to send config message to them
         Set<Integer> sendAddressing = getLCRWithConflictingAddressing();
+        log.debug("Devices suspected for sending In service command " + sendInServiceDevice);
+        log.debug("Devices suspected for sending Out of service command " + sendOOSDevice);
         log.debug("Devices suspected for sending Config command " + sendAddressing);
 
         Set<Integer> allLcrs = new HashSet<>();
@@ -370,25 +382,31 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         // Check if message can be send to LCR in this run cycle of DR reconciliation. 
         // If not then remove those LCR from list and do not consider them in further processing for this run cycle
         long drReconEndTime = processEndTime.minus(minimumExecutionTime).getMillis() - Instant.now().getMillis();
+
+        log.trace("Finding devices that have not had enough time since the last config was sent");
         Set<Integer> allLcrsForThisCycle = drReconciliationDao.getLcrsToSendMessageInCurrentCycle(allLcrs, drReconEndTime);
+        log.trace("Done finding devices that have not had enough time since the last config was sent");
         sendOOSDevice.retainAll(allLcrsForThisCycle);
         sendInServiceDevice.retainAll(allLcrsForThisCycle);
         sendAddressing.retainAll(allLcrsForThisCycle);
         
-        log.debug("Devices picked for Send In service command " + sendInServiceDevice);
-        log.debug("Devices picked for Send Out of service command " + sendOOSDevice);
-        log.debug("Devices picked for Send Config command " + sendAddressing);
+        log.info("Devices picked for Send In service command " + sendInServiceDevice);
+        log.info("Devices picked for Send Out of service command " + sendOOSDevice);
+        log.info("Devices picked for Send Config command " + sendAddressing);
 
         // Do not have any LCR's to send message return back.
-        if (allLcrs.isEmpty()) {
+        if (allLcrs.isEmpty()) { // Should this be allLcrsForThisCycle?
             return false;
         }
 
+        log.trace("Finding devices enrolled in multiple groups");
         // This will allow us to find how many messages will be send for LCR in multiple groups
-        Multimap<Integer, Integer> lcrInMultipleGroups = drReconciliationDao.getLcrEnrolledInMultipleGroup(allLcrs);
+        Multimap<Integer, Integer> lcrInMultipleGroups = drReconciliationDao.getLcrEnrolledInMultipleGroup(allLcrs); // Should this be allLcrsForThisCycle?
+        log.trace("Done finding devices enrolled in multiple groups" + lcrInMultipleGroups);
 
         // Find out number of RFN gateways in the system
         int noOfGateways = paoDao.getPaoCount(PaoType.getRfGatewayTypes());
+        log.debug("Found " + noOfGateways + " gateways");
 
         // I am not sure if we want to send any message if we do not have gateways
         if (noOfGateways == 0) {
@@ -402,11 +420,14 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         // minute.
         futureSchdTwelveMin = executor.scheduleAtFixedRate(() -> {
             int noOfLCRToSendMessage = noOfGateways;
+            log.debug("Finding new LCRs to send messages to");
 
             // This query should return top LCR for which message have to be send. noOfLCRToSendMessage is the number
             // of message to send in next 12 min
             Map<Integer, Integer> sendMessageToLcr =
                 drReconciliationDao.getLcrWithLatestEvent(allLcrsForThisCycle, noOfLCRToSendMessage);
+ 
+            log.debug("Will send message to " + sendMessageToLcr.size() + " LCR in next 12 min");
 
             // Queue the messages to send
             sendMessageToLcr.entrySet().stream().forEach(lcr -> {
@@ -426,17 +447,15 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
                     log.error("Scheduler for finding message to send Interrupted " + e);
                 }
             });
-            if (sendMessageToLcr.size() > 0) {
-                log.debug("Will send message to " + sendMessageToLcr.size() + " LCR in next 12 min");
-            }
+           
 
         }, 0, calculationCycleMinutes, TimeUnit.MINUTES);
 
         // It will send only that number of messages which have to be send per minute.
         futureSchdOneMin = executor.scheduleAtFixedRate(() -> {
-            int messagesSend = 0;
-
-            while (!queue.isEmpty() && messagesSend < noOfMessagePerMin) {
+            int messagesSent = 0;
+            
+            while (!queue.isEmpty() && messagesSent < noOfMessagePerMin) {
                 LCRCommandHolder lcrCommandHolder;
                 try {
                     lcrCommandHolder = queue.take();
@@ -450,14 +469,14 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
                         } else if (lmHardwareCommandType == LmHardwareCommandType.CONFIG) {
                             sendAddressing.remove(deviceId);
                         }
-                        messagesSend = messagesSend + lcrCommandHolder.getNoOfMessages();
+                        messagesSent = messagesSent + lcrCommandHolder.getNoOfMessages();
                     }
                 } catch (InterruptedException e) {
                     log.error("Scheduler for sending message Interrupted " + e);
                 }
             }
-            if (messagesSend > 0) {
-                log.debug("Have send message " + messagesSend + " in this minute");
+            if (messagesSent > 0) {
+                log.debug("Sent " + messagesSent + " messages");
             }
             if (sendOOSDevice.isEmpty() && sendInServiceDevice.isEmpty() && sendAddressing.isEmpty()) {
                 messageSendingDone.countDown();
@@ -509,8 +528,9 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         return success;
     }
 
-    private void compareExpectedServiceStatusWithReportedLcrs(Map<Integer, List<Integer>> lcrsToSendCommand) {
+    private void compareExpectedServiceStatusWithReportedLcrs(Map<Integer, Set<Integer>> lcrsToSendCommand) {
 
+        log.trace("Comparing expected service status with what the LCR reported");
         List<Integer> deviceList = new ArrayList<>();
         deviceList = lcrsToSendCommand.values().stream()
                                                .flatMap(p -> p.stream())
@@ -522,8 +542,10 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             deviceToPoint.values().stream()
                                   .map(LitePoint :: getPointID)
                                   .collect(Collectors.toSet());
+        log.trace("Requesting values from Dispatch");
         Set<? extends PointValueQualityHolder> pointValues = asyncDynamicDataSource.getPointDataOnce(statusPointIds);
-
+        log.trace("Done requesting values from Dispatch");
+        
         Map<Integer, Integer> pointsToPaos = 
                 deviceToPoint.inverse().entrySet().stream()
                         .collect(Collectors.toMap(
@@ -540,15 +562,19 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         List<Integer> outOfServiceLcrs = devicesByStatus.get(LcrDeviceStatus.OUT_OF_SERVICE);
 
         if (inServiceLcrs != null) {
+            log.trace("Removing all correct In Service LCRs from list");
             // If actual reporting status of LCR is already In Service, then we don't need to send
             // InService message to that LCR, hence removing it from sendInServiceDevice list
             lcrsToSendCommand.get(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).removeAll(inServiceLcrs);
         }
         if (outOfServiceLcrs != null) {
+            log.trace("Removing all correct OOS LCRs from list");
             // If actual reporting status of LCR is already OOS, then we don't need to send Out Of Service
             // message to that LCR, hence removing it from OOSDevice list
             lcrsToSendCommand.get(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).removeAll(outOfServiceLcrs);
         }
+        
+        log.trace("Done comparing expected service status with what the LCR reported");
     }
 
     /**
