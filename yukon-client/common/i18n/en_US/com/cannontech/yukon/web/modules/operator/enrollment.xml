@@ -65,6 +65,8 @@
     <entry key="yukon.web.modules.operator.enrollmentList.failed">
         Error processing enrollment/unenrollment for {0}.
     </entry>
+    
+    <entry key="yukon.web.modules.operator.enrollmentError.relay">Relay selected for enrollment does not match the Load Group: {0}.</entry>
 
     <entry key="yukon.web.modules.operator.enrollmentList.unenrollCompleted">
         Successfully unenrolled from {0}.
