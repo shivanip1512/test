@@ -58,33 +58,14 @@ public class ItronDeviceDataParserTest {
         rowData[5] = "11:22:33:44:55:66:66:77";
         rowData[9] = "type: 0, log event ID: 32782 (0x800E) - Vendor-specific or Unknown, payload:  data(0000000000)";
         
-        LitePoint lp1 = new LitePoint(1, "pao1", 1, 1, 1, 15);
         LiteYukonPAObject lpo = new LiteYukonPAObject(1, "pao1", 
                                                       PaoCategory.DEVICE, 
                                                       PaoClass.ITRON, 
                                                       PaoType.LCR6600S, 
                                                       "", "");
-        DeviceDao deviceDao = EasyMock.createStrictMock(DeviceDao.class);
-        EasyMock.expect(deviceDao.getDeviceIdFromMacAddress("11:22:33:44:55:66:66:77")).andReturn(1);
-        EasyMock.replay(deviceDao);
-        ReflectionTestUtils.setField(parser, "deviceDao", deviceDao);
-
-        IDatabaseCache serverDatabaseCache = EasyMock.createStrictMock(IDatabaseCache.class);
-        EasyMock.expect(serverDatabaseCache.getAllPaosMap()).andReturn(Map.of(1, lpo));
-        EasyMock.replay(serverDatabaseCache);
-        ReflectionTestUtils.setField(parser, "serverDatabaseCache", serverDatabaseCache);
-
-        AttributeService attributeService = EasyMock.createStrictMock(AttributeService.class);
-        EasyMock.expect(attributeService.createAndFindPointForAttribute(lpo, BuiltInAttribute.CONTROL_STATUS)).andReturn(lp1);
-        EasyMock.replay(attributeService);
-        ReflectionTestUtils.setField(parser, "attributeService", attributeService);
         
-        AsyncDynamicDataSource dataSource = EasyMock.createStrictMock(AsyncDynamicDataSource.class);
-        PointData pvqh = new PointData();
-        EasyMock.expect(dataSource.getPointValue(1)).andReturn(pvqh);
-        EasyMock.replay(dataSource);
-        ReflectionTestUtils.setField(parser, "dataSource", dataSource);
-        
+        setupMocks(lpo, BuiltInAttribute.CONTROL_STATUS);
+
         Multimap<PaoIdentifier, PointData> results = parser.generatePointData(rowData);
         Collection<PointData> data = results.get(lpo.getPaoIdentifier());
         Assert.assertEquals(1, data.size());
@@ -102,33 +83,14 @@ public class ItronDeviceDataParserTest {
         rowData[5] = "11:22:33:44:55:66:66:77";
         rowData[9] = "type: 0, log event ID: 32792 (0x8018) - Vendor-specific or Unknown, payload:  data(0300000000)";
         
-        LitePoint lp1 = new LitePoint(1, "pao1", 1, 1, 1, 15);
         LiteYukonPAObject lpo = new LiteYukonPAObject(1, "pao1", 
                                                       PaoCategory.DEVICE, 
                                                       PaoClass.ITRON, 
                                                       PaoType.LCR6600S, 
                                                       "", "");
-        DeviceDao deviceDao = EasyMock.createStrictMock(DeviceDao.class);
-        EasyMock.expect(deviceDao.getDeviceIdFromMacAddress("11:22:33:44:55:66:66:77")).andReturn(1);
-        EasyMock.replay(deviceDao);
-        ReflectionTestUtils.setField(parser, "deviceDao", deviceDao);
-
-        IDatabaseCache serverDatabaseCache = EasyMock.createStrictMock(IDatabaseCache.class);
-        EasyMock.expect(serverDatabaseCache.getAllPaosMap()).andReturn(Map.of(1, lpo));
-        EasyMock.replay(serverDatabaseCache);
-        ReflectionTestUtils.setField(parser, "serverDatabaseCache", serverDatabaseCache);
-
-        AttributeService attributeService = EasyMock.createStrictMock(AttributeService.class);
-        EasyMock.expect(attributeService.createAndFindPointForAttribute(lpo, BuiltInAttribute.RELAY_3_SHED_STATUS)).andReturn(lp1);
-        EasyMock.replay(attributeService);
-        ReflectionTestUtils.setField(parser, "attributeService", attributeService);
         
-        AsyncDynamicDataSource dataSource = EasyMock.createStrictMock(AsyncDynamicDataSource.class);
-        PointData pvqh = new PointData();
-        EasyMock.expect(dataSource.getPointValue(1)).andReturn(pvqh);
-        EasyMock.replay(dataSource);
-        ReflectionTestUtils.setField(parser, "dataSource", dataSource);
-        
+        setupMocks(lpo, BuiltInAttribute.RELAY_3_SHED_STATUS);
+
         Multimap<PaoIdentifier, PointData> results = parser.generatePointData(rowData);
         Collection<PointData> data = results.get(lpo.getPaoIdentifier());
         Assert.assertEquals(1, data.size());
@@ -146,33 +108,14 @@ public class ItronDeviceDataParserTest {
         rowData[5] = "11:22:33:44:55:66:66:77";
         rowData[9] = "type: 0, log event ID: 32898 (0x8082) - Vendor-specific or Unknown, payload:  data(2213E24400)";
         
-        LitePoint lp1 = new LitePoint(1, "pao1", 1, 1, 1, 15);
         LiteYukonPAObject lpo = new LiteYukonPAObject(1, "pao1", 
                                                       PaoCategory.DEVICE, 
                                                       PaoClass.ITRON, 
                                                       PaoType.LCR6600S, 
                                                       "", "");
-        DeviceDao deviceDao = EasyMock.createStrictMock(DeviceDao.class);
-        EasyMock.expect(deviceDao.getDeviceIdFromMacAddress("11:22:33:44:55:66:66:77")).andReturn(1);
-        EasyMock.replay(deviceDao);
-        ReflectionTestUtils.setField(parser, "deviceDao", deviceDao);
-
-        IDatabaseCache serverDatabaseCache = EasyMock.createStrictMock(IDatabaseCache.class);
-        EasyMock.expect(serverDatabaseCache.getAllPaosMap()).andReturn(Map.of(1, lpo));
-        EasyMock.replay(serverDatabaseCache);
-        ReflectionTestUtils.setField(parser, "serverDatabaseCache", serverDatabaseCache);
-
-        AttributeService attributeService = EasyMock.createStrictMock(AttributeService.class);
-        EasyMock.expect(attributeService.createAndFindPointForAttribute(lpo, BuiltInAttribute.TIME_SYNC)).andReturn(lp1);
-        EasyMock.replay(attributeService);
-        ReflectionTestUtils.setField(parser, "attributeService", attributeService);
         
-        AsyncDynamicDataSource dataSource = EasyMock.createStrictMock(AsyncDynamicDataSource.class);
-        PointData pvqh = new PointData();
-        EasyMock.expect(dataSource.getPointValue(1)).andReturn(pvqh);
-        EasyMock.replay(dataSource);
-        ReflectionTestUtils.setField(parser, "dataSource", dataSource);
-        
+        setupMocks(lpo, BuiltInAttribute.TIME_SYNC);
+
         Multimap<PaoIdentifier, PointData> results = parser.generatePointData(rowData);
         Collection<PointData> data = results.get(lpo.getPaoIdentifier());
         Assert.assertEquals(1, data.size());
@@ -190,32 +133,13 @@ public class ItronDeviceDataParserTest {
         rowData[5] = "11:22:33:44:55:66:66:77";
         rowData[9] = "type: 0, log event ID: 32768 (0x8000) - Vendor-specific or Unknown, payload:  data(0000000000)";
         
-        LitePoint lp1 = new LitePoint(1, "pao1", 1, 1, 1, 15);
         LiteYukonPAObject lpo = new LiteYukonPAObject(1, "pao1", 
                                                       PaoCategory.DEVICE, 
                                                       PaoClass.ITRON, 
                                                       PaoType.LCR6600S, 
                                                       "", "");
-        DeviceDao deviceDao = EasyMock.createStrictMock(DeviceDao.class);
-        EasyMock.expect(deviceDao.getDeviceIdFromMacAddress("11:22:33:44:55:66:66:77")).andReturn(1);
-        EasyMock.replay(deviceDao);
-        ReflectionTestUtils.setField(parser, "deviceDao", deviceDao);
-
-        IDatabaseCache serverDatabaseCache = EasyMock.createStrictMock(IDatabaseCache.class);
-        EasyMock.expect(serverDatabaseCache.getAllPaosMap()).andReturn(Map.of(1, lpo));
-        EasyMock.replay(serverDatabaseCache);
-        ReflectionTestUtils.setField(parser, "serverDatabaseCache", serverDatabaseCache);
-
-        AttributeService attributeService = EasyMock.createStrictMock(AttributeService.class);
-        EasyMock.expect(attributeService.createAndFindPointForAttribute(lpo, BuiltInAttribute.BLINK_COUNT)).andReturn(lp1);
-        EasyMock.replay(attributeService);
-        ReflectionTestUtils.setField(parser, "attributeService", attributeService);
         
-        AsyncDynamicDataSource dataSource = EasyMock.createStrictMock(AsyncDynamicDataSource.class);
-        PointData pvqh = new PointData();
-        EasyMock.expect(dataSource.getPointValue(1)).andReturn(pvqh);
-        EasyMock.replay(dataSource);
-        ReflectionTestUtils.setField(parser, "dataSource", dataSource);
+        setupMocks(lpo, BuiltInAttribute.BLINK_COUNT);
         
         Multimap<PaoIdentifier, PointData> results = parser.generatePointData(rowData);
         Collection<PointData> data = results.get(lpo.getPaoIdentifier());
@@ -234,33 +158,14 @@ public class ItronDeviceDataParserTest {
         rowData[5] = "11:22:33:44:55:66:66:77";
         rowData[9] = "type: 0, log event ID: 32924 (0x809C) - Vendor-specific or Unknown, payload:  data(0002000000)";
         
-        LitePoint lp1 = new LitePoint(1, "pao1", 1, 1, 1, 15);
         LiteYukonPAObject lpo = new LiteYukonPAObject(1, "pao1", 
                                                       PaoCategory.DEVICE, 
                                                       PaoClass.ITRON, 
                                                       PaoType.LCR6600S, 
                                                       "", "");
-        DeviceDao deviceDao = EasyMock.createStrictMock(DeviceDao.class);
-        EasyMock.expect(deviceDao.getDeviceIdFromMacAddress("11:22:33:44:55:66:66:77")).andReturn(1);
-        EasyMock.replay(deviceDao);
-        ReflectionTestUtils.setField(parser, "deviceDao", deviceDao);
-
-        IDatabaseCache serverDatabaseCache = EasyMock.createStrictMock(IDatabaseCache.class);
-        EasyMock.expect(serverDatabaseCache.getAllPaosMap()).andReturn(Map.of(1, lpo));
-        EasyMock.replay(serverDatabaseCache);
-        ReflectionTestUtils.setField(parser, "serverDatabaseCache", serverDatabaseCache);
-
-        AttributeService attributeService = EasyMock.createStrictMock(AttributeService.class);
-        EasyMock.expect(attributeService.createAndFindPointForAttribute(lpo, BuiltInAttribute.MINIMUM_VOLTAGE)).andReturn(lp1);
-        EasyMock.replay(attributeService);
-        ReflectionTestUtils.setField(parser, "attributeService", attributeService);
         
-        AsyncDynamicDataSource dataSource = EasyMock.createStrictMock(AsyncDynamicDataSource.class);
-        PointData pvqh = new PointData();
-        EasyMock.expect(dataSource.getPointValue(1)).andReturn(pvqh);
-        EasyMock.replay(dataSource);
-        ReflectionTestUtils.setField(parser, "dataSource", dataSource);
-        
+        setupMocks(lpo, BuiltInAttribute.MINIMUM_VOLTAGE);
+
         Multimap<PaoIdentifier, PointData> results = parser.generatePointData(rowData);
         Collection<PointData> data = results.get(lpo.getPaoIdentifier());
         Assert.assertEquals(0, data.size());
@@ -272,26 +177,8 @@ public class ItronDeviceDataParserTest {
         rowData2[5] = "11:22:33:44:55:66:66:77";
         rowData2[9] = "type: 0, log event ID: 32926 (0x809E) - Vendor-specific or Unknown, payload:  data(2213E24400)";
         
-        deviceDao = EasyMock.createStrictMock(DeviceDao.class);
-        EasyMock.expect(deviceDao.getDeviceIdFromMacAddress("11:22:33:44:55:66:66:77")).andReturn(1);
-        EasyMock.replay(deviceDao);
-        ReflectionTestUtils.setField(parser, "deviceDao", deviceDao);
+        setupMocks(lpo, BuiltInAttribute.MINIMUM_VOLTAGE);
 
-        serverDatabaseCache = EasyMock.createStrictMock(IDatabaseCache.class);
-        EasyMock.expect(serverDatabaseCache.getAllPaosMap()).andReturn(Map.of(1, lpo));
-        EasyMock.replay(serverDatabaseCache);
-        ReflectionTestUtils.setField(parser, "serverDatabaseCache", serverDatabaseCache);
-
-        attributeService = EasyMock.createStrictMock(AttributeService.class);
-        EasyMock.expect(attributeService.createAndFindPointForAttribute(lpo, BuiltInAttribute.MINIMUM_VOLTAGE)).andReturn(lp1);
-        EasyMock.replay(attributeService);
-        ReflectionTestUtils.setField(parser, "attributeService", attributeService);
-        
-        dataSource = EasyMock.createStrictMock(AsyncDynamicDataSource.class);
-        EasyMock.expect(dataSource.getPointValue(1)).andReturn(pvqh);
-        EasyMock.replay(dataSource);
-        ReflectionTestUtils.setField(parser, "dataSource", dataSource);
-        
         results = parser.generatePointData(rowData2);
         data = results.get(lpo.getPaoIdentifier());
         Assert.assertEquals(1, data.size());
@@ -308,33 +195,14 @@ public class ItronDeviceDataParserTest {
         rowData[5] = "11:22:33:44:55:66:66:77";
         rowData[9] = "type: 0, log event ID: 32923 (0x809B) - Vendor-specific or Unknown, payload:  data(0002000000)";
         
-        LitePoint lp1 = new LitePoint(1, "pao1", 1, 1, 1, 15);
         LiteYukonPAObject lpo = new LiteYukonPAObject(1, "pao1", 
                                                       PaoCategory.DEVICE, 
                                                       PaoClass.ITRON, 
                                                       PaoType.LCR6600S, 
                                                       "", "");
-        DeviceDao deviceDao = EasyMock.createStrictMock(DeviceDao.class);
-        EasyMock.expect(deviceDao.getDeviceIdFromMacAddress("11:22:33:44:55:66:66:77")).andReturn(1);
-        EasyMock.replay(deviceDao);
-        ReflectionTestUtils.setField(parser, "deviceDao", deviceDao);
-
-        IDatabaseCache serverDatabaseCache = EasyMock.createStrictMock(IDatabaseCache.class);
-        EasyMock.expect(serverDatabaseCache.getAllPaosMap()).andReturn(Map.of(1, lpo));
-        EasyMock.replay(serverDatabaseCache);
-        ReflectionTestUtils.setField(parser, "serverDatabaseCache", serverDatabaseCache);
-
-        AttributeService attributeService = EasyMock.createStrictMock(AttributeService.class);
-        EasyMock.expect(attributeService.createAndFindPointForAttribute(lpo, BuiltInAttribute.MAXIMUM_VOLTAGE)).andReturn(lp1);
-        EasyMock.replay(attributeService);
-        ReflectionTestUtils.setField(parser, "attributeService", attributeService);
         
-        AsyncDynamicDataSource dataSource = EasyMock.createStrictMock(AsyncDynamicDataSource.class);
-        PointData pvqh = new PointData();
-        EasyMock.expect(dataSource.getPointValue(1)).andReturn(pvqh);
-        EasyMock.replay(dataSource);
-        ReflectionTestUtils.setField(parser, "dataSource", dataSource);
-        
+        setupMocks(lpo, BuiltInAttribute.MAXIMUM_VOLTAGE);
+
         Multimap<PaoIdentifier, PointData> results = parser.generatePointData(rowData);
         Collection<PointData> data = results.get(lpo.getPaoIdentifier());
         Assert.assertEquals(0, data.size());
@@ -346,30 +214,38 @@ public class ItronDeviceDataParserTest {
         rowData2[5] = "11:22:33:44:55:66:66:77";
         rowData2[9] = "type: 0, log event ID: 32927 (0x809F) - Vendor-specific or Unknown, payload:  data(2213E24400)";
         
-        deviceDao = EasyMock.createStrictMock(DeviceDao.class);
-        EasyMock.expect(deviceDao.getDeviceIdFromMacAddress("11:22:33:44:55:66:66:77")).andReturn(1);
-        EasyMock.replay(deviceDao);
-        ReflectionTestUtils.setField(parser, "deviceDao", deviceDao);
-
-        serverDatabaseCache = EasyMock.createStrictMock(IDatabaseCache.class);
-        EasyMock.expect(serverDatabaseCache.getAllPaosMap()).andReturn(Map.of(1, lpo));
-        EasyMock.replay(serverDatabaseCache);
-        ReflectionTestUtils.setField(parser, "serverDatabaseCache", serverDatabaseCache);
-
-        attributeService = EasyMock.createStrictMock(AttributeService.class);
-        EasyMock.expect(attributeService.createAndFindPointForAttribute(lpo, BuiltInAttribute.MAXIMUM_VOLTAGE)).andReturn(lp1);
-        EasyMock.replay(attributeService);
-        ReflectionTestUtils.setField(parser, "attributeService", attributeService);
-        
-        dataSource = EasyMock.createStrictMock(AsyncDynamicDataSource.class);
-        EasyMock.expect(dataSource.getPointValue(1)).andReturn(pvqh);
-        EasyMock.replay(dataSource);
-        ReflectionTestUtils.setField(parser, "dataSource", dataSource);
+        setupMocks(lpo, BuiltInAttribute.MAXIMUM_VOLTAGE);
         
         results = parser.generatePointData(rowData2);
         data = results.get(lpo.getPaoIdentifier());
         Assert.assertEquals(1, data.size());
         PointData pointData = (PointData) results.get(lpo.getPaoIdentifier()).toArray()[0];
         Assert.assertEquals(2, pointData.getValue(), 0.1);
+    }
+    
+    private void setupMocks(LiteYukonPAObject lpo, BuiltInAttribute attribute) {
+        LitePoint lp1 = new LitePoint(1, "pao1", 1, 1, 1, 15);
+
+        DeviceDao deviceDao = EasyMock.createStrictMock(DeviceDao.class);
+        EasyMock.expect(deviceDao.getDeviceIdFromMacAddress("11:22:33:44:55:66:66:77")).andReturn(1);
+        EasyMock.replay(deviceDao);
+        ReflectionTestUtils.setField(parser, "deviceDao", deviceDao);
+
+        IDatabaseCache serverDatabaseCache = EasyMock.createStrictMock(IDatabaseCache.class);
+        EasyMock.expect(serverDatabaseCache.getAllPaosMap()).andReturn(Map.of(1, lpo));
+        EasyMock.replay(serverDatabaseCache);
+        ReflectionTestUtils.setField(parser, "serverDatabaseCache", serverDatabaseCache);
+
+        AttributeService attributeService = EasyMock.createStrictMock(AttributeService.class);
+        EasyMock.expect(attributeService.createAndFindPointForAttribute(lpo, attribute)).andReturn(lp1);
+        EasyMock.replay(attributeService);
+        ReflectionTestUtils.setField(parser, "attributeService", attributeService);
+        
+        AsyncDynamicDataSource dataSource = EasyMock.createStrictMock(AsyncDynamicDataSource.class);
+        PointData pvqh = new PointData();
+        EasyMock.expect(dataSource.getPointValue(1)).andReturn(pvqh);
+        EasyMock.replay(dataSource);
+        ReflectionTestUtils.setField(parser, "dataSource", dataSource);
+        
     }
 }
