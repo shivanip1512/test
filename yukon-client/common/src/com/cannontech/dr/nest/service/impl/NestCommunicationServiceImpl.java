@@ -61,7 +61,7 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     @Autowired
     public NestCommunicationServiceImpl(GlobalSettingDao settingDao) {
         this.settingDao = settingDao;
-        String nestUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL);
+        String nestUrl = "";//settingDao.getString(GlobalSettingType.NEST_SERVER_URL);
         restTemplate = new RestTemplate();
 
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
@@ -202,8 +202,9 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
     
     @Override 
     public String constructNestUrl(int version, NestURL url) {
+        return ""; /*
         String globalUrl = settingDao.getString(GlobalSettingType.NEST_SERVER_URL);
-        return url.buildUrl(version, globalUrl);        
+        return url.buildUrl(version, globalUrl);        */
     }
     
     @Override
@@ -297,12 +298,15 @@ public class NestCommunicationServiceImpl implements NestCommunicationService{
      
     @Override
     public String encodeAuthorization() {
+        /*
         String key = settingDao.getString(GlobalSettingType.NEST_USERNAME) + ":" + settingDao.getString(GlobalSettingType.NEST_PASSWORD);
         try {
             return "Basic " + DatatypeConverter.printBase64Binary(key.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
             throw new NestException("Error encoding Nest key", e);
         }
+        */
+        return "";
     }
 
 }

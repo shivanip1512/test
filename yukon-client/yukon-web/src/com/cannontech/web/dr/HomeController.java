@@ -130,9 +130,6 @@ public class HomeController {
         
         boolean isAdmin = rolePropertyDao.checkRole(YukonRole.OPERATOR_ADMINISTRATOR, user);
         model.addAttribute("showSeasonReset", isAdmin);
-        
-        boolean nestAvailable = !globalSettingDao.getString(GlobalSettingType.NEST_USERNAME).isEmpty();
-        model.addAttribute("nestAvailable", nestAvailable);
 
         return "dr/home.jsp";
     }

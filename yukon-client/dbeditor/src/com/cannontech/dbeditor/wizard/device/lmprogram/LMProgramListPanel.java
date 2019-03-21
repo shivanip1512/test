@@ -29,7 +29,6 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
     // Temp lists that hold the previous state of the load groups for a given // program
     private List<Object> currentAvailableList;
     private List<Object> currentSelectedList;
-    private boolean isNest = false;
     
     public LMProgramListPanel() {
         super();
@@ -160,7 +159,6 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
                     boolean isSepProgram = programType == PaoType.LM_SEP_PROGRAM;
                     boolean isEcobeeProgram = programType == PaoType.LM_ECOBEE_PROGRAM;
                     boolean isHoneywellProgram = programType == PaoType.LM_HONEYWELL_PROGRAM;
-                    boolean isNestProgram = programType == PaoType.LM_NEST_PROGRAM;
                     boolean isItronProgram = programType == PaoType.LM_ITRON_PROGRAM;
                     // SEP compatible groups are shown for SEP programs and
                     // hidden for all others
@@ -173,14 +171,11 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
                     } else if ((!isSepProgram && !isGroupSepCompatible(paoType))
                         && (!isEcobeeProgram && !isGroupEcobeeCompatible(paoType))
                         && (!isHoneywellProgram && !isGroupHoneywellCompatible(paoType)
-                        && (!isNestProgram && !isGroupNestCompatible(paoType)))) {
+                        )) {
                         newList.addElement(group);
                     } else if (isEcobeeProgram && isGroupEcobeeCompatible(paoType)) {
                         newList.addElement(group);
                     } else if (isHoneywellProgram && isGroupHoneywellCompatible(paoType)) {
-                        newList.addElement(group);
-                    } else if (isNestProgram && isGroupNestCompatible(paoType)) {
-                        isNest = true;
                         newList.addElement(group);
                     } else if (isItronProgram && isGroupItronCompatible(paoType)) {
                         newList.addElement(group);
@@ -207,10 +202,6 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
         return groupType == PaoType.LM_GROUP_HONEYWELL;
     }
     
-    private boolean isGroupNestCompatible(PaoType groupType) {
-        return groupType == PaoType.LM_GROUP_NEST;
-    }
-    
     private boolean isGroupItronCompatible(PaoType groupType) {
         return groupType == PaoType.LM_GROUP_ITRON;
     }
@@ -219,10 +210,6 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
     public boolean isInputValid() {
         if (getAddRemovePanel().rightListGetModel().getSize() <= 0) {
             setErrorString("At least 1 load group must be present in this current program.");
-            return false;
-        }
-        if (getAddRemovePanel().rightListGetModel().getSize() > 1 && isNest) {
-            setErrorString("Only 1 load group may be present in a nest program.");
             return false;
         }
         if (!checkForEnrollmentConflicts()) {

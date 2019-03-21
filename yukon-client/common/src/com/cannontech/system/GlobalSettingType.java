@@ -117,9 +117,6 @@ public enum GlobalSettingType implements DisplayableEnum {
     HONEYWELL_APPLICATIONID(GlobalSettingSubCategory.DR, stringType(), ""),
     HONEYWELL_CLIENTID(GlobalSettingSubCategory.DR, stringType(), ""),
     HONEYWELL_SECRET(GlobalSettingSubCategory.DR, stringType(), ""),
-    NEST_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://energy.api.nest.com"),
-    NEST_USERNAME(GlobalSettingSubCategory.DR, stringType(), ""),
-    NEST_PASSWORD(GlobalSettingSubCategory.DR, stringType(), ""),
     ITRON_HCM_API_URL(GlobalSettingSubCategory.DR, stringType(), ""),
     ITRON_HCM_USERNAME(GlobalSettingSubCategory.DR, stringType(), ""),
     ITRON_HCM_PASSWORD(GlobalSettingSubCategory.DR, stringType(), ""),
@@ -227,8 +224,6 @@ public enum GlobalSettingType implements DisplayableEnum {
             OADR_TRUSTSTORE_PASSWORD,
             SMTP_USERNAME,
             SMTP_PASSWORD,
-            NEST_USERNAME,
-            NEST_PASSWORD,
             ITRON_HCM_USERNAME,
             ITRON_HCM_PASSWORD);
 

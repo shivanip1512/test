@@ -294,8 +294,6 @@ public class LMGroupWizardPanel extends WizardPanel {
                 || (currentPanel == getLMGroupBasePanel()
                 && getSwitchTypePanel().getTypeOfSwitchSelected() == PaoType.LM_GROUP_HONEYWELL)
                 || (currentPanel == getLMGroupBasePanel()
-                && getSwitchTypePanel().getTypeOfSwitchSelected() == PaoType.LM_GROUP_NEST)
-                || (currentPanel == getLMGroupBasePanel()
                 && getSwitchTypePanel().getTypeOfSwitchSelected() == PaoType.LM_GROUP_ITRON));
     }
 }
