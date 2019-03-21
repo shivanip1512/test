@@ -1337,7 +1337,6 @@ public void setSwitchType(PaoType deviceType)
 	      deviceType == PaoType.LM_GROUP_ECOBEE ||
 	      deviceType == PaoType.LM_GROUP_HONEYWELL ||
 	      deviceType == PaoType.LM_GROUP_ITRON ||
-          deviceType == PaoType.LM_GROUP_NEST ||
 	      deviceType == PaoType.LM_GROUP_RFN_EXPRESSCOMM) );
 	
 	getRelayPanel().setVisible(deviceType == PaoType.LM_GROUP_ITRON);

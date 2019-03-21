@@ -89,7 +89,7 @@ public class GlobalSettingValidatorTest {
         command.setCategory(GlobalSettingSubCategory.DR);
         globalSettings.put(GlobalSettingType.ECOBEE_SERVER_URL, "http://127.0.0.1");
         globalSettings.put(GlobalSettingType.HONEYWELL_SERVER_URL, "http://127.0.0.1");
-        globalSettings.put(GlobalSettingType.NEST_SERVER_URL, "http://127.0.0.1");
+//        globalSettings.put(GlobalSettingType.NEST_SERVER_URL, "http://127.0.0.1");
         globalSettings.put(GlobalSettingType.ITRON_HCM_API_URL, "http://127.0.0.1");
         command.setValues(globalSettings);
 
@@ -102,7 +102,7 @@ public class GlobalSettingValidatorTest {
         command.setCategory(GlobalSettingSubCategory.DR);
         globalSettings.put(GlobalSettingType.ECOBEE_SERVER_URL, "http://ECOBEESERVER");
         globalSettings.put(GlobalSettingType.HONEYWELL_SERVER_URL, "http://HONEYWELLSERVER");
-        globalSettings.put(GlobalSettingType.NEST_SERVER_URL, "http://NESTSERVER");
+//        globalSettings.put(GlobalSettingType.NEST_SERVER_URL, "http://NESTSERVER");
         globalSettings.put(GlobalSettingType.ITRON_HCM_API_URL, "http://ITRONSERVER");
         command.setValues(globalSettings);
 
@@ -116,7 +116,7 @@ public class GlobalSettingValidatorTest {
         command.setCategory(GlobalSettingSubCategory.DR);
         globalSettings.put(GlobalSettingType.ECOBEE_SERVER_URL, "http//127.0.0.1");
         globalSettings.put(GlobalSettingType.HONEYWELL_SERVER_URL, "htt://127.0.0.1");
-        globalSettings.put(GlobalSettingType.NEST_SERVER_URL, "htt://127.0.0.1");
+//        globalSettings.put(GlobalSettingType.NEST_SERVER_URL, "htt://127.0.0.1");
         globalSettings.put(GlobalSettingType.ITRON_HCM_API_URL, "htt://127.0.0.1");
         command.setValues(globalSettings);
 
@@ -131,7 +131,7 @@ public class GlobalSettingValidatorTest {
         command.setCategory(GlobalSettingSubCategory.DR);
         globalSettings.put(GlobalSettingType.ECOBEE_SERVER_URL, "http://ECOBEE>SERVER");
         globalSettings.put(GlobalSettingType.HONEYWELL_SERVER_URL, "http://HONEYWELL(SERVER");
-        globalSettings.put(GlobalSettingType.NEST_SERVER_URL, "http://NEST(SERVER");
+//        globalSettings.put(GlobalSettingType.NEST_SERVER_URL, "http://NEST(SERVER");
         globalSettings.put(GlobalSettingType.ITRON_HCM_API_URL, "http://ITRON(SERVER");
         command.setValues(globalSettings);
 
