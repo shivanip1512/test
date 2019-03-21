@@ -64,6 +64,7 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
@@ -675,5 +676,12 @@ public class AttributeServiceImpl implements AttributeService {
         });
 
         return attributeToDevice;
+    }
+
+    @Override
+    public LitePoint createAndFindPointForAttribute(LiteYukonPAObject pao,
+                                                    BuiltInAttribute attribute) {
+        createPointForAttribute(pao, attribute);
+        return findPointForAttribute(pao, attribute);
     }
 }
