@@ -41,12 +41,12 @@ public class ItronDeviceDataParserTest {
     @Test
     public void validateItronDataEventType() {
         Arrays.stream(ItronDataEventType.values())
-        .collect(Collectors.groupingBy(ItronDataEventType::getEventIdHex))
-        .entrySet().stream()
-        .filter(e -> e.getValue().size() > 1)
-        .map(e -> String.format("0x%08X", e.getKey()))
-        .reduce((s1, s2) -> s1 + ", " + s2)
-        .ifPresent(duplicates -> fail("duplicate hex value found: " + duplicates));
+            .collect(Collectors.groupingBy(ItronDataEventType::getEventIdHex))
+            .entrySet().stream()
+            .filter(e -> e.getValue().size() > 1)
+            .map(e -> String.format("0x%08X", e.getKey()))
+            .reduce((s1, s2) -> s1 + ", " + s2)
+            .ifPresent(duplicates -> fail("duplicate hex value found: " + duplicates));
     }
     
     @Test
