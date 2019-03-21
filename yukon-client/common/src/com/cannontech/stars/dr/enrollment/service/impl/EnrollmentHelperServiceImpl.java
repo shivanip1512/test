@@ -22,6 +22,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.itron.dao.ItronDao;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -276,8 +277,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
             }
             //error if relay does not match group
             if (enrollmentRelay != relayFromGroup) {
-                log.error("Relay selected for enrollment does not match the relay selected for Itron Load Group: " + loadGroup.getName());
-                throw new EnrollmentException("Relay selected for enrollment does not match the Load Group: " + loadGroup.getName() + ".");
+                EnrollmentException e = new EnrollmentException("Relay selected for enrollment does not match the Load Group: " + loadGroup.getName() + ".");
+                YukonMessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.operator.enrollmentError.relay", loadGroup.getName());
+                e.setDetailMessage(message);
+                log.error(e.getMessage());
+                throw e;
             }
         }
     }

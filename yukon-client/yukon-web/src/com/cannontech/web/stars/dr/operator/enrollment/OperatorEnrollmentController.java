@@ -59,6 +59,7 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.enrollment.ProgramEnrollment.InventoryEnrollment;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
@@ -326,6 +327,12 @@ public class OperatorEnrollmentController {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName(), accessor.getMessage(e.getKey()));
             flashScope.setError(message);
+            if (e.getDetailMessage() != null) {
+                List<MessageSourceResolvable> messages = new ArrayList<>();
+                messages.add(message);
+                messages.add(e.getDetailMessage());
+                flashScope.setError(messages, FlashScopeListType.NONE);
+            }
         } catch (ItronCommunicationException e) {
             flashScope.setError(e.getItronMessage());
         }
