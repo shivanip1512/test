@@ -417,12 +417,12 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-databind-2.9.8.jar" sourcepath="/third-party/linked-sources/jackson-databind-2.9.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-databind-2.9.6.jar" sourcepath="/third-party/linked-sources/jackson-databind-2.9.6-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
- 	<classpathentry exported="true" kind="lib" path="/third-party/jackson-core-2.9.8.jar" sourcepath="/third-party/linked-sources/jackson-core-2.9.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-core-2.9.6.jar" sourcepath="/third-party/linked-sources/jackson-core-2.9.6-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

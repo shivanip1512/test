@@ -55,8 +55,8 @@
         <include name="hawtbuf-1.11.jar"/>
         <include name="i18n-en_US.jar"/>
         <include name="jackson-annotations-2.9.6.jar"/>
-        <include name="jackson-core-2.9.8.jar"/>
-        <include name="jackson-databind-2.9.8.jar"/>
+        <include name="jackson-core-2.9.6.jar"/>
+        <include name="jackson-databind-2.9.6.jar"/>
     	<include name="jackson-dataformat-csv-2.9.6.jar"/>
         <include name="snakeyaml-1.18.2.jar"/>
         <include name="jasypt-1.9.2.jar"/>
