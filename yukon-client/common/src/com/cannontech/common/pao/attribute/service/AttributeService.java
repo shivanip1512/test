@@ -24,6 +24,7 @@ import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Multimap;
@@ -274,4 +275,8 @@ public interface AttributeService {
      */
     Multimap<BuiltInAttribute, SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group,
             List<BuiltInAttribute> attributes, List<Integer> deviceIds);
+    /**
+     * combines create and find point for attribute
+     */
+    LitePoint createAndFindPointForAttribute(LiteYukonPAObject pao, BuiltInAttribute attribute);
 }

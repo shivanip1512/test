@@ -28,7 +28,6 @@ import com.cannontech.dr.itron.ItronDataEventType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -109,14 +108,13 @@ public class ItronDeviceDataParser {
      * @param rowData - parses single row of a csv entry
      * @param pointValues - return pointValues using this object
      */
-    private Multimap<PaoIdentifier, PointData> generatePointData(String[] rowData) {
+    public Multimap<PaoIdentifier, PointData> generatePointData(String[] rowData) {
         Multimap<PaoIdentifier, PointData> pointValues = HashMultimap.create();
         ItronDataCategory category = ItronDataCategory.valueOf(rowData[1]);
         String eventTime = rowData[3];//ISO 8601 YYYY-MM-DD
         String source = rowData[5];//Mac address
         String[] text = rowData[9].split(",");
         long eventId = 0;
-        long payload = 0;
         
         switch(category) {
         case EVENT_CAT_NIC_EVENT:
@@ -147,9 +145,8 @@ public class ItronDeviceDataParser {
                 int deviceId = deviceDao.getDeviceIdFromMacAddress(source);
                 LiteYukonPAObject lpo = serverDatabaseCache.getAllPaosMap().get(deviceId);
                 //building the point
-                boolean pointExists = attributeService.createPointForAttribute(lpo, event.getAttribute(decoded));
-                LitePoint lp = attributeService.findPointForAttribute(lpo, event.getAttribute(decoded));
-                double currentValue = dataSource.getPointValue(lp.getLiteID()).getValue(); //Should I be using liteId or pointId?
+                LitePoint lp = attributeService.createAndFindPointForAttribute(lpo, event.getAttribute(decoded));
+                double currentValue = dataSource.getPointValue(lp.getPointID()).getValue();
                 Optional<PointData> optionalPointData = event.getPointData(decoded, currentValue, eventTime , lp);
                 optionalPointData.ifPresent(pointData -> {
                     pointData.setId(lp.getLiteID());
@@ -159,8 +156,11 @@ public class ItronDeviceDataParser {
                     pointValues.put(lpo.getPaoIdentifier(), pointData);
                 });
             }
+        default:
+            break;
         }
         
+//        This event type is sent from Itron, but we are not parsing it because we can get the same information from EVENT_CAT_NIC_EVENTs
       /*  case EVENT_CAT_PROGRAM_EVENTS:
             for(int i = 0; i < text.length; i+=2) {
                 String[] tuple = text[i].split(":");
