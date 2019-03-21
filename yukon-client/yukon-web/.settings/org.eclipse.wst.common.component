@@ -154,10 +154,10 @@
         <dependent-module archiveName="jackson-annotations-2.9.6.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-annotations-2.9.6.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jackson-databind-2.9.8.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-databind-2.9.8.jar">
+        <dependent-module archiveName="jackson-databind-2.9.6.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-databind-2.9.6.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jackson-core-2.9.8.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-core-2.9.8.jar">
+        <dependent-module archiveName="jackson-core-2.9.6.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-core-2.9.6.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="commons-codec-1.10.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/commons-codec-1.10.jar">
