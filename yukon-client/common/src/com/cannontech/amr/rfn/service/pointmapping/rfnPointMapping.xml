@@ -1521,6 +1521,44 @@
                 <modifier>Max</modifier>
                 <modifier>Cumulative</modifier>
             </modifiers>
+            <baseUom>Var</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+            </baseModifiers>
+        </point>
+        <!-- alternate definition in case of Harmonic being present -->
+        <point name="Coincident Cumulative Peak kVAr (Quadrants 1 4)" icd="false">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Cumulative</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+            <baseUom>Var</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Harmonic</modifier>
+            </baseModifiers>
+        </point>
+        
+        <point name="Coincident Cumulative Peak kVAr (Quadrants 1 4)">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Cumulative</modifier>
+            </modifiers>
             <baseUom>W</baseUom>
             <baseModifiers match="equal">
                 <modifier>Quadrant 1</modifier>
@@ -1541,6 +1579,42 @@
                 <modifier>Harmonic</modifier>
             </modifiers>
             <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Harmonic</modifier>
+            </baseModifiers>
+        </point>
+        
+        <point name="Coincident Peak kVAr (Quadrants 2 3)">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Max</modifier>
+            </modifiers>
+            <baseUom>Var</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+            </baseModifiers>
+        </point>
+        <!-- alternate definition in case of Harmonic being present -->
+        <point name="Coincident Peak kVAr (Quadrants 2 3)" icd="false">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Max</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+            <baseUom>Var</baseUom>
             <baseModifiers match="equal">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
