@@ -33,8 +33,7 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
           PaoType.LM_GROUP_DIGI_SEP,
           PaoType.LM_GROUP_ECOBEE,
           PaoType.LM_GROUP_HONEYWELL,
-          PaoType.LM_GROUP_ITRON,
-          PaoType.LM_GROUP_NEST},
+          PaoType.LM_GROUP_ITRON},
 
         //com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupEmetconPanel
         { PaoType.LM_GROUP_EMETCON },
