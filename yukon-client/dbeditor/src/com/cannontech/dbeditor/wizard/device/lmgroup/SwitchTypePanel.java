@@ -32,12 +32,12 @@ public class SwitchTypePanel extends DataInputPanel {
             Long.parseLong(ClientSession.getInstance().getRolePropertyValue(YukonRoleProperty.DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV), 16);
 
     private static List<PaoType> GROUP_LIST = new LinkedList<>(Arrays.asList(PaoType.LM_GROUP_DIGI_SEP,
-        PaoType.LM_GROUP_ECOBEE, PaoType.LM_GROUP_ITRON, PaoType.LM_GROUP_NEST, PaoType.LM_GROUP_EMETCON, PaoType.LM_GROUP_EXPRESSCOMM, PaoType.LM_GROUP_GOLAY,
+        PaoType.LM_GROUP_ECOBEE, PaoType.LM_GROUP_ITRON, PaoType.LM_GROUP_EMETCON, PaoType.LM_GROUP_EXPRESSCOMM, PaoType.LM_GROUP_GOLAY,
         PaoType.LM_GROUP_MCT, PaoType.LM_GROUP_POINT, PaoType.LM_GROUP_RFN_EXPRESSCOMM, PaoType.LM_GROUP_RIPPLE,
         PaoType.LM_GROUP_VERSACOM));
 
     private static List<PaoType> GROUP_LIST_SA = new LinkedList<>(Arrays.asList(PaoType.LM_GROUP_DIGI_SEP,
-        PaoType.LM_GROUP_ECOBEE, PaoType.LM_GROUP_NEST, PaoType.LM_GROUP_ITRON, PaoType.LM_GROUP_EMETCON, PaoType.LM_GROUP_EXPRESSCOMM, PaoType.LM_GROUP_GOLAY,
+        PaoType.LM_GROUP_ECOBEE, PaoType.LM_GROUP_ITRON, PaoType.LM_GROUP_EMETCON, PaoType.LM_GROUP_EXPRESSCOMM, PaoType.LM_GROUP_GOLAY,
         PaoType.LM_GROUP_MCT, PaoType.LM_GROUP_POINT, PaoType.LM_GROUP_RFN_EXPRESSCOMM, PaoType.LM_GROUP_RIPPLE,
         PaoType.LM_GROUP_SA205, PaoType.LM_GROUP_SA305, PaoType.LM_GROUP_SADIGITAL, PaoType.LM_GROUP_VERSACOM));
 

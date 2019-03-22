@@ -147,7 +147,7 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
         validators.put(GlobalSettingType.NETWORK_MANAGER_ADDRESS, urlValidator);
         validators.put(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER, urlValidator);
         validators.put(GlobalSettingType.YUKON_INTERNAL_URL, urlValidator);
-        validators.put(GlobalSettingType.NEST_SERVER_URL, urlValidator);
+//        validators.put(GlobalSettingType.NEST_SERVER_URL, urlValidator);
         validators.put(GlobalSettingType.ITRON_HCM_API_URL, urlValidator);
 
         validators.put(GlobalSettingType.JMS_BROKER_HOST, ipHostNameValidator);
