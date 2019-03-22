@@ -29,10 +29,10 @@ Function DatabaseBackup () {
     Reset-DatabaseSnapshot
 #>
 Function Reset-DatabaseSnapshot () {
-    Invoke-Sqlcmd   -Query  "USE MASTER; "`
-                            "RESTORE DATABASE yukon "`
-                            "FROM DATABASE_SNAPSHOT = 'yukon_snapshot'"
-                    -Username "yukon" -Password "yukon" -ServerInstance "localhost"
+    Write-Host "Restoring database using database snapshot"
+    Invoke-Sqlcmd   -Query  "USE MASTER; RESTORE DATABASE yukon FROM DATABASE_SNAPSHOT = 'yukon_snapshot'"`
+                    -ServerInstance "localhost" -Database "yukon"  -Username "yukon" -Password "yukon"
+    Write-Host "Database restore completed"
 }
 
 <#

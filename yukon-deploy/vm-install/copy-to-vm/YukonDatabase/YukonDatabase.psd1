@@ -1,7 +1,7 @@
 #
-# Module manifest for module 'YukonDeploy'
+# Module manifest for module 'YukonDatabase'
 #
-# Generated on: 3/4/2019
+# Generated on: 3/22/2019
 #
 
 @{
@@ -13,7 +13,7 @@
     ModuleVersion = '1.0'
     
     # ID used to uniquely identify this module
-    GUID = 'f54df0b9-851b-4ff8-99c6-a5bf4aa7996q'
+    GUID = '5812853a-a3a7-48e3-a7e1-463734576c1c'
     
     # Author of this module
     Author = 'Eaton'
@@ -115,5 +115,3 @@
     # DefaultCommandPrefix = ''
     
     }
-    
-    
