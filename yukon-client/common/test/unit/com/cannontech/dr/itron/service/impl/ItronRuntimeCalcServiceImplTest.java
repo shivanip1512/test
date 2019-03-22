@@ -466,6 +466,122 @@ public class ItronRuntimeCalcServiceImplTest {
         itronRuntimeCalcService.calculateDataLogs();
     }
     
+    @Test
+    public void test_calculateRuntimes_uninitialized() {
+
+        ReflectionTestUtils.setField(itronRuntimeCalcService, "runtimeCalcService", new RuntimeCalcServiceImpl());
+
+        var mockPaoDao = createNiceMock(PaoDao.class);
+        
+        expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6600S))
+            .andReturn(Lists.newArrayList(lcr6600s));
+        expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6601S))
+            .andReturn(Collections.emptyList());
+        replay(mockPaoDao);
+        
+        ReflectionTestUtils.setField(itronRuntimeCalcService, "paoDao", mockPaoDao);
+        
+        var mockAttributeService = createStrictMock(AttributeService.class);
+
+        expect(mockAttributeService.findPaoMultiPointIdentifiersForAttributes(List.of(lcr6600s), ItronRelayDataLogs.getDataLogAttributes()))
+            .andReturn(List.of(new PaoMultiPointIdentifier(lcr6600s, List.of(new PointIdentifier(lcr6600s_relay1_runtimeLog_15m.getPointTypeEnum(),
+                                                                                                 lcr6600s_relay1_runtimeLog_15m.getPointOffset()),
+                                                                             new PointIdentifier(lcr6600s_relay1_shedtimeLog_5m.getPointTypeEnum(),
+                                                                                                 lcr6600s_relay1_shedtimeLog_5m.getPointOffset())
+                                                                             ))));
+        expect(mockAttributeService.findPaoMultiPointIdentifiersForAttributes(List.of(lcr6600s), ItronRelayDataLogs.getRelayStatusAttributes()))
+            .andReturn(List.of(new PaoMultiPointIdentifier(lcr6600s, List.of(new PointIdentifier(lcr6600s_relay1_relayState.getPointTypeEnum(),
+                                                                                                 lcr6600s_relay1_relayState.getPointOffset()),
+                                                                             new PointIdentifier(lcr6600s_relay1_shedStatus.getPointTypeEnum(),
+                                                                                                 lcr6600s_relay1_shedStatus.getPointOffset())))
+                               ));
+        replay(mockAttributeService);
+        
+        ReflectionTestUtils.setField(itronRuntimeCalcService, "attributeService", mockAttributeService);
+
+        //  Per device:
+        //  getRecentData()
+        var mockPointDao = createNiceMock(PointDao.class);
+        expect(mockPointDao.getLitePointsByPaObjectId(lcr6600s.getPaoIdentifier().getPaoId()))
+            .andReturn(lcr6600s_points);
+        replay(mockPointDao);
+
+        ReflectionTestUtils.setField(itronRuntimeCalcService, "pointDao", mockPointDao);
+        
+        Set<Integer> lcr6600s_pointIds = Sets.newHashSet(Lists.transform(lcr6600s_points, LitePoint::getPointID));
+        
+        DateTime recentRelayState = DateTime.parse("2019-03-20T11:13:27.000Z");
+        DateTime uninitialized = DateTime.parse("2010-01-01T18:00:00.000Z");
+        
+        var mockAsyncDynamicDataSource = createStrictMock(AsyncDynamicDataSource.class);
+        EasyMock.<Set<? extends PointValueQualityHolder>>expect(mockAsyncDynamicDataSource.getPointDataOnce(lcr6600s_pointIds))
+            .andReturn(Sets.newHashSet(buildPvqh(lcr6600s_relay1_relayState, recentRelayState, 0.0),
+                                       buildPvqh(lcr6600s_relay1_shedStatus, uninitialized, 0.0, PointQuality.Uninitialized),
+                                       buildPvqh(lcr6600s_relay1_runtimeLog_15m, uninitialized, 0.0, PointQuality.Uninitialized),
+                                       buildPvqh(lcr6600s_relay1_shedtimeLog_5m, uninitialized, 0.0, PointQuality.Uninitialized)));
+        
+        mockAsyncDynamicDataSource.putValues(eq(Collections.emptyList()));
+        
+        
+        replay(mockAsyncDynamicDataSource);
+        
+        ReflectionTestUtils.setField(itronRuntimeCalcService, "asyncDynamicDataSource", mockAsyncDynamicDataSource);
+
+        //  per relay status
+        var mockRawPointHistoryDao = createStrictMock(RawPointHistoryDao.class);
+        expect(mockRawPointHistoryDao.getPointData(Sets.newHashSet(lcr6600s_relay1_relayState.getPointID(),
+                                                                   lcr6600s_relay1_shedStatus.getPointID()),
+                                                   Range.inclusive(null, TimeUtil.getStartOfHour(recentRelayState).toInstant()), 
+                                                   false,
+                                                   Order.FORWARD))
+            .andReturn(Collections.emptyList());
+
+        replay(mockRawPointHistoryDao);
+
+        ReflectionTestUtils.setField(itronRuntimeCalcService, "rphDao", mockRawPointHistoryDao);
+
+        var mockPaoDefinitionDao = createStrictMock(PaoDefinitionDao.class);
+        expect(mockPaoDefinitionDao.findAttributeLookup(eq(lcr6600s.getPaoType()), anyObject(BuiltInAttribute.class)))
+            .andReturn(Optional.empty());
+        expect(mockPaoDefinitionDao.findAttributeLookup(lcr6600s.getPaoType(), BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG_15_MIN))
+            .andReturn(Optional.of(new AttributeDefinition(BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG_15_MIN, 
+                                                           new PointTemplate("Relay 1 Run Time Log 15 Minutes",
+                                                                             PointType.Analog,
+                                                                             12, 1, UnitOfMeasure.MINUTES.getId(), -1, 0),
+                                                           null)));
+        expect(mockPaoDefinitionDao.findAttributeLookup(eq(lcr6600s.getPaoType()), anyObject(BuiltInAttribute.class)))
+            .andReturn(Optional.empty())
+            .times(2);
+        expect(mockPaoDefinitionDao.findAttributeLookup(lcr6600s.getPaoType(), BuiltInAttribute.RELAY_1_RELAY_STATE))
+            .andReturn(Optional.of(new AttributeDefinition(BuiltInAttribute.RELAY_1_RELAY_STATE, 
+                                                           new PointTemplate("Relay 1 Relay State",
+                                                                             PointType.Status,
+                                                                             3, 1, -1, -1, 0),
+                                                           null)));
+        expect(mockPaoDefinitionDao.findAttributeLookup(eq(lcr6600s.getPaoType()), anyObject(BuiltInAttribute.class)))
+            .andReturn(Optional.empty())
+            .times(15);
+        expect(mockPaoDefinitionDao.findAttributeLookup(eq(lcr6600s.getPaoType()), anyObject(BuiltInAttribute.class)))
+            .andReturn(Optional.empty())
+            .times(20);
+
+        replay(mockPaoDefinitionDao);
+
+        ReflectionTestUtils.setField(itronRuntimeCalcService, "paoDefinitionDao", mockPaoDefinitionDao);
+
+        var newTimes = new AssetAvailabilityPointDataTimes(lcr6600sId);
+        newTimes.setRelayRuntime(1, date1.toInstant());
+        
+        var mockDynamicLcrCommunicationsDao = createNiceMock(DynamicLcrCommunicationsDao.class);
+        /* expect */ mockDynamicLcrCommunicationsDao.insertData(newTimes);
+        
+        replay(mockDynamicLcrCommunicationsDao);
+
+        ReflectionTestUtils.setField(itronRuntimeCalcService, "dynamicLcrCommunicationsDao", mockDynamicLcrCommunicationsDao);
+        
+        itronRuntimeCalcService.calculateDataLogs();
+    }
+    
     private PointData buildPointData(LitePoint point, DateTime timestamp, Double value) {
         var pd = new PointData();
         pd.setId(point.getPointID());
@@ -478,9 +594,13 @@ public class ItronRuntimeCalcServiceImplTest {
     }
     
     private PointValueQualityHolder buildPvqh(LitePoint point, DateTime timestamp, Double value) {
+        return buildPvqh(point, timestamp, value, PointQuality.Normal);
+    }
+
+    private PointValueQualityHolder buildPvqh(LitePoint point, DateTime timestamp, Double value, PointQuality quality) {
         return PointValueBuilder.create()
                                 .withPointId(point.getPointID())
-                                .withPointQuality(PointQuality.Normal)
+                                .withPointQuality(quality)
                                 .withType(point.getPointTypeEnum())
                                 .withTimeStamp(timestamp.toDate())
                                 .withValue(value)
