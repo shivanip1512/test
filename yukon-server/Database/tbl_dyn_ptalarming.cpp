@@ -8,6 +8,8 @@
 #include "database_writer.h"
 #include "database_util.h"
 
+#include <boost/algorithm/string/erase.hpp>
+
 #define DEFAULT_ACTIONLENGTH        60
 #define DEFAULT_DESCRIPTIONLENGTH   120
 #define DEFAULT_USERLENGTH          64
@@ -273,12 +275,9 @@ std::string CtiTableDynamicPointAlarming::formatStringInput( const std::string &
     {
         return "(none)";
     }
-    else if ( input.length() >= maxLength )
+    if ( input.length() > maxLength )
     {
-        string temp = input;
-        temp.resize( maxLength - 1 );
-
-        return temp;
+        return boost::erase_tail_copy( input, -maxLength );
     }
 
     return input;

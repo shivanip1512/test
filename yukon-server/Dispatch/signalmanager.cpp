@@ -682,7 +682,7 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
                     | boost::adaptors::filtered(
                         [this]( CtiSignalMsg * pSig )
                         {
-                            return pSig && _dirtySignals.count( pSig->getId() ) == 1;
+                            return pSig && _dirtySignals.count( pSig->getId() );
                         } )
                     | boost::adaptors::transformed( signalToPointAlarmTable )
             );
