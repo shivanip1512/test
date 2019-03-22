@@ -213,7 +213,7 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
             constraintsJRadioButtonNestProgram.anchor = GridBagConstraints.WEST;
             constraintsJRadioButtonNestProgram.ipadx = 1;
             constraintsJRadioButtonNestProgram.insets = new Insets(9, 105, 10, 101);
-            add(getJRadioButtonNestControl(), constraintsJRadioButtonNestProgram);
+//            add(getJRadioButtonNestControl(), constraintsJRadioButtonNestProgram);
             
             GridBagConstraints constraintsJRadioButtonItronProgram = new GridBagConstraints();
             constraintsJRadioButtonItronProgram.gridx = 1; 
