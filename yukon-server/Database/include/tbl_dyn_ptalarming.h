@@ -9,14 +9,13 @@
 #include "database_connection.h"
 #include "database_util.h"
 #include "row_writer.h"
-#include "loggable.h"
 
 
 #define CTITABLEDYNAMICPOINTALARMING_MAX_ACTION         60
 #define CTITABLEDYNAMICPOINTALARMING_MAX_DESCRIPTION    120
 
 
-class IM_EX_CTIYUKONDB CtiTableDynamicPointAlarming : public CtiMemDBObject, private boost::noncopyable, public Cti::RowSource
+class IM_EX_CTIYUKONDB CtiTableDynamicPointAlarming : public CtiMemDBObject, public Cti::RowSource
 {
     LONG        _pointID;
     UINT        _alarmCondition;       // 0-31     Telling us which alarm this represents  Directly tied to point type & found in class CtiTablePointAlarming
@@ -39,9 +38,6 @@ public:
     virtual int operator==(const CtiTableDynamicPointAlarming&) const;
 
     static std::string getTableName();
-
-    bool Insert(Cti::Database::DatabaseConnection &conn);
-    bool Update(Cti::Database::DatabaseConnection &conn);
 
     static bool Delete(long pointid, int alarm_condition);
 
@@ -90,5 +86,7 @@ public:
     void fillRowWriter(Cti::RowWriter& writer) const override;
 
     static std::array<Cti::Database::ColumnDefinition, 11> getTempTableSchema();
+
+    std::string formatStringInput( const std::string & input, const std::size_t maxLength );
 };
 

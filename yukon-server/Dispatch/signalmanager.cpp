@@ -25,7 +25,12 @@
 #include "tbl_pt_alarm.h"
 #include "database_connection.h"
 #include "database_transaction.h"
+#include "database_bulk_writer.h"
+#include "database_exceptions.h"
 
+#include <boost/range/adaptor/map.hpp>
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 
 using std::pair;
 using std::make_pair;
@@ -628,6 +633,32 @@ void CtiSignalManager::setDirty(bool flag, long paoID)
     return;
 }
 
+namespace
+{
+
+// Function to convert a signal message to PointAlarming table object.
+//
+CtiTableDynamicPointAlarming signalToPointAlarmTable( CtiSignalMsg *pSig )
+{
+    CtiTableDynamicPointAlarming ptAlm;
+
+    ptAlm.setPointID( pSig->getId() );
+    ptAlm.setAlarmCondition( pSig->getCondition() );
+    ptAlm.setCategoryID( pSig->getSignalCategory() );
+    ptAlm.setAlarmTime( pSig->getMessageTime() );
+    ptAlm.setAction( pSig->getText() );
+    ptAlm.setDescription( pSig->getAdditionalInfo() );
+    ptAlm.setTags( pSig->getTags() & SIGNAL_MANAGER_MASK );
+    ptAlm.setLogID( pSig->getLogID() );
+    ptAlm.setSOE( pSig->getSOE() );
+    ptAlm.setLogType( pSig->getLogType() );
+    ptAlm.setUser( pSig->getUser() );
+
+    return ptAlm;
+};
+
+}
+
 UINT CtiSignalManager::writeDynamicSignalsToDB()
 {
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
@@ -637,15 +668,38 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
         tlg.tryAcquire(5000);
     }
 
-    CtiSignalMsg *pSig = 0;
-    SigMgrMap_t::iterator itr;
-
     UINT count = 0;
 
     try
     {
         if(!empty() && dirty())
         {
+            // grab the dirty signals 
+                     
+            const auto dirtyRows = boost::copy_range< std::vector< CtiTableDynamicPointAlarming > >(
+                _map
+                    | boost::adaptors::map_values
+                    | boost::adaptors::filtered(
+                        [this]( CtiSignalMsg * pSig )
+                        {
+                            return pSig && _dirtySignals.count( pSig->getId() ) == 1;
+                        } )
+                    | boost::adaptors::transformed( signalToPointAlarmTable )
+            );
+
+            // get a RowSource view into the dirty signals
+
+            auto rowSources = boost::copy_range< std::vector< const Cti::RowSource* > >(
+                dirtyRows
+                    | boost::adaptors::transformed(
+                        []( const CtiTableDynamicPointAlarming & dpa )
+                        {
+                            return &dpa;
+                        } )
+            );
+
+            // connect to the database
+
             Cti::Database::DatabaseConnection   conn;
 
             if ( ! conn.isValid() )
@@ -654,46 +708,51 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
                 return 0;
             }
 
+            // build the bulk updater
+
+            Cti::Database::DatabaseBulkUpdater<11> bu { 
+                conn.getClientType(),
+                CtiTableDynamicPointAlarming::getTempTableSchema(),
+                "DPA",
+                "DynamicPointAlarming",
+                "Point"
+            };
+
             CtiTime start;
+
+            count = rowSources.size();
+
+            CTILOG_INFO( dout, "Writing " << count << " dynamic signal entries." );
 
             bool updateError = false;
 
-            for(itr = _map.begin(); itr != _map.end(); itr++)
+            try
             {
-                SigMgrMap_t::value_type vt = *itr;
-                SigMgrMap_t::key_type   key = vt.first;
+                auto rejectedRows = bu.writeRows( conn, std::move(rowSources) );
 
-                pSig = vt.second;
+                std::size_t rejectedCount = rejectedRows.size();
 
-                if(pSig && _dirtySignals.find(pSig->getId()) != _dirtySignals.end())
+                if ( rejectedCount == 0 )
                 {
-                    CtiTableDynamicPointAlarming ptAlm;
+                    // success - clear the dirty flag
 
-                    ptAlm.setPointID( pSig->getId() );
-                    ptAlm.setAlarmCondition( pSig->getCondition() );
-                    ptAlm.setCategoryID( pSig->getSignalCategory() );
-                    ptAlm.setAlarmTime( pSig->getMessageTime() );
-                    ptAlm.setAction( pSig->getText() );
-                    ptAlm.setDescription( pSig->getAdditionalInfo() );
-                    ptAlm.setTags( pSig->getTags() & SIGNAL_MANAGER_MASK );
-                    ptAlm.setLogID( pSig->getLogID() );
-
-                    ptAlm.setSOE( pSig->getSOE() );
-                    ptAlm.setLogType( pSig->getLogType() );
-                    ptAlm.setUser( pSig->getUser() );
-
-                    if( ! ptAlm.Update( conn ) )
-                    {
-                        CTILOG_ERROR(dout, "Writing dynamic signals to Database failed"<<
-                                ptAlm);
-
-                        updateError = true; // an update has fail, do not reset the dirty flag
-                    }
-                    else
-                    {
-                        count++;
-                    }
+                    setDirty( false, 0 );
                 }
+                else    // an update has failed, do not reset the dirty flag
+                {                    
+                    // adjust the count
+
+                    count -= rejectedCount;
+
+                    // report -- now with grammar!
+
+                    CTILOG_INFO( dout, " -- " << rejectedCount << " dynamic signal "
+                                        << ( ( rejectedCount == 1 ) ? "entry was" : "entries were" ) << " rejected." );
+                }
+            } 
+            catch ( const Cti::Database::DatabaseException& ex )
+            {
+                CTILOG_EXCEPTION_ERROR( dout, ex, "Unable to update rows in DynamicPointAlarming." );
             }
 
             CtiTime stop;
@@ -701,11 +760,6 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
             if((stop.seconds() - start.seconds()) > 5)
             {
                 CTILOG_INFO(dout, "Writing dynamic signals took "<< (stop.seconds() - start.seconds()) <<" seconds and wrote "<< count <<" entries");
-            }
-
-            if(! updateError)
-            {
-                setDirty(false, 0);
             }
         }
     }

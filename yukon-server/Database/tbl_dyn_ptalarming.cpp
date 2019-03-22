@@ -43,124 +43,6 @@ string CtiTableDynamicPointAlarming::getTableName()
     return string("DynamicPointAlarming");
 }
 
-
-bool CtiTableDynamicPointAlarming::Insert(Cti::Database::DatabaseConnection &conn)
-{
-    if(getAction().empty())
-    {
-        setAction("(none)");
-    }
-    if(getDescription().empty())
-    {
-        setDescription("(none)");
-    }
-    if(getUser().empty())
-    {
-        setUser("(none)");
-    }
-
-    static const std::string sql = "insert into " + getTableName() + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    Cti::Database::DatabaseWriter   inserter(conn, sql);
-
-    inserter <<
-    getPointID() <<
-    getAlarmCondition() <<
-    getCategoryID() <<
-    getAlarmDBTime() <<
-    getAction() <<
-    getDescription() <<
-    getTags() <<
-    getLogID() <<
-    getSOE() <<
-    getLogType() <<
-    getUser();
-
-    if( ! Cti::Database::executeCommand( inserter, CALLSITE, Cti::Database::LogDebug( isDebugLudicrous() )))
-    {
-        return false;
-    }
-
-    setDirty(false);
-
-    return true; // No error occurred!
-}
-
-bool CtiTableDynamicPointAlarming::Update( Cti::Database::DatabaseConnection &conn )
-{
-    if(getAction().empty())
-    {
-        setAction("(none)");
-    }
-    if(getDescription().empty())
-    {
-        setDescription("(none)");
-    }
-    if(getUser().empty())
-    {
-        setUser("(none)");
-    }
-
-    if(getAction().length() >= DEFAULT_ACTIONLENGTH)
-    {
-        string temp = getAction();
-        temp.resize(DEFAULT_ACTIONLENGTH - 1);
-        setAction(temp);
-    }
-
-    if(getDescription().length() >= DEFAULT_DESCRIPTIONLENGTH)
-    {
-        string temp = getDescription();
-        temp.resize(DEFAULT_DESCRIPTIONLENGTH - 1);
-        setDescription(temp);
-    }
-
-    if(getUser().length() >= DEFAULT_USERLENGTH)
-    {
-        string temp = getUser();
-        temp.resize(DEFAULT_USERLENGTH - 1);
-        setUser(temp);
-    }
-
-    static const std::string sql = "update " + getTableName() +
-                                   " set "
-                                        "categoryid = ?, "
-                                        "alarmtime = ?, "
-                                        "action = ?, "
-                                        "description = ?, "
-                                        "tags = ?, "
-                                        "logid = ?, "
-                                        "soe_tag = ?, "
-                                        "type = ?, "
-                                        "username = ?"
-                                    " where "
-                                        "pointid = ? and "
-                                        "alarmcondition = ?";
-
-    Cti::Database::DatabaseWriter   updater(conn, sql);
-
-    updater
-        << getCategoryID()
-        << getAlarmTime()
-        << getAction().c_str()
-        << getDescription().c_str()
-        << getTags()
-        << getLogID()
-        << getSOE()
-        << getLogType()
-        << getUser().c_str()
-        << getPointID()
-        << getAlarmCondition();
-
-    if( ! Cti::Database::executeUpdater( updater, CALLSITE , Cti::Database::LogDebug( isDebugLudicrous() ), Cti::Database::LogNoRowsAffected::Disable ))
-    {
-        return Insert(conn); // Try a vanilla insert if the update failed!
-    }
-
-    setDirty(false);
-    return true;
-}
-
 bool CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_condition)
 {
     static const std::string sql = "delete from " + getTableName() + " where pointid = ? and alarmcondition = ?";
@@ -258,7 +140,7 @@ string CtiTableDynamicPointAlarming::getAction() const
 }
 CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setAction(const string &str)
 {
-    _action = str;
+    _action = formatStringInput( str, DEFAULT_ACTIONLENGTH );
     return *this;
 }
 
@@ -268,7 +150,7 @@ string CtiTableDynamicPointAlarming::getDescription() const
 }
 CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setDescription(const string &str)
 {
-    _description = str;
+    _description = formatStringInput( str, DEFAULT_DESCRIPTIONLENGTH );
     return *this;
 }
 
@@ -325,7 +207,7 @@ string CtiTableDynamicPointAlarming::getUser() const
 }
 CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setUser(const string &str)
 {
-    _user = str;
+    _user = formatStringInput( str, DEFAULT_USERLENGTH );
     return *this;
 }
 
@@ -383,5 +265,22 @@ std::array<Cti::Database::ColumnDefinition, 11> CtiTableDynamicPointAlarming::ge
             { "Type",           "numeric",      "NUMBER"        },
             { "UserName",       "varchar(64)",  "VARCHAR2(64)"  }
     };
+}
+
+std::string CtiTableDynamicPointAlarming::formatStringInput( const std::string & input, const std::size_t maxLength )
+{
+    if ( input.empty() )
+    {
+        return "(none)";
+    }
+    else if ( input.length() >= maxLength )
+    {
+        string temp = input;
+        temp.resize( maxLength - 1 );
+
+        return temp;
+    }
+
+    return input;
 }
 
