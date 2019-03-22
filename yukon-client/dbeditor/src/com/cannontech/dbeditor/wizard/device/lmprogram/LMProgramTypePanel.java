@@ -245,7 +245,7 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
         buttonGroup.add( getJRadioButtonSepControl() );
         buttonGroup.add( getJRadioButtonEcobeeControl() );
         buttonGroup.add( getJRadioButtonHoneywellControl() );
-        buttonGroup.add( getJRadioButtonNestControl() ); 
+//        buttonGroup.add( getJRadioButtonNestControl() ); 
         buttonGroup.add( getJRadioButtonItronControl() );
     
         // default selected button
