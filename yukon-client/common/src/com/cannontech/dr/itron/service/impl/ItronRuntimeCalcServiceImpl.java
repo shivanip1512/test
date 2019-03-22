@@ -145,11 +145,14 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
         //  Map of point IDs to data log point values 
         Map<PaoPointIdentifier, PointValueQualityHolder> dataLogValues = getPointData(dataLogPoints, recentData);
         
-        //  Map of PaoPointIdentifiers to point IDs
+        //  Map of PaoPointIdentifiers to data log point IDs
         Map<PaoPointIdentifier, Integer> dataLogIdLookup = Maps.transformValues(dataLogValues, PointValueHolder::getId);
         
-        //  Map of PaoPointIdentifiers to point IDs 
-        Map<PaoPointIdentifier, Integer> relayStatusIdLookup = getPointIds(relayStatusPoints, recentData); 
+        //  Map of PaoPointIdentifiers to relay status point values
+        Map<PaoPointIdentifier, PointValueQualityHolder> relayStatusValues = getPointData(relayStatusPoints, recentData); 
+        
+        //  Map of PaoPointIdentifiers to relay status point IDs
+        Map<PaoPointIdentifier, Integer> relayStatusIdLookup = Maps.transformValues(relayStatusValues, PointValueHolder::getId); 
         
         Set<Integer> relayStatusPointIds = Sets.newHashSet(relayStatusIdLookup.values());
         
@@ -166,6 +169,10 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
                 rphDao.getPointData(relayStatusPointIds, logRange, false, Order.FORWARD).stream()
                     .collect(Collectors.groupingBy(PointValueHolder::getId)); 
 
+        //  Add in any relay information that's outside of the range
+        relayStatusIdLookup.forEach((ppi, pointId) -> 
+            relayStatusData.computeIfAbsent(pointId, x -> List.of(relayStatusValues.get(ppi))));
+        
         for (var relayInfo : ItronRelayDataLogs.values()) {
             calculateRelayDataLogs(device, logRange, relayStatusData, relayInfo, relayStatusIdLookup, dataLogIdLookup);
         }
@@ -232,25 +239,46 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
      * @param logRange The beginning of the range, or null if none.
      * @return The activity data with the new entry added, if retrieved.
      */
-    private Iterable<PointValueHolder> addBoundaryValues(Iterable<PointValueHolder> relayStatuses, Range<Instant> logRange) {
+    Iterable<PointValueHolder> addBoundaryValues(Iterable<PointValueHolder> relayStatuses, Range<Instant> logRange) {
+
+        relayStatuses = addPrecedingValue(relayStatuses, logRange);
+
+        relayStatuses = addTrailingValue(relayStatuses, logRange);
+
+        return relayStatuses;
+    }
+
+    private Iterable<PointValueHolder> addPrecedingValue(Iterable<PointValueHolder> relayStatuses, Range<Instant> logRange) {
         PointValueHolder firstStatus = Iterables.getFirst(relayStatuses, null);
-        PointValueHolder lastStatus = Iterables.getLast(relayStatuses, null);
-        
-        //  Get the entry preceding the range, if the start of the range is defined
-        if (firstStatus != null && logRange.getMin() != null) {
-            int pointId = firstStatus.getId();
-            Date centerDate = firstStatus.getPointDataTimeStamp();
-            Range<Date> dateRange = new Range<>(null, true, centerDate, false);
-            List<PointValueHolder> precedingValue = rphDao.getLimitedPointData(pointId,
-                    dateRange.translate(CtiUtilities.INSTANT_FROM_DATE)
-                    /* Clusivity.INCLUSIVE_EXCLUSIVE */, false,
-                    Order.REVERSE, 1);
-            relayStatuses = Iterables.concat(precedingValue, relayStatuses);
+        if (firstStatus != null) {
+            var firstStatusInstant = new Instant(firstStatus.getPointDataTimeStamp().getTime());
+            //  Get the entry preceding the range, if the start of the range is defined
+            if (logRange.getMin() != null && logRange.getMin().isBefore(firstStatusInstant)) {
+                relayStatuses = Iterables.concat(getPrecedingArchivedValue(firstStatus), relayStatuses);
+            }
         }
-        //  Extend the last status to the end of the range, which must be defined
-        if (lastStatus != null && lastStatus.getPointDataTimeStamp().getTime() != logRange.getMax().getMillis()) {
-            var trailingValue = List.of(cloneWithNewTime(lastStatus, logRange.getMax()));
-            relayStatuses = Iterables.concat(relayStatuses, trailingValue);
+        return relayStatuses;
+    }
+
+    List<PointValueHolder> getPrecedingArchivedValue(PointValueHolder firstStatus) {
+        int pointId = firstStatus.getId();
+        Date centerDate = firstStatus.getPointDataTimeStamp();
+        Range<Date> dateRange = new Range<>(null, true, centerDate, false);
+        return rphDao.getLimitedPointData(pointId,
+                dateRange.translate(CtiUtilities.INSTANT_FROM_DATE)
+                /* Clusivity.INCLUSIVE_EXCLUSIVE */, false,
+                Order.REVERSE, 1);
+    }
+
+    private Iterable<PointValueHolder> addTrailingValue(Iterable<PointValueHolder> relayStatuses, Range<Instant> logRange) {
+        PointValueHolder lastStatus = Iterables.getLast(relayStatuses, null);
+        if (lastStatus != null) {
+            var lastStatusInstant = new Instant(lastStatus.getPointDataTimeStamp().getTime());
+            if (logRange.getMax().isAfter(lastStatusInstant)) {
+                //  Extend the last status to the end of the range
+                var trailingValue = List.of(cloneWithNewTime(lastStatus, logRange.getMax()));
+                relayStatuses = Iterables.concat(relayStatuses, trailingValue);
+            }
         }
         return relayStatuses;
     }
@@ -412,10 +440,6 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
         }
         
         return new DatedShedtimeStatus(status, date);
-    }
-    
-    private static Map<PaoPointIdentifier, Integer> getPointIds(Set<PaoPointIdentifier> paoPointIdentifiers, Map<PaoPointIdentifier, PointValueQualityHolder> recentData) {
-        return Maps.transformValues(getPointData(paoPointIdentifiers, recentData), PointValueHolder::getId);
     }
     
     private static Map<PaoPointIdentifier, PointValueQualityHolder> getPointData(Set<PaoPointIdentifier> paoPointIdentifiers, Map<PaoPointIdentifier, PointValueQualityHolder> recentData) {
