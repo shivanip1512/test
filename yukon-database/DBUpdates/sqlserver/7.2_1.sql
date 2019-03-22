@@ -69,4 +69,4 @@ INSERT INTO DBUpdates VALUES ('YUK-19697', '7.2.1', GETDATE());
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('7.2', '02-FEB-2019', 'Latest Update', 1, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('7.2', '22-MAR-2019', 'Latest Update', 1, GETDATE());
