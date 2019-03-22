@@ -42,6 +42,7 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
+import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
@@ -130,9 +131,9 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
     private void calculateDeviceDataLogs(YukonPao device, Set<PaoPointIdentifier> relayStatusPoints, Set<PaoPointIdentifier> dataLogPoints) {
         Map<PaoPointIdentifier, PointValueQualityHolder> recentData = getRecentData(device);
         
-        //  Get the most recent timestamp from all available point data on the device.
+        //  Get the most recent timestamp from all initialized point data on the device.
         Instant endOfRange = 
-                getLatestTimestamp(recentData.values())
+                getLatestInitializedTimestamp(recentData.values())
                     .map(RelayLogInterval.LOG_60_MINUTE::start)  //  round down to a 60 minute interval to allow full calculation of all interval lengths
                     .map(DateTime::toInstant)
                     .orElse(null);
@@ -142,14 +143,14 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
             return;
         }
 
-        //  Map of point IDs to data log point values 
+        //  Map of point IDs to data log point values, even if uninitialized
         Map<PaoPointIdentifier, PointValueQualityHolder> dataLogValues = getPointData(dataLogPoints, recentData);
         
         //  Map of PaoPointIdentifiers to data log point IDs
         Map<PaoPointIdentifier, Integer> dataLogIdLookup = Maps.transformValues(dataLogValues, PointValueHolder::getId);
         
-        //  Map of PaoPointIdentifiers to relay status point values
-        Map<PaoPointIdentifier, PointValueQualityHolder> relayStatusValues = getPointData(relayStatusPoints, recentData); 
+        //  Map of PaoPointIdentifiers to relay status point values - only initialized points with real data
+        Map<PaoPointIdentifier, PointValueQualityHolder> relayStatusValues = getInitializedPointData(relayStatusPoints, recentData); 
         
         //  Map of PaoPointIdentifiers to relay status point IDs
         Map<PaoPointIdentifier, Integer> relayStatusIdLookup = Maps.transformValues(relayStatusValues, PointValueHolder::getId); 
@@ -158,7 +159,7 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
         
         //  Latest data log point timestamp
         Instant startOfRange = 
-                getLatestTimestamp(dataLogValues.values())
+                getLatestInitializedTimestamp(dataLogValues.values())
                     .map(DateTime::toInstant)
                     .orElse(null);
 
@@ -234,9 +235,9 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
 
     /**
      * Gets the status point entry preceding the range, if the start of the range is specified, and extends the last status out to the end of the range.
-     * This is needed to calculate runtime for the portion of the hour prior to the "first" status, and the portion of the hour after the status.
+     * This is needed to calculate runtime for the portion of the interval prior to the "first" status, and the portion of the interval after the status.
      * @param relayStatuses The existing raw relay statuses.
-     * @param logRange The beginning of the range, or null if none.
+     * @param logRange The log calculation range
      * @return The activity data with the new entry added, if retrieved.
      */
     Iterable<PointValueHolder> addBoundaryValues(Iterable<PointValueHolder> relayStatuses, Range<Instant> logRange) {
@@ -284,27 +285,10 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
     }
 
     private PointValueHolder cloneWithNewTime(PointValueHolder lastStatus, Instant instant) {
-        return new PointValueHolder() {
-            @Override
-            public int getId() {
-                return lastStatus.getId();
-            }
-
-            @Override
-            public Date getPointDataTimeStamp() {
-                return new Date(instant.getMillis());
-            }
-
-            @Override
-            public int getType() {
-                return lastStatus.getType();
-            }
-
-            @Override
-            public double getValue() {
-                return lastStatus.getValue();
-            }
-        };
+        return new SimplePointValue(lastStatus.getId(), 
+                                    new Date(instant.getMillis()), 
+                                    lastStatus.getType(), 
+                                    lastStatus.getValue()); 
     }
     
     /**
@@ -403,8 +387,9 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
             .collect(Collectors.toList());
     }
     
-    private static Optional<DateTime> getLatestTimestamp(Collection<PointValueQualityHolder> pointData) {
+    private static Optional<DateTime> getLatestInitializedTimestamp(Collection<PointValueQualityHolder> pointData) {
         return pointData.stream()
+            .filter(pvqh -> pvqh.getPointQuality() != PointQuality.Uninitialized)
             .map(PointValueQualityHolder::getPointDataTimeStamp)
             .max(Date::compareTo)
             .map(DateTime::new);
@@ -444,5 +429,9 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
     
     private static Map<PaoPointIdentifier, PointValueQualityHolder> getPointData(Set<PaoPointIdentifier> paoPointIdentifiers, Map<PaoPointIdentifier, PointValueQualityHolder> recentData) {
         return Maps.filterValues(Maps.asMap(paoPointIdentifiers, recentData::get), Objects::nonNull);
+    }
+
+    private static Map<PaoPointIdentifier, PointValueQualityHolder> getInitializedPointData(Set<PaoPointIdentifier> paoPointIdentifiers, Map<PaoPointIdentifier, PointValueQualityHolder> recentData) {
+        return Maps.filterValues(getPointData(paoPointIdentifiers, recentData), pvqh -> pvqh.getPointQuality() != PointQuality.Uninitialized);
     }
 }
