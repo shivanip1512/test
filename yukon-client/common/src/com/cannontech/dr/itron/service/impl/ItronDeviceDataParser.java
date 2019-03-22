@@ -10,6 +10,7 @@ import java.util.zip.ZipFile;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -24,6 +25,8 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
+import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.itron.ItronDataEventType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.yukon.IDatabaseCache;
@@ -38,6 +41,7 @@ public class ItronDeviceDataParser {
     @Autowired private DeviceDao deviceDao;
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private AttributeService attributeService;
+    @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
     
     private static final Logger log = YukonLogManager.getLogger(ItronDeviceDataParser.class);
 
@@ -149,6 +153,9 @@ public class ItronDeviceDataParser {
                 double currentValue = dataSource.getPointValue(lp.getPointID()).getValue();
                 Optional<PointData> optionalPointData = event.getPointData(decoded, currentValue, eventTime , lp);
                 optionalPointData.ifPresent(pointData -> {
+                    AssetAvailabilityPointDataTimes times = new AssetAvailabilityPointDataTimes(lpo.getPaoIdentifier().getPaoId());
+                    times.setLastCommunicationTime(new Instant(pointData.getTimeStamp()));
+                    dynamicLcrCommunicationsDao.insertData(times);
                     pointData.setId(lp.getLiteID());
                     pointData.setType(lp.getPointType());
                     pointData.setPointQuality(PointQuality.Normal);
