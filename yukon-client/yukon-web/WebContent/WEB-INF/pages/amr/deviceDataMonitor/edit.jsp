@@ -141,9 +141,7 @@
                                         <c:forEach items="${allGroupedReadableAttributes}" var="group">
                                             <optgroup label="<cti:msg2 key="${group.key}"/>">
                                                 <c:forEach items="${group.value}" var="item">
-                                                    <option value="${item.key}" ${selected}>
-                                                        <cti:formatObject value="${item}"/>
-                                                    </option>
+                                                    <option value="${item.key}" ${selected}><cti:formatObject value="${item}"/></option>
                                                 </c:forEach>
                                             </optgroup>
                                         </c:forEach>
