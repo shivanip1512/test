@@ -23,6 +23,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.itron.ItronDataEventType;
 import com.cannontech.dr.itron.service.impl.ItronDeviceDataParser;
 import com.cannontech.message.dispatch.message.PointData;
@@ -246,6 +247,12 @@ public class ItronDeviceDataParserTest {
         EasyMock.expect(dataSource.getPointValue(1)).andReturn(pvqh);
         EasyMock.replay(dataSource);
         ReflectionTestUtils.setField(parser, "dataSource", dataSource);
+        
+        DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao = EasyMock.createStrictMock(DynamicLcrCommunicationsDao.class);
+        dynamicLcrCommunicationsDao.insertData(EasyMock.anyObject());
+        EasyMock.expectLastCall();
+        EasyMock.replay(dynamicLcrCommunicationsDao);
+        ReflectionTestUtils.setField(parser, "dynamicLcrCommunicationsDao", dynamicLcrCommunicationsDao);
         
     }
 }
