@@ -107,7 +107,7 @@ public enum ItronDataEventType {
         this.attribute = attribute;
         this.firstByteIndex = firstByteIndex;
         this.numOfBytes = numOfBytes;
-        this.value = value;
+        this.value = value; //Corresponds to the value in the point's state group
     }
     
     public static ItronDataEventType getFromHex(long hex) {
