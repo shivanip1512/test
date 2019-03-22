@@ -14,10 +14,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -42,6 +42,7 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueBuilder;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -54,6 +55,7 @@ import com.cannontech.dr.service.impl.DatedRuntimeStatus;
 import com.cannontech.dr.service.impl.RuntimeCalcServiceImpl;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -148,6 +150,187 @@ public class ItronRuntimeCalcServiceImplTest {
         assertThat("status 0 runtime == active", status0.isActive(), equalTo(true));
         assertThat("status 1 date", status1.getDate(), equalTo(date2));
         assertThat("status 1 runtime == inactive", status1.isActive(), equalTo(false));
+    }
+    
+    @Test
+    public void test_addBoundaryValues_valuesWithinRange() {
+        
+        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+                .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
+                .createMock();
+        
+        DateTime rangeStart = DateTime.parse("2019-03-20T11:13:27.000Z");
+        DateTime rangeEnd = rangeStart.plusMinutes(76);
+
+        var value1 = buildPvqh(lcr6600s_relay1_relayState, rangeStart.plusMinutes(22), 6.0);
+        var value2 = buildPvqh(lcr6600s_relay1_relayState, rangeStart.plusMinutes(44), 171.0);
+        
+        Iterable<PointValueHolder> relayStatuses = List.of(value1, value2);
+        
+        Range<Instant> logRange = Range.inclusive(rangeStart.toInstant(), rangeEnd.toInstant());
+        
+        expect(itronRuntimeCalcService.getPrecedingArchivedValue(value1))
+            .andReturn(List.of(buildPvqh(lcr6600s_relay1_relayState, rangeStart.minusMinutes(6), 9.0)));
+        replay(itronRuntimeCalcService);
+
+        Iterable<PointValueHolder> results = itronRuntimeCalcService.addBoundaryValues(relayStatuses, logRange); 
+        
+        assertThat("boundary values added", Iterables.size(results), equalTo(4));
+        
+        PointValueHolder first = Iterables.getFirst(results, null);
+        
+        assertThat("preceding boundary value", first.getValue(), equalTo(9.0));
+        assertThat("preceding boundary timestamp", first.getPointDataTimeStamp().getTime(), equalTo(rangeStart.minusMinutes(6).getMillis()));
+        assertThat("preceding boundary id", first.getId(), equalTo(lcr6600s_relay1_relayState.getPointID()));
+
+        PointValueHolder last = Iterables.getLast(results, null);
+        
+        assertThat("trailing boundary value", last.getValue(), equalTo(171.0));
+        assertThat("trailing boundary timestamp", last.getPointDataTimeStamp().getTime(), equalTo(rangeEnd.getMillis()));
+        assertThat("trailing boundary id", last.getId(), equalTo(lcr6600s_relay1_relayState.getPointID()));
+    }
+    
+    @Test
+    public void test_addBoundaryValues_recentValueOutsideRange() {
+        
+        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+                .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
+                .createMock();
+        
+        DateTime rangeStart = DateTime.parse("2019-03-20T11:13:27.000Z");
+        DateTime rangeEnd = rangeStart.plusMinutes(76);
+
+        var value1 = buildPvqh(lcr6600s_relay1_relayState, rangeStart.minusMinutes(7), 6.0);
+        
+        Iterable<PointValueHolder> relayStatuses = List.of(value1);
+        
+        Range<Instant> logRange = Range.inclusive(rangeStart.toInstant(), rangeEnd.toInstant());
+        
+        //  expect no calls
+        replay(itronRuntimeCalcService);
+        
+        Iterable<PointValueHolder> results = itronRuntimeCalcService.addBoundaryValues(relayStatuses, logRange); 
+        
+        assertThat("boundary values added", Iterables.size(results), equalTo(2));
+        
+        PointValueHolder last = Iterables.getLast(results, null);
+        
+        assertThat("trailing boundary value", last.getValue(), equalTo(6.0));
+        assertThat("trailing boundary timestamp", last.getPointDataTimeStamp().getTime(), equalTo(rangeEnd.getMillis()));
+        assertThat("trailing boundary id", last.getId(), equalTo(lcr6600s_relay1_relayState.getPointID()));
+    }
+    
+    @Test
+    public void test_addBoundaryValues_valueAtRangeEnd() {
+        
+        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+                .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
+                .createMock();
+        
+        DateTime rangeStart = DateTime.parse("2019-03-20T11:13:27.000Z");
+        DateTime rangeEnd = rangeStart.plusMinutes(76);
+
+        var value1 = buildPvqh(lcr6600s_relay1_relayState, rangeStart.plusMinutes(22), 6.0);
+        var value2 = buildPvqh(lcr6600s_relay1_relayState, rangeEnd, 171.0);
+        
+        Iterable<PointValueHolder> relayStatuses = List.of(value1, value2);
+        
+        Range<Instant> logRange = Range.inclusive(rangeStart.toInstant(), rangeEnd.toInstant());
+        
+        expect(itronRuntimeCalcService.getPrecedingArchivedValue(value1))
+            .andReturn(List.of(buildPvqh(lcr6600s_relay1_relayState, rangeStart.minusMinutes(6), 9.0)));
+        replay(itronRuntimeCalcService);
+    
+        Iterable<PointValueHolder> results = itronRuntimeCalcService.addBoundaryValues(relayStatuses, logRange); 
+        
+        assertThat("boundary values added", Iterables.size(results), equalTo(3));
+        
+        PointValueHolder first = Iterables.getFirst(results, null);
+        
+        assertThat("preceding boundary value", first.getValue(), equalTo(9.0));
+        assertThat("preceding boundary timestamp", first.getPointDataTimeStamp().getTime(), equalTo(rangeStart.minusMinutes(6).getMillis()));
+        assertThat("preceding boundary id", first.getId(), equalTo(lcr6600s_relay1_relayState.getPointID()));
+
+        PointValueHolder last = Iterables.getLast(results, null);
+        
+        assertThat("trailing boundary value", last.getValue(), equalTo(171.0));
+        assertThat("trailing boundary timestamp", last.getPointDataTimeStamp().getTime(), equalTo(rangeEnd.getMillis()));
+        assertThat("trailing boundary id", last.getId(), equalTo(lcr6600s_relay1_relayState.getPointID()));
+    }
+    
+    @Test
+    public void test_addBoundaryValues_valueAtRangeStart() {
+        
+        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+                .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
+                .createMock();
+        
+        DateTime rangeStart = DateTime.parse("2019-03-20T11:13:27.000Z");
+        DateTime rangeEnd = rangeStart.plusMinutes(76);
+
+        var value1 = buildPvqh(lcr6600s_relay1_relayState, rangeStart, 6.0);
+        var value2 = buildPvqh(lcr6600s_relay1_relayState, rangeStart.plusMinutes(44), 171.0);
+        
+        Iterable<PointValueHolder> relayStatuses = List.of(value1, value2);
+        
+        Range<Instant> logRange = Range.inclusive(rangeStart.toInstant(), rangeEnd.toInstant());
+        
+        expect(itronRuntimeCalcService.getPrecedingArchivedValue(value1))
+            .andReturn(List.of(buildPvqh(lcr6600s_relay1_relayState, rangeStart.minusMinutes(6), 9.0)));
+        replay(itronRuntimeCalcService);
+
+        Iterable<PointValueHolder> results = itronRuntimeCalcService.addBoundaryValues(relayStatuses, logRange); 
+        
+        assertThat("boundary values added", Iterables.size(results), equalTo(3));
+        
+        PointValueHolder first = Iterables.getFirst(results, null);
+        
+        assertThat("preceding boundary value", first.getValue(), equalTo(6.0));
+        assertThat("preceding boundary timestamp", first.getPointDataTimeStamp().getTime(), equalTo(rangeStart.getMillis()));
+        assertThat("preceding boundary id", first.getId(), equalTo(lcr6600s_relay1_relayState.getPointID()));
+
+        PointValueHolder last = Iterables.getLast(results, null);
+        
+        assertThat("trailing boundary value", last.getValue(), equalTo(171.0));
+        assertThat("trailing boundary timestamp", last.getPointDataTimeStamp().getTime(), equalTo(rangeEnd.getMillis()));
+        assertThat("trailing boundary id", last.getId(), equalTo(lcr6600s_relay1_relayState.getPointID()));
+    }
+    
+    @Test
+    public void test_addBoundaryValues_noRangeStart() {
+        
+        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+                .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
+                .createMock();
+        
+        DateTime rangeStart = DateTime.parse("2019-03-20T11:13:27.000Z");
+        DateTime rangeEnd = rangeStart.plusMinutes(76);
+
+        var value1 = buildPvqh(lcr6600s_relay1_relayState, rangeStart.plusMinutes(22), 6.0);
+        var value2 = buildPvqh(lcr6600s_relay1_relayState, rangeStart.plusMinutes(44), 171.0);
+        
+        Iterable<PointValueHolder> relayStatuses = List.of(value1, value2);
+        
+        Range<Instant> logRange = Range.inclusive(null, rangeEnd.toInstant());
+        
+        //  expect no calls
+        replay(itronRuntimeCalcService);
+
+        Iterable<PointValueHolder> results = itronRuntimeCalcService.addBoundaryValues(relayStatuses, logRange); 
+        
+        assertThat("boundary values added", Iterables.size(results), equalTo(3));
+        
+        PointValueHolder first = Iterables.getFirst(results, null);
+        
+        assertThat("first value", first.getValue(), equalTo(6.0));
+        assertThat("first timestamp", first.getPointDataTimeStamp().getTime(), equalTo(rangeStart.plusMinutes(22).getMillis()));
+        assertThat("first id", first.getId(), equalTo(lcr6600s_relay1_relayState.getPointID()));
+
+        PointValueHolder last = Iterables.getLast(results, null);
+        
+        assertThat("trailing boundary value", last.getValue(), equalTo(171.0));
+        assertThat("trailing boundary timestamp", last.getPointDataTimeStamp().getTime(), equalTo(rangeEnd.getMillis()));
+        assertThat("trailing boundary id", last.getId(), equalTo(lcr6600s_relay1_relayState.getPointID()));
     }
     
     @Test
