@@ -529,8 +529,7 @@ public class ItronRuntimeCalcServiceImplTest {
 
         //  per relay status
         var mockRawPointHistoryDao = createStrictMock(RawPointHistoryDao.class);
-        expect(mockRawPointHistoryDao.getPointData(Sets.newHashSet(lcr6600s_relay1_relayState.getPointID(),
-                                                                   lcr6600s_relay1_shedStatus.getPointID()),
+        expect(mockRawPointHistoryDao.getPointData(Sets.newHashSet(lcr6600s_relay1_relayState.getPointID()),
                                                    Range.inclusive(null, TimeUtil.getStartOfHour(recentRelayState).toInstant()), 
                                                    false,
                                                    Order.FORWARD))
