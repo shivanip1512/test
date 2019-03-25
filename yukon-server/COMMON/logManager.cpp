@@ -51,7 +51,6 @@ FileInfo::FileInfo() :
     path             ("..\\log"),
     maxOpenRetries   (0),
     openRetryMillis  (1000),
-    logRetentionDays (0),
     fileAppend       (true),
     bufferedIO       (true),
     bufferSize       (1024 * 128)
@@ -137,7 +136,7 @@ void LogManager::reloadSettings()
     }
     if( const int days = GlobalSettings::getInteger(GlobalSettings::Integers::LogRetentionDays, 90) )
     {
-        _fileInfo.logRetentionDays = days;
+        LogFileAppender::setLogRetentionDays(days);
     }
 }
 

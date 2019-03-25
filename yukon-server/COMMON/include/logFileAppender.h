@@ -15,8 +15,11 @@ namespace Cti::Logging {
 class IM_EX_CTIBASE LogFileAppender : public log4cxx::rolling::RollingFileAppender
 {
     static std::atomic<uintmax_t> _maxFileSize;
+    static std::atomic<uint16_t>  _logRetentionDays;
 
     const FileInfo  _fileInfo;
+    uint16_t        _retentionDays;
+    long long       _nextCleanupAttempt;
     long long       _nextResumeAttempt;
     bool            _maxFileSizeLogged;
 
@@ -35,7 +38,10 @@ class IM_EX_CTIBASE LogFileAppender : public log4cxx::rolling::RollingFileAppend
             const long long timestamp,
             log4cxx::helpers::Pool &p);
 
-    void cleanupOldFiles() const;
+    void tryCleanupOldFiles(
+            const long long timestamp);
+
+    void cleanupOldFiles();
 
 public:
 
@@ -43,6 +49,7 @@ public:
                     const FileInfo& fileInfo);
 
     static void setMaxFileSize(uintmax_t fileSize);
+    static void setLogRetentionDays(uint16_t days);
 };
 
 }

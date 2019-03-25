@@ -28,7 +28,6 @@ struct IM_EX_CTIBASE FileInfo
 
     unsigned long maxOpenRetries;
     unsigned long openRetryMillis;
-    unsigned long logRetentionDays;
     bool          fileAppend;
     bool          bufferedIO;
     size_t        bufferSize;

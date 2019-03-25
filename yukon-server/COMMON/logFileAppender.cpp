@@ -50,6 +50,7 @@ LogFileAppender::LogFileAppender(const log4cxx::LayoutPtr& layout, const FileInf
     :   _fileInfo(fileInfo),
         _maxFileSizeLogged(false),
         _nextResumeAttempt(0),
+        _nextCleanupAttempt(0),
         _nextFlush(0),
         _flushInterval(5 * 1000 * 1000)  //  force a flush every 5 seconds
 {
@@ -69,10 +70,32 @@ LogFileAppender::LogFileAppender(const log4cxx::LayoutPtr& layout, const FileInf
 }
 
 std::atomic<uintmax_t> LogFileAppender::_maxFileSize = 1024 * 1024 * 1024;  //  1 GB default
+std::atomic<uint16_t>  LogFileAppender::_logRetentionDays = 90;  //  90 days default
 
 void LogFileAppender::setMaxFileSize(uintmax_t maxFileSize)
 {
     _maxFileSize = maxFileSize;
+}
+
+void LogFileAppender::setLogRetentionDays(uint16_t days)
+{
+    _logRetentionDays = days;
+}
+
+void LogFileAppender::tryCleanupOldFiles(const long long timestamp)
+{
+    if( timestamp < _nextCleanupAttempt )
+    {
+        return;
+    }
+
+    //  If the setting changed, run it again
+    if( _retentionDays != _logRetentionDays )
+    {
+        cleanupOldFiles();
+    }
+
+    _nextCleanupAttempt = apr_time_now() + 5 * 1000 * 1000;  //  only check every 5 seconds
 }
 
 bool LogFileAppender::tryResumeWriting(const long long timestamp, log4cxx::helpers::Pool &p)
@@ -152,6 +175,8 @@ void LogFileAppender::subAppend(
     {
         log4cxx::helpers::synchronized sync(mutex);
 
+        tryCleanupOldFiles(timestamp);
+
         if( _maxFileSizeLogged )
         {
             if( ! tryResumeWriting(timestamp, p) )
@@ -201,11 +226,13 @@ void LogFileAppender::subAppend(
     }
 }
 
-void LogFileAppender::cleanupOldFiles() const
+void LogFileAppender::cleanupOldFiles()
 {
     log4cxx::helpers::synchronized sync(mutex);
 
-    if( !_fileInfo.logRetentionDays )
+    _retentionDays = _logRetentionDays;
+
+    if( ! _retentionDays )
     {
         return;
     }
@@ -225,7 +252,7 @@ void LogFileAppender::cleanupOldFiles() const
 
         if (finderHandle != INVALID_HANDLE_VALUE)
         {
-            const CtiDate cutoffDate = CtiDate::now() - _fileInfo.logRetentionDays;
+            const CtiDate cutoffDate = CtiDate::now() - _retentionDays;
 
             do
             {
