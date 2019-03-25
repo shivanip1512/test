@@ -145,7 +145,6 @@ void main(void)
 
     // fire up the logger thread
     doutManager.setOutputPath   ( gLogDirectory );
-    doutManager.setRetentionDays( gLogRetention );
     doutManager.setOutputFile   ( "lm_server_client_serialization_test" );
     doutManager.setToStdOut     ( true );
     doutManager.start();

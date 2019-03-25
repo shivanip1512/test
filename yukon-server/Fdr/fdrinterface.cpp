@@ -856,7 +856,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                     {
                         GlobalSettings::reload();
 
-                        doutManager.reloadMaxFileSize();
+                        doutManager.reloadSettings();
                     }
                     break;
 

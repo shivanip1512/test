@@ -1904,7 +1904,7 @@ void CtiCapController::parseMessage(CtiMessage *message)
                     {
                         GlobalSettings::reload();
 
-                        doutManager.reloadMaxFileSize();
+                        doutManager.reloadSettings();
                     }
                 }
                 break;

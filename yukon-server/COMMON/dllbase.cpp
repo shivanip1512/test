@@ -46,7 +46,6 @@ string     dbUser("yukon");
 string     dbPassword("yukon");
 
 IM_EX_CTIBASE string        gLogDirectory("\\yukon\\server\\log");
-IM_EX_CTIBASE unsigned long gLogRetention = 0;      // 0 == keep forever
 IM_EX_CTIBASE bool          gLogPorts = false;
 IM_EX_CTIBASE bool          gOptimizeVersacom = false;
 IM_EX_CTIBASE bool          gDoPrefix = false;
@@ -298,19 +297,6 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if (DebugLevel & 0x0001)
         {
             CTILOG_TRACE(dout, "Yukon Log Directory: " << gLogDirectory);
-        }
-    }
-
-    gLogRetention = gConfigParms.getValueAsULong("LOG_FILE_RETENTION", 90ul);   // 90 day default
-    if(DebugLevel & 0x0001)
-    {
-        if ( gLogRetention )
-        {
-            CTILOG_TRACE(dout, "Yukon Log Retention: " << gLogRetention << " days");
-        }
-        else
-        {
-            CTILOG_TRACE(dout, "Yukon Log Retention: forever");
         }
     }
 

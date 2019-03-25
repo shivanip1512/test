@@ -48,7 +48,6 @@ typedef boost::char_separator<char> Separator;
 IM_EX_CTIBASE extern CtiCriticalSection          coutMux;
 
 IM_EX_CTIBASE extern std::string      gLogDirectory;
-IM_EX_CTIBASE extern unsigned long    gLogRetention;
 
 IM_EX_CTIBASE extern bool           gLogPorts;                    // Write port data to portname.dayofmonth
 IM_EX_CTIBASE extern bool           gDoPrefix;                    // Attach a prefix to TAP transmissions

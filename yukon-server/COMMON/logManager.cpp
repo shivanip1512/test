@@ -111,11 +111,8 @@ LogManager::LogManager(const std::string &baseLoggerName)
 
 void LogManager::setDefaultOptions(const compileinfo_t& ownerinfo, const std::string& basefilename)
 {
-    reloadMaxFileSize();
-
     setOwnerInfo(ownerinfo);
     setOutputPath(gLogDirectory);
-    setRetentionDays(gLogRetention);
     setOutputFile(basefilename);
     setToStdOut(true);
 }
@@ -132,11 +129,15 @@ void LogManager::setOutputFile(const std::string& baseFileName)
     _fileInfo.baseFileName.swap(scrubbed);
 }
 
-void LogManager::reloadMaxFileSize()
+void LogManager::reloadSettings()
 {
     if( const uint64_t maxFileSizeGb = GlobalSettings::getInteger(GlobalSettings::Integers::MaxLogFileSize, 1) )
     {
         LogFileAppender::setMaxFileSize(maxFileSizeGb * 1024 * 1024 * 1024);
+    }
+    if( const int days = GlobalSettings::getInteger(GlobalSettings::Integers::LogRetentionDays, 90) )
+    {
+        _fileInfo.logRetentionDays = days;
     }
 }
 
@@ -168,11 +169,6 @@ void LogManager::setToStdOut(const bool toStdout)
     _toStdout = toStdout;
 }
 
-void LogManager::setRetentionDays(const unsigned long days)
-{
-    _fileInfo.logRetentionDays = days;
-}
-
 void LogManager::setOutputFormat(const LogFormats format)
 {
     _format = format;
@@ -185,6 +181,8 @@ const FileInfo& LogManager::getFileInfo() const
 
 void LogManager::start()
 {
+    reloadSettings();
+
     const log4cxx::LoggerPtr baseLogger = log4cxx::Logger::getLogger(_baseLoggerName);
 
     log4cxx::LayoutPtr logLayout;

@@ -67,9 +67,8 @@ public:
     void setOutputFile    (const std::string &basefilename);
     void setOwnerInfo     (const compileinfo_t &ownerinfo);
     void setToStdOut      (const bool toStdout);
-    void setRetentionDays (const unsigned long days);
     void setOutputFormat  (const LogFormats format);
-    void reloadMaxFileSize();
+    void reloadSettings();
     void start();
 
     static void refresh();

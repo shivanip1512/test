@@ -1229,7 +1229,7 @@ void DispatchMsgHandlerThread(void *Arg)
                     {
                         GlobalSettings::reload();
 
-                        doutManager.reloadMaxFileSize();
+                        doutManager.reloadSettings();
                     }
                     break;
                 }

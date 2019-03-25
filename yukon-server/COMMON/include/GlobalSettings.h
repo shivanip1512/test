@@ -18,6 +18,7 @@ public:
         ProducerWindowSize,
         MaxInactivityDuration,
         MaxLogFileSize,
+        LogRetentionDays,
     };
 
     enum class Booleans {

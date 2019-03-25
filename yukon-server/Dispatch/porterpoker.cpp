@@ -50,7 +50,6 @@ void main(int argc, char **argv)
 {
     // fire up the logger thread
     doutManager.setOutputPath    ( gLogDirectory );
-    doutManager.setRetentionDays ( gLogRetention );
     doutManager.setOutputFile    ( argv[0] );
     doutManager.setToStdOut      ( true );
     doutManager.start();

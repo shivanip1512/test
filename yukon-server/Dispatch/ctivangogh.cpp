@@ -1761,7 +1761,7 @@ void CtiVanGogh::processMessageData( CtiMessage *pMsg )
                 {
                     GlobalSettings::reload();
 
-                    doutManager.reloadMaxFileSize();
+                    doutManager.reloadSettings();
                 }
                 break;
             }

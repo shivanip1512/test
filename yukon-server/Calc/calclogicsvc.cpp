@@ -660,7 +660,7 @@ void CtiCalcLogicService::handleDbChangeMsg( const CtiDBChangeMsg &dbChgMsg, Cti
     {
         GlobalSettings::reload();
 
-        doutManager.reloadMaxFileSize();
+        doutManager.reloadSettings();
     }
 
     // only reload on if a database change was made to a point

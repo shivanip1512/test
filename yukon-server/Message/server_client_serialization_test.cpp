@@ -138,7 +138,6 @@ void main(int argc, char* argv[])
     // fire up the logger thread
 
     doutManager.setOutputPath    ( gLogDirectory );
-    doutManager.setRetentionDays ( gLogRetention );
     doutManager.setOutputFile    ( "server_client_serialization_test" );
     doutManager.setToStdOut      ( true );
     doutManager.start();

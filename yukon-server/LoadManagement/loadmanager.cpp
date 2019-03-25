@@ -947,7 +947,7 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
             {
                 GlobalSettings::reload();
 
-                doutManager.reloadMaxFileSize();
+                doutManager.reloadSettings();
             }
         }
         break;

@@ -53,7 +53,6 @@ int main(int argc, char* argv[])
 
    slogManager.setOwnerInfo     ( CompileInfo );
    slogManager.setOutputPath    ( dbglogdir );
-   slogManager.setRetentionDays ( gLogRetention );
    slogManager.setOutputFile    ( "simulate" );
    slogManager.setToStdOut      ( gConfigParms.getValueAsInt("YUKON_SIMULATE_TOSTDOUT",0) );
    slogManager.start(); // fire up the simulator thread

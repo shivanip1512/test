@@ -33,7 +33,6 @@ extern HANDLE gQuitEvent;
 int main(int argc, char* argv[] )
 {
     doutManager.setOutputPath    (gLogDirectory);
-    doutManager.setRetentionDays (gLogRetention);
     doutManager.setOutputFile    ("field_simulator");
     doutManager.setToStdOut      (true);
 

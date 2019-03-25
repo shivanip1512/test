@@ -30,7 +30,8 @@ static const SettingNamesFor<Strings> StringNames {
 static const SettingNamesFor<Integers> IntegerNames{
     { Integers::MaxInactivityDuration, "MAX_INACTIVITY_DURATION" },
     { Integers::ProducerWindowSize,    "PRODUCER_WINDOW_SIZE" },
-    { Integers::MaxLogFileSize,        "MAX_LOG_FILE_SIZE"} };
+    { Integers::MaxLogFileSize,        "MAX_LOG_FILE_SIZE" },
+    { Integers::LogRetentionDays,      "LOG_RETENTION_DAYS" } };
 
 static const SettingNamesFor<Booleans> BooleanNames{ /* empty */ };
 
