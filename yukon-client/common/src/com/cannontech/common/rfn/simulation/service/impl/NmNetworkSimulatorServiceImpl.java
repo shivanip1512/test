@@ -44,6 +44,14 @@ import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataReplyType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataRequest;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataResponse;
+import com.cannontech.common.rfn.message.metadatamulti.NodeData;
+import com.cannontech.common.rfn.message.metadatamulti.PrimaryGatewayComm;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
 import com.cannontech.common.rfn.message.network.NeighborData;
 import com.cannontech.common.rfn.message.network.NeighborFlagType;
 import com.cannontech.common.rfn.message.network.ParentData;
@@ -64,6 +72,7 @@ import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.yukon.IDatabaseCache;
@@ -233,6 +242,18 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
                         }
                     }
+                    
+                    Object metaDataMultiMessage = jmsTemplate.receive(JmsApiDirectory.RF_METADATA_MULTI.getQueue().getName());
+                    if (metaDataMultiMessage != null) {
+                        ObjectMessage requestMessage = (ObjectMessage) metaDataMultiMessage;
+                        if (requestMessage.getObject() instanceof RfnMetadataMultiRequest) {
+                            RfnMetadataMultiRequest request = (RfnMetadataMultiRequest) requestMessage.getObject();
+                            log.debug("RfnMetadataMultiRequest:"+request);
+                            RfnMetadataMultiResponse reply = getMetadataMultiResponse(settings, request);
+                            log.debug("RfnMetadataMultiResponse:"+reply);
+                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
+                        }
+                    }
                 } catch (Exception e) {
                     log.error("Error occurred in NM Network Simulator.", e);
                 }
@@ -240,6 +261,57 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         }, 0, 1, TimeUnit.SECONDS);
 
         log.info("Started NM Network Simulator");
+    }
+    
+    /**
+     * Returns generated metadata multi response
+     */
+    private RfnMetadataMultiResponse getMetadataMultiResponse(SimulatedNmMappingSettings settings,
+            RfnMetadataMultiRequest request) {
+        RfnMetadataMultiResponse reply = new RfnMetadataMultiResponse();
+        reply.setResponseType(RfnMetadataMultiResponseType.OK);
+        reply.setQueryResults(new HashMap<>());
+        request.getRfnIdentifiers().forEach(identifier -> {
+            if(request.getRfnMetadatas().contains(RfnMetadataMulti.ALL)) {
+                request.getRfnMetadatas().addAll(Set.of(RfnMetadataMulti.values()));
+                request.getRfnMetadatas().remove(RfnMetadataMulti.ALL);
+            }
+            RfnMetadataMultiQueryResult result = new RfnMetadataMultiQueryResult();
+            result.setResultType(RfnMetadataMultiQueryResultType.OK);
+            result.setMetadatas(new HashMap<>());
+            request.getRfnMetadatas().forEach(metaData -> {     
+                switch(metaData) {
+                    case PRIMARY_GATEWAY_COMM:
+                         PrimaryGatewayComm comm = new PrimaryGatewayComm();
+                    comm.setCommStatusTimestamp(1517588257267L);
+                    comm.setCommStatusType(new Random().nextBoolean()
+                        ? com.cannontech.common.rfn.message.metadatamulti.CommStatusType.READY
+                        : com.cannontech.common.rfn.message.metadatamulti.CommStatusType.NOT_READY);
+                    List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+                         RfnGateway randomGateway = gateways.get(new Random().nextInt(gateways.size()));
+                         comm.setRfnIdentifier(randomGateway.getRfnIdentifier());
+                         result.getMetadatas().put(RfnMetadataMulti.PRIMARY_GATEWAY_COMM, comm); 
+                         break;
+                    case NODE_DATA:
+                        NodeData node = new NodeData();
+                        node.setFirmwareVersion("Simulated Firmware Version");
+                        node.setHardwareVersion("1.1.1 (Sim)");
+                        node.setInNetworkTimestamp(1517588257267L);
+                        node.setMacAddress("11:22:33:44:91:11");
+                        node.setNetworkAddress("1234:1234:1234:1234:1234:1234:1234:1234");
+                        node.setNodeSerialNumber(settings.getRouteData().getSerialNumber());
+                        node.setNodeType("Nodetype (Sim)");
+                        node.setProductNumber("123456789 (Sim)");
+                        result.getMetadatas().put(RfnMetadataMulti.NODE_DATA, node); 
+                        break;
+                    default:
+                        break;
+                    
+                }
+            });
+            reply.getQueryResults().put(identifier, result);
+        });
+        return reply;
     }
 
     @Override

@@ -6,7 +6,7 @@ import org.geojson.FeatureCollection;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
-import com.cannontech.common.rfn.message.metadata.CommStatusType;
+import com.cannontech.common.rfn.message.metadatamulti.CommStatusType;
 import com.cannontech.common.rfn.model.RfnDevice;
 
 public abstract class MappingInfo {

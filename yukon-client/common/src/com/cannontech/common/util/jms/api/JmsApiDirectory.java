@@ -65,6 +65,8 @@ import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.message.location.LocationResponseAck;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataRequest;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataResponse;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReply;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataRequest;
 import com.cannontech.common.rfn.message.network.RfnParentReply;
@@ -1012,6 +1014,20 @@ public final class JmsApiDirectory {
                   .responseQueue(JmsQueue.TEMP_QUEUE)
                   .requestMessage(GatewaySetConfigRequest.class)
                   .responseMessage(GatewaySetConfigResponse.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(NETWORK_MANAGER)
+                  .receiver(YUKON_SIMULATORS)
+                  .build();
+    
+    public static JmsApi<RfnMetadataMultiRequest,?,RfnMetadataMultiResponse> RF_METADATA_MULTI =
+            JmsApi.builder(RfnMetadataMultiRequest.class, RfnMetadataMultiResponse.class)
+                  .name("Rfn Meta Data Multi")
+                  .description("Sends metadata request to NM.")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("yukon.qr.obj.common.rfn.MetadataMultiRequest"))
+                  .responseQueue(JmsQueue.TEMP_QUEUE)
+                  .requestMessage(RfnMetadataMultiRequest.class)
+                  .responseMessage(RfnMetadataMultiResponse.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)

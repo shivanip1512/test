@@ -57,17 +57,20 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
-import com.cannontech.common.rfn.message.metadata.CommStatusType;
-import com.cannontech.common.rfn.message.metadata.RfnMetadata;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.metadatamulti.NodeData;
+import com.cannontech.common.rfn.message.metadatamulti.PrimaryGatewayComm;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
-import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
+import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
@@ -80,7 +83,6 @@ import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.user.YukonUserContext;
@@ -112,10 +114,8 @@ public class MapController {
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private RfnGatewayDataCache gatewayDataCache;
-    @Autowired private RfnDeviceMetadataService metadataService;
+    @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
-    @Autowired private PaoDao paoDao;
-    @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
@@ -124,6 +124,7 @@ public class MapController {
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private RfnGatewayService rfnGatewayService;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
@@ -234,35 +235,36 @@ public class MapController {
                 }
             } else {
                 try {
-                    Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);
-                    model.addAttribute("macAddress", metadataService.getMetaDataValueAsString(RfnMetadata.NODE_ADDRESS, metadata));
-                    String primaryGatewayName = metadataService.getMetaDataValueAsString(RfnMetadata.PRIMARY_GATEWAY, metadata);
-                    model.addAttribute("primaryGatewayName", primaryGatewayName);
-                    String nodeSN = metadataService.getMetaDataValueAsString(RfnMetadata.NODE_SERIAL_NUMBER, metadata);
-                    model.addAttribute("nodeSN", nodeSN);
-                    Object commStatus = metadata.get(RfnMetadata.COMM_STATUS);
-                    if (commStatus != null) {
-                        CommStatusType status = CommStatusType.valueOf(commStatus.toString());
-                        String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + status);
+                    Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
+                        metadataMultiService.getMetadata(rfnDevice.getRfnIdentifier(),
+                            Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_COMM, RfnMetadataMulti.NODE_DATA));
+                    RfnMetadataMultiQueryResult metadata = metaData.get(rfnDevice.getRfnIdentifier());                   
+                    if (metadata.getResultType() != RfnMetadataMultiQueryResultType.OK) {
+                        log.error("NM returned query result:" + metadata.getResultType() + " message:" + metadata.getResultMessage()
+                            + " for device:" + rfnDevice);
+                      //Carrie
+                    }
+                    PrimaryGatewayComm comm = (PrimaryGatewayComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_COMM);
+                    if (comm != null) {
+                        RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(rfnDevice.getRfnIdentifier());
+                        RfnGateway rfnGateway = rfnGatewayService.getGatewayByPaoId(gateway.getPaoIdentifier().getPaoId());
+                        String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getCommStatusType());
                         model.addAttribute("deviceStatus", statusString);
+                        model.addAttribute("primaryGatewayName", rfnGateway.getNameWithIPAddress());
+                        model.addAttribute("primaryGateway", gateway);
                     } else {
                         // ignore, status will be set to "UNKNOWN"
-                        log.error("NM didn't return communication status for " + id);
+                        log.error("NM didn't return communication status for " + rfnDevice);
                     }
-                    //primary gateway from NM contains the IP Address too
-                    List<LiteYukonPAObject> foundGateways;
-                    foundGateways = paoDao.getLiteYukonPaoByName(primaryGatewayName, false);
-                    if (foundGateways.size() > 0) {
-                        model.addAttribute("primaryGateway", foundGateways.get(0));
+                    
+                    NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
+                    if (nodeData != null) {
+                        model.addAttribute("macAddress", nodeData.getMacAddress());
+                        model.addAttribute("nodeSN", nodeData.getNodeSerialNumber());
                     } else {
-                        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-                        for (RfnGateway gateway : gateways) {
-                            if (gateway.getNameWithIPAddress().equals(primaryGatewayName)) {
-                                model.addAttribute("primaryGateway", gateway);
-                                break;
-                            }
-                        }
-                    }
+                        log.error("NM didn't return node data for " + rfnDevice);
+                    }  
+                    
                 } catch (NmCommunicationException e) {
                     log.error("Failed to get metadata for " + id, e);
                     model.addAttribute("errorMsg", e.getMessage());
