@@ -1124,6 +1124,7 @@ public final class JmsApiDirectory {
             .put(RF_NETWORK, NETWORK_PRIMARY_ROUTE)
             
             .put(RF_MISC, RFN_METADATA)
+            .put(RF_MISC, RF_METADATA_MULTI)
             .put(RF_MISC, RF_ALARM_ARCHIVE)
             .put(RF_MISC, RF_DA_ARCHIVE)
             .put(RF_MISC, RF_EVENT_ARCHIVE)
