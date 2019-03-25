@@ -62,6 +62,7 @@
                         <form:option value="Outage Count"/>
                         <form:option value="V"/>
                         <form:option value="V degree"/>
+                        <form:option value="VA"/>
                         <form:option value="A"/>
                         <form:option value="VAh"/>
                         <form:option value="Var"/>
@@ -91,7 +92,7 @@
                                     <tags:check label="Max" path="modifiers" value="max"/>
                                     <tags:check label="Min" path="modifiers" value="min"/>
                                     <tags:check label="Average" path="modifiers" value="avg"/>
-                                    <tags:check label="Previous" path="modifiers" value="prev"/>
+                                    <tags:check label="Previous" path="modifiers" value="previous"/>
                                     <tags:check label="Daily Max" path="modifiers" value="dailyMax"/>
                                 </div>
                             </td>
@@ -125,10 +126,12 @@
                                     <tags:check label="Net Flow" path="modifiers" value="netFlow"/>
                                     <tags:check label="Coincident" path="modifiers" value="coincident"/>
                                     <tags:check label="Harmonic" path="modifiers" value="harmonic"/>
-                                    <tags:check label="Cumulative" path="modifiers" value="cumulative"/>
-                                    <tags:check label="Continuous cumulative" path="modifiers" value="continuousCumulative"/>
                                     <tags:check label="tenths" path="modifiers" value="tenths"/>
                                     <tags:check label="Phase Neutral to Ground" path="modifiers" value="neutralToGround"/>
+                                </div>
+                                <div class="button-group">
+                                    <tags:check label="Cumulative" path="modifiers" value="cumulative"/>
+                                    <tags:check label="Continuous cumulative" path="modifiers" value="continuousCumulative"/>
                                 </div>
                             </td>
                         </tr>

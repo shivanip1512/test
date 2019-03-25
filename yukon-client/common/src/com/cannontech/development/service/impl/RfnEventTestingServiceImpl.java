@@ -114,9 +114,10 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
                 .put("touRateD", "TOU Rate D")
                 .put("touRateE", "TOU Rate E")
                 //---
-                .put("netFlow",    "Net Flow")
+                .put("netFlow", "Net Flow")
                 .put("coincident", "Coincident")
-                .put("harmonic",   "Harmonic")
+                .put("harmonic", "Harmonic")
+                .put("previous", "Previous")
                 .put("cumulative", "Cumulative")
                 .put("continuousCumulative", "Continuous cumulative")
                 .put("neutralToGround", "Phase Neutral->Ground")
