@@ -118,6 +118,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
                 .put("coincident", "Coincident")
                 .put("harmonic",   "Harmonic")
                 .put("cumulative", "Cumulative")
+                .put("continuousCumulative", "Continuous cumulative")
                 .put("neutralToGround", "Phase Neutral->Ground")
                 .put("dailyMax", "Daily Max")
                 .build();
