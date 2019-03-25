@@ -48,7 +48,6 @@ UnsolicitedHandler::UnsolicitedHandler(CtiPortSPtr &port, CtiDeviceManager &devi
 {
     _portLogManager.setToStdOut      ( false );  // Not to std out.
     _portLogManager.setOwnerInfo     ( CompileInfo );
-    _portLogManager.setRetentionDays ( gLogRetention );
     _portLogManager.setOutputFormat( Cti::Logging::LogFormat_CommLog );
 
     _portLog = _portLogManager.getLogger();

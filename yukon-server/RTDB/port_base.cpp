@@ -486,7 +486,6 @@ _portLogManager("port" + std::to_string(++portCount))
 
     _portLogManager.setToStdOut     ( false );  // Not to std out - traces are logged in ANSI color to the console by traceBytes().
     _portLogManager.setOwnerInfo    ( CompileInfo );
-    _portLogManager.setRetentionDays( gLogRetention );
     _portLogManager.setOutputFormat ( Cti::Logging::LogFormat_CommLog );
 
     _portLog = _portLogManager.getLogger();
