@@ -490,7 +490,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
               .append(",")
               .appendArgument(group.getFullName())
               .append(")");
-        update.append("WHERE Value").contains(previousGroupName);
+        update.append("WHERE Value").startsWith(previousGroupName);
         update.append("AND Name").in(jobProperties);
         updateStatement.add(update);
 
@@ -501,15 +501,19 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                                  .append(",")
                                  .appendArgument(group.getFullName())
                                  .append(")");
-        updateWidgetSettingsQuery.append("WHERE Value").contains(previousGroupName);
+        updateWidgetSettingsQuery.append("WHERE Value").startsWith(previousGroupName);
         updateWidgetSettingsQuery.append(  "AND Name").eq("deviceGroup");
         updateStatement.add(updateWidgetSettingsQuery);
 
         for (String tableName : tablesToUpdate) {
             SqlStatementBuilder updatetable = new SqlStatementBuilder();
             updatetable.append("UPDATE ").append(tableName);
-            updatetable.append("SET GroupName").eq(group.getFullName());
-            updatetable.append("WHERE GroupName").eq(previousGroupName);
+            updatetable.append("SET GroupName = REPLACE(GroupName,")
+                       .appendArgument(previousGroupName)
+                       .append(",")
+                       .appendArgument(group.getFullName())
+                       .append(")");
+            updatetable.append("WHERE GroupName").startsWith(previousGroupName);
             updateStatement.add(updatetable);
         }
 
