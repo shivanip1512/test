@@ -479,41 +479,52 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                                                        "PorterResponseMonitor",
                                                        "ValidationMonitor");
 
-        List<String> jobProperties = ImmutableList.of("deviceGroup",
-                                                      "deviceGroupNames");
-
         List<SqlStatementBuilder> updateStatement = new ArrayList<>();
-        SqlStatementBuilder update = new SqlStatementBuilder();
-        update.append("UPDATE JobProperty");
-        update.append("SET Value = REPLACE(Value,")
-              .appendArgument(previousGroupName)
-              .append(",")
-              .appendArgument(group.getFullName())
-              .append(")");
-        update.append("WHERE Value").startsWith(previousGroupName);
-        update.append("AND Name").in(jobProperties);
-        updateStatement.add(update);
+        SqlStatementBuilder jobPropertiesUpdate = new SqlStatementBuilder();
+        jobPropertiesUpdate.append("UPDATE JobProperty")
+                           .append("SET Value = REPLACE(Value,")
+                           .appendArgument(previousGroupName)
+                           .append(",")
+                           .appendArgument(group.getFullName())
+                           .append(")")
+                           .append("WHERE (Value").startsWith(previousGroupName)
+                           .append("AND Name").eq("deviceGroup")
+                           .append(") OR (Value").contains(previousGroupName)
+                           .append("AND Name").eq("deviceGroupNames")
+                           .append(")");
+        updateStatement.add(jobPropertiesUpdate);
+        
+        SqlStatementBuilder deviceGroupNamesUpdate = new SqlStatementBuilder();
+        deviceGroupNamesUpdate.append("UPDATE JobProperty")
+                              .append("SET Value = REPLACE(Value,")
+                              .appendArgument(previousGroupName)
+                              .append(",")
+                              .appendArgument(group.getFullName())
+                              .append(")")
+                              .append("WHERE Value").contains(previousGroupName)
+                              .append("AND Name").eq("deviceGroupNames");
+        updateStatement.add(deviceGroupNamesUpdate);
 
         SqlStatementBuilder updateWidgetSettingsQuery = new SqlStatementBuilder();
-        updateWidgetSettingsQuery.append("UPDATE WidgetSettings");
-        updateWidgetSettingsQuery.append("SET Value = REPLACE(Value,")
+        updateWidgetSettingsQuery.append("UPDATE WidgetSettings")
+                                 .append("SET Value = REPLACE(Value,")
                                  .appendArgument(previousGroupName)
                                  .append(",")
                                  .appendArgument(group.getFullName())
-                                 .append(")");
-        updateWidgetSettingsQuery.append("WHERE Value").startsWith(previousGroupName);
-        updateWidgetSettingsQuery.append(  "AND Name").eq("deviceGroup");
+                                 .append(")")
+                                 .append("WHERE Value").startsWith(previousGroupName)
+                                 .append("AND Name").eq("deviceGroup");
         updateStatement.add(updateWidgetSettingsQuery);
 
         for (String tableName : tablesToUpdate) {
             SqlStatementBuilder updatetable = new SqlStatementBuilder();
-            updatetable.append("UPDATE ").append(tableName);
-            updatetable.append("SET GroupName = REPLACE(GroupName,")
+            updatetable.append("UPDATE ").append(tableName)
+                       .append("SET GroupName = REPLACE(GroupName,")
                        .appendArgument(previousGroupName)
                        .append(",")
                        .appendArgument(group.getFullName())
-                       .append(")");
-            updatetable.append("WHERE GroupName").startsWith(previousGroupName);
+                       .append(")")
+                       .append("WHERE GroupName").startsWith(previousGroupName);
             updateStatement.add(updatetable);
         }
 
