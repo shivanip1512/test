@@ -2,6 +2,7 @@ package com.cannontech.yukon.api.stars.endpoint;
 
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.w3c.dom.Node;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
@@ -43,6 +45,9 @@ public class ControllableDevicesRequestEndPoint {
     private StarsControllableDeviceHelper starsControllableDeviceHelper;
     @Autowired private RolePropertyDao rolePropertyDao;    
 
+    private static final Logger log = YukonLogManager.getLogger(ControllableDevicesRequestEndPoint.class);
+
+    
     private Namespace ns = YukonXml.getYukonNamespace();
 
     // Request elements
@@ -115,6 +120,8 @@ public class ControllableDevicesRequestEndPoint {
             } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
+            } catch (Exception e) {
+                log.error("Unhandled exception adding device.", e);
             }
         }
 
@@ -155,6 +162,8 @@ public class ControllableDevicesRequestEndPoint {
             } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
+            } catch (Exception e) {
+                log.error("Unhandled exception adding device.", e);
             }
         }
 
@@ -195,6 +204,8 @@ public class ControllableDevicesRequestEndPoint {
             } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
+            } catch (Exception e) {
+                log.error("Unhandled exception adding device.", e);
             }
         }
 
