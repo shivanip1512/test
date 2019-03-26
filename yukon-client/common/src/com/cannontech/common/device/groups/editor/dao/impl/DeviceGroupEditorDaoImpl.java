@@ -493,17 +493,6 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                            .append("AND Name").eq("deviceGroupNames")
                            .append(")");
         updateStatement.add(jobPropertiesUpdate);
-        
-        SqlStatementBuilder deviceGroupNamesUpdate = new SqlStatementBuilder();
-        deviceGroupNamesUpdate.append("UPDATE JobProperty")
-                              .append("SET Value = REPLACE(Value,")
-                              .appendArgument(previousGroupName)
-                              .append(",")
-                              .appendArgument(group.getFullName())
-                              .append(")")
-                              .append("WHERE Value").contains(previousGroupName)
-                              .append("AND Name").eq("deviceGroupNames");
-        updateStatement.add(deviceGroupNamesUpdate);
 
         SqlStatementBuilder updateWidgetSettingsQuery = new SqlStatementBuilder();
         updateWidgetSettingsQuery.append("UPDATE WidgetSettings")
