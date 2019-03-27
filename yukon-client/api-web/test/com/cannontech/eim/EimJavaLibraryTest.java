@@ -173,7 +173,7 @@ public class EimJavaLibraryTest {
             @Override
             public void startElement(String uri, String localName, String qName, Attributes attributes)
                     throws SAXException {
-                if (qName.equals("include")) {
+                if (qName.equals("include") && attributes.getValue("name").endsWith(".jar")) {
                     eimJars.add(attributes.getValue("name"));
                 }
             }
