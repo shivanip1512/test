@@ -3,6 +3,8 @@ $(document).on('click', 'li.menuOption.command', function(event) {
    var showConfirmation = false,
        menuOption = $(event.currentTarget).closest("li"),
        ul = menuOption.closest('ul'),
+       itemId = ul.find("input[name='paoId']").val(),
+       commandId = $(event.currentTarget).val(),
        confirmPopupLevel = ul.find("input[name='warnOnCommands']").val();
     if (confirmPopupLevel === 'ALL_COMMANDS') {
         showConfirmation = true;
@@ -16,8 +18,8 @@ $(document).on('click', 'li.menuOption.command', function(event) {
         var popup = $('#commandConfirmation'),
             title = popup.data('title');
         popup.find('.js-warning').text(menuOption.find('span.confirmMessage').html());
-        popup.data('itemId', ul.find("input[name='paoId']").val());
-        popup.data('commandId', $(event.currentTarget).val());
+        popup.data('itemId', itemId);
+        popup.data('commandId', commandId);
         popup.dialog({
             title: title, 
             width: 'auto',
@@ -27,7 +29,7 @@ $(document).on('click', 'li.menuOption.command', function(event) {
         //make it so the user has to intentionally click the button
         document.activeElement.blur();
     } else {
-        doItemCommand(ul.find("input[name='paoId']").val(), $(event.currentTarget).val(), event);
+        doItemCommand(itemId, commandId, event);
     }
 });
 
