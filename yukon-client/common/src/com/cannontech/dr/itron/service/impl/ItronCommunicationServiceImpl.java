@@ -70,6 +70,7 @@ import com.cannontech.dr.itron.service.ItronAddEditGroupException;
 import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.dr.itron.service.ItronEditDeviceException;
+import com.cannontech.dr.itron.service.ItronEventNotFoundException;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.AccountDto;
@@ -189,8 +190,12 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         log.debug("ITRON-optOut account number {}", account.getAccountNumber());
         int yukonGroupId = getGroupIdByInventoryId(inventoryId, enrollments);
         String macAddress= deviceDao.getDeviceMacAddress(deviceId);
-        // Restore the single device immediately. Disable randomization (ramp out)
-        sendRestore(yukonGroupId, macAddress, null, false);
+        try {
+            // Restore the single device immediately. Disable randomization (ramp out)
+            sendRestore(yukonGroupId, macAddress, null, false);
+        } catch (ItronEventNotFoundException e) {
+            log.debug("No events found to restore while opting out.", e);
+        }
         itronEventLogService.optOut(account.getAccountNumber(), yukonGroupId, macAddress);
         addMacAddressesToGroup(account, getGroup(yukonGroupId));
     }
@@ -297,8 +302,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
 
         Long eventId = groupPaoIdToItronEventId.get(yukonGroupId);
         if (eventId == null) {
-            throw new ItronCommunicationException(
-                "Unable to restore, Itron event id doesn't exists. Web Server might have been restarted.");
+            throw new ItronEventNotFoundException(
+                "Unable to restore, Itron event id doesn't exist. Services may have been restarted.");
         }
         String url = ItronEndpointManager.PROGRAM_EVENT.getUrl(settingDao);
         try {
