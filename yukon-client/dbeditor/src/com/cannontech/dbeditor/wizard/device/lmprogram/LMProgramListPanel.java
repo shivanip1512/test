@@ -172,8 +172,9 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
                         newList.addElement(group);
                     } else if ((!isSepProgram && !isGroupSepCompatible(paoType))
                         && (!isEcobeeProgram && !isGroupEcobeeCompatible(paoType))
-                        && (!isHoneywellProgram && !isGroupHoneywellCompatible(paoType)
-                        && (!isNestProgram && !isGroupNestCompatible(paoType)))) {
+                        && (!isHoneywellProgram && !isGroupHoneywellCompatible(paoType))
+                        && (!isItronProgram && !isGroupItronCompatible(paoType))
+                        && (!isNestProgram && !isGroupNestCompatible(paoType))) {
                         newList.addElement(group);
                     } else if (isEcobeeProgram && isGroupEcobeeCompatible(paoType)) {
                         newList.addElement(group);
