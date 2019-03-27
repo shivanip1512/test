@@ -38,7 +38,7 @@ $(document).on('click', 'li.menuOption.stateChange', function(event) {
     doChangeState($(event.currentTarget).closest("ul").find("input[name='paoId']").val(), $(event.currentTarget).val());
 });
 
-/** Assign Users  */
+/** User has clicked OK on command confirmation popup - execute the command  */
 $(document).on('yukon:command:confirm', function (ev) {
     var popup = $(ev.target),
         itemId = popup.data('itemId'),
