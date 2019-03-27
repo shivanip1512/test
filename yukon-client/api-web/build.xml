@@ -163,14 +163,6 @@
             <param name="destdir" value="test/build/unit"/>
         </antcall>
     </target>
-    <!-- Run unit tests - will run all tests even if a failure or error occurs during a test -->
-    <target name="runUnitTestsIgnoreFailures" description="Run all unit tests, do not stop on failure" depends="compileUnitTests">
-        <antcall target="executeTests">
-            <param name="halt" value="no"/>
-            <param name="srcdir" value="test/unit"/>
-            <param name="destdir" value="test/build/unit" />
-        </antcall>
-    </target>
     <!-- Compile unit tests - will compile all unit tests -->
     <target name="compileUnitTests">
         <antcall target="compileTests">
