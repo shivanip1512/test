@@ -1,18 +1,32 @@
 $(document).on('click', 'li.menuOption.command', function(event) {
    yukon.da.common.hideMenu();
-    var doCommand = true,
-        menuOption = $(event.currentTarget).closest("li"),
-        ul = menuOption.closest('ul'),
-        confirmPopupLevel = ul.find("input[name='warnOnCommands']").val();
+   var showConfirmation = false,
+       menuOption = $(event.currentTarget).closest("li"),
+       ul = menuOption.closest('ul'),
+       confirmPopupLevel = ul.find("input[name='warnOnCommands']").val();
     if (confirmPopupLevel === 'ALL_COMMANDS') {
-        doCommand = confirm(menuOption.find('span.confirmMessage').html());
+        showConfirmation = true;
     } else if (confirmPopupLevel === 'OPERATIONAL_COMMANDS') {
         if ($(event.currentTarget).data('operationalCommand')) {
-            doCommand = confirm(menuOption.find('span.confirmMessage').html());
+            showConfirmation = true;
         }
     }
     
-    if (doCommand) {
+    if (showConfirmation) {
+        var popup = $('#commandConfirmation'),
+            title = popup.data('title');
+        popup.find('.js-warning').text(menuOption.find('span.confirmMessage').html());
+        popup.data('itemId', ul.find("input[name='paoId']").val());
+        popup.data('commandId', $(event.currentTarget).val());
+        popup.dialog({
+            title: title, 
+            width: 'auto',
+            modal: true,
+            buttons: yukon.ui.buttons({event: 'yukon:command:confirm'})
+        });
+        //make it so the user has to intentionally click the button
+        document.activeElement.blur();
+    } else {
         doItemCommand(ul.find("input[name='paoId']").val(), $(event.currentTarget).val(), event);
     }
 });
@@ -20,6 +34,15 @@ $(document).on('click', 'li.menuOption.command', function(event) {
 $(document).on('click', 'li.menuOption.stateChange', function(event) {
     yukon.da.common.hideMenu();
     doChangeState($(event.currentTarget).closest("ul").find("input[name='paoId']").val(), $(event.currentTarget).val());
+});
+
+/** Assign Users  */
+$(document).on('yukon:command:confirm', function (ev) {
+    var popup = $(ev.target),
+        itemId = popup.data('itemId'),
+        commandId = popup.data('commandId');
+    doItemCommand(itemId, commandId);
+    $('.js-command-confirmation').dialog('destroy');
 });
 
 /** This method executes the command.
