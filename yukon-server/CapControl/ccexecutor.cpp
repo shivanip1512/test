@@ -22,6 +22,8 @@
 #include "IVVCState.h"
 #include "IVVCStrategy.h"
 
+#include <boost/range/adaptor/filtered.hpp>
+
 using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::createPorterRequestMsg;
 using Cti::CapControl::EventLogEntry;
@@ -1339,7 +1341,21 @@ void CtiCCCommandExecutor::SendTimeSync()
     EventLogEntries ccEvents;
 
     Cti::CapControl::CapControlType type = store->determineTypeById(paoId);
-    CapBankList capBanks = store->getCapBanksByPaoIdAndType(paoId, type);
+
+    CapBankList capBanks = store->getCapBanksByPaoIdAndType( paoId, type );
+
+    // Don't send to a disabled bank unless this command is targeting this bank only
+
+    if ( type != Cti::CapControl::CapBank )
+    {
+        capBanks = boost::copy_range< CapBankList >(
+            capBanks
+                | boost::adaptors::filtered(
+                    []( CtiCCCapBankPtr bank )
+                    {
+                        return ! bank->getDisableFlag();
+                    } ) );
+    }
 
     printOutEventLogsByIdAndType(paoId, type, " Time Sync", _command->getUser(), pointChanges, ccEvents);
     queueCapBankTimeSyncPilMessages(pilMessages, capBanks);
@@ -1405,7 +1421,23 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     EventLogEntries events;
     std::vector<CtiRequestMsg*> requests;
 
-    CapBankList banks = store->getCapBanksByPaoIdAndType(paoId,type);
+    // Grab the collections of banks to operate on.  If the paoType is anything other than CapBank then we need to
+    //  filter out the disabled banks.  If it is an individual bank, then we do want to run the command on it, even
+    //  if it is disabled.
+
+    CapBankList banks = store->getCapBanksByPaoIdAndType( paoId, type );
+
+    if ( type != Cti::CapControl::CapBank )
+    {
+        banks = boost::copy_range< CapBankList >(
+            banks
+                | boost::adaptors::filtered(
+                    []( CtiCCCapBankPtr bank )
+                    {
+                        return ! bank->getDisableFlag();
+                    } ) );
+    }
+
     for ( CtiCCCapBankPtr bank : banks )
     {
         long bankId = bank->getPaoId();
