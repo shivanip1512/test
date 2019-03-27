@@ -110,4 +110,9 @@ $('#resetBankOpCountOption').click(function(event) {
     </ul>
 </div>
 
+    <div id="commandConfirmation" class="dn js-command-confirmation" data-dialog data-title="<cti:msg2 key=".confirmation"/>" 
+        data-event="yukon:command:confirm"><br/>
+        <span class="user-message error js-warning"></span>
+    </div>
+
 </cti:msgScope>     
