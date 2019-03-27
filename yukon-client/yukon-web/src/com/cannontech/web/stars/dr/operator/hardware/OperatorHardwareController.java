@@ -505,8 +505,7 @@ public class OperatorHardwareController {
             int inventoryId = hardwareModelHelper.create(user, hardware, bindingResult, request.getSession());
 
             if (bindingResult.hasErrors()) {
-                return returnToCreateWithErrors(model, hardware, userContext, flashScope, accountInfoFragment,
-                    bindingResult);
+                return returnToCreateWithErrors(model, hardware, userContext, flashScope, accountInfoFragment, bindingResult);
             }
             AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
             flashScope.setConfirm(
