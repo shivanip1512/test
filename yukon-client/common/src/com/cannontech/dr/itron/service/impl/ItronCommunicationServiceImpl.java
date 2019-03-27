@@ -189,7 +189,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         log.debug("ITRON-optOut account number {}", account.getAccountNumber());
         int yukonGroupId = getGroupIdByInventoryId(inventoryId, enrollments);
         String macAddress= deviceDao.getDeviceMacAddress(deviceId);
-        sendRestore(yukonGroupId, macAddress, null);
+        // Restore the single device immediately. Disable randomization (ramp out)
+        sendRestore(yukonGroupId, macAddress, null, false);
         itronEventLogService.optOut(account.getAccountNumber(), yukonGroupId, macAddress);
         addMacAddressesToGroup(account, getGroup(yukonGroupId));
     }
@@ -199,7 +200,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     public void sendRestore(int yukonGroupId) {
         long itronGroupId = itronDao.getItronGroupId(yukonGroupId);
         itronEventLogService.sendRestore(yukonGroupId);
-        sendRestore(yukonGroupId, null, itronGroupId);
+        // Restore the group. Enable randomization (ramp out) if the event was sent with randomization.
+        sendRestore(yukonGroupId, null, itronGroupId, true);
     }
     
     @Override
@@ -287,8 +289,10 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     
     /**
      * Sends restore message to Itron
+     * @param enableRandomization - If true, this sends the restore, but allows the "ramp out" randomization to occur,
+     * if it was enabled in the original event request. 
      */
-    void sendRestore(int yukonGroupId, String macAddress, Long itronGroupId) {
+    void sendRestore(int yukonGroupId, String macAddress, Long itronGroupId, boolean enableRandomization) {
         LiteYukonPAObject group = getGroup(yukonGroupId);
 
         Long eventId = groupPaoIdToItronEventId.get(yukonGroupId);
@@ -299,7 +303,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         String url = ItronEndpointManager.PROGRAM_EVENT.getUrl(settingDao);
         try {
             CancelHANLoadControlProgramEventOnDevicesRequest request =
-                ProgramEventManagerHelper.buildRestoreRequest(itronGroupId, eventId, macAddress);
+                ProgramEventManagerHelper.buildRestoreRequest(itronGroupId, eventId, macAddress, enableRandomization);
             log.debug(XmlUtils.getPrettyXml(request));
             log.debug("ITRON-sendRestore url:{} mac address:{} yukon group:{} itron event id:{}.", url, macAddress,
                 group.getPaoName(), eventId);

@@ -29,7 +29,9 @@ public class ProgramEventManagerHelper implements SoapFaultParser {
         1, EventControlType.ADVANCED_OPTION_1,   // True Cycle
         2, EventControlType.ADVANCED_OPTION_2 ); // Smart Cycle
 
-    public static CancelHANLoadControlProgramEventOnDevicesRequest buildRestoreRequest(Long itronGroupId, long eventID, String macAddress) {
+    public static CancelHANLoadControlProgramEventOnDevicesRequest buildRestoreRequest(Long itronGroupId, long eventID, 
+            String macAddress, boolean enableRandomization) {
+        
         CancelHANLoadControlProgramEventOnDevicesRequest request = new CancelHANLoadControlProgramEventOnDevicesRequest();
         if(itronGroupId != null) {
             request.getDeviceGroupIDs().add(itronGroupId);
@@ -38,6 +40,7 @@ public class ProgramEventManagerHelper implements SoapFaultParser {
             request.getNicMacIDs().add(macAddress);
         }
         request.setEventID(eventID);
+        request.setEnableRandomization(enableRandomization);
         return request;
     }
     
@@ -75,7 +78,7 @@ public class ProgramEventManagerHelper implements SoapFaultParser {
         SoapFaultDetail soapFaultDetail = e.getSoapFault().getFaultDetail();
         soapFaultDetail.getDetailEntries().forEachRemaining(detail -> {
             SoapFaultDetailElement detailElementChild =
-                (SoapFaultDetailElement) soapFaultDetail.getDetailEntries().next();
+                soapFaultDetail.getDetailEntries().next();
             Source detailSource = detailElementChild.getSource();
             ErrorFault fault = (ErrorFault) ItronEndpointManager.PROGRAM_EVENT.getMarshaller().unmarshal(detailSource);
             log.debug(XmlUtils.getPrettyXml(fault));
