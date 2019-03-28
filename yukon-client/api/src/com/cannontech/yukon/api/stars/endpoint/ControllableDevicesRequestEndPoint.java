@@ -10,6 +10,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.w3c.dom.Node;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.util.ObjectMapper;
@@ -64,6 +65,8 @@ public class ControllableDevicesRequestEndPoint {
     static final String routeStr = "y:routeName";
     static final String fieldInstallDateStr = "y:fieldInstallDate";
     static final String fieldRemoveDateStr = "y:fieldRemoveDate";
+    static final String latitudeStr = "y:latitude";
+    static final String longitudeStr = "y:longitude";
 
     private static ControllableDeviceDTOMapper deviceElementMapper = new ControllableDeviceDTOMapper();
 
@@ -112,7 +115,7 @@ public class ControllableDevicesRequestEndPoint {
                 } else {
                     throw new StarsClientRequestException("This operation is not supported for this device type");
                 }
-            } catch (StarsClientRequestException e) {
+            } catch (StarsClientRequestException | ProcessingException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
             }
@@ -152,7 +155,7 @@ public class ControllableDevicesRequestEndPoint {
                 } else {
                     throw new StarsClientRequestException("This operation is not supported for this device type");
                 }
-            } catch (StarsClientRequestException e) {
+            } catch (StarsClientRequestException | ProcessingException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
             }
@@ -192,7 +195,7 @@ public class ControllableDevicesRequestEndPoint {
                 } else {
                     throw new StarsClientRequestException("This operation is not supported for this device type");
                 }
-            } catch (StarsClientRequestException e) {
+            } catch (StarsClientRequestException | ProcessingException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
             }
@@ -264,7 +267,8 @@ public class ControllableDevicesRequestEndPoint {
         VendorUserIdNotUpdatable(DeviceVendorUserIdNotUpdatableException.class),
         InvalidArgument(StarsInvalidArgumentException.class), 
         InvalidDeviceType(StarsInvalidDeviceTypeException.class), 
-        ClientRequestError(StarsClientRequestException.class);
+        ClientRequestError(StarsClientRequestException.class),
+        InvalidLocationDetails(ProcessingException.class);
 
         private Class<? extends Throwable> throwableClass;
 
@@ -306,6 +310,8 @@ public class ControllableDevicesRequestEndPoint {
             device.setFieldInstallDate(template.evaluateAsDate(fieldInstallDateStr));
             device.setFieldRemoveDate(template.evaluateAsDate(fieldRemoveDateStr));
             device.setMacAddress(template.evaluateAsString(macAddressStr));
+            device.setLatitude(template.evaluateAsDouble(latitudeStr));
+            device.setLongitude(template.evaluateAsDouble(longitudeStr));
             device.setDeviceVendorUserId(template.evaluateAsInt(deviceVendorUserIdStr));
             device.setInventoryRoute(template.evaluateAsString(routeStr));
             return device;

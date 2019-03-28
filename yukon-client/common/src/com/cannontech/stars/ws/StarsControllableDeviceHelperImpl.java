@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.field.processor.impl.LatitudeLongitudeBulkFieldProcessor;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.config.ConfigurationSource;
@@ -75,7 +77,7 @@ import com.cannontech.util.Validator;
 import com.google.common.collect.Lists;
 
 public class StarsControllableDeviceHelperImpl implements StarsControllableDeviceHelper {
-
+    private static final Logger log = YukonLogManager.getLogger(StarsControllableDeviceHelperImpl.class);
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private DbChangeManager dbChangeManager;
@@ -517,6 +519,9 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             } else if (dto.getLatitude() == null && dto.getLongitude() == null) {
                 paoLocationDao.delete(lib.getDeviceID());
             }
+        } else {
+            log.debug("The location field is not supported by " + dto.getDeviceType() + " device having serial no as "
+                + dto.getSerialNumber());
         }
     }
 
