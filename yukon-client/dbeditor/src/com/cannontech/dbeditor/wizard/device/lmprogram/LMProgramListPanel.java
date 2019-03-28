@@ -1,7 +1,6 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -14,7 +13,6 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMProgramDirectBase;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
