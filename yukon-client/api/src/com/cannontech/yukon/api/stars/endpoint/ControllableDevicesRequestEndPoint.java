@@ -166,7 +166,7 @@ public class ControllableDevicesRequestEndPoint {
                 // store error and continue to process all devices
                 device.setThrowable(e);
             } catch (Exception e) {
-                log.error("Unhandled exception adding device.", e);
+                log.error("Unhandled exception updating device.", e);
             }
         }
 
@@ -208,7 +208,7 @@ public class ControllableDevicesRequestEndPoint {
                 // store error and continue to process all devices
                 device.setThrowable(e);
             } catch (Exception e) {
-                log.error("Unhandled exception adding device.", e);
+                log.error("Unhandled exception removing device.", e);
             }
         }
 
