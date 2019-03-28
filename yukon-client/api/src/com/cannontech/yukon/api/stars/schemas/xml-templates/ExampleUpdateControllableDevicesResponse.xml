@@ -18,5 +18,10 @@
 	       	<serialNumber>500000007</serialNumber>
             <success/>
         </controllableDeviceResult>
+        <controllableDeviceResult>
+            <accountNumber>290419</accountNumber>
+            <serialNumber>500000008</serialNumber>
+            <success/>
+        </controllableDeviceResult>
     </controllableDeviceResultList>
 </updateControllableDevicesResponse>

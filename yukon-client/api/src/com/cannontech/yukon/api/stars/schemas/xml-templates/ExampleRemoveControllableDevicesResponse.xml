@@ -27,5 +27,10 @@
                 <errorDescription>Bad stuff happened.</errorDescription>
             </failure>
         </controllableDeviceResult>
+        <controllableDeviceResult>
+            <accountNumber>290419</accountNumber>
+            <serialNumber>500000008</serialNumber>
+            <success/>
+        </controllableDeviceResult>
     </controllableDeviceResultList>
 </removeControllableDevicesResponse>

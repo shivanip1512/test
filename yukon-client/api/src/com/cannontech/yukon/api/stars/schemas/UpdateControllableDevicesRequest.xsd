@@ -33,6 +33,8 @@
                                                     <xsd:element name="deviceVendorUserId" type="xsd:int" minOccurs="0"/>
                                                     <xsd:element name="serviceCompanyName" type="xsd:string" minOccurs="0"/>
                                                     <xsd:element name="routeName" type="xsd:string" minOccurs="0"/>
+                                                    <xsd:element name="latitude" type="xsd:double" minOccurs="0"/>
+                                                    <xsd:element name="longitude" type="xsd:double" minOccurs="0"/>
                                                 </xsd:sequence>
                                             </xsd:extension>
                                         </xsd:complexContent>
