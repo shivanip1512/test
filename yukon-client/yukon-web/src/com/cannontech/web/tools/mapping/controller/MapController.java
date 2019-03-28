@@ -238,32 +238,34 @@ public class MapController {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
                         metadataMultiService.getMetadata(rfnDevice.getRfnIdentifier(),
                             Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_COMM, RfnMetadataMulti.NODE_DATA));
-                    RfnMetadataMultiQueryResult metadata = metaData.get(rfnDevice.getRfnIdentifier());                   
+                    RfnMetadataMultiQueryResult metadata = metaData.get(rfnDevice.getRfnIdentifier());
                     if (metadata.getResultType() != RfnMetadataMultiQueryResultType.OK) {
                         log.error("NM returned query result:" + metadata.getResultType() + " message:" + metadata.getResultMessage()
                             + " for device:" + rfnDevice);
-                      //Carrie
-                    }
-                    PrimaryGatewayComm comm = (PrimaryGatewayComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_COMM);
-                    if (comm != null) {
-                        RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(rfnDevice.getRfnIdentifier());
-                        RfnGateway rfnGateway = rfnGatewayService.getGatewayByPaoId(gateway.getPaoIdentifier().getPaoId());
-                        String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getCommStatusType());
-                        model.addAttribute("deviceStatus", statusString);
-                        model.addAttribute("primaryGatewayName", rfnGateway.getNameWithIPAddress());
-                        model.addAttribute("primaryGateway", gateway);
+                        String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.metadataError");
+                        model.addAttribute("errorMsg", nmError);
                     } else {
-                        // ignore, status will be set to "UNKNOWN"
-                        log.error("NM didn't return communication status for " + rfnDevice);
+                        PrimaryGatewayComm comm = (PrimaryGatewayComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_COMM);
+                        if (comm != null) {
+                            RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(comm.getRfnIdentifier());
+                            RfnGateway rfnGateway = rfnGatewayService.getGatewayByPaoId(gateway.getPaoIdentifier().getPaoId());
+                            String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getCommStatusType());
+                            model.addAttribute("deviceStatus", statusString);
+                            model.addAttribute("primaryGatewayName", rfnGateway.getNameWithIPAddress());
+                            model.addAttribute("primaryGateway", gateway);
+                        } else {
+                            // ignore, status will be set to "UNKNOWN"
+                            log.error("NM didn't return communication status for " + rfnDevice);
+                        }
+                        
+                        NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
+                        if (nodeData != null) {
+                            model.addAttribute("macAddress", nodeData.getMacAddress());
+                            model.addAttribute("nodeSN", nodeData.getNodeSerialNumber());
+                        } else {
+                            log.error("NM didn't return node data for " + rfnDevice);
+                        }  
                     }
-                    
-                    NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
-                    if (nodeData != null) {
-                        model.addAttribute("macAddress", nodeData.getMacAddress());
-                        model.addAttribute("nodeSN", nodeData.getNodeSerialNumber());
-                    } else {
-                        log.error("NM didn't return node data for " + rfnDevice);
-                    }  
                     
                 } catch (NmCommunicationException e) {
                     log.error("Failed to get metadata for " + id, e);

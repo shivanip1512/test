@@ -83,6 +83,7 @@
     <entry key="yukon.web.modules.operator.mapNetwork.exception.neighbors.missingLocationData">The following neighbor device(s) do not have location data to display: {0}</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.NO_NEARBY_DEVICES">No nearby devices were found for this device.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.TOO_MANY_NEARBY_DEVICES">{0} nearby devices were found for this device.  The map is displaying the closest {1} devices.</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.exception.metadataError">There was a problem getting the device details from Network Manager.</entry>
     
     <entry key="yukon.web.modules.operator.mapNetwork.location.update.successful">Location was successfully updated.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.location.changeCoordinates.title">Change Coordinates</entry>

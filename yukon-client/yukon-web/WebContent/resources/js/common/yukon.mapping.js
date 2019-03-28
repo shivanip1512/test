@@ -109,6 +109,9 @@ yukon.mapping = (function () {
             } else {
                 $('.js-primary-gateway').text(pao.primaryGateway);
             }
+            //display NM error if applicable
+            $('.js-nm-error-text').text(pao.errorMsg);
+            $('.js-nm-error').toggleClass('dn', pao.errorMsg === null);
         },
         
         displayNeighborPopupProperties: function(neighbor) {

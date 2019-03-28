@@ -8,6 +8,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.metadatamulti.CommStatusType;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public abstract class MappingInfo {
     
@@ -21,6 +22,7 @@ public abstract class MappingInfo {
     private double distanceInKm;
     private String statusDisplay;
     private String distanceDisplay;
+    @JsonIgnore
     private MessageSourceAccessor accessor;
     private boolean gatewayType;
     private String deviceDetailUrl;
@@ -29,6 +31,7 @@ public abstract class MappingInfo {
     private String macAddress;
     private String ipAddress;
     private String meterNumber;
+    private String errorMsg;
 
     public MappingInfo(RfnDevice device, FeatureCollection location, MessageSourceAccessor accessor) {
         this.device = device;
@@ -158,6 +161,18 @@ public abstract class MappingInfo {
 
     public void setPrimaryGatewayUrl(String primaryGatewayUrl) {
         this.primaryGatewayUrl = primaryGatewayUrl;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
+    
+    public MessageSourceAccessor getAccessor() {
+        return accessor;
     }
 
 }

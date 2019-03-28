@@ -2,6 +2,7 @@ package com.cannontech.web.tools.mapping.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,6 +79,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private static final String nmError = "Received error from Network Manager.";
     private static final String noRoute = "One or more devices within the route could not be located.";
     private static final String noParent = "No location in Yukon was found for this parent device.";
+    private static final String metadataErrorKey = "yukon.web.modules.operator.mapNetwork.exception.metadataError";
 
     private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.network.data.request";
  
@@ -109,10 +111,12 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     public class Neighbors {
         private List<Neighbor> neighbors = new ArrayList<>();
         private List<RfnDevice> neighborsWithoutLocation = new ArrayList<>();
+        private String errorMsg;
 
-        public Neighbors(List<Neighbor> neighbors, List<RfnDevice> neighborsWithoutLocation) {
+        public Neighbors(List<Neighbor> neighbors, List<RfnDevice> neighborsWithoutLocation, String errorMsg) {
             this.neighbors = neighbors;
             this.neighborsWithoutLocation = neighborsWithoutLocation;
+            this.errorMsg = errorMsg;
         }
 
         public List<Neighbor> getNeighbors() {
@@ -122,15 +126,25 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         public List<RfnDevice> getNeighborsWithoutLocation() {
             return neighborsWithoutLocation;
         }
+
+        public String getErrorMsg() {
+            return errorMsg;
+        }
+
+        public void setErrorMsg(String errorMsg) {
+            this.errorMsg = errorMsg;
+        }
     }
     
     public class Route {
         private List<RouteInfo> route = new ArrayList<>();
         private RfnDevice deviceWithoutLocation = null;
+        private String errorMsg;
         
-        public Route(List<RouteInfo> route, RfnDevice deviceWithoutLocation) {
+        public Route(List<RouteInfo> route, RfnDevice deviceWithoutLocation, String errorMsg) {
             this.route = route;
             this.deviceWithoutLocation = deviceWithoutLocation;
+            this.errorMsg = errorMsg;
         }
 
         public RfnDevice getDeviceWithoutLocation() {
@@ -139,6 +153,14 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         public List<RouteInfo> getRoute() {
             return route;
+        }
+
+        public String getErrorMsg() {
+            return errorMsg;
+        }
+
+        public void setErrorMsg(String errorMsg) {
+            this.errorMsg = errorMsg;
         }
     }
     
@@ -179,8 +201,14 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(parentLocation));
             Parent parent = new Parent(parentDevice, location, data, accessor);
             parent.setDeviceDetailUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(parentDevice));
-            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = getMetaData(Lists.newArrayList(parentDevice));
-            addMappingInfo(metaData, parent);
+            
+            try {
+                Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = getMetaData(Lists.newArrayList(parentDevice));
+                addMappingInfo(metaData, parent);
+            } catch (NmNetworkException e) {
+                parent.setErrorMsg(accessor.getMessage(metadataErrorKey));
+            }
+            
             addDistance(parent, deviceLocation, parentLocation);
             log.debug(parent);
             log.debug("-----" + deviceLocation + " <<>> " + parentLocation);
@@ -200,6 +228,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
         RfnPrimaryRouteDataRequest request = new RfnPrimaryRouteDataRequest();
         request.setRfnIdentifier(device.getRfnIdentifier());
+        String errorMsg = null;
 
         log.debug("Sending get route request to Network Manager: " + request);
 
@@ -223,8 +252,13 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         Map<RouteData, RfnDevice>  dataToDevice = response.getRouteData().stream()
                 .collect(Collectors.toMap(data -> data, data -> findDevice(data.getRfnIdentifier())));
-            
-        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = getMetaData(dataToDevice.values());
+                    
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
+        try {
+            metaData = getMetaData(dataToDevice.values());
+        } catch (NmNetworkException e) {
+            errorMsg = accessor.getMessage(metadataErrorKey);
+        }
 
         Set<PaoLocation> allLocations = paoLocationDao.getLocations(dataToDevice.values());
         Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
@@ -268,7 +302,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             // one of the devices has no location, can't display a route
             throw new NmNetworkException(noRoute, "noRoute"); 
         }
-        return new Route(routes, hopWithoutLocation);
+        return new Route(routes, hopWithoutLocation, errorMsg);
     }
 
     @Override
@@ -278,7 +312,8 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         PaoLocation deviceLocation = paoLocationDao.getLocation(deviceId);
         RfnNeighborDataRequest request = new RfnNeighborDataRequest();
         request.setRfnIdentifier(device.getRfnIdentifier());
-
+        String errorMsg = null;
+        
         log.debug("Sending get neighbors request to Network Manager: " + request);
 
         BlockingJmsReplyHandler<RfnNeighborDataReply> reply = new BlockingJmsReplyHandler<>(RfnNeighborDataReply.class);
@@ -299,7 +334,13 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         Map<NeighborData, RfnDevice>  dataToDevice = response.getNeighborData().stream()
             .collect(Collectors.toMap(data -> data, data -> findDevice(data.getRfnIdentifier())));
         
-        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = getMetaData(dataToDevice.values());
+        
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
+        try {
+            metaData = getMetaData(dataToDevice.values());
+        } catch (NmNetworkException e) {
+            errorMsg = accessor.getMessage(metadataErrorKey);
+        }
         
         Set<PaoLocation> allLocations = paoLocationDao.getLocations(dataToDevice.values());
         Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
@@ -326,7 +367,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 }
             }
         }
-        return new Neighbors(neighbors, neighborsWithoutLocation);
+        return new Neighbors(neighbors, neighborsWithoutLocation, errorMsg);
     }
 
     /**
@@ -342,7 +383,6 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         try {
             metaData = metadataMultiService.getMetadata(devicesOtherThenGatways, Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_COMM, RfnMetadataMulti.NODE_DATA));
         } catch (NmCommunicationException e) {
-            //Carrie
             throw new NmNetworkException(commsError, e, "commsError");
         }
         return metaData;
@@ -377,29 +417,32 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      * Adds metadata received from NM to mapping info
      */
     private void addMetadata(MappingInfo info, Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData) {
-        RfnMetadataMultiQueryResult metadata = metaData.get(info.getDevice().getRfnIdentifier());
-        if (metadata.getResultType() != RfnMetadataMultiQueryResultType.OK) {
-            log.error("NM returned query result:" + metadata.getResultType() + " message:" + metadata.getResultMessage()
-                + " for device:" + info.getDevice());
-            return;
+        if (!metaData.isEmpty()) {
+            RfnMetadataMultiQueryResult metadata = metaData.get(info.getDevice().getRfnIdentifier());
+            if (metadata.getResultType() != RfnMetadataMultiQueryResultType.OK) {
+                log.error("NM returned query result:" + metadata.getResultType() + " message:" + metadata.getResultMessage()
+                    + " for device:" + info.getDevice());
+                info.setErrorMsg(info.getAccessor().getMessage(metadataErrorKey));
+                return;
+            }
+            PrimaryGatewayComm comm = (PrimaryGatewayComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_COMM);
+            if (comm != null) {
+                info.setStatus(comm.getCommStatusType());
+            } else {
+                // ignore, status will be set to "UNKNOWN"
+                log.error("NM didn't return communication status for " + info.getDevice());
+            }
+            
+            RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(findDevice(comm.getRfnIdentifier()).getPaoIdentifier().getPaoId());
+            info.setPrimaryGateway(gateway.getNameWithIPAddress());
+            info.setPrimaryGatewayUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(gateway));
+            NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
+            if (nodeData != null) {
+                info.setMacAddress(nodeData.getMacAddress());
+            } else {
+                log.error("NM didn't return node data for " + info.getDevice());
+            }
         }
-        PrimaryGatewayComm comm = (PrimaryGatewayComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_COMM);
-        if (comm != null) {
-            info.setStatus(comm.getCommStatusType());
-        } else {
-            // ignore, status will be set to "UNKNOWN"
-            log.error("NM didn't return communication status for " + info.getDevice());
-        }
-        
-        RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(findDevice(comm.getRfnIdentifier()).getPaoIdentifier().getPaoId());
-        info.setPrimaryGateway(gateway.getNameWithIPAddress());
-        info.setPrimaryGatewayUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(gateway));
-        NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
-        if (nodeData != null) {
-            info.setMacAddress(nodeData.getMacAddress());
-        } else {
-            log.error("NM didn't return node data for " + info.getDevice());
-        }        
     }
 
     /**
