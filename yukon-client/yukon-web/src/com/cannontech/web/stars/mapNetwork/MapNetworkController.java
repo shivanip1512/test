@@ -164,6 +164,9 @@ public class MapNetworkController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
             Neighbors allNeighbors = nmNetworkService.getNeighbors(deviceId, accessor);
+            if (allNeighbors.getErrorMsg() != null) {
+                json.put("errorMsg",  allNeighbors.getErrorMsg());
+            }
             List<Neighbor> neighbors =  allNeighbors.getNeighbors();
             json.put("neighbors",  neighbors);
             //check for any neighbors that have missing location data
@@ -185,6 +188,9 @@ public class MapNetworkController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
             Route entireRoute = nmNetworkService.getRoute(deviceId, accessor);
+            if (entireRoute.getErrorMsg() != null) {
+                json.put("errorMsg", entireRoute.getErrorMsg());
+            }
             List<RouteInfo> route = entireRoute.getRoute();
             json.put("routeInfo",  route);
             //check if any devices in the route have missing location data
