@@ -21,6 +21,7 @@
 #include "database_reader.h"
 #include "IVVCState.h"
 #include "IVVCStrategy.h"
+#include "CapControlPredicates.h"
 
 #include <boost/range/adaptor/filtered.hpp>
 
@@ -1350,11 +1351,7 @@ void CtiCCCommandExecutor::SendTimeSync()
     {
         capBanks = boost::copy_range< CapBankList >(
             capBanks
-                | boost::adaptors::filtered(
-                    []( CtiCCCapBankPtr bank )
-                    {
-                        return ! bank->getDisableFlag();
-                    } ) );
+                | boost::adaptors::filtered( Cti::CapControl::isEnabled ) );
     }
 
     printOutEventLogsByIdAndType(paoId, type, " Time Sync", _command->getUser(), pointChanges, ccEvents);
@@ -1431,11 +1428,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     {
         banks = boost::copy_range< CapBankList >(
             banks
-                | boost::adaptors::filtered(
-                    []( CtiCCCapBankPtr bank )
-                    {
-                        return ! bank->getDisableFlag();
-                    } ) );
+                | boost::adaptors::filtered( Cti::CapControl::isEnabled ) );
     }
 
     for ( CtiCCCapBankPtr bank : banks )
