@@ -508,8 +508,9 @@ public class OperatorHardwareController {
                 return returnToCreateWithErrors(model, hardware, userContext, flashScope, accountInfoFragment, bindingResult);
             }
             AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-            model.addAttribute("inventoryId", inventoryId);
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareCreated"));
+            model.addAttribute("inventoryId", inventoryId);
+            
 
             return "redirect:view";
 
