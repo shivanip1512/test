@@ -179,8 +179,10 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         CustomerAccount account = customerAccountDao.getById(accountId);
         log.debug("ITRON-optIn account number {}", account.getAccountNumber());
         List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
-        int yukonGroupId = getGroupIdByInventoryId(inventoryId, enrollments);
-        addMacAddressesToGroup(account, getGroup(yukonGroupId));
+        Set<Integer> yukonGroupIds = getGroupIdsByInventoryId(inventoryId, enrollments);
+        for(int yukonGroupId : yukonGroupIds) {
+            addMacAddressesToGroup(account, getGroup(yukonGroupId));
+        }
     }
     
     @Override
@@ -188,16 +190,18 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         CustomerAccount account = customerAccountDao.getById(accountId);
         List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
         log.debug("ITRON-optOut account number {}", account.getAccountNumber());
-        int yukonGroupId = getGroupIdByInventoryId(inventoryId, enrollments);
+        Set<Integer> yukonGroupIds = getGroupIdsByInventoryId(inventoryId, enrollments);
         String macAddress= deviceDao.getDeviceMacAddress(deviceId);
-        try {
-           // Restore the single device immediately. Disable randomization (ramp out)
-            sendRestore(yukonGroupId, macAddress, null, false);
-        } catch (ItronEventNotFoundException e) {
-            log.debug("No events found to restore while opting out.", e);
+        for(int yukonGroupId : yukonGroupIds) {
+            try {
+                // Restore the single device immediately. Disable randomization (ramp out)
+                sendRestore(yukonGroupId, macAddress, null, false);
+            } catch (ItronEventNotFoundException e) {
+                log.debug("No events found to restore while opting out.", e);
+            }
+            itronEventLogService.optOut(account.getAccountNumber(), yukonGroupId, macAddress);
+            addMacAddressesToGroup(account, getGroup(yukonGroupId));
         }
-        itronEventLogService.optOut(account.getAccountNumber(), yukonGroupId, macAddress);
-        addMacAddressesToGroup(account, getGroup(yukonGroupId));
     }
     
     @Transactional
@@ -293,7 +297,10 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     /**
-     * Sends restore message to Itron
+     * Sends restore message to Itron.
+     * @param yukonGroupId - Used to get the active Itron events.
+     * @param macAddress - If specified, the restore will target this device.
+     * @param itronGroupId - If specified, the restore will target this itron group.
      * @param enableRandomization - If true, this sends the restore, but allows the "ramp out" randomization to occur,
      * if it was enabled in the original event request. 
      */
@@ -716,12 +723,14 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         return programPao;
     }
     
-    private int getGroupIdByInventoryId(int inventoryId, List<ProgramEnrollment> enrollments) {
-        int yukonGroupId = enrollments.stream()
-                .filter(enrollment -> enrollment.getInventoryId() == inventoryId)
-                .findFirst().get()
-                .getLmGroupId();
-        return yukonGroupId;
+    /**
+     * Get all groups that the specified inventory is enrolled in, based on the specified enrollments.
+     */
+    private Set<Integer> getGroupIdsByInventoryId(int inventoryId, List<ProgramEnrollment> enrollments) {
+        return enrollments.stream()
+                          .filter(enrollment -> enrollment.getInventoryId() == inventoryId)
+                          .map(ProgramEnrollment::getLmGroupId)
+                          .collect(Collectors.toSet());
     }
        
     /**
