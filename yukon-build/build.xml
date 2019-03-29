@@ -183,23 +183,6 @@
         <copy file="${basedir}/yukon-client/common/src/com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml" 
             tofile="${yukon.exampleXml}/rfnPointMapping_Example.xml"/>
 
-        <for param="file" parallel="true" threadCount="20">
-            <path>
-                <fileset dir="${client.bin}">
-                    <include name="*.jar"/>
-                    <exclude name="activation.jar"/>
-                    <exclude name="azure-core-0.9.7.jar"/>
-                    <exclude name="azure-servicebus-0.9.7.jar"/>
-                    <exclude name="sqljdbc42.jar"/>
-                </fileset>
-            </path>
-            
-            <sequential>
-                <signjar jar="@{file}" alias="cannon6" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore"
-                         tsaurl="http://timestamp.digicert.com" tsaproxyport="8080" tsaproxyhost="proxy.etn.com"/>
-            </sequential>
-        </for>
-
         <!-- Yukon Base Component (Server) -->      
         <property name="server.dir" value="${install.bag}/Yukon Base/Server"/>
         <property name="server.bin" value="${server.dir}/bin"/>
