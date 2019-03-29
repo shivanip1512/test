@@ -520,8 +520,8 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                 paoLocationDao.delete(lib.getDeviceID());
             }
         } else {
-            log.debug("The location field is not supported by " + dto.getDeviceType() + " device having serial no as "
-                + dto.getSerialNumber());
+            log.warn("Location data is not supported by " + dto.getDeviceType()
+            + " device type. No location data will be set for serial number " + dto.getSerialNumber());
         }
     }
 
