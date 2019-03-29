@@ -3,7 +3,8 @@
 pipeline {
     agent none
     options {
-        preserveStashes() 
+        preserveStashes()
+        timestamps ()
     }
     stages {
         stage('build') {
