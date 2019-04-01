@@ -30,14 +30,14 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
     }
     
     static public class ModelRow {
-        public String Area;
-        public String Substation;
-        public String Bus;
-        public String Feeder;
-        public Integer BusUTC;
-        public Integer FeederUTC;
-        public Integer BusUTO;
-        public Integer FeederUTO;
+        public String area;
+        public String substation;
+        public String bus;
+        public String feeder;
+        public Integer busUTC;
+        public Integer feederUTC;
+        public Integer busUTO;
+        public Integer feederUTO;
     }
     
     @Override
@@ -71,14 +71,14 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
         jdbcOps.query(sql.toString(), dateRange, new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 CapControlAssetUnavailabilityModel.ModelRow row = new CapControlAssetUnavailabilityModel.ModelRow();
-                row.Area = rs.getString("Area");
-                row.Substation = rs.getString("Substation");
-                row.Bus = rs.getString("Bus");
-                row.Feeder = rs.getString("Feeder");
-                row.BusUTC = rs.getInt("BusUnableToClose");
-                row.FeederUTC = rs.getInt("FeederUnableToClose");
-                row.BusUTO = rs.getInt("BusUnableToOpen");
-                row.FeederUTO = rs.getInt("FeederUnableToOpen");
+                row.area = rs.getString("Area");
+                row.substation = rs.getString("Substation");
+                row.bus = rs.getString("Bus");
+                row.feeder = rs.getString("Feeder");
+                row.busUTC = rs.getInt("BusUnableToClose");
+                row.feederUTC = rs.getInt("FeederUnableToClose");
+                row.busUTO = rs.getInt("BusUnableToOpen");
+                row.feederUTO = rs.getInt("FeederUnableToOpen");
                 
                 data.add(row);
             }
@@ -90,9 +90,9 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
     public StringBuffer buildSQLStatement()
     {
         StringBuffer sql = new StringBuffer 
-                  ("WITH BUTC AS ( ");
+                  ("WITH Butc_CTE AS ( ");
         sql.append("    SELECT ");
-        sql.append("        COUNT(*) AS BussesUTC, ");
+        sql.append("        COUNT(*) AS BussesUtc, ");
         sql.append("        SubID ");
         sql.append("    FROM CCEventLog ");
         sql.append("    WHERE EventType = 3 ");
@@ -100,9 +100,9 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
         sql.append("    AND (Text LIKE '%Cannot Decrease Var%' OR Text LIKE '%Cannot Increase Volt%') ");
         sql.append("    GROUP BY SubID ");
         sql.append("), ");
-        sql.append("BUTO AS ( ");
+        sql.append("Buto_CTE AS ( ");
         sql.append("    SELECT ");
-        sql.append("        COUNT(*) AS BussesUTO, ");
+        sql.append("        COUNT(*) AS BussesUto, ");
         sql.append("        SubID ");
         sql.append("    FROM CCEventLog ");
         sql.append("    WHERE EventType = 3 ");
@@ -110,9 +110,9 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
         sql.append("    AND (Text LIKE '%Cannot Increase Var%' OR Text LIKE '%Cannot Decrease Volt%') ");
         sql.append("    GROUP BY SubID ");
         sql.append("), ");
-        sql.append("FUTC AS ( ");
+        sql.append("Futc_CTE AS ( ");
         sql.append("    SELECT ");
-        sql.append("        COUNT(*) AS FeedersUTC, ");
+        sql.append("        COUNT(*) AS FeedersUtc, ");
         sql.append("        FeederID ");
         sql.append("    FROM CCEventLog ");
         sql.append("    WHERE EventType = 3 ");
@@ -121,9 +121,9 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
         sql.append("    AND (Text LIKE '%Cannot Decrease Var%' OR Text LIKE '%Cannot Increase Volt%') ");
         sql.append("    GROUP BY FeederID ");
         sql.append("), ");
-        sql.append("FUTO AS ( ");
+        sql.append("Futo_CTE AS ( ");
         sql.append("    SELECT ");
-        sql.append("        COUNT(*) AS FeedersUTO, ");
+        sql.append("        COUNT(*) AS FeedersUto, ");
         sql.append("        FeederID ");
         sql.append("    FROM CCEventLog ");
         sql.append("    WHERE EventType = 3 ");
@@ -137,10 +137,10 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
         sql.append("    YP1.PAOName Substation, ");
         sql.append("    YP2.PAOName Bus,");
         sql.append("    YP3.PAOName Feeder, ");
-        sql.append("    CASE WHEN BUTC.SubID IS NULL THEN 0 ELSE BUTC.BussesUTC END AS BusUnableToClose, ");
-        sql.append("    CASE WHEN FUTC.FeederID IS NULL THEN 0 ELSE FUTC.FeedersUTC END AS FeederUnableToClose, ");
-        sql.append("    CASE WHEN BUTO.SubID IS NULL THEN 0 ELSE BUTO.BussesUTO END AS BusUnableToOpen, ");
-        sql.append("    CASE WHEN FUTO.feederid IS NULL THEN 0 ELSE FUTO.FeedersUTO END AS FeederUnableToOpen ");
+        sql.append("    CASE WHEN Butc_CTE.SubID IS NULL THEN 0 ELSE Butc_CTE.BussesUtc END AS BusUnableToClose, ");
+        sql.append("    CASE WHEN Futc_CTE.FeederID IS NULL THEN 0 ELSE Futc_CTE.FeedersUtc END AS FeederUnableToClose, ");
+        sql.append("    CASE WHEN Buto_CTE.SubID IS NULL THEN 0 ELSE Buto_CTE.BussesUto END AS BusUnableToOpen, ");
+        sql.append("    CASE WHEN Futo_CTE.FeederID IS NULL THEN 0 ELSE Futo_CTE.FeedersUto END AS FeederUnableToOpen ");
         sql.append("FROM YukonPAObject YPO ");
         sql.append("JOIN CCSUBAREAASSIGNMENT SA ON YPO.PAObjectID = SA.AreaID ");
         sql.append("JOIN CCSUBSTATIONSUBBUSLIST SS ON SA.SubstationBusID = SS.SubStationID ");
@@ -148,14 +148,14 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
         sql.append("JOIN YukonPAObject YP1 ON YP1.PAObjectID = SA.SubstationBusID ");
         sql.append("JOIN YukonPAObject YP2 ON YP2.PAObjectID = SS.SubStationBusID ");
         sql.append("JOIN YukonPAObject YP3 ON YP3.PAObjectID = FS.FeederID ");
-        sql.append("LEFT JOIN BUTC ON BUTC.SubID = FS.SubStationBusID ");
-        sql.append("LEFT JOIN BUTO ON BUTO.SubID = FS.SubStationBusID ");
-        sql.append("LEFT JOIN FUTC ON FUTC.FeederID = FS.FeederID ");
-        sql.append("LEFT JOIN FUTO ON FUTO.FeederID = FS.FeederID ");
-        sql.append("WHERE (BUTC.BussesUTC IS NOT NULL ");
-        sql.append("OR     BUTO.BussesUTO IS NOT NULL ");
-        sql.append("OR     FUTC.FeedersUTC IS NOT NULL ");
-        sql.append("OR     FUTO.FeedersUTO IS NOT NULL) ");
+        sql.append("LEFT JOIN Butc_CTE ON Butc_CTE.SubID = FS.SubStationBusID ");
+        sql.append("LEFT JOIN Buto_CTE ON Buto_CTE.SubID = FS.SubStationBusID ");
+        sql.append("LEFT JOIN Futc_CTE ON Futc_CTE.FeederID = FS.FeederID ");
+        sql.append("LEFT JOIN Futo_CTE ON Futo_CTE.FeederID = FS.FeederID ");
+        sql.append("WHERE (Butc_CTE.BussesUtc IS NOT NULL ");
+        sql.append("OR     Buto_CTE.BussesUto IS NOT NULL ");
+        sql.append("OR     Futc_CTE.FeedersUtc IS NOT NULL ");
+        sql.append("OR     Futo_CTE.FeedersUto IS NOT NULL) ");
         
         String result = null;
         
