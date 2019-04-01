@@ -16,7 +16,8 @@ $(document).on('click', 'li.menuOption.command', function(event) {
     
     if (showConfirmation) {
         var popup = $('#commandConfirmation'),
-            title = popup.data('title');
+            title = popup.data('title'),
+            okButtonText = popup.data('okText');
         popup.find('.js-warning').text(menuOption.find('span.confirmMessage').html());
         popup.data('itemId', itemId);
         popup.data('commandId', commandId);
@@ -24,7 +25,7 @@ $(document).on('click', 'li.menuOption.command', function(event) {
             title: title, 
             width: 'auto',
             modal: true,
-            buttons: yukon.ui.buttons({event: 'yukon:command:confirm'})
+            buttons: yukon.ui.buttons({okText: okButtonText, event: 'yukon:command:confirm'})
         });
         //make it so the user has to intentionally click the button
         document.activeElement.blur();
