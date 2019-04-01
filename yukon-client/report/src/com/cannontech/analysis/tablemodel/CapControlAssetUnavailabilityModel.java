@@ -34,10 +34,10 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
         public String substation;
         public String bus;
         public String feeder;
-        public Integer busUTC;
-        public Integer feederUTC;
-        public Integer busUTO;
-        public Integer feederUTO;
+        public Integer busUtc;
+        public Integer feederUtc;
+        public Integer busUto;
+        public Integer feederUto;
     }
     
     @Override
@@ -75,10 +75,10 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
                 row.substation = rs.getString("Substation");
                 row.bus = rs.getString("Bus");
                 row.feeder = rs.getString("Feeder");
-                row.busUTC = rs.getInt("BusUnableToClose");
-                row.feederUTC = rs.getInt("FeederUnableToClose");
-                row.busUTO = rs.getInt("BusUnableToOpen");
-                row.feederUTO = rs.getInt("FeederUnableToOpen");
+                row.busUtc = rs.getInt("BusUnableToClose");
+                row.feederUtc = rs.getInt("FeederUnableToClose");
+                row.busUto = rs.getInt("BusUnableToOpen");
+                row.feederUto = rs.getInt("FeederUnableToOpen");
                 
                 data.add(row);
             }
