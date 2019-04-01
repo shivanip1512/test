@@ -77,6 +77,11 @@ public enum YukonSimulatorSettingsKey {
     RFN_METER_CONTROL_SIMULATOR_DISCONNECT_FAIL_RATE_2(0 , InputTypeFactory.integerType(), SimulatorType.RFN_METER_READ_CONTROL),
     
     //RFN Network Simulator (SimulatorSettings)
+    
+    //Metadata Settings
+    RFN_NETWORK_SIMULATOR_METADATA_RESPONSE_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_METADATA_DEVICE_RESPONSE_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_METADATA_RESPONSE_STRING("", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
     //NeighborData
     RFN_NETWORK_SIMULATOR_NEIGHB_ADDR("00:14:08:03:FA:A2", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_NEIGHB_PRIM_FORW_ROUTE(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),

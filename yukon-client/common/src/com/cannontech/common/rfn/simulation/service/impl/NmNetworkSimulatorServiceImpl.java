@@ -249,7 +249,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         if (requestMessage.getObject() instanceof RfnMetadataMultiRequest) {
                             RfnMetadataMultiRequest request = (RfnMetadataMultiRequest) requestMessage.getObject();
                             log.debug("RfnMetadataMultiRequest:"+request);
-                            RfnMetadataMultiResponse reply = getMetadataMultiResponse(settings, request);
+                            RfnMetadataMultiResponse reply = getMetadataMultiResponse(request);
                             log.debug("RfnMetadataMultiResponse:"+reply);
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
                         }
@@ -266,10 +266,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     /**
      * Returns generated metadata multi response
      */
-    private RfnMetadataMultiResponse getMetadataMultiResponse(SimulatedNmMappingSettings settings,
-            RfnMetadataMultiRequest request) {
+    private RfnMetadataMultiResponse getMetadataMultiResponse(RfnMetadataMultiRequest request) {
         RfnMetadataMultiResponse reply = new RfnMetadataMultiResponse();
-        reply.setResponseType(RfnMetadataMultiResponseType.OK);
+        reply.setResponseType(settings.getMetadataResponseType());
         reply.setQueryResults(new HashMap<>());
         request.getRfnIdentifiers().forEach(identifier -> {
             if(request.getRfnMetadatas().contains(RfnMetadataMulti.ALL)) {
@@ -277,7 +276,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                 request.getRfnMetadatas().remove(RfnMetadataMulti.ALL);
             }
             RfnMetadataMultiQueryResult result = new RfnMetadataMultiQueryResult();
-            result.setResultType(RfnMetadataMultiQueryResultType.OK);
+            result.setResultType(settings.getMetadataQueryResponseType());
+            result.setResultMessage(settings.getMetadataResponseString());
             result.setMetadatas(new HashMap<>());
             request.getRfnMetadatas().forEach(metaData -> {     
                 switch(metaData) {
@@ -331,6 +331,11 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         if (settings == null) {
             SimulatedNmMappingSettings simulatedNmMappingSettings = new SimulatedNmMappingSettings();
             
+            //Metadata
+            simulatedNmMappingSettings.setMetadataResponseType(RfnMetadataMultiResponseType.valueOf((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_METADATA_RESPONSE_TYPE.getDefaultValue()));
+            simulatedNmMappingSettings.setMetadataQueryResponseType(RfnMetadataMultiQueryResultType.valueOf((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_METADATA_DEVICE_RESPONSE_TYPE.getDefaultValue()));
+            simulatedNmMappingSettings.setMetadataResponseString((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_METADATA_RESPONSE_STRING.getDefaultValue());
+
             //NeighborData
             NeighborData neighborData = new NeighborData();
             neighborData.setNeighborAddress((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_ADDR.getDefaultValue());

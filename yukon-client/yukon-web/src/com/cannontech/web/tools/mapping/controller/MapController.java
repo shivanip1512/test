@@ -234,6 +234,7 @@ public class MapController {
                     model.addAttribute("errorMsg", e.getMessage());
                 }
             } else {
+                String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.metadataError");
                 try {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
                         metadataMultiService.getMetadata(rfnDevice.getRfnIdentifier(),
@@ -242,7 +243,6 @@ public class MapController {
                     if (metadata.getResultType() != RfnMetadataMultiQueryResultType.OK) {
                         log.error("NM returned query result:" + metadata.getResultType() + " message:" + metadata.getResultMessage()
                             + " for device:" + rfnDevice);
-                        String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.metadataError");
                         model.addAttribute("errorMsg", nmError);
                     } else {
                         PrimaryGatewayComm comm = (PrimaryGatewayComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_COMM);
@@ -269,7 +269,7 @@ public class MapController {
                     
                 } catch (NmCommunicationException e) {
                     log.error("Failed to get metadata for " + id, e);
-                    model.addAttribute("errorMsg", e.getMessage());
+                    model.addAttribute("errorMsg", nmError);
                 } catch (NotFoundException e) {
                     log.error("Failed to find RFN Device for " + id, e);           
                 }

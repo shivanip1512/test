@@ -53,6 +53,8 @@ import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestRes
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResult;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
 import com.cannontech.common.rfn.message.network.NeighborFlagType;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnParentReplyType;
@@ -959,6 +961,8 @@ public class NmIntegrationController {
         model.addAttribute("parentReplys", RfnParentReplyType.values());
         model.addAttribute("neighborReplys", RfnNeighborDataReplyType.values());
         model.addAttribute("routeReplys", RfnPrimaryRouteDataReplyType.values());
+        model.addAttribute("metadataResponseTypes", RfnMetadataMultiResponseType.values());
+        model.addAttribute("metadataQueryResponseTypes", RfnMetadataMultiQueryResultType.values());
         
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(Action.GET_SETTINGS);
         SimulatorResponseBase response = sendRequest(simRequest, null, flash); 

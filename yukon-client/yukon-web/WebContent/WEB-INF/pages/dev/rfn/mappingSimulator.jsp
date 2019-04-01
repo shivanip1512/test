@@ -12,6 +12,20 @@
     
     <div class="column-12-12 clearfix">
         <div class="column one">
+        
+        <tags:sectionContainer title="NM Multi Metadata Response">
+            <tags:nameValueContainer tableClass="natural-width">
+                <tags:nameValue name="Response Type">
+                    <tags:selectWithItems items="${metadataResponseTypes}" path="metadataResponseType" />
+                </tags:nameValue>
+                <tags:nameValue name="Device Response Type">
+                    <tags:selectWithItems items="${metadataQueryResponseTypes}" path="metadataQueryResponseType" />
+                </tags:nameValue>
+                <tags:nameValue name="Message">
+                    <tags:input path="metadataResponseString"/>
+                </tags:nameValue>
+            </tags:nameValueContainer>
+        </tags:sectionContainer>
 
     <tags:sectionContainer title="Parent Node Settings">
         <tags:nameValueContainer tableClass="natural-width">

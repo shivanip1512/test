@@ -2,6 +2,8 @@ package com.cannontech.common.rfn.simulation;
 
 import java.io.Serializable;
 
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
 import com.cannontech.common.rfn.message.network.NeighborData;
 import com.cannontech.common.rfn.message.network.ParentData;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
@@ -18,6 +20,9 @@ public class SimulatedNmMappingSettings implements Serializable {
     private RfnParentReplyType parentReplyType;
     private RfnNeighborDataReplyType neighborReplyType;
     private RfnPrimaryRouteDataReplyType routeReplyType;
+    private RfnMetadataMultiResponseType metadataResponseType;
+    private RfnMetadataMultiQueryResultType metadataQueryResponseType;
+    private String metadataResponseString;
     
     public NeighborData getNeighborData() {
         return neighborData;
@@ -54,5 +59,23 @@ public class SimulatedNmMappingSettings implements Serializable {
     }
     public void setRouteReplyType(RfnPrimaryRouteDataReplyType routeReplyType) {
         this.routeReplyType = routeReplyType;
+    }
+    public RfnMetadataMultiResponseType getMetadataResponseType() {
+        return metadataResponseType;
+    }
+    public void setMetadataResponseType(RfnMetadataMultiResponseType metadataResponseType) {
+        this.metadataResponseType = metadataResponseType;
+    }
+    public RfnMetadataMultiQueryResultType getMetadataQueryResponseType() {
+        return metadataQueryResponseType;
+    }
+    public void setMetadataQueryResponseType(RfnMetadataMultiQueryResultType metadataQueryResponseType) {
+        this.metadataQueryResponseType = metadataQueryResponseType;
+    }
+    public String getMetadataResponseString() {
+        return metadataResponseString;
+    }
+    public void setMetadataResponseString(String metadataResponseString) {
+        this.metadataResponseString = metadataResponseString;
     }
 }
