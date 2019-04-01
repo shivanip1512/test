@@ -75,10 +75,10 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
                 row.Substation = rs.getString("Substation");
                 row.Bus = rs.getString("Bus");
                 row.Feeder = rs.getString("Feeder");
-                row.BusUTC = rs.getInt("Bus Unable to Close");
-                row.FeederUTC = rs.getInt("Feeder Unable to Close");
-                row.BusUTO = rs.getInt("Bus Unable to Open");
-                row.FeederUTO = rs.getInt("Feeder Unable to Open");
+                row.BusUTC = rs.getInt("BusUnableToClose");
+                row.FeederUTC = rs.getInt("FeederUnableToClose");
+                row.BusUTO = rs.getInt("BusUnableToOpen");
+                row.FeederUTO = rs.getInt("FeederUnableToOpen");
                 
                 data.add(row);
             }
@@ -92,43 +92,43 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
         StringBuffer sql = new StringBuffer 
                   ("WITH BUTC AS ( ");
         sql.append("    SELECT ");
-        sql.append("        COUNT(*) AS \"BussesUTC\", ");
+        sql.append("        COUNT(*) AS BussesUTC, ");
         sql.append("        SubID ");
         sql.append("    FROM CCEventLog ");
         sql.append("    WHERE EventType = 3 ");
-        sql.append("    AND DateTime > ? AND DateTime < ? ");
+        sql.append("    AND DateTime > ? AND DateTime <= ? ");
         sql.append("    AND (Text LIKE '%Cannot Decrease Var%' OR Text LIKE '%Cannot Increase Volt%') ");
         sql.append("    GROUP BY SubID ");
         sql.append("), ");
         sql.append("BUTO AS ( ");
         sql.append("    SELECT ");
-        sql.append("        COUNT(*) AS \"BussesUTO\", ");
+        sql.append("        COUNT(*) AS BussesUTO, ");
         sql.append("        SubID ");
         sql.append("    FROM CCEventLog ");
         sql.append("    WHERE EventType = 3 ");
-        sql.append("    AND DateTime > ? AND DateTime < ? ");
+        sql.append("    AND DateTime > ? AND DateTime <= ? ");
         sql.append("    AND (Text LIKE '%Cannot Increase Var%' OR Text LIKE '%Cannot Decrease Volt%') ");
         sql.append("    GROUP BY SubID ");
         sql.append("), ");
         sql.append("FUTC AS ( ");
         sql.append("    SELECT ");
-        sql.append("        COUNT(*) AS \"FeedersUTC\", ");
+        sql.append("        COUNT(*) AS FeedersUTC, ");
         sql.append("        FeederID ");
         sql.append("    FROM CCEventLog ");
         sql.append("    WHERE EventType = 3 ");
         sql.append("    AND FeederID != 0 ");
-        sql.append("    AND DateTime > ? AND DateTime < ? ");
+        sql.append("    AND DateTime > ? AND DateTime <= ? ");
         sql.append("    AND (Text LIKE '%Cannot Decrease Var%' OR Text LIKE '%Cannot Increase Volt%') ");
         sql.append("    GROUP BY FeederID ");
         sql.append("), ");
         sql.append("FUTO AS ( ");
         sql.append("    SELECT ");
-        sql.append("        COUNT(*) AS \"FeedersUTO\", ");
+        sql.append("        COUNT(*) AS FeedersUTO, ");
         sql.append("        FeederID ");
         sql.append("    FROM CCEventLog ");
         sql.append("    WHERE EventType = 3 ");
         sql.append("    AND FeederID != 0 ");
-        sql.append("    AND DateTime > ? AND DateTime < ? ");
+        sql.append("    AND DateTime > ? AND DateTime <= ? ");
         sql.append("    AND (Text LIKE '%Cannot Increase Var%' OR Text LIKE '%Cannot Decrease Volt%') ");
         sql.append("    GROUP BY FeederID ");
         sql.append(") ");
@@ -137,10 +137,10 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
         sql.append("    YP1.PAOName Substation, ");
         sql.append("    YP2.PAOName Bus,");
         sql.append("    YP3.PAOName Feeder, ");
-        sql.append("    CASE WHEN BUTC.SubID IS NULL THEN 0 ELSE BUTC.\"BussesUTC\" END AS \"Bus Unable to Close\", ");
-        sql.append("    CASE WHEN FUTC.FeederID IS NULL THEN 0 ELSE FUTC.\"FeedersUTC\" END AS \"Feeder Unable to Close\", ");
-        sql.append("    CASE WHEN BUTO.SubID IS NULL THEN 0 ELSE BUTO.\"BussesUTO\" END AS \"Bus Unable to Open\", ");
-        sql.append("    CASE WHEN FUTO.feederid IS NULL THEN 0 ELSE FUTO.\"FeedersUTO\" END AS \"Feeder Unable to Open\" ");
+        sql.append("    CASE WHEN BUTC.SubID IS NULL THEN 0 ELSE BUTC.BussesUTC END AS BusUnableToClose, ");
+        sql.append("    CASE WHEN FUTC.FeederID IS NULL THEN 0 ELSE FUTC.FeedersUTC END AS FeederUnableToClose, ");
+        sql.append("    CASE WHEN BUTO.SubID IS NULL THEN 0 ELSE BUTO.BussesUTO END AS BusUnableToOpen, ");
+        sql.append("    CASE WHEN FUTO.feederid IS NULL THEN 0 ELSE FUTO.FeedersUTO END AS FeederUnableToOpen ");
         sql.append("FROM YukonPAObject YPO ");
         sql.append("JOIN CCSUBAREAASSIGNMENT SA ON YPO.PAObjectID = SA.AreaID ");
         sql.append("JOIN CCSUBSTATIONSUBBUSLIST SS ON SA.SubstationBusID = SS.SubStationID ");
@@ -152,10 +152,10 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
         sql.append("LEFT JOIN BUTO ON BUTO.SubID = FS.SubStationBusID ");
         sql.append("LEFT JOIN FUTC ON FUTC.FeederID = FS.FeederID ");
         sql.append("LEFT JOIN FUTO ON FUTO.FeederID = FS.FeederID ");
-        sql.append("WHERE (BUTC.\"BussesUTC\" IS NOT NULL ");
-        sql.append("OR     BUTO.\"BussesUTO\" IS NOT NULL ");
-        sql.append("OR     FUTC.\"FeedersUTC\" IS NOT NULL ");
-        sql.append("OR     FUTO.\"FeedersUTO\" IS NOT NULL) ");
+        sql.append("WHERE (BUTC.BussesUTC IS NOT NULL ");
+        sql.append("OR     BUTO.BussesUTO IS NOT NULL ");
+        sql.append("OR     FUTC.FeedersUTC IS NOT NULL ");
+        sql.append("OR     FUTO.FeedersUTO IS NOT NULL) ");
         
         String result = null;
         
