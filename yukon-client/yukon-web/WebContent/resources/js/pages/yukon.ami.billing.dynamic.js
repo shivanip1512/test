@@ -289,7 +289,7 @@ function updateFormat (headerText, method) {
             case 'padSide':
                 attributeValue = $('#'+ headerText+'PadSide').val();
                 option.setAttribute('padSide', attributeValue);
-                updatePadSideSelect(selectedFields[0], attributeValue);
+                updatePadSideSelect($('#' + headerText + 'PadSide'), attributeValue);
                 checkPaddingSide(headerText, attributeValue);
                 break;
             case 'padCharSelect':
@@ -370,13 +370,8 @@ function updateFormat (headerText, method) {
 }
 
 function checkPaddingSide (headerText, padSideValue) {
-    if (padSideValue === 'none') {
-        $('#'+ headerText+'PadChar').prop('disabled', true);
-        $('#'+ headerText+'PadCharSelect').prop('disabled', true);
-    } else {
-        $('#'+ headerText+'PadChar').prop('disabled', false);
-        $('#'+ headerText+'PadCharSelect').prop('disabled', false);
-    }
+    $('#' + headerText + 'PadChar').prop('disabled', padSideValue === 'none');
+    $('#' + headerText + 'PadCharSelect').prop('disabled', padSideValue === 'none');
 }
 
 function selectPadCharSelectOption (jQuerySelect, value) {
@@ -505,13 +500,7 @@ function displayHelper (elem) {
 
 //Helps with setting the padding side
 function updatePadSideSelect (padSideSelect, padSide) {
-	var options = $(padSideSelect).children('option'),
-        i;
-    for (i = 0; i < options.length; i += 1) {
-        if ($(options[i]).val() === padSide) {
-            padSideSelect.attr('selectedIndex', i);
-        }
-    }
+    padSideSelect.val(padSide);
 }
 
 // gets all the initial values for the current selected field
@@ -553,13 +542,7 @@ function updateReadingFormatFields (option) {
     // get the initial padChar value
     padSide = getAttributeValue(option, 'padSide');
     updatePadSideSelect($('#readingPadSide'), padSide);
-    if (padSide === 'none') {
-        $('#readingPadChar').prop('disabled', true);
-        $('#readingPadCharSelect').prop('disabled', true);
-    } else {
-        $('#readingPadChar').prop('disabled', false);
-        $('#readingPadCharSelect').prop('disabled', false);
-    }
+    checkPaddingSide('reading', padSide);
 }
 
 // gets all the initial values for the current selected field
@@ -596,13 +579,7 @@ function updateTimestampFormatFields (timestampDiv, option) {
     // get the initial padChar value
     padSide = getAttributeValue(option, 'padSide');
     updatePadSideSelect($('#timestampPadSide'), padSide);
-    if (padSide === 'none') {
-        $('#timestampPadChar').prop('disabled', true);
-        $('#timestampPadCharSelect').prop('disabled', true);
-    } else {
-        $('#timestampPadChar').prop('disabled', false);
-        $('#timestampPadCharSelect').prop('disabled', false);
-    }
+    checkPaddingSide('timestamp', padSide);
 }
 
 // gets all the initial values for the current selected field
@@ -635,13 +612,7 @@ function updateGenericFormatFields (genericFormatDiv, option) {
     // get the initial padChar value
     padSide = getAttributeValue(option, 'padSide');
     updatePadSideSelect($('#genericPadSide'), padSide);
-    if (padSide === 'none') {
-        $('#genericPadChar').prop('disabled', true);
-        $('#genericPadCharSelect').prop('disabled', true);
-    } else {
-        $('#genericPadChar').prop('disabled', false);
-        $('#genericPadCharSelect').prop('disabled', false);
-    }
+    checkPaddingSide('generic', padSide);
 }
 function toggleHelperPopup (id) {
     $('#'+ id).toggle();
