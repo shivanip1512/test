@@ -13,6 +13,8 @@ INSERT INTO DBUpdates VALUES ('YUK-19587', '7.3.0', GETDATE());
 /* @end YUK-19587 */
 
 /* @start YUK-19601 */
+/* If the 7.2 creation script was used, the table/FK would be added without running the YUK-19601 update */
+/* @error ignore-begin */
 CREATE TABLE LMItronCycleGear (
     GearId          numeric         NOT NULL,
     CycleOption     nvarchar(20)    NOT NULL,
@@ -32,6 +34,7 @@ SELECT
     'STANDARD' AS CycleOption
 FROM LMProgramDirectGear PDG
 WHERE PDG.ControlMethod = 'ItronCycle';
+/* @error ignore-end */
 
 INSERT INTO DBUpdates VALUES ('YUK-19601', '7.3.0', GETDATE());
 /* @end YUK-19601 */
@@ -46,7 +49,10 @@ INSERT INTO DBUpdates VALUES ('YUK-19324', '7.3.0', GETDATE());
 /* @end YUK-19324 */
 
 /* @start YUK-19624 */
+/* If the 7.2 creation script was used, the row would already exist without running the YUK-19624 update */
+/* @error ignore-begin */
 INSERT INTO State VALUES(-28, 3, 'On', 0, 6, 0);
+/* @error ignore-end */
 
 INSERT INTO DBUpdates VALUES ('YUK-19624', '7.3.0', GETDATE());
 /* @end YUK-19624 */
@@ -73,6 +79,32 @@ WHERE Name IN ('NEST_USERNAME', 'NEST_PASSWORD', 'NEST_SERVER_URL');
 
 INSERT INTO DBUpdates VALUES ('YUK-19697', '7.3.0', GETDATE());
 /* @end YUK-19697 */
+
+/* @start YUK-19712 */
+CREATE TABLE DeviceConfigState (
+    PaObjectId              NUMERIC         NOT NULL,
+    CurrentState            VARCHAR(50)     NOT NULL,
+    LastAction              VARCHAR(20)     NOT NULL,
+    LastActionStatus        VARCHAR(20)     NOT NULL,
+    LastActionStart         DATETIME        NOT NULL,
+    LastActionEnd           DATETIME        NULL,
+    CollectionActionId      NUMERIC         NULL,
+    CONSTRAINT PK_DeviceConfigState PRIMARY KEY (PaObjectId)
+);
+GO
+
+ALTER TABLE DeviceConfigState
+    ADD CONSTRAINT FK_DeviceConfigState_CollAct FOREIGN KEY (CollectionActionId)
+    REFERENCES CollectionAction (CollectionActionId);
+
+ALTER TABLE DeviceConfigState
+    ADD CONSTRAINT FK_DeviceConfigState_YukonPao FOREIGN KEY (PaObjectId)
+    REFERENCES YukonPAObject (PAObjectID)
+    ON DELETE CASCADE;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-19712', '7.3.0', GETDATE());
+/* @end YUK-19712 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

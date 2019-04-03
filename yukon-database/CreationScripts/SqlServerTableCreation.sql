@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/15/2019 2:05:15 PM                         */
+/* Created on:     4/2/2019 2:17:20 PM                          */
 /*==============================================================*/
 
 
@@ -3230,6 +3230,21 @@ INSERT INTO DeviceConfigDeviceTypes VALUES (12, -2, 'PO_REGULATOR');
 
 alter table DeviceConfigDeviceTypes
    add constraint AK_DevConDevTypes_CatIdDevType unique (DeviceConfigurationId, PaoType)
+go
+
+/*==============================================================*/
+/* Table: DeviceConfigState                                     */
+/*==============================================================*/
+create table DeviceConfigState (
+   PaObjectId           numeric              not null,
+   CurrentState         varchar(50)          not null,
+   LastAction           varchar(20)          not null,
+   LastActionStatus     varchar(20)          not null,
+   LastActionStart      datetime             not null,
+   LastActionEnd        datetime             null,
+   CollectionActionId   numeric              null,
+   constraint PK_DeviceConfigState primary key (PaObjectId)
+)
 go
 
 /*==============================================================*/
@@ -13010,6 +13025,17 @@ go
 alter table DeviceConfigDeviceTypes
    add constraint FK_DevConfDevTypes_DevConfig foreign key (DeviceConfigurationId)
       references DeviceConfiguration (DeviceConfigurationID)
+         on delete cascade
+go
+
+alter table DeviceConfigState
+   add constraint FK_DeviceConfigState_CollAct foreign key (CollectionActionId)
+      references CollectionAction (CollectionActionId)
+go
+
+alter table DeviceConfigState
+   add constraint FK_DeviceConfigState_YukonPao foreign key (PaObjectId)
+      references YukonPAObject (PAObjectID)
          on delete cascade
 go
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/15/2019 2:06:10 PM                         */
+/* Created on:     4/2/2019 2:16:22 PM                          */
 /*==============================================================*/
 
 
@@ -3029,6 +3029,20 @@ INSERT INTO DeviceConfigDeviceTypes VALUES (12, -2, 'PO_REGULATOR');
 
 alter table DeviceConfigDeviceTypes
    add constraint AK_DevConDevTypes_CatIdDevType unique (DeviceConfigurationId, PaoType);
+
+/*==============================================================*/
+/* Table: DeviceConfigState                                     */
+/*==============================================================*/
+create table DeviceConfigState  (
+   PaObjectId           NUMBER                          not null,
+   CurrentState         VARCHAR2(50)                    not null,
+   LastAction           VARCHAR2(20)                    not null,
+   LastActionStatus     VARCHAR2(20)                    not null,
+   LastActionStart      DATE                            not null,
+   LastActionEnd        DATE,
+   CollectionActionId   NUMBER,
+   constraint PK_DeviceConfigState primary key (PaObjectId)
+);
 
 /*==============================================================*/
 /* Table: DeviceConfiguration                                   */
@@ -12125,6 +12139,15 @@ alter table DeviceConfigCategoryMap
 alter table DeviceConfigDeviceTypes
    add constraint FK_DevConfDevTypes_DevConfig foreign key (DeviceConfigurationId)
       references DeviceConfiguration (DeviceConfigurationID)
+      on delete cascade;
+
+alter table DeviceConfigState
+   add constraint FK_DeviceConfigState_CollAct foreign key (CollectionActionId)
+      references CollectionAction (CollectionActionId);
+
+alter table DeviceConfigState
+   add constraint FK_DeviceConfigState_YukonPao foreign key (PaObjectId)
+      references YukonPAObject (PAObjectID)
       on delete cascade;
 
 alter table DeviceConfigurationDeviceMap
