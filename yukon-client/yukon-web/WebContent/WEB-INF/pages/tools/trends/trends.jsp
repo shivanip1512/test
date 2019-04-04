@@ -5,18 +5,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="tools" page="${pageName}">
-
-<cti:includeScript link="HIGH_STOCK"/>
-<cti:includeScript link="HIGH_STOCK_EXPORTING"/>
-<cti:includeScript link="HIGH_STOCK_NO_DATA"/>
-
-<style>
-.trend-list {
-    max-height: 600px;
-    overflow-y: auto;
-}
-.trend-container .glass{height: 100%;width: 100%;z-index: 1000;}
-</style>
     
     <div id="label-json" class="dn">${fn:escapeXml(labels)}</div>
     
@@ -59,6 +47,11 @@
             </c:otherwise>
         </c:choose>
     </div>
+    
     <cti:includeScript link="/resources/js/pages/yukon.tools.trends.js"/>
     <cti:includeScript link="/resources/js/common/yukon.trends.js"/>
+    <cti:includeScript link="HIGH_STOCK"/>
+    <cti:includeScript link="HIGH_STOCK_EXPORTING"/>
+    <cti:includeScript link="HIGH_STOCK_NO_DATA"/>
+    
 </cti:standardPage>

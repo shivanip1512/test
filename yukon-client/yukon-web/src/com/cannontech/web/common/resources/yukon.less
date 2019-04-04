@@ -1978,6 +1978,13 @@ table th, .title-header, .column-header {
     vertical-align: bottom;
 }
 
+/* Trends */
+.trend-list {
+    max-height: 600px;
+    overflow-y: auto;
+}
+.trend-container .glass{height: 100%;width: 100%;z-index: 1000;}
+
 /* JUNK TO FIX */
 .CONTROLAREA_STATE_ACTIVE, .CONTROLAREA_STATE_PARTIALLY_ACTIVE, .CONTROLAREA_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_ACTIVE, .PROGRAM_STATE_PARTIALLY_ACTIVE, .PROGRAM_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_TIMED_ACTIVE, .LOADGROUP_STATE_ACTIVE {color: @green;}
 .CONTROLAREA_STATE_INACTIVE,.PROGRAM_STATE_INACTIVE, .PROGRAM_STATE_NON_CONTROL, .LOADGROUP_STATE_INACTIVE {color: #555;}
