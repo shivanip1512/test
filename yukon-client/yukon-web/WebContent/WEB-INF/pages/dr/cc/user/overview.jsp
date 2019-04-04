@@ -6,12 +6,6 @@
 
 <cti:standardPage module="dr" page="cc.user.overview">
 
-    <cti:includeScript link="/resources/js/pages/yukon.tools.trends.js"/>
-    <cti:includeScript link="JQUERY_SCROLLTO"/>
-    <cti:includeScript link="HIGH_STOCK"/>
-    <cti:includeScript link="HIGH_STOCK_EXPORTING"/>
-    <cti:includeScript link="HIGH_STOCK_NO_DATA"/>
-
     <cti:tabs>
         <cti:msg2 var="eventsTabName" key=".events"/>
         <cti:tab title="${eventsTabName}" selected="true">
@@ -58,4 +52,10 @@
             </div>
         </cti:tab>
     </cti:tabs>
+    
+    <cti:includeScript link="/resources/js/common/yukon.trends.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.trends.js"/>
+    <cti:includeScript link="HIGH_STOCK"/>
+    <cti:includeScript link="HIGH_STOCK_NO_DATA"/>
+    
 </cti:standardPage>
