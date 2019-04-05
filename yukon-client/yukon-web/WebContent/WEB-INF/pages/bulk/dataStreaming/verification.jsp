@@ -69,7 +69,7 @@
 
     </form:form>
     
-    <div id="data-streaming-popup-${id}" data-width="400" data-title="<cti:msg2 key=".configuration"/>">
+    <div id="data-streaming-popup-${id}" data-width="400" data-title="<cti:msg2 key=".configuration"/>" class="dn">
         <c:set var="config" value="${verificationInfo.configuration}"/>
         <%@ include file="/WEB-INF/pages/dataStreaming/configurationTable.jspf" %>
     </div>
