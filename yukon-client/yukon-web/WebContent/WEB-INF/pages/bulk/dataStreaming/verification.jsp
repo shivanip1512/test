@@ -12,8 +12,9 @@
     <input type="hidden" id="verificationPassed" value="${verificationInfo.verificationPassed}"/>
 
     <div class="stacked notes">
-     <strong><i:inline key=".configuration"/>:</strong>&nbsp;
-     <a href="javascript:void(0);" data-popup="#data-streaming-popup">${fn:escapeXml(verificationInfo.configuration.name)}</a>
+        <cti:uniqueIdentifier var="id" />
+        <strong><i:inline key=".configuration" />:</strong>&nbsp; 
+        <a href="javascript:void(0);" data-popup="#data-streaming-popup-${id}">${fn:escapeXml(verificationInfo.configuration.name)}</a>
     </div>
 
     <cti:url var="assignUrl"  value="/bulk/dataStreaming/verification" />
@@ -68,7 +69,7 @@
 
     </form:form>
     
-    <div id="data-streaming-popup" data-width="400" data-title="<cti:msg2 key=".configuration"/>" class="dn">
+    <div id="data-streaming-popup-${id}" data-width="400" data-title="<cti:msg2 key=".configuration"/>">
         <c:set var="config" value="${verificationInfo.configuration}"/>
         <%@ include file="/WEB-INF/pages/dataStreaming/configurationTable.jspf" %>
     </div>
