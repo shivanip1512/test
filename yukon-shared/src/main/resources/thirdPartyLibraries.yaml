@@ -2284,7 +2284,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-aop/5.1.5.RELEASE"
     md5 : bea7aa8a96cf2d2821e44e73312b6c46
     sha1 : 5e6ab23bc14369b0e29881afd85ad13b79846a0e
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring AOP
   
@@ -2298,7 +2298,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-aspects/5.1.5.RELEASE"
     md5 : f877b04758285e6ab12047f774966946
     sha1 : 3bb95e05b646ef93e2a4cf0b600924c2979fc723
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Aspects
   
@@ -2312,7 +2312,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-beans/5.1.5.RELEASE"
     md5 : e6ac01d5b15c48ff45112c13664c7057
     sha1 : 58b10c61f6bf2362909d884813c4049b657735f5
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Beans
   
@@ -2326,7 +2326,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-context/5.1.5.RELEASE"
     md5 : 8e681927c1f9932874a2a7c3b32f6952
     sha1 : d39299241a2c8353d83f0f0c84d3677973da7c57
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Context
   
@@ -2340,7 +2340,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-context-indexer/5.1.5.RELEASE"
     md5 : 47db5ebd0071560989ffdc531057e723
     sha1 : 212b6ee163619013b04fced78e25452f90995c16
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Context Indexer
   
@@ -2354,7 +2354,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-context-support/5.1.5.RELEASE"
     md5 : 3a7ed652a0fbcba62ac6316763706c92
     sha1 : b6c4877e5cad1cbf72c3ff2c65eb62f2c89e5e8b
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Context Support
   
@@ -2368,7 +2368,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-core/5.1.5.RELEASE"
     md5 : f9fb0fef81c5301a8b30686bcaa2627b
     sha1 : aacc4555108f3da913a58114b2aebc819f58cce4
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Core
   
@@ -2382,7 +2382,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-expression/5.1.5.RELEASE"
     md5 : 4eb211187dc029cccce154ce661681ef
     sha1 : b728a06924560ee69307a52d100e6b156d9a4a80
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Expression Language (SpEL)
   
@@ -2396,7 +2396,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-instrument/5.1.5.RELEASE"
     md5 : d4fb18deeae8388da39c7a9ad6ad1796
     sha1 : 602baddb57c979ec7af53be1656d83f5d74465c6
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Instrument
   
@@ -2410,7 +2410,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework.integration/spring-integration-core/5.1.3.RELEASE"
     md5 : ecaad5f2d45d8a2f2e0884d70305382b
     sha1 : 721ef7e3ed5c44bac2b0c212f002e469736b64f9
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Integration Core
   
@@ -2424,7 +2424,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework.integration/spring-integration-jms/5.1.3.RELEASE"
     md5 : a27244cd2647c80270516aa9a5023044
     sha1 : 864c76cc3e515333a5fa52d05d5b0466b3fd9680
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Integration JMS Support
   
@@ -2438,7 +2438,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-jcl/5.1.5.RELEASE"
     md5 : 5395be46a9accac156f78c800dbb0b9d
     sha1 : 5cbd44d11a031c64c788edf1f99706b31c434469
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Commons Logging Bridge
   
@@ -2452,7 +2452,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-jdbc/5.1.5.RELEASE"
     md5 : 2b8095a5313d33d4592531a86d0016ae
     sha1 : 067a6be20d032276a12a91fce4fe8b13ccc8c95d
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring JDBC
   
@@ -2466,7 +2466,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-jms/5.1.5.RELEASE"
     md5 : 8733b56ecae754b9ac8907b612e64775
     sha1 : 9fb8f45bf493812909c77f9f5d7e275fe6a5f84c
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring JMS
   
@@ -2480,7 +2480,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-messaging/5.1.5.RELEASE"
     md5 : 3292395fb6eb152b804f8619dd7d259e
     sha1 : 5874e45679c566deaaa00bb09ff786581eb56e26
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Messaging
   
@@ -2494,7 +2494,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-orm/5.1.5.RELEASE"
     md5 : c15fb2260f43184b17458865db915386
     sha1 : 2320c1442ad2d33c4bb0c289d0e48554c7c42ee7
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Object/Relational Mapping
   
@@ -2508,7 +2508,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-oxm/5.1.5.RELEASE"
     md5 : 313ef6987e0ebd58751d10456e6dcb98
     sha1 : d6394f9019c4b15270aaecb6f8c158e93d72317a
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Object/XML Marshalling
   
@@ -2522,7 +2522,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-test/5.1.5.RELEASE"
     md5 : 142b2ed65a982a94c87c53c97581019d
     sha1 : 0693fac3c64b4617b7c2b207e45e93529f6594bd
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring TestContext Framework
   
@@ -2536,7 +2536,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-tx/5.1.5.RELEASE"
     md5 : 3f9105131de928f12339ee966eded1ff
     sha1 : c2d39bf1f87a7b9f74a199b3aa37ffc8be84b918
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Transaction
   
@@ -2550,7 +2550,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-web/5.1.5.RELEASE"
     md5 : 48aac340b953d36d1fa9e40ebadf3afa
     sha1 : c37c4363be4ad6c5f67e3f9f020497e2d599e325
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Web
   
@@ -2564,7 +2564,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-webflux/5.1.5.RELEASE"
     md5 : bd17dcaf47019e4435d40b10df9983ee
     sha1 : dd4cb3ebfa7a942aebcf76a9153ce507c30dbecc
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring WebFlux
   
@@ -2578,7 +2578,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-webmvc/5.1.5.RELEASE"
     md5 : 5540650b970bb2f2f6ad9b25706a9eea
     sha1 : 236e3bfdbdc6c86629237a74f0f11414adb4e211
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Web MVC
   
@@ -2592,7 +2592,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-websocket/5.1.5.RELEASE"
     md5 : 3dca0a9f7d41dda62939f06d4c71e990
     sha1 : 4d150cc48adaf39cf28bc09a88dd68e4f9f007cf
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring WebSocket
   
@@ -2606,7 +2606,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework.ws/spring-ws-core/3.0.7.RELEASE"
     md5 : fc8eb7bcfd8cd813ccd7acf8b32aa431
     sha1 : 46c634e0f546199aa490c9651ea5e3ae22543bb1
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring Web Services Core
   
@@ -2620,7 +2620,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.springframework.ws/spring-xml/3.0.7.RELEASE"
     md5 : f8ea556e4b6ca23ab43041dfbf0dd42e
     sha1 : 4e4420222527527d392cb1f4e740831c7225d95e
-    updated : 2019-03-28
+    updated : 2019-04-03
     jira : YUK-19578
     notes : Spring XML
   
