@@ -7,4 +7,7 @@ public interface PointValueHolder {
     public Date getPointDataTimeStamp();
     public int getType();
     public double getValue();
+    public default String getTrackingId() {
+        return "";
+    }
 }

@@ -79,6 +79,8 @@ public:
 
    CtiPointDataMsg& setTimeWithMillis(const CtiTime& aTime, const unsigned millis);
 
+   std::string getTrackingId() const;
+
    virtual std::string toString() const override;
 
    virtual bool isValid();
