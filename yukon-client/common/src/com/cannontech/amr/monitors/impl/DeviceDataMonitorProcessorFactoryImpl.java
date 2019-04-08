@@ -55,6 +55,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
             if (richPointData.getPointValue().getPointQuality().isInvalid()) {
                 log.debug("monitor {} discarded point data {} because point quality is invalid", monitor,
                     richPointData.getPointValue());
+                rejectTrackingId(richPointData);
             }
             return;
         }
@@ -77,6 +78,12 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
 
         if (Boolean.TRUE.equals(isValidDeviceForMonitor)) {
             deviceDataMonitorCalculationService.updateViolationsGroupBasedOnNewPointData(monitor, richPointData);
+            acceptTrackingId(richPointData);
         }
+    }
+    
+    @Override
+    protected Logger getTrackingLogger() {
+        return log;
     }
 }

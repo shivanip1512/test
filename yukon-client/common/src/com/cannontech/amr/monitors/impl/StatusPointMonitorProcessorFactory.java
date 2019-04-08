@@ -16,7 +16,6 @@ import com.cannontech.amr.monitors.message.OutageJmsMessage;
 import com.cannontech.amr.statusPointMonitoring.dao.StatusPointMonitorDao;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorProcessor;
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -36,6 +35,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.google.common.collect.Iterables;
 
 public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryBase<StatusPointMonitor> {
 
@@ -47,95 +47,101 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private GlobalSettingDao globalSettingDao;
     private JmsTemplate jmsTemplate;
-
     @Override
     protected List<StatusPointMonitor> getAllMonitors() {
         return statusPointMonitorDao.getAllStatusPointMonitors();
     }
 
+    private boolean isMonitoredData(final StatusPointMonitor statusPointMonitor, RichPointData richPointData) {
+        int daysToIgnore = globalSettingDao.getInteger(GlobalSettingType.STATUS_POINT_MONITOR_NOTIFICATION_LIMIT);
+        //Ignores date check if value is set to 0
+        if (daysToIgnore > 0) {
+            DateTime xDaysAgo = now().withTimeAtStartOfDay().minusDays(daysToIgnore);
+            if (new DateTime(richPointData.getPointValue().getPointDataTimeStamp()).isBefore(xDaysAgo)) {
+                // ignore the data that is older the X number of days
+                return false;
+            }
+        }
+      
+        PaoIdentifier paoIdentifier = richPointData.getPaoPointIdentifier().getPaoIdentifier();
+        if (paoIdentifier.getPaoType().getPaoCategory() != PaoCategory.DEVICE) {
+            // non devices can't be in groups
+            return false;
+        }
+        
+        //check to make sure this point is a status point
+        PointType pointType = richPointData.getPaoPointIdentifier().getPointIdentifier().getPointType(); 
+        if (!pointType.isStatus()) {
+            return false;
+        }
+        
+        DeviceGroup groupToMonitor = deviceGroupService.findGroupName(statusPointMonitor.getGroupName());
+        if (groupToMonitor == null) {
+            // group does not exist, have nothing to monitor
+            return false;
+        }
+
+        SimpleDevice simpleDevice = new SimpleDevice(paoIdentifier);
+        boolean deviceInGroup = deviceGroupService.isDeviceInGroup(groupToMonitor, simpleDevice);
+        if (!deviceInGroup) {
+            return false;
+        }
+
+        // RichPointData matches the attribute we're looking for?
+        if (!attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), statusPointMonitor.getAttribute())) {
+            return false;
+        }
+        
+        LitePoint litePoint = pointDao.getLitePoint(richPointData.getPointValue().getId());
+        
+        // point's StateGroup matches the StateGroup we are monitoring?
+        if (litePoint.getStateGroupID() != statusPointMonitor.getStateGroup().getStateGroupID()) {
+            return false;
+        }
+        
+        return true;
+    }
+
     @Override
     protected RichPointDataListener createPointListener(final StatusPointMonitor statusPointMonitor) {
         
-        RichPointDataListener richPointDataListener = new RichPointDataListener() {
+        return richPointData -> {
+            if (!isMonitoredData(statusPointMonitor, richPointData)) {
+                rejectTrackingId(richPointData);
+                return;
+            }
+            
+            acceptTrackingId(richPointData);
 
-            @Override
-            public void pointDataReceived(RichPointData richPointData) {
-                int daysToIngore = globalSettingDao.getInteger(GlobalSettingType.STATUS_POINT_MONITOR_NOTIFICATION_LIMIT);
-                //Ignores date check if value is set to 0
-                if (daysToIngore > 0) {
-                    DateTime xDaysAgo = now().withTimeAtStartOfDay().minusDays(daysToIngore);
-                    if (new DateTime(richPointData.getPointValue().getPointDataTimeStamp()).isBefore(xDaysAgo)) {
-                        // ignore the data that is older the X number of days
-                        return;
-                    }
-                }
-      
-                PaoIdentifier paoIdentifier = richPointData.getPaoPointIdentifier().getPaoIdentifier();
-                if (paoIdentifier.getPaoType().getPaoCategory() != PaoCategory.DEVICE) {
-                    // non devices can't be in groups
-                    return;
+            PointValueHolder nextValue = richPointData.getPointValue();
+            PointValueHolder previousValue = null; // store this outside the loop because it is valid for every processor 
+            
+            if (log.isDebugEnabled()) {
+                log.debug("Point %s caught by Status Point Monitor: %s with value: %s", richPointData.getPaoPointIdentifier(), statusPointMonitor, nextValue);
+            }
+            
+            for (StatusPointMonitorProcessor statusPointMonitorProcessor : statusPointMonitor.getProcessors()) {
+                
+                boolean needPreviousValue = previousValue == null && needPreviousValue(statusPointMonitorProcessor); 
+                if (needPreviousValue) {
+                    previousValue = getPreviousValueForPoint(nextValue);
                 }
                 
-                //check to make sure this point is a status point
-                PointType pointType = richPointData.getPaoPointIdentifier().getPointIdentifier().getPointType(); 
-                if (!pointType.isStatus()) {
-                    return;
-                }
-                
-                DeviceGroup groupToMonitor = deviceGroupService.findGroupName(statusPointMonitor.getGroupName());
-                if (groupToMonitor == null) {
-                	// group does not exist, have nothing to monitor
-                	return;
-                }
+                boolean shouldSendMessage = shouldSendMessage(statusPointMonitorProcessor, nextValue, previousValue);
 
-                SimpleDevice simpleDevice = new SimpleDevice(paoIdentifier);
-                boolean deviceInGroup = deviceGroupService.isDeviceInGroup(groupToMonitor, simpleDevice);
-                if (!deviceInGroup) {
-                    return;
-                }
-
-                // RichPointData matches the attribute we're looking for?
-                if (!attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), statusPointMonitor.getAttribute())) {
-                    return;
-                }
-                
-                LitePoint litePoint = pointDao.getLitePoint(richPointData.getPointValue().getId());
-                
-                // point's StateGroup matches the StateGroup we are monitoring?
-                if (!(litePoint.getStateGroupID() == statusPointMonitor.getStateGroup().getStateGroupID())) {
-                    return;
-                }
-                
-                PointValueHolder nextValue = richPointData.getPointValue();
-                PointValueHolder previousValue = null; // store this outside the loop because it is valid for every processor 
-                
-                LogHelper.debug(log, "Point %s caught by Status Point Monitor: %s with value: %s", richPointData.getPaoPointIdentifier(), statusPointMonitor, nextValue);
-                
-                for (StatusPointMonitorProcessor statusPointMonitorProcessor : statusPointMonitor.getProcessors()) {
+                if (shouldSendMessage) {
+                    OutageJmsMessage outageJmsMessage = new OutageJmsMessage();
+                    outageJmsMessage.setSource(statusPointMonitor.getName());
+                    outageJmsMessage.setActionType(statusPointMonitorProcessor.getActionTypeEnum());
+                    outageJmsMessage.setPaoIdentifier(richPointData.getPaoPointIdentifier().getPaoIdentifier());
+                    outageJmsMessage.setPointValueQualityHolder(richPointData.getPointValue());
                     
-                    boolean needPreviousValue = previousValue == null && needPreviousValue(statusPointMonitorProcessor); 
-                    if (needPreviousValue) {
-                        previousValue = getPreviousValueForPoint(nextValue);
-                    }
-                    
-                    boolean shouldSendMessage = shouldSendMessage(statusPointMonitorProcessor, nextValue, previousValue);
-
-                    if (shouldSendMessage) {
-                        OutageJmsMessage outageJmsMessage = new OutageJmsMessage();
-                        outageJmsMessage.setSource(statusPointMonitor.getName());
-                        outageJmsMessage.setActionType(statusPointMonitorProcessor.getActionTypeEnum());
-                        outageJmsMessage.setPaoIdentifier(richPointData.getPaoPointIdentifier().getPaoIdentifier());
-                        outageJmsMessage.setPointValueQualityHolder(richPointData.getPointValue());
-                        
-                        log.debug("Outage message pushed to jms queue: " + outageJmsMessage);
-                        jmsTemplate.convertAndSend("yukon.notif.obj.amr.OutageJmsMessage", outageJmsMessage);
-                        break; // once we've found a match, stop evaluating processors
-                    }
+                    log.debug("Outage message pushed to jms queue: " + outageJmsMessage);
+                    jmsTemplate.convertAndSend("yukon.notif.obj.amr.OutageJmsMessage", outageJmsMessage);
+                    break; // once we've found a match, stop evaluating processors
                 }
             }
         };
-
-        return richPointDataListener;
     }
     
     public static boolean needPreviousValue(StatusPointMonitorProcessor processor) {
@@ -234,17 +240,17 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
 		List<PointValueHolder> pointPrevValueList = rawPointHistoryDao.getLimitedPointData(pointId,dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), false,
 						Order.REVERSE, 1);
 
-        if (pointPrevValueList.size() > 0) { 
-            PointValueHolder pointValuePrev = pointPrevValueList.get(0);
-            return pointValuePrev;
-        } else {
-            return null;
-        }
+        return Iterables.getFirst(pointPrevValueList, null);
     }
     
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setPubSubDomain(true);
-    }   
+    }
+    
+    @Override
+    protected Logger getTrackingLogger() {
+        return log;
+    }
 }
