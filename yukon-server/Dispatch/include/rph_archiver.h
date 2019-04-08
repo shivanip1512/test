@@ -28,7 +28,8 @@ public:
     void submitPointData(const CtiPointDataMsg& msg);
     unsigned archiverQueueSize();
 
-    unsigned writeRawPointHistory(Cti::Database::DatabaseConnection &conn, std::vector<std::unique_ptr<CtiTableRawPointHistory>>&& rowsToWrite);
+    //  Returns tracking IDs (if any) of rows written.
+    std::vector<std::string> writeRawPointHistory(Cti::Database::DatabaseConnection &conn, std::vector<std::unique_ptr<CtiTableRawPointHistory>>&& rowsToWrite);
 
     bool isRunning();
     void interrupt();

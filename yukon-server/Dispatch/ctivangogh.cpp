@@ -1539,7 +1539,7 @@ void CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                     {
                         if( gConfigParms.isTrue("DISPATCH_LOG_DUPLICATE_ARCHIVE_SUPPRESSION", true) )
                         {
-                            CTILOG_DEBUG(dout, "Suppressing duplicate forced archive, id " << TempPoint->getPointID() << ", " << aPD.getValue() << "@" << aPD.getTime());
+                            CTILOG_DEBUG(dout, "Suppressing duplicate forced archive, id " << TempPoint->getPointID() << ", " << aPD.getValue() << "@" << aPD.getTime() << " " << aPD.getTrackingId());
                         }
                     }
                     else
