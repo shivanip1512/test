@@ -278,6 +278,8 @@ std::string inputStrings[] = {
 "getvalue hourly read cancel",
 "getvalue hourly read channel 1",
 "getvalue hourly read channel 2 12/25/2014",
+//  250
 "getvalue hourly read channel 3 12/25/2014 12/31/2014",
+"control close offset 17 offset 99",
 };
 

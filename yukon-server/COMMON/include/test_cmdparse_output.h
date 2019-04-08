@@ -279,4 +279,5 @@ std::string parse_asString[] = {
 "command=1:flags=0::channel=(none),2,2.000:hourly_read=(none),1,1.000:hourly_read_date_begin=12/25/2014,-2147483648,0.000:type=versacom,0,0.000",
 //  250
 "command=1:flags=0::channel=(none),3,3.000:hourly_read=(none),1,1.000:hourly_read_date_begin=12/25/2014,-2147483648,0.000:hourly_read_date_end=12/31/2014,-2147483648,0.000:type=versacom,0,0.000",
+"command=8:flags=268435488::offset=(none),17,17.000:sa_f1bit=(none),0,0.000:type=versacom,0,0.000",
 };
