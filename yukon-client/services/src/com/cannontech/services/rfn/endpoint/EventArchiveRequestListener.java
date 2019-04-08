@@ -1,6 +1,7 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
@@ -36,13 +37,17 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
         }
 
         @Override
-        protected void processData(RfnDevice device, RfnEventArchiveRequest eventRequest) {
+        protected Optional<String> processData(RfnDevice device, RfnEventArchiveRequest eventRequest) {
+            Optional<String> trackingIds = Optional.empty();
+            
             // Only process events for meters at this time
             if (device.getPaoIdentifier().getPaoType().isMeter() ||
                     device.getPaoIdentifier().getPaoType().isRfRelay()) {
                 List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);
                 rfnMeterEventService.processEvent(device, eventRequest.getEvent(), messagesToSend);
     
+                trackingIds = trackValues(messagesToSend);
+                
                 // Save analog value(s) to db
                 asyncDynamicDataSource.putValues(messagesToSend);
                 processedEventRequest.addAndGet(messagesToSend.size());
@@ -53,6 +58,8 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
                 incrementProcessedArchiveRequest();
             }
             sendAcknowledgement(eventRequest);
+            
+            return trackingIds;
         }
     }
 

@@ -1,6 +1,7 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
@@ -50,8 +51,9 @@ public class RfDaArchiveRequestListener extends ArchiveRequestListenerBase<RfDaA
         }
         
         @Override
-        public void processData(RfnDevice rfnDevice, RfDaArchiveRequest archiveRequest) {
+        public Optional<String> processData(RfnDevice rfnDevice, RfDaArchiveRequest archiveRequest) {
             //  no data to archive on this queue, just device creation requests that have no other payload
+            return Optional.empty();  //  no point data to track
         }
     }
     

@@ -1,6 +1,7 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -44,11 +45,12 @@ public class GatewayFirmwareUpdateResponseListener extends ArchiveRequestListene
         }
         
         @Override
-        public void processData(RfnDevice rfnDevice, RfnIdentifyingMessage message) {
+        public Optional<String> processData(RfnDevice rfnDevice, RfnIdentifyingMessage message) {
             RfnGatewayFirmwareUpdateResponse response = (RfnGatewayFirmwareUpdateResponse) message;
             gatewayFirmwareUpgradeDao.complete(response.getUpdateId(), 
                                                rfnDevice.getPaoIdentifier(), 
                                                response.getResult());
+            return Optional.empty();  //  no point data to track
         }
     }
     

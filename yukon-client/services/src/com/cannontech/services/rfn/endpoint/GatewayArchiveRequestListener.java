@@ -2,6 +2,7 @@ package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -61,9 +62,10 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
         }
         
         @Override
-        public void processData(RfnDevice rfnDevice, GatewayArchiveRequest archiveRequest) {
+        public Optional<String> processData(RfnDevice rfnDevice, GatewayArchiveRequest archiveRequest) {
             //no data to archive on this queue, just device creation requests that have no other payload
             incrementProcessedArchiveRequest();
+            return Optional.empty();  //  no point data to track
         }
     }
     

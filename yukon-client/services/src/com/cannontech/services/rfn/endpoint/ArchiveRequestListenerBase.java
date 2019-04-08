@@ -1,19 +1,23 @@
 package com.cannontech.services.rfn.endpoint;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import javax.annotation.PreDestroy;
 import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 
-import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
 import com.cannontech.amr.rfn.model.CalculationData;
 import com.cannontech.amr.rfn.service.RfnChannelDataConverter;
 import com.cannontech.clientutils.YukonLogManager;
@@ -28,8 +32,11 @@ import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
+import com.cannontech.common.util.Base94;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.message.dispatch.message.PointData;
+import com.google.common.collect.Maps;
 
 public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage> {
     
@@ -43,6 +50,10 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
     protected JmsTemplate jmsTemplate;
     private AtomicInteger processedArchiveRequest = new AtomicInteger();
+    
+    private static final String CREATION_FAILED_FOR = "Creation failed for ";
+    private static AtomicLong pointDataTracker = new AtomicLong(); 
+    private static final long MAX_TRACKING_ID = Base94.max(4);  //  4 digits before rollover
     
     protected abstract class ConverterBase extends Thread {
         private ArrayBlockingQueue<T> inQueue;
@@ -80,18 +91,22 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
             while (true) {
                 try {
                     T request = inQueue.take();
-                    doCommsLogging(request);
-                    processRequest(request);
-                    if (log.isDebugEnabled()) {
-                        log.debug("Processed Archive Request for " + request.getRfnIdentifier() + " on " + getName()
-                                + ", queue size is: " + inQueue.size());
-                    }
+                    Optional<String> trackingInfo = Optional.empty();
+                    try {
+                        trackingInfo = processRequest(request);
+                        if (log.isDebugEnabled()) {
+                            log.debug("Processed Archive Request for " + request.getRfnIdentifier() + " on " + getName()
+                                    + ", queue size is: " + inQueue.size());
+                        } 
+                    } catch (Exception e) {
+                        // consider using more "named" exceptions throughout this code
+                        log.warn("Unknown exception while processing request", e);
+                    } 
+
+                    doCommsLogging(request, trackingInfo);
                 } catch (InterruptedException e) {
                     log.warn("received shutdown signal, queue size: " + inQueue.size());
-                    break;
-                } catch (Exception e) {
-                    // consider using more "named" exceptions throughout this code
-                    log.warn("Unknown exception while processing request", e);
+                    return;
                 }
             }
         }
@@ -99,29 +114,43 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
         /**
          * Decide how to handle RFN comms logging based on request type and log level.
          * @param request The RFN archive request sent from network manager.
+         * @param trackingInfo The tracking information for the request, if any.
+         * @param pointDataIdentifiers 
          */
-        private void doCommsLogging(T request) {
+        private void doCommsLogging(T request, Optional<String> trackingInfo) {
             Logger rfnCommsLog = YukonLogManager.getRfnLogger();
-            Level logLevel = rfnCommsLog.getLevel();
-            if (request instanceof RfnMeterReadingArchiveRequest) {
-                if (Level.DEBUG.isMoreSpecificThan(logLevel)) {
-                    rfnCommsLog.debug(">>> " + request.toString());
-                } else if (Level.INFO.isMoreSpecificThan(logLevel)) {
-                    RfnMeterReadingArchiveRequest meterRequest = (RfnMeterReadingArchiveRequest) request;
-                    rfnCommsLog.info(">>> " +
-                        String.format("RfnMeterReadingArchiveRequest [rfnIdentifier=%s, dataPointId=%s, readingType=%s]",
-                                meterRequest.getRfnIdentifier(),
-                                meterRequest.getDataPointId(),
-                                meterRequest.getReadingType()));
-                }
-            } else {
-                if (Level.INFO.isMoreSpecificThan(logLevel)) {
-                    rfnCommsLog.info(">>> " + request.toString());
-                }
+            createLogEntry(request, trackingInfo, rfnCommsLog::isEnabled, rfnCommsLog::log);
+        }
+        
+        /**
+         * Creates a log entry for the request and tracking info, if any, depending on the enabled log level.
+         * The log-related methods are passed as method references to limit coupling with the full Logger class. 
+         * @param request The request to log.
+         * @param trackingInfo The tracking info for the request, if any.
+         * @param isEnabled A predicate to test whether the log level is enabled.
+         * @param log A logging function that logs a string at a given log level.
+         */
+        protected void createLogEntry(T request, Optional<String> trackingInfo, Predicate<Level> isEnabled, BiConsumer<Level, String> log) {
+            if (isEnabled.test(Level.INFO)) {
+                log.accept(Level.INFO, ">>> " + request.toString() + delimited(trackingInfo));
             }
         }
 
-        protected void processRequest(T request) {
+        /**
+         * Returns the string with a space separator if non-empty, otherwise returns an empty string.
+         * @param field
+         * @return The space-padded string, or an empty string if empty.
+         */
+        protected String delimited(Optional<String> field) {
+            return field.map(t -> " " + t).orElse("");
+        }
+
+        /**
+         * Processes the request and returns any tracking information for the request
+         * @param request the request to process
+         * @return the tracking information, if any
+         */
+        protected Optional<String> processRequest(T request) {
             RfnIdentifier rfnIdentifier = request.getRfnIdentifier();
             if (rfnIdentifier.is_Empty_()) {
                 if (log.isInfoEnabled()) {
@@ -129,7 +158,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                              + rfnIdentifier.getSensorManufacturer() + " Sensor Model:" + rfnIdentifier.getSensorModel());
                 }
                 sendAcknowledgement(request);
-                return;
+                return Optional.empty();
             }
             RfnDevice rfnDevice;
             try {
@@ -145,12 +174,12 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                     if (isDev || isAcknowledgeable) {
                         log.info("Exception:" + e.getMessage());
                         sendAcknowledgement(request);
-                        return;
+                        return Optional.empty();
                     }
                     throw e;
                 }
             }
-            processData(rfnDevice, request);
+            return processData(rfnDevice, request);
         }
 
         /**
@@ -167,35 +196,51 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
             } catch (IgnoredTemplateException e) {
                 throw new RuntimeException("Unable to create device for " + identifier + " because template is ignored", e);
             } catch (BadTemplateDeviceCreationException e) {
-                log.warn("Creation failed for " + identifier + ". Manufacturer, Model and Serial Number combination do "
+                log.warn(CREATION_FAILED_FOR + identifier + ". Manufacturer, Model and Serial Number combination do "
                     + "not match any templates.", e);
-                throw new RuntimeException("Creation failed for " + identifier, e);
+                throw new RuntimeException(CREATION_FAILED_FOR + identifier, e);
             } catch (DeviceCreationException e) {
-                log.warn("Creation failed for " + identifier + ", checking cache for any new entries.");
+                log.warn(CREATION_FAILED_FOR + identifier + ", checking cache for any new entries.");
                 //  Try another lookup in case someone else beat us to it
                 try {
                     return rfnDeviceLookupService.getDevice(identifier);
                 } catch (NotFoundException e1) {
-                    throw new RuntimeException("Creation failed for " + identifier, e);
+                    throw new RuntimeException(CREATION_FAILED_FOR + identifier, e);
                 }
             } catch (Exception e) {
                 if (log.isTraceEnabled()) {
                     // Only log full exception when trace is on so lots of failed creations don't kill performance.
-                    log.warn("Creation failed for " + identifier, e);
+                    log.warn(CREATION_FAILED_FOR + identifier, e);
                 } else {
-                    log.warn("Creation failed for " + identifier +":" + e);
+                    log.warn(CREATION_FAILED_FOR + identifier +":" + e);
                 }
-                throw new RuntimeException("Creation failed for " + identifier, e);
+                throw new RuntimeException(CREATION_FAILED_FOR + identifier, e);
             }
         }
 
-        protected abstract void processData(RfnDevice device, T request);
+        /**
+         * Processes the data in the request for the given device.
+         * @return the tracking information for the request, if any. 
+         */
+        protected abstract Optional<String> processData(RfnDevice device, T request);
 
         public void shutdown() {
             // shutdown mechanism assumes that
             shutdown = true;
             interrupt();
             drainQueue();
+        }
+
+        protected Optional<String> trackValues(Collection<PointData> messagesToSend) {
+            if (messagesToSend.isEmpty()) {
+                return Optional.empty();
+            }
+            
+            var messageIds = Maps.toMap(messagesToSend, m -> Base94.of(pointDataTracker.getAndIncrement() % MAX_TRACKING_ID));
+
+            messageIds.forEach((message, id) -> message.setTrackingId(id));
+            
+            return Optional.of(Strings.join(messageIds.values(), ' '));
         }
     }
     

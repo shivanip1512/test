@@ -1,6 +1,7 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
@@ -39,7 +40,7 @@ public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<
         }
 
         @Override
-        protected void processData(RfnDevice device, LocationResponse location) {
+        protected Optional<String> processData(RfnDevice device, LocationResponse location) {
             if (log.isDebugEnabled()) {
                 log.debug("Received location for " + device.getName() + " " + device.getRfnIdentifier() + " "
                     + location);
@@ -55,6 +56,7 @@ public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<
                     YukonUserContext.system.getYukonUser());
             }
             sendAcknowledgement(location);
+            return Optional.empty();  //  no point data to track
         }
     }
 

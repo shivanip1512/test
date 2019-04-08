@@ -2,6 +2,7 @@ package com.cannontech.services.rfn.endpoint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -11,7 +12,6 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.archive.RfRelayArchiveRequest;
 import com.cannontech.common.rfn.message.archive.RfRelayArchiveResponse;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -31,11 +31,12 @@ public class RfRelayArchiveRequestListener extends ArchiveRequestListenerBase<Rf
         }
 
         @Override
-        public void processData(RfnDevice rfnDevice, RfRelayArchiveRequest archiveRequest) {
+        public Optional<String> processData(RfnDevice rfnDevice, RfRelayArchiveRequest archiveRequest) {
             // no data to archive on this queue, just device creation requests
             // that have no other payload
             incrementProcessedArchiveRequest();
             sendAcknowledgement(archiveRequest);
+            return Optional.empty();  //  no point data to track
         }
     }
 
