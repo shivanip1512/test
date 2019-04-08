@@ -33,6 +33,7 @@
         <pointInfo name="Coincident Cumulative Peak kVAr"/>
         <pointInfo name="Coincident Power Factor" attributes="POWER_FACTOR_COIN"/>
         <pointInfo name="Configuration Error" attributes="CONFIGURATION_ERROR"/>
+        <pointInfo name="Current Neutral to Ground" attributes="NEUTRAL_CURRENT"/>
         <pointInfo name="Current Waveform Distortion" attributes="CURRENT_WAVEFORM_DISTORTION"/>
         <pointInfo name="Delivered kVAh (Rate A kVAh)" attributes="KVAH_RATE_A"/>
         <pointInfo name="Delivered kVAh (Rate B kVAh)" attributes="KVAH_RATE_B"/>
