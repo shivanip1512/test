@@ -318,6 +318,46 @@ BOOST_AUTO_TEST_CASE(test_convertHexStringToBytes)
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_toBase94)
+{
+    BOOST_CHECK_EQUAL(toBase94(0), "!!!");
+    BOOST_CHECK_EQUAL(toBase94(1), "!!\"");
+    BOOST_CHECK_EQUAL(toBase94(2), "!!#");
+    BOOST_CHECK_EQUAL(toBase94(3), "!!$");
+
+    BOOST_CHECK_EQUAL(toBase94(47), "!!P");
+
+    BOOST_CHECK_EQUAL(toBase94(92), "!!}");
+    BOOST_CHECK_EQUAL(toBase94(93), "!!~");
+    BOOST_CHECK_EQUAL(toBase94(94), "!\"!");
+    BOOST_CHECK_EQUAL(toBase94(95), "!\"\"");
+    BOOST_CHECK_EQUAL(toBase94(96), "!\"#");
+
+    BOOST_CHECK_EQUAL(toBase94(141), "!\"P");
+    BOOST_CHECK_EQUAL(toBase94(142), "!\"Q");
+    BOOST_CHECK_EQUAL(toBase94(143), "!\"R");
+
+    BOOST_CHECK_EQUAL(toBase94(186), "!\"}");
+    BOOST_CHECK_EQUAL(toBase94(187), "!\"~");
+    BOOST_CHECK_EQUAL(toBase94(188), "!#!");
+    BOOST_CHECK_EQUAL(toBase94(189), "!#\"");
+    BOOST_CHECK_EQUAL(toBase94(190), "!##");
+
+    BOOST_CHECK_EQUAL(toBase94(830582), "~~}");
+    BOOST_CHECK_EQUAL(toBase94(830583), "~~~");
+    BOOST_CHECK_EQUAL(toBase94(830584), "\"!!!");
+    BOOST_CHECK_EQUAL(toBase94(830585), "\"!!\"");
+
+    BOOST_CHECK_EQUAL(toBase94(78074894), "~~~}");
+    BOOST_CHECK_EQUAL(toBase94(78074895), "~~~~");
+    BOOST_CHECK_EQUAL(toBase94(78074896), "\"!!!!");
+    BOOST_CHECK_EQUAL(toBase94(78074897), "\"!!!\"");
+
+    BOOST_CHECK_EQUAL(toBase94(std::numeric_limits<int16_t>::max()), "$cX");
+    BOOST_CHECK_EQUAL(toBase94(std::numeric_limits<int32_t>::max()), "<PP}d");
+    BOOST_CHECK_EQUAL(toBase94(std::numeric_limits<int64_t>::max()), "1**0#VEx9D");
+}
+
 BOOST_AUTO_TEST_CASE(test_stringCompareIgnoreCase)
 {
     std::string s1 = "My Compare";
