@@ -1,6 +1,8 @@
 package com.cannontech.common.rfn.message.metadatamulti;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -24,25 +26,25 @@ public class RfnMetadataMultiRequest implements Serializable {
     public Set<RfnIdentifier> getRfnIdentifiers() {
         return rfnIdentifiers;
     }
-    
-    public void setRfnIdentifiers(RfnIdentifier... rfnIdentifiers) {
-        setRfnIdentifiers(Set.of(rfnIdentifiers));
-    }
-    
-    public void setRfnMetadatas(RfnMetadataMulti... rfnMetadatas) {
-        setRfnMetadatas(Set.of(rfnMetadatas));
-    }
 
     public Set<RfnMetadataMulti> getRfnMetadatas() {
         return rfnMetadatas;
     }
+    
+    public void setRfnIdentifiers(RfnIdentifier... rfnIdentifiers) {
+        setRfnIdentifiers(new HashSet<>(Arrays.asList(rfnIdentifiers)));
+    }
+    
+    public void setRfnMetadatas(RfnMetadataMulti... rfnMetadatas) {
+        setRfnMetadatas(new HashSet<>(Arrays.asList(rfnMetadatas)));
+    }
+    
+    public void setRfnIdentifiers(Set<RfnIdentifier> rfnIdentifiers) {
+        this.rfnIdentifiers = rfnIdentifiers;
+    }
 
     public void setRfnMetadatas(Set<RfnMetadataMulti> rfnMetadatas) {
         this.rfnMetadatas = rfnMetadatas;
-    }
-
-    public void setRfnIdentifiers(Set<RfnIdentifier> rfnIdentifiers) {
-        this.rfnIdentifiers = rfnIdentifiers;
     }
 
     @Override
