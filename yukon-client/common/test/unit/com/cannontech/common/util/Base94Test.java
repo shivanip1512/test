@@ -1,57 +1,35 @@
 package com.cannontech.common.util;
 
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.springframework.core.io.ClassPathResource;
 
 @RunWith(Parameterized.class)
 public class Base94Test {
 
+    private static ClassPathResource testCases = new ClassPathResource("testCases/base94.txt");
+    
     @Parameters
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-            { 0, "!!!" },
-            { 1, "!!\"" },
-            { 2, "!!#" },
-            { 3, "!!$" },
-
-            { 47, "!!P" },
-
-            { 92, "!!}" },
-            { 93, "!!~" },
-            { 94, "!\"!" },
-            { 95, "!\"\"" },
-            { 96, "!\"#" },
-
-            { 141, "!\"P" },
-            { 142, "!\"Q" },
-            { 143, "!\"R" },
-
-            { 186, "!\"}" },
-            { 187, "!\"~" },
-            { 188, "!#!" },
-            { 189, "!#\"" },
-            { 190, "!##" },
-            
-            { 830582, "~~}" },
-            { 830583, "~~~" },
-            { 830584, "\"!!!" },
-            { 830585, "\"!!\"" },
-
-            { 78074894, "~~~}" },
-            { 78074895, "~~~~" },
-            { 78074896, "\"!!!!" },
-            { 78074897, "\"!!!\"" },
-
-            { Short.MAX_VALUE, "$cX" },
-            { Integer.MAX_VALUE, "<PP}d" },
-            { Long.MAX_VALUE, "1**0#VEx9D" },
-        });
+    public static Collection<Object[]> data() throws IOException {
+        
+        var lineReader = new BufferedReader(new InputStreamReader(testCases.getInputStream()));
+        
+        return lineReader.lines()
+                .filter(StringUtils::isNotEmpty)
+                .filter(s -> !s.contains("cpp-delimiter"))  //  filter out the required C++ delimiters at the start and end of the file
+                .map(StringUtils::split)
+                .map(testCase -> new Object[] { Long.valueOf(testCase[0]), testCase[1] })
+                .collect(Collectors.toList());
     }
     
     private long input;
