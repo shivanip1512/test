@@ -154,7 +154,12 @@ public class MaintenanceSchedulerRunner {
                 } else {
                     log.info("Maintenance scheduler " + scheduler + " will run " + tasks.size() + " tasks.");
                     // return will be true when all task completed before time, else it will be false
-                    endedEarly = taskRunner.run(tasks, nextRunWindow.getEnd().toInstant());
+                    try {
+                        endedEarly = taskRunner.run(tasks, nextRunWindow.getEnd().toInstant());
+                    } catch (Throwable t) {
+                        endedEarly = true;
+                        log.error("Error occured while executing the scheduler : " + t);
+                    }
                 }
                 reschedule(scheduler, endedEarly);
             }, millisecondsUntilRun, TimeUnit.MILLISECONDS);

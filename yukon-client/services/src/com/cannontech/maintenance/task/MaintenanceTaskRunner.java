@@ -45,20 +45,27 @@ public class MaintenanceTaskRunner {
         return false;
     }
 
-    private void runTasks(List<MaintenanceTask> tasks, Set<MaintenanceTaskType> completedMaintenanceTask, Duration timeSliceLength) {
+    private void runTasks(List<MaintenanceTask> tasks, Set<MaintenanceTaskType> completedMaintenanceTask,
+            Duration timeSliceLength) {
         for (MaintenanceTask task : tasks) {
-            log.info("Running " + task.getMaintenanceTaskType().name() + " maintenance task");
-            Instant endOfTimeSlice = Instant.now().plus(timeSliceLength);
-            // The task runs repeatedly, until it's out of work, or the allotted time is up
-            boolean taskIsDone = false;
-            if (!completedMaintenanceTask.contains(task.getMaintenanceTaskType())) {
-                while (!taskIsDone && isEnoughTimeAvailable(endOfTimeSlice)) {
-                    taskIsDone = task.doTask(endOfTimeSlice);
-                    if (taskIsDone) {
-                        completedMaintenanceTask.add(task.getMaintenanceTaskType());
-                        log.info("Maintenance task " + task.getMaintenanceTaskType().name() + " is completed.");
+            try {
+                log.info("Running " + task.getMaintenanceTaskType().name() + " maintenance task");
+                Instant endOfTimeSlice = Instant.now().plus(timeSliceLength);
+                // The task runs repeatedly, until it's out of work, or the allotted time is up
+                boolean taskIsDone = false;
+                if (!completedMaintenanceTask.contains(task.getMaintenanceTaskType())) {
+                    while (!taskIsDone && isEnoughTimeAvailable(endOfTimeSlice)) {
+                        taskIsDone = task.doTask(endOfTimeSlice);
+                        if (taskIsDone) {
+                            completedMaintenanceTask.add(task.getMaintenanceTaskType());
+                            log.info("Maintenance task " + task.getMaintenanceTaskType().name() + " is completed.");
+                        }
                     }
                 }
+            } catch (Throwable t) {
+                completedMaintenanceTask.add(task.getMaintenanceTaskType());
+                log.error("Error occured while executing the task : " + task.getMaintenanceTaskType().name()
+                    + " with error : " + t);
             }
         }
 
