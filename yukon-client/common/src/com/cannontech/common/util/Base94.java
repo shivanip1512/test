@@ -17,6 +17,8 @@ import com.google.common.base.Strings;
  *   <tr><td>4</td><td>81,450,625</td><td>16,777,215</td><td>+387%</td></tr>
  * </table>
  * 
+ * Matching C++ implementation at yukon-server/COMMON/utility.cpp
+ * 
  * @see <a href="https://stackoverflow.com/questions/49205570/what-is-base94-encoding-and-how-does-it-work">base94 on Stack Overflow</a>
  * @author E9816181
  *

@@ -692,6 +692,8 @@ void convertHexStringToBytes( std::string & stringInput, std::vector< unsigned c
     }
 }
 
+//  Converts a number to base94 representation for logging.
+//    Matching Java implementation at /common/src/com/cannontech/common/util/Base94.java
 std::string toBase94(uint64_t input)
 {
     std::string s;
