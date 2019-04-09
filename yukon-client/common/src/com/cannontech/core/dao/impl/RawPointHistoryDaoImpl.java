@@ -1098,7 +1098,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         sql.append("quality,");
         sql.append("pointtype");
         sql.append("FROM (");
-        sql.append("  SELECT ROW_NUMBER() OVER (ORDER BY Timestamp DESC) as rowNumber, rph.pointId, rph.timestamp, rph.value, rph.quality, p.pointtype");
+        sql.append("  SELECT ROW_NUMBER() OVER (ORDER BY Timestamp DESC, Changeid DESC) as rowNumber, rph.pointId, rph.timestamp, rph.value, rph.quality, p.pointtype");
         sql.append("  FROM RawPointHistory rph");
         sql.append("  JOIN Point p ON (rph.pointId = p.pointId)");
         sql.append("  WHERE rph.pointId").eq(pointId);
