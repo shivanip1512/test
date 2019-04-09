@@ -860,7 +860,7 @@ Itron Sentinel:
     - Current Phase A:                                                { Unit: *A,     Modifiers: [ *PhA, *milli                               ], Models: *_1234, Itron name: "Instantaneous Current, Phase A" }
     - Current Phase B:                                                { Unit: *A,     Modifiers: [ *PhB, *milli                               ], Models: *_1234, Itron name: "Instantaneous Current, Phase B" }
     - Current Phase C:                                                { Unit: *A,     Modifiers: [ *PhC, *milli                               ], Models: *_1234, Itron name: "Instantaneous Current, Phase C" }
-    - Current Neutral to Ground:                                      { Unit: *A,     Modifiers: [ *Neutral, *milli                           ], Models: *_1234, Mapped: false, Itron name: "Instantaneous Neutral Current" }
+    - Current Neutral to Ground:                                      { Unit: *A,     Modifiers: [ *Neutral, *milli                           ], Models: *_1234, Itron name: "Instantaneous Neutral Current" }
     - Angle of Voltage Phase B to Voltage Phase A:                    { Unit: *V_deg, Modifiers: [ *PhB                                       ], Models: *_1234, Mapped: false, Itron name: "Angle Voltage B To Voltage A" }
     - Angle of Voltage Phase C to Voltage Phase A:                    { Unit: *V_deg, Modifiers: [ *PhC                                       ], Models: *_1234, Mapped: false, Itron name: "Angle Voltage C To Voltage A" }
     - Angle of Current Phase A to Voltage Phase A:                    { Unit: *A_deg, Modifiers: [ *PhA                                       ], Models: *_1234, Mapped: false, Itron name: "Angle Current A To Voltage A" }

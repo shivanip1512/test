@@ -2635,7 +2635,13 @@
             <uom>Restore Blink Count</uom>
             <modifiers match="equal"/> 
         </point>
-        
+        <point name="Current Neutral to Ground">
+            <uom>A</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase Neutral->Ground</modifier>
+            </modifiers>
+        </point>
         <point name="Device Temperature">
             <uom>&#176;C</uom>
             <multiplier value="1"/>
