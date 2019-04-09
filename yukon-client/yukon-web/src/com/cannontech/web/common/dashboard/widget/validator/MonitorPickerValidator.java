@@ -1,6 +1,8 @@
 package com.cannontech.web.common.dashboard.widget.validator;
 
+import java.util.Optional;
 import java.util.StringTokenizer;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.amr.monitors.PointMonitor;
@@ -27,7 +29,7 @@ public class MonitorPickerValidator implements WidgetInputValidator {
     @Override
     public void validate(String inputName, Object inputValue, WidgetInputType type)
             throws WidgetParameterValidationException, WidgetMissingParameterException {
-        StringTokenizer tokenizer = new StringTokenizer(inputValue.toString(), ",");
+        StringTokenizer tokenizer = new StringTokenizer((String) Optional.ofNullable(inputValue).orElse(""), ",");
         while (tokenizer.hasMoreElements()) {
             String monitorId = tokenizer.nextElement().toString();
             if (!isValidMonitorId(monitorId) && !StringUtils.isBlank(monitorId)) {
