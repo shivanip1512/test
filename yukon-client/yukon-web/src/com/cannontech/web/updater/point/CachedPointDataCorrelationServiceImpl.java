@@ -90,10 +90,9 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
             log.info("Historical values haven't been written to RPH yet");
             return true;
         }
-        log.info("Comparing values:");
-        log.info("historicalValue="+historicalValue.getValue());
-        log.info("pointUpdateBackingServiceCachedValue="+pointUpdateBackingServiceCachedValue.getValue());
-        log.info("asyncDataSourceValue="+asyncDataSourceValue.getValue());
+        log.info("Comparing values:" + " historicalValue=" + historicalValue.getValue()
+            + " pointUpdateBackingServiceCachedValue=" + pointUpdateBackingServiceCachedValue.getValue()
+            + " asyncDataSourceValue=" + asyncDataSourceValue.getValue());
         boolean matchedByValue = historicalValue.getValue() == pointUpdateBackingServiceCachedValue.getValue()
             && pointUpdateBackingServiceCachedValue.getValue() == asyncDataSourceValue.getValue();
         boolean matchedByDate =
