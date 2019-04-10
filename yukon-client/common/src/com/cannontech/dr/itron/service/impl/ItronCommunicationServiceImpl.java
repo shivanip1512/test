@@ -1,18 +1,18 @@
 package com.cannontech.dr.itron.service.impl;
 
+import static com.cannontech.core.dao.PersistedSystemValueKey.*;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -26,6 +26,7 @@ import org.apache.commons.compress.utils.Sets;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.soap.client.SoapFaultClientException;
@@ -39,7 +40,8 @@ import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PersistedSystemValueDao;
-import com.cannontech.core.dao.PersistedSystemValueKey;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.dao.ItronDao;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceRequest;
@@ -81,32 +83,32 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 public class ItronCommunicationServiceImpl implements ItronCommunicationService {
     
+    @Autowired private ApplianceAndProgramDao applianceAndProgramDao;
+    @Autowired private AssignedProgramDao assignedProgramDao;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private EnrollmentDao enrollmentDao;
+    @Autowired private IDatabaseCache cache;
+    @Autowired private GlobalSettingDao settingDao;
     @Autowired private ItronDao itronDao;
     @Autowired private ItronEventLogService itronEventLogService;
-    @Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private AssignedProgramDao assignedProgramDao;
-    @Autowired private IDatabaseCache cache;
-    @Autowired private DeviceDao deviceDao;
     @Autowired private InventoryDao inventoryDao;
-    @Autowired private GlobalSettingDao settingDao;
-    @Autowired private ApplianceAndProgramDao applianceAndProgramDao;
-    @Autowired private List<SoapFaultParser> soapFaultParsers;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
+    @Autowired private List<SoapFaultParser> soapFaultParsers;
     
     private static final Set<String> faultCodesToIgnore = Sets.newHashSet("UtilServicePointID.Exists");
-    private static final Map<Integer, Long> groupPaoIdToItronEventId = new HashMap<>();
-
+    
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
-    public static final String FILE_PATH = CtiUtilities.getItronDirPath();
-    public static final SimpleDateFormat FILE_NAME_DATE_FORMATTER = new SimpleDateFormat("YYYYMMddHHmm");
     private static final String READ_GROUP = "ITRON_READ_GROUP";
+    public static final String FILE_PATH = CtiUtilities.getItronDirPath();
         
     enum ExportType {
         READ,
@@ -211,6 +213,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         itronEventLogService.sendRestore(yukonGroupId);
         // Restore the group. Enable randomization (ramp out) if the event was sent with randomization.
         sendRestore(yukonGroupId, null, itronGroupId, true);
+        // Remove the event ID mapping from the DB
+        itronDao.removeActiveEvent(yukonGroupId);
     }
     
     @Override
@@ -235,7 +239,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                     (JAXBElement<AddProgramEventResponseType>) ItronEndpointManager.PROGRAM_EVENT.getTemplate(
                     settingDao).marshalSendAndReceive(url, request);
             AddProgramEventResponseType type = response.getValue();
-            groupPaoIdToItronEventId.put(yukonGroupId, type.getProgramEventID());
+            itronDao.updateActiveEvent(yukonGroupId, type.getProgramEventID());
             log.debug("ITRON-sendDREventForGroup url:{} mac address:{} itron group id:{} itron event id:{} result:{}.", url,
                 group.getPaoName(), program.getPaoName(), type.getProgramEventID() , "success");
             log.debug(XmlUtils.getPrettyXml(response));
@@ -261,11 +265,14 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * 3. Sends message to Itron to update device logs
      */
     private long updateDeviceLogsBeforeRead(List<Integer> deviceIds) {
-        Long itronReadGroupId = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.ITRON_READ_GROUP_ID);
-        if(itronReadGroupId == null) {
+        long itronReadGroupId = persistedSystemValueDao.getLongValue(ITRON_READ_GROUP_ID);
+        
+        // If the read group ID hasn't been persisted yet, do so now
+        if (ITRON_READ_GROUP_ID.isDefaultValue(itronReadGroupId)) {
             itronReadGroupId = getGroupIdFromItron(READ_GROUP);
-            persistedSystemValueDao.setValue(PersistedSystemValueKey.ITRON_READ_GROUP_ID, itronReadGroupId);
+            persistedSystemValueDao.setValue(ITRON_READ_GROUP_ID, itronReadGroupId);
         }
+        
         //add new mac addresses to group
         List<String> macAddresses = Lists.newArrayList(deviceDao.getDeviceMacAddresses(deviceIds).values());
         addMacAddressesToGroup(READ_GROUP, macAddresses);
@@ -307,15 +314,15 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     void sendRestore(int yukonGroupId, String macAddress, Long itronGroupId, boolean enableRandomization) {
         LiteYukonPAObject group = getGroup(yukonGroupId);
 
-        Long eventId = groupPaoIdToItronEventId.get(yukonGroupId);
-        if (eventId == null) {
-            throw new ItronEventNotFoundException(
-                "Unable to restore, Itron event id doesn't exist. Services may have been restarted.");
+        Optional<Long> eventId = itronDao.getActiveEvent(yukonGroupId);
+        if (eventId.isEmpty()) {
+            throw new ItronEventNotFoundException( "Unable to restore, Itron event id doesn't exist.");
         }
+        
         String url = ItronEndpointManager.PROGRAM_EVENT.getUrl(settingDao);
         try {
             CancelHANLoadControlProgramEventOnDevicesRequest request =
-                ProgramEventManagerHelper.buildRestoreRequest(itronGroupId, eventId, macAddress, enableRandomization);
+                ProgramEventManagerHelper.buildRestoreRequest(itronGroupId, eventId.get(), macAddress, enableRandomization);
             log.debug(XmlUtils.getPrettyXml(request));
             log.debug("ITRON-sendRestore url:{} mac address:{} yukon group:{} itron event id:{}.", url, macAddress,
                 group.getPaoName(), eventId);
@@ -452,13 +459,15 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      */
     private ZipFile downloadAndZipReportFiles(List<String> fileURLs, long commandId, ExportType type) {
         List<File> files = new ArrayList<>();
-        String zipName = type + "_" + FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + commandId + ".zip";
+        String timestamp = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
+        String zipName = type + "_" + timestamp + "_" + commandId + ".zip";
+        
         for (int i = 0; i < fileURLs.size(); i++) {
             String fileURL = fileURLs.get(i);
             try {
                 URLConnection conn =  YukonHttpProxy.getURLConnection(fileURL, settingDao);
                 String fileName =
-                    (i + 1) + "_" + FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + commandId + ".csv";
+                    (i + 1) + "_" + timestamp + "_" + commandId + ".csv";
                 File file = new File(FILE_PATH, fileName);
                 OutputStream out = new FileOutputStream(file);
                 IOUtils.copy(conn.getInputStream(), out);
@@ -467,7 +476,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 log.debug("ITRON-downoladed Itron file:{} created file:{} commandId: {}.", fileURL, fileName,
                     commandId);
             } catch (Exception e) {
-                log.error("Unable to download file: " + fileURL);
+                log.error("Unable to download file: " + fileURL, e);
             }
         }
         return zipFiles(zipName, files);
