@@ -55,7 +55,6 @@ public class ItronMessageListener {
                     controlDurationSeconds, dutyCyclePercent);
             } catch (JMSException e) {
                 log.error("Error parsing Itron control message from LM", e);
-                return;
             }
         }
     }

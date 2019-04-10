@@ -3,6 +3,7 @@ package com.cannontech.dr.itron.dao;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.cannontech.core.dao.NotFoundException;
 
@@ -57,4 +58,20 @@ public interface ItronDao {
      * Returns the list of all itron group ids
      */
     List<Long> getAllItronGroupIds();
+
+    /**
+     * Get the Itron event ID for the active event on the specified group. Returns an empty optional if there is no 
+     * active event. 
+     */
+    Optional<Long> getActiveEvent(int lmGroupId);
+
+    /**
+     * Set the ID of the active event for the specified group.
+     */
+    void updateActiveEvent(int lmGroupId, Long itronEventId);
+    
+    /**
+     * Removes the active event for the specified group.
+     */
+    void removeActiveEvent(int lmGroupId);
 }

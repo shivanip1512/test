@@ -1,9 +1,11 @@
 package com.cannontech.dr.itron.dao.impl;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -14,10 +16,10 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.dr.itron.dao.ItronDao;
 
 public class ItronDaoImpl implements ItronDao {
-
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     @Override
@@ -28,8 +30,8 @@ public class ItronDaoImpl implements ItronDao {
         sql.append("WHERE YukonGroupId").eq(yukonLmGroupId);
         try {
             return jdbcTemplate.queryForInt(sql);
-        } catch (EmptyResultDataAccessException ex){
-            throw new NotFoundException("ItronGroupId with YukonGroupId: " + yukonLmGroupId + " was not found.");
+        } catch (EmptyResultDataAccessException e){
+            throw new NotFoundException("ItronGroupId with YukonGroupId: " + yukonLmGroupId + " was not found.", e);
         }
     }
     
@@ -49,8 +51,8 @@ public class ItronDaoImpl implements ItronDao {
         sql.append("WHERE YukonProgramId").eq(yukonLmProgramId);
         try {
             return jdbcTemplate.queryForInt(sql);
-        } catch (EmptyResultDataAccessException ex) {
-            throw new NotFoundException("ItronProgramId with YukonProgramId: " + yukonLmProgramId + " was not found.");
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("ItronProgramId with YukonProgramId: " + yukonLmProgramId + " was not found.", e);
         }
     }
     
@@ -62,8 +64,8 @@ public class ItronDaoImpl implements ItronDao {
         sql.append("WHERE YukonGroupId").eq(yukonLmGroupId);
         try {
             return jdbcTemplate.queryForInt(sql);
-        } catch (EmptyResultDataAccessException ex){
-            throw new NotFoundException("VirtualRelayId with YukonGroupId: " + yukonLmGroupId + " was not found.");
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("VirtualRelayId with YukonGroupId: " + yukonLmGroupId + " was not found.", e);
         }
     }
 
@@ -131,5 +133,36 @@ public class ItronDaoImpl implements ItronDao {
         return jdbcTemplate.query(sql, (YukonResultSet rs) -> {
             return rs.getInt("YukonGroupId");
         });
+    }
+    
+    @Override
+    public void updateActiveEvent(int lmGroupId, Long itronEventId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE LmGroupItronMapping");
+        sql.set("ItronEventId", itronEventId);
+        sql.append("WHERE YukonGroupId").eq(lmGroupId);
+        jdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public Optional<Long> getActiveEvent(int lmGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT YukonGroupId, ItronEventId");
+        sql.append("FROM LmGroupItronMapping");
+        sql.append("WHERE YukonGroupId").eq(lmGroupId);
+        
+        // If there is no row for this Yukon group ID, this will throw an EmptyResultDataAccessException
+        // If the row exists but the value is null, an empty optional will be returned
+        return jdbcTemplate.queryForObject(sql, new YukonRowMapper<Optional<Long>>() {
+            @Override
+            public Optional<Long> mapRow(YukonResultSet rs) throws SQLException {
+                return Optional.ofNullable(rs.getNullableLong("ItronEventId"));
+            }
+        });
+    }
+    
+    @Override
+    public void removeActiveEvent(int lmGroupId) {
+        updateActiveEvent(lmGroupId, null);
     }
 }

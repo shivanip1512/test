@@ -1,7 +1,6 @@
 package com.cannontech.dr.ecobee.service.impl;
 
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.AUTHENTICATION_EXPIRED;
-import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.AUTHENTICATION_FAILED;
+import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.*;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -17,7 +16,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
@@ -45,12 +43,9 @@ public class EcobeeRestProxyFactory {
 
     private final RestTemplate proxiedTemplate;
     private RequestReplyTemplate<EcobeeAuthTokenResponse> ecobeeAuthTokenRequestTemplate;
-    private JmsTemplate jmsTemplate;
     
     @PostConstruct
     public void init() {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setDeliveryPersistent(false);
         ecobeeAuthTokenRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.ECOBEE_AUTH_TOKEN.getName(),
                 configSource, connectionFactory, JmsApiDirectory.ECOBEE_AUTH_TOKEN.getQueue().getName(), false);
     }
