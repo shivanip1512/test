@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/2/2019 2:17:20 PM                          */
+/* Created on:     4/10/2019 10:32:11 AM                        */
 /*==============================================================*/
 
 
@@ -6864,6 +6864,7 @@ create table LMGroupItronMapping (
    YukonGroupId         numeric              not null,
    ItronGroupId         numeric              null,
    VirtualRelayId       numeric              not null,
+   ItronEventId         numeric              null,
    constraint PK_LMGroupItronMapping primary key (YukonGroupId)
 )
 go

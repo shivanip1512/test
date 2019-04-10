@@ -106,6 +106,16 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-19712', '7.3.0', GETDATE());
 /* @end YUK-19712 */
 
+/* @start YUK-19773 */
+/* If the 7.2 creation script was used, the column would already exist without running the YUK-19773 update */
+/* @error ignore-begin */
+ALTER TABLE LMGroupItronMapping
+ADD ItronEventId NUMERIC NULL;
+/* @error ignore-end */
+
+INSERT INTO DBUpdates VALUES ('YUK-19773', '7.3.0', GETDATE());
+/* @end YUK-19773 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/2/2019 2:16:22 PM                          */
+/* Created on:     4/10/2019 10:33:19 AM                        */
 /*==============================================================*/
 
 
@@ -6487,6 +6487,7 @@ create table LMGroupItronMapping  (
    YukonGroupId         NUMBER                          not null,
    ItronGroupId         NUMBER,
    VirtualRelayId       NUMBER                          not null,
+   ItronEventId         NUMBER,
    constraint PK_LMGroupItronMapping primary key (YukonGroupId)
 );
 
