@@ -6473,6 +6473,7 @@ create table LMGroupItronMapping  (
    YukonGroupId         NUMBER                          not null,
    ItronGroupId         NUMBER,
    VirtualRelayId       NUMBER                          not null,
+   ItronEventId         NUMBER,
    constraint PK_LMGroupItronMapping primary key (YukonGroupId)
 );
 
