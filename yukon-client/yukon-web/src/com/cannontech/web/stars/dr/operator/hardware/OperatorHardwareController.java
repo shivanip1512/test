@@ -497,23 +497,18 @@ public class OperatorHardwareController {
 
         LiteYukonUser user = userContext.getYukonUser();
         Set<YukonRoleProperty> verifyProperties = Sets.newHashSet(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE);
+            YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE);
         hardwareModelHelper.creationAttempted(user, accountInfoFragment.getAccountNumber(), hardware, verifyProperties, bindingResult);
 
         if (!bindingResult.hasErrors()) {
-            try {
-                int inventoryId = hardwareModelHelper.create(user, hardware, bindingResult, request.getSession());
-                AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareCreated"));
-                model.addAttribute("inventoryId", inventoryId);
-            } catch (ItronCommunicationException e) {
-                flashScope.setError(e.getItronMessage());
-                return returnToCreateWithErrors(model, hardware, userContext, flashScope, accountInfoFragment, bindingResult);
-            }
+            int inventoryId = hardwareModelHelper.create(user, hardware, bindingResult, request.getSession());
 
             if (bindingResult.hasErrors()) {
                 return returnToCreateWithErrors(model, hardware, userContext, flashScope, accountInfoFragment, bindingResult);
             }
+            AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareCreated"));
+            model.addAttribute("inventoryId", inventoryId);
 
             return "redirect:view";
 
