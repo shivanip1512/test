@@ -202,9 +202,11 @@ public class OperatorAccountController {
         modelMap.addAttribute("prescan", true);
         if (hardwareFileUpload.getFile() != null) {
             modelMap.addAttribute("showHardwareStats", true);
+            modelMap.addAttribute("hardwareFileName", result.getHardwareFileUpload().getName());
         }
         if (accountFileUpload.getFile() != null) {
             modelMap.addAttribute("showCustomerStats", true);
+            modelMap.addAttribute("accountFileName", result.getAccountFileUpload().getName());
         }
         
         return "operator/account/accountImportResults.jsp";

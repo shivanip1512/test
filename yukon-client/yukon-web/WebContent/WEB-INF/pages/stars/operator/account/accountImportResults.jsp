@@ -2,6 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="operator" page="accountImport">
     <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
@@ -66,12 +67,18 @@
                     </tags:nameValue2>
                     
                     <c:if test="${showCustomerStats}">
+                        <tags:nameValue2 nameKey=".accountImportFile">
+                            <span>${fn:escapeXml(accountFileName)}</span> 
+                        </tags:nameValue2>
                         <tags:nameValue2 nameKey=".accountsToImport">
                             <cti:dataUpdaterValue identifier="${resultId}/ACCOUNTS_PROCESSED" type="ACCOUNT_IMPORT"/>
                         </tags:nameValue2>
                     </c:if>
                     
                     <c:if test="${showHardwareStats}">
+                        <tags:nameValue2 nameKey=".hardwareImportFile">
+                            <span>${fn:escapeXml(hardwareFileName)}</span>
+                        </tags:nameValue2>
                         <tags:nameValue2 nameKey=".hardwareToImport">
                             <cti:dataUpdaterValue identifier="${resultId}/HARDWARE_PROCESSED" type="ACCOUNT_IMPORT"/>
                         </tags:nameValue2>
