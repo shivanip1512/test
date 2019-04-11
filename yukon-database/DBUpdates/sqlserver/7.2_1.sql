@@ -65,13 +65,6 @@ WHERE Name IN ('NEST_USERNAME', 'NEST_PASSWORD', 'NEST_SERVER_URL');
 INSERT INTO DBUpdates VALUES ('YUK-19697', '7.2.1', GETDATE());
 /* @end YUK-19697 */
 
-/* @start YUK-19773 */
-ALTER TABLE LMGroupItronMapping
-ADD ItronEventId NUMERIC NULL;
-
-INSERT INTO DBUpdates VALUES ('YUK-19773', '7.3.0', GETDATE());
-/* @end YUK-19773 */
-
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
