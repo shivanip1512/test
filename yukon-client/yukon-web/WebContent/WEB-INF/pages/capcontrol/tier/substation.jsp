@@ -185,7 +185,7 @@ $(function() {
     
 <cti:displayForPageEditModes modes="EDIT,VIEW">
     <div class="column two nogutter">
-      <cti:tabs>
+      <cti:tabs containerName="substation_${substationId}_Tab1">
          <cti:msg2 var="statisticsTab" key=".statisticsTab"/>
          <cti:tab title="${statisticsTab}">
             <div class="column-12-12">

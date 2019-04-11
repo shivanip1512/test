@@ -5,3 +5,5 @@
 <%@ attribute name="mode" required="true" type="com.cannontech.web.PageEditMode" %>
 
 <c:set var="com.cannontech.web.taglib.StandardPageTag.pageEditMode" scope="request" value="${mode}"/>
+
+<input type="hidden" id="pageEditMode" value="${mode == 'EDIT'}"/>

@@ -908,7 +908,12 @@ yukon.ui = (function () {
 
                 if (elem.is('[data-container-name]')) {
                     var containerName = elem.data('containerName');
-                    elem.tabs('option', 'active', window.localStorage.getItem(containerName));
+                    var pageEditMode = $('#pageEditMode').val();
+                    if (pageEditMode == 'true') {
+                        elem.tabs('option', 'active', window.localStorage.getItem(containerName));
+                    } else {
+                        elem.tabs('option', 'active', elem.data('selectedTab'));
+                    }
                     elem.tabs('option','activate', function (ev, ui){
                         window.localStorage.setItem(containerName, ui.newTab.index());
                     });
