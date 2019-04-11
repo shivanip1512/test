@@ -231,6 +231,12 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
             drainQueue();
         }
 
+        /**
+         * Adds tracking IDs to the pointData and returns them as a combined string for logging.
+         * Optionally called by child classes to mark any pointData they generate.
+         * @param messagesToSend The pointData to track.
+         * @return The combined tracking information as a string, if any.
+         */
         protected Optional<String> trackValues(Collection<PointData> messagesToSend) {
             if (messagesToSend.isEmpty()) {
                 return Optional.empty();
