@@ -19,10 +19,6 @@ import com.google.common.collect.Multimap;
 public abstract class MonitorProcessorFactoryBase<T extends PointMonitor> implements
         RichPointDataListenerFactory {
 
-    private static final Duration trackingLogFrequency = Duration.standardSeconds(30);
-    private Instant nextTrackingLog = Instant.now().plus(trackingLogFrequency);
-    private Multimap<Boolean, String> trackingIds = ArrayListMultimap.create();
-
     @Override
     public List<RichPointDataListener> createListeners() {
         List<T> allMonitors = getAllMonitors();
@@ -40,42 +36,4 @@ public abstract class MonitorProcessorFactoryBase<T extends PointMonitor> implem
 
     protected abstract RichPointDataListener createPointListener(T monitor);
 
-    protected void acceptTrackingId(RichPointData data) {
-        processTrackingId(data, true);
-    }
-    protected void rejectTrackingId(RichPointData data) {
-        processTrackingId(data, false);
-    }
-    
-    private void processTrackingId(RichPointData data, boolean accepted) {
-        String trackingId = data.getPointValue().getTrackingId();
-        if (StringUtils.isNotEmpty(trackingId)) {
-            trackingIds.put(accepted, trackingId);
-        }
-        
-        if (Instant.now().isAfter(nextTrackingLog)) {
-            nextTrackingLog = Instant.now().plus(trackingLogFrequency);
-
-            logTrackingIds(trackingIds);
-            
-            trackingIds.clear();
-        }
-    }
-
-    protected void logTrackingIds(Multimap<Boolean, String> trackingIds) {
-        var log = getTrackingLogger();
-        
-        if (log != null && log.isInfoEnabled()) {
-            if (trackingIds.containsKey(true)) {
-                log.info("Tracking IDs accepted: " + String.join(" ", trackingIds.get(true)));
-            }
-            if (trackingIds.containsKey(false)) {
-                log.info("Tracking IDs rejected: " + String.join(" ", trackingIds.get(false)));
-            }
-        }
-    }
-    
-    protected Logger getTrackingLogger() {
-        return null;
-    }
 }

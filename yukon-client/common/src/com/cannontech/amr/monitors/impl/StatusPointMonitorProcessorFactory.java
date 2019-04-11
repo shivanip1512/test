@@ -4,7 +4,6 @@ import static org.joda.time.DateTime.now;
 
 import java.util.Date;
 import java.util.List;
-
 import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
@@ -47,6 +46,8 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private GlobalSettingDao globalSettingDao;
     private JmsTemplate jmsTemplate;
+    private PointDataTrackingLogger trackingLogger = new PointDataTrackingLogger(log);
+
     @Override
     protected List<StatusPointMonitor> getAllMonitors() {
         return statusPointMonitorDao.getAllStatusPointMonitors();
@@ -107,11 +108,11 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
         
         return richPointData -> {
             if (!isMonitoredData(statusPointMonitor, richPointData)) {
-                rejectTrackingId(richPointData);
+                trackingLogger.rejectId(richPointData);
                 return;
             }
             
-            acceptTrackingId(richPointData);
+            trackingLogger.acceptId(richPointData);
 
             PointValueHolder nextValue = richPointData.getPointValue();
             PointValueHolder previousValue = null; // store this outside the loop because it is valid for every processor 
@@ -247,10 +248,5 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setPubSubDomain(true);
-    }
-    
-    @Override
-    protected Logger getTrackingLogger() {
-        return log;
     }
 }

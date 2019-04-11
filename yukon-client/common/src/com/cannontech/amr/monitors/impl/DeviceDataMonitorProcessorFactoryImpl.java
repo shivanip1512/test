@@ -25,6 +25,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
     @Autowired private MonitorCacheService monitorCacheService;
     @Autowired private DeviceDataMonitorCalculationService deviceDataMonitorCalculationService;
     @Autowired private DeviceGroupService deviceGroupService;
+    private PointDataTrackingLogger trackingLogger = new PointDataTrackingLogger(log);
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorProcessorFactoryImpl.class);
 
     private final Cache<Pair<SimpleDevice, Integer>, Boolean> devicesToMonitors =
@@ -37,13 +38,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
 
     @Override
     protected RichPointDataListener createPointListener(DeviceDataMonitor monitor) {
-        return new RichPointDataListener() {
-            @Override
-            
-            public void pointDataReceived(RichPointData richPointData) {
-                handlePointDataReceived(monitor, richPointData);
-            }
-        };
+        return richPointData -> handlePointDataReceived(monitor, richPointData);
     }
 
     @Override
@@ -55,7 +50,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
             if (richPointData.getPointValue().getPointQuality().isInvalid()) {
                 log.debug("monitor {} discarded point data {} because point quality is invalid", monitor,
                     richPointData.getPointValue());
-                rejectTrackingId(richPointData);
+                trackingLogger.rejectId(richPointData);
             }
             return;
         }
@@ -78,12 +73,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
 
         if (Boolean.TRUE.equals(isValidDeviceForMonitor)) {
             deviceDataMonitorCalculationService.updateViolationsGroupBasedOnNewPointData(monitor, richPointData);
-            acceptTrackingId(richPointData);
+            trackingLogger.acceptId(richPointData);
         }
-    }
-    
-    @Override
-    protected Logger getTrackingLogger() {
-        return log;
     }
 }
