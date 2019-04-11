@@ -456,6 +456,7 @@ yukon.namespace = function (ns) {
             } else {
                 alertbox.html(messages[0]);
             }
+            alertbox.prepend("<i class=\"cp fr icon icon-close-x\" onclick=\"$(this).parent().addClass('dn');\"></i>");
         });
     };
     
