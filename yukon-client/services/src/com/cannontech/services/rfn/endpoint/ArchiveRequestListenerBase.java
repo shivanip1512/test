@@ -35,6 +35,7 @@ import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.Base94;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.PointDataTracker;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Maps;
 
@@ -47,13 +48,12 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     @Autowired protected RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ConfigurationSource configurationSource;
+    @Autowired private PointDataTracker pointDataTracker; 
 
     protected JmsTemplate jmsTemplate;
     private AtomicInteger processedArchiveRequest = new AtomicInteger();
     
     private static final String CREATION_FAILED_FOR = "Creation failed for ";
-    private static AtomicLong pointDataTracker = new AtomicLong(); 
-    private static final long MAX_TRACKING_ID = Base94.max(4);  //  4 digits before rollover
     
     protected abstract class ConverterBase extends Thread {
         private ArrayBlockingQueue<T> inQueue;
@@ -238,15 +238,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
          * @return The combined tracking information as a string, if any.
          */
         protected Optional<String> trackValues(Collection<PointData> messagesToSend) {
-            if (messagesToSend.isEmpty()) {
-                return Optional.empty();
-            }
-            
-            var messageIds = Maps.toMap(messagesToSend, m -> Base94.of(pointDataTracker.getAndIncrement() % MAX_TRACKING_ID));
-
-            messageIds.forEach((message, id) -> message.setTrackingId(id));
-            
-            return Optional.of(Strings.join(messageIds.values(), ' '));
+            return pointDataTracker.trackValues(messagesToSend);
         }
     }
     

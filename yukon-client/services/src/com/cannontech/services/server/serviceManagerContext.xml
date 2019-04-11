@@ -18,6 +18,8 @@
 
     <bean id="deviceDataMonitorProcessor" class="com.cannontech.amr.monitors.impl.DeviceDataMonitorProcessorFactoryImpl"/>
 
+    <bean id="pointDataTracker" class="com.cannontech.core.dynamic.impl.PointDataTrackerImpl"/>
+
     <bean class="com.cannontech.services.password.impl.EncryptPlainTextPasswordsServiceImpl"/>
     
     <bean class="com.cannontech.amr.rfn.dataStreaming.service.impl.DataStreamingStatisticsCollectionService"/>
