@@ -116,6 +116,14 @@ ADD ItronEventId NUMERIC NULL;
 INSERT INTO DBUpdates VALUES ('YUK-19773', '7.3.0', GETDATE());
 /* @end YUK-19773 */
 
+/* @start YUK-19653 */
+CREATE INDEX INDX_LMHardConf_AddGrpId ON LMHardwareConfiguration (
+    AddressingGroupID ASC
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-19653', '7.3.0', GETDATE());
+/* @end YUK-19653 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

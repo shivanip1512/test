@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/10/2019 10:33:19 AM                        */
+/* Created on:     4/12/2019 10:08:30 AM                        */
 /*==============================================================*/
 
 
@@ -6648,6 +6648,13 @@ create index LmHrd_LmHrdCfg_FK on LMHardwareConfiguration (
 /*==============================================================*/
 create index CstLdIn_LMHrdCfg_FK on LMHardwareConfiguration (
    ApplianceID ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_LMHardConf_AddGrpId                              */
+/*==============================================================*/
+create index INDX_LMHardConf_AddGrpId on LMHardwareConfiguration (
+   AddressingGroupID ASC
 );
 
 /*==============================================================*/

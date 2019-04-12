@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/10/2019 10:32:11 AM                        */
+/* Created on:     4/12/2019 10:09:21 AM                        */
 /*==============================================================*/
 
 
@@ -7039,6 +7039,14 @@ go
 /*==============================================================*/
 create index CstLdIn_LMHrdCfg_FK on LMHardwareConfiguration (
 ApplianceID ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_LMHardConf_AddGrpId                              */
+/*==============================================================*/
+create index INDX_LMHardConf_AddGrpId on LMHardwareConfiguration (
+AddressingGroupID ASC
 )
 go
 
