@@ -111,7 +111,8 @@ public class ControllableDevicesRequestEndPoint {
         for (LmDeviceDto device : devices) {
             try {
                 if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
-                    if (device.getLatitude().isNaN() && device.getLatitude().isNaN()) {
+                    if (device.getLatitude() != null && device.getLongitude() != null && device.getLatitude().isNaN()
+                        && device.getLongitude().isNaN()) {
                         device.setLatitude(null);
                         device.setLongitude(null);
                     }
