@@ -46,6 +46,7 @@ public enum ItronEndpointManager {
             template = new WebServiceTemplate(factory);
             template.setMarshaller(marshaller);
             template.setUnmarshaller(marshaller);
+            template.setCheckConnectionForFault(true); //Desperation
         } catch (Exception e) {
             log.error("Unable to create template or marshaller", e);
         }
