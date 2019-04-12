@@ -77,7 +77,7 @@
         <form:hidden path="id" />
         <div class="column-14-10 clearfix">
             <div class="column one">
-                <cti:tabs containerName="capbank_${capbank.id}_Tab1">
+                <cti:tabs containerName="capbank_Tab1">
                     <cti:msg2 var="infoTab" key=".infoTab"/>
                     <cti:tab title="${infoTab}">
                         <tags:nameValueContainer2 tableClass="natural-width">
@@ -405,7 +405,7 @@
         
             <cti:displayForPageEditModes modes="EDIT,VIEW">
                 <div class="column two nogutter">
-                    <cti:tabs containerName="capbank_${capbank.id}_Tab2">
+                    <cti:tabs containerName="capbank_Tab2">
                         <cti:msg2 var="attachedPointsTab" key=".attachedPointsTab"/>
                         <cti:tab title="${attachedPointsTab}">
                             <div class="scroll-md">
