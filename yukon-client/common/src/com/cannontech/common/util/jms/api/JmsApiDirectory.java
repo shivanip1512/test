@@ -5,6 +5,11 @@ import static com.cannontech.common.util.jms.api.JmsCommunicatingService.*;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 import com.cannontech.amr.monitors.message.DeviceDataMonitorMessage;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusRequest;
@@ -96,8 +101,6 @@ import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 
 /**
  * This is intended to be the single repository for all JmsApi information in the Yukon Java code.<br><br>
@@ -113,11 +116,10 @@ import com.google.common.collect.Multimap;
  * To define any messaging that is sent over a temp queue, use JmsQueue.TEMP_QUEUE.
  */
 public final class JmsApiDirectory {
-    private static final Multimap<JmsApiCategory, JmsApi<?,?,?>> jmsApis;
-    
+    private static final Comparator<JmsApi<?,?,?>> API_COMPARATOR = (api1, api2) -> api1.getName().compareTo(api2.getName());
     /*
      * WARNING: If you add any static fields to JmsApiDirectory that are not JmsApi definitions, they need to be 
-     *filtered in JmsApiDirectoryTest!
+     * filtered in JmsApiDirectoryTest!
      */
     
     //TODO: use this in InfrastructureWarningsRefreshServiceImpl
@@ -1065,86 +1067,103 @@ public final class JmsApiDirectory {
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
     
-    static {
-        jmsApis = new ImmutableMultimap.Builder<JmsApiCategory, JmsApi<?,?,?>>()
-             //For readability, these are alphabetized by category, then api name
-            .put(DATA_STREAMING, DATA_STREAMING_CONFIG)
-            .put(DATA_STREAMING, GATEWAY_DATA_STREAMING_INFO)
-            
-            .put(DIGI_ZIGBEE, ZIGBEE_SEP_TEXT)
-            .put(DIGI_ZIGBEE, ZIGBEE_SEP_TEXT_CANCEL)
-            .put(DIGI_ZIGBEE, ZIGBEE_SMART_UPDATE)
-            
-            .put(MONITOR, DEVICE_DATA_MONITOR_STATUS)
-            .put(MONITOR, DEVICE_DATA_MONITOR_RECALC)
-            .put(MONITOR, RICH_POINT_DATA)
-            .put(MONITOR, STATUS_POINT_MONITOR_OUTAGE)
-            
-            .put(OTHER, ARCHIVE_STARTUP)
-            .put(OTHER, BROKER_SYSTEM_METRICS)
-            .put(OTHER, LM_ADDRESS_NOTIFICATION)
-            .put(OTHER, LOCATION)
-            .put(OTHER, SIMULATORS)
-            .put(OTHER, ECOBEE_AUTH_TOKEN)
-
-            .put(RFN_LCR, RFN_EXPRESSCOM_BROADCAST)
-            .put(RFN_LCR, RFN_EXPRESSCOM_UNICAST)
-            .put(RFN_LCR, RFN_EXPRESSCOM_UNICAST_BULK)
-            .put(RFN_LCR, RFN_EXPRESSCOM_UNICAST_WITH_DATA)
-            .put(RFN_LCR, RFN_LCR_ARCHIVE)
-            .put(RFN_LCR, RFN_LCR_READ_ARCHIVE)
-            
-            .put(RFN_METER, RFN_METER_DEMAND_RESET)
-            .put(RFN_METER, RFN_METER_DISCONNECT)
-            .put(RFN_METER, RFN_METER_READ)
-            .put(RFN_METER, RFN_METER_READ_ARCHIVE)
-            
-            .put(RF_GATEWAY, RF_GATEWAY_ARCHIVE)
-            .put(RF_GATEWAY, RF_GATEWAY_CERTIFICATE_UPDATE)
-            .put(RF_GATEWAY, RF_GATEWAY_COLLECTION)
-            .put(RF_GATEWAY, RF_GATEWAY_CONNECT)
-            .put(RF_GATEWAY, RF_GATEWAY_CONNECTION_TEST)
-            .put(RF_GATEWAY, RF_GATEWAY_CREATE)
-            .put(RF_GATEWAY, RF_GATEWAY_DATA)
-            .put(RF_GATEWAY, RF_GATEWAY_DATA_INTERNAL)
-            .put(RF_GATEWAY, RF_GATEWAY_DATA_UNSOLICITED)
-            .put(RF_GATEWAY, RF_GATEWAY_DELETE)
-            .put(RF_GATEWAY, RF_GATEWAY_DELETE_FROM_NM)
-            .put(RF_GATEWAY, RF_GATEWAY_EDIT)
-            .put(RF_GATEWAY, RF_GATEWAY_FIRMWARE_UPGRADE)
-            .put(RF_GATEWAY, RF_GATEWAY_SCHEDULE_DELETE)
-            .put(RF_GATEWAY, RF_GATEWAY_SCHEDULE_REQUEST)
-            .put(RF_GATEWAY, RF_UPDATE_SERVER_AVAILABLE_VERSION)
-            .put(RF_GATEWAY, RF_GATEWAY_SET_CONFIG)
-            .put(RF_GATEWAY, NM_ALARM)
-
-            
-            .put(RF_NETWORK, NETWORK_NEIGHBOR)
-            .put(RF_NETWORK, NETWORK_PARENT)
-            .put(RF_NETWORK, NETWORK_PRIMARY_ROUTE)
-            
-            .put(RF_MISC, RFN_METADATA)
-            .put(RF_MISC, RF_METADATA_MULTI)
-            .put(RF_MISC, RF_ALARM_ARCHIVE)
-            .put(RF_MISC, RF_DA_ARCHIVE)
-            .put(RF_MISC, RF_EVENT_ARCHIVE)
-            .put(RF_MISC, RF_RELAY_ARCHIVE)
-            
-            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT)
-            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT)
-            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_MESSAGE_PARAMETERS)
-            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_DAILY_DIGEST_TEST)
-            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT)
-            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_DATA_IMPORT_EVENT)
-            
-            .put(WIDGET_REFRESH, DATA_COLLECTION)
-            .put(WIDGET_REFRESH, DATA_COLLECTION_RECALCULATION)
-            .put(WIDGET_REFRESH, INFRASTRUCTURE_WARNINGS)
-            .put(WIDGET_REFRESH, INFRASTRUCTURE_WARNINGS_CACHE_REFRESH)
-            .build();
+    public static Map<JmsApiCategory, List<JmsApi<?,?,?>>> getQueueDescriptions() {
+        EnumMap<JmsApiCategory, List<JmsApi<?,?,?>>> jmsApis = new EnumMap<>(JmsApiCategory.class);
+        
+        //For readability, these are alphabetized by category, then api name
+        addApis(jmsApis, DATA_STREAMING, 
+                DATA_STREAMING_CONFIG, 
+                GATEWAY_DATA_STREAMING_INFO);
+        
+        addApis(jmsApis, DIGI_ZIGBEE, 
+                ZIGBEE_SEP_TEXT, 
+                ZIGBEE_SEP_TEXT_CANCEL,
+                ZIGBEE_SMART_UPDATE);
+        
+        addApis(jmsApis, MONITOR, 
+                DEVICE_DATA_MONITOR_STATUS, 
+                DEVICE_DATA_MONITOR_RECALC,
+                RICH_POINT_DATA,
+                STATUS_POINT_MONITOR_OUTAGE);
+        
+        addApis(jmsApis, OTHER, 
+                ARCHIVE_STARTUP, 
+                BROKER_SYSTEM_METRICS,
+                LM_ADDRESS_NOTIFICATION,
+                LOCATION,
+                SIMULATORS,
+                ECOBEE_AUTH_TOKEN);
+        
+        addApis(jmsApis, RFN_LCR, 
+                RFN_EXPRESSCOM_BROADCAST, 
+                RFN_EXPRESSCOM_UNICAST,
+                RFN_EXPRESSCOM_UNICAST_BULK,
+                RFN_EXPRESSCOM_UNICAST_WITH_DATA,
+                RFN_LCR_ARCHIVE,
+                RFN_LCR_READ_ARCHIVE);
+        
+        addApis(jmsApis, RFN_METER, 
+                RFN_METER_DEMAND_RESET, 
+                RFN_METER_DISCONNECT,
+                RFN_METER_READ,
+                RFN_METER_READ_ARCHIVE);
+        
+        addApis(jmsApis, RF_GATEWAY, 
+                RF_GATEWAY_ARCHIVE, 
+                RF_GATEWAY_CERTIFICATE_UPDATE,
+                RF_GATEWAY_COLLECTION,
+                RF_GATEWAY_CONNECT,
+                RF_GATEWAY_CONNECTION_TEST,
+                RF_GATEWAY_CREATE, 
+                RF_GATEWAY_DATA,
+                RF_GATEWAY_DATA_INTERNAL,
+                RF_GATEWAY_DATA_UNSOLICITED,
+                RF_GATEWAY_DELETE,
+                RF_GATEWAY_DELETE_FROM_NM,
+                RF_GATEWAY_EDIT,
+                RF_GATEWAY_FIRMWARE_UPGRADE,
+                RF_GATEWAY_SCHEDULE_DELETE,
+                RF_GATEWAY_SCHEDULE_REQUEST,
+                RF_UPDATE_SERVER_AVAILABLE_VERSION,
+                RF_GATEWAY_SET_CONFIG,
+                NM_ALARM);
+        
+        addApis(jmsApis, RF_NETWORK, 
+                NETWORK_NEIGHBOR, 
+                NETWORK_PARENT,
+                NETWORK_PRIMARY_ROUTE);
+        
+        addApis(jmsApis, RF_MISC, 
+                RFN_METADATA, 
+                RF_METADATA_MULTI,
+                RF_ALARM_ARCHIVE,
+                RF_DA_ARCHIVE,
+                RF_EVENT_ARCHIVE,
+                RF_RELAY_ARCHIVE);
+        
+        addApis(jmsApis, SMART_NOTIFICATION,
+                SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT,
+                SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT,
+                SMART_NOTIFICATION_MESSAGE_PARAMETERS,
+                SMART_NOTIFICATION_DAILY_DIGEST_TEST,
+                SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT,
+                SMART_NOTIFICATION_DATA_IMPORT_EVENT);
+        
+        addApis(jmsApis, WIDGET_REFRESH,
+                DATA_COLLECTION,
+                DATA_COLLECTION_RECALCULATION,
+                INFRASTRUCTURE_WARNINGS,
+                INFRASTRUCTURE_WARNINGS_CACHE_REFRESH);
+        
+        return jmsApis;
     }
     
-    public static Multimap<JmsApiCategory, JmsApi<?,?,?>> getQueueDescriptions() {
-        return jmsApis;
+    private static void addApis(Map<JmsApiCategory, List<JmsApi<?,?,?>>> jmsApis, 
+                               JmsApiCategory category, JmsApi<?,?,?>...apis) {
+        jmsApis.put(category, new ArrayList<>());
+        for (JmsApi<?,?,?> api : apis) {
+            jmsApis.get(category).add(api);
+        }
+        jmsApis.get(category).sort(API_COMPARATOR);
     }
 }

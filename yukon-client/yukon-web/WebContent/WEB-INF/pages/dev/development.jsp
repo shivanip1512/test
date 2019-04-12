@@ -33,6 +33,7 @@
                     <li><a href="<cti:url value="/dev/bulkImportFileGenerator/home"/>">Bulk Import File Generator</a></li>
                     <li><a href="<cti:url value="/dev/viewDeviceGroupSimulator"/>">Device Group Generator</a></li>
                     <li><a href="<cti:url value="/dev/getEcobeePGPKeyPair"/>">Ecobee PGP Key Pair</a></li>
+                    <li><a href="<cti:url value="/dev/jmsApiDirectory"/>">JMS API Directory</a></li>
                 </ul>
             </tags:sectionContainer>
         </div>

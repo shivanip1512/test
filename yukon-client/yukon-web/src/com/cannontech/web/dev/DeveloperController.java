@@ -19,8 +19,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.Logger;
+import org.jdom2.JDOMException;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -32,16 +37,12 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-import org.jdom2.JDOMException;
-import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -54,6 +55,11 @@ import com.cannontech.common.util.FileUtil;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.jms.api.JmsApi;
+import com.cannontech.common.util.jms.api.JmsApiCategory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.common.util.jms.api.JmsCommunicatingService;
+import com.cannontech.common.util.jms.api.JmsCommunicationPattern;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.users.model.LiteUserGroup;
@@ -82,6 +88,7 @@ import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.dev.model.JmsApiFilters;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckCparm;
@@ -316,6 +323,21 @@ public class DeveloperController {
         return "ecobeePGPKeyPair.jsp";
     }
 
+    @RequestMapping("/jmsApiDirectory")
+    public String jmsApiDirectory(ModelMap model, @ModelAttribute("apiFilters") JmsApiFilters apiFilters) {
+        model.addAttribute("apiFilters", apiFilters);
+        
+        Map<JmsApiCategory, List<JmsApi<?,?,?>>> queueDescriptionsMap = JmsApiDirectory.getQueueDescriptions();
+        queueDescriptionsMap = apiFilters.filter(queueDescriptionsMap);
+        model.addAttribute("jmsApis", queueDescriptionsMap);
+        
+        model.addAttribute("categories", JmsApiCategory.values());
+        model.addAttribute("commPatterns", JmsCommunicationPattern.values());
+        model.addAttribute("services", JmsCommunicatingService.values());
+        
+        return "jmsApiDirectory.jsp";
+    }
+    
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         PropertyEditor dateTimeEditor =
@@ -482,7 +504,7 @@ public class DeveloperController {
             this.start = start;
             this.stop = stop;
             this.logComponent = logComponent;
-            this.dateFormat = DateTimeFormat.forPattern(logComponent.getDatePattern());
+            dateFormat = DateTimeFormat.forPattern(logComponent.getDatePattern());
             this.file = file;
         }
 

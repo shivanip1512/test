@@ -332,6 +332,10 @@
     <entry key="yukon.web.modules.dev.itronSimulator.pageName">Itron Simulator</entry>
     <entry key="yukon.web.modules.dev.itronSimulator.crumbTitle">Itron Simulator</entry>
     
+    <!-- JMS API -->
+    <entry key="yukon.web.modules.dev.jmsApis.pageName">JMS APIs</entry>
+    <entry key="yukon.web.modules.dev.jmsApis.crumbTitle">JMS APIs</entry>
+    
     <!-- IVVC -->
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.pageName">IVVC Test</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.title">IVVC Simulator</entry>

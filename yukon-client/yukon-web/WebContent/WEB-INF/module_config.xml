@@ -1659,6 +1659,7 @@
           <page name="smartNotificationsSimulator" type="BASIC"/>
           <page name="collectionActionsTesting" type="BASIC"/>
           <page name="itronSimulator" type="BASIC"/>
+          <page name="jmsApis" type="BASIC"/>
           <page name="nest" type="BASIC">
           <link>/dev/nest/home</link>
             <pages>

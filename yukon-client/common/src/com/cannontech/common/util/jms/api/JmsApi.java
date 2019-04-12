@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -129,8 +130,20 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         return senders;
     }
     
+    public String getSendersString() {
+        return senders.stream()
+                      .map(JmsCommunicatingService::toString)
+                      .collect(Collectors.joining(", "));
+    }
+    
     public Set<JmsCommunicatingService> getReceivers() {
         return receivers;
+    }
+    
+    public String getReceiversString() {
+        return receivers.stream()
+                        .map(JmsCommunicatingService::toString)
+                        .collect(Collectors.joining(", "));
     }
     
     public JmsQueue getQueue() {
