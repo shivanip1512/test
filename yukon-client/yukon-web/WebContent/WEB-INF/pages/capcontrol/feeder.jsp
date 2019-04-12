@@ -82,7 +82,7 @@
     <cti:csrfToken/>
     <div class="column-12-12">
         <div class="column one">
-            <cti:tabs containerName="feeder_${feeder.id}_Tab1">
+            <cti:tabs containerName="feeder_Tab1">
                 <cti:msg2 var="infoTab" key=".infoTab"/>
                 <cti:tab title="${infoTab}">
                     <tags:nameValueContainer2>
@@ -116,7 +116,7 @@
            </div>
             <cti:displayForPageEditModes modes="EDIT,VIEW">
                 <div class="column two nogutter">
-                <cti:tabs containerName="feeder_${feeder.id}_Tab2">
+                <cti:tabs containerName="feeder_Tab2">
                     <cti:msg2 var="controlPointsTab" key=".controlPointsTab"/>
                     <cti:tab title="${controlPointsTab}">
                         <tags:nameValueContainer2>

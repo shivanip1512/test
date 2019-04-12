@@ -912,6 +912,7 @@ yukon.ui = (function () {
                     if (pageEditMode == 'true') {
                         elem.tabs('option', 'active', window.localStorage.getItem(containerName));
                     } else {
+                        window.localStorage.removeItem(containerName);
                         elem.tabs('option', 'active', elem.data('selectedTab'));
                     }
                     elem.tabs('option','activate', function (ev, ui){

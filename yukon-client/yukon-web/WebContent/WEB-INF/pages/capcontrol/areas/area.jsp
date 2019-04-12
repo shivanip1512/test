@@ -110,7 +110,7 @@
     <form:hidden path="type"/>
 <div class="column-12-12 clearfix">
     <div class="column one">
-        <cti:tabs containerName="area_${areaId}_Tab1">
+        <cti:tabs containerName="area_Tab1">
                 <cti:msg2 var="infoTab" key=".infoTab"/>
                 <cti:tab title="${infoTab}">
                  <cti:displayForPageEditModes modes="VIEW">
@@ -195,7 +195,7 @@
     </div>
     <cti:displayForPageEditModes modes="EDIT,VIEW">
         <div class="column two nogutter">
-            <cti:tabs containerName="area_${areaId}_Tab2">
+            <cti:tabs containerName="area_Tab2">
                 <cti:msg2 var="statisticsTab" key=".statisticsTab"/>
                 <cti:tab title="${statisticsTab}">
                     <div class="column-12-12">
