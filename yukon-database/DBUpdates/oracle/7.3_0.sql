@@ -119,6 +119,15 @@ CREATE INDEX INDX_LMHardConf_AddGrpId ON LMHardwareConfiguration (
 INSERT INTO DBUpdates VALUES ('YUK-19653', '7.3.0', SYSDATE);
 /* @end YUK-19653 */
 
+/* @start YUK-19758 */
+UPDATE UNITMEASURE 
+SET UOMName = 'ms' 
+WHERE UomId = 45 
+AND UOMName = 'Ms';
+
+INSERT INTO DBUpdates VALUES ('YUK-19758', '7.3.0', SYSDATE);
+/* @end YUK-19758 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

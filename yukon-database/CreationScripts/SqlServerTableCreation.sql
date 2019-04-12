@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/12/2019 10:09:21 AM                        */
+/* Created on:     4/12/2019 1:33:14 PM                         */
 /*==============================================================*/
 
 
@@ -9776,7 +9776,7 @@ INSERT INTO UnitMeasure VALUES ( 41,'VoltsV2H', 1,'Volts from V2H','(none)' );
 INSERT INTO UnitMeasure VALUES ( 42,'AmpsA2H', 1,'Amps from A2H','(none)' );
 INSERT INTO UnitMeasure VALUES ( 43,'Tap', 0,'LTC Tap Position','(none)' );
 INSERT INTO UnitMeasure VALUES ( 44,'Miles', 0,'Miles','(none)' );
-INSERT INTO UnitMeasure VALUES ( 45,'Ms', 0,'Milliseconds','(none)' );
+INSERT INTO UnitMeasure VALUES ( 45,'ms', 0,'Milliseconds','(none)' );
 INSERT INTO UnitMeasure VALUES ( 46,'PPM',0,'Parts Per Million','(none)');
 INSERT INTO UnitMeasure VALUES ( 47,'MPH',0,'Miles Per Hour','(none)');
 INSERT INTO UnitMeasure VALUES ( 48,'Inches',0,'Inches','(none)');
