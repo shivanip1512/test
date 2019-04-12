@@ -444,7 +444,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     }
 
     @Override
-    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser ecOperator) {
+    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser ecOperator, boolean isEIMRequest) {
 
         //Get energyCompany for the user
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(ecOperator);
@@ -466,7 +466,12 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             // call service to update device on the customer account
             lib = starsInventoryBaseService.updateDeviceOnAccount(lib, lsec, ecOperator, dto);
 
-            setLocationForHardware(hardwareType, dto, lib);
+            if (isEIMRequest == true) {
+                setLocationForHardwareEIM(hardwareType, dto, lib);
+            } else {
+                setLocationForHardware(hardwareType, dto, lib);
+            }
+            
 
         } else {
             // add device to account
@@ -516,6 +521,27 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                 saveLocation(dto, lib);
             } else if (dto.getLatitude() == null && dto.getLongitude() == null) {
                 paoLocationDao.delete(lib.getDeviceID());
+            }
+        } else {
+            log.warn("Location data is not supported by " + dto.getDeviceType()
+                + " device type. No location data will be set for serial number " + dto.getSerialNumber());
+        }
+    }
+    
+    /* Method to set or update the latitude and longitude for the hardware for EIM server*/
+    private void setLocationForHardwareEIM(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib) {
+
+        if (hardwareType.isTwoWay() && lib.getDeviceID() > 0) {
+            if (dto.getLatitude() != null && dto.getLongitude() != null && !dto.getLatitude().isNaN()
+                && !dto.getLongitude().isNaN()) {
+                saveLocation(dto, lib);
+            } else if (dto.getLatitude() != null && dto.getLongitude() != null && dto.getLatitude().isNaN()
+                && dto.getLongitude().isNaN()) {
+                paoLocationDao.delete(lib.getDeviceID());
+            } else {
+                // do not modify the location
+                log.warn("Location data is not modified by " + dto.getDeviceType()
+                    + " device type. No location data will be updated for serial number " + dto.getSerialNumber());
             }
         } else {
             log.warn("Location data is not supported by " + dto.getDeviceType()

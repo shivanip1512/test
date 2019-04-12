@@ -147,14 +147,20 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     /**
      * Evaluate value at expression as a Double.
      * Returns null if the expression defines a node that does not exists.
+     * Return NaN if the expression exist but is empty.
      * @param expression
      * @return
      * @throws XPathException
      */
-    public Double evaluateAsDouble(String expression) throws XPathException {
+    public Double evaluateAsDouble(String expression, boolean isNaNForBlank) throws XPathException {
         checkArgument(expression != null);
 
-    	Double num = evaluateNumber(expression);
+        Double num = null;
+        if (isNaNForBlank == true) {
+            num = evaluateNumber(expression, true);
+        } else {
+            num = evaluateNumber(expression, false);
+        }
         return num == null ? null : num;
     }
 
@@ -165,7 +171,7 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
 	public Float evaluateAsFloat(String expression) {
         checkArgument(expression != null);
 
-    	Double num = evaluateNumber(expression);
+    	Double num = evaluateNumber(expression, false);
         return num == null ? null : num.floatValue();
     }
 	
@@ -186,7 +192,7 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     public Long evaluateAsLong(String expression, Long defaultValue) {
         checkArgument(expression != null);
 
-        Double num = evaluateNumber(expression);
+        Double num = evaluateNumber(expression, false);
         if (num == null) {
             return defaultValue;
         }
@@ -208,7 +214,7 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     public Integer evaluateAsInt(String expression, Integer defaultInt) throws XPathException {
         checkArgument(expression != null);
 
-        Double num = evaluateNumber(expression);
+        Double num = evaluateNumber(expression, false);
         return (num == null) ? defaultInt : (Integer) num.intValue();
     }
     
@@ -220,20 +226,27 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
 	 * 
 	 * @throws NumberFormatException
 	 */
-	private Double evaluateNumber(String expression) throws NumberFormatException {
+    private Double evaluateNumber(String expression, boolean isNaNForBlank) throws NumberFormatException {
 
-	    // Check to see if it is empty.  If it is return null.
-	    if (StringUtils.isBlank(evaluateAsString(expression))) {
-	        return null;
-	    }
-	    
-		Double num = (Double) evaluate(expression, XPathConstants.NUMBER);
-    	if (num.equals(Double.NaN)) {
-    		throw new NumberFormatException();
-    	}
-    	return num;
-	}
-	
+        // Check to see if it is empty. If it is return null.
+        if (!isNaNForBlank && StringUtils.isBlank(evaluateAsString(expression))) {
+            return null;
+        } else {
+            if (evaluateAsString(expression) == null) {
+                return null;
+            }
+            if (StringUtils.isBlank(evaluateAsString(expression))) {
+                return Double.NaN;
+            }
+        }
+
+        Double num = (Double) evaluate(expression, XPathConstants.NUMBER);
+        if (num.equals(Double.NaN)) {
+            throw new NumberFormatException();
+        }
+        return num;
+    }
+
     /**
      * Evaluate value at expression as a String.
      * Returns null if the expression defines a node that does not exists.

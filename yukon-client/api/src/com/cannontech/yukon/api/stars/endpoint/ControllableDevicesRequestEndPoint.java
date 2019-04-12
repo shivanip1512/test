@@ -111,6 +111,10 @@ public class ControllableDevicesRequestEndPoint {
         for (LmDeviceDto device : devices) {
             try {
                 if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
+                    if (device.getLatitude().isNaN() && device.getLatitude().isNaN()) {
+                        device.setLatitude(null);
+                        device.setLongitude(null);
+                    }
                     starsControllableDeviceHelper.addDeviceToAccount(device, user);
                 } else {
                     throw new StarsClientRequestException("This operation is not supported for this device type");
@@ -151,7 +155,7 @@ public class ControllableDevicesRequestEndPoint {
                                                                 EventSource.API);
 
                 if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
-                    starsControllableDeviceHelper.updateDeviceOnAccount(device, user);
+                    starsControllableDeviceHelper.updateDeviceOnAccount(device, user, true);
                 } else {
                     throw new StarsClientRequestException("This operation is not supported for this device type");
                 }
@@ -310,8 +314,8 @@ public class ControllableDevicesRequestEndPoint {
             device.setFieldInstallDate(template.evaluateAsDate(fieldInstallDateStr));
             device.setFieldRemoveDate(template.evaluateAsDate(fieldRemoveDateStr));
             device.setMacAddress(template.evaluateAsString(macAddressStr));
-            device.setLatitude(template.evaluateAsDouble(latitudeStr));
-            device.setLongitude(template.evaluateAsDouble(longitudeStr));
+            device.setLatitude(template.evaluateAsDouble(latitudeStr, true));
+            device.setLongitude(template.evaluateAsDouble(longitudeStr, true));
             device.setDeviceVendorUserId(template.evaluateAsInt(deviceVendorUserIdStr));
             device.setInventoryRoute(template.evaluateAsString(routeStr));
             return device;

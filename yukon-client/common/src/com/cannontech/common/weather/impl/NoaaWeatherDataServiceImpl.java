@@ -202,12 +202,12 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
             YukonXPathTemplate template = YukonXml.getXPathTemplateForNode(rootNode);
             // These are not guaranteed to exist.
             // Need to check for null when accessing these from weather observation
-            Double tempInF = template.evaluateAsDouble("temp_f");
+            Double tempInF = template.evaluateAsDouble("temp_f", false);
             if (tempInF == null) {
                 log.info("NOAA Weather Station " + weatherStation.getStationId()
                     + " is missing temperature data and will not be included in requested weather observation.");
             }
-            Double relHum = template.evaluateAsDouble("relative_humidity");
+            Double relHum = template.evaluateAsDouble("relative_humidity" , false);
             if (relHum == null) {
                 log.info("NOAA Weather Station " + weatherStation.getStationId()
                     + " is missing humidity data and will not be included in requested weather observation.");

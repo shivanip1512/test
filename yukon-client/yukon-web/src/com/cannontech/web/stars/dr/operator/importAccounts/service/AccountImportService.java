@@ -1183,7 +1183,7 @@ public class AccountImportService {
                 // UPDATE HARDWARE
                 LmDeviceDto dto = dtoConverter.getDtoForHardware(accountNumber, liteInv, energyCompany);
                 dtoConverter.updateDtoWithHwFields(dto, hwFields, energyCompany);
-                liteInv = deviceHelper.updateDeviceOnAccount(dto, result.getCurrentUser());
+                liteInv = deviceHelper.updateDeviceOnAccount(dto, result.getCurrentUser(), false);
                 
                 result.getHardwareUpdated().add(hwFields[ImportFields.IDX_SERIAL_NO]);
             }
