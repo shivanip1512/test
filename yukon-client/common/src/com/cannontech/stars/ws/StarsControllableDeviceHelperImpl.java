@@ -371,6 +371,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                 hardware.setMacAddress(macAddress);
                 try {
                     itronBuilder.createDevice(hardware);
+                    lib.setDeviceID(hardware.getDeviceId());
                 } catch (ItronCommunicationException e) {
                     throw new StarsClientRequestException("There was a communication error trying to connect with Itron.");
                 }
@@ -510,11 +511,8 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
 
     /* Method to set or update the latitude and longitude for the hardware */
     private void setLocationForHardware(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib) {
-
         if (hardwareType.isTwoWay() && lib.getDeviceID() > 0) {
             if (dto.getLatitude() != null && dto.getLongitude() != null) {
-                saveLocation(dto, lib);
-            } else if (dto.getLatitude() != null || dto.getLongitude() != null) {
                 saveLocation(dto, lib);
             } else if (dto.getLatitude() == null && dto.getLongitude() == null) {
                 paoLocationDao.delete(lib.getDeviceID());
