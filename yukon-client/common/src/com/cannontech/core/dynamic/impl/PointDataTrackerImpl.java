@@ -26,7 +26,7 @@ public class PointDataTrackerImpl implements PointDataTracker {
     private static final long INTERVAL_SIZE = MAX_TRACKING_ID / DIVISIONS;
     
     private AtomicLong trackingId = new AtomicLong();
-    private Long offset;
+    private long offset;
 
     Map<ApplicationId, Long> applicationOffsets = ImmutableMap.<ApplicationId, Long>builder()
             .put(ApplicationId.SERVICE_MANAGER, 1 * INTERVAL_SIZE)
@@ -37,11 +37,10 @@ public class PointDataTrackerImpl implements PointDataTracker {
     private void init() {
         var applicationId = BootstrapUtils.getApplicationId();
 
-        offset = applicationOffsets.get(applicationId);
+        offset = applicationOffsets.getOrDefault(applicationId, 0L);
         
-        if (offset == null) {
+        if (offset == 0L) {
             log.warn("Unhandled application ID " + applicationId + ", defaulting to offset 0");
-            offset = 0L;
         } else {
             log.info("Setting start offset to " + Base94.of(offset) + " for " + applicationId);
         }
