@@ -182,3 +182,45 @@ Function Start-YukonServices() {
     Write-Host "Starting All Services"
     C:\Yukon\Server\Bin\RestartYukonServices.ps1 -Operation start -ExitWhenComplete
 }
+
+<#
+.SYNOPSIS
+    Archive the Yukon Log with each deployment
+.DESCRIPTION 
+    Archive-YukonLog function will copy the log from /Server/Log folder and
+    archive it to SmokeSuiteArchivedLog folder.We are maintaining logs
+    for 7 days and deleting the old one.
+.EXAMPLE
+    Archive-YukonLog
+#>
+Function Archive-YukonLog() {
+    Write-Host "Archiving Yukon logs - Started"
+    $yukonLog = "C:\Yukon\Server\Log"
+    $files = Get-ChildItem -Path $yukonLog 
+
+    $smokeSuiteArchivedLog = "C:\SmokeSuiteArchivedLog\YukonLog_"
+    $date = Get-Date
+    $date = $date.ToString("dd-MM-yyyy-hh-mm-ss")
+    $smokeSuiteArchivedLogFolder = "$smokeSuiteArchivedLog$date"
+    New-Item -ItemType directory -Path $smokeSuiteArchivedLogFolder -Force
+
+    #move the files from /Server/log folder to SmokeSuiteArchivedLog folder
+    foreach($file in $files)
+    {
+        Copy-Item "$yukonLog\$file" -destination $smokeSuiteArchivedLogFolder 
+    }
+    $CompressionToUse = [System.IO.Compression.CompressionLevel]::Optimal
+    $IncludeBaseFolder = $false
+    $zipTo = "{0}.zip" -f $smokeSuiteArchivedLogFolder
+    [Reflection.Assembly]::LoadWithPartialName( "System.IO.Compression.FileSystem" )
+    [System.IO.Compression.ZipFile]::CreateFromDirectory($smokeSuiteArchivedLogFolder, $ZipTo, $CompressionToUse, $IncludeBaseFolder)
+
+    Remove-Item $smokeSuiteArchivedLogFolder -RECURSE -Force
+
+    Remove-Item $yukonLog -RECURSE -Force
+
+    # remove the files which are older than 7 days
+    $limit = (Get-Date).AddDays(-7)
+    Get-ChildItem -Path "C:\SmokeSuiteArchivedLog" -File -Recurse | ? LastWriteTime -LE $limit | Remove-Item
+    Write-Host "Archiving Yukon logs - Completed"
+}

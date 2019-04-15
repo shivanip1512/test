@@ -27,6 +27,7 @@ Import-Module $PSScriptRoot\YukonDatabase
  
 Uninstall-Yukon
 Reset-DatabaseSnapshot
+Archive-YukonLog
 Expand-Installer
 Install-Yukon
 Update-YukonDatabase -DatabaseType $($DatabaseType)

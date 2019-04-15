@@ -1,25 +1,3 @@
-# Need to add the IF check to decide if we are doing a backup.
-Function DatabaseBackup () {
-    Param (
-        [string]$databasePassword,
-        [string]$databaseLogin,
-        [string]$databaseServer,
-        [string]$databaseName,
-        [string]$backupFolder,
-        [integer]$daysToKeepBackup
-    )
-    
-    Invoke-Sqlcmd   -InputFile C:\MaintenanceSolution.sql -Username $databaseLogin -Password $databasePassword -ServerInstance $databaseServer
-    Invoke-Sqlcmd   -Query "EXECUTE dbo.DatabaseBackup "`
-                            "@Databases = $($databaseName),  "`
-                            "@Directory = "$($backupFolder)",  "`
-                            "@BackupType = 'FULL',  "`
-                            "@Verify = 'Y', " `
-                            "@Compress = 'Y', "`
-                            "@CleanupTime = $($daysToKeepBackup)" `
-                    -Username $databaseLogin -Password $databasePassword -ServerInstance $databaseServer
-}
-
 <#
 .SYNOPSIS
     Reset the Yukon database to the snapshot named yukon_snapshot
