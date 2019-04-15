@@ -34,7 +34,7 @@ public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionData
         if(!RfnDataValidator.isTimestampValid(eventInstant, now)) {
             //  Bad timestamp - but since this is an alarm (likely occurring now), try sending current time with an Estimated quality
             if(event instanceof RfnAlarm) {
-                log.trace(device + " invalid timestamp " + eventInstant + " for alarm " + event.toString() + ", sending current time as estimate");
+                log.warn(device + " invalid timestamp " + eventInstant + " for alarm " + event.toString() + ", sending current time as estimate");
                 eventInstant = now;
                 quality = PointQuality.Estimated;
             }
@@ -52,8 +52,11 @@ public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionData
                                                            now);
         } catch (InvalidEventMessageException ex) {
             if (event instanceof RfnAlarm) {
-                log.trace(device + " outage alarm received with no COUNT, not sending RFN_OUTAGE_COUNT update");
+                log.error("Invalid Event Message device:" + device + " event:" + event + " pointDatas:" + pointDatas
+                    + ". Outage alarm received with no COUNT, not sending RFN_OUTAGE_COUNT update", ex);
             } else {
+                log.error("Invalid Event Message device:" + device + " event:" + event + " pointDatas:" + pointDatas,
+                    ex);
                 throw ex;
             }
         }
