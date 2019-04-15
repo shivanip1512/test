@@ -45,6 +45,7 @@ import com.cannontech.common.rfn.message.metadata.RfnMetadataReplyType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataRequest;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataResponse;
 import com.cannontech.common.rfn.message.metadatamulti.NodeData;
+import com.cannontech.common.rfn.message.metadatamulti.NodeType;
 import com.cannontech.common.rfn.message.metadatamulti.PrimaryGatewayComm;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
@@ -271,10 +272,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         reply.setResponseType(settings.getMetadataResponseType());
         reply.setQueryResults(new HashMap<>());
         request.getRfnIdentifiers().forEach(identifier -> {
-            if(request.getRfnMetadatas().contains(RfnMetadataMulti.ALL)) {
-                request.getRfnMetadatas().addAll(Set.of(RfnMetadataMulti.values()));
-                request.getRfnMetadatas().remove(RfnMetadataMulti.ALL);
-            }
             RfnMetadataMultiQueryResult result = new RfnMetadataMultiQueryResult();
             result.setResultType(settings.getMetadataQueryResponseType());
             result.setResultMessage(settings.getMetadataResponseString());
@@ -300,7 +297,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         node.setMacAddress("11:22:33:44:91:11");
                         node.setNetworkAddress("00C36E09081400");
                         node.setNodeSerialNumber(settings.getRouteData().getSerialNumber());
-                        node.setNodeType("Nodetype (Sim)");
+                        node.setNodeType(NodeType.ELECTRIC_NODE);
                         node.setProductNumber("123456789 (Sim)");
                         result.getMetadatas().put(RfnMetadataMulti.NODE_DATA, node); 
                         break;

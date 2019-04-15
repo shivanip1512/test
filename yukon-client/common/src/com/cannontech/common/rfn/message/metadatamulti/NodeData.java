@@ -8,13 +8,13 @@ public class NodeData implements Serializable {
     
     private String nodeSerialNumber;
     
-    private String nodeType;
+    private NodeType nodeType;
     
     private long inNetworkTimestamp;
     
     private String macAddress;
     
-    private String networkAddress; // RF internally-used address
+    private String networkAddress; // A propriety EkaNet network address
 
     private String hardwareVersion;
     
@@ -30,11 +30,11 @@ public class NodeData implements Serializable {
         this.nodeSerialNumber = nodeSerialNumber;
     }
 
-    public String getNodeType() {
+    public NodeType getNodeType() {
         return nodeType;
     }
 
-    public void setNodeType(String nodeType) {
+    public void setNodeType(NodeType nodeType) {
         this.nodeType = nodeType;
     }
 
@@ -137,10 +137,7 @@ public class NodeData implements Serializable {
                 return false;
         } else if (!nodeSerialNumber.equals(other.nodeSerialNumber))
             return false;
-        if (nodeType == null) {
-            if (other.nodeType != null)
-                return false;
-        } else if (!nodeType.equals(other.nodeType))
+        if (nodeType != other.nodeType)
             return false;
         if (productNumber == null) {
             if (other.productNumber != null)
