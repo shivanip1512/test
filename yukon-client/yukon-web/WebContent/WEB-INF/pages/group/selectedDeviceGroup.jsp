@@ -252,10 +252,10 @@
                                     <c:forEach var="subGroup" items="${subGroupMap}">
                                         <tr>
                                             <td>
-                                                <cti:url var="homeUrl" value="/group/editor/home"><cti:param name="groupName" value="${subGroup.key.fullName}"/></cti:url>
                                                 <span title="${fn:escapeXml(subGroup.key.fullName)}">
-                                                    <input type="hidden" id="js-subgroup-full-name" value="${fn:escapeXml(subGroup.key.fullName)}"/>
-                                                    <a href="#" id="js-subgroups"><c:out value="${subGroup.key.name}"/></a>
+                                                    <a href="#" id="js-subgroups" data-group-name="${fn:escapeXml(subGroup.key.fullName)}">
+                                                        <c:out value="${subGroup.key.name}"/>
+                                                    </a>
                                                 </span>
                                                 <span class="fr">${subGroup.value}&nbsp;<cti:msg2 key=".devices"/></span>
                                             </td>

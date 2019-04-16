@@ -121,7 +121,8 @@ yukon.tools.group.editor = (function () {
             
             $(document).on('click', '#js-subgroups', function (event) {
                 event.preventDefault();
-                yukon.tools.group.editor.retrieveGroupDetails($("#js-subgroup-full-name").val());
+                var groupName = $(this).data("groupName");
+                yukon.tools.group.editor.retrieveGroupDetails(groupName);
             });
             
             $(document).on('yukon:devicegroup:removealldevices', function (event) {
