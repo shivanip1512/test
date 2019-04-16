@@ -1,6 +1,5 @@
 package com.cannontech.web.dev.model;
 
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,12 +32,10 @@ public class JmsApiFilters {
             queueDescriptionsMap = singleCategoryMap;
         }
         
-        for (JmsApiCategory category : queueDescriptionsMap.keySet()) {
-            Collection<JmsApi<?,?,?>> apisForCategory = queueDescriptionsMap.get(category);
+        for (var apisForCategory : queueDescriptionsMap.values()) {
             Iterator<JmsApi<?,?,?>> apisIterator = apisForCategory.iterator();
             while (apisIterator.hasNext()) {
                 JmsApi<?,?,?> api = apisIterator.next();
-                
                 if (filterApiByCommPattern(api) ||
                         filterApiBySenders(api) ||
                         filterApiByReceivers(api) ||

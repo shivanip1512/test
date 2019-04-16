@@ -6,6 +6,7 @@ import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
@@ -1160,10 +1161,9 @@ public final class JmsApiDirectory {
     
     private static void addApis(Map<JmsApiCategory, List<JmsApi<?,?,?>>> jmsApis, 
                                JmsApiCategory category, JmsApi<?,?,?>...apis) {
-        jmsApis.put(category, new ArrayList<>());
-        for (JmsApi<?,?,?> api : apis) {
-            jmsApis.get(category).add(api);
-        }
-        jmsApis.get(category).sort(API_COMPARATOR);
+        
+        var categoryApiList = jmsApis.computeIfAbsent(category, unused -> new ArrayList<>());
+        categoryApiList.addAll(Arrays.asList(apis));
+        categoryApiList.sort(API_COMPARATOR);
     }
 }
