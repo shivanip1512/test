@@ -221,6 +221,6 @@ Function Archive-YukonLog() {
 
     # remove the files which are older than 7 days
     $limit = (Get-Date).AddDays(-7)
-    Get-ChildItem -Path "C:\SmokeSuiteArchivedLog" -File -Recurse | ? LastWriteTime -LE $limit | Remove-Item
+    Get-ChildItem -Path "C:\SmokeSuiteArchivedLog" -File -Recurse | ? LastWriteTime -LE $limit | Remove-Item -Verbose
     Write-Host "Archiving Yukon logs - Completed"
 }
