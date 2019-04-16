@@ -244,6 +244,7 @@
     <entry key="yukon.web.modules.operator.accountImport.progressBarLabel">Import Progress</entry>
     <entry key="yukon.web.modules.operator.accountImport.accountsProgress">Accounts</entry>
     <entry key="yukon.web.modules.operator.accountImport.hardwareProgress">Hardware</entry>
+    <entry key="yukon.web.modules.operator.accountImport.customerProgress">Customer</entry>
     <entry key="yukon.web.modules.operator.accountImport.prescanning">Prescanning...</entry>
     <entry key="yukon.web.modules.operator.accountImport.finishedFailed">Finished - Failed</entry>
     <entry key="yukon.web.modules.operator.accountImport.finishedPassed">Finished - Passed</entry>

@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -126,6 +127,7 @@ public class OperatorAccountController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private SubstationDao substationDao;
     @Autowired private SystemEventLogService systemEventLogService;
+    @Autowired private ToolsEventLogService toolsEventLogService;
     @Autowired private TransactionOperations transactionTemplate;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -257,13 +259,15 @@ public class OperatorAccountController {
     }
     
     // CANCEL AN IMPORT
-    @RequestMapping(value="doAccountImport", params="cancelImport")
-    public String cancelImport(ModelMap modelMap, String resultId, boolean prescan, YukonUserContext userContext) {
+    @RequestMapping(value = "doAccountImport", params = "cancelImport")
+    public String cancelImport(ModelMap modelMap, int hardwareLines, int accountLines, String resultId, boolean prescan,
+            YukonUserContext userContext) {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
         AccountImportResult result = recentResultsCache.getResult(resultId);
         result.cancel();
         if (!prescan) {
+            importCancelled(result, hardwareLines, accountLines, userContext);
             result.setStopTime(new Instant());
             modelMap.addAttribute("processedBeforeCancel", result.getPosition());
         }
@@ -271,7 +275,30 @@ public class OperatorAccountController {
         
         return "redirect:accountImport";
     }
-    
+
+    private void importCancelled(AccountImportResult result, int hardwareLines, int accountLines,
+            YukonUserContext userContext) {
+        LiteYukonUser user = userContext.getYukonUser();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String importType = accessor.getMessage(baseKey + "accountImport.pageName");
+        if (result.getPosition().contains("customer")) {
+            String customer = accessor.getMessage(baseKey + "accountImport.customerProgress");
+            toolsEventLogService.importCancelled(importType + " - " + customer, result.getAccountFileUpload().getName(),
+                user, result.getCustSuccessCount(), result.custFileErrors,
+                accountLines - result.getCustSuccessCount() - result.custFileErrors);
+            if (result.getHardwareFileUpload().getFile() != null) {
+                String hardware = accessor.getMessage(baseKey + "accountImport.hardwareProgress");
+                toolsEventLogService.importCancelled(importType + " - " + hardware,
+                    result.getHardwareFileUpload().getName(), user, 0, 0, hardwareLines);
+            }
+        } else if (result.getPosition().contains("hardware")) {
+            String hardware = accessor.getMessage(baseKey + "accountImport.hardwareProgress");
+            toolsEventLogService.importCancelled(importType + " - " + hardware,
+                result.getHardwareFileUpload().getName(), user, result.getHwSuccessCount(), result.hwFileErrors,
+                hardwareLines - result.getHwSuccessCount() - result.hwFileErrors);
+        }
+    }
+
     // DO ACCOUNT IMPORT
     @RequestMapping("doAccountImport")
     public String doAccountImport(ModelMap modelMap, String resultId, YukonUserContext userContext) {
@@ -281,6 +308,18 @@ public class OperatorAccountController {
         AccountImportResult result = initAccountImportResult(userContext.getYukonUser(), 
                 prescanResult.getAccountFileUpload(), prescanResult.getHardwareFileUpload(), 
                 prescanResult.getEmail(), false);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String importType = accessor.getMessage(baseKey + "accountImport.pageName");
+        if (result.getAccountFileUpload().getFile() != null) {
+            String customer = accessor.getMessage("yukon.web.modules.operator.accountImport.customerProgress");
+            toolsEventLogService.importStarted(userContext.getYukonUser(), importType + " - " + customer,
+                result.getAccountFileUpload().getName());
+        }
+        if (result.getHardwareFileUpload().getFile() != null) {
+            String hardware = accessor.getMessage("yukon.web.modules.operator.accountImport.hardwareProgress");
+            toolsEventLogService.importStarted(userContext.getYukonUser(), importType + " - " + hardware,
+                result.getHardwareFileUpload().getName());
+        }
         accountImportService.startAccountImport(result, userContext);
         
         modelMap.addAttribute("resultId", result.getResultId());
@@ -292,6 +331,8 @@ public class OperatorAccountController {
             
         modelMap.addAttribute("callbackResult", result);
         modelMap.addAttribute("totalCount", totalCount);
+        modelMap.addAttribute("hardwareLines", hardwareLines);
+        modelMap.addAttribute("accountLines", accountLines);
         modelMap.addAttribute("prescan", false);
         
         if (result.getAccountFileUpload().getFile() != null) {

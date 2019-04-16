@@ -6,6 +6,7 @@ public enum ArgEnum {
     applianceCategoryName,
     applianceType,
     auto,
+    cancelled,
     cancelTime,
     changeId,
     commandRequestExecutionContextId, 

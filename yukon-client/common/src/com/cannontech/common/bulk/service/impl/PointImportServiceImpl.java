@@ -21,6 +21,7 @@ import com.cannontech.common.bulk.processor.PointImportProcessorFactory;
 import com.cannontech.common.bulk.processor.StatusPointImportProcessor;
 import com.cannontech.common.bulk.service.PointImportService;
 import com.cannontech.common.csvImport.ImportData;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.point.PointCalculation;
 import com.cannontech.common.util.RecentResultsCache;
@@ -30,6 +31,7 @@ import com.cannontech.user.YukonUserContext;
 public class PointImportServiceImpl implements PointImportService {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PointImportProcessorFactory pointImportProcessorFactory;
+    @Autowired private ToolsEventLogService toolsEventLogService;
     @Resource(name="recentResultsCache") 
     private RecentResultsCache<BackgroundProcessResultHolder> bpRecentResultsCache;
     @Resource(name="transactionPerItemProcessor")
@@ -54,7 +56,7 @@ public class PointImportServiceImpl implements PointImportService {
     
     private String setUpProcessing(ImportData data, MessageSourceAccessor messageSourceAccessor, PointImportProcessor processor) {
         String resultId = getRandomId();
-        PointImportCallbackResult callbackResult = new PointImportCallbackResult(resultId, data, messageSourceAccessor);
+        PointImportCallbackResult callbackResult = new PointImportCallbackResult(resultId, data, messageSourceAccessor, toolsEventLogService);
         bpRecentResultsCache.addResult(resultId, callbackResult);
         bulkProcessor.backgroundBulkProcess(data.iterator(), processor, callbackResult);
         return resultId;

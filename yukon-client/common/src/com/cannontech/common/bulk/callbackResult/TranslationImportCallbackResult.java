@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.google.common.collect.Lists;
 
@@ -15,13 +16,19 @@ public class TranslationImportCallbackResult extends LoggingCallbackResult<Strin
     private List<String[]> importRows = Lists.newArrayList();
     private List<Integer> failedRows = Lists.newArrayList();
     private MessageSourceAccessor messageSourceAccessor;
+    private ToolsEventLogService toolsEventLogService;
+    private String originalFileName;
     
-    public TranslationImportCallbackResult(String resultsId, List<String> headers, List<String[]> importRows, MessageSourceAccessor messageSourceAccessor) {
+    public TranslationImportCallbackResult(String resultsId, List<String> headers, List<String[]> importRows,
+            MessageSourceAccessor messageSourceAccessor, ToolsEventLogService toolsEventLogService,
+            String originalFileName) {
         this.headers = headers;
         this.importRows = importRows;
         this.backgroundProcessType = BackgroundProcessTypeEnum.IMPORT_FDR_TRANSLATION;
         this.messageSourceAccessor = messageSourceAccessor;
         this.resultsId = resultsId;
+        this.toolsEventLogService = toolsEventLogService;
+        this.originalFileName = originalFileName;
     }
     
     public String getResultsId() {
@@ -91,5 +98,21 @@ public class TranslationImportCallbackResult extends LoggingCallbackResult<Strin
     
     public List<String[]> getImportRows() {
         return importRows;
+    }
+
+    @Override
+    public void processingSucceeded() {
+        super.processingSucceeded();
+        String logString = messageSourceAccessor.getMessage("yukon.web.menu.vv.fdrTranslations");
+        toolsEventLogService.importCompleted(logString, originalFileName, getSuccessCount(),
+            getTotalItems() - getSuccessCount());
+    }
+
+    @Override
+    public void processingFailed(Exception e) {
+        super.processingFailed(e);
+        String logString = messageSourceAccessor.getMessage("yukon.web.menu.vv.fdrTranslations");
+        toolsEventLogService.importCompleted(logString, originalFileName, getSuccessCount(),
+            getTotalItems() - getSuccessCount());
     }
 }

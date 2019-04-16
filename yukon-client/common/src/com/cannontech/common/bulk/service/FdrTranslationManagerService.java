@@ -35,5 +35,5 @@ public interface FdrTranslationManagerService {
      * Takes headers, ignored columns and rows of import file and begins import.
      * Returns the resultId for this import operation.
      */
-    public String startImport(List<String> headers, List<Integer> columnsToIgnore, List<String[]> fileLines, YukonUserContext userContext);
+    public String startImport(List<String> headers, List<Integer> columnsToIgnore, List<String[]> fileLines, YukonUserContext userContext, String originalFileName);
 }

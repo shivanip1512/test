@@ -32,6 +32,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -109,6 +110,7 @@ public class AccountImportService {
     @Autowired private StarsCustAccountInformationDao scaiDao; 
     @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private StarsSearchService starsSearchService;
+    @Autowired private ToolsEventLogService toolsEventLogService;
     @Autowired private UpdatableAccountConverter accountConverter;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonListDao yukonListDao;
@@ -119,6 +121,7 @@ public class AccountImportService {
     private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
     private PrintWriter importLog;
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private static final String key = "yukon.web.modules.operator.accountImport.";
     
     public void startAccountImport(final AccountImportResult result, final YukonUserContext context) {
         executor.execute(() -> {
@@ -255,6 +258,9 @@ public class AccountImportService {
         
         // Map from serial # (String) to account # (String)
         Map<String, String> hwFieldsMap = Maps.newHashMap();
+        
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        String importType = accessor.getMessage(key + "pageName");
 
 
         try {
@@ -762,6 +768,12 @@ public class AccountImportService {
                         importLog.println("* "+custFile.getName()+" was not deleted *");
                     }
                 }
+                if (!preScan && !result.isCanceled()) {
+                    String customer = accessor.getMessage(key + "customerProgress");
+                    toolsEventLogService.importCompleted(importType + "-" + customer,
+                        result.getAccountFileUpload().getName(), result.getCustSuccessCount(),
+                        result.custFileErrors);
+                }
             }
             
             if (hwFile != null) {
@@ -1021,6 +1033,12 @@ public class AccountImportService {
                     if (isDeleted == false) {
                         importLog.println("* " + hwFile.getName() + " was not deleted *");
                     }
+                }
+                if (!preScan && !result.isCanceled()) {
+                    String hardware = accessor.getMessage(key + "hardwareProgress");
+                    toolsEventLogService.importCompleted(importType + " - " + hardware,
+                        result.getHardwareFileUpload().getName(), result.getHwSuccessCount(),
+                        result.hwFileErrors);
                 }
             }
             

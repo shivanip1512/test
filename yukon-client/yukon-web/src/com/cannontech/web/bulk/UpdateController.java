@@ -26,8 +26,12 @@ import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.bulk.service.BulkUpdateFileInfo;
 import com.cannontech.common.bulk.service.BulkUpdateService;
 import com.cannontech.common.bulk.service.ParsedBulkUpdateFileInfo;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.cannontech.web.bulk.util.BulkFileUploadUtils;
@@ -40,6 +44,8 @@ public class UpdateController {
     
     @Autowired private BulkFieldService bulkFieldService;
     @Autowired private BulkUpdateService bulkUpdateService;
+    @Autowired private ToolsEventLogService toolsEventLogService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
    
     private Map<String, BulkUpdateFileInfo> bulkUpdateFileInfoMap = new ConcurrentHashMap<>();
@@ -66,7 +72,9 @@ public class UpdateController {
 
     // PARSE
     @RequestMapping("parseUpload")
-    public String parseUpload(ModelMap model, HttpServletRequest request) {
+    public String parseUpload(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
         // options 
         Boolean ignoreInvalidCols = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", false);
@@ -89,6 +97,8 @@ public class UpdateController {
         BulkUpdateFileInfo bulkUpdateFileInfo = new BulkUpdateFileInfo(fileResource, ignoreInvalidCols, ignoreInvalidIdentifiers);
         
         // save file info
+        bulkUpdateFileInfo.setOriginalFilename(bulkFileUpload.getName());
+        bulkUpdateFileInfo.setImportType(accessor.getMessage("yukon.web.menu.update"));
         String fileInfoId = bulkUpdateFileInfo.getId();
         bulkUpdateFileInfoMap.put(fileInfoId, bulkUpdateFileInfo);
         
@@ -131,12 +141,15 @@ public class UpdateController {
     
     // DO UPDATE
     @RequestMapping("doUpdate")
-    public String doUpdate(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException, IOException {
+    public String doUpdate(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletRequestBindingException, IOException {
         
         // open file as csv
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
         BulkUpdateFileInfo bulkUpdateFileInfo = bulkUpdateFileInfoMap.get(fileInfoId);
         ParsedBulkUpdateFileInfo parsedResult = bulkUpdateService.createParsedBulkUpdateFileInfo(bulkUpdateFileInfo);
+        
+        toolsEventLogService.importStarted(userContext.getYukonUser(), bulkUpdateFileInfo.getImportType(),
+            bulkUpdateFileInfo.getOriginalFilename());
        
         String resultsId = bulkUpdateService.startBulkUpdate(parsedResult);
         

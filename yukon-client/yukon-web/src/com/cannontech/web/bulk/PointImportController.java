@@ -31,17 +31,20 @@ import com.cannontech.common.csvImport.ImportData;
 import com.cannontech.common.csvImport.ImportFileFormat;
 import com.cannontech.common.csvImport.ImportFileValidator;
 import com.cannontech.common.csvImport.ImportParser;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.exception.DuplicateColumnNameException;
 import com.cannontech.common.exception.EmptyImportFileException;
 import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.exception.InvalidColumnNameException;
 import com.cannontech.common.exception.NoImportFileException;
 import com.cannontech.common.exception.RequiredColumnMissingException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.point.PointCalculation;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -59,6 +62,8 @@ public class PointImportController {
     private RecentResultsCache<PointImportCallbackResult> recentResultsCache;
     @Autowired PointImportService pointImportService;
     @Autowired CalculationImportService calculationImportService;
+    @Autowired private ToolsEventLogService toolsEventLogService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @RequestMapping("upload")
     public String upload(ModelMap model) {
@@ -78,6 +83,7 @@ public class PointImportController {
     public String submitImport(ModelMap model, HttpServletRequest request, FlashScope flashScope, 
                                PointImportType importType, YukonUserContext userContext) throws IOException {
         
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         boolean ignoreInvalidColumns = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidColumns", false);
         
         Map<String, PointCalculation> calcMap = null;
@@ -152,6 +158,12 @@ public class PointImportController {
             return "redirect:upload";
         }
         
+        String importTypeMessage =
+            accessor.getMessage("yukon.web.menu.pointImport") + " - " + accessor.getMessage(importType.getFormatKey());
+        data.setOriginalFileName(dataFile.getOriginalFilename());
+        data.setImportType(importTypeMessage);
+        toolsEventLogService.importStarted(userContext.getYukonUser(), importTypeMessage, dataFile.getOriginalFilename());
+
         String resultId = pointImportService.startImport(data, importType, calcMap, userContext);
         model.addAttribute("resultId", resultId);
         model.addAttribute("fileName", dataFile.getOriginalFilename());

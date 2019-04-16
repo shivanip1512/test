@@ -15,9 +15,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -34,6 +32,7 @@ import com.cannontech.common.bulk.model.FdrImportFileInterfaceInfo;
 import com.cannontech.common.bulk.model.FdrInterfaceDisplayable;
 import com.cannontech.common.bulk.service.FdrTranslationManagerCsvHelper;
 import com.cannontech.common.bulk.service.FdrTranslationManagerService;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.exception.ImportFileFormatException;
 import com.cannontech.common.fdr.FdrInterfaceType;
@@ -61,6 +60,7 @@ public class FdrTranslationManagerController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private FdrTranslationManagerService fdrTranslationManagerService;
     @Autowired private FdrTranslationManagerCsvHelper fdrTranslationManagerCsvHelper;
+    @Autowired private ToolsEventLogService toolsEventLogService;
     private RecentResultsCache<TranslationImportCallbackResult> recentResultsCache;
     
     @RequestMapping("home")
@@ -174,9 +174,14 @@ public class FdrTranslationManagerController {
             fileLines.add(line);
         }
         
-        //start import
-        String resultId = fdrTranslationManagerService.startImport(headers, interfaceInfo.getColumnsToIgnore(), fileLines, userContext);
-        
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        toolsEventLogService.importStarted(userContext.getYukonUser(),
+            messageSourceAccessor.getMessage("yukon.web.menu.vv.fdrTranslations"), dataFile.getOriginalFilename());
+
+        // start import
+        String resultId = fdrTranslationManagerService.startImport(headers, interfaceInfo.getColumnsToIgnore(),
+            fileLines, userContext, dataFile.getOriginalFilename());
+
         //return parameter map so ajax success function can redirect to results
         Map<String,Object> responseMap = Maps.newHashMapWithExpectedSize(3);
         responseMap.put("resultId", resultId);

@@ -6,6 +6,7 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
 import com.cannontech.common.csvImport.ImportData;
 import com.cannontech.common.csvImport.ImportRow;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.google.common.collect.Lists;
 
@@ -18,11 +19,14 @@ public class PointImportCallbackResult extends LoggingCallbackResult<ImportRow, 
     private String resultsId = "";
     private ImportData data;
     private List<Integer> failedRows = Lists.newArrayList();
+    private ToolsEventLogService toolsEventLogService;
     
-    public PointImportCallbackResult(String resultsId, ImportData data, MessageSourceAccessor messageSourceAccessor) {
+    public PointImportCallbackResult(String resultsId, ImportData data, MessageSourceAccessor messageSourceAccessor,
+            ToolsEventLogService toolsEventLogService) {
         this.resultsId = resultsId;
         this.data = data;
         this.messageSourceAccessor = messageSourceAccessor;
+        this.toolsEventLogService = toolsEventLogService;
     }
     
     @Override
@@ -90,5 +94,19 @@ public class PointImportCallbackResult extends LoggingCallbackResult<ImportRow, 
     @Override
     public boolean isFailureFileSupported() {
         return false;
+    }
+
+    @Override
+    public void processingSucceeded() {
+        super.processingSucceeded();
+        toolsEventLogService.importCompleted(data.getImportType(), data.getOriginalFileName(), getSuccessCount(),
+            getTotalItems() - getSuccessCount());
+    }
+
+    @Override
+    public void processingFailed(Exception e) {
+        super.processingFailed(e);
+        toolsEventLogService.importCompleted(data.getImportType(), data.getOriginalFileName(), getSuccessCount(),
+            getTotalItems() - getSuccessCount());
     }
 }

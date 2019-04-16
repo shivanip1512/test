@@ -510,4 +510,12 @@ public class AccountImportResult implements Completable {
         this.hwArchiveDir = hwArchiveDir;
     }
 
+    public int getHwSuccessCount() {
+        return hwLines.size() - hwFileErrors - 1;
+    }
+
+    public int getCustSuccessCount() {
+        return custLines.size() - custFileErrors - 1;
+    }
+
 }

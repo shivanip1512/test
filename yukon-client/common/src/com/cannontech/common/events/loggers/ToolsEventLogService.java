@@ -92,6 +92,11 @@ public interface ToolsEventLogService {
     public void importCompleted(@Arg(ArgEnum.type) String importType, @Arg(ArgEnum.fileName) String fileName,
             @Arg(ArgEnum.successCount) int successCount, @Arg(ArgEnum.failureCount) int failureCount);
 
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.bulkOperations")
+    public void importCancelled(@Arg(ArgEnum.type) String importType, @Arg(ArgEnum.fileName) String fileName,
+            @Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.successCount) int successCount,
+            @Arg(ArgEnum.failureCount) int failureCount, @Arg(ArgEnum.cancelled) int cancelledCount);
+
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.scheduledDataImport")
     public void scheduleCreated(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
             @Arg(ArgEnum.scheduleName) String ScheduleName, @Arg(ArgEnum.type) String type,

@@ -16,6 +16,7 @@
     <entry key="yukon.common.events.applianceCategoryName">Appliance Category Name</entry>
     <entry key="yukon.common.events.applianceType">Appliance Type</entry>
     <entry key="yukon.common.events.cancelTime">Cancel Time</entry>
+    <entry key="yukon.common.events.cancelled">Cancelled</entry>
     <entry key="yukon.common.events.changeId">ChangeId</entry>
     <entry key="yukon.common.events.commandRequestExecutionContextId">CommandReqExecContextId</entry>
     <entry key="yukon.common.events.commandRequestExecutionId">CommandReqExecId</entry>
@@ -604,6 +605,7 @@
     <entry key="yukon.common.events.system.tools.billing.billingFormatDeleted">Billing export schedule {2} deleted by {1}.</entry>
     <entry key="yukon.common.events.system.tools.bulkOperations.importStarted">{2} started for File Name: {3} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.bulkOperations.importCompleted">{1} completed for File Name: {2} (Success:{7} Failure:{8}).</entry>
+    <entry key="yukon.common.events.system.tools.bulkOperations.importCancelled">{1} cancelled for File Name: {2} (Success:{7} Failure:{8} Cancelled:{9}) by {3}.</entry>
     <entry key="yukon.common.events.system.tools.scheduledDataImport.scheduleCreated">Data import schedule {2} created for type {3} with scheduled run {4} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.scheduledDataImport.scheduleCreated.3">Import Type</entry>
     <entry key="yukon.common.events.system.tools.scheduledDataImport.scheduleUpdated">Data import schedule {2} updated for type {3} with scheduled run {4} by {1}.</entry>

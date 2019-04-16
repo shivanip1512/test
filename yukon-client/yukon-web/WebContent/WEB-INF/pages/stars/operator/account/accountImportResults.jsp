@@ -116,7 +116,9 @@
         <div class="page-action-area">
             <form action="${action}" id="importForm">
                 <input type="hidden" value="${resultId}" name="resultId">
-                  
+                <input type="hidden" value="${accountLines}" name="accountLines">
+                <input type="hidden" value="${hardwareLines}" name="hardwareLines">
+                
                 <c:if test="${prescan}"><cti:button type="submit" id="importButton" nameKey="import" disabled="true" classes="primary action"/></c:if>
                 <cti:button type="submit" id="cancelButton" name="cancelImport" nameKey="cancel"/>
                 

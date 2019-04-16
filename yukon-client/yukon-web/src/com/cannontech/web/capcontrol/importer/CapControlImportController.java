@@ -36,19 +36,23 @@ import com.cannontech.capcontrol.dao.CapControlImporterFileDao;
 import com.cannontech.capcontrol.exception.CapControlCbcFileImportException;
 import com.cannontech.capcontrol.exception.CapControlHierarchyFileImporterException;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.csvImport.CapControlImportResult;
 import com.cannontech.common.csvImport.ImportData;
 import com.cannontech.common.csvImport.ImportFileFormat;
 import com.cannontech.common.csvImport.ImportFileValidator;
 import com.cannontech.common.csvImport.ImportParser;
 import com.cannontech.common.csvImport.ImportResult;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.exception.DuplicateColumnNameException;
 import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.exception.InvalidColumnNameException;
 import com.cannontech.common.exception.RequiredColumnMissingException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -69,11 +73,13 @@ public class CapControlImportController {
     @Autowired private CapControlImporterFileDao fileImporterDao;
     @Autowired private RegulatorImportService regulatorImportService;
     @Autowired private RegulatorPointMappingImportService regulatorPointMappingImportService;
+    @Autowired private ToolsEventLogService toolsEventLogService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     private static Logger log = YukonLogManager.getLogger(CapControlImportController.class);
     private static final String key = "yukon.web.modules.capcontrol.import.";
     
-    private Cache<String, List<ImportResult>> resultsLookup = 
+    private Cache<String, CapControlImportResult> resultsLookup = 
             CacheBuilder.newBuilder().expireAfterWrite(12, TimeUnit.HOURS).build();
     
     private static Function<CapControlImporterCbcField, String> colNameOfField =
@@ -85,12 +91,23 @@ public class CapControlImportController {
     };
     
     @RequestMapping("view")
-    public String view(String cacheKey, ModelMap model) {
+    public String view(String cacheKey, ModelMap model, YukonUserContext userContext ) {
         
         List<ImportResult> results = Lists.newArrayList();
         
         if (cacheKey != null) {
-            results = resultsLookup.getIfPresent(cacheKey);
+            CapControlImportResult capControlImportResult = resultsLookup.getIfPresent(cacheKey);
+            results = capControlImportResult.getImportResult();
+
+            int totalCount = results.size();
+            int successCount = (int) results.stream().filter(ImportResult::isSuccess).count();
+
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            String importType = accessor.getMessage(key + "importTypes." + capControlImportResult.getImportType());
+            String capacitorControlImport = accessor.getMessage(key + "pageName");
+
+            toolsEventLogService.importCompleted(capacitorControlImport + " - " + importType,
+                capControlImportResult.getOriginalFileName(), successCount, totalCount - successCount);
         }
         
         model.addAttribute("results", results);
@@ -100,7 +117,7 @@ public class CapControlImportController {
     }
     
     @RequestMapping(value="cbcFile", method=RequestMethod.POST)
-    public String cbcFile(HttpServletRequest req, ModelMap model, FlashScope flash) throws IOException {
+    public String cbcFile(HttpServletRequest req, ModelMap model, FlashScope flash, YukonUserContext userContext) throws IOException {
         
         List<CbcImportResult> results = new ArrayList<CbcImportResult>();
         
@@ -110,6 +127,7 @@ public class CapControlImportController {
         
         try {
             FileUploadUtils.validateDataUploadFileType(dataFile);
+            importStarted(ImportType.CBC.getFormatKey(), userContext, dataFile.getOriginalFilename());
             List<CbcImportData> cbcImportData = fileImporterDao.getCbcImportData(inputStream, results);
 
             processCbcImport(cbcImportData, results);
@@ -138,7 +156,9 @@ public class CapControlImportController {
         List<ImportResult> cbcResults = getCbcResultResolvables(results);
         
         UUID randomUUID = UUID.randomUUID();
-        resultsLookup.put(randomUUID.toString(), cbcResults);
+        CapControlImportResult capControlImportResult =
+            new CapControlImportResult(cbcResults, dataFile.getOriginalFilename(), ImportType.CBC.name());
+        resultsLookup.put(randomUUID.toString(), capControlImportResult);
         
         model.addAttribute("cacheKey", randomUUID.toString());
         
@@ -195,10 +215,13 @@ public class CapControlImportController {
              return "redirect:view";
         }
         
+        importStarted(ImportType.REGULATOR.getFormatKey(), userContext, dataFile.getOriginalFilename());
         List<ImportResult> results = regulatorImportService.startImport(data);
         
         String resultId = UUID.randomUUID().toString();
-        resultsLookup.put(resultId, results);
+        CapControlImportResult capControlImportResult =
+            new CapControlImportResult(results, dataFile.getOriginalFilename(), ImportType.REGULATOR.name());
+        resultsLookup.put(resultId, capControlImportResult);
         
         model.addAttribute("cacheKey", resultId);
         
@@ -206,7 +229,7 @@ public class CapControlImportController {
     }
     
     @RequestMapping(value="pointmappingFile", method=RequestMethod.POST)
-    public String pointmappingFile(ModelMap model, HttpServletRequest req, FlashScope flash) throws IOException {
+    public String pointmappingFile(ModelMap model, HttpServletRequest req, FlashScope flash, YukonUserContext userContext) throws IOException {
         //Procure the import file
         if (!ServletFileUpload.isMultipartContent(req)) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.import.error.noImportFile"));
@@ -244,11 +267,13 @@ public class CapControlImportController {
             flash.setError(new YukonMessageSourceResolvable(key + "missingRequiredColumn", e.getJoinedMissingColumnNames()));
             return "redirect:view";
         }
-        
+        importStarted(ImportType.POINT_MAPPING.getFormatKey(), userContext, dataFile.getOriginalFilename());
         List<ImportResult> results = regulatorPointMappingImportService.startImport(data);
         
         String resultId = UUID.randomUUID().toString();
-        resultsLookup.put(resultId, results);
+        CapControlImportResult capControlImportResult =
+            new CapControlImportResult(results, dataFile.getOriginalFilename(), ImportType.POINT_MAPPING.name());
+        resultsLookup.put(resultId, capControlImportResult);
         
         model.addAttribute("cacheKey", resultId);
         
@@ -256,7 +281,7 @@ public class CapControlImportController {
     }
     
     @RequestMapping(value="hierarchyFile", method=RequestMethod.POST)
-    public String hierarchyFile(HttpServletRequest req, ModelMap model, FlashScope flash) throws IOException {
+    public String hierarchyFile(HttpServletRequest req, ModelMap model, FlashScope flash, YukonUserContext userContext) throws IOException {
         
         List<HierarchyImportResult> results = Lists.newArrayList();
         
@@ -266,6 +291,7 @@ public class CapControlImportController {
         
         try {
             FileUploadUtils.validateDataUploadFileType(dataFile);
+            importStarted(ImportType.HIERARCHY.getFormatKey(), userContext, dataFile.getOriginalFilename());
             List<HierarchyImportData> hierarchyImportData =
                 fileImporterDao.getHierarchyImportData(inputStream, results);
 
@@ -289,7 +315,9 @@ public class CapControlImportController {
         List<ImportResult> resolvables = getHierarchyResultResolvables(results);
         
         UUID randomUUID = UUID.randomUUID();
-        resultsLookup.put(randomUUID.toString(), resolvables);
+        CapControlImportResult capControlImportResult =
+            new CapControlImportResult(resolvables, dataFile.getOriginalFilename(), ImportType.HIERARCHY.name());
+        resultsLookup.put(randomUUID.toString(), capControlImportResult);
         
         model.addAttribute("cacheKey", randomUUID.toString());
         
@@ -390,5 +418,14 @@ public class CapControlImportController {
             }
         }
     }
-    
+
+    private void importStarted(String importKey, YukonUserContext userContext, String fileName) {
+
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String importType = accessor.getMessage(importKey);
+        String capacitorControlImport = accessor.getMessage(key + "pageName");
+        toolsEventLogService.importStarted(userContext.getYukonUser(), capacitorControlImport + " - " + importType,
+            fileName);
+    }
+
 }

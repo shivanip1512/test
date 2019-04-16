@@ -986,6 +986,7 @@ public class DevEventLogCreationService {
                 String fileName = "MCT_Import.csv";
                 toolsEventLogService.importStarted(user, BulkImportType.MCT.name(), fileName);
                 toolsEventLogService.importCompleted(BulkImportType.MCT.name(), fileName, 10, 0);
+                toolsEventLogService.importCancelled("Account Import - Customer", "Account_Import_File.csv", user, 5, 1, 10);
 
                 String scheduleName = "Schedule_test1";
                 String type = "Asset Import";
@@ -1230,7 +1231,7 @@ public class DevEventLogCreationService {
         RFN_DEVICE(RfnDeviceEventLogService.class, 3),
         STARS(StarsEventLogService.class, 26),
         SYSTEM(SystemEventLogService.class, 35),
-        TOOLS(ToolsEventLogService.class, 27),
+        TOOLS(ToolsEventLogService.class, 28),
         USERS(UsersEventLogService.class, 23),
         VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),

@@ -26,6 +26,7 @@ import com.cannontech.common.bulk.service.FdrCsvHeader;
 import com.cannontech.common.bulk.service.FdrImportAction;
 import com.cannontech.common.bulk.service.FdrTranslationManagerCsvHelper;
 import com.cannontech.common.bulk.service.FdrTranslationManagerService;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.exception.ImportFileFormatException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
@@ -52,6 +53,7 @@ import com.google.common.collect.Lists;
 public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerService {
     
     @Autowired DbChangeManager dbChangeManager;
+    @Autowired private ToolsEventLogService toolsEventLogService;
     private FdrTranslationManagerCsvHelper fdrTranslationManagerCsvHelper;
     private final Logger log = YukonLogManager.getLogger(FdrTranslationManagerServiceImpl.class);
     private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -62,9 +64,9 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
     private FdrTranslationDao fdrTranslationDao;
     
     @Override
-    public String startImport(List<String> headers, List<Integer> columnsToIgnore, List<String[]> fileLines, YukonUserContext userContext) {
+    public String startImport(List<String> headers, List<Integer> columnsToIgnore, List<String[]> fileLines, YukonUserContext userContext, String originalFileName) {
         SingleProcessor<String[]> translationProcessor = getTranslationProcessor(headers, columnsToIgnore, userContext);
-        String resultsId = startProcessor(fileLines, headers, translationProcessor, userContext);
+        String resultsId = startProcessor(fileLines, headers, translationProcessor, userContext, originalFileName);
         
         return resultsId;
     }
@@ -138,10 +140,11 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
         return interfaceInfo;
     }
     
-    private String startProcessor(List<String[]> fileLines, List<String> headers, Processor<String[]> processor, YukonUserContext userContext) {
+    private String startProcessor(List<String[]> fileLines, List<String> headers, Processor<String[]> processor, YukonUserContext userContext, String originalFileName) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        TranslationImportCallbackResult callbackResult = new TranslationImportCallbackResult(resultsId, headers, fileLines, messageSourceAccessor);
+        TranslationImportCallbackResult callbackResult = new TranslationImportCallbackResult(resultsId, headers,
+            fileLines, messageSourceAccessor, toolsEventLogService, originalFileName);
         bpRecentResultsCache.addResult(resultsId, callbackResult);
         
         bulkProcessor.backgroundBulkProcess(fileLines.iterator(), processor, callbackResult);

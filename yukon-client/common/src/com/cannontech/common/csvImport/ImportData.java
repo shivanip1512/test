@@ -21,6 +21,8 @@ public class ImportData {
     private List<String[]> originalData;
     private List<String> columnNames = Lists.newArrayList();
     private List<ImportRow> rows = Lists.newArrayList();
+    private String importType;
+    private String originalFileName;
     
     public ImportData(List<String[]> stringData, ImportFileFormat format) {
         List<String[]> stringDataCopy = Lists.newArrayList(stringData);
@@ -158,4 +160,21 @@ public class ImportData {
         }
         return false;
     }
+
+    public String getImportType() {
+        return importType;
+    }
+
+    public void setImportType(String importType) {
+        this.importType = importType;
+    }
+
+    public String getOriginalFileName() {
+        return originalFileName;
+    }
+
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
+    }
+
 }
