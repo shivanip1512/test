@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/12/2019 1:34:06 PM                         */
+/* Created on:     4/16/2019 1:04:28 PM                         */
 /*==============================================================*/
 
 
@@ -3040,7 +3040,7 @@ create table DeviceConfigState  (
    LastActionStatus     VARCHAR2(20)                    not null,
    LastActionStart      DATE                            not null,
    LastActionEnd        DATE,
-   CollectionActionId   NUMBER,
+   CommandRequestExecId NUMBER,
    constraint PK_DeviceConfigState primary key (PaObjectId)
 );
 
@@ -12150,8 +12150,9 @@ alter table DeviceConfigDeviceTypes
       on delete cascade;
 
 alter table DeviceConfigState
-   add constraint FK_DeviceConfigState_CollAct foreign key (CollectionActionId)
-      references CollectionAction (CollectionActionId);
+   add constraint FK_DevConfigState_CommReqExec foreign key (CommandRequestExecId)
+      references CommandRequestExec (CommandRequestExecId)
+      on delete set null;
 
 alter table DeviceConfigState
    add constraint FK_DeviceConfigState_YukonPao foreign key (PaObjectId)

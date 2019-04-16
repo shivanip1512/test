@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/12/2019 1:33:14 PM                         */
+/* Created on:     4/16/2019 1:01:50 PM                         */
 /*==============================================================*/
 
 
@@ -3242,7 +3242,7 @@ create table DeviceConfigState (
    LastActionStatus     varchar(20)          not null,
    LastActionStart      datetime             not null,
    LastActionEnd        datetime             null,
-   CollectionActionId   numeric              null,
+   CommandRequestExecId numeric              null,
    constraint PK_DeviceConfigState primary key (PaObjectId)
 )
 go
@@ -13038,8 +13038,9 @@ alter table DeviceConfigDeviceTypes
 go
 
 alter table DeviceConfigState
-   add constraint FK_DeviceConfigState_CollAct foreign key (CollectionActionId)
-      references CollectionAction (CollectionActionId)
+   add constraint FK_DevConfigState_CommReqExec foreign key (CommandRequestExecId)
+      references CommandRequestExec (CommandRequestExecId)
+         on delete set null
 go
 
 alter table DeviceConfigState

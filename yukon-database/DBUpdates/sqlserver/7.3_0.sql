@@ -80,32 +80,6 @@ WHERE Name IN ('NEST_USERNAME', 'NEST_PASSWORD', 'NEST_SERVER_URL');
 INSERT INTO DBUpdates VALUES ('YUK-19697', '7.3.0', GETDATE());
 /* @end YUK-19697 */
 
-/* @start YUK-19712 */
-CREATE TABLE DeviceConfigState (
-    PaObjectId              NUMERIC         NOT NULL,
-    CurrentState            VARCHAR(50)     NOT NULL,
-    LastAction              VARCHAR(20)     NOT NULL,
-    LastActionStatus        VARCHAR(20)     NOT NULL,
-    LastActionStart         DATETIME        NOT NULL,
-    LastActionEnd           DATETIME        NULL,
-    CollectionActionId      NUMERIC         NULL,
-    CONSTRAINT PK_DeviceConfigState PRIMARY KEY (PaObjectId)
-);
-GO
-
-ALTER TABLE DeviceConfigState
-    ADD CONSTRAINT FK_DeviceConfigState_CollAct FOREIGN KEY (CollectionActionId)
-    REFERENCES CollectionAction (CollectionActionId);
-
-ALTER TABLE DeviceConfigState
-    ADD CONSTRAINT FK_DeviceConfigState_YukonPao FOREIGN KEY (PaObjectId)
-    REFERENCES YukonPAObject (PAObjectID)
-    ON DELETE CASCADE;
-GO
-
-INSERT INTO DBUpdates VALUES ('YUK-19712', '7.3.0', GETDATE());
-/* @end YUK-19712 */
-
 /* @start YUK-19773 */
 /* If the 7.2 creation script was used, the column would already exist without running the YUK-19773 update */
 /* @error ignore-begin */
@@ -132,6 +106,48 @@ AND UOMName = 'Ms';
 
 INSERT INTO DBUpdates VALUES ('YUK-19758', '7.3.0', GETDATE());
 /* @end YUK-19758 */
+
+/* @start YUK-19780 if YUK-19712 */
+ALTER TABLE DeviceConfigState DROP CONSTRAINT FK_DeviceConfigState_CollAct;
+GO
+
+ALTER TABLE DeviceConfigState DROP COLUMN CollectionActionId;
+GO
+
+ALTER TABLE DeviceConfigState ADD CommandRequestExecId NUMERIC NULL;
+GO
+
+ALTER TABLE DeviceConfigState
+    ADD CONSTRAINT FK_DevConfigState_CommReqExec FOREIGN KEY (CommandRequestExecId)
+    REFERENCES CommandRequestExec (CommandRequestExecId);
+
+INSERT INTO DBUpdates VALUES ('YUK-19780', '7.3.0', GETDATE());
+/* @end YUK-19780 */
+
+/* @start YUK-19780 */
+CREATE TABLE DeviceConfigState  (
+    PaObjectId              NUMERIC             NOT NULL,
+    CurrentState            VARCHAR(50)         NOT NULL,
+    LastAction              VARCHAR(20)         NOT NULL,
+    LastActionStatus        VARCHAR(20)         NOT NULL,
+    LastActionStart         DATETIME            NOT NULL,
+    LastActionEnd           DATETIME            NULL,
+    CommandRequestExecId    NUMERIC             NULL,
+    CONSTRAINT PK_DeviceConfigState PRIMARY KEY (PaObjectId)
+);
+
+ALTER TABLE DeviceConfigState
+    ADD CONSTRAINT FK_DevConfigState_CommReqExec FOREIGN KEY (CommandRequestExecId)
+    REFERENCES CommandRequestExec (CommandRequestExecId)
+    ON DELETE SET NULL;
+
+ALTER TABLE DeviceConfigState
+    ADD CONSTRAINT FK_DeviceConfigState_YukonPao FOREIGN KEY (PaObjectId)
+    REFERENCES YukonPAObject (PAObjectID)
+    ON DELETE CASCADE;
+
+INSERT INTO DBUpdates VALUES ('YUK-19780', '7.3.0', GETDATE());
+/* @end YUK-19780 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
