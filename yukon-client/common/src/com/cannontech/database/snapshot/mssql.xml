@@ -38293,7 +38293,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>CollectionActionId</i__columnName>
+            <i__columnName>CommandRequestExecId</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>numeric</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -63139,6 +63139,15 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_DevConfigState_CommReqExec</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>CommandRequestExecId</i__columnName>
+            <i__foreignColumnName>CommandRequestExecId</i__foreignColumnName>
+            <i__foreignTableName>CommandRequestExec</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_ComReqUnsupp_ComReqExec</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CommandRequestExecId</i__columnName>
@@ -65662,15 +65671,6 @@
             <i__foreignColumnName>CollectionActionId</i__foreignColumnName>
             <i__foreignTableName>CollectionAction</i__foreignTableName>
             <i__updateRule>0</i__updateRule>
-            <i__deleteRule>1</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DeviceConfigState_CollAct</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>CollectionActionId</i__columnName>
-            <i__foreignColumnName>CollectionActionId</i__foreignColumnName>
-            <i__foreignTableName>CollectionAction</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
         </i__foreignKeys>
