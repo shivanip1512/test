@@ -22,7 +22,7 @@ public interface RecentEventParticipationService {
     /**
      * Creates new control event associated with the specified load program & group
      */
-    public void createDeviceControlEvent(int programId, int eventId, int groupId, Instant startTime, Instant stopTime);
+    public void createDeviceControlEvent(int programId, long eventId, int groupId, Instant startTime, Instant stopTime);
     
     /**
      * Retrieves as a list of RecentEventParticipationSummary associated with the specified event IDs.

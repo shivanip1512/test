@@ -13,20 +13,19 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
 import com.cannontech.dr.model.PerformanceVerificationAverageReports;
-import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.dr.service.DemandResponseService;
 import com.cannontech.dr.service.DemandResponseService.CombinedSortableField;
@@ -36,7 +35,6 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.message.dispatch.command.service.CommandService;
-import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.OnOff;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -53,11 +51,9 @@ public class HomeController {
 
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private RoleDao roleDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private DemandResponseService demandResponseService;
     @Autowired private UserPageDao userPageDao;
-    @Autowired private PerformanceVerificationDao performanceVerificationDao;
     @Autowired private RfnPerformanceVerificationService performanceVerificationService;
     @Autowired private JobManager jobManager;
     @Autowired private CommandService commandService;
@@ -65,11 +61,10 @@ public class HomeController {
         private YukonJobDefinition<RfnPerformanceVerificationTask> rfnVerificationJobDef;
     @Autowired @Qualifier("rfnPerformanceVerificationEmail")
         private YukonJobDefinition<RfnPerformanceVerificationEmailTask> rfnEmailJobDef;
-    @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
-    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    
+    @Autowired private ConfigurationSource configurationSource;
+
     private static final String key = "yukon.web.modules.dr.";
     
     @RequestMapping("/home")
@@ -133,7 +128,11 @@ public class HomeController {
         
         boolean nestAvailable = false;//!globalSettingDao.getString(GlobalSettingType.NEST_USERNAME).isEmpty();
         model.addAttribute("nestAvailable", nestAvailable);
-
+        
+        boolean recentEventParticipationAvailable = false;
+        recentEventParticipationAvailable = configurationSource.getBoolean(MasterConfigBoolean.HONEYWELL_SUPPORT_ENABLED, false)
+                                            || !globalSettingDao.getString(GlobalSettingType.ITRON_HCM_USERNAME).isEmpty();
+        model.addAttribute("recentEventParticipationAvailable", recentEventParticipationAvailable);
         return "dr/home.jsp";
     }
 

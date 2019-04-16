@@ -27,7 +27,9 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
+import com.cannontech.dr.honeywellWifi.azure.event.EventPhase;
 import com.cannontech.dr.itron.ItronDataEventType;
+import com.cannontech.dr.recenteventparticipation.service.RecentEventParticipationService;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.HashMultimap;
@@ -42,7 +44,8 @@ public class ItronDeviceDataParser {
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private AttributeService attributeService;
     @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
-    
+    @Autowired private RecentEventParticipationService recentEventParticipationService;
+
     private static final Logger log = YukonLogManager.getLogger(ItronDeviceDataParser.class);
 
     public Multimap<PaoIdentifier, PointValueHolder> parseAndSend(ZipFile zip) throws EmptyImportFileException {
@@ -152,7 +155,21 @@ public class ItronDeviceDataParser {
                 LitePoint lp = attributeService.createAndFindPointForAttribute(lpo, event.getAttribute(decoded));
                 double currentValue = dataSource.getPointValue(lp.getPointID()).getValue();
                 Optional<PointData> optionalPointData = event.getPointData(decoded, currentValue, eventTime , lp);
+                final byte[]  decodedFinal = decoded;
                 optionalPointData.ifPresent(pointData -> {
+                    if (event.isControlEventType()) { //Updating Recent Event Participation
+                        if (event.equals(ItronDataEventType.EVENT_STARTED)) {
+                            recentEventParticipationService.updateDeviceControlEvent((int) event.decode(decodedFinal),
+                                                                                     deviceId,
+                                                                                     EventPhase.PHASE_1, 
+                                                                                     new Instant(pointData.getMillis()));
+                        } else {
+                            recentEventParticipationService.updateDeviceControlEvent((int) event.decode(decodedFinal),
+                                                                                     deviceId,
+                                                                                     EventPhase.COMPLETED, 
+                                                                                     new Instant(pointData.getMillis()));
+                        }
+                    }
                     AssetAvailabilityPointDataTimes times = new AssetAvailabilityPointDataTimes(lpo.getPaoIdentifier().getPaoId());
                     times.setLastCommunicationTime(new Instant(pointData.getTimeStamp()));
                     dynamicLcrCommunicationsDao.insertData(times);

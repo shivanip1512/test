@@ -18,7 +18,7 @@ public interface RecentEventParticipationDao {
     /**
      * Creates new control event associated with the specified load program & group
      */
-    public void createNewEventMapping(int programId, int eventId, int groupId, Instant startTime, Instant stopTime);
+    public void createNewEventMapping(int programId, long eventId, int groupId, Instant startTime, Instant stopTime);
 
     /**
      * Update device status (({@link ControlEventDeviceStatus}, deviceReceivedTime)) for which response is
@@ -33,7 +33,7 @@ public interface RecentEventParticipationDao {
      * @param eventTime -- start time of event (eventTime is used to load OptOutEventId where this parameter is
      *        within the start/stop of OptOut Event ).
      */
-    void insertDeviceControlEvent(int eventId, int loadGroupId, Instant eventTime);
+    void insertDeviceControlEvent(long eventId, int loadGroupId, Instant eventTime);
 
     /**
      * Retrieves as a list of RecentEventParticipationSummary associated with the specified event IDs.
@@ -50,7 +50,7 @@ public interface RecentEventParticipationDao {
     /**
      * Returns List of RecentEventParticipationDetail for specified event
      */
-    List<RecentEventParticipationDetail> getRecentEventParticipationDetail(int eventId);
+    List<RecentEventParticipationDetail> getRecentEventParticipationDetail(long eventId);
 
     /**
      * Returns list of RecentEventParticipationDetail for specified date range

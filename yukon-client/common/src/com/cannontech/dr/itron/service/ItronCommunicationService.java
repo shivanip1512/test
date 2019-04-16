@@ -6,6 +6,7 @@ import java.util.zip.ZipFile;
 import org.joda.time.Duration;
 
 import com.cannontech.common.inventory.Hardware;
+import com.cannontech.dr.itron.service.impl.RecentEventParticipationItronData;
 import com.cannontech.stars.dr.account.model.AccountDto;
 
 public interface ItronCommunicationService {
@@ -80,8 +81,9 @@ public interface ItronCommunicationService {
 
     /**
      * Sends control request to Itron
+     * @return two values utilized from the caller to initialize Recent Event Participation table entry;
      */
-    void sendDREventForGroup(int yukonGroupId, int dutyCycleType, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
+    RecentEventParticipationItronData sendDREventForGroup(int yukonGroupId, int dutyCycleType, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
             boolean rampIn, boolean rampOut, Duration controlDuration);
 
     /**
