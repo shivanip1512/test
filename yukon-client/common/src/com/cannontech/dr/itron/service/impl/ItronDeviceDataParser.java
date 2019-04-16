@@ -158,6 +158,8 @@ public class ItronDeviceDataParser {
                 final byte[]  decodedFinal = decoded;
                 optionalPointData.ifPresent(pointData -> {
                     if (event.isControlEventType()) { //Updating Recent Event Participation
+                        log.debug("EventId: " + event.decode(decodedFinal) + ", EventType: "
+                                  + event.name() + ", deviceId: " + deviceId);
                         if (event.equals(ItronDataEventType.EVENT_STARTED)) {
                             recentEventParticipationService.updateDeviceControlEvent((int) event.decode(decodedFinal),
                                                                                      deviceId,
