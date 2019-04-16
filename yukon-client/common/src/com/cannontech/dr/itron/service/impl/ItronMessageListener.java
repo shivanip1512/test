@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
+import com.cannontech.dr.recenteventparticipation.service.RecentEventParticipationService;
 import com.cannontech.dr.service.ControlHistoryService;
 import com.cannontech.dr.service.ControlType;
 import com.cannontech.yukon.IDatabaseCache;
@@ -23,7 +24,8 @@ public class ItronMessageListener {
     @Autowired private ControlHistoryService controlHistoryService;
     @Autowired private ItronCommunicationService itronCommunicationService;
     @Autowired private IDatabaseCache dbCache;
-    
+    @Autowired private RecentEventParticipationService recentEventParticipationService;
+
     public void handleCyclingControlMessage(Message message) {
         if (message instanceof StreamMessage) {
             try {
@@ -49,8 +51,13 @@ public class ItronMessageListener {
                           ", Ramp In: " + rampIn + ", Ramp Out: " + rampOut + ", Duty Cycle Type: " + dutyCycleType + 
                           ", Duty Cycle Percent: " + dutyCyclePercent + ", Duty Cycle Period: " + dutyCyclePeriod + ", criticality: " + criticality);
                                 
-                itronCommunicationService.sendDREventForGroup(groupId, dutyCycleType, dutyCyclePercent, dutyCyclePeriod, criticality,
+                RecentEventParticipationItronData data = itronCommunicationService.sendDREventForGroup(groupId, dutyCycleType, dutyCyclePercent, dutyCyclePeriod, criticality,
                     rampIn, rampOut, controlDuration);
+                recentEventParticipationService.createDeviceControlEvent(data.getProgramId(), 
+                                                                         data.getEventId(), 
+                                                                         groupId,
+                                                                         startTime, 
+                                                                         endTime);
                 controlHistoryService.sendControlHistoryShedMessage(groupId, startTimeUtc, ControlType.ITRON, null,
                     controlDurationSeconds, dutyCyclePercent);
             } catch (JMSException e) {
