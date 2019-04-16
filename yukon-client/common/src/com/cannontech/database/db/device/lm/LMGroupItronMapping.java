@@ -17,7 +17,7 @@ public class LMGroupItronMapping extends com.cannontech.database.db.DBPersistent
 
     @Override
     public void add() throws java.sql.SQLException {
-        Object addValues[] = { yukonGroupId, null, virtualRelayId};
+        Object addValues[] = { yukonGroupId, null, virtualRelayId, null};
         add(TABLE_NAME, addValues);
 
     }
