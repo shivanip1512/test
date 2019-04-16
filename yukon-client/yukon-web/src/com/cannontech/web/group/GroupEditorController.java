@@ -220,7 +220,6 @@ public class GroupEditorController {
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(selectedDeviceGroup);
         model.addAttribute("deviceCollection", deviceCollection);
         
-        model.addAttribute("addGroupDataJson", getJsonForGroup(group, userContext));
     }
     
     @RequestMapping(value = "selectedDeviceGroup", method = RequestMethod.GET)
@@ -608,22 +607,4 @@ public class GroupEditorController {
 
     }
 
-    private String getJsonForGroup(final DeviceGroup group, YukonUserContext userContext) throws JsonProcessingException {
-        DeviceGroup rootGroup = deviceGroupService.getRootGroup();
-        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
-
-        String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
-
-        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, new NodeAttributeSettingCallback<DeviceGroup>() {
-            @Override
-            public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
-
-                if (group.equals(deviceGroup)) {
-                    node.setAttribute("disabled", true);
-                }
-            }
-        });
-
-        return JsonUtils.toJson(root.toMap(), true);
-    }
 }
