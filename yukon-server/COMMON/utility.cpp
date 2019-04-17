@@ -692,6 +692,30 @@ void convertHexStringToBytes( std::string & stringInput, std::vector< unsigned c
     }
 }
 
+//  Converts a number to base94 representation for logging.
+//    Matching Java implementation at /common/src/com/cannontech/common/util/Base94.java
+std::string toBase94(uint64_t input)
+{
+    std::string s;
+
+    constexpr int Base = 94;
+    constexpr char Offset = '!';  //  ASCII 33
+
+    while( input )
+    {
+        s.append(1, (input % Base) + Offset);
+        input /= Base;
+    }
+
+    if( s.size() < 3 )
+    {
+        s.append(3 - s.size(), Offset);
+    }
+
+    std::reverse(s.begin(), s.end());
+
+    return s;
+}
 
 bool isRepeater(INT Type)
 {

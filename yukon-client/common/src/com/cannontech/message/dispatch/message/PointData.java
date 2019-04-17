@@ -1,5 +1,7 @@
 package com.cannontech.message.dispatch.message;
 
+import java.util.Date;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.core.style.ToStringCreator;
 
@@ -10,13 +12,16 @@ import com.cannontech.database.data.point.PointType;
 
 public class PointData extends com.cannontech.message.util.Message implements PointValueQualityHolder
 {
+    private static final String TRACKING_DELIMITER = " trkid ";
+
     private int id;
     private int type;
     private PointQuality pointQuality;
     private long tags;
     private double value;
-    private java.lang.String str = "";
-    private java.util.Date time = new java.util.Date();
+    private String str = "";
+    private Date time = new Date();
+    private String trackingId;  //  just for memoization
 
     private long millis;
 
@@ -100,7 +105,16 @@ public class PointData extends com.cannontech.message.util.Message implements Po
     public double getValue() {
         return value;
     }
-
+    
+    @Override 
+    public String getTrackingId() {
+        //  extract on demand, cache/memoize into trackingId
+        if (trackingId == null) {
+            trackingId = StringUtils.substringAfter(getSource(), TRACKING_DELIMITER);
+        }
+        return trackingId;
+    }
+    
     public void setId(int newId) {
         id = newId;
     }
@@ -119,8 +133,10 @@ public class PointData extends com.cannontech.message.util.Message implements Po
      * If you want to set or clear individual tags, such as Load Profile Data or Must Archive, you 
      * should use the setTags...() family of methods instead.
      * @see setTagsLoadProfileData(), setTagsMustArchive()
+     * @deprecated
      * @param newTags all point tags as a bitfield
      */
+    @Deprecated(since="2013-09-18")
     public void setTags(long newTags) {
         tags = newTags;
     }
@@ -135,6 +151,16 @@ public class PointData extends com.cannontech.message.util.Message implements Po
 
     public void setValue(double newValue) {
         value = newValue;
+    }
+
+    /**
+     * Appends the tracking ID to the Source message field.
+     * @param id the tracking ID to append
+     */
+    public void setTrackingId(String id) {
+        trackingId = id;  //  memoize into trackingId
+        var bareSource = StringUtils.substringBefore(getSource(), TRACKING_DELIMITER);
+        setSource(bareSource + TRACKING_DELIMITER + id); 
     }
 
     @Override

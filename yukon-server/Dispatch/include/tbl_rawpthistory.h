@@ -11,10 +11,11 @@ struct CtiTableRawPointHistory : Cti::RowSource
    const int     millis;
    const int     quality;
    const double  value;
+   const std::string trackingId;  //  Just for tracking, not written to the database
 
    static int validateMillis(int millis);
 
-   CtiTableRawPointHistory(long pid, int qual, double val, const CtiTime tme, int millis);
+   CtiTableRawPointHistory(long pid, int qual, double val, const CtiTime tme, int millis, std::string trackingId);
 
    static std::array<Cti::Database::ColumnDefinition, 5> getTempTableSchema();
 

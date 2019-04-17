@@ -318,6 +318,30 @@ BOOST_AUTO_TEST_CASE(test_convertHexStringToBytes)
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_toBase94)
+{
+    std::string rawInput = 
+#include "../../yukon-shared/src/main/resources/testCases/base94.txt"
+        "";
+
+    std::istringstream testCases(rawInput);
+    
+    for( std::string line; std::getline(testCases, line); )
+    {
+        if( ! line.empty() )
+        {
+            std::istringstream testCase(line);
+
+            uint64_t input;
+            std::string output;
+
+            testCase >> input >> output;
+
+            BOOST_CHECK_EQUAL(toBase94(input), output);
+        }
+    }
+}
+
 BOOST_AUTO_TEST_CASE(test_stringCompareIgnoreCase)
 {
     std::string s1 = "My Compare";

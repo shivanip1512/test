@@ -4,6 +4,7 @@ import static com.cannontech.common.rfn.service.RfnDeviceCreationService.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -107,7 +108,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
         }
         
         @Override
-        public void processData(RfnDevice rfnDevice, RfnIdentifyingMessage message) {
+        public Optional<String> processData(RfnDevice rfnDevice, RfnIdentifyingMessage message) {
             try {
                 //This publishes the data to a topic, where the web server will receive and cache it
                 log.debug("Publishing gateway data on internal topic: " + message);
@@ -122,24 +123,25 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                         updateServerConfigHelper.sendNMConfiguration(rfnDevice.getPaoIdentifier().getPaoId());
                     }
                 }
+                return Optional.empty();  //  no point data to track
             } catch (Exception e) {
                 log.warn("Data processing failed for " + rfnDevice, e);
                 log.debug("Gateway data: " + message);
                 throw new RuntimeException("Data processing failed for " + rfnDevice, e);
             }
         }
-    }
     
-    private void handleDataMessage(GatewayDataResponse message) {
-        RfnIdentifier rfnIdentifier = message.getRfnIdentifier();
-        try {
-            RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
-            nmSyncService.syncGatewayName(rfnDevice, message.getName());
-            log.debug("Handling gateway data message: " + message);
-            RfnGatewayData data = new RfnGatewayData(message, rfnDevice.getName());
-            gatewayCache.put(rfnDevice.getPaoIdentifier(), data);
-        } catch (NotFoundException e) {
-            log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
+        private void handleDataMessage(GatewayDataResponse message) {
+            RfnIdentifier rfnIdentifier = message.getRfnIdentifier();
+            try {
+                RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
+                nmSyncService.syncGatewayName(rfnDevice, message.getName());
+                log.debug("Handling gateway data message: " + message);
+                RfnGatewayData data = new RfnGatewayData(message, rfnDevice.getName());
+                gatewayCache.put(rfnDevice.getPaoIdentifier(), data);
+            } catch (NotFoundException e) {
+                log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
+            }
         }
     }
     

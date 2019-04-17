@@ -204,6 +204,21 @@ CtiPointDataMsg& CtiPointDataMsg::setTimeWithMillis(const CtiTime& aTime, const 
 }
 
 
+std::string CtiPointDataMsg::getTrackingId() const
+{
+    //  Delimiter used to indicate that there is a tracking ID
+    static const std::string TrackingDelimiter = " trkid ";
+
+    const auto& source = getSource();
+
+    if( auto pos = source.find(TrackingDelimiter); pos != std::string::npos )
+    {
+        return source.substr(pos + TrackingDelimiter.size());
+    }
+
+    return "";
+}
+
 std::string CtiPointDataMsg::toString() const
 {
     Cti::FormattedList itemList;

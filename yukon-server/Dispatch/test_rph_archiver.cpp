@@ -46,18 +46,18 @@ BOOST_AUTO_TEST_SUITE( test_rph_archiver )
 template<typename T, typename U>
 CtiTableRawPointHistory operator+(const CtiTableRawPointHistory &lhs, const std::chrono::duration<T, U> d)
 {
-    return CtiTableRawPointHistory { lhs.pointId, lhs.quality, lhs.value, lhs.time + std::chrono::duration_cast<std::chrono::seconds>(d).count(), lhs.millis };
+    return CtiTableRawPointHistory { lhs.pointId, lhs.quality, lhs.value, lhs.time + std::chrono::duration_cast<std::chrono::seconds>(d).count(), lhs.millis, "" };
 }
 template<typename T, typename U>
 CtiTableRawPointHistory operator-(const CtiTableRawPointHistory &lhs, const std::chrono::duration<T, U> d)
 {
-    return CtiTableRawPointHistory { lhs.pointId, lhs.quality, lhs.value, lhs.time - std::chrono::duration_cast<std::chrono::seconds>(d).count(), lhs.millis };
+    return CtiTableRawPointHistory { lhs.pointId, lhs.quality, lhs.value, lhs.time - std::chrono::duration_cast<std::chrono::seconds>(d).count(), lhs.millis, "" };
 }
 
 template<>
 CtiTableRawPointHistory operator+(const CtiTableRawPointHistory &lhs, std::chrono::milliseconds ms)
 {
-    return CtiTableRawPointHistory { lhs.pointId, lhs.quality, lhs.value, lhs.time, lhs.millis + static_cast<int>(ms.count()) };
+    return CtiTableRawPointHistory { lhs.pointId, lhs.quality, lhs.value, lhs.time, lhs.millis + static_cast<int>(ms.count()), "" };
 }
 
 BOOST_AUTO_TEST_CASE( test_wasPreviouslyArchived )
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE( test_wasPreviouslyArchived )
 
     const auto now = t.seconds();
         
-    const CtiTableRawPointHistory b { 11235, 5, 12.34, t, 0 };
+    const CtiTableRawPointHistory b { 11235, 5, 12.34, t, 0, "" };
 
     //  baseline
     BOOST_CHECK_EQUAL( AS::NotInCache,  a.getArchiveStatus(b, now) );

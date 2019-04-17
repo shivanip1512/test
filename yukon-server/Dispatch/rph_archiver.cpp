@@ -17,12 +17,15 @@
 #include "coroutine_util.h"
 #include "std_helper.h"
 
-#include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/adaptor/indirected.hpp>
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/adaptor/transformed.hpp>
+#include <boost/range/numeric.hpp>
 
 #include <unordered_map>
 
-using Cti::Logging::Set::operator<<;
+using Cti::Logging::Vector::operator<<;
+using namespace std::string_literals;
 
 namespace Cti {
 namespace Dispatch {
@@ -91,11 +94,27 @@ bool RawPointHistoryArchiver::writeArchiveDataToDB(Cti::Database::DatabaseConnec
     {
         Cti::Timing::MillisecondTimer timer;
 
-        if( unsigned rowsWritten = writeRawPointHistory(conn, std::move(rowsToWrite)) )
+        auto trackingIds = writeRawPointHistory(conn, std::move(rowsToWrite));
+
+        if( ! trackingIds.empty() )
         {
+            const unsigned rowsWritten = trackingIds.size();
             const unsigned rowsRemaining = archiverQueueSize();
 
-            CTILOG_INFO(dout, "RawPointHistory transaction completed in " << timer.elapsed() << "ms. Inserted "<< rowsWritten <<" rows. remaining: "<< rowsRemaining <<" rows");
+            std::string trackingInfo = 
+                boost::accumulate(trackingIds, ""s, [](std::string s1, std::string s2) {
+                return
+                    s1.empty() ? s2 : 
+                    s2.empty() ? s1 : 
+                    s1 + " " + s2;
+                });
+
+            if( ! trackingInfo.empty() )
+            {
+                trackingInfo = " Tracking: " + trackingInfo;
+            }
+
+            CTILOG_INFO(dout, "RawPointHistory transaction completed in " << timer.elapsed() << "ms. Inserted " << rowsWritten << " rows. remaining: " << rowsRemaining << " rows." << trackingInfo);
 
             return rowsRemaining > MinRowsToWrite;
         }
@@ -119,7 +138,7 @@ auto RawPointHistoryArchiver::getFilteredRows(size_t maximum) -> std::vector<std
 
     FormattedList duplicates;
 
-    std::set<long> ancient, future, beyondCache;
+    std::vector<std::string> ancient, future, beyondCache;
 
     for( const auto now = std::time(nullptr); maximum-- && itr.base() != _archiverQueue.end(); ++itr )
     {
@@ -127,11 +146,11 @@ auto RawPointHistoryArchiver::getFilteredRows(size_t maximum) -> std::vector<std
 
         if( status == ArchiveStatus::Duplicate )
         {
-            duplicates.add(std::to_string((*itr)->pointId)) << (*itr)->time << " - " << (*itr)->value;
+            duplicates.add(std::to_string((*itr)->pointId)) << (*itr)->time << " - " << (*itr)->value << " " << (*itr)->trackingId;
             continue;
         }
 
-        std::set<long>* classification =
+        std::vector<std::string>* classification =
             status == ArchiveStatus::Ancient     ? &ancient :
             status == ArchiveStatus::BeyondCache ? &beyondCache :
             status == ArchiveStatus::Future      ? &future :
@@ -139,7 +158,14 @@ auto RawPointHistoryArchiver::getFilteredRows(size_t maximum) -> std::vector<std
 
         if( classification )
         {
-            classification->insert((*itr)->pointId);
+            auto info = std::to_string((*itr)->pointId);
+
+            if( const auto& trackingId = (*itr)->trackingId; ! trackingId.empty() )
+            {
+                info += " " + trackingId;
+            }
+
+            classification->emplace_back(info);
         }
 
         rows.push_back(*itr);
@@ -153,11 +179,11 @@ auto RawPointHistoryArchiver::getFilteredRows(size_t maximum) -> std::vector<std
     }
     if( ! future.empty() )
     {
-        CTILOG_DEBUG(dout, "Received pointids more than 1 day in the future " << future);
+        CTILOG_INFO(dout, "Received pointids more than 1 day in the future " << future);
     }
     if( ! ancient.empty() )
     {
-        CTILOG_DEBUG(dout, "Received pointids more than 1 year old " << ancient);
+        CTILOG_INFO(dout, "Received pointids more than 1 year old " << ancient);
     }
     if( ! beyondCache.empty() )
     {
@@ -170,13 +196,11 @@ auto RawPointHistoryArchiver::getFilteredRows(size_t maximum) -> std::vector<std
 
 auto RawPointHistoryArchiver::getArchiveStatus(const CtiTableRawPointHistory& row, const time_t now) -> ArchiveStatus
 {
-    enum {
-        MinutesPerYear = 365 * 24 * 60,
-        IntervalBits = 37,
-        MaxInterval = 60
-    };
+    constexpr int MinutesPerYear = 365 * 24 * 60;
+    constexpr int IntervalBits = 37;
+    constexpr int MaxInterval = 60;
 
-    static const auto makeArchiveEpoch = [](const time_t now){ return now / 60 - MinutesPerYear; };  //  1 year before startup
+    static const auto makeArchiveEpoch = [MinutesPerYear](const time_t now){ return now / 60 - MinutesPerYear; };  //  1 year before startup
 
     static auto ArchiveEpoch = makeArchiveEpoch(now);
 
@@ -483,13 +507,16 @@ void RawPointHistoryArchiver::submitPointData(const CtiPointDataMsg& ptData)
 {
     std::lock_guard<std::mutex> lock(_archiverLock);
 
-    _archiverQueue.emplace_back(
+    auto rphRow =
         std::make_unique<CtiTableRawPointHistory>(
             ptData.getId(), 
             ptData.getQuality(), 
             ptData.getValue(), 
             ptData.getTime(), 
-            ptData.getMillis()));
+            ptData.getMillis(),
+            ptData.getTrackingId());
+
+    _archiverQueue.emplace_back(std::move(rphRow));
 }
 
 void RawPointHistoryArchiver::submitRows(std::vector<std::unique_ptr<CtiTableRawPointHistory>>&& rows)
@@ -512,24 +539,24 @@ unsigned RawPointHistoryArchiver::archiverQueueSize()
 }
 
 
-unsigned RawPointHistoryArchiver::writeRawPointHistory(Cti::Database::DatabaseConnection &conn, std::vector<std::unique_ptr<CtiTableRawPointHistory>>&& rowsToWrite)
+std::vector<std::string> RawPointHistoryArchiver::writeRawPointHistory(Cti::Database::DatabaseConnection &conn, std::vector<std::unique_ptr<CtiTableRawPointHistory>>&& rowsToWrite)
 {
     using namespace Cti::Database;
+    using boost::adaptors::transformed;
 
     if( ! conn.isValid() )
     {
         CTILOG_ERROR(dout, "Invalid Connection to Database");
-        return 0;
+        return {};
     }
 
     //  Get a RowSources view of the RawPointHistory rows
     const auto asRowSource = [](const std::unique_ptr<CtiTableRawPointHistory>& rph) { return rph.get(); };
+    const auto getTrackingId = [](const std::unique_ptr<CtiTableRawPointHistory>& rph) { return rph->trackingId; };
 
-    auto rowSources = boost::copy_range<std::vector<const RowSource*>>(rowsToWrite | boost::adaptors::transformed(asRowSource));
+    auto rowSources = boost::copy_range<std::vector<const RowSource*>>(rowsToWrite | transformed(asRowSource));
 
     DatabaseBulkInserter<5> rphWriter { conn.getClientType(), CtiTableRawPointHistory::getTempTableSchema(), "RPH", "RawPointHistory", "changeId" };
-
-    unsigned rowsWritten = rowSources.size();
 
     try
     {
@@ -544,10 +571,10 @@ unsigned RawPointHistoryArchiver::writeRawPointHistory(Cti::Database::DatabaseCo
                     [](const Cti::Loggable &obj) {
                         return obj.toString(); }), "\n"));
 
-        rowsWritten = 0;
+        return {};
     }
 
-    return rowsWritten;
+    return boost::copy_range<std::vector<std::string>>(rowsToWrite | transformed(getTrackingId));
 }
 
 

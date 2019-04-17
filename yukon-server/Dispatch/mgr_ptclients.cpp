@@ -706,7 +706,7 @@ std::vector<std::unique_ptr<CtiTableRawPointHistory>> CtiPointClientManager::sca
                                 case ArchiveTypeOnTimer:
                                 case ArchiveTypeOnTimerOrUpdated:
                                     {
-                                        toArchive.emplace_back(std::make_unique<CtiTableRawPointHistory>(pPt->getID(), pDyn->getQuality(), pDyn->getValue(), Now, 0));
+                                        toArchive.emplace_back(std::make_unique<CtiTableRawPointHistory>(pPt->getID(), pDyn->getQuality(), pDyn->getValue(), Now, 0, ""));
                                         break;
                                     }
                                 case ArchiveTypeOnTimerAndUpdated:

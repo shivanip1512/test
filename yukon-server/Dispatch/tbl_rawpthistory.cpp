@@ -13,12 +13,13 @@ using Cti::Database::DatabaseException;
 
 using DbClientType = DatabaseConnection::ClientType;
 
-CtiTableRawPointHistory::CtiTableRawPointHistory(long pid, int qual, double val, const CtiTime tme, int millis) :
+CtiTableRawPointHistory::CtiTableRawPointHistory(long pid, int qual, double val, const CtiTime tme, int millis, std::string id) :
     pointId(pid),
     quality(qual),
     value(val),
     time(tme),
-    millis(validateMillis(millis))
+    millis(validateMillis(millis)),
+    trackingId(id)  //  just for tracking, not written to the database
 {
 }
 
@@ -66,11 +67,16 @@ int CtiTableRawPointHistory::validateMillis(int millis)
 
 std::string CtiTableRawPointHistory::toString() const
 {
-    return 
-        Cti::StreamBuffer{} 
-            << pointId 
-            << "," << time
-            << "," << quality
-            << "," << value
-            << "," << millis;
+    std::string delimitedTrackingId =
+        trackingId.empty()
+            ? ""
+            : " " + trackingId;
+
+    return Cti::StreamBuffer{}
+        << pointId
+        << "," << time
+        << "," << quality
+        << "," << value
+        << "," << millis
+        << delimitedTrackingId;
 }

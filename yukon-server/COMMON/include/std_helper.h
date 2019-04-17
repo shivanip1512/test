@@ -252,7 +252,8 @@ namespace Map {
 
 namespace Vector {
 
-inline std::ostream &operator<<(std::ostream &logger, const std::vector<long> &buf)
+template<class T>
+inline std::ostream &operator<<(std::ostream &logger, const std::vector<T> &buf)
 {
     logger << "[";
     if( buf.empty() )
@@ -261,7 +262,7 @@ inline std::ostream &operator<<(std::ostream &logger, const std::vector<long> &b
     }
     else
     {
-        boost::range::copy(buf, std::ostream_iterator<long>{ logger, "," });
+        boost::range::copy(buf, std::ostream_iterator<T>{ logger, "," });
     }
     return logger << "]";
 }

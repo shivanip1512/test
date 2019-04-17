@@ -1,11 +1,14 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -47,10 +50,12 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
         }
         
         @Override
-        public void processData(RfnDevice device, RfnMeterReadingArchiveRequest request) {
+        public Optional<String> processData(RfnDevice device, RfnMeterReadingArchiveRequest request) {
             RfnMeterPlusReadingData meterPlusReadingData = new RfnMeterPlusReadingData(device, request.getData());
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
             List<CalculationData> toCalculate = pointDataProducer.convert(meterPlusReadingData, messagesToSend, request.getDataPointId());
+
+            Optional<String> trackingIds = trackValues(messagesToSend);
 
             asyncDynamicDataSource.putValues(messagesToSend);
             archivedReadings.addAndGet(messagesToSend.size());
@@ -79,6 +84,23 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
                     log.warn("interrupted while queuing generate request", e);
                     Thread.currentThread().interrupt();
                 }
+            }
+            return trackingIds;
+        }
+        
+        @Override
+        protected void createLogEntry(RfnMeterReadingArchiveRequest request, Optional<String> trackingInfo, 
+                                      Predicate<Level> isEnabled, BiConsumer<Level, String> log) {
+            if (isEnabled.test(Level.DEBUG)) {
+                log.accept(Level.DEBUG, ">>> " + request.toString() + delimited(trackingInfo));
+            } 
+            else if (isEnabled.test(Level.INFO)) {
+                log.accept(Level.INFO, ">>> " +
+                    String.format("RfnMeterReadingArchiveRequest [rfnIdentifier=%s, dataPointId=%s, readingType=%s]%s",
+                            request.getRfnIdentifier(),
+                            request.getDataPointId(),
+                            request.getReadingType(),
+                            delimited(trackingInfo)));
             }
         }
     }

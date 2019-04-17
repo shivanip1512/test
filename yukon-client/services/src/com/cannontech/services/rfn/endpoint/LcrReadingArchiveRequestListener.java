@@ -2,6 +2,7 @@ package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -72,7 +73,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
         }
         
         @Override
-        public void processData(RfnDevice rfnDevice, RfnLcrArchiveRequest request) {
+        public Optional<String> processData(RfnDevice rfnDevice, RfnLcrArchiveRequest request) {
             
             Instant startTime = new Instant();
             
@@ -148,6 +149,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 Duration processingDuration = new Duration(startTime, new Instant());
                 log.debug("It took " + processingDuration + " to process a request");
             }
+            return Optional.empty();  //  not tracking this point data yet
         }
     }
     
