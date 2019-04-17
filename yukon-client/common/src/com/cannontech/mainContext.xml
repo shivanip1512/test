@@ -88,6 +88,8 @@
     <bean class="com.cannontech.core.roleproperties.dao.impl.RolePropertyEditorDaoImpl"/>
     
     <bean class="com.cannontech.system.dao.GlobalSettingChangeHelper"/>
+    <!--  This needs to be instantiated before YukonLoggingReloader so any migrated settings are available to the logger.  -->
+    <bean class="com.cannontech.common.config.MasterConfigDeprecatedKeyMigrationHelper"/>
     <bean class="com.cannontech.clientutils.YukonLoggingReloader"/>
 
     <bean id="globalTimer" class="java.util.Timer" destroy-method="cancel" lazy-init="true">

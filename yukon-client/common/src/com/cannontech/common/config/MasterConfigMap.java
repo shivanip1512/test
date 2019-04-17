@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Period;
@@ -25,11 +27,13 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SimplePeriodFormat;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.MasterConfigCryptoUtils;
+import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.system.dao.GlobalSettingUpdateDao;
 
 public class MasterConfigMap implements ConfigurationSource {
+    private static final Logger log = YukonLogManager.getLogger(MasterConfigMap.class);
     private final Map<String, String> configMap = new HashMap<>();
     private File masterCfgFile;
-    private final Logger log = YukonLogManager.getLogger(MasterConfigMap.class);
 
     public MasterConfigMap(File file) throws IOException, CryptoException {
         super();
@@ -43,7 +47,21 @@ public class MasterConfigMap implements ConfigurationSource {
 
     public void initialize() throws IOException {
         configMap.clear();
+        processFile(this::loadEntry);
+    }
+
+    //  Package visibility - only MasterConfigDeprecatedKeyMigrationHelper should be calling this 
+    void updateDeprecatedKeys(GlobalSettingDao globalSettingDao, GlobalSettingUpdateDao globalSettingUpdateDao) throws IOException {
+        processFile((lineNum, key, value) -> migrateDeprecatedEntry(lineNum, key, value, globalSettingDao, globalSettingUpdateDao)); 
+    }
+
+    private interface EntryProcessor {
+        abstract Map.Entry<String, String> processEntry(int lineNum, String key, String value);
+    }
+    
+    private void processFile(EntryProcessor entryProcessor) throws IOException {
         boolean updateFile = false;
+        StringBuilder tempWriter = new StringBuilder();
         String endl = System.getProperty("line.separator");
         log.debug("starting initialization");
         Pattern keyCharPattern = Pattern.compile("^\\s*([^:#\\s]+)\\s*:\\s*([^#]+)\\s*(#.*)*");
@@ -52,68 +70,102 @@ public class MasterConfigMap implements ConfigurationSource {
 
         InputStream inputStream = FileUtils.openInputStream(masterCfgFile);
         // Don't specify an encoding - read using the default system encoding.
-        BufferedReader masterCfgReader = new BufferedReader(new InputStreamReader(inputStream));
-        // As we are parsing master.cfg, we copy it into this temporary string.  If we come across
-        // value which needs to be encrypted, we encrypt it and set updateFile to true.  Then, if
-        // updateFile is true, we overwrite the master.cfg file with the value of this string.
-        // (If updateFile is false, we know that nothing needed to be encrypted so we can leave
-        // the file alone.)
-        StringBuilder tempWriter = new StringBuilder();
-        int lineNum = 0;
-        List <String> lines = masterCfgReader.lines().collect(Collectors.toList());
+        try (BufferedReader masterCfgReader = new BufferedReader(new InputStreamReader(inputStream))) {
+            // As we are parsing master.cfg, we copy it into this temporary string.  If we come across
+            // value which needs to be encrypted, we encrypt it and set updateFile to true.  Then, if
+            // updateFile is true, we overwrite the master.cfg file with the value of this string.
+            // (If updateFile is false, we know that nothing needed to be encrypted so we can leave
+            // the file alone.)
+            int lineNum = 0;
+            List <String> lines = masterCfgReader.lines().collect(Collectors.toList());
 
-        for (String line : lines) {
-            lineNum++;
-            Matcher extCharMatcher = extCharPattern.matcher(line);
+            for (String line : lines) {
+                lineNum++;
+                Matcher extCharMatcher = extCharPattern.matcher(line);
 
-            if (extCharMatcher.find()) {
-                log.warn("Line " + lineNum + ": Extended characters found while reading Master Config file: " + extCharMatcher.group());
-            }
-            line = spacePattern.matcher(line).replaceAll(" ");
-            Matcher keyMatcher = keyCharPattern.matcher(line);
-            if (keyMatcher.find()) {
-                String key = keyMatcher.group(1);
-                String value = keyMatcher.group(2).trim();
-                String comment = (keyMatcher.group(3) != null) ? keyMatcher.group(3) : ""; // avoid null
-                if (configMap.containsKey(key)) {
-                    log.warn("Line " + lineNum + ": Duplicate key found while reading Master Config file: " + key);
+                if (extCharMatcher.find()) {
+                    log.warn("Line " + lineNum + ": Extended characters found while reading Master Config file: " + extCharMatcher.group());
                 }
-
-                if (MasterConfigDeprecatedKey.isDeprecated(key)) {
-                    updateFile = true;
-                    tempWriter.append("#(DEPRECATED) ").append(line);
-                    log.warn("Line " + lineNum + ": Deprecated key found while reading Master Config file: " + key + ". Marking as disabled in master.cfg");
-                } else {
-                    if (MasterConfigString.isEncryptedKey(key)
-                            && !MasterConfigCryptoUtils.isEncrypted(value)) {
-                        // Found a value that needs to be encrypted
-                        updateFile = true;
-                        String valueEncrypted = MasterConfigCryptoUtils.encryptValue(value);
-                        tempWriter.append(key).append(" : ").append(valueEncrypted).append(" ").append(comment);
-                        configMap.put(key, valueEncrypted);
-                        log.info("Line " + lineNum + ": Value for " + key + " encrypted and rewritten in Master Config file."); // Do not log value here for security
-                    } else {
-                        // Either plain-text data, or data already encrypted and safe to place into memory
-                        configMap.put(key, value);
-                        tempWriter.append(line);
-                    }
-                    if (MasterConfigString.isEncryptedKey(key)) {
-                        log.debug("Found line match: " + key + " [encrypted value]"); // Do no log entire line here because it contains sensitive data
-                    } else {
-                        log.debug("Found line match: " + line);
-                    }
-                }
-            } else {
-                // Line with no "key : value" pair
-                tempWriter.append(line);
+                line = spacePattern.matcher(line).replaceAll(" ");
+                Matcher keyMatcher = keyCharPattern.matcher(line);
+                
+                updateFile |= processLine(tempWriter, lineNum, line, keyMatcher, entryProcessor);
+                
+                tempWriter.append(endl);
             }
-            tempWriter.append(endl);
         }
-        masterCfgReader.close();
         if (updateFile) {
             // Don't specify an encoding - write using the default system encoding.
             FileUtils.writeStringToFile(masterCfgFile, tempWriter.toString());
         }
+    }
+
+    private boolean processLine(StringBuilder tempWriter, int lineNum, String line, Matcher keyMatcher, EntryProcessor entryProcessor) {
+        if (keyMatcher.find()) {
+            String key = keyMatcher.group(1);
+            String value = keyMatcher.group(2).trim();
+            String comment = (keyMatcher.group(3) != null) ? keyMatcher.group(3) : ""; // avoid null
+
+            var modifiedEntry = entryProcessor.processEntry(lineNum, key, value);
+            
+            if (modifiedEntry != null) {
+                tempWriter.append(modifiedEntry.getKey()).append(" : ").append(modifiedEntry.getValue()).append(" ").append(comment);
+                
+                return true;
+            }
+        }
+        tempWriter.append(line);
+        
+        return false;
+    }
+
+    private Map.Entry<String, String> loadEntry(int lineNum, String key, String value) {
+        Map.Entry<String, String> modifiedEntry = null;
+
+        if (MasterConfigDeprecatedKey.isDeprecated(key)) {
+            log.warn("Line " + lineNum + ": Not loading deprecated key " + key + ".");
+        } else {
+            if (MasterConfigString.isEncryptedKey(key)
+                    && !MasterConfigCryptoUtils.isEncrypted(value)) {
+                // Found a value that needs to be encrypted
+                value = MasterConfigCryptoUtils.encryptValue(value);
+                modifiedEntry = Pair.of(key, value);
+                log.info("Line " + lineNum + ": Value for " + key + " encrypted and rewritten in Master Config file."); // Do not log value here for security
+            }
+            if (configMap.containsKey(key)) {
+                log.warn("Line " + lineNum + ": Duplicate key found while reading Master Config file: " + key);
+            }
+            configMap.put(key, value);
+
+            if (MasterConfigString.isEncryptedKey(key)) {
+                log.debug("Found line match: " + key + " [encrypted value]"); // Do not log entire line here because it contains sensitive data
+            } else {
+                log.debug("Found line match: " + key + " : " + value);
+            }
+        }
+        return modifiedEntry;
+    }
+
+    private Map.Entry<String, String> migrateDeprecatedEntry(int lineNum, String key, String value, 
+            GlobalSettingDao globalSettingDao, GlobalSettingUpdateDao globalSettingUpdateDao) {
+        return MasterConfigDeprecatedKey.find(key)
+                .map(deprecatedKey -> {
+                    log.info("Line " + lineNum + ": Disabling deprecated key " + key);
+                    if (deprecatedKey.canMigrateToGlobalSetting()) {
+                        if(globalSettingDao.hasDatabaseEntry(deprecatedKey.getGlobalSettingType())) {
+                            log.warn("Setting already exists for " + deprecatedKey + ", not inserting as new global setting.");
+                        } else {
+                            deprecatedKey.migrate(value)
+                            .ifPresent(migratedSetting -> {
+                                migratedSetting.setComments("Automatically migrated from master.cfg on " + LocalDate.now());
+                                log.info("Migrating [" + key + " : " + value + "] to " + migratedSetting);
+                                globalSettingUpdateDao.updateSetting(migratedSetting, null);
+                            });
+                        }
+                    }
+                    return Pair.of("#(DEPRECATED) " + key, value);
+                })
+                .orElse(null);
     }
 
     @Override
@@ -228,8 +280,7 @@ public class MasterConfigMap implements ConfigurationSource {
         if (StringUtils.isBlank(string)) {
             return defaultValue.toPeriod();
         }
-        Period result = SimplePeriodFormat.getConfigPeriodFormatter().parsePeriod(string);
-        return result;
+        return SimplePeriodFormat.getConfigPeriodFormatter().parsePeriod(string);
     }
 
     @Override
@@ -265,7 +316,7 @@ public class MasterConfigMap implements ConfigurationSource {
      */
     private static void verifyKey(String key) {
         if(MasterConfigDeprecatedKey.isDeprecated(key)) {
-            throw new IllegalArgumentException("Master config setting: " + key + " is deprecated can cannot be used.");
+            throw new IllegalArgumentException("Master config setting: " + key + " is deprecated and cannot be used.");
         }
     }
 

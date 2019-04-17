@@ -1,5 +1,18 @@
 package com.cannontech.common.config;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.cannontech.common.util.DatabaseRepresentationSource;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.model.GlobalSetting;
+import com.cannontech.web.input.type.InputType;
+import com.google.common.collect.Maps;
 
 /**
  * Mark unused master.cfg CPARMS deprecated.
@@ -33,6 +46,8 @@ public enum MasterConfigDeprecatedKey {
     RECAPTCHA_PUBLIC_KEY, //public key used for CAPTCHA V1 , as we moved to reCAPTCHA V2 so no longer needed.
     RECAPTCHA_PRIVATE_KEY, //private key used for CAPTCHA V1 , as we moved to reCAPTCHA V2 so no longer needed.
 
+    LOG_FILE_RETENTION(GlobalSettingType.LOG_RETENTION_DAYS, UnaryOperator.identity()),
+    
     /* The following YUKON_DNP_* keys were intended to be deprecated but have been commented out of this enum.
      * This was done to prevent the 5.5.2 update script from throwing an exception when
      * attempting to look up these CPARMs using the @start-cparm annotation.
@@ -44,18 +59,75 @@ public enum MasterConfigDeprecatedKey {
 //    YUKON_DNP_TIMESYNCS,
     ;
 
+    private static Map<String, MasterConfigDeprecatedKey> keyLookup = Maps.uniqueIndex(Arrays.asList(values()), Enum::name);
+    
+    private GlobalSettingType globalSettingType;
+    private Function<String, String> translation;
+    
+    private MasterConfigDeprecatedKey() {
+    }
+    
+    private MasterConfigDeprecatedKey(GlobalSettingType migration, UnaryOperator<String> translation) {
+        this.globalSettingType = migration;
+        this.translation = translation;
+    }
+    
+    public GlobalSettingType getGlobalSettingType() {
+        return globalSettingType;
+    }
+    public boolean canMigrateToGlobalSetting() {
+        return globalSettingType != null && translation != null;
+    }
+
+    public Optional<GlobalSetting> migrate(String value) {
+        return Optional.ofNullable(value)
+                .filter(x -> canMigrateToGlobalSetting())
+                .map(translation)
+                .filter(StringUtils::isNotBlank)
+                .flatMap(translatedValue -> createObject(translatedValue, globalSettingType.getType()))
+                .map(obj -> new GlobalSetting(globalSettingType, obj));
+    }
+
+    //  Adapted from YukonResultSet
+    private static Optional<? extends Object> createObject(String value, InputType<?> type) {
+        Class<?> valueType = type.getTypeClass();
+        
+        if(valueType == Boolean.class) {
+            return Optional.ofNullable(Boolean.valueOf(value));
+        }
+        if(valueType == String.class) {
+            return Optional.ofNullable(value);
+        } 
+        if(valueType == Integer.class) {
+            return Optional.ofNullable(Integer.valueOf(value));
+        } 
+        if (valueType == Double.class) {
+            return Optional.ofNullable(Double.valueOf(value));
+        } 
+        if (valueType.isEnum()) {
+            Function<Enum<?>, String> mapping;
+            if (DatabaseRepresentationSource.class.isAssignableFrom(valueType)) {
+                mapping = e -> ((DatabaseRepresentationSource)e).getDatabaseRepresentation().toString();
+            } else {
+                mapping = Enum<?>::name;
+            }
+            
+            return Arrays.stream(valueType.getEnumConstants())
+                        .map(e -> (Enum<?>)e)
+                        .filter(e -> mapping.apply(e).matches(value))
+                        .findFirst();
+        } 
+        throw new UnsupportedOperationException("Unhandled InputType " + valueType);
+    }
+    
+    public static Optional<MasterConfigDeprecatedKey> find(String keyStr) {
+        return Optional.ofNullable(keyLookup.get(keyStr));
+    }
+    
     /**
      * Returns true if the CPARM key is deprecated
-     * 
-     * Throws NullPointerException if keyStr is null
      */
     public static boolean isDeprecated(String keyStr) {
-        try {
-            // If we get a value here we know this keyStr is a deprecated CPARM
-            MasterConfigDeprecatedKey.valueOf(keyStr);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
+        return keyLookup.containsKey(keyStr);
     }
 }
