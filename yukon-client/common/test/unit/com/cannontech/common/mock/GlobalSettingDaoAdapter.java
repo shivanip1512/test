@@ -60,4 +60,9 @@ public class GlobalSettingDaoAdapter implements GlobalSettingDao {
         throw new MethodNotImplementedException();
     }
 
+    @Override
+    public boolean hasDatabaseEntry(GlobalSettingType setting) {
+        throw new MethodNotImplementedException();
+    }
+
 }

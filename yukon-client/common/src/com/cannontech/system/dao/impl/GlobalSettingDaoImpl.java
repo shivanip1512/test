@@ -70,7 +70,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
     @Override
     public Optional<String> getOptionalString(GlobalSettingType type) {
         return Optional.ofNullable(getConvertedValue(type, Object.class))
-                       .map(value -> value.toString());
+                       .map(Object::toString);
     }
     
     @Override
@@ -171,6 +171,11 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
         return settingDb;
     }
 
+    @Override
+    public boolean hasDatabaseEntry(GlobalSettingType setting) {
+        return findSetting(setting) != null;
+    }
+    
     @Override
     public void valueChanged() {
         log.debug("Removing " +  cache.size() + " values from the Global Settings Cache");

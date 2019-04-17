@@ -75,4 +75,9 @@ public class GlobalSetting {
     public boolean isSensitiveInformation() {
         return type.isSensitiveInformation();
     }
+
+    @Override
+    public String toString() {
+        return "GlobalSetting [type=" + type + ", value=" + value + ", comments=" + comments + "]";
+    }
 }
