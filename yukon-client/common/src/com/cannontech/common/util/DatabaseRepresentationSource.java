@@ -6,7 +6,7 @@ public interface DatabaseRepresentationSource {
      * style call as a replacement for a '?' value.
      * 
      * For example, many of our Enums use name() as their representation, but
-     * others, for historical reason, use something else. Those emums should
+     * others, for historical reason, use something else. Those enums should
      * implement this interface to declare what String or Integer is used
      * for their DB representation.
      * @return
