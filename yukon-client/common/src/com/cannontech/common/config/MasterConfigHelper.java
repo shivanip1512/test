@@ -15,8 +15,11 @@ import com.cannontech.encryption.CryptoException;
 public class MasterConfigHelper {
     private static File masterCfgLocation;
     private static final Logger log = YukonLogManager.getLogger(MasterConfigHelper.class);
-    private static ConfigurationSource localConfig = null;
+    private static MasterConfigMap localConfig = null;
     
+    private MasterConfigHelper() {
+        //  hide implicit constructor
+    }
 
     static {
         URL url =  MasterConfigHelper.class.getClassLoader().getResource("master.cfg");
@@ -41,7 +44,7 @@ public class MasterConfigHelper {
         return masterCfgLocation;
     }
 
-    static public synchronized ConfigurationSource getLocalConfiguration(){
+    static public synchronized MasterConfigMap getLocalConfiguration(){
         if (localConfig == null) {
             File masterCfg;
             // check if on classpath
