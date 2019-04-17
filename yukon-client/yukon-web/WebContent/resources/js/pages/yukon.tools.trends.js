@@ -114,10 +114,12 @@ yukon.tools.trends = (function () {
             $(document).on('click', '.js-dl-csv', function (ev) {
                 var chart = trendChartContainer.highcharts(),
                     ex = chart.series[0].xAxis.getExtremes(),
-                    trendId = $(this).closest('li').data('trendId');
+                    trendId = $(this).closest('li').data('trendId'),
+                    max = ex.max == null ? 0 : ex.max,
+                    min = ex.min == null ? 0 : ex.min;
                 
                 window.location = yukon.url('/tools/trends/' + trendId + '/csv?' 
-                + 'from=' + new Date(ex.min).getTime() + '&to=' + new Date(ex.max).getTime()); 
+                + 'from=' + new Date(min).getTime() + '&to=' + new Date(max).getTime()); 
             });
         }
     };
