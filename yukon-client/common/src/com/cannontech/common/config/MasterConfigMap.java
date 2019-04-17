@@ -55,7 +55,14 @@ public class MasterConfigMap implements ConfigurationSource {
         processFile((lineNum, key, value) -> migrateDeprecatedEntry(lineNum, key, value, globalSettingDao, globalSettingUpdateDao)); 
     }
 
+    /**
+     * A processor that indicates whether a master.cfg entry needs to be rewritten.
+     */
     private interface EntryProcessor {
+        /**
+         * Processes a master.cfg entry and returns a new key/value pair if the line needs to be rewritten.
+         * @return a new key+value pair if the line is to be rewritten, or null otherwise.
+         */
         abstract Map.Entry<String, String> processEntry(int lineNum, String key, String value);
     }
     
@@ -119,6 +126,10 @@ public class MasterConfigMap implements ConfigurationSource {
         return false;
     }
 
+    /**
+     * Loads the entry into configMap, rewriting any encrypted entries.
+     * @return the encrypted key/value pair for any sensitive entries, null otherwise.
+     */
     private Map.Entry<String, String> loadEntry(int lineNum, String key, String value) {
         Map.Entry<String, String> modifiedEntry = null;
 
@@ -146,6 +157,10 @@ public class MasterConfigMap implements ConfigurationSource {
         return modifiedEntry;
     }
 
+    /**
+     * Comments out any deprecated entries, migrating them to GlobalSettings if applicable.
+     * @return the commented-out key/value pair for any deprecated entries, null otherwise.   
+     */
     private Map.Entry<String, String> migrateDeprecatedEntry(int lineNum, String key, String value, 
             GlobalSettingDao globalSettingDao, GlobalSettingUpdateDao globalSettingUpdateDao) {
         return MasterConfigDeprecatedKey.find(key)
