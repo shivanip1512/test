@@ -19,7 +19,7 @@ public abstract class YukonLoggingReloaderHelper {
     private final static long gigaBytesToByteMultiplier = 1024 * 1024 * 1024;
 
     public void reloadAppenderForMaxFileSize(boolean isDBChanged) {
-        long maxFileSize = Long.valueOf(globalSettingDao.getString(GlobalSettingType.MAX_LOG_FILE_SIZE)) * gigaBytesToByteMultiplier;
+        long maxFileSize = globalSettingDao.getInteger(GlobalSettingType.MAX_LOG_FILE_SIZE) * gigaBytesToByteMultiplier;
         if (maxFileSize > 0 && (isDBChanged || maxFileSize > DEFAULT_MAX_FILE_SIZE)) {
             reloadAppender(maxFileSize, GlobalSettingType.MAX_LOG_FILE_SIZE);
             BootstrapUtils.setLogMaxFileSize(maxFileSize);
@@ -27,7 +27,7 @@ public abstract class YukonLoggingReloaderHelper {
     }
 
     public void reloadAppenderForLogRetentionDays() {
-        int logRetentionDays =  Integer.valueOf(globalSettingDao.getString(GlobalSettingType.LOG_RETENTION_DAYS));
+        int logRetentionDays =  globalSettingDao.getInteger(GlobalSettingType.LOG_RETENTION_DAYS);
         if (logRetentionDays > 0) {
             reloadAppender(logRetentionDays, GlobalSettingType.LOG_RETENTION_DAYS);
             BootstrapUtils.setLogRetentionDays(logRetentionDays);
@@ -40,10 +40,10 @@ public abstract class YukonLoggingReloaderHelper {
             YukonRollingFileAppender appender = (YukonRollingFileAppender) e.getValue();
             if (type == GlobalSettingType.MAX_LOG_FILE_SIZE) {
                 appender.setMaxFileSize(value);
-                log.info(appender.getName() + " appender updated with max file size : " + value / gigaBytesToByteMultiplier + "GB");
+                log.info(appender.getName() + " updated with max file size : " + value / gigaBytesToByteMultiplier + "GB");
             } else if (type == GlobalSettingType.LOG_RETENTION_DAYS) {
                 appender.setLogRetentionDays((int) value);
-                log.info(appender.getName() + " is upgated with log retention days : " + value + " Days.");
+                log.info(appender.getName() + " updated with log retention : " + value + " days");
             }
             appender.start();
             config.addAppender(appender);
