@@ -37,7 +37,7 @@ public class RecentEventParticipationServiceImpl implements RecentEventParticipa
 
     @Override
     @Transactional
-    public void createDeviceControlEvent(int programId, long eventId, int groupId, Instant startTime, Instant stopTime) {
+    public void createDeviceControlEvent(int programId, int eventId, int groupId, Instant startTime, Instant stopTime) {
         recentEventParticipationDao.createNewEventMapping(programId, eventId, groupId, startTime, stopTime);
         recentEventParticipationDao.insertDeviceControlEvent(eventId, groupId, startTime);
     }

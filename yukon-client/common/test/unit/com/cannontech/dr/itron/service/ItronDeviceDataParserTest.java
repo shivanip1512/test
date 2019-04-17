@@ -26,7 +26,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.itron.ItronDataEventType;
 import com.cannontech.dr.itron.service.impl.ItronDeviceDataParser;
-import com.cannontech.dr.recenteventparticipation.service.RecentEventParticipationService;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Multimap;
@@ -68,12 +67,6 @@ public class ItronDeviceDataParserTest {
         
         setupMocks(lpo, BuiltInAttribute.CONTROL_STATUS);
 
-        RecentEventParticipationService recentEventParticipationService = EasyMock.createMock(RecentEventParticipationService.class);
-        recentEventParticipationService.updateDeviceControlEvent(EasyMock.anyInt(), EasyMock.anyInt(), EasyMock.anyObject(), EasyMock.anyObject());
-        EasyMock.expectLastCall();
-        EasyMock.replay(recentEventParticipationService);
-        ReflectionTestUtils.setField(parser, "recentEventParticipationService", recentEventParticipationService);
-        
         Multimap<PaoIdentifier, PointData> results = parser.generatePointData(rowData);
         Collection<PointData> data = results.get(lpo.getPaoIdentifier());
         Assert.assertEquals(1, data.size());

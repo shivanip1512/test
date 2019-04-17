@@ -1,6 +1,6 @@
 package com.cannontech.dr.itron.service.impl;
 
-import static com.cannontech.core.dao.PersistedSystemValueKey.ITRON_READ_GROUP_ID;
+import static com.cannontech.core.dao.PersistedSystemValueKey.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -218,7 +218,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     @Override
-    public RecentEventParticipationItronData sendDREventForGroup(int yukonGroupId, int dutyCycleType, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
+    public void sendDREventForGroup(int yukonGroupId, int dutyCycleType, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
             boolean rampIn, boolean rampOut, Duration duration) {
         String url = ItronEndpointManager.PROGRAM_EVENT.getUrl(settingDao);
         int relay = itronDao.getVirtualRelayId(yukonGroupId);
@@ -229,8 +229,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         LiteYukonPAObject group = getGroup(yukonGroupId);
         LiteYukonPAObject program = getProgram(programId);
        
-        long eventId = 0;
-        
         try {
             itronEventLogService.sendDREventForGroup(yukonGroupId, dutyCyclePercent, dutyCyclePeriod, criticality);
             AddHANLoadControlProgramEventRequest request = ProgramEventManagerHelper.buildDrEvent(dutyCyclePercent, dutyCycleType,
@@ -241,16 +239,13 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                     (JAXBElement<AddProgramEventResponseType>) ItronEndpointManager.PROGRAM_EVENT.getTemplate(
                     settingDao).marshalSendAndReceive(url, request);
             AddProgramEventResponseType type = response.getValue();
-            eventId = type.getProgramEventID();
-            itronDao.updateActiveEvent(yukonGroupId, eventId);
+            itronDao.updateActiveEvent(yukonGroupId, type.getProgramEventID());
             log.debug("ITRON-sendDREventForGroup url:{} mac address:{} itron group id:{} itron event id:{} result:{}.", url,
-                group.getPaoName(), program.getPaoName(), eventId , "success");
+                group.getPaoName(), program.getPaoName(), type.getProgramEventID() , "success");
             log.debug(XmlUtils.getPrettyXml(response));
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.PROGRAM_EVENT);
         }
-        
-        return new RecentEventParticipationItronData(programId, eventId);
     }
     
     /** 

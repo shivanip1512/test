@@ -155,9 +155,9 @@
         <c:if test="${nestAvailable}">
             <jsp:include page="/dr/nest/statistics"/>
         </c:if>
-        <c:if test="${recentEventParticipationAvailable}">
+        <cti:checkRolesAndProperties value="HONEYWELL_SUPPORT_ENABLED">
             <jsp:include page="/dr/recenteventparticipation/auditReport"/>
-        </c:if>
+        </cti:checkRolesAndProperties>
     </div>
     <div class="column two nogutter">
         <tags:sectionContainer2 nameKey="quickSearches" styleClass="stacked">

@@ -19,9 +19,9 @@ import com.google.common.collect.ImmutableSet;
 
 public enum ItronDataEventType {
     //Event where the value and attribute are known and defined. decode() is not used for these enums.
-    EVENT_STARTED(0x800E, BuiltInAttribute.CONTROL_STATUS, 0, 4, 1),
-    EVENT_STOPPED(0x800F, BuiltInAttribute.CONTROL_STATUS, 0, 4, 0),
-    EVENT_CANCELED(0x8010, BuiltInAttribute.CONTROL_STATUS, 0, 4, 0),
+    EVENT_STARTED(0x800E, BuiltInAttribute.CONTROL_STATUS, 0, 0, 1),
+    EVENT_STOPPED(0x800F, BuiltInAttribute.CONTROL_STATUS, 0, 0, 0),
+    EVENT_CANCELED(0x8010, BuiltInAttribute.CONTROL_STATUS, 0, 0, 0),
     MEMORY_MAP_LOST(0x800A, BuiltInAttribute.MEMORY_MAP_LOST, 0, 0, 1),
     MAX_CONTROL_EXCEEDED(0x8085, BuiltInAttribute.MAX_CONTROL_EXCEEDED, 0, 0, 1),
     NETWORK_TIMEOUT_CANCEL(0x8086, BuiltInAttribute.NETWORK_TIMEOUT_CANCEL, 0, 0, 1),
@@ -72,23 +72,19 @@ public enum ItronDataEventType {
     
     private final static ImmutableSet<ItronDataEventType> incrementalTypes;
     private final static ImmutableSet<ItronDataEventType> voltageTypes;
-    private final static ImmutableSet<ItronDataEventType> controlEventTypes;
         
     static {
         incrementalTypes = ImmutableSet.of(
-                                           POWER_FAIL,
-                                           LINE_UNDER_FREQUENCY,
-                                           LINE_UNDER_VOLTAGE);
+            POWER_FAIL,
+            LINE_UNDER_FREQUENCY,
+            LINE_UNDER_VOLTAGE
+            );
         voltageTypes = ImmutableSet.of(
-                                       MIN_VOLTAGE,
-                                       MIN_VOLTAGE_TIME,
-                                       MAX_VOLTAGE,
-                                       MAX_VOLTAGE_TIME);
-        controlEventTypes = ImmutableSet.of(
-                                            EVENT_STARTED,
-                                            EVENT_STOPPED,
-                                            EVENT_CANCELED,
-                                            EVENT_SUPERSEDED);
+           MIN_VOLTAGE,
+           MIN_VOLTAGE_TIME,
+           MAX_VOLTAGE,
+           MAX_VOLTAGE_TIME
+           );
     }
     
     private static Map<Long, ItronDataEventType> ItronEventTypeFromHexMap = new HashMap<>();
@@ -137,16 +133,12 @@ public enum ItronDataEventType {
     public boolean isVoltageType() {
         return voltageTypes.contains(this);
     }
-    
-    public boolean isControlEventType() {
-        return controlEventTypes.contains(this);
-    }
     /**
      * 
      * @param byteArray - this is a byte array that has been converted from a 5 byte hex string.
      * @return will return the value needed based off the flash logging library document.
      */
-    public long decode(byte[] byteArray) {
+    protected long decode(byte[] byteArray) {
         ByteBuffer buffer = ByteBuffer.wrap(byteArray);
         if (numOfBytes == 1) {
             return ByteUtil.getInteger(byteArray[firstByteIndex]);

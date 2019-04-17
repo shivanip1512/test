@@ -87,7 +87,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     }
 
     @Override
-    public void createNewEventMapping(int programId, long eventId, int groupId, Instant startTime, Instant stopTime) {
+    public void createNewEventMapping(int programId, int eventId, int groupId, Instant startTime, Instant stopTime) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink p = sql.insertInto("ControlEvent");
         p.addValue("ControlEventId", eventId);
@@ -100,7 +100,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     }
 
     @Override
-    public void insertDeviceControlEvent(long eventId, int loadGroupId, Instant eventTime) {
+    public void insertDeviceControlEvent(int eventId, int loadGroupId, Instant eventTime) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO ControlEventDevice (DeviceId, ControlEventId, OptOutEventId, Result)");
         sql.append("   (SELECT ypo.PaobjectId, ").appendArgument(eventId).append(",").append("ooe.OptOutEventId").append(",").appendArgument_k(UNKNOWN);
@@ -245,10 +245,10 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         };
 
     @Override
-    public List<RecentEventParticipationDetail> getRecentEventParticipationDetail(long eventId) {
+    public List<RecentEventParticipationDetail> getRecentEventParticipationDetail(int eventId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(getControlAuditBaseQuery());
-        sql.append("ce.ControlEventId").eq(eventId);
+        sql.append("ce.ControlEventId").eq_k(eventId);
         List<RecentEventParticipationDetail> recentEventParticipationDetails = jdbcTemplate.query(sql, recentEventParticipationDetailRowMapper);
         return recentEventParticipationDetails;
     }
