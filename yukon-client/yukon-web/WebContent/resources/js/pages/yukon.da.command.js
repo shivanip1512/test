@@ -39,7 +39,7 @@ $(document).on('click', 'li.menuOption.stateChange', function(event) {
     doChangeState($(event.currentTarget).closest("ul").find("input[name='paoId']").val(), $(event.currentTarget).val());
 });
 
-/** User has clicked OK on command confirmation popup - execute the command  */
+/** User has clicked Send Command on command confirmation popup - execute the command  */
 $(document).on('yukon:command:confirm', function (ev) {
     var popup = $(ev.target),
         itemId = popup.data('itemId'),
@@ -76,18 +76,39 @@ function doItemCommand(itemId, commandId, event, reason, onReasonMenu) {
     });
 }
 
-/** This method executes the normal commands.
+/** This method executes the system commands.
  *  @param {number} commandId - Id of the command that needs to be executed.
  */
-function doSystemCommand(commandId) {
+function doSystemCommand(commandId, commandText) {
+    
+    var popup = $('#systemCommandConfirmation'),
+        title = popup.data('title'),
+        okButtonText = popup.data('okText');
+    popup.find('.js-warning').text(commandText);
+    popup.data('commandId', commandId);
+    popup.dialog({
+        title: title, 
+        width: 'auto',
+        modal: true,
+        buttons: yukon.ui.buttons({okText: okButtonText, event: 'yukon:system:command:confirm'})
+    });
+    //make it so the user has to intentionally click the button
+    document.activeElement.blur();
+}
+
+/** User has clicked Send Command on system command confirmation popup - execute the command  */
+$(document).on('yukon:system:command:confirm', function (ev) {
+    var popup = $(ev.target),
+        commandId = popup.data('commandId');
     $.ajax({
         url: yukon.url('/capcontrol/command/system'),
         type: 'POST',
         data: {'commandId' : commandId}
     }).done( function(response){
         yukon.da.common.showMessage(response);
+        popup.dialog('destroy');
     });
-}
+});
 
 /** This method changes the state of the cap bank.
  *  @param {number} itemId - PAO ID.

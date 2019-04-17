@@ -70,16 +70,28 @@
 
             <tags:dynamicChoose updaterString="CAPCONTROL/SYSTEM_ENABLE_COMMAND" suffix="">
                 <tags:dynamicChooseOption optionId="enabled">
-                    <cm:dropdownOption id="systemOn" icon="icon-delete" href="javascript:doSystemCommand('28')" key=".disableSystem.label"/>
+                    <cti:msg2 var="disableSystem" key=".disableSystem.label"/>
+                    <cti:msg2 var="commandWarning" key=".command.confirm" argument="${disableSystem}"/>
+                    <cm:dropdownOption id="systemOn" icon="icon-delete" href="javascript:doSystemCommand('28', '${commandWarning}')" label="${disableSystem}"/>
                 </tags:dynamicChooseOption>
                 <tags:dynamicChooseOption optionId="disabled">
-                    <cm:dropdownOption id="systemOff" icon="icon-accept" href="javascript:doSystemCommand('28')" key=".enableSystem.label"/>
+                    <cti:msg2 var="enableSystem" key=".enableSystem.label"/>
+                    <cti:msg2 var="commandWarning" key=".command.confirm" argument="${enableSystem}"/>
+                    <cm:dropdownOption id="systemOff" icon="icon-accept" href="javascript:doSystemCommand('28', '${commandWarning}')" label="${enableSystem}"/>
                 </tags:dynamicChooseOption>
             </tags:dynamicChoose>
-            <cm:dropdownOption id="systemResetOpCountsLink" icon="icon-arrow-undo" href="javascript:doSystemCommand('16')" key=".resetOpCount.label"/>
+            <cti:msg2 var="resetOps" key=".resetOpCount.label"/>
+            <cti:msg2 var="commandWarning" key=".command.confirm" argument="${resetOps}"/>
+            <cm:dropdownOption id="systemResetOpCountsLink" icon="icon-arrow-undo" href="javascript:doSystemCommand('16', '${commandWarning}')" label="${resetOps}"/>
             
         </cti:checkRolesAndProperties>
     </cti:checkRolesAndProperties>
+    
+    <div id="systemCommandConfirmation" class="dn js-system-command-confirmation" data-dialog data-title="<cti:msg2 key="yukon.web.modules.capcontrol.menu.confirmation"/>" 
+        data-event="yukon:system:command:confirm" data-ok-text="<cti:msg2 key="yukon.web.modules.capcontrol.menu.sendCommandButton.label"/>"><br/>
+        <span class="user-message error js-warning"></span>
+        
+    </div>
     
 </div>
 
