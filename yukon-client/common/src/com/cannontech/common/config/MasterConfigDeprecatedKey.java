@@ -59,12 +59,14 @@ public enum MasterConfigDeprecatedKey {
 //    YUKON_DNP_TIMESYNCS,
     ;
 
-    private static Map<String, MasterConfigDeprecatedKey> keyLookup = Maps.uniqueIndex(Arrays.asList(values()), Enum::name);
+    private static final Map<String, MasterConfigDeprecatedKey> keyLookup = Maps.uniqueIndex(Arrays.asList(values()), Enum::name);
     
-    private GlobalSettingType globalSettingType;
-    private Function<String, String> translation;
+    private final GlobalSettingType globalSettingType;
+    private final Function<String, String> translation;
     
     private MasterConfigDeprecatedKey() {
+        this.globalSettingType = null;
+        this.translation = null;
     }
     
     private MasterConfigDeprecatedKey(GlobalSettingType migration, UnaryOperator<String> translation) {
