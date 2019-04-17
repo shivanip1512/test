@@ -909,7 +909,7 @@ yukon.ui = (function () {
                 if (elem.is('[data-container-name]')) {
                     var containerName = elem.data('containerName');
                     var pageEditMode = $('#pageEditMode').val();
-                    if (pageEditMode == 'true') {
+                    if (pageEditMode === 'true') {
                         elem.tabs('option', 'active', window.localStorage.getItem(containerName));
                     } else {
                         window.localStorage.removeItem(containerName);
