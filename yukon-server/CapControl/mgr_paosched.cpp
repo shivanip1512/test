@@ -448,25 +448,25 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
             boost::regex re("[0-9]+");
             secsSinceLastOperation = 0;
 
-            if(!(token = Cti::matchRegex(CmdStr, "[0-9]+ min")).empty())
+            if(!(token = Cti::matchRegex(CmdStr, "[0-9]+ +min")).empty())
             {
                 val = atoi(Cti::matchRegex(token, re).c_str());
                 multiplier = 60;
                 secsSinceLastOperation += val * multiplier;
             }
-            if(!(token = Cti::matchRegex(CmdStr, "[0-9]+ hr")).empty())
+            if(!(token = Cti::matchRegex(CmdStr, "[0-9]+ +hr")).empty())
             {
                 val = atoi(Cti::matchRegex(token, re).c_str());
                 multiplier = 3600;
                 secsSinceLastOperation += val * multiplier;
             }
-            if(!(token = Cti::matchRegex(CmdStr, "[0-9]+ day")).empty())
+            if(!(token = Cti::matchRegex(CmdStr, "[0-9]+ +day")).empty())
             {
                 val = atoi(Cti::matchRegex(token, re).c_str());
                 multiplier = 86400;
                 secsSinceLastOperation += val * multiplier;
             }
-            if(!(token = Cti::matchRegex(CmdStr, "[0-9]+ wk")).empty())
+            if(!(token = Cti::matchRegex(CmdStr, "[0-9]+ +wk")).empty())
             {
                 val = atoi(Cti::matchRegex(token, re).c_str());
                 multiplier = 604800;
