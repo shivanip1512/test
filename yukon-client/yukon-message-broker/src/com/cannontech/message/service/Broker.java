@@ -1,6 +1,5 @@
 package com.cannontech.message.service;
 
-import static com.cannontech.common.util.ApplicationId.MESSAGE_BROKER;
 import java.io.IOException;
 
 import org.apache.activemq.broker.BrokerService;
@@ -10,6 +9,8 @@ import org.apache.activemq.command.ActiveMQTempQueue;
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.ApplicationId;
+import com.cannontech.common.util.activemq.ActiveMQHelper;
 import com.cannontech.common.util.jmx.JmxHelper;
 
 public class Broker {
@@ -19,7 +20,7 @@ public class Broker {
 
     private Logger log = YukonLogManager.getLogger(Broker.class);
 
-    private final String name;
+    private final ApplicationId applicationId;
     private final String listenerHost;
     private static final String localhostConnector = "tcp://localhost:61616";
     private static final String anyhostConnector = "tcp://0.0.0.0:61616";
@@ -33,21 +34,22 @@ public class Broker {
     BrokerServiceMonitor monitor = new BrokerServiceMonitor();
 
     /**
-     * @param name name used for the broker, mostly for debug
+     * @param applicationId Application ID of the broker, passed in by BrokerService.
      * @param listenerHost something like "tcp://localhost:61616"
      */
-    public Broker(String name, String listenerHost) {
-        this.name = name;
+    public Broker(ApplicationId applicationId, String listenerHost) {
+        this.applicationId = applicationId;
         this.listenerHost = listenerHost;
     }
 
     public void start() {
         try {
             BrokerService broker = new BrokerService();
-            broker.setBrokerName(name);
+            broker.getPersistenceAdapter().setDirectory(ActiveMQHelper.getKahaDbDirectory(applicationId));
+            broker.setBrokerName(ActiveMQHelper.resolveBrokerName(applicationId));
 
             broker.setUseJmx(true);
-            broker.getManagementContext().setConnectorPort(JmxHelper.getApplicationJmxPort(MESSAGE_BROKER));
+            broker.getManagementContext().setConnectorPort(JmxHelper.getApplicationJmxPort(applicationId));
 
             broker.addConnector(listenerHost);
             if (!listenerHost.startsWith(anyhostConnector) && !listenerHost.startsWith(localhostConnector)) {

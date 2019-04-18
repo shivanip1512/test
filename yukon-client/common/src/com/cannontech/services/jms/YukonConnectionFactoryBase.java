@@ -30,7 +30,7 @@ abstract class YukonConnectionFactoryBase {
     
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired protected ConfigurationSource configurationSource;
-    static private ClientEmbeddedBroker clientEmbeddedBroker;
+    private static ClientEmbeddedBroker clientEmbeddedBroker;
     
     static {
         System.setProperty(
@@ -42,8 +42,7 @@ abstract class YukonConnectionFactoryBase {
         String hostUri = "tcp://" + globalSettingDao.getString(GlobalSettingType.JMS_BROKER_HOST);
         Integer port = globalSettingDao.getNullableInteger(GlobalSettingType.JMS_BROKER_PORT);
 
-        // MaxInactivityDuration controls how long AMQ keeps a socket open when it's not heard from
-        // it.
+        // MaxInactivityDuration controls how long AMQ keeps a socket open when it has had no activity.
         String maxInactivityDuration =
             "wireFormat.MaxInactivityDuration=" +
                     (globalSettingDao.getInteger(GlobalSettingType.MAX_INACTIVITY_DURATION) * 1000);
