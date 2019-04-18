@@ -82,9 +82,9 @@ public enum ItronEndpointManager {
         }
 
         @Override
-        public boolean handleFault(MessageContext arg0) throws WebServiceClientException {
+        public boolean handleFault(MessageContext context) throws WebServiceClientException {
             // logs soap fault
-            SoapMessage message = (SoapMessage) arg0.getResponse();
+            SoapMessage message = (SoapMessage) context.getResponse();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             try {
                 message.writeTo(out);
@@ -97,13 +97,15 @@ public enum ItronEndpointManager {
         }
 
         @Override
-        public boolean handleRequest(MessageContext arg0) throws WebServiceClientException {
+        public boolean handleRequest(MessageContext messageContext) throws WebServiceClientException {
             TransportContext context = TransportContextHolder.getTransportContext();
             String userCredentials = username + ":" + password;
             String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
             HttpUrlConnection conn = (HttpUrlConnection) context.getConnection();
             conn.getConnection().setRequestProperty("authorization", basicAuth);
-            conn.getConnection().addRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+            //Soap 1.1 uses "text/xml". Soap 1.2 uses "application/soap+xml"
+            //Itron uses 1.1 as indicated by namespace http://schemas.xmlsoap.org/wsdl/soap/ in WSDLs
+            conn.getConnection().addRequestProperty("Content-Type", "text/xml; charset=UTF-8");
             return true;
         }
 
