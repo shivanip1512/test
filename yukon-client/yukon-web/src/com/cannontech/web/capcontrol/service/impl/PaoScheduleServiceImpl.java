@@ -8,9 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -41,6 +39,7 @@ import com.cannontech.web.capcontrol.service.PaoScheduleService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.ImmutableMap;
 
 @Service
 public class PaoScheduleServiceImpl implements PaoScheduleService {
@@ -54,16 +53,12 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
     @Autowired private PaoScheduleServiceHelper paoScheduleServiceHelper;
     
     private static final String NO_FILTER = "All";
-    private static PeriodFormatter periodFormatter;
-    
-    static {
-        PeriodFormatterBuilder builder = new PeriodFormatterBuilder()
-        .appendMinutes().appendLiteral(" min ")
-        .appendHours().appendLiteral(" hr ")
-        .appendDays().appendLiteral(" day ")
-        .appendWeeks().appendLiteral(" wk");
-        periodFormatter = builder.toFormatter();
-    }
+
+    private Map<String, Number> supportedDurations = ImmutableMap.of(
+        "min", Duration.standardMinutes(1).getStandardSeconds(),
+        "hr",  Duration.standardHours(1).getStandardSeconds(),
+        "day", Duration.standardDays(1).getStandardSeconds(),
+        "wk",  Duration.standardDays(7).getStandardSeconds());
     
     private static final Logger log = YukonLogManager.getLogger(PaoScheduleServiceImpl.class);
 
@@ -330,7 +325,13 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
         String timeString = assignment.getCommandName().replaceAll(ScheduleCommand.VerifyNotOperatedIn.getCommandName().substring(0, 41), "").trim();
     
         //parse min/hr/day/wk value from command string
-        Period period = periodFormatter.parsePeriod(timeString);
-        return period.toStandardSeconds().getSeconds();
+        String[] tokens = timeString.replaceAll(" +", " ").split("\\s");
+
+        long seconds = 0;
+        for (int i = 0; i < tokens.length; i+=2) {
+            seconds += supportedDurations.get(tokens[i+1]).intValue() * Integer.parseInt(tokens[i]);
+        }
+        
+        return seconds;
     }
 }
