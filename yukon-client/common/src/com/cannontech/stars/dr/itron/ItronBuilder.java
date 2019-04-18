@@ -43,6 +43,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
     @Autowired private ItronCommunicationService itronCommunicationService;
     @Autowired private AccountService accountService;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
+    
     @Override
     public void createDevice(Hardware hardware) {
         try {

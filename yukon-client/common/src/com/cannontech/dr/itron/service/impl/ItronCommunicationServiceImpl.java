@@ -1,6 +1,6 @@
 package com.cannontech.dr.itron.service.impl;
 
-import static com.cannontech.core.dao.PersistedSystemValueKey.ITRON_READ_GROUP_ID;
+import static com.cannontech.core.dao.PersistedSystemValueKey.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -199,7 +199,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 // Restore the single device immediately. Disable randomization (ramp out)
                 sendRestore(yukonGroupId, macAddress, null, false);
             } catch (ItronEventNotFoundException e) {
-                log.debug("No events found to restore while opting out.", e);
+                log.debug("No events to restore for Yukon group ID " + yukonGroupId + "while opting out.");
+                log.trace("Exception: ", e);
             }
             itronEventLogService.optOut(account.getAccountNumber(), yukonGroupId, macAddress);
             addMacAddressesToGroup(account, getGroup(yukonGroupId));
