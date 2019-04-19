@@ -512,18 +512,20 @@ public class AccountImportResult implements Completable {
 
     /**
      * Returns success count for hardware file.
-     * <code>hwLines</code> contain all the data rows including headers so we need to subtract 1 to get the success count.
+     * <code>hwLines</code> contain all the data rows including headers so we need to subtract hwFileErrors
+     * and 1 to get the success count.
      */
     public int getHwSuccessCount() {
-        return hwLines.size() - hwFileErrors - 1;
+        return (hwLines == null || hwLines.size() == 0 ? 0 : hwLines.size() - hwFileErrors - 1);
     }
 
     /**
      * Returns success count for customer file.
-     * <code>custLines</code> contain all the data rows including headers so we need to subtract 1 to get the success count.
+     * <code>custLines</code> contain all the data rows including headers so we need to subtract
+     * custFileErrors and 1 to get the success count.
      */
     public int getCustSuccessCount() {
-        return custLines.size() - custFileErrors - 1;
+        return (custLines == null || custLines.size() == 0 ? 0 : custLines.size() - custFileErrors - 1);
     }
 
 }
