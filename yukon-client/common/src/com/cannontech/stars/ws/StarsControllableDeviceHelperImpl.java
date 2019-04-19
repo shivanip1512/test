@@ -466,7 +466,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             // call service to update device on the customer account
             lib = starsInventoryBaseService.updateDeviceOnAccount(lib, lsec, ecOperator, dto);
 
-            if (isEIMRequest == true) {
+            if (isEIMRequest) {
                 setLocationForHardwareEIM(hardwareType, dto, lib);
             } else {
                 setLocationForHardware(hardwareType, dto, lib);
@@ -528,10 +528,12 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         }
     }
     
-    /* Method to set or update the latitude and longitude for the hardware for EIM server*/
+    /* Method to set or update the latitude and longitude for the hardware for EIM server */
     private void setLocationForHardwareEIM(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib) {
 
         if (hardwareType.isTwoWay() && lib.getDeviceID() > 0) {
+            // checks if fields exist or not in the request. If the fields exist but are empty then it will
+            // remove the location details.
             if (dto.getLatitude() != null && dto.getLongitude() != null && !dto.getLatitude().isNaN()
                 && !dto.getLongitude().isNaN()) {
                 saveLocation(dto, lib);
@@ -540,8 +542,8 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                 paoLocationDao.delete(lib.getDeviceID());
             } else {
                 // do not modify the location
-                log.warn("Location data is not modified by " + dto.getDeviceType()
-                    + " device type. No location data will be updated for serial number " + dto.getSerialNumber());
+                log.warn("Location data is not modified for serial number " + dto.getSerialNumber()
+                    + ". Latitude or longitude fields are not specified in the request. ");
             }
         } else {
             log.warn("Location data is not supported by " + dto.getDeviceType()

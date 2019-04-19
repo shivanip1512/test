@@ -66,6 +66,7 @@ import com.cannontech.common.util.ObjectMapper;
  */
 public class SimpleXPathTemplate extends TransformerObjectSupport {
     private Properties namespaces;
+    private static Double emptyField = Double.NaN;
 
     /** Returns namespaces used in the XPath expression. */
     public Properties getNamespaces() {
@@ -156,12 +157,8 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         checkArgument(expression != null);
 
         Double num = null;
-        if (isNaNForBlank == true) {
-            num = evaluateNumber(expression, true);
-        } else {
-            num = evaluateNumber(expression, false);
-        }
-        return num == null ? null : num;
+        num = evaluateNumber(expression, isNaNForBlank);
+        return num;
     }
 
     /**
@@ -232,11 +229,13 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         if (!isNaNForBlank && StringUtils.isBlank(evaluateAsString(expression))) {
             return null;
         } else {
+            // checks if fields exist or not
             if (evaluateAsString(expression) == null) {
                 return null;
             }
+            // checks if fields are empty or whitespace characters
             if (StringUtils.isBlank(evaluateAsString(expression))) {
-                return Double.NaN;
+                return emptyField;
             }
         }
 
