@@ -21,6 +21,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
 public class FileUploadUtils {
+
     public static void validateDataUploadFileType(MultipartFile file) throws IOException, FileImportException {
         validateFileUpload(file);
         File importFile = File.createTempFile(file.getName(), "");
@@ -33,9 +34,10 @@ public class FileUploadUtils {
             CSVReader csvReaderWithDelimeter = new CSVReaderBuilder(filereader).withCSVParser(parser).build();
             String[] csvData = csvReaderWithDelimeter.readNext();
             String[] csvRecord = csvReader.readNext();
-            if (importFile.length() > 2 && (csvData != null && csvRecord == null))
+            if (importFile.length() > 2 && (csvData != null && csvRecord == null)) {
                 if (!(csvReaderWithDelimeter.readNext() == null))
                     throw new ImportFileFormatException("yukon.common.validDataFileRequired.error");
+            }
         }
     }
 
