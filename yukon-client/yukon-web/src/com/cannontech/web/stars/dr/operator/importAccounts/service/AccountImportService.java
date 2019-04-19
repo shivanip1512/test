@@ -770,7 +770,7 @@ public class AccountImportService {
                 }
                 if (!preScan && !result.isCanceled()) {
                     String customer = accessor.getMessage(key + "customerProgress");
-                    toolsEventLogService.importCompleted(importType + "-" + customer,
+                    toolsEventLogService.importCompleted(importType + " - " + customer,
                         result.getAccountFileUpload().getName(), result.getCustSuccessCount(),
                         result.custFileErrors);
                 }

@@ -16,7 +16,7 @@
     <entry key="yukon.common.events.applianceCategoryName">Appliance Category Name</entry>
     <entry key="yukon.common.events.applianceType">Appliance Type</entry>
     <entry key="yukon.common.events.cancelTime">Cancel Time</entry>
-    <entry key="yukon.common.events.cancelled">Cancelled</entry>
+    <entry key="yukon.common.events.cancelledCount">Cancelled</entry>
     <entry key="yukon.common.events.changeId">ChangeId</entry>
     <entry key="yukon.common.events.commandRequestExecutionContextId">CommandReqExecContextId</entry>
     <entry key="yukon.common.events.commandRequestExecutionId">CommandReqExecId</entry>
