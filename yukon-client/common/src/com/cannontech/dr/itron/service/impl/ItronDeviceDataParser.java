@@ -160,7 +160,7 @@ public class ItronDeviceDataParser {
                     if (event.isControlEventType()) { //Updating Recent Event Participation
                         log.debug("EventId: " + event.decode(decodedFinal) + ", EventType: "
                                   + event.name() + ", deviceId: " + deviceId);
-                        if (event.equals(ItronDataEventType.EVENT_STARTED)) {
+                        if (event == ItronDataEventType.EVENT_STARTED) {
                             recentEventParticipationService.updateDeviceControlEvent((int) event.decode(decodedFinal),
                                                                                      deviceId,
                                                                                      EventPhase.PHASE_1, 
