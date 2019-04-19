@@ -510,10 +510,18 @@ public class AccountImportResult implements Completable {
         this.hwArchiveDir = hwArchiveDir;
     }
 
+    /**
+     * Returns success count for hardware file.
+     * <code>hwLines</code> contain all the data rows including headers so we need to subtract 1 to get the success count.
+     */
     public int getHwSuccessCount() {
         return hwLines.size() - hwFileErrors - 1;
     }
 
+    /**
+     * Returns success count for customer file.
+     * <code>custLines</code> contain all the data rows including headers so we need to subtract 1 to get the success count.
+     */
     public int getCustSuccessCount() {
         return custLines.size() - custFileErrors - 1;
     }

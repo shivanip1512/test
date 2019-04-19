@@ -267,7 +267,7 @@ public class OperatorAccountController {
         AccountImportResult result = recentResultsCache.getResult(resultId);
         result.cancel();
         if (!prescan) {
-            importCancelled(result, hardwareLines, accountLines, userContext);
+            logImportCancelled(result, hardwareLines, accountLines, userContext);
             result.setStopTime(new Instant());
             modelMap.addAttribute("processedBeforeCancel", result.getPosition());
         }
@@ -276,7 +276,7 @@ public class OperatorAccountController {
         return "redirect:accountImport";
     }
 
-    private void importCancelled(AccountImportResult result, int hardwareLines, int accountLines,
+    private void logImportCancelled(AccountImportResult result, int hardwareLines, int accountLines,
             YukonUserContext userContext) {
         LiteYukonUser user = userContext.getYukonUser();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
