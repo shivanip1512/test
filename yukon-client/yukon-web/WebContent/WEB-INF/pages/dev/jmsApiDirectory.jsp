@@ -51,6 +51,7 @@
     </tags:sectionContainer>
     
     <c:forEach var="categoryEntry" items="${jmsApis.entrySet()}">
+        <c:if test="${categoryEntry.value.size() gt 0}">
         <tags:sectionContainer title="${categoryEntry.key.toString()}">
             <c:forEach var="api" items="${categoryEntry.value}">
                 <tags:boxContainer title="${api.name}">
@@ -97,6 +98,7 @@
                 </tags:boxContainer>
             </c:forEach>
         </tags:sectionContainer>
+        </c:if>
     </c:forEach>
     
 </cti:standardPage>

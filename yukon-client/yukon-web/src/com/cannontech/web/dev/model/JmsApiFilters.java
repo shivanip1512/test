@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.cannontech.common.util.jms.api.JmsApi;
 import com.cannontech.common.util.jms.api.JmsApiCategory;
 import com.cannontech.common.util.jms.api.JmsCommunicatingService;
@@ -66,6 +68,11 @@ public class JmsApiFilters {
     }
     
     private boolean filterApiByQueueSearch(JmsApi<?,?,?> api) {
+        if (StringUtils.isEmpty(queueSearch)) {
+            //If there's no queue search string, don't filter anything
+            return false;
+        }
+        
         boolean queueMatch = api.getQueue().getName().contains(queueSearch);
         
         boolean responseQueueMatch = api.getResponseQueue()
