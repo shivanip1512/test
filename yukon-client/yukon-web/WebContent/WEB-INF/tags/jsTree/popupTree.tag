@@ -13,7 +13,8 @@
 <%@ attribute name="multiSelect" type="java.lang.Boolean" %>
 <%@ attribute name="includeControlBar" type="java.lang.Boolean" %>
 <%@ attribute name="styleClass" %>
-<%@ attribute name="dataJson" %>
+<%@ attribute name="dataJson" description="A dictionary starting with attributes of the root node. Either dataJson or dataUrl is required."%>
+<%@ attribute name="dataUrl" description="A URL indicating how to get the data for the tree. Either dataJson or dataUrl is required."%>
 
 <%-- POPUP WINDOW SETUP --%>
 <%-- buttonsList is used to add buttons (with handlers) to the window. It is not required. --%>
@@ -32,6 +33,7 @@
              treeParameters="${treeParameters}"
              highlightNodePath="${highlightNodePath}"
              dataJson="${dataJson}"
+             dataUrl="${dataUrl}"
              maxHeight="${pageScope.maxHeight}"
              includeControlBar="${includeControlBar}"
              styleClass="${styleClass} popupTree"

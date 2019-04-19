@@ -22,6 +22,7 @@ yukon.device.selection = (function () {
         
         var tab = container.find('[data-select-by="group"]'),
             groups = tab.data('groups'),
+            groupsUrl = tab.data('groupsUrl'),
             multi = tab.is('[data-multi]'),
             initialized = tab.is('.js-initialized');
         
@@ -30,6 +31,7 @@ yukon.device.selection = (function () {
             yukon.dynatree.build({
                 container: tab,
                 groups: groups,
+                groupDataUrl: groupsUrl,
                 multi: multi,
                 nodeId: 'groupName'
             }, {

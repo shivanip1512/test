@@ -22,25 +22,26 @@ yukon.tools.group.editor = (function () {
 
     mod = {
             
-        retrieveGroupDetails : function(groupName) {
+        retrieveGroupDetails : function(groupName, selectNode) {
             //remove all current dialogs so it doesn't use old content
             $('.ui-dialog').remove();
             var groupNameEncoded = encodeURIComponent(groupName);
-            var url = yukon.url('/group/editor/selectedDeviceGroup?groupName=' + escape(groupName));
+            var showDevices = $('#showDevices').val();
+            var url = yukon.url('/group/editor/selectedDeviceGroup?groupName=' + escape(groupName) + "&showDevices=" + showDevices);
             var redirectUrl = yukon.url('/group/editor/home?groupName=' + groupNameEncoded);
 
             $.ajax({
                 url: url
             }).done(function (data) {
                 $('#subViewDiv').html(data);
-                //select and scroll to the group
-                var selectedGroup = $('#selectedGroup').val();
-                var paths = selectedGroup.split('/');
-                var selectedKey = paths[paths.length-1];
-                $("#selectGroupTree").dynatree("getTree").selectKey(selectedKey);
-                $("#selectGroupTree").dynatree("getTree").getNodeByKey(selectedKey).activateSilently();
-                $("#selectGroupTree").dynatree("getTree").getNodeByKey(selectedKey).focus();
                 window.history.pushState({path:redirectUrl},'',redirectUrl);
+                if (selectNode) {
+                    var selectedKey = $('#selectedGroup').val();
+                    //select and scroll to the group
+                    $("#selectGroupTree").dynatree("getTree").selectKey(selectedKey);
+                    $("#selectGroupTree").dynatree("getTree").getNodeByKey(selectedKey).activateSilently();
+                    $("#selectGroupTree").dynatree("getTree").getNodeByKey(selectedKey).focus();
+                }
             });
         },
             
@@ -115,14 +116,14 @@ yukon.tools.group.editor = (function () {
                     $('.js-error').addClass('dn');
                 }
                 var groupName = $('#groupName').val();
-                yukon.tools.group.editor.retrieveGroupDetails(groupName);
+                yukon.tools.group.editor.retrieveGroupDetails(groupName, false);
                 hideOnGroupLoad = true;
             });
             
             $(document).on('click', '#js-subgroups', function (event) {
                 event.preventDefault();
                 var groupName = $(this).data("groupName");
-                yukon.tools.group.editor.retrieveGroupDetails(groupName);
+                yukon.tools.group.editor.retrieveGroupDetails(groupName, true);
             });
             
             $(document).on('yukon:devicegroup:removealldevices', function (event) {

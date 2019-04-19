@@ -100,6 +100,7 @@ yukon.dynatree = (function () {
          * @param {JQuery object} container - The container element.
          *                                    Expected to contain a child element with a class name of 'tree-canvas'.
          * @param {object} groups           - The JSON object of groups for the dynatree plugin.
+         * @param {String} groupDataUrl     - The URL for the data for the tree.
          * @param {Array} [selected]        - Optional array of selected node id's. Default: [].
          * @param {Array} [nodeId]          - The name of the metadata property to use when preselecting nodes. 
          *                                    Default: 'groupName'. i.e. 'groupName' would indicate each node has a 
@@ -117,6 +118,9 @@ yukon.dynatree = (function () {
             
             options.container.find('.tree-canvas').dynatree($.extend({
                 
+                initAjax: {
+                    url: options.groupDataUrl,
+                },
                 children: options.groups,
                 
                 // Prevent the top level elements (visually - dynatree has 1 hidden root by default) 
@@ -162,8 +166,10 @@ yukon.dynatree = (function () {
             } else {
                 // Open all of the first level children.
                 var root = tree.getRoot();
-                for (var i = 0; i < root.childList.length; i++) {
-                    root.childList[i].expand(true);
+                if (root.childList != null) {
+                    for (var i = 0; i < root.childList.length; i++) {
+                        root.childList[i].expand(true);
+                    }
                 }
             }
             

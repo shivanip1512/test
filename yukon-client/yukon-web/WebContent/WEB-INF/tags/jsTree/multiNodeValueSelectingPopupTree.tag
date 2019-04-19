@@ -16,7 +16,8 @@
 <%@ attribute name="id" required="true" %>
 <%@ attribute name="triggerElement" %>
 <%@ attribute name="treeParameters" description="This should be a object '{}' with arguments for tree initialization." %>
-<%@ attribute name="dataJson" required="true" %>
+<%@ attribute name="dataJson" description="A dictionary starting with attributes of the root node. Either dataJson or dataUrl is required."%>
+<%@ attribute name="dataUrl" description="A URL indicating how to get the data for the tree. Either dataJson or dataUrl is required."%>
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="noSelectionAlert" %>
 
@@ -72,6 +73,7 @@
 <input type="hidden" name="${fieldName}" id="${fieldId}" value="">
 <t:popupTree buttonsList="[{text:'${cancelText}', click:clearAllNodeValues_${id}},{text:'${submitText}', click:setNodeValues_${id}, 'class': 'action primary'}]"
              dataJson="${dataJson}"
+             dataUrl="${dataUrl}"
              id="${id}"
              includeControlBar="true" 
              multiSelect="true"

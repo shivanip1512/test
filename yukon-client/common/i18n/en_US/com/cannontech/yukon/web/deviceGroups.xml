@@ -29,6 +29,8 @@
 <entry key="yukon.web.deviceGroups.editor.title">Device Groups</entry>
 <entry key="yukon.web.deviceGroups.editor.groupsContainer.title">Groups</entry>
 
+<entry key="yukon.web.deviceGroups.editor.groupNotFoundError">Group {0} could not be found.</entry>
+
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.title">Operations</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.topLevelLabel">Top Level</entry>
 

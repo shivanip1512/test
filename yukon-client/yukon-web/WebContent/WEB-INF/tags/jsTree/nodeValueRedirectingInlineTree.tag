@@ -11,7 +11,8 @@
 <%-- PASS THROUGH PARAMETERS TO jsTree:inlineTree --%>
 <%-- see inlineTree.tag for parameter descriptions --%>
 <%@ attribute name="id" required="true" type="java.lang.String"%>
-<%@ attribute name="dataJson" required="true" type="java.lang.String"%>
+<%@ attribute name="dataJson" description="A dictionary starting with attributes of the root node. Either dataJson or dataUrl is required."%>
+<%@ attribute name="dataUrl" description="A URL indicating how to get the data for the tree. Either dataJson or dataUrl is required."%>
 <%@ attribute name="highlightNodePath" required="false" type="java.lang.String"%>
 <%@ attribute name="includeControlBar" required="false" type="java.lang.Boolean"%>
 
@@ -44,6 +45,7 @@ function redirectToNameValue_${id}(node) {
                 treeCss="/resources/js/lib/dynatree/skin/device.group.css"
                 treeParameters="{onActivate: redirectToNameValue_${id}}"
                 dataJson="${dataJson}"
+                dataUrl="${dataUrl}"
                 maxHeight="${pageScope.maxHeight}"
                 highlightNodePath="${pageScope.highlightNodePath}"
                 includeControlBar="${pageScope.includeControlBar}"

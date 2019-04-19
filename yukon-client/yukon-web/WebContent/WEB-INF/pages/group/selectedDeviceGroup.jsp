@@ -11,6 +11,7 @@
 <cti:msg2 var="invalidGroupNameError" key="yukon.web.deviceGroups.editor.operationsContainer.invalidGroupNameError" javaScriptEscape="true"/>
  
  <input id="selectedGroup" type="hidden" value="${extSelectedNodePath}"/>
+ <input id="showDevices" type="hidden" value="${showDevices}"/>
 
     <%-- OPERATIONS BOX --%>
     <cti:msg2 key=".title" var="operationsTitle"/>
@@ -53,6 +54,7 @@
                         &nbsp;|&nbsp;
                         <%-- MOVE --%>
                         <cti:link id="moveGroupLink" href="javascript:void(0);" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup"/>
+                        <cti:url var="moveGroupUrl" value="/group/editor/moveGroupJson?groupName=${group.fullName}"/>
                             
                         <form id="moveGroupForm" action="<cti:url value="/group/editor/moveGroup"/>" method="post">
                             <cti:csrfToken/>    
@@ -71,7 +73,7 @@
                                 submitCallback="yukon.tools.group.editor.submitMoveGroupForm();"
                                 id="groupsEditorMoveGroupTree"
                                 triggerElement="moveGroupLink"
-                                dataJson="${moveGroupDataJson}"
+                                dataUrl="${moveGroupUrl}"
                                 title="${moveGroupPopupTitle}"
                                 noSelectionAlertText="${noGroupSelectedAlertText}"
                                 includeControlBar="true" />
@@ -124,7 +126,8 @@
                                 <cti:url value="/group/editor/addDevicesByCollection" var="selectionUrl"/>
                                 <form  method="post" action="${selectionUrl}" class="dib">
                                     <cti:csrfToken />
-                                    <tags:deviceCollectionPicker multi="true" submit="true" 
+                                    <cti:url var="groupDataUrl" value="/group/editor/allGroupsJson"/>
+                                    <tags:deviceCollectionPicker multi="true" submit="true" groupDataUrl="${groupDataUrl}"
                                         title=".add.title">
                                         <cti:msg2 key=".addDevices"/>
                                     </tags:deviceCollectionPicker>
@@ -144,6 +147,8 @@
                     <cti:msg2 var="copyContentsLinkTitle" key=".copyContents.linkTitle"/>
                     <a title="${copyContentsLinkTitle}" href="javascript:void(0);" id="copyContentsToGroupLink">${copyContentsLinkText}</a>
                     
+                    <cti:url var="copyGroupUrl" value="/group/editor/copyGroupJson?groupName=${group.fullName}"/>
+                    
                     <form id="copyContentsToGroupForm" action="<cti:url value="/group/editor/copyContentsToGroup"/>">
                         <cti:csrfToken/>    
                         
@@ -162,7 +167,7 @@
                             submitCallback="yukon.tools.group.editor.submitCopyContentsToGroupForm();"
                             id="copyContentsToGroupTree"
                             triggerElement="copyContentsToGroupLink"
-                            dataJson="${copyGroupDataJson}"
+                            dataUrl="${copyGroupUrl}"
                             title="${copyContentsPopupTitle}"
                             noSelectionAlertText="${noGroupSelectedAlertText}"
                             includeControlBar="true" />

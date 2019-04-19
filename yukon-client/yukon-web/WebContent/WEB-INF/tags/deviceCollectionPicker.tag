@@ -43,6 +43,9 @@
               type="java.util.Set" 
               description="Set of callbacks to be preformed on each node in the device group tree. Can be used to disable 
                            selecting certain nodes." %>
+                           
+<%@ attribute name="groupDataUrl" description="A URL indicating how to get the data for the groups tree."%>
+    
               
 <cti:msgScope paths=", yukon.common.device.bulk.deviceSelection, yukon.common, yukon.common.device.selection">
 
@@ -62,7 +65,9 @@
 <!--[if lte IE 8]><cti:includeScript link="JQUERY_IFRAME_TRANSPORT" /><![endif]-->
 <cti:includeScript link="/resources/js/pages/yukon.device.selection.js"/>
 
-<cti:deviceGroupHierarchyJson var="groups" predicates="${predicates}" callbacks="${callbacks}"/>
+<c:if test="${empty groupDataUrl}">
+    <cti:deviceGroupHierarchyJson var="groups" predicates="${predicates}" callbacks="${callbacks}"/>
+</c:if>
 <cti:uniqueIdentifier var="id" prefix="collection"/>
 
 <cti:msgScope paths=",yukon.web.components">
@@ -131,7 +136,7 @@
     </div>
     
     <div id="${id}-group" class="inline-tree pr full-height" <c:if test="${multi}">data-multi</c:if>
-        data-select-by="group" data-groups="${fn:escapeXml(groups)}">
+        data-select-by="group" data-groups="${fn:escapeXml(groups)}" data-groups-url="${groupDataUrl}">
         
         <input type="hidden" class="js-device-collection-inputs" name="collectionType" value="groups" data-group-names>
         <div class="tree-controls clearfix">

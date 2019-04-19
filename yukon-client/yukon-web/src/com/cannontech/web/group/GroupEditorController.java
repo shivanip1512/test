@@ -1,7 +1,9 @@
 package com.cannontech.web.group;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -51,6 +54,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.JsTreeBuilderUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsTreeNode;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -76,34 +80,28 @@ public class GroupEditorController {
     private final int maxToShowImmediately = 10;
     private final int maxGetDevicesSize = 1000;
     
-    @RequestMapping(value = "home", method = RequestMethod.GET)
-    public ModelAndView home(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+    @GetMapping("home")
+    public String home(ModelMap model, HttpServletRequest request, HttpServletResponse response)
             throws Exception, ServletException {
-
-        ModelAndView mav = new ModelAndView("home.jsp");
-        
-        populateModelWithGroup(request, mav.getModelMap());
-
-        return mav;
+        populateModelForHome(request, model);
+        return "home.jsp";
     }
     
-    private void populateModelWithGroup(HttpServletRequest request, ModelMap model) throws ServletRequestBindingException, JsonProcessingException {
+    private void populateModelForHome(HttpServletRequest request, ModelMap model) throws ServletRequestBindingException, JsonProcessingException {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-
+        
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
         DeviceGroup group = null;
-        String errorMessage = ServletRequestUtils.getStringParameter(request, "errorMessage", null);
-        if (errorMessage != null) {
-            model.addAttribute("errorMessage", errorMessage);
-        }
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
         model.addAttribute("rootGroup", rootGroup);
+        
+        Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices", false);
+        model.addAttribute("showDevices", showDevices);
 
-        // ALL GROUPS HIERARCHY
         DeviceGroupHierarchy everythingHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NullPredicate<DeviceGroup>());
         
         DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(everythingHierarchy, new NonHiddenDeviceGroupPredicate());
-
+        
         if (!StringUtils.isEmpty(groupName)) {
             
             try {
@@ -129,25 +127,6 @@ public class GroupEditorController {
             group = rootGroup;
         }
         
-        model.addAttribute("group", group);
-        model.addAttribute("groupFullName", group.getFullName());
-        
-        // sub groups (child groups)
-        List<DeviceGroup> childGroups = deviceGroupDao.getChildGroups(group);
-        
-        Map<DeviceGroup,Integer> subGroupMap = new TreeMap<>();
-        
-        for (DeviceGroup childGroup : childGroups) {
-            if(!childGroup.isHidden()){
-                int deviceCount = deviceGroupDao.getDeviceCount(childGroup);
-                subGroupMap.put(childGroup, deviceCount);
-            }
-        }
-
-        
-        // NodeAttributeSettingCallback to highlight node for selected group
-        // This one has been given an additional responsibility of recording the node path of the selected node,
-        // this path will be used to expand the tree to the selected node and ensure it is visible.
         final DeviceGroup selectedDeviceGroup = group;
         
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
@@ -162,6 +141,41 @@ public class GroupEditorController {
         
         String allGroupsDataJson = JsonUtils.toJson(allGroupsRoot.toMap(), true);
         model.addAttribute("allGroupsDataJson", allGroupsDataJson);
+                
+    }
+    
+    private void populateModelWithGroup(HttpServletRequest request, ModelMap model, YukonUserContext userContext) 
+            throws ServletRequestBindingException, JsonProcessingException {
+        String errorMessage = ServletRequestUtils.getStringParameter(request, "errorMessage", null);
+        if (errorMessage != null) {
+            model.addAttribute("errorMessage", errorMessage);
+        }
+
+        DeviceGroup group = getSelectedDeviceGroup(request);
+        if (group == null) {
+            model.addAttribute("errorMessage", messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.editor.groupNotFoundError"));
+            return;
+        }
+        
+        model.addAttribute("group", group);
+        model.addAttribute("groupFullName", group.getFullName());
+        String nodeId = JsTreeBuilderUtil.createUniqueNodeId(group.getFullName(), new HashMap<String, Integer>());
+        model.addAttribute("extSelectedNodePath", nodeId);
+
+        
+        // sub groups (child groups)
+        List<DeviceGroup> childGroups = deviceGroupDao.getChildGroups(group);
+        
+        Map<DeviceGroup,Integer> subGroupMap = new TreeMap<>();
+        
+        for (DeviceGroup childGroup : childGroups) {
+            if(!childGroup.isHidden()){
+                int deviceCount = deviceGroupDao.getDeviceCount(childGroup);
+                subGroupMap.put(childGroup, deviceCount);
+            }
+        }
+
+        final DeviceGroup selectedDeviceGroup = group;
         
         model.addAttribute("subGroupMap",subGroupMap);
         Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices", false);
@@ -195,40 +209,115 @@ public class GroupEditorController {
             model.addAttribute("maxGetDevicesSize", maxGetDevicesSize);
         }
         
-        // MOVE GROUPS TREE JSON
-        Predicate<DeviceGroup> canMoveUnderPredicate = deviceGroupDao.getGroupCanMovePredicate(selectedDeviceGroup);
-        DeviceGroupHierarchy moveGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canMoveUnderPredicate);
-        JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, groupsLabel, Collections.emptySet());
-        
-        String moveGroupJson = JsonUtils.toJson(moveGroupRoot.toMap(), true);
-        model.addAttribute("moveGroupDataJson", moveGroupJson); 
-        
-        // COPY GROUPS TREE JSON
-        Predicate<DeviceGroup> canCopyIntoPredicate = new Predicate<DeviceGroup>() {
-            @Override
-            public boolean evaluate(DeviceGroup receivingGroup) {
-                return !receivingGroup.isEqualToOrDescendantOf(selectedDeviceGroup) && receivingGroup.isModifiable();
-            }
-        };
-        DeviceGroupHierarchy copyGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canCopyIntoPredicate);
-        JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, groupsLabel, Collections.emptySet());
-        
-        String copyGroupJson = JsonUtils.toJson(copyExtRoot.toMap(), true);
-        model.addAttribute("copyGroupDataJson", copyGroupJson); 
-        
         // DEVICE COLLECTION
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(selectedDeviceGroup);
         model.addAttribute("deviceCollection", deviceCollection);
-        
+
     }
     
-    @RequestMapping(value = "selectedDeviceGroup", method = RequestMethod.GET)
-    public ModelAndView selectedDeviceGroup(HttpServletRequest request, HttpServletResponse response)
+    @GetMapping("selectedDeviceGroup")
+    public String selectedDeviceGroup(HttpServletRequest request, ModelMap model, YukonUserContext userContext)
             throws Exception, ServletException {
+        populateModelWithGroup(request, model, userContext);
+        return "selectedDeviceGroup.jsp";
+    }
+    
+    @GetMapping("allGroupsJson")
+    public void allGroupsJson(YukonUserContext userContext, HttpServletRequest request, HttpServletResponse resp) 
+            throws ServletRequestBindingException, IOException {
+        DeviceGroup rootGroup = deviceGroupService.getRootGroup();
+
+        DeviceGroupHierarchy everythingHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NullPredicate<DeviceGroup>());
         
-        ModelAndView mav = new ModelAndView("selectedDeviceGroup.jsp");
-        populateModelWithGroup(request, mav.getModelMap());
-        return mav;
+        DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(everythingHierarchy, new NonHiddenDeviceGroupPredicate());
+        
+        String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
+        
+        // ALL GROUPS TREE JSON
+        HighlightSelectedGroupNodeAttributeSettingCallback callback = new HighlightSelectedGroupNodeAttributeSettingCallback(rootGroup);
+        JsTreeNode allGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(allGroupsGroupHierarchy, groupsLabel, callback);
+        
+        String allGroupsDataJson = JsonUtils.toJson(allGroupsRoot.toMap(), true);
+        
+        resp.setContentType("application/json");
+        resp.getWriter().write(allGroupsDataJson);
+    }
+    
+    @GetMapping("copyGroupJson")
+    public void copyGroupJson(YukonUserContext userContext, HttpServletRequest request, HttpServletResponse resp) 
+            throws ServletRequestBindingException, IOException {
+        DeviceGroup rootGroup = deviceGroupService.getRootGroup();
+        DeviceGroupHierarchy everythingHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NullPredicate<DeviceGroup>());
+        DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(everythingHierarchy, new NonHiddenDeviceGroupPredicate());
+        
+        String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
+        
+        String copyGroupJson = "";
+        
+        DeviceGroup group = getSelectedDeviceGroup(request);
+        
+        if (group != null) {
+        
+            final DeviceGroup selectedDeviceGroup = group;
+            
+            Predicate<DeviceGroup> canCopyIntoPredicate = new Predicate<DeviceGroup>() {
+                @Override
+                public boolean evaluate(DeviceGroup receivingGroup) {
+                    return !receivingGroup.isEqualToOrDescendantOf(selectedDeviceGroup) && receivingGroup.isModifiable();
+                }
+            };
+            DeviceGroupHierarchy copyGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canCopyIntoPredicate);
+            JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, groupsLabel, Collections.emptySet());
+            
+            copyGroupJson = JsonUtils.toJson(copyExtRoot.toMap(), true);
+        }
+        
+        resp.setContentType("application/json");
+        resp.getWriter().write(copyGroupJson);
+    }
+    
+    @GetMapping("moveGroupJson")
+    public void moveGroupJson(YukonUserContext userContext, HttpServletRequest request, HttpServletResponse resp) 
+            throws ServletRequestBindingException, IOException {
+        DeviceGroup rootGroup = deviceGroupService.getRootGroup();
+        DeviceGroupHierarchy everythingHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NullPredicate<DeviceGroup>());
+        DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(everythingHierarchy, new NonHiddenDeviceGroupPredicate());
+        
+        String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
+        
+        String moveGroupJson = "";
+        
+        DeviceGroup group = getSelectedDeviceGroup(request);
+        
+        if (group != null) {
+        
+            final DeviceGroup selectedDeviceGroup = group;
+            
+            Predicate<DeviceGroup> canMoveUnderPredicate = deviceGroupDao.getGroupCanMovePredicate(selectedDeviceGroup);
+            DeviceGroupHierarchy moveGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canMoveUnderPredicate);
+            JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, groupsLabel, Collections.emptySet());
+            
+            moveGroupJson = JsonUtils.toJson(moveGroupRoot.toMap(), true);
+        }
+
+        resp.setContentType("application/json");
+        resp.getWriter().write(moveGroupJson);
+    }
+    
+    private DeviceGroup getSelectedDeviceGroup(HttpServletRequest request) throws ServletRequestBindingException {
+        String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
+        DeviceGroup group = null;
+        if (!StringUtils.isEmpty(groupName)) {
+            try {
+                group = deviceGroupService.resolveGroupName(groupName);
+            } catch (NotFoundException e) {
+                return null;
+            }
+        } else {
+            DeviceGroup rootGroup = deviceGroupService.getRootGroup();
+            group = rootGroup;
+        }
+        return group;
     }
     
     @RequestMapping("getDevicesForGroup")
