@@ -1,6 +1,6 @@
 package com.cannontech.dr.itron.service.impl;
 
-import static com.cannontech.core.dao.PersistedSystemValueKey.*;
+import static com.cannontech.core.dao.PersistedSystemValueKey.ITRON_READ_GROUP_ID;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,8 +22,11 @@ import java.util.zip.ZipOutputStream;
 
 import javax.xml.bind.JAXBElement;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Sets;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -85,6 +88,8 @@ import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
@@ -109,6 +114,11 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
     private static final String READ_GROUP = "ITRON_READ_GROUP";
     public static final String FILE_PATH = CtiUtilities.getItronDirPath();
+    
+    private Cache<Integer, Enrollment> enrollmentCache =
+            CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.MINUTES).build();
+    private Cache<Integer, Enrollment> unenrollmentCache =
+            CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.MINUTES).build();
         
     enum ExportType {
         READ,
@@ -161,21 +171,27 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Transactional
     @Override
     public void enroll(int accountId, int groupId) {
+        List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
         CustomerAccount account = customerAccountDao.getById(accountId);
-        log.debug("ITRON-enroll account number {}", account.getAccountNumber());
-        sendEnrollmentRequest(account, true);
-        addMacAddressesToGroup(account, getGroup(groupId));
+        if (!isEnrollmentSentToItron(account, groupId, enrollments, enrollmentCache)) {
+            log.debug("ITRON-enroll account number {}", account.getAccountNumber());
+            sendEnrollmentRequest(account, enrollments, true);
+            addMacAddressesToGroup(account, getGroup(groupId));
+        }
     }
     
     @Transactional
     @Override
     public void unenroll(int accountId, int groupId) {
+        List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
         CustomerAccount account = customerAccountDao.getById(accountId);
-        log.debug("ITRON-unenroll account number {}", account.getAccountNumber());
-        sendEnrollmentRequest(account, false);
-        addMacAddressesToGroup(account, getGroup(groupId));
+        if (!isEnrollmentSentToItron(account, groupId, enrollments, unenrollmentCache)) {
+            log.debug("ITRON-unenroll account number {}", account.getAccountNumber());
+            sendEnrollmentRequest(account, enrollments, false);
+            addMacAddressesToGroup(account, getGroup(groupId));
+        }
     }
-    
+     
     @Override
     public void optIn(int accountId, int inventoryId) {
         CustomerAccount account = customerAccountDao.getById(accountId);
@@ -367,6 +383,9 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             List<String> macAddresses =
                 Lists.newArrayList(deviceDao.getDeviceMacAddresses(inventoryIdsToDeviceIds.values()).values());
             addMacAddressesToGroup(String.valueOf(group.getLiteID()), macAddresses);
+        } else {
+            //remove all devices from group
+            addMacAddressesToGroup(String.valueOf(group.getLiteID()), new ArrayList<>());
         }
     }
         
@@ -525,8 +544,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     /**
      * Sends enrollment requests to Itron
      */
-    private void sendEnrollmentRequest(CustomerAccount account, boolean enroll) {
-        List<ProgramEnrollment> enrollments = getItronProgramEnrollments(account.getAccountId());
+    private void sendEnrollmentRequest(CustomerAccount account, List<ProgramEnrollment> enrollments, boolean enroll) {
         String url = ItronEndpointManager.PROGRAM.getUrl(settingDao);
         List<Long> itronProgramIds = new ArrayList<>();
         
@@ -772,6 +790,43 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         } else {
             log.error("Communication error:", e);
             throw new ItronCommunicationException("Communication error:", e);
+        }
+    }
+    
+    /**
+     * Returns true if enrollment was already sent to Itron.
+     */
+    private boolean isEnrollmentSentToItron(CustomerAccount account, int groupId, List<ProgramEnrollment> enrollments,
+            Cache<Integer, Enrollment> cacheToCheck) {
+        Enrollment newValueToCache = new Enrollment(groupId, enrollments);
+        Enrollment valueInCache = cacheToCheck.getIfPresent(account.getAccountId());
+        if (valueInCache != null) {
+            if (CollectionUtils.isEqualCollection(newValueToCache.inventoryIds, valueInCache.inventoryIds)
+                && newValueToCache.groupId == valueInCache.groupId) {
+                log.debug("ITRON-skipping sending enroll/unroll messages for account number {}, as the messages were already sent. ",
+                    account.getAccountNumber());
+                return true;
+            }
+        }
+        cacheToCheck.put(account.getAccountId(), newValueToCache);
+        return false;
+    }
+        
+    private class Enrollment {
+        private int groupId;
+        private List<Integer> inventoryIds;
+        
+        public Enrollment(int groupId, List<ProgramEnrollment> enrollments){
+            inventoryIds = enrollments.stream()
+                    .map(enrollment -> enrollment.getInventoryId())
+                    .collect(Collectors.toList());
+            this.groupId = groupId;
+        }
+        
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this,
+                ToStringStyle.MULTI_LINE_STYLE);
         }
     }
 }
