@@ -1,8 +1,12 @@
 package com.cannontech.common.util;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,12 +15,27 @@ import com.cannontech.common.exception.EmptyImportFileException;
 import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.exception.ImportFileFormatException;
 import com.cannontech.common.exception.NoImportFileException;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 
 public class FileUploadUtils {
     public static void validateDataUploadFileType(MultipartFile file) throws IOException, FileImportException {
         validateFileUpload(file);
-        if (!file.getContentType().startsWith("text") && !file.getContentType().endsWith("excel")) {
-            throw new ImportFileFormatException("yukon.common.validDataFileRequired.error");
+        File importFile = File.createTempFile(file.getName(), "");
+        importFile.deleteOnExit();
+        file.transferTo(importFile);
+        try (Reader reader = Files.newBufferedReader(Paths.get(importFile.getAbsolutePath()));
+             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
+             Reader filereader = new FileReader(importFile.getAbsolutePath());) {
+            CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
+            CSVReader csvReaderWithDelimeter = new CSVReaderBuilder(filereader).withCSVParser(parser).build();
+            String[] csvData = csvReaderWithDelimeter.readNext();
+            String[] csvRecord = csvReader.readNext();
+            if (importFile.length() > 2 && (csvData != null && csvRecord == null))
+                if (!(csvReaderWithDelimeter.readNext() == null))
+                    throw new ImportFileFormatException("yukon.common.validDataFileRequired.error");
         }
     }
 
