@@ -543,7 +543,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             } else {
                 // do not modify the location
                 log.warn("Location data is not modified for serial number " + dto.getSerialNumber()
-                    + ". Latitude or longitude fields are not specified in the request. ");
+                    + ". Latitude or longitude fields are not specified in the request.");
             }
         } else {
             log.warn("Location data is not supported by " + dto.getDeviceType()
