@@ -141,6 +141,9 @@ public class GroupEditorController {
         
         String allGroupsDataJson = JsonUtils.toJson(allGroupsRoot.toMap(), true);
         model.addAttribute("allGroupsDataJson", allGroupsDataJson);
+        
+        model.addAttribute("group", group);
+        model.addAttribute("groupFullName", group.getFullName());
                 
     }
     
