@@ -9,8 +9,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.EmptyImportFileException;
 import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.exception.ImportFileFormatException;
@@ -22,23 +24,14 @@ import com.opencsv.CSVReaderBuilder;
 
 public class FileUploadUtils {
 
+    private static final Logger log = YukonLogManager.getLogger(FileUploadUtils.class);
+
     public static void validateDataUploadFileType(MultipartFile file) throws IOException, FileImportException {
         validateFileUpload(file);
-        File importFile = File.createTempFile(file.getName(), "");
+        File importFile = File.createTempFile(file.getName(), StringUtils.EMPTY);
         importFile.deleteOnExit();
         file.transferTo(importFile);
-        try (Reader reader = Files.newBufferedReader(Paths.get(importFile.getAbsolutePath()));
-             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
-             Reader filereader = new FileReader(importFile.getAbsolutePath());) {
-            CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
-            CSVReader csvReaderWithDelimeter = new CSVReaderBuilder(filereader).withCSVParser(parser).build();
-            String[] csvData = csvReaderWithDelimeter.readNext();
-            String[] csvRecord = csvReader.readNext();
-            if (importFile.length() > 2 && (csvData != null && csvRecord == null)) {
-                if (!(csvReaderWithDelimeter.readNext() == null))
-                    throw new ImportFileFormatException("yukon.common.validDataFileRequired.error");
-            }
-        }
+        validateUploadFileType(importFile);
     }
 
     public static void validateImageUploadFileType(MultipartFile file) throws IOException, FileImportException {
@@ -71,20 +64,41 @@ public class FileUploadUtils {
             throw new EmptyImportFileException("yukon.web.import.error.emptyFile");
         }
     }
-    
+
+    /**
+     * Validate file type and throw exception if it is not valid CSV file
+     * 
+     * @throws ImportFileFormatException
+     * @throws IOException
+     */
+    public static void validateUploadFileType(File file) throws ImportFileFormatException, IOException {
+        try (Reader reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
+             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
+             Reader fileReader = new FileReader(file.getAbsoluteFile());) {
+            CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
+            CSVReader csvReaderWithDelimeter = new CSVReaderBuilder(fileReader).withCSVParser(parser).build();
+            String[] csvData = csvReaderWithDelimeter.readNext();
+            String[] csvRecord = csvReader.readNext();
+            if (file.length() > 2 && (csvData != null && csvRecord == null)) {
+                if (csvReaderWithDelimeter.readNext() != null)
+                    throw new ImportFileFormatException("yukon.common.validDataFileRequired.error");
+            }
+        }
+    }
+
     /**
      * Validate file type and return true if it is valid CSV file
      */
     public static boolean validateCsvFileContentType(Path path) {
 
         try {
-            String contentType = Files.probeContentType(path);
-            if (contentType != null && (contentType.startsWith("text") || contentType.endsWith("excel"))) {
-                return true;
-            }
+            validateUploadFileType(path.toFile());
+        } catch (ImportFileFormatException e) {
+            log.error("Import file must be text or CSV");
+            return false;
         } catch (IOException e) {
             // do nothing
         }
-        return false;
+        return true;
     }
 }
