@@ -115,8 +115,8 @@ yukon.tools.trends = (function () {
                 var chart = trendChartContainer.highcharts(),
                     ex = chart.series[0].xAxis.getExtremes(),
                     trendId = $(this).closest('li').data('trendId'),
-                    max = ex.max == null ? 0 : ex.max,
-                    min = ex.min == null ? 0 : ex.min;
+                    max = ex.max ? ex.max : 0,
+                    min = ex.min ? ex.min : 0;
                 
                 window.location = yukon.url('/tools/trends/' + trendId + '/csv?' 
                 + 'from=' + new Date(min).getTime() + '&to=' + new Date(max).getTime()); 
