@@ -11,7 +11,7 @@ import org.springframework.ws.soap.SoapFaultDetailElement;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.cannontech.common.util.xml.XmlUtils;
-import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.ErrorFault;
+import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.ErrorFault;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AccountType;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServicePointRequest;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServicePointType;
