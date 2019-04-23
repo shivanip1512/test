@@ -89,12 +89,13 @@
     <entry key="yukon.web.modules.tools.map.deleteCoordinates.error">Unable to delete coordinates: {0}</entry>
     <entry key="yukon.web.modules.tools.map.network.error">Unable to retrieve network information.</entry>
     <entry key="yukon.web.modules.tools.map.collectionActions">Collection Actions</entry>
-    <entry key="yukon.web.modules.tools.map.meterNumber">Meter Number</entry>
-    <entry key="yukon.web.modules.tools.map.latitude">Latitude</entry>
-    <entry key="yukon.web.modules.tools.map.longitude">Longitude</entry>
-    <entry key="yukon.web.modules.tools.map.lastChangedDate">Last Changed Date</entry>
-    <entry key="yukon.web.modules.tools.map.lastChangedTime">Last Changed Time</entry>
-    <entry key="yukon.web.modules.tools.map.origin">Origin</entry>
+    <entry key="yukon.web.modules.tools.map.NAME">NAME</entry>
+    <entry key="yukon.web.modules.tools.map.meterNumber">METER_NUMBER</entry>
+    <entry key="yukon.web.modules.tools.map.latitude">LATITUDE</entry>
+    <entry key="yukon.web.modules.tools.map.longitude">LONGITUDE</entry>
+    <entry key="yukon.web.modules.tools.map.lastChangedDate">LAST_CHANGED_DATE</entry>
+    <entry key="yukon.web.modules.tools.map.lastChangedTime">LAST_CHANGED_TIME</entry>
+    <entry key="yukon.web.modules.tools.map.origin">ORIGIN</entry>
     <entry key="yukon.web.modules.tools.map.na">N/A</entry>
     <!-- /trend -->  
     <entry key="yukon.web.modules.tools.trend.pageName">Trends</entry>

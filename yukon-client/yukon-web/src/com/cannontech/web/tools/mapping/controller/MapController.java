@@ -384,7 +384,7 @@ public class MapController {
     private String[] getHeaderRows(YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String[] headerRow = new String[7];
-        headerRow[0] = accessor.getMessage("yukon.common.deviceName");
+        headerRow[0] = accessor.getMessage(baseKey + "NAME");
         headerRow[1] = accessor.getMessage(baseKey + "meterNumber");
         headerRow[2] = accessor.getMessage(baseKey + "latitude");
         headerRow[3] = accessor.getMessage(baseKey + "longitude");
