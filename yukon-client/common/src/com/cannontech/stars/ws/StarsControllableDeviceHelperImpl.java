@@ -31,6 +31,7 @@ import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
@@ -534,11 +535,13 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         if (hardwareType.isTwoWay() && lib.getDeviceID() > 0) {
             // checks if fields exist or not in the request. If the fields exist but are empty then it will
             // remove the location details.
-            if (dto.getLatitude() != null && dto.getLongitude() != null && !dto.getLatitude().isNaN()
-                && !dto.getLongitude().isNaN()) {
+            if (dto.getLatitude() != null && dto.getLongitude() != null
+                && !SimpleXPathTemplate.isEmptyDouble(dto.getLatitude())
+                && !SimpleXPathTemplate.isEmptyDouble(dto.getLongitude())) {
                 saveLocation(dto, lib);
-            } else if (dto.getLatitude() != null && dto.getLongitude() != null && dto.getLatitude().isNaN()
-                && dto.getLongitude().isNaN()) {
+            } else if (dto.getLatitude() != null && dto.getLongitude() != null
+                && SimpleXPathTemplate.isEmptyDouble(dto.getLatitude())
+                && SimpleXPathTemplate.isEmptyDouble(dto.getLongitude())) {
                 paoLocationDao.delete(lib.getDeviceID());
             } else {
                 // do not modify the location

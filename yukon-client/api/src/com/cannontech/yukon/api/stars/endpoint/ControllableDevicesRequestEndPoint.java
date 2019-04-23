@@ -111,8 +111,9 @@ public class ControllableDevicesRequestEndPoint {
         for (LmDeviceDto device : devices) {
             try {
                 if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
-                    if (device.getLatitude() != null && device.getLongitude() != null && device.getLatitude().isNaN()
-                        && device.getLongitude().isNaN()) {
+                    if (device.getLatitude() != null && device.getLongitude() != null
+                        && SimpleXPathTemplate.isEmptyDouble(device.getLatitude())
+                        && SimpleXPathTemplate.isEmptyDouble(device.getLongitude())) {
                         device.setLatitude(null);
                         device.setLongitude(null);
                     }
