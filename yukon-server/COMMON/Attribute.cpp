@@ -311,6 +311,7 @@ INIT_ATTRIBUTE( Voltage,                                            "VOLTAGE" );
 INIT_ATTRIBUTE( VoltagePhaseA,                                      "VOLTAGE_PHASE_A" );
 INIT_ATTRIBUTE( VoltagePhaseB,                                      "VOLTAGE_PHASE_B" );
 INIT_ATTRIBUTE( VoltagePhaseC,                                      "VOLTAGE_PHASE_C" );
+INIT_ATTRIBUTE( BatteryVoltage,                                     "BATTERY_VOLTAGE" );
 INIT_ATTRIBUTE( MinimumVoltagePhaseA,                               "MINIMUM_VOLTAGE_PHASE_A" );
 INIT_ATTRIBUTE( MinimumVoltagePhaseB,                               "MINIMUM_VOLTAGE_PHASE_B" );
 INIT_ATTRIBUTE( MinimumVoltagePhaseC,                               "MINIMUM_VOLTAGE_PHASE_C" );

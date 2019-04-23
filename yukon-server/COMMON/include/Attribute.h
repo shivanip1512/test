@@ -302,6 +302,7 @@ public:
     static const Attribute  VoltagePhaseA;
     static const Attribute  VoltagePhaseB;
     static const Attribute  VoltagePhaseC;
+    static const Attribute  BatteryVoltage;
     static const Attribute  MinimumVoltagePhaseA;
     static const Attribute  MinimumVoltagePhaseB;
     static const Attribute  MinimumVoltagePhaseC;

@@ -315,6 +315,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     VOLTAGE_PHASE_B("Voltage (Phase B)", AttributeGroup.VOLTAGE),
     VOLTAGE_PHASE_C("Voltage (Phase C)", AttributeGroup.VOLTAGE),
     VOLTAGE_PROFILE("Voltage Profile", AttributeGroup.PROFILE, false),    //require extra input, not "attribute" based readable
+    BATTERY_VOLTAGE("Battery Voltage", AttributeGroup.VOLTAGE),
     WATT_HOUR_PULSE_FAILURE("Watt-Hour Pulse Failure", AttributeGroup.RFN_HARDWARE_EVENT, false),
     ZERO_USAGE_FLAG("Zero Usage Flag", AttributeGroup.STATUS),
     ZIGBEE_LINK_STATUS("ZigBee Link Status", AttributeGroup.STATUS, false),

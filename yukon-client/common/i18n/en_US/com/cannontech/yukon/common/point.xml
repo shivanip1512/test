@@ -289,6 +289,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_B">Voltage (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_C">Voltage (Phase C)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PROFILE">Voltage Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.BATTERY_VOLTAGE">Battery Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.WATT_HOUR_PULSE_FAILURE">Watt-Hour Pulse Failure</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ZERO_USAGE_FLAG">Zero Usage Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ZIGBEE_LINK_STATUS">ZigBee Link Status</entry>

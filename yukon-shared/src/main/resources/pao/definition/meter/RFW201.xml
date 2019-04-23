@@ -16,7 +16,7 @@
     </configuration>
     <pointInfos>
         <pointInfo name="Battery End Of Life" attributes="BATTERY_END_OF_LIFE"/>
-        <pointInfo name="Battery Voltage" init="true"/>
+        <pointInfo name="Battery Voltage" init="true" attributes="BATTERY_VOLTAGE"/>
         <pointInfo name="Meter Read - Checksum error" attributes="METER_READ_CHECKSUM_ERROR"/>
         <pointInfo name="Meter Read - Error reading serial number" attributes="METER_READ_ERROR_READING_SERIAL_NUMBER"/>
         <pointInfo name="Meter Read - Field exceeded maximum digits" attributes="METER_READ_FIELD_EXCEEDED_MAXIMUM_DIGITS"/>
@@ -27,7 +27,7 @@
         <pointInfo name="Reverse Flow" attributes="REVERSE_FLOW"/>
         <pointInfo name="Suspected Leak" attributes="SUSPECTED_LEAK"/>
         <pointInfo name="Tamper - Cable Cut" attributes="TAMPER_CABLE_CUT"/>
-        <pointInfo name="Temperature" init="true"/>
+        <pointInfo name="Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
         <pointInfo name="Temperature Out Of Range" attributes="TEMPERATURE_OUT_OF_RANGE"/>
         <pointInfo name="Thirty Days No Usage" attributes="THIRTY_DAYS_NO_USAGE"/>
         <pointInfo name="Water Usage" init="true" attributes="USAGE_WATER, USAGE"/>
