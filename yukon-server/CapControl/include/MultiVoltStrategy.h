@@ -24,6 +24,8 @@ public:
     virtual double getPeakLead() const;
     virtual double getOffPeakLead() const;
 
+    const double getMaximumDeltaVoltage() const;
+
     virtual void setPeakLag(const double value);
     virtual void setOffPeakLag(const double value);
     virtual void setPeakLead(const double value);
@@ -50,5 +52,7 @@ private:
     double _offpeakUpperVoltLimit;
     double _peakLowerVoltLimit;
     double _offpeakLowerVoltLimit;
+
+    double _maximumDeltaVoltage;
 };
 

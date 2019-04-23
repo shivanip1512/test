@@ -44,6 +44,7 @@ IVVCStrategy::IVVCStrategy(const PointDataRequestFactoryPtr& factory)
     _capbankCommReportingPercentage(100.0),
     _voltageMonitorCommReportingPercentage(100.0),
     _reportCommStatisticsByPhase(true),
+    _maximumDeltaVoltage(10.0),
     _controlMethod(SubstationBusControlMethod)
 {
 }
@@ -122,6 +123,9 @@ void IVVCStrategy::restoreParameters( const std::string &name, const std::string
                 { "REGULATOR",          &IVVCStrategy::_regulatorCommReportingPercentage        },
                 { "CAPBANK",            &IVVCStrategy::_capbankCommReportingPercentage          },
                 { "VOLTAGE_MONITOR",    &IVVCStrategy::_voltageMonitorCommReportingPercentage   }   }
+        },
+        {   "Maximum Delta Voltage",        {
+                { "MAX_DELTA",          &IVVCStrategy::_maximumDeltaVoltage                     }   }
         }
     };
 
@@ -380,6 +384,11 @@ const double IVVCStrategy::getVoltageMonitorCommReportingPercentage() const
 const bool IVVCStrategy::getReportCommStatisticsByPhase() const
 {
     return _reportCommStatisticsByPhase;
+}
+
+const double IVVCStrategy::getMaximumDeltaVoltage() const
+{
+    return _maximumDeltaVoltage;
 }
 
 /**

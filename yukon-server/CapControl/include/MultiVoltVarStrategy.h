@@ -30,6 +30,8 @@ public:
     virtual double getPeakPFSetPoint() const;
     virtual double getOffPeakPFSetPoint() const;
 
+    const double getMaximumDeltaVoltage() const;
+
     virtual void setPeakLag(const double value);
     virtual void setOffPeakLag(const double value);
     virtual void setPeakLead(const double value);
@@ -64,5 +66,7 @@ private:
     double _offpeakKVarLeading;
     double _peakKVarLagging;
     double _offpeakKVarLagging;
+
+    double _maximumDeltaVoltage;
 };
 

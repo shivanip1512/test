@@ -360,6 +360,12 @@ BOOST_AUTO_TEST_CASE(test_Strategy_upper_and_lower_volt_limit_support)
         BOOST_CHECK_EQUAL( 118.0, strategy.getLowerVoltLimit( true ) );     // peak
         BOOST_CHECK_EQUAL( 116.0, strategy.getLowerVoltLimit( false ) );    // offpeak
 
+        BOOST_CHECK_EQUAL(  10.0, strategy.getMaximumDeltaVoltage() );      // default value
+
+        strategy.restoreParameters( "Maximum Delta Voltage", "MAX_DELTA",  "5.0" );
+
+        BOOST_CHECK_EQUAL(   5.0, strategy.getMaximumDeltaVoltage() );
+
         // legacy passthru to yukon-client
 
         strategy.setPeakTimeFlag( false );
@@ -390,6 +396,12 @@ BOOST_AUTO_TEST_CASE(test_Strategy_upper_and_lower_volt_limit_support)
         BOOST_CHECK_EQUAL( 124.0, strategy.getUpperVoltLimit( false ) );    // offpeak
         BOOST_CHECK_EQUAL( 118.0, strategy.getLowerVoltLimit( true ) );     // peak
         BOOST_CHECK_EQUAL( 116.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+
+        BOOST_CHECK_EQUAL(  10.0, strategy.getMaximumDeltaVoltage() );      // default value
+
+        strategy.restoreParameters( "Maximum Delta Voltage", "MAX_DELTA",  "5.0" );
+
+        BOOST_CHECK_EQUAL(   5.0, strategy.getMaximumDeltaVoltage() );
 
         // legacy passthru to yukon-client
 
@@ -493,6 +505,12 @@ BOOST_AUTO_TEST_CASE(test_Strategy_upper_and_lower_volt_limit_support)
         BOOST_CHECK_EQUAL( 124.0, strategy.getUpperVoltLimit( false ) );    // offpeak
         BOOST_CHECK_EQUAL( 118.0, strategy.getLowerVoltLimit( true ) );     // peak
         BOOST_CHECK_EQUAL( 116.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+
+        BOOST_CHECK_EQUAL(  10.0, strategy.getMaximumDeltaVoltage() );      // default value
+
+        strategy.restoreParameters( "Maximum Delta Voltage", "MAX_DELTA",  "5.0" );
+
+        BOOST_CHECK_EQUAL(   5.0, strategy.getMaximumDeltaVoltage() );
 
         // legacy passthru to yukon-client
 
