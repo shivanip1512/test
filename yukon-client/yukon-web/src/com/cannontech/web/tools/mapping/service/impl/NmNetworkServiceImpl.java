@@ -1,10 +1,12 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -56,16 +58,25 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.tools.mapping.model.MappingInfo;
 import com.cannontech.web.tools.mapping.model.Neighbor;
+import com.cannontech.web.tools.mapping.model.NetworkMap;
+import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
+import com.cannontech.web.tools.mapping.model.NetworkMapFilter.Color;
+import com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy;
+import com.cannontech.web.tools.mapping.model.NetworkMapFilter.Legend;
+import com.cannontech.web.tools.mapping.model.NetworkMapFilter.LinkStrength;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.model.Parent;
 import com.cannontech.web.tools.mapping.model.RouteInfo;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.math.IntMath;
 
 public class NmNetworkServiceImpl implements NmNetworkService {
 
@@ -97,6 +108,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private RequestReplyTemplate<RfnPrimaryRouteDataReply> routeReplyTemplate;
     private RequestReplyTemplate<RfnNeighborDataReply> neighborReplyTemplate;
     private RequestReplyTemplate<RfnParentReply> parentReplyTemplate;
+    
+    
+    @Autowired private IDatabaseCache cache;
 
     @PostConstruct
     public void init() {
@@ -521,5 +535,60 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             this.distanceInKm = distanceInKm;
             this.distanceInMiles = distanceInMiles;
         }
+    }
+
+    @Override
+    public NetworkMap getNetworkMap(NetworkMapFilter filter) {
+
+        List<PaoIdentifier> allDevices =
+            cache.getAllDevices().stream().filter(device -> device.getPaoType().isRfn()).map(
+                device -> device.getPaoIdentifier()).collect(Collectors.toList());
+        Set<PaoLocation> deviceLocations = paoLocationDao.getLocations(allDevices);
+        Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(deviceLocations, c -> c.getPaoIdentifier());
+        NetworkMap map = new NetworkMap();
+
+        if (filter.getColorCodeBy() == ColorCodeBy.GATEWAY) {
+            List<List<PaoIdentifier>> subSets = partition(allDevices, filter.getSelectedGatewayIds().size());
+            for (int i = 0; i < subSets.size(); i++) {
+                RfnDevice gateway = rfnDeviceDao.getDevice(filter.getSelectedGatewayIds().get(i));
+                Color color = Color.values()[i];
+                map.getLegend().add(new Legend(color, gateway.getName()));
+                addLocationAndColorToNetworkMap(map, locations, subSets.get(i), color);
+                addGatewayToNetworkMap(map, locations, color, filter.getSelectedGatewayIds().get(i));
+            }
+        } else if (filter.getColorCodeBy() == ColorCodeBy.LINK_STENGTH) {
+            List<List<PaoIdentifier>> subSets = partition(allDevices, LinkStrength.values().length);
+            for (int i = 0; i < subSets.size(); i++) {
+                LinkStrength linkStrength = LinkStrength.values()[i];
+                map.getLegend().add(new Legend(linkStrength.getColor(), linkStrength.name()));
+                addLocationAndColorToNetworkMap(map, locations, subSets.get(i), linkStrength.getColor());
+                PaoIdentifier randomGateway =
+                    filter.getSelectedGatewayIds().get(new Random().nextInt(filter.getSelectedGatewayIds().size()));
+                addGatewayToNetworkMap(map, locations, linkStrength.getColor(), randomGateway);
+            }
+        } 
+        return map;
+    }
+    
+    private List<List<PaoIdentifier>> partition(List<PaoIdentifier> allDevices, int divisor) {
+        int chunk = IntMath.divide(allDevices.size(), divisor, RoundingMode.CEILING);
+        return Lists.partition(allDevices, chunk);
+    }
+
+    private void addGatewayToNetworkMap(NetworkMap map, Map<PaoIdentifier, PaoLocation> locations, Color color,
+            PaoIdentifier gateway) {
+        PaoLocation location = locations.get(gateway);
+        map.getMappedDevices().put(color, paoLocationService.getFeatureCollection(Lists.newArrayList(location)));
+    }
+
+    private void addLocationAndColorToNetworkMap(NetworkMap map, Map<PaoIdentifier, PaoLocation> locations,
+            List<PaoIdentifier> paos, Color color) {
+        paos.forEach(pao -> {
+            PaoLocation location = locations.get(pao);
+            if (location != null && !pao.getPaoType().isRfGateway()) {
+                map.getMappedDevices().put(color,
+                    paoLocationService.getFeatureCollection(Lists.newArrayList(location)));
+            }
+        });
     }
 }
