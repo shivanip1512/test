@@ -31,6 +31,7 @@ import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
@@ -444,7 +445,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     }
 
     @Override
-    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser ecOperator) {
+    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser ecOperator, boolean isEIMRequest) {
 
         //Get energyCompany for the user
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(ecOperator);
@@ -466,7 +467,12 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             // call service to update device on the customer account
             lib = starsInventoryBaseService.updateDeviceOnAccount(lib, lsec, ecOperator, dto);
 
-            setLocationForHardware(hardwareType, dto, lib);
+            if (isEIMRequest) {
+                setLocationForHardwareEIM(hardwareType, dto, lib);
+            } else {
+                setLocationForHardware(hardwareType, dto, lib);
+            }
+            
 
         } else {
             // add device to account
@@ -511,7 +517,6 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
 
     /* Method to set or update the latitude and longitude for the hardware */
     private void setLocationForHardware(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib) {
-
         if (hardwareType.isTwoWay() && lib.getDeviceID() > 0) {
             if (dto.getLatitude() != null && dto.getLongitude() != null) {
                 saveLocation(dto, lib);
@@ -520,7 +525,32 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             }
         } else {
             log.warn("Location data is not supported by " + dto.getDeviceType()
-            + " device type. No location data will be set for serial number " + dto.getSerialNumber());
+                + " device type. No location data will be set for serial number " + dto.getSerialNumber());
+        }
+    }
+    
+    /* Method to set or update the latitude and longitude for the hardware for EIM server */
+    private void setLocationForHardwareEIM(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib) {
+
+        if (hardwareType.isTwoWay() && lib.getDeviceID() > 0) {
+            // checks if fields exist or not in the request. If the fields exist but are empty then it will
+            // remove the location details.
+            if (dto.getLatitude() != null && dto.getLongitude() != null
+                && !SimpleXPathTemplate.isEmptyDouble(dto.getLatitude())
+                && !SimpleXPathTemplate.isEmptyDouble(dto.getLongitude())) {
+                saveLocation(dto, lib);
+            } else if (dto.getLatitude() != null && dto.getLongitude() != null
+                && SimpleXPathTemplate.isEmptyDouble(dto.getLatitude())
+                && SimpleXPathTemplate.isEmptyDouble(dto.getLongitude())) {
+                paoLocationDao.delete(lib.getDeviceID());
+            } else {
+                // do not modify the location
+                log.warn("Location data is not modified for serial number " + dto.getSerialNumber()
+                    + ". Latitude or longitude fields are not specified in the request.");
+            }
+        } else {
+            log.warn("Location data is not supported by " + dto.getDeviceType()
+                + " device type. No location data will be set for serial number " + dto.getSerialNumber());
         }
     }
 

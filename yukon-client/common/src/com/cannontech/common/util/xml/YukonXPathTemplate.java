@@ -21,7 +21,7 @@ public class YukonXPathTemplate extends SimpleXPathTemplate {
     public Temperature evaluateAsTemperature(String expression) {
         Temperature temperature = null;
         
-        Double temperatureValue = evaluateAsDouble(expression);
+        Double temperatureValue = evaluateAsDouble(expression, false);
         if(temperatureValue == null) {
             return null;
         }
