@@ -94,7 +94,7 @@ public class FileUploadUtils {
         try {
             validateUploadFileType(path.toFile());
         } catch (ImportFileFormatException e) {
-            log.error("Import file must be text or CSV");
+            log.error("Import file must be text or CSV "+ path.toFile().getName());
             return false;
         } catch (IOException e) {
             // do nothing
