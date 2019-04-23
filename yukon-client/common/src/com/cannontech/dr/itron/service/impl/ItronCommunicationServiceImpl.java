@@ -109,16 +109,16 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private List<SoapFaultParser> soapFaultParsers;
     
-    private static final Set<String> faultCodesToIgnore = Sets.newHashSet("UtilServicePointID.Exists");
+    private static final Set<String> faultCodesToIgnore = Sets.newHashSet("UtilServicePointID.Exists", "macID.exists");
     
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
     private static final String READ_GROUP = "ITRON_READ_GROUP";
     public static final String FILE_PATH = CtiUtilities.getItronDirPath();
     
     private Cache<Integer, Enrollment> enrollmentCache =
-            CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.MINUTES).build();
+            CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).build();
     private Cache<Integer, Enrollment> unenrollmentCache =
-            CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.MINUTES).build();
+            CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).build();
         
     enum ExportType {
         READ,
@@ -177,6 +177,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug("ITRON-enroll account number {}", account.getAccountNumber());
             sendEnrollmentRequest(account, enrollments, true);
             addMacAddressesToGroup(account, getGroup(groupId));
+            unenrollmentCache.invalidate(accountId);
         }
     }
     
@@ -189,6 +190,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug("ITRON-unenroll account number {}", account.getAccountNumber());
             sendEnrollmentRequest(account, enrollments, false);
             addMacAddressesToGroup(account, getGroup(groupId));
+            enrollmentCache.invalidate(accountId);
         }
     }
      
@@ -789,7 +791,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     /**
-     * Returns true if enrollment was already sent to Itron.
+     * Returns true if enrollment was already sent to Itron. Caches enrollment information.
      */
     private boolean isEnrollmentSentToItron(CustomerAccount account, int groupId, List<ProgramEnrollment> enrollments,
             Cache<Integer, Enrollment> cacheToCheck) {
@@ -807,7 +809,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         return false;
     }
         
-    private class Enrollment {
+    private static class Enrollment {
         private int groupId;
         private List<Integer> inventoryIds;
         
