@@ -287,31 +287,14 @@ long CtiCCSubstationBus::getControlSendRetries() const
 
 long CtiCCSubstationBus::getLastFeederControlledSendRetries() const
 {
-    long sendRetries = 0;
-
     try
     {
-        if (getLastFeederControlledPosition() >= 0)
+        for ( CtiCCFeederPtr feeder : _ccfeeders )
         {
-            CtiCCFeederPtr feed = (CtiCCFeederPtr)_ccfeeders[getLastFeederControlledPosition()];
-
-            if (feed->getPaoId() != getLastFeederControlledPAOId())
+            if ( feeder->getPaoId() == getLastFeederControlledPAOId()
+                 && feeder->getStrategy()->getUnitType() != ControlStrategy::None )
             {
-                for(long i=0;i<_ccfeeders.size();i++)
-                {
-                    feed = (CtiCCFeeder*)_ccfeeders[i];
-                    if (feed->getPaoId() == getLastFeederControlledPAOId())
-                    {
-                        //setLastFeederControlledPosition(i);
-                        break;
-                    }
-                    feed = NULL;
-                }
-
-            }
-            if (feed != NULL && feed->getStrategy()->getUnitType() != ControlStrategy::None)
-            {
-                sendRetries = feed->getStrategy()->getControlSendRetries();
+                return feeder->getStrategy()->getControlSendRetries();
             }
         }
     }
@@ -319,7 +302,7 @@ long CtiCCSubstationBus::getLastFeederControlledSendRetries() const
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-    return sendRetries;
+    return 0;
 }
 
 /*---------------------------------------------------------------------------
