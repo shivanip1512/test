@@ -1468,8 +1468,8 @@ Next Gen Water Node:
     #     The goal of the Faceplate Reading channel is to match the number on the meter’s faceplate.  The actual units of the meter’s faceplate 
     #     reading will differ among the various meter types that may be attached to the node.
     - Battery Voltage:   { Unit: *V,    Modifiers: [ *milli ], Metric ID: 115 }
-    # Note: The metricId is incorrect for the Battery Voltage. It will be corrected in the future. It is currently overrided in the 
-    # metricIdToAttributeMapping. A new issue has been created for the required change, YUK-19834
+    # Note: The metricId is incorrect for the Battery Voltage. It will be corrected in the future.
+    # A new issue has been created for the required change, YUK-19834
     - Temperature:       { Unit: *C,    Modifiers: [        ], Metric ID: 257 }
 
 Metric IDs:

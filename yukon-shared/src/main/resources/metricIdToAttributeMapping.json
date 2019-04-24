@@ -209,16 +209,10 @@
                 { "metricId" : 4051, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_RATE_D" },
                 { "metricId" : 4052, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_KVA_RATE_D" },
                 { "metricId" : 4184, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR_RATE_D" },
-                { "metricId" : 4210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA_RATE_D" },
-                
-                
-                
-                
-                { "metricId" : 9115, "attribute" : "BATTERY_VOLTAGE" }
+                { "metricId" : 4210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA_RATE_D" }
         ],
         "attributeOverrides" : [
                 { "attribute" : "PEAK_DEMAND",          "metricId" :  13,   "paoTypes" : [ "rfn-530s4x", "rfn-530s4eax", "rfn-530s4eaxr", "rfn-530s4erx", "rfn-530s4erxr" ] },
-                { "attribute" : "BATTERY_VOLTAGE",      "metricId" :  115,  "paoTypes" : [ "rfw-201"] },
                 { "attribute" : "USAGE_RATE_A",         "metricId" :  1003, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
                 { "attribute" : "USAGE_RATE_B",         "metricId" :  2003, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
                 { "attribute" : "USAGE_RATE_C",         "metricId" :  3003, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
