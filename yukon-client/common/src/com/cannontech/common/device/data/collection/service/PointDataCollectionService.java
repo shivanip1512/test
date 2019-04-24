@@ -88,10 +88,12 @@ public class PointDataCollectionService implements MessageListener {
             log.debug("Data collection already running.");
             return;
         }
-        Instant lastCollectionTime = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.DATA_COLLECTION_TIME);
-        if (lastCollectionTime == null || now().isAfter(lastCollectionTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION))) {
-            persistedSystemValueDao.setValue(PersistedSystemValueKey.DATA_COLLECTION_TIME, new Instant());
-            try {
+        try {
+            Instant lastCollectionTime =
+                persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.DATA_COLLECTION_TIME);
+            if (lastCollectionTime == null
+                || now().isAfter(lastCollectionTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION))) {
+                persistedSystemValueDao.setValue(PersistedSystemValueKey.DATA_COLLECTION_TIME, new Instant());
                 collectingData = true;
                 List<LiteYukonPAObject> devices = databaseCache.getAllYukonPAObjects();
                 log.debug("Starting data collection for " + devices.size() + " devices.");
@@ -133,9 +135,9 @@ public class PointDataCollectionService implements MessageListener {
                         changeIdRange.getMax());
                     jmsTemplate.convertAndSend(recalculationQueueName, new RecalculationRequest());
                 }
-            } finally {
-                collectingData = false;
             }
+        } finally {
+            collectingData = false;
         }
     }
 
