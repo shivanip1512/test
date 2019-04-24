@@ -71,7 +71,7 @@ public class FileUploadUtils {
      * @throws ImportFileFormatException
      * @throws IOException
      */
-    public static void validateUploadFileType(File file) throws ImportFileFormatException, IOException {
+    private static void validateUploadFileType(File file) throws ImportFileFormatException, IOException {
         try (Reader reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
              CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
              Reader fileReader = new FileReader(file.getAbsoluteFile());) {
