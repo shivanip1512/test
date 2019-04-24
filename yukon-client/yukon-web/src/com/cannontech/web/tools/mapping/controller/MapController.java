@@ -39,6 +39,7 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -384,10 +385,10 @@ public class MapController {
     private String[] getHeaderRows(YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String[] headerRow = new String[7];
-        headerRow[0] = accessor.getMessage(baseKey + "NAME");
-        headerRow[1] = accessor.getMessage(baseKey + "meterNumber");
-        headerRow[2] = accessor.getMessage(baseKey + "latitude");
-        headerRow[3] = accessor.getMessage(baseKey + "longitude");
+        headerRow[0] = BulkFieldColumnHeader.NAME.name();
+        headerRow[1] = BulkFieldColumnHeader.METER_NUMBER.name();
+        headerRow[2] = BulkFieldColumnHeader.LATITUDE.name();
+        headerRow[3] = BulkFieldColumnHeader.LONGITUDE.name();
         headerRow[4] = accessor.getMessage(baseKey + "lastChangedDate");
         headerRow[5] = accessor.getMessage(baseKey + "lastChangedTime");
         headerRow[6] = accessor.getMessage(baseKey + "origin");

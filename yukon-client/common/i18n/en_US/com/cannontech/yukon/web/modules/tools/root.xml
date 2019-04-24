@@ -89,10 +89,6 @@
     <entry key="yukon.web.modules.tools.map.deleteCoordinates.error">Unable to delete coordinates: {0}</entry>
     <entry key="yukon.web.modules.tools.map.network.error">Unable to retrieve network information.</entry>
     <entry key="yukon.web.modules.tools.map.collectionActions">Collection Actions</entry>
-    <entry key="yukon.web.modules.tools.map.NAME">NAME</entry>
-    <entry key="yukon.web.modules.tools.map.meterNumber">METER_NUMBER</entry>
-    <entry key="yukon.web.modules.tools.map.latitude">LATITUDE</entry>
-    <entry key="yukon.web.modules.tools.map.longitude">LONGITUDE</entry>
     <entry key="yukon.web.modules.tools.map.lastChangedDate">LAST_CHANGED_DATE</entry>
     <entry key="yukon.web.modules.tools.map.lastChangedTime">LAST_CHANGED_TIME</entry>
     <entry key="yukon.web.modules.tools.map.origin">ORIGIN</entry>
