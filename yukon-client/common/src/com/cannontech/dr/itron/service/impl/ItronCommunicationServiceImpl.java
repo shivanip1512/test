@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -176,7 +177,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         if (!isEnrollmentSentToItron(account, groupId, enrollments, enrollmentCache)) {
             log.debug("ITRON-enroll account number {}", account.getAccountNumber());
             sendEnrollmentRequest(account, enrollments, true);
-            addMacAddressesToGroup(account, getGroup(groupId));
+            Set<Integer> inventoryIds = getInventoryIdsForGroup(groupId);
+            addMacAddressesToGroup(account, getGroup(groupId), inventoryIds);
             unenrollmentCache.invalidate(accountId);
         }
     }
@@ -189,7 +191,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         if (!isEnrollmentSentToItron(account, groupId, enrollments, unenrollmentCache)) {
             log.debug("ITRON-unenroll account number {}", account.getAccountNumber());
             sendEnrollmentRequest(account, enrollments, false);
-            addMacAddressesToGroup(account, getGroup(groupId));
+            Set<Integer> inventoryIds = getInventoryIdsForGroup(groupId);
+            addMacAddressesToGroup(account, getGroup(groupId), inventoryIds);
             enrollmentCache.invalidate(accountId);
         }
     }
@@ -201,7 +204,9 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
         Set<Integer> yukonGroupIds = getGroupIdsByInventoryId(inventoryId, enrollments);
         for(int yukonGroupId : yukonGroupIds) {
-            addMacAddressesToGroup(account, getGroup(yukonGroupId));
+            Set<Integer> inventoryIds = getInventoryIdsForGroup(yukonGroupId);
+            inventoryIds.add(inventoryId);
+            addMacAddressesToGroup(account, getGroup(yukonGroupId), inventoryIds);
         }
     }
     
@@ -221,7 +226,9 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 log.trace("Exception: ", e);
             }
             itronEventLogService.optOut(account.getAccountNumber(), yukonGroupId, macAddress);
-            addMacAddressesToGroup(account, getGroup(yukonGroupId));
+            Set<Integer> inventoryIds = getInventoryIdsForGroup(yukonGroupId);
+            inventoryIds.remove(inventoryId);
+            addMacAddressesToGroup(account, getGroup(yukonGroupId), inventoryIds);
         }
     }
     
@@ -367,18 +374,9 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * 3. Finds mac address for each device
      * 4. For each group sends all mac addresses to itron
      */
-    private void addMacAddressesToGroup(CustomerAccount account, LiteYukonPAObject group) {
+    private void addMacAddressesToGroup(CustomerAccount account, LiteYukonPAObject group, Set<Integer> inventoryIds) {
         log.debug("ITRON-group {} is associated with account number {}", group.getPaoName(),
-            account.getAccountNumber());
-
-        Multimap<Integer, Integer> groupIdsToInventoryIds =
-            enrollmentDao.getActiveEnrolledInventoryIdsMapForGroupIds(Lists.newArrayList(group.getLiteID()));
-
-        List<Integer> optOuts = enrollmentDao.getCurrentlyOptedOutInventory();
-
-        Collection<Integer> inventoryIds = groupIdsToInventoryIds.get(group.getLiteID());
-        inventoryIds.removeAll(optOuts);
-        
+            account.getAccountNumber());        
         if (!inventoryIds.isEmpty()) {
             log.debug("ITRON-{} device(s) in group {}", inventoryIds.size(), group.getPaoName());
             Map<Integer, Integer> inventoryIdsToDeviceIds = inventoryDao.getDeviceIds(inventoryIds);
@@ -389,6 +387,21 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             //remove all devices from group
             addMacAddressesToGroup(String.valueOf(group.getLiteID()), new ArrayList<>());
         }
+    }
+    
+    /**
+     * Returns active inventory without opt outs.
+     */
+    private Set<Integer> getInventoryIdsForGroup(int groupId) {
+        Multimap<Integer, Integer> groupIdsToInventoryIds =
+            enrollmentDao.getActiveEnrolledInventoryIdsMapForGroupIds(Lists.newArrayList(groupId));
+
+        List<Integer> optOuts = enrollmentDao.getCurrentlyOptedOutInventory();
+
+        Set<Integer> inventoryIds = new HashSet<>();
+        inventoryIds.addAll(groupIdsToInventoryIds.get(groupId));
+        inventoryIds.removeAll(optOuts);
+        return inventoryIds;
     }
         
     @Override
