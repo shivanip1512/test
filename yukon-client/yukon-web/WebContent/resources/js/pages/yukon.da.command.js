@@ -48,6 +48,13 @@ $(document).on('yukon:command:confirm', function (ev) {
     $('.js-command-confirmation').dialog('destroy');
 });
 
+/** User has clicked on a system command (Enable/Disable System or Reset All Ops **/
+$(document).on('click', '.js-system-command', function (ev) {
+    var commandId = $(this).data('commandId'),
+        commandWarning = $(this).data('commandWarning');
+    doSystemCommand(commandId, commandWarning);
+});
+
 /** This method executes the command.
  *  @param {number} itemId - PAO Id.
  *  @param {number} commandId - Id of the command that needs to be executed.
