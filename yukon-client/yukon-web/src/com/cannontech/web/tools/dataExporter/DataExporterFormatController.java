@@ -303,10 +303,6 @@ public class DataExporterFormatController {
             if (patternError != null) {
                 model.addAttribute("readingPatternError", accessor.getMessage(patternError));
             }
-            FieldError maxLength = result.getFieldError("maxLength");
-            if (maxLength != null) {
-                model.addAttribute("maxLengthError", accessor.getMessage(maxLength));
-            }
             
             return "data-exporter/format/field.jsp";
         }

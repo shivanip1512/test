@@ -93,11 +93,8 @@
                 </tags:nameValue2>
                 
                 <tags:nameValue2 rowId="field-size" nameKey=".fieldSize">
-                    <tags:input id="max-length" path="maxLength" size="5" maxlength="5" displayValidationToRight="true"/>&nbsp;
-                    <i:inline key=".fieldSizeMax"/>
-                    <c:if test="${not empty maxLengthError}">
-                        <br><span class="error">${maxLengthError}</span>
-                    </c:if>
+                    <cti:msg2 var="fieldSizeMsg" key=".fieldSizeMax"/>
+                    <tags:input id="max-length" path="maxLength" size="5" maxlength="5" units="${fieldSizeMsg}"/>
                 </tags:nameValue2>
                 
                 <c:set var="classes" value="${exportField.field.plainTextType ? 'dn' : ''}"/>
