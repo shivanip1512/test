@@ -247,13 +247,16 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     }
     
     /**
-     * Find group id and adds to the command.
+     * Find group id and adds to the command. This method is used for Itron only.
      */
     private void addLmGroupId(List<ProgramEnrollment> requests, LmHardwareCommand command, int inventoryId) {
         Integer groupId = requests.stream()
                 .filter(entrollment -> entrollment.getInventoryId() == inventoryId)
                 .findFirst().get()
                 .getLmGroupId();
+        // we are only want to send information to Itron if we are doing enrollment or un-enrollment
+        // EXPECT_RESPONSE = true marks command as OK to send to itron 
+        command.getParams().put(LmHardwareCommandParam.EXPECT_RESPONSE, true);
         command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupId);
     }
 
