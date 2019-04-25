@@ -121,6 +121,7 @@ public enum SiteMapPage implements DisplayableEnum {
     RELAYS(SiteMapCategory.ASSETS, "yukon.web.menu.assets.relays", "/stars/relay", MatchStyle.any, YukonRoleProperty.INFRASTRUCTURE_ADMIN,
         YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE, YukonRoleProperty.INFRASTRUCTURE_DELETE, YukonRoleProperty.INFRASTRUCTURE_VIEW),
     RTUS(SiteMapCategory.ASSETS, "yukon.web.menu.assets.rtus", "/stars/rtu-list", MatchStyle.all, YukonRoleProperty.CBC_DATABASE_EDIT),
+    COMPREHENSIVE_MAP(SiteMapCategory.ASSETS, "yukon.web.modules.operator.comprehensiveMap.pageName", "/stars/comprehensiveMap/home", MatchStyle.all),
 
     CONFIGURATION(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.pageName", "/admin/config/view",
             MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),

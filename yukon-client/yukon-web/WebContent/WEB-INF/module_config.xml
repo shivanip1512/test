@@ -1181,6 +1181,9 @@
             <page name="mapNetwork" type="BASIC" hideSearch="true">
                 <link>/stars/mapNetwork/home</link>
             </page>
+            <page name="comprehensiveMap" type="BASIC" hideSearch="true">
+                <link>/stars/comprehensiveMap/home</link>
+            </page>
             <page name="gateways.list" type="BASIC" hideSearch="true">
                 <link>/stars/gateways</link>
                 <pages>

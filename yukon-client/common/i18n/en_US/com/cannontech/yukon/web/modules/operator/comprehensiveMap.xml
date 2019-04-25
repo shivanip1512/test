@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>   
+   
+    <entry key="yukon.web.modules.operator.comprehensiveMap.pageName">Comprehensive Map</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.pageDescription">Comprehensive Map</entry>
+    
+    <entry key="yukon.web.modules.operator.comprehensiveMap.selectGateways">Select Gateways</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.tooManyGateways">A maximum of 5 gateways may be selected.</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy">Color Code By:</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy.GATEWAY">Gateway</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy.LINK_STRENGTH">Link Strength</entry>
+    
+
+</properties>

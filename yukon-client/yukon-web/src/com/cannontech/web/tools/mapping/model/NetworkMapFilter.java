@@ -2,62 +2,19 @@ package com.cannontech.web.tools.mapping.model;
 
 import java.util.List;
 
-import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.i18n.DisplayableEnum;
 
 public class NetworkMapFilter {
-    
-    public enum ColorCodeBy {
-        GATEWAY,
-        LINK_STENGTH,
-    }
-    
-    public enum Color {
-        GREEN,
-        BLUE,
-        RED,
-        GREY
-    }
-    
-    public enum LinkStrength {
-        GOOD(Color.GREEN),
-        OK(Color.BLUE),
-        WEAK(Color.RED),
-        UNVERIFIED(Color.GREY);
-        
-        private Color color;
-        LinkStrength(Color color) {
-            this.color = color;
-        }
-        public Color getColor() {
-            return color;
-        }
-    }
-    
-    public static class Legend {
-        private Color color;
-        private String text;
-        
-        public Legend(Color color, String text) {
-            this.color = color;
-            this.text = text;
-        }
-        public Color getColor() {
-            return color;
-        }
-        public String getText() {
-            return text;
-        }
-    }
-    
-    private List<PaoIdentifier> selectedGatewayIds;
+
+    private List<Integer> selectedGatewayIds;
     private ColorCodeBy colorCodeBy;
     private List<LinkStrength> linkStrength;
 
-    public List<PaoIdentifier> getSelectedGatewayIds() {
+    public List<Integer> getSelectedGatewayIds() {
         return selectedGatewayIds;
     }
 
-    public void setSelectedGatewayIds(List<PaoIdentifier> selectedGatewayIds) {
+    public void setSelectedGatewayIds(List<Integer> selectedGatewayIds) {
         this.selectedGatewayIds = selectedGatewayIds;
     }
 
@@ -75,5 +32,65 @@ public class NetworkMapFilter {
 
     public void setLinkStrength(List<LinkStrength> linkStrength) {
         this.linkStrength = linkStrength;
+    }
+    
+    
+    public enum ColorCodeBy implements DisplayableEnum {
+        GATEWAY,
+        LINK_STRENGTH,;
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.operator.comprehensiveMap.colorCodeBy." + this;
+        }
+    }
+    
+    public enum Color {
+        GREEN("#009933"),
+        BLUE("#4d90fe"),
+        ORANGE("#ec971f"),
+        GREY("#888"),
+        YELLOW("#f0cb2f");
+        
+        private Color(String hexColor) {
+            this.hexColor = hexColor;
+        }
+
+        private final String hexColor;
+        
+        public String getHexColor() {
+            return hexColor;
+        }
+    }
+    
+    public enum LinkStrength {
+        GOOD(Color.GREEN),
+        OK(Color.BLUE),
+        WEAK(Color.ORANGE),
+        UNVERIFIED(Color.GREY);
+        
+        private Color color;
+        LinkStrength(Color color) {
+            this.color = color;
+        }
+        public Color getColor() {
+            return color;
+        }
+    }
+    
+    public static class Legend {
+        private String hexColor;
+        private String text;
+        
+        public Legend(String hexColor, String text) {
+            this.hexColor = hexColor;
+            this.text = text;
+        }
+        public String getHexColor() {
+            return hexColor;
+        }
+        public String getText() {
+            return text;
+        }
     }
 }
