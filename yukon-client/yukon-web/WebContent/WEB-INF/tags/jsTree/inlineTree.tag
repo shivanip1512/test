@@ -13,8 +13,8 @@
 <%@ attribute name="styleClass"%>
 <%@ attribute name="maxHeight" type="java.lang.Integer"
     description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500."%>
-<%@ attribute name="dataJson" description="A dictionary starting with attributes of the root node. Either dataJson or dataUrl is required."%>
-<%@ attribute name="dataUrl" description="A URL indicating how to get the data for the tree. Either dataJson or dataUrl is required."%>
+<%@ attribute name="dataJson" type="java.lang.String" description="A dictionary starting with attributes of the root node. Either dataJson or dataUrl is required."%>
+<%@ attribute name="dataUrl" type="java.lang.String" description="A URL indicating how to get the data for the tree. Either dataJson or dataUrl is required."%>
 <%@ attribute name="scrollToHighlighted" type="java.lang.Boolean"%>
 
 <cti:includeScript link="JQUERY_TREE" />
@@ -88,12 +88,12 @@
             
             <c:choose>
                 <c:when test="${not empty pageScope.dataUrl}">
-                	initAjax: {
+                    initAjax: {
                 	    url: '${pageScope.dataUrl}',
                 	},
                 </c:when>
                 <c:otherwise>
-                	children: ${pageScope.dataJson},
+                    children: ${pageScope.dataJson},
                 </c:otherwise>
         	</c:choose>
     
@@ -139,9 +139,9 @@
             <cti:msg2 var="collapse" key="yukon.common.collapseAll" />
             <cti:msg2 var="search" key="yukon.common.search.placeholder" />
             <cti:msg2 var="tooltip" key="yukon.web.components.jstree.input.search.tooltip" />
-            <a href="javascript:void(0);" class="open-all fl" data-tree-id="${id}" title="${expand}">${expand}</a> <a
-                href="javascript:void(0);" class="close-all fl" data-tree-id="${id}" title="${collapse}">${collapse}</a> <input type="text"
-                class="tree-search fl" data-tree-id="${id}" placeholder="${search}" title="${tooltip}" />
+            <a href="javascript:void(0);" class="open-all fl" data-tree-id="${id}" title="${expand}">${expand}</a>
+            <a href="javascript:void(0);" class="close-all fl" data-tree-id="${id}" title="${collapse}">${collapse}</a>
+            <input type="text" class="tree-search fl" data-tree-id="${id}" placeholder="${search}" title="${tooltip}" />
         </div>
     </c:if>
 

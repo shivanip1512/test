@@ -25,10 +25,10 @@ yukon.tools.group.editor = (function () {
         retrieveGroupDetails : function(groupName, selectNode) {
             //remove all current dialogs so it doesn't use old content
             $('.ui-dialog').remove();
-            var groupNameEncoded = encodeURIComponent(groupName);
-            var showDevices = $('#showDevices').val();
-            var url = yukon.url('/group/editor/selectedDeviceGroup?groupName=' + escape(groupName) + "&showDevices=" + showDevices);
-            var redirectUrl = yukon.url('/group/editor/home?groupName=' + groupNameEncoded);
+            var groupNameEncoded = encodeURIComponent(groupName),
+                showDevices = $('#showDevices').val(),
+                url = yukon.url('/group/editor/selectedDeviceGroup?groupName=' + escape(groupName) + "&showDevices=" + showDevices),
+                redirectUrl = yukon.url('/group/editor/home?groupName=' + groupNameEncoded);
 
             $.ajax({
                 url: url

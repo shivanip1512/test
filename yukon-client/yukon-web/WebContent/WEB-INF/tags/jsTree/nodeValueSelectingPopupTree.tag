@@ -16,8 +16,8 @@
 <%@ attribute name="id" required="true" %>
 <%@ attribute name="triggerElement" %>
 <%@ attribute name="highlightNodePath" %>
-<%@ attribute name="dataJson" description="A dictionary starting with attributes of the root node. Either dataJson or dataUrl is required."%>
-<%@ attribute name="dataUrl" description="A URL indicating how to get the data for the tree. Either dataJson or dataUrl is required."%>
+<%@ attribute name="dataJson" type="java.lang.String" description="A dictionary starting with attributes of the root node. Either dataJson or dataUrl is required."%>
+<%@ attribute name="dataUrl" type="java.lang.String" description="A URL indicating how to get the data for the tree. Either dataJson or dataUrl is required."%>
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="maxHeight" type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500."%>
 <%@ attribute name="noSelectionAlertText" %>

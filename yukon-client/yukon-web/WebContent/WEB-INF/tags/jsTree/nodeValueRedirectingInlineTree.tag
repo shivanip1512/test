@@ -11,8 +11,8 @@
 <%-- PASS THROUGH PARAMETERS TO jsTree:inlineTree --%>
 <%-- see inlineTree.tag for parameter descriptions --%>
 <%@ attribute name="id" required="true" type="java.lang.String"%>
-<%@ attribute name="dataJson" description="A dictionary starting with attributes of the root node. Either dataJson or dataUrl is required."%>
-<%@ attribute name="dataUrl" description="A URL indicating how to get the data for the tree. Either dataJson or dataUrl is required."%>
+<%@ attribute name="dataJson" type="java.lang.String" description="A dictionary starting with attributes of the root node. Either dataJson or dataUrl is required."%>
+<%@ attribute name="dataUrl" type="java.lang.String" description="A URL indicating how to get the data for the tree. Either dataJson or dataUrl is required."%>
 <%@ attribute name="highlightNodePath" required="false" type="java.lang.String"%>
 <%@ attribute name="includeControlBar" required="false" type="java.lang.Boolean"%>
 
