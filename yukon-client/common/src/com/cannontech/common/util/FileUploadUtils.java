@@ -68,18 +68,24 @@ public class FileUploadUtils {
     /**
      * Validate file type and throw exception if it is not valid CSV file
      * 
+     * Here ; is used as a separator so when we use ; as a separator with parser,
+     * And when reader read that file it reads whole line of CSV file in single read and it will be stored as a 
+     * single entry in string array while reading.
+     * 
      * @throws ImportFileFormatException
      * @throws IOException
      */
     private static void validateUploadFileType(File file) throws ImportFileFormatException, IOException {
         try (Reader reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
              CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
+             //csvReader will skip first line while reading CSV file and it will return null if we try to read file other than text or CSV file.
              Reader fileReader = new FileReader(file.getAbsoluteFile());) {
             CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
             CSVReader csvReaderWithDelimeter = new CSVReaderBuilder(fileReader).withCSVParser(parser).build();
             String[] csvData = csvReaderWithDelimeter.readNext();
             String[] csvRecord = csvReader.readNext();
             if (file.length() > 2 && (csvData != null && csvRecord == null)) {
+                //file.length() > 2 this check is for when we create empty CSV file with Excel, default size of that CSV file will be 2 bytes.
                 if (csvReaderWithDelimeter.readNext() != null)
                     throw new ImportFileFormatException("yukon.common.validDataFileRequired.error");
             }
