@@ -214,7 +214,9 @@ yukon.tools.dataExporterFormat = (function () {
                     },
                     error: function (xhr, status, error, $form) {
                         $('#format-popup').html(xhr.responseText);
-                        
+                        if ($("#format-popup").find("#maxLength\\.errors").exists()) {
+                            $("#format-popup").find("#maxLength\\.errors").remove();
+                        }
                     }
                 });
             });
@@ -360,6 +362,9 @@ yukon.tools.dataExporterFormat = (function () {
                     error: function (xhr, status, error, $form) {
                         // show the validated form
                         $('#format-popup').html(xhr.responseText);
+                        if ($("#format-popup").find("#maxLength\\.errors").exists()) {
+                            $("#format-popup").find("#maxLength\\.errors").remove();
+                        }
                     }
                 });
             });

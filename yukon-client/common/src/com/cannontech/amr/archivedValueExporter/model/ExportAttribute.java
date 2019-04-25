@@ -10,7 +10,7 @@ public class ExportAttribute {
     private int formatId;
     private BuiltInAttribute attribute;
     private DataSelection dataSelection;
-    private int daysPrevious = 1;
+    private Integer daysPrevious = 1;
     
     @JsonIgnore
     public int getAttributeId() {

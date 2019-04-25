@@ -25,7 +25,7 @@ public class ExportFieldValidator extends SimpleValidator<ExportField> {
         if (field.getField().getType() == FieldType.PLAIN_TEXT ) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "plainText", field.getPattern(), 50);
         } else if (field.getMaxLength() == null || field.getMaxLength() < 0) {
-            errors.rejectValue("exportField.maxLength", DataExporterFormatController.BASE_KEY + "formatError.lessThanZero.fieldSize");
+            errors.rejectValue("maxLength", DataExporterFormatController.BASE_KEY + "formatError.lessThanZero.fieldSize");
         }
 
         YukonValidationUtils.checkExceedsMaxLength(errors, "padChar", field.getPadChar(), 1);
