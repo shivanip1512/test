@@ -451,7 +451,6 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     
     public boolean isConfigurable() {
         return hardwareConfigType != HardwareConfigType.SA_SIMPLE
-            && hardwareConfigType != HardwareConfigType.ITRON
             && hardwareConfigType != null;
     }
     
