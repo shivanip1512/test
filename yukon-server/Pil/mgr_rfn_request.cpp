@@ -639,7 +639,7 @@ void RfnRequestManager::cancelByGroupMessageId(long groupMessageId)
             {
                 if( rfnDeviceRequestGroupIdMatches(*itr) )
                 {
-                    queue.erase(itr++);
+                    itr = queue.erase(itr);
                 }
                 else
                 {
