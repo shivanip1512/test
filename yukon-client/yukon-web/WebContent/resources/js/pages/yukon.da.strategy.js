@@ -33,6 +33,7 @@ yukon.da.strategy = (function () {
         $('.js-ivvc-only').toggle(algorithm === 'INTEGRATED_VOLT_VAR');
         $('.js-bus-ivvc-only').toggle(algorithm === 'INTEGRATED_VOLT_VAR' &&
                                       method === 'BUSOPTIMIZED_FEEDER');
+        $('.js-max-delta').toggle(algorithm === 'INTEGRATED_VOLT_VAR' || algorithm === 'MULTI_VOLT_VAR' || algorithm === 'MULTI_VOLT');
         
         if (algorithm == 'KVAR' || algorithm == 'MULTI_VOLT_VAR') {
            $('#kvarMessage').show();

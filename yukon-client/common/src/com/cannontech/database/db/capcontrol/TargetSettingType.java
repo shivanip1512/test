@@ -18,6 +18,7 @@ public enum TargetSettingType implements DatabaseRepresentationSource, Displayab
     DECISION_WEIGHT("Decision Weight", 1.0, ""),
     VOLTAGE_REGULATION_MARGIN("Voltage Regulation Margin", 1.0, "Volts"),
     MAX_CONSECUTIVE_BANK_OPERATIONS("Max Consecutive CapBank Ops.", 2.0, ""),
+    MAX_DELTA("Maximum Delta Voltage", 10.0, "Volts"),
     HOUR_ZERO("00:00", 0, "%"),
     HOUR_ONE("01:00", 0, "%"),
     HOUR_TWO("02:00", 0, "%"),

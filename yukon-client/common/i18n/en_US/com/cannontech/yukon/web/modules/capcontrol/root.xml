@@ -756,6 +756,7 @@
     <entry key="yukon.web.modules.capcontrol.strategy.bandwidth">Bandwidth</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.cost">Cost</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.maxCost">Max Cost</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.maxDeltaVoltage.title">Maximum Delta Voltage</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.emergencyCost">Emergency Cost</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.commPercentage.title">Comm Percentage Settings</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.voltageMonitors">Voltage Monitors</entry>
@@ -1034,6 +1035,7 @@
     <entry key="yukon.web.modules.capcontrol.targetSetting.DECISION_WEIGHT">Decision Weight</entry>
     <entry key="yukon.web.modules.capcontrol.targetSetting.VOLTAGE_REGULATION_MARGIN">Voltage Regulation Margin</entry>
     <entry key="yukon.web.modules.capcontrol.targetSetting.MAX_CONSECUTIVE_BANK_OPERATIONS">Max Consecutive Bank Ops</entry>
+    <entry key="yukon.web.modules.capcontrol.targetSetting.MAX_DELTA">Maximum Delta Voltage</entry>
     <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_ZERO">00:00</entry>
     <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_ONE">01:00</entry>
     <entry key="yukon.web.modules.capcontrol.targetSetting.HOUR_TWO">02:00</entry>
