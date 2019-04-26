@@ -308,7 +308,7 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatError.delimiterRequired">The delimiter cannot be blank.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatError.duplicateName">Name already in use, please provide a different format name.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatError.lessThanZero.daysPrevious">Days previous must be greater than zero.</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatError.lessThanZero.fieldSize">Field size must be greater than zero.</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatError.lessThanZero.fieldSize">Field size must be greater than or equal to zero.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatError.textInputRequired">The plain text input cannot be blank.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatError.fieldsRequired">At least one field must be entered.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatError.invalidPattern">The pattern is invalid.</entry>
