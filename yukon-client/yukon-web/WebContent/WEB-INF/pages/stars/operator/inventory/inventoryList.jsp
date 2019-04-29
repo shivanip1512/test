@@ -109,12 +109,23 @@
                                             <cti:param name="inventoryId" value="${result.identifier.inventoryId}"/>
                                         </cti:url>
                                         <c:if test="${result.accountId > 0}">
-                                            <cti:url var="inventoryUrl" value="/stars/operator/hardware/view">
-                                                <cti:param name="inventoryId" value="${result.identifier.inventoryId}"/>
-                                                <cti:param name="accountId" value="${result.accountId}"/>
-                                            </cti:url>
+                                            <c:choose>
+                                                <c:when test="${result.paoType == 'SYSTEM'}">
+                                                    <cti:url var="inventoryUrl" value="/stars/operator/hardware/mp/view">
+                                                        <cti:param name="inventoryId" value="${result.identifier.inventoryId}"/>
+                                                        <cti:param name="accountId" value="${result.accountId}"/>
+                                                    </cti:url>
+                                                    <a href="${inventoryUrl}">${result.label}</a>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <cti:url var="inventoryUrl" value="/stars/operator/hardware/view">
+                                                        <cti:param name="inventoryId" value="${result.identifier.inventoryId}"/>
+                                                        <cti:param name="accountId" value="${result.accountId}"/>
+                                                    </cti:url>
+                                                    <a href="${inventoryUrl}">${result.serialNumber}</a>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </c:if>
-                                        <a href="${inventoryUrl}">${result.serialNumber}</a>
                                     </td>
                                     
                                     <td>

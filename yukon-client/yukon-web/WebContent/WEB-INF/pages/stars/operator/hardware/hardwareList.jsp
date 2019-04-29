@@ -39,14 +39,8 @@
     <input type="hidden" name="meterId" id="meterId">
 </form>
 
-<c:choose>
-    <c:when test="${starsMeters}">
-        <cti:url var="meterUrl" value="/stars/operator/hardware/mp/view?accountId=${accountId}&amp;inventoryId="/>
-    </c:when>
-    <c:otherwise>
-        <cti:url var="meterUrl" value="/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId="/>
-    </c:otherwise>
-</c:choose>
+<cti:url var="starsMeterUrl" value="/stars/operator/hardware/mp/view?accountId=${accountId}&amp;inventoryId="/>
+<cti:url var="meterUrl" value="/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId="/>
 
 <script type="text/javascript">
     function showAddSwitchPopup() {
@@ -594,9 +588,18 @@
                                     </td>
                                 </c:if>
                                 <td>
-                                    <a href="${meterUrl}${meter.inventoryId}">
-                                        ${fn:escapeXml(meter.displayName)}
-                                    </a>
+                                    <c:choose>
+                                        <c:when test="${meter.hardwareType == 'NON_YUKON_METER'}">
+                                            <a href="${starsMeterUrl}${meter.inventoryId}">
+                                                ${fn:escapeXml(meter.displayName)}
+                                            </a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <a href="${meterUrl}${meter.inventoryId}">
+                                                ${fn:escapeXml(meter.displayName)}
+                                            </a>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </td>
 
                                 <c:if test="${starsMeters}">
@@ -628,10 +631,12 @@
                                             <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editMeterConfigUrl}${meter.deviceId}" />
                                             <cti:checkRolesAndProperties value="METERING">
                                                 <li>
-                                                    <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
-                                                        <cti:icon icon="icon-control-equalizer-blue"/>
-                                                        <cti:msg2 key="yukon.web.components.button.meterDetail.label"/>
-                                                    </cti:paoDetailUrl>
+                                                    <c:if test="${meter.hardwareType != 'NON_YUKON_METER'}">
+                                                        <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
+                                                            <cti:icon icon="icon-control-equalizer-blue"/>
+                                                            <cti:msg2 key="yukon.web.components.button.meterDetail.label"/>
+                                                        </cti:paoDetailUrl>
+                                                    </c:if>
                                                 </li>
                                             </cti:checkRolesAndProperties>
                                         </cm:dropdown>
