@@ -664,17 +664,6 @@ yukon.map.network = (function () {
                     }
                 });
                 
-                /** Change map tiles layer on tile button group clicks. */
-                $('#map-tiles button').click(function (ev) {
-                    $(this).siblings().removeClass('on');
-                    $(this).addClass('on');
-                    for (var i in _tiles) {
-                        var layer = $(this).data('layer');
-                        _tiles[i].set('visible', (_tiles[i].get('name') === layer));
-                    }
-                    
-                });
-                
                 /** Change mouse cursor when over marker.  There HAS to be a css way to do this! */
                 $(_map.getViewport()).on('mousemove', function(e) {
                     var pixel = _map.getEventPixel(e.originalEvent),
@@ -707,11 +696,11 @@ yukon.map.network = (function () {
                                    var id = properties.pao.paoId;
                                    if (id == paoId) {
                                      source.removeFeature(features[x]);
-                                      break;
+                                      //break;
                                    }
                                  }
                                }
-                            source.removeFeature(feature);
+                            //source.removeFeature(feature);
                         },
                         error: function(xhr, status, error) {
                             var errorMsg = xhr.responseJSON.message;
@@ -854,12 +843,6 @@ yukon.map.network = (function () {
                         yukon.ui.unblock(mapContainer);
                         $('#marker-info').hide();
                     });
-                });
-                
-                /** Redirects to new device map network page **/
-                $(document).on('click', '.js-device-map', function() {
-                    var deviceId = $(this).data('deviceId');
-                    window.location.href = yukon.url('/stars/mapNetwork/home?deviceId=' + deviceId);
                 });
                 
                 /** Gets the parent node from Network Manager **/

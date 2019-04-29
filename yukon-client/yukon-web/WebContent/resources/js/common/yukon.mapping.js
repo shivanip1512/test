@@ -67,6 +67,22 @@ yukon.mapping = (function () {
             
             if (_initialized) return;
             
+            /** Redirects to new device map network page **/
+            $(document).on('click', '.js-device-map', function() {
+                var deviceId = $(this).data('deviceId');
+                window.location.href = yukon.url('/stars/mapNetwork/home') + '?deviceId=' + deviceId;
+            });
+            
+            $('#map-tiles button').click(function (ev) {
+                $(this).siblings().removeClass('on');
+                $(this).addClass('on');
+                for (var i in _tiles) {
+                    var layer = $(this).data('layer');
+                    _tiles[i].set('visible', (_tiles[i].get('name') === layer));
+                }
+                
+            });
+            
             _initialized = true;
         },
         
@@ -239,7 +255,7 @@ yukon.mapping = (function () {
                     break;
             }
             $('.js-status').addClass(statusClass);
-        }
+        },
 
     };
  

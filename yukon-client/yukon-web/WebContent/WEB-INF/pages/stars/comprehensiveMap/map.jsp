@@ -27,7 +27,7 @@
                         <i:inline key=".colorCodeBy"/>
                         <tags:selectWithItems items="${colorCodeByOptions}" path="colorCodeBy"/>
                         
-                        <cti:button nameKey="filter" classes="js-filter-map primary action fr vab"/>
+                        <cti:button nameKey="filter" classes="js-filter-map primary action fr vab" busy="true"/>
                     </div>
                     
                 </form:form>
@@ -48,12 +48,10 @@
         </div>
     </div>
     <div id="legend" class="dn" style="margin-top:150px;width:40%;"></div>
-
     
     <cti:includeScript link="OPEN_LAYERS"/>
     <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
     <cti:includeScript link="/resources/js/common/yukon.mapping.js"/>
-    <cti:includeScript link="/resources/js/pages/yukon.map.network.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.map.comprehensive.js"/>
 
 </cti:standardPage>

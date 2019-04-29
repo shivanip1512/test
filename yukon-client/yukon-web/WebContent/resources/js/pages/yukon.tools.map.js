@@ -715,17 +715,6 @@ yukon.tools.map = (function() {
                 
             });
             
-            /** Change map tiles layer on tile button group clicks. */
-            $('#map-tiles button').click(function(ev) {
-                $(this).siblings().removeClass('on');
-                $(this).addClass('on');
-                for (var i in _tiles) {
-                    var layer = $(this).data('layer');
-                    _tiles[i].set('visible', (_tiles[i].get('name') === layer));
-                }
-                
-            });
-            
             /** Remove filtering when no filter button clicked. */
             $('#no-filter-btn').click(function(ev) {
                 $('#no-filter-btn').hide();
@@ -791,12 +780,6 @@ yukon.tools.map = (function() {
             /** Destroy the coordinate deletion confirmation popup when cancelled **/
             $(document).on('click', '.cancel-delete', function(event) {
                 $('#confirm-delete').dialog('destroy');
-            });
-            
-            /** Redirects to new device map network page **/
-            $(document).on('click', '.js-device-map', function() {
-                var deviceId = $(this).data('deviceId');
-                window.location.href = yukon.url('/stars/mapNetwork/home') + '?deviceId=' + deviceId;
             });
             
             /** Gets the neighbor data from Network Manager **/
