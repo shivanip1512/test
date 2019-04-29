@@ -688,19 +688,18 @@ yukon.map.network = (function () {
                         success: function(results) {
                             $('#confirm-delete').dialog('destroy');
                             yukon.ui.removeAlerts();
-                            var source = _map.getLayers().getArray()[_tiles.length].getSource();
-                            var features = source.getFeatures();
+                            var source = _map.getLayers().getArray()[_tiles.length].getSource(),
+                                features = source.getFeatures();
                             if (features != null && features.length > 0) {
                                 for (x in features) {
-                                   var properties = features[x].getProperties();
-                                   var id = properties.pao.paoId;
+                                   var properties = features[x].getProperties(),
+                                       id = properties.pao.paoId;
                                    if (id == paoId) {
-                                     source.removeFeature(features[x]);
-                                      //break;
+                                       source.removeFeature(features[x]);
+                                       break;
                                    }
-                                 }
-                               }
-                            //source.removeFeature(feature);
+                                }
+                            }
                         },
                         error: function(xhr, status, error) {
                             var errorMsg = xhr.responseJSON.message;
