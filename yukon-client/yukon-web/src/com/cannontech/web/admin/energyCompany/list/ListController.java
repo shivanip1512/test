@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.constants.DisplayableSelectionList;
 import com.cannontech.common.constants.SelectionListCategory;
 import com.cannontech.common.constants.YukonDefinition;
@@ -59,6 +61,7 @@ public class ListController {
     @Autowired private SelectionListService selectionListService;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonListDao listDao;
+    @Autowired private ConfigurationSource configSource;
 
     private final Validator validator = new SimpleValidator<SelectionListDto>(SelectionListDto.class) {
         @Override
@@ -179,7 +182,12 @@ public class ListController {
                 listDefinitions.remove(YukonDefinition.DEV_TYPE_METER);
             }
         }
-
+        
+        if(!configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
+            //Used to remove the Nest Thermostat from the Admin EC > Lists > Device Type YUK-19820
+        listDefinitions.remove(YukonDefinition.DEV_TYPE_NEST_THERMOSTAT);
+        }
+        
         model.addAttribute("listDefinitions", listDefinitions);
         model.addAttribute("usesType", !listDefinitions.isEmpty());
     }
