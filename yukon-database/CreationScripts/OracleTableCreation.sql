@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/16/2019 1:04:28 PM                         */
+/* Created on:     4/30/2019 3:16:18 PM                         */
 /*==============================================================*/
 
 
@@ -7235,6 +7235,23 @@ create table NestSyncValue  (
 );
 
 /*==============================================================*/
+/* Table: NmToRfnDeviceData                                     */
+/*==============================================================*/
+create table NmToRfnDeviceData  (
+   GatewayId            NUMBER                          not null,
+   RfnId                NUMBER                          not null,
+   LastTransferTime     TIMESTAMP                       not null,
+   constraint PK_NmToRfnDeviceData primary key (GatewayId, RfnId)
+);
+
+/*==============================================================*/
+/* Index: INDX_NmToRfnDeviceData_RfnId                          */
+/*==============================================================*/
+create index INDX_NmToRfnDeviceData_RfnId on NmToRfnDeviceData (
+   RfnId ASC
+);
+
+/*==============================================================*/
 /* Table: NotificationDestination                               */
 /*==============================================================*/
 create table NotificationDestination  (
@@ -13263,6 +13280,15 @@ alter table NestSyncDetail
 alter table NestSyncValue
    add constraint FK_NSDetail_NSValue foreign key (SyncDetailId)
       references NestSyncDetail (SyncDetailId)
+      on delete cascade;
+
+alter table NmToRfnDeviceData
+   add constraint FK_NmToRfnDD_YukonPAO_Gateway foreign key (GatewayId)
+      references YukonPAObject (PAObjectID);
+
+alter table NmToRfnDeviceData
+   add constraint FK_NmToRfnDD_YukonPAO_RfnId foreign key (RfnId)
+      references YukonPAObject (PAObjectID)
       on delete cascade;
 
 alter table NotificationDestination

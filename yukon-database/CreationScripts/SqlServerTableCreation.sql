@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/16/2019 1:01:50 PM                         */
+/* Created on:     4/30/2019 3:15:29 PM                         */
 /*==============================================================*/
 
 
@@ -7673,6 +7673,25 @@ create table NestSyncValue (
 go
 
 /*==============================================================*/
+/* Table: NmToRfnDeviceData                                     */
+/*==============================================================*/
+create table NmToRfnDeviceData (
+   GatewayId            numeric              not null,
+   RfnId                numeric              not null,
+   LastTransferTime     timestamp            not null,
+   constraint PK_NmToRfnDeviceData primary key (GatewayId, RfnId)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_NmToRfnDeviceData_RfnId                          */
+/*==============================================================*/
+create index INDX_NmToRfnDeviceData_RfnId on NmToRfnDeviceData (
+RfnId ASC
+)
+go
+
+/*==============================================================*/
 /* Table: NotificationDestination                               */
 /*==============================================================*/
 create table NotificationDestination (
@@ -14409,6 +14428,17 @@ go
 alter table NestSyncValue
    add constraint FK_NSDetail_NSValue foreign key (SyncDetailId)
       references NestSyncDetail (SyncDetailId)
+         on delete cascade
+go
+
+alter table NmToRfnDeviceData
+   add constraint FK_NmToRfnDD_YukonPAO_Gateway foreign key (GatewayId)
+      references YukonPAObject (PAObjectID)
+go
+
+alter table NmToRfnDeviceData
+   add constraint FK_NmToRfnDD_YukonPAO_RfnId foreign key (RfnId)
+      references YukonPAObject (PAObjectID)
          on delete cascade
 go
 

@@ -142,6 +142,28 @@ ALTER TABLE DeviceConfigState
 INSERT INTO DBUpdates VALUES ('YUK-19780', '7.3.0', SYSDATE);
 /* @end YUK-19780 */
 
+/* @start YUK-19858 */
+CREATE TABLE NmToRfnDeviceData  (
+    GatewayId               NUMBER          NOT NULL,
+    RfnId                   NUMBER          NOT NULL,
+    LastTransferTime        TIMESTAMP       NOT NULL,
+    CONSTRAINT PK_NmToRfnDeviceData PRIMARY KEY (GatewayId, RfnId)
+);
+
+CREATE INDEX INDX_NmToRfnDeviceData_RfnId ON NmToRfnDeviceData (RfnId ASC);
+
+ALTER TABLE NmToRfnDeviceData
+    ADD CONSTRAINT FK_NmToRfnDD_YukonPAO_Gateway FOREIGN KEY (GatewayId)
+    REFERENCES YukonPAObject (PAObjectID);
+
+ALTER TABLE NmToRfnDeviceData
+    ADD CONSTRAINT FK_NmToRfnDD_YukonPAO_RfnId FOREIGN KEY (RfnId)
+    REFERENCES YukonPAObject (PAObjectID)
+    ON DELETE CASCADE;
+
+INSERT INTO DBUpdates VALUES ('YUK-19858', '7.3.0', SYSDATE);
+/* @end YUK-19858 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
