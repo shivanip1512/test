@@ -44,7 +44,7 @@
               description="Set of callbacks to be preformed on each node in the device group tree. Can be used to disable 
                            selecting certain nodes." %>
                            
-<%@ attribute name="groupDataUrl" description="A URL indicating how to get the data for the groups tree."%>
+<%@ attribute name="groupDataUrl" type="java.lang.String" description="A URL indicating how to get the data for the groups tree."%>
     
               
 <cti:msgScope paths=", yukon.common.device.bulk.deviceSelection, yukon.common, yukon.common.device.selection">
