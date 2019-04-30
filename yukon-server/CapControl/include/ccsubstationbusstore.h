@@ -278,11 +278,6 @@ public:
                                                         PaoIdToSubBusMap *paobject_subbus_map,
                                                         PointIdToCapBankMultiMap *pointid_capbank_map);
 
-    void reCalculateOperationStatsFromDatabase( );
-    void resetAllOperationStats();
-    void resetAllConfirmationStats();
-    void reCalculateConfirmationStatsFromDatabase( );
-    void reCalculateAllStats( );
     void assignStrategyAtBus(CtiCCSubstationBusPtr bus, long stratId);
     void assignStrategyAtFeeder(CtiCCFeederPtr feeder, long stratId);
     void assignStrategyToCCObject(Cti::RowReader& dbRdr, Cti::CapControl::CapControlType objectType);
@@ -412,7 +407,6 @@ public:
 
     void createOperationStatPointDataMsgs(CtiMultiMsg_vec& pointChanges, CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
                                   CtiCCSubstationPtr station, CtiCCAreaPtr area, CtiCCSpecialPtr spArea);
-    void createAllStatsPointDataMsgs(CtiMultiMsg_vec& pointChanges);
 
     void setControlStatusAndIncrementFailCount(CtiMultiMsg_vec& pointChanges, long status, CtiCCCapBank* cap);
     void setControlStatusAndIncrementOpCount(CtiMultiMsg_vec& pointChanges, long status, CtiCCCapBank* cap,
@@ -608,6 +602,43 @@ public:
     using PointIdToPaoMultiMap = std::multimap< long, CapControlPao * >;
 
     PointIdToPaoMultiMap & getPointIDToPaoMultiMap() { return _pointID_to_pao; }
+
+private:
+
+    // opStats stuff
+
+    enum StatDurationWindow
+    {
+        UserDef,
+        Daily,
+        Weekly,
+        Monthly
+    };
+
+    using StatCache = std::map< std::pair< long, StatDurationWindow >, long >;
+
+    // commStats
+
+    struct CommStat
+    {
+        long    bankID,
+                attemptCount,
+                errorCount;
+        StatDurationWindow  window;
+    };
+
+    using CommStatCache = std::vector< CommStat >;
+
+    void reCalculateOperationStatsFromDatabase( StatCache & counts, StatCache & failures );
+    void reCalculateConfirmationStatsFromDatabase( CommStatCache & cache );
+
+    // these 6 functions need the store mux locked
+    void resetAllOperationStats();
+    void resetAllConfirmationStats();
+    void populateOperationStats( const StatCache & counts, const StatCache & failures );
+    void populateCommStats( const CommStatCache & cache );
+    void reCalculateAllStats( );
+    void createAllStatsPointDataMsgs(CtiMultiMsg_vec& pointChanges);
 
 private:
 

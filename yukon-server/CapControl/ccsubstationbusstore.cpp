@@ -2261,6 +2261,7 @@ void CtiCCSubstationBusStore::doOpStatsThr()
     {
         CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
+
     ThreadStatusKeeper threadStatus("CapControl doOpsThr");
     bool startUpSendStats = true;
     long lastOpStatsThreadPulse = 0;
@@ -2282,34 +2283,52 @@ void CtiCCSubstationBusStore::doOpStatsThr()
                 CTILOG_INFO(dout, "Controller refreshing OP STATS");
 
                 {
-                    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
+                    StatCache       counts,
+                                    failures;
+                    CommStatCache   cache;
 
-                    CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
-                    CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
+                    reCalculateOperationStatsFromDatabase( counts, failures );
+                    reCalculateConfirmationStatsFromDatabase( cache );
 
-                    resetAllOperationStats();
-                    resetAllConfirmationStats();
-                    reCalculateOperationStatsFromDatabase( );
-                    reCalculateConfirmationStatsFromDatabase( );
-                    try
                     {
-                        reCalculateAllStats( );
-                        lastOpStatsThreadPulse = secondsFrom1901;
-                        opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  _OP_STATS_REFRESH_RATE );
-                        CTILOG_INFO(dout, "Next OP STATS CHECKTIME : "<<opStatRefreshRate);
+                        CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
-                        createAllStatsPointDataMsgs(pointChanges);
+                        resetAllOperationStats();
+                        resetAllConfirmationStats();
+                        populateOperationStats( counts, failures );
+                        populateCommStats( cache );
+
                         try
                         {
-                            //send point changes to dispatch
-                            if( multiDispatchMsg->getCount() > 0 )
+                            reCalculateAllStats( );
+                            lastOpStatsThreadPulse = secondsFrom1901;
+                            opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  _OP_STATS_REFRESH_RATE );
+                            CTILOG_INFO(dout, "Next OP STATS CHECKTIME : "<<opStatRefreshRate);
+
+                            CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
+                            CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
+
+                            createAllStatsPointDataMsgs(pointChanges);
+                            try
                             {
-                                multiDispatchMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
-                                CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg, CALLSITE);
+                                //send point changes to dispatch
+                                if( multiDispatchMsg->getCount() > 0 )
+                                {
+                                    multiDispatchMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
+                                    CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg, CALLSITE);
+                                }
+                                else
+                                {
+                                    delete multiDispatchMsg;
+                                }
                             }
-                            else
+                            catch ( boost::thread_interrupted & )
                             {
-                                delete multiDispatchMsg;
+                                throw;
+                            }
+                            catch(...)
+                            {
+                                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                             }
                         }
                         catch ( boost::thread_interrupted & )
@@ -2320,14 +2339,6 @@ void CtiCCSubstationBusStore::doOpStatsThr()
                         {
                             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                         }
-                    }
-                    catch ( boost::thread_interrupted & )
-                    {
-                        throw;
-                    }
-                    catch(...)
-                    {
-                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
                 }
                 startUpSendStats = false;
@@ -8897,123 +8908,121 @@ void CtiCCSubstationBusStore::resetAllConfirmationStats()
 
 void CtiCCSubstationBusStore::reCalculateAllStats( )
 {
-    CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
+    for ( auto currentSubstationBus : *_ccSubstationBuses )
     {
-        for ( auto currentSubstationBus : *_ccSubstationBuses )
+        CCStatsObject subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly,
+                      subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp;
+
+        for ( auto currentFeeder : currentSubstationBus->getCCFeeders() )
         {
-            CCStatsObject subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly,
-                          subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp;
+            CCStatsObject feederUserDef, feederDaily, feederWeekly, feederMonthly,
+                          feederUserDefOp, feederDailyOp, feederWeeklyOp, feederMonthlyOp;
 
-            for ( auto currentFeeder : currentSubstationBus->getCCFeeders() )
+            for ( auto currentCapBank : currentFeeder->getCCCapBanks() )
             {
-                CCStatsObject feederUserDef, feederDaily, feederWeekly, feederMonthly,
-                              feederUserDefOp, feederDailyOp, feederWeeklyOp, feederMonthlyOp;
-
-                for ( auto currentCapBank : currentFeeder->getCCCapBanks() )
+                if(currentCapBank->getControlDeviceId() > 0 && !currentCapBank->getDisableFlag())
                 {
-                    if(currentCapBank->getControlDeviceId() > 0 && !currentCapBank->getDisableFlag())
+                    //Confirmation Stats Total
+                    if (currentCapBank->getConfirmationStats().getUserDefCommCount() > 0)
                     {
-                        //Confirmation Stats Total
-                        if (currentCapBank->getConfirmationStats().getUserDefCommCount() > 0)
-                        {
-                            feederUserDef.addSuccessSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS));
-                        }
-                        if (currentCapBank->getConfirmationStats().getDailyCommCount() > 0)
-                        {
-                            feederDaily.addSuccessSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS));
-                        }
-                        if (currentCapBank->getConfirmationStats().getWeeklyCommCount() > 0)
-                        {
-                            feederWeekly.addSuccessSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS));
-                        }
-                        if (currentCapBank->getConfirmationStats().getMonthlyCommCount() > 0)
-                        {
-                            feederMonthly.addSuccessSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS));
-                        }
+                        feederUserDef.addSuccessSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS));
+                    }
+                    if (currentCapBank->getConfirmationStats().getDailyCommCount() > 0)
+                    {
+                        feederDaily.addSuccessSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS));
+                    }
+                    if (currentCapBank->getConfirmationStats().getWeeklyCommCount() > 0)
+                    {
+                        feederWeekly.addSuccessSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS));
+                    }
+                    if (currentCapBank->getConfirmationStats().getMonthlyCommCount() > 0)
+                    {
+                        feederMonthly.addSuccessSample( currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS));
+                    }
 
-                        //Operations Stats Total
-                        if (currentCapBank->getOperationStats().getUserDefOpCount() > 0)
-                        {
-                            feederUserDefOp.addSuccessSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS));
-                        }
-                        if (currentCapBank->getOperationStats().getDailyOpCount() > 0)
-                        {
-                            feederDailyOp.addSuccessSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS));
-                        }
-                        if (currentCapBank->getOperationStats().getWeeklyOpCount() > 0)
-                        {
-                            feederWeeklyOp.addSuccessSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS));
-                        }
-                        if (currentCapBank->getOperationStats().getMonthlyOpCount() > 0)
-                        {
-                            feederMonthlyOp.addSuccessSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS));
-                        }
+                    //Operations Stats Total
+                    if (currentCapBank->getOperationStats().getUserDefOpCount() > 0)
+                    {
+                        feederUserDefOp.addSuccessSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS));
+                    }
+                    if (currentCapBank->getOperationStats().getDailyOpCount() > 0)
+                    {
+                        feederDailyOp.addSuccessSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS));
+                    }
+                    if (currentCapBank->getOperationStats().getWeeklyOpCount() > 0)
+                    {
+                        feederWeeklyOp.addSuccessSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS));
+                    }
+                    if (currentCapBank->getOperationStats().getMonthlyOpCount() > 0)
+                    {
+                        feederMonthlyOp.addSuccessSample( currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS));
                     }
                 }
-                setConfirmationSuccessPercents( *currentFeeder, feederUserDef, feederDaily, feederWeekly, feederMonthly);
-                setOperationSuccessPercents( *currentFeeder, feederUserDefOp, feederDailyOp, feederWeeklyOp, feederMonthlyOp);
-
-                incrementConfirmationPercentTotals( *currentFeeder, subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly);
-                incrementOperationPercentTotals( *currentFeeder, subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp);
             }
-            setConfirmationSuccessPercents( *currentSubstationBus, subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly);
-            setOperationSuccessPercents( *currentSubstationBus, subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp);
+            setConfirmationSuccessPercents( *currentFeeder, feederUserDef, feederDaily, feederWeekly, feederMonthly);
+            setOperationSuccessPercents( *currentFeeder, feederUserDefOp, feederDailyOp, feederWeeklyOp, feederMonthlyOp);
+
+            incrementConfirmationPercentTotals( *currentFeeder, subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly);
+            incrementOperationPercentTotals( *currentFeeder, subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp);
         }
+        setConfirmationSuccessPercents( *currentSubstationBus, subBusUserDef, subBusDaily, subBusWeekly, subBusMonthly);
+        setOperationSuccessPercents( *currentSubstationBus, subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp);
+    }
 
-        for ( auto currentStation : _ccSubstations )
+    for ( auto currentStation : _ccSubstations )
+    {
+        CCStatsObject subUserDef, subDaily, subWeekly, subMonthly,
+                      subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp;
+
+        for ( long busId : currentStation->getCCSubIds() )
         {
-            CCStatsObject subUserDef, subDaily, subWeekly, subMonthly,
-                          subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp;
-
-            for ( long busId : currentStation->getCCSubIds() )
+            if ( auto currentSubstationBus = findSubBusByPAObjectID( busId ) )
             {
-                if ( auto currentSubstationBus = findSubBusByPAObjectID( busId ) )
-                {
-                    incrementConfirmationPercentTotals( *currentSubstationBus, subUserDef, subDaily, subWeekly, subMonthly);
-                    incrementOperationPercentTotals( *currentSubstationBus, subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp);
-                }
+                incrementConfirmationPercentTotals( *currentSubstationBus, subUserDef, subDaily, subWeekly, subMonthly);
+                incrementOperationPercentTotals( *currentSubstationBus, subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp);
             }
-            setConfirmationSuccessPercents( *currentStation, subUserDef, subDaily, subWeekly, subMonthly);
-            setOperationSuccessPercents( *currentStation, subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp);
         }
+        setConfirmationSuccessPercents( *currentStation, subUserDef, subDaily, subWeekly, subMonthly);
+        setOperationSuccessPercents( *currentStation, subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp);
+    }
 
-        for ( auto currentArea : *_ccGeoAreas )
+    for ( auto currentArea : *_ccGeoAreas )
+    {
+        CCStatsObject areaUserDef, areaDaily, areaWeekly, areaMonthly,
+                      areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp;
+
+        for ( long subId : currentArea->getSubstationIds() )
         {
-            CCStatsObject areaUserDef, areaDaily, areaWeekly, areaMonthly,
-                          areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp;
-
-            for ( long subId : currentArea->getSubstationIds() )
+            if ( auto currentStation = findSubstationByPAObjectID( subId ) )
             {
-                if ( auto currentStation = findSubstationByPAObjectID( subId ) )
-                {
-                   incrementConfirmationPercentTotals( *currentStation, areaUserDef, areaDaily, areaWeekly, areaMonthly);
-                   incrementOperationPercentTotals( *currentStation, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
-                }
-           }
-           setConfirmationSuccessPercents( *currentArea, areaUserDef, areaDaily, areaWeekly, areaMonthly);
-           setOperationSuccessPercents( *currentArea, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
-        }
-
-        for ( auto currentSpArea : *_ccSpecialAreas )
-        {
-            CCStatsObject areaUserDef, areaDaily, areaWeekly, areaMonthly,
-                          areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp;
-
-            for ( long subId : currentSpArea->getSubstationIds() )
-            {
-                if ( auto currentStation = findSubstationByPAObjectID( subId ) )
-                {
-                    incrementConfirmationPercentTotals( *currentStation, areaUserDef, areaDaily, areaWeekly, areaMonthly);
-                    incrementOperationPercentTotals( *currentStation, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
-                }
+               incrementConfirmationPercentTotals( *currentStation, areaUserDef, areaDaily, areaWeekly, areaMonthly);
+               incrementOperationPercentTotals( *currentStation, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
             }
-            setConfirmationSuccessPercents( *currentSpArea, areaUserDef, areaDaily, areaWeekly, areaMonthly);
-            setOperationSuccessPercents( *currentSpArea, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
+       }
+       setConfirmationSuccessPercents( *currentArea, areaUserDef, areaDaily, areaWeekly, areaMonthly);
+       setOperationSuccessPercents( *currentArea, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
+    }
+
+    for ( auto currentSpArea : *_ccSpecialAreas )
+    {
+        CCStatsObject areaUserDef, areaDaily, areaWeekly, areaMonthly,
+                      areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp;
+
+        for ( long subId : currentSpArea->getSubstationIds() )
+        {
+            if ( auto currentStation = findSubstationByPAObjectID( subId ) )
+            {
+                incrementConfirmationPercentTotals( *currentStation, areaUserDef, areaDaily, areaWeekly, areaMonthly);
+                incrementOperationPercentTotals( *currentStation, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
+            }
         }
+        setConfirmationSuccessPercents( *currentSpArea, areaUserDef, areaDaily, areaWeekly, areaMonthly);
+        setOperationSuccessPercents( *currentSpArea, areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp);
     }
 }
 
-void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
+
+void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( StatCache & counts, StatCache & failures )
 {
     try
     {
@@ -9064,54 +9073,26 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                 rdr["pointid"] >> pointId;
                 rdr["datetime"] >> logDateTime;
 
-                CtiCCCapBankPtr cap = NULL;
-                PointIdToCapBankMultiMap::iterator capBeginIter, capEndIter;
-                if (findCapBankByPointID(pointId, capBeginIter, capEndIter))
-                    cap = capBeginIter->second;
-
-                if (logDateTime >= userDefWindow && cap != NULL )
+                if (logDateTime >= userDefWindow )
                 {
-                    if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
-                    {
-                        CTILOG_DEBUG(dout, "logDateTime >= userDefWindow " << CtiTime(logDateTime) <<">="<<CtiTime(userDefWindow));
-                    }
-                    cap->getOperationStats().incrementAllOpCounts();
+                    counts[ { pointId, UserDef } ]++;
                 }
-                else if (logDateTime >= yesterday && cap != NULL )
+                else if (logDateTime >= yesterday )
                 {
-                    if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
-                    {
-                        CTILOG_DEBUG(dout, "logDateTime >= yesterday " << CtiTime(logDateTime) <<">="<<CtiTime(yesterday));
-                    }
-                    cap->getOperationStats().incrementDailyOpCounts();
+                    counts[ { pointId, Daily } ]++;
                 }
-                else if (logDateTime >= lastWeek && cap != NULL )
+                else if (logDateTime >= lastWeek )
                 {
-                    if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
-                    {
-                        CTILOG_DEBUG(dout, "logDateTime >= lastWeek " << CtiTime(logDateTime) <<">="<<CtiTime(lastWeek));
-                    }
-                    cap->getOperationStats().incrementWeeklyOpCounts();
+                    counts[ { pointId, Weekly } ]++;
                 }
-                else if (logDateTime >= oneMonthAgo && cap != NULL )
+                else if (logDateTime >= oneMonthAgo )
                 {
-                    if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
-                    {
-                        CTILOG_DEBUG(dout, "logDateTime >= oneMonthAgo " << CtiTime(logDateTime) <<">="<<CtiTime(oneMonthAgo));
-                    }
-                    cap->getOperationStats().incrementMonthlyOpCounts();
+                    counts[ { pointId, Monthly } ]++;
                 }
                 else if ( (_CC_DEBUG & CC_DEBUG_OPSTATS) &&
                          (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                 {
-                    if (cap != NULL)
-                    {
-                        CTILOG_INFO(dout, "irregular LOG datetime: " << CtiTime(logDateTime) << " for CAPBANK: " << cap->getPaoName());
-                    }
-                    else
-                    {
-                        CTILOG_INFO(dout, "irregular LOG datetime: " << CtiTime(logDateTime) <<" CAPBANK with Bank Status PID: "<< pointId <<" no longer exists.");
-                    }
+                    CTILOG_INFO(dout, "irregular LOG datetime: " << logDateTime << " for pointID: " << pointId);
                 }
             }
         }
@@ -9148,38 +9129,26 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                 rdr["pointid"] >> pointId;
                 rdr["datetime"] >> logDateTime;
 
-                CtiCCCapBankPtr cap = NULL;
-                PointIdToCapBankMultiMap::iterator capBeginIter, capEndIter;
-                if (findCapBankByPointID(pointId, capBeginIter, capEndIter))
-                    cap = capBeginIter->second;
-
-                if (logDateTime >= userDefWindow && cap != NULL )
+                if (logDateTime >= userDefWindow)
                 {
-                    cap->getOperationStats().incrementAllOpFails();
+                    failures[ { pointId, UserDef } ]++;
                 }
-                else if (logDateTime >= yesterday && cap != NULL )
+                else if (logDateTime >= yesterday)
                 {
-                    cap->getOperationStats().incrementDailyOpFails();
+                    failures[ { pointId, Daily } ]++;
                 }
-                else if (logDateTime >= lastWeek && cap != NULL )
+                else if (logDateTime >= lastWeek)
                 {
-                    if (cap != NULL) cap->getOperationStats().incrementWeeklyOpFails();
+                    failures[ { pointId, Weekly } ]++;
                 }
-                else if (logDateTime >= oneMonthAgo && cap != NULL )
+                else if (logDateTime >= oneMonthAgo)
                 {
-                    cap->getOperationStats().incrementMonthlyOpFails();
+                    failures[ { pointId, Monthly } ]++;
                 }
                 else if ( (_CC_DEBUG & CC_DEBUG_OPSTATS) &&
                          (_CC_DEBUG & CC_DEBUG_EXTENDED) )
                 {
-                    if (cap != NULL)
-                    {
-                        CTILOG_INFO(dout, "irregular LOG datetime: " << CtiTime(logDateTime) << " for CAPBANK: " << cap->getPaoName());
-                    }
-                    else
-                    {
-                        CTILOG_INFO(dout, "irregular LOG datetime: " << CtiTime(logDateTime) <<" CAPBANK with Bank Status PID: "<< pointId <<" no longer exists.");
-                    }
+                    CTILOG_INFO(dout, "irregular LOG datetime: " << logDateTime << " for pointID: " << pointId);
                 }
             }
         }
@@ -9188,10 +9157,76 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
 }
 
-void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
+
+void CtiCCSubstationBusStore::populateOperationStats( const StatCache & counts, const StatCache & failures )
+{
+    // opCounts
+
+    static const std::map< StatDurationWindow, void (CtiCCOperationStats::*)() > opCountSelector =
+    {
+        { UserDef,  &CtiCCOperationStats::incrementAllOpCounts      },
+        { Daily,    &CtiCCOperationStats::incrementDailyOpCounts    },
+        { Weekly,   &CtiCCOperationStats::incrementWeeklyOpCounts   },
+        { Monthly,  &CtiCCOperationStats::incrementMonthlyOpCounts  }
+    };
+    
+    for ( auto & [ key, value ] : counts )
+    {
+        PointIdToCapBankMultiMap::iterator capBeginIter, capEndIter;
+        if ( findCapBankByPointID( key.first, capBeginIter, capEndIter ) )
+        {
+            if ( auto incrementer = Cti::mapFindRef( opCountSelector, key.second ) )
+            {
+                CtiCCCapBankPtr bank = capBeginIter->second;
+
+                for ( long i = 0; i < value; ++i )
+                {
+                    (bank->getOperationStats().**incrementer)();
+                }
+            }
+        }
+        else
+        {
+            CTILOG_INFO( dout, "CAPBANK with Bank Status PID: " << key.first << " no longer exists." );
+        }
+    }
+
+    // failCounts
+
+    static const std::map< StatDurationWindow, void (CtiCCOperationStats::*)() > failCountSelector =
+    {
+        { UserDef,  &CtiCCOperationStats::incrementAllOpFails       },
+        { Daily,    &CtiCCOperationStats::incrementDailyOpFails     },
+        { Weekly,   &CtiCCOperationStats::incrementWeeklyOpFails    },
+        { Monthly,  &CtiCCOperationStats::incrementMonthlyOpFails   }
+    };
+
+    for ( auto & [ key, value ] : failures )
+    {
+        PointIdToCapBankMultiMap::iterator capBeginIter, capEndIter;
+        if ( findCapBankByPointID( key.first, capBeginIter, capEndIter ) )
+        {
+            if ( auto incrementer = Cti::mapFindRef( failCountSelector, key.second ) )
+            {
+                CtiCCCapBankPtr bank = capBeginIter->second;
+
+                for ( long i = 0; i < value; ++i )
+                {
+                    (bank->getOperationStats().**incrementer)();
+                }
+            }
+        }
+        else
+        {
+            CTILOG_INFO( dout, "CAPBANK with Bank Status PID: " << key.first << " no longer exists." );
+        }
+    }
+}
+
+
+void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( CommStatCache & cache )
 {
     try
     {
@@ -9200,88 +9235,75 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
         CtiDate oneMonthAgo = CtiDate() -  31; //today - 30 days
         CtiDate yesterday = CtiDate() -  1;
 
+        static const std::string sql =
+            "SELECT "
+                "C.DEVICEID, "
+                "D.Attempts, "
+                "D.CommErrors + "
+                "D.ProtocolErrors + "
+                "D.SystemErrors AS ErrorCount, "
+                "D.StatisticType, "
+                "D.StartDateTime "
+            "FROM "
+                "DynamicPAOStatistics D "
+                    "JOIN YukonPAObject Y "
+                        "ON D.PAObjectId = Y.PAObjectID "
+                    "JOIN CAPBANK C "
+                        "ON D.PAObjectId = C.CONTROLDEVICEID "
+            "WHERE "
+                "Y.Type LIKE 'CBC%' "
+                "AND D.Attempts > 0 "
+                "AND D.StartDateTime >= ?";
+
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
+
+        rdr << CtiTime { oneMonthAgo };
+
+        rdr.executeWithRetries();
+
+        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
         {
-            static const string sql =  "SELECT DPS.paobjectid, DPS.attempts, DPS.commerrors, DPS.protocolerrors, "
-                                         "DPS.systemerrors, DPS.statistictype, DPS.startdatetime, "
-                                         "YP.paobjectid, YP.type "
-                                       "FROM dynamicpaostatistics DPS, yukonpaobject YP "
-                                       "WHERE DPS.paobjectid = YP.paobjectid AND DPS.attempts > 0 AND "
-                                         "YP.type LIKE '%CBC%' AND DPS.startdatetime >= ?";
+            CTILOG_INFO(dout, rdr.asString());
+        }
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection, sql);
+        while ( rdr() )
+        {
+            long bankID, attempts, errorTotal;
+            std::string statisticType;
+            CtiTime start;
 
-            rdr << CtiTime { oneMonthAgo };
+            rdr["DEVICEID"] >> bankID; //bank Id.
+            rdr["Attempts"]  >> attempts;
+            rdr["ErrorCount"] >> errorTotal;
+            rdr["StatisticType"] >> statisticType;
+            rdr["StartDateTime"] >> start;
 
-            rdr.executeWithRetries();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            if (ciStringEqual(statisticType, "Monthly") && start > oneMonthAgo)
             {
-                CTILOG_INFO(dout, rdr.asString());
+                cache.push_back( { bankID, attempts, errorTotal, Monthly } );
             }
-
-            while ( rdr() )
+            else if (ciStringEqual(statisticType, "Weekly") )
             {
-
-                long paobjectId, attempts, commErrors, protocolErrors, systemErrors, errorTotal;
-                string statisticType;
-                double successPercent = 100;
-                CtiTime start;
-
-                rdr["paobjectid"] >> paobjectId; //cbc Id.
-                rdr["attempts"]  >> attempts;
-                rdr["commerrors"] >> commErrors;
-                rdr["protocolerrors"] >> protocolErrors;
-                rdr["systemerrors"] >> systemErrors;
-                rdr["statistictype"] >> statisticType;
-                rdr["startdatetime"] >> start;
-
-
-                errorTotal = commErrors + protocolErrors + systemErrors;
-
-                CtiCCCapBankPtr cap = NULL;
-                long capId = findCapBankIDbyCbcID(paobjectId);
-                if (capId != NULL)
-                    cap = findCapBankByPAObjectID(capId);
-
-                if (ciStringEqual(statisticType, "Monthly")  && cap != NULL &&
-                    start > oneMonthAgo)
+                cache.push_back( { bankID, attempts, errorTotal, Weekly } );
+            }
+            else if (ciStringEqual(statisticType, "Daily") && start > yesterday)
+            {
+                cache.push_back( { bankID, attempts, errorTotal, Daily } );
+            }
+            else if (stringContainsIgnoreCase(statisticType, "Hour") )
+            {
+                if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
                 {
-                    cap->getConfirmationStats().setMonthlyCommCount(attempts);
-                    cap->getConfirmationStats().setMonthlyCommFail(errorTotal);
-                    successPercent = cap->getConfirmationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS);
-                    cap->getConfirmationStats().setMonthlyCommSuccessPercent(successPercent);
+                    CTILOG_DEBUG(dout, "Start Time: " << start <<"  *** UserDefined Window: " << userDefWindow);
                 }
-                else if (ciStringEqual(statisticType, "Weekly") && cap != NULL )
-                {
-                    cap->getConfirmationStats().setWeeklyCommCount(attempts);
-                    cap->getConfirmationStats().setWeeklyCommFail(errorTotal);
-                    successPercent = cap->getConfirmationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS);
-                    cap->getConfirmationStats().setWeeklyCommSuccessPercent(successPercent);
-                }
-                else if (ciStringEqual(statisticType, "Daily") && cap != NULL &&
-                         start > yesterday)
-                {
-                    cap->getConfirmationStats().setDailyCommCount(attempts);
-                    cap->getConfirmationStats().setDailyCommFail(errorTotal);
-                    successPercent = cap->getConfirmationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS);
-                    cap->getConfirmationStats().setDailyCommSuccessPercent(successPercent);
-                }
-                else if (stringContainsIgnoreCase(statisticType, "Hour") && cap != NULL )
+                if (start > userDefWindow )
                 {
                     if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
                     {
-                        CTILOG_DEBUG(dout, "Start Time: " << start <<"  *** UserDefined Window: " << userDefWindow);
+                        CTILOG_DEBUG(dout, "Incrementing User Def Comm Counts for Capbank ID: "<< bankID);
                     }
-                    if (start > userDefWindow )
-                    {
-                        if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
-                        {
-                            CTILOG_DEBUG(dout, "Incrementing User Def Comm Counts for Cap: "<< cap->getPaoName());
-                        }
-                        cap->getConfirmationStats().incrementUserDefCommCounts(attempts);
-                        cap->getConfirmationStats().incrementUserDefCommFails(errorTotal);
-                    }
+                    cache.push_back( { bankID, attempts, errorTotal, UserDef } );
                 }
             }
         }
@@ -9290,8 +9312,45 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
 }
+
+
+void CtiCCSubstationBusStore::populateCommStats( const CommStatCache & cache )
+{
+    for ( auto & entry : cache  )
+    {
+        if ( CtiCCCapBankPtr bank = findCapBankByPAObjectID( entry.bankID ) )
+        {
+            if ( entry.window == Monthly )
+            {
+                bank->getConfirmationStats().setMonthlyCommCount( entry.attemptCount );
+                bank->getConfirmationStats().setMonthlyCommFail( entry.errorCount );
+                bank->getConfirmationStats().setMonthlyCommSuccessPercent(
+                    bank->getConfirmationStats().calculateSuccessPercent( capcontrol::MONTHLY_CCSTATS ) );
+            }
+            else if ( entry.window == Weekly )
+            {
+                bank->getConfirmationStats().setWeeklyCommCount( entry.attemptCount );
+                bank->getConfirmationStats().setWeeklyCommFail( entry.errorCount );
+                bank->getConfirmationStats().setWeeklyCommSuccessPercent(
+                    bank->getConfirmationStats().calculateSuccessPercent( capcontrol::WEEKLY_CCSTATS ) );
+            }
+            else if ( entry.window == Daily )
+            {
+                bank->getConfirmationStats().setDailyCommCount( entry.attemptCount );
+                bank->getConfirmationStats().setDailyCommFail( entry.errorCount );
+                bank->getConfirmationStats().setDailyCommSuccessPercent(
+                    bank->getConfirmationStats().calculateSuccessPercent( capcontrol::DAILY_CCSTATS ) );
+            }
+            else    // entry.window == UserDef
+            {
+                bank->getConfirmationStats().incrementUserDefCommCounts( entry.attemptCount );
+                bank->getConfirmationStats().incrementUserDefCommFails( entry.errorCount );
+            }
+        }
+    }
+}
+
 
 void CtiCCSubstationBusStore::setOperationSuccessPercents( CapControlPao & object,
                                                            const CCStatsObject & userDef,
@@ -9432,7 +9491,6 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementFailCount(CtiMultiMsg_
 
 void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& pointChanges)
 {
-    long i=0;
     try
     {
         for ( CtiCCAreaPtr currentArea : *_ccGeoAreas )
@@ -9475,10 +9533,8 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
 
     try
     {
-        for(i=0;i<_ccSubstationBuses->size();i++)
+        for ( CtiCCSubstationBusPtr currentSubstationBus : *_ccSubstationBuses )
         {
-            CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)_ccSubstationBuses->at(i);
-
             try
             {
                 currentSubstationBus->getOperationStats().createPointDataMsgs(pointChanges);
@@ -9489,21 +9545,15 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
-            CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
-
-            for(long j=0; j < ccFeeders.size(); j++)
+            for ( CtiCCFeederPtr currentFeeder : currentSubstationBus->getCCFeeders() )
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
                 try
                 {
                     currentFeeder->getOperationStats().createPointDataMsgs(pointChanges);
                     currentFeeder->getConfirmationStats().createPointDataMsgs(pointChanges);
 
-                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                    for(long k=0;k<ccCapBanks.size();k++)
+                    for ( CtiCCCapBankPtr currentCapBank : currentFeeder->getCCCapBanks() )
                     {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
                         try
                         {
                             currentCapBank->getOperationStats().createPointDataMsgs(pointChanges);
