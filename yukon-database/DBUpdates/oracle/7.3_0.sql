@@ -142,27 +142,45 @@ ALTER TABLE DeviceConfigState
 INSERT INTO DBUpdates VALUES ('YUK-19780', '7.3.0', SYSDATE);
 /* @end YUK-19780 */
 
-/* @start YUK-19858 */
-CREATE TABLE NmToRfnDeviceData  (
-    GatewayId               NUMBER          NOT NULL,
-    RfnId                   NUMBER          NOT NULL,
-    LastTransferTime        TIMESTAMP       NOT NULL,
-    CONSTRAINT PK_NmToRfnDeviceData PRIMARY KEY (GatewayId, RfnId)
+/* @start YUK-19858-1 */
+/* @start-block */
+DECLARE
+    table_exists INT;
+BEGIN
+    SELECT COUNT(*) INTO table_exists 
+    FROM USER_TABLES
+    WHERE table_name = 'NmToRfnDeviceData';
+    
+    IF table_exists > 0 THEN
+        EXECUTE IMMEDIATE 'DROP TABLE NmToRfnDeviceData';
+    END IF;
+END;
+/
+/* @end-block */
+
+CREATE TABLE DynamicRfnDeviceData  (
+    DeviceId            NUMBER          NOT NULL,
+    GatewayId           NUMBER,
+    LastTransferTime    TIMESTAMP       NOT NULL,
+    CONSTRAINT PK_NmToRfnDeviceData PRIMARY KEY (DeviceId)
 );
 
-CREATE INDEX INDX_NmToRfnDeviceData_RfnId ON NmToRfnDeviceData (RfnId ASC);
+CREATE INDEX INDX_DynRfnDevData_GatewayId ON DynamicRfnDeviceData (
+   GatewayId ASC
+);
 
-ALTER TABLE NmToRfnDeviceData
-    ADD CONSTRAINT FK_NmToRfnDD_YukonPAO_Gateway FOREIGN KEY (GatewayId)
-    REFERENCES YukonPAObject (PAObjectID);
-
-ALTER TABLE NmToRfnDeviceData
-    ADD CONSTRAINT FK_NmToRfnDD_YukonPAO_RfnId FOREIGN KEY (RfnId)
-    REFERENCES YukonPAObject (PAObjectID)
+ALTER TABLE DynamicRfnDeviceData
+    ADD CONSTRAINT FK_DynRfnDevData_RfnAddr_DevId FOREIGN KEY (DeviceId)
+    REFERENCES RfnAddress (DeviceId)
     ON DELETE CASCADE;
 
-INSERT INTO DBUpdates VALUES ('YUK-19858', '7.3.0', SYSDATE);
-/* @end YUK-19858 */
+ALTER TABLE DynamicRfnDeviceData
+    ADD CONSTRAINT FK_DynRfnDevData_RfnAddr_GatId FOREIGN KEY (GatewayId)
+    REFERENCES RfnAddress (DeviceId)
+    ON DELETE SET NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-19858-1', '7.3.0', SYSDATE);
+/* @end YUK-19858-1 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

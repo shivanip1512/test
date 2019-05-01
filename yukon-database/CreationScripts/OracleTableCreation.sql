@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/30/2019 3:16:18 PM                         */
+/* Created on:     5/1/2019 10:05:46 AM                         */
 /*==============================================================*/
 
 
@@ -5035,6 +5035,23 @@ create table DynamicPointAlarming  (
 );
 
 /*==============================================================*/
+/* Table: DynamicRfnDeviceData                                  */
+/*==============================================================*/
+create table DynamicRfnDeviceData  (
+   DeviceId             NUMBER                          not null,
+   GatewayId            NUMBER,
+   LastTransferTime     TIMESTAMP                       not null,
+   constraint PK_NmToRfnDeviceData primary key (DeviceId)
+);
+
+/*==============================================================*/
+/* Index: INDX_DynRfnDevData_GatewayId                          */
+/*==============================================================*/
+create index INDX_DynRfnDevData_GatewayId on DynamicRfnDeviceData (
+   GatewayId ASC
+);
+
+/*==============================================================*/
 /* Table: DynamicTags                                           */
 /*==============================================================*/
 create table DynamicTags  (
@@ -7232,23 +7249,6 @@ create table NestSyncValue  (
    SyncValue            VARCHAR2(100)                   not null,
    SyncValueType        VARCHAR2(60)                    not null,
    constraint PK_NestSyncValue primary key (SyncValueId)
-);
-
-/*==============================================================*/
-/* Table: NmToRfnDeviceData                                     */
-/*==============================================================*/
-create table NmToRfnDeviceData  (
-   GatewayId            NUMBER                          not null,
-   RfnId                NUMBER                          not null,
-   LastTransferTime     TIMESTAMP                       not null,
-   constraint PK_NmToRfnDeviceData primary key (GatewayId, RfnId)
-);
-
-/*==============================================================*/
-/* Index: INDX_NmToRfnDeviceData_RfnId                          */
-/*==============================================================*/
-create index INDX_NmToRfnDeviceData_RfnId on NmToRfnDeviceData (
-   RfnId ASC
 );
 
 /*==============================================================*/
@@ -12385,6 +12385,16 @@ alter table DynamicPointAlarming
       references POINT (POINTID)
       on delete cascade;
 
+alter table DynamicRfnDeviceData
+   add constraint FK_DynRfnDevData_RfnAddr_DevId foreign key (DeviceId)
+      references RfnAddress (DeviceId)
+      on delete cascade;
+
+alter table DynamicRfnDeviceData
+   add constraint FK_DynRfnDevData_RfnAddr_GatId foreign key (GatewayId)
+      references RfnAddress (DeviceId)
+      on delete set null;
+
 alter table DynamicTags
    add constraint FK_DynamicTags_Point foreign key (PointID)
       references POINT (POINTID)
@@ -13280,15 +13290,6 @@ alter table NestSyncDetail
 alter table NestSyncValue
    add constraint FK_NSDetail_NSValue foreign key (SyncDetailId)
       references NestSyncDetail (SyncDetailId)
-      on delete cascade;
-
-alter table NmToRfnDeviceData
-   add constraint FK_NmToRfnDD_YukonPAO_Gateway foreign key (GatewayId)
-      references YukonPAObject (PAObjectID);
-
-alter table NmToRfnDeviceData
-   add constraint FK_NmToRfnDD_YukonPAO_RfnId foreign key (RfnId)
-      references YukonPAObject (PAObjectID)
       on delete cascade;
 
 alter table NotificationDestination

@@ -149,30 +149,37 @@ ALTER TABLE DeviceConfigState
 INSERT INTO DBUpdates VALUES ('YUK-19780', '7.3.0', GETDATE());
 /* @end YUK-19780 */
 
-/* @start YUK-19858 */
-CREATE TABLE NmToRfnDeviceData (
-    GatewayId               NUMERIC         NOT NULL,
-    RfnId                   NUMERIC         NOT NULL,
-    LastTransferTime        TIMESTAMP       NOT NULL,
-    CONSTRAINT PK_NmToRfnDeviceData PRIMARY KEY (GatewayId, RfnId)
+/* @start YUK-19858-1 */
+/* @start-block */
+DROP TABLE IF EXISTS NmToRfnDeviceData;
+/* @end-block */
+
+CREATE TABLE DynamicRfnDeviceData (
+    DeviceId            NUMERIC         NOT NULL,
+    GatewayId           NUMERIC         NULL,
+    LastTransferTime    TIMESTAMP       NOT NULL,
+    CONSTRAINT PK_NmToRfnDeviceData PRIMARY KEY (DeviceId)
 );
 GO
 
-CREATE INDEX INDX_NmToRfnDeviceData_RfnId ON NmToRfnDeviceData (RfnId ASC);
+CREATE INDEX INDX_DynRfnDevData_GatewayId ON DynamicRfnDeviceData (
+    GatewayId ASC
+);
 GO
 
-ALTER TABLE NmToRfnDeviceData
-    ADD CONSTRAINT FK_NmToRfnDD_YukonPAO_Gateway FOREIGN KEY (GatewayId)
-    REFERENCES YukonPAObject (PAObjectID);
-
-ALTER TABLE NmToRfnDeviceData
-    ADD CONSTRAINT FK_NmToRfnDD_YukonPAO_RfnId FOREIGN KEY (RfnId)
-    REFERENCES YukonPAObject (PAObjectID)
+ALTER TABLE DynamicRfnDeviceData
+    ADD CONSTRAINT FK_DynRfnDevData_RfnAddr_DevId FOREIGN KEY (DeviceId)
+    REFERENCES RfnAddress (DeviceId)
     ON DELETE CASCADE;
+
+ALTER TABLE DynamicRfnDeviceData
+    ADD CONSTRAINT FK_DynRfnDevData_RfnAddr_GatId FOREIGN KEY (GatewayId)
+    REFERENCES RfnAddress (DeviceId)
+    ON DELETE SET NULL;
 GO
 
-INSERT INTO DBUpdates VALUES ('YUK-19858', '7.3.0', GETDATE());
-/* @end YUK-19858 */
+INSERT INTO DBUpdates VALUES ('YUK-19858-1', '7.3.0', GETDATE());
+/* @end YUK-19858-1 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
