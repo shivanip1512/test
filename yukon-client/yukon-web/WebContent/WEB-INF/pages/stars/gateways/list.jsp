@@ -61,7 +61,7 @@
             </cm:dropdownOption>
         </cti:checkRolesAndProperties>
         <cti:url var="comprehensiveMapUrl" value="/stars/comprehensiveMap/home"/>
-        <cm:dropdownOption key="yukon.web.modules.operator.comprehensiveMap.pageName" href="${comprehensiveMapUrl}" icon="icon-map"/>
+        <cm:dropdownOption key="yukon.web.modules.operator.comprehensiveMap.pageName" href="${comprehensiveMapUrl}" icon="icon-map-pins"/>
         <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
             <cm:dropdownOption data-popup="#firmware-server-popup" icon="icon-drive-go"
                 classes="update-servers disabled" disabled="true">

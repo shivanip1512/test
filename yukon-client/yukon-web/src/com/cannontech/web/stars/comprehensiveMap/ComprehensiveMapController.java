@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -33,7 +31,7 @@ public class ComprehensiveMapController {
 
     
     @GetMapping("home")
-    public String home(ModelMap model) throws ServletException {
+    public String home(ModelMap model) {
         
         NetworkMapFilter filter = new NetworkMapFilter();
         model.addAttribute("filter", filter);                                                                

@@ -2,6 +2,8 @@ package com.cannontech.web.tools.mapping.model;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.cannontech.common.i18n.DisplayableEnum;
 
 public class NetworkMapFilter {
@@ -90,7 +92,7 @@ public class NetworkMapFilter {
             return hexColor;
         }
         public String getText() {
-            return text;
+            return StringEscapeUtils.escapeHtml4(text);
         }
     }
 }

@@ -29,7 +29,10 @@ yukon.map.comprehensive = (function () {
     _deviceFocusLines = [],
     _deviceFocusIconLayer,
     _largerScale = 1.3,
-    
+    _deviceScale = 0.8,
+    _relayScale = 0.9,
+    _gatewayScale = 1,
+        
     /** @type {Object.<number, {ol.Feature}>} - Map of pao id to feature for all device icons. */
     _icons = [], 
     
@@ -52,7 +55,6 @@ yukon.map.comprehensive = (function () {
         var source = _map.getLayers().getArray()[_tiles.length].getSource();
         for (x in devices.features) {
             var feature = devices.features[x],
-                scale = 1,
                 zIndex = _iconLayerIndex,
                 pao = feature.properties.paoIdentifier,
                 src_projection = devices.crs.properties.name,
@@ -65,15 +67,11 @@ yukon.map.comprehensive = (function () {
                 image = currentStyle.getImage(),
                 src = image.getSrc();
             
-            //make larger if relay
-            if (pao.paoType === 'RFN_RELAY') {
-                scale = 1.2;
-                zIndex = _relayLayerIndex;
-            }
-            
-            currentStyle.setImage(new ol.style.Icon({ src: src, color: color, anchor:  [0.5, 1.0], scale: scale }));
+            currentStyle.setImage(new ol.style.Icon({ src: src, color: color, anchor:  [0.5, 1.0] }));
             
             icon.setStyle(currentStyle);
+            
+            _setScaleForDevice(icon);
             
             if (src_projection === _destProjection) {
                 icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
@@ -143,15 +141,27 @@ yukon.map.comprehensive = (function () {
         yukon.mapping.hideNeighborsLegend();
     },
     
+    _setScaleForDevice = function(feature) {
+        var currentStyle = feature.getStyle().clone(),
+            scale = _deviceScale,
+            pao = feature.get('pao');
+        //make larger if relay
+        if (pao.paoType === 'RFN_RELAY') {
+            scale = _relayScale;
+        } else if (pao.paoType === 'RFN_GATEWAY' || pao.paoType === 'GWY800') {
+            scale = _gatewayScale;
+        }
+        currentStyle.getImage().setScale(scale);
+        feature.setStyle(currentStyle);
+    }
+    
     //remove neighbors and route information from all icons and set back to initial scale
     _setIconsBack = function() {
         for (var i in _icons) {
             var icon = _icons[i];
             icon.unset("neighbor");
             icon.unset("routeInfo");
-            var normalStyle = icon.getStyle();
-            normalStyle.getImage().setScale(1);
-            icon.setStyle(normalStyle);
+            _setScaleForDevice(icon);
         }
     },
     
@@ -180,8 +190,6 @@ yukon.map.comprehensive = (function () {
                 style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
                 icon = new ol.Feature({ routeInfo: route });
             
-            icon.setStyle(style);
-            
             //check if device already exists on map...the first device will always be the original device so make the icon larger
             var deviceFound = _findFocusDevice(feature.properties.paoIdentifier.paoId, x == 0);
             if (deviceFound) {
@@ -189,7 +197,9 @@ yukon.map.comprehensive = (function () {
                 icon.set("routeInfo", route);
                 icon.unset("neighbor");
             } else {
+                icon.setStyle(style);
                 icon.set("pao", feature.properties.paoIdentifier);
+                _setScaleForDevice(icon);
                 if (x == 0) {
                     _makeDeviceIconLarger(icon);
                 }
@@ -269,6 +279,7 @@ yukon.map.comprehensive = (function () {
             } else {
                 icon.setStyle(style);
                 icon.set("pao", feature.properties.paoIdentifier);
+                _setScaleForDevice(icon);
 
                 if (src_projection === _destProjection) {
                     icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
@@ -336,7 +347,7 @@ yukon.map.comprehensive = (function () {
             
             if (_initialized) return;
             
-            $(".js-chosen").chosen({width: "200px", max_selected_options: 5});
+            $(".js-chosen").chosen({width: "400px", max_selected_options: 5});
             $(".js-chosen").bind("chosen:maxselected", function () {
                 var gatewayError = $('#tooManyGatewaysError').val();
                 yukon.ui.alertError(gatewayError);
@@ -361,7 +372,7 @@ yukon.map.comprehensive = (function () {
             _map.addOverlay(_overlay);
             _map.on('click', function(ev) {
                 var feature = _map.forEachFeatureAtPixel(ev.pixel, function(feature, layer) { return feature; });
-                if (feature) {
+                if (feature && feature.get('pao') != null) {
                     var 
                     geometry = feature.getGeometry(),
                     coord = geometry.getCoordinates(),
@@ -396,6 +407,11 @@ yukon.map.comprehensive = (function () {
                 $('#' + _map.getTarget()).css('cursor', hit ? 'pointer' : 'default');
             });
             
+            $('.js-chosen').on('change', function(evt, params) {
+                var values = $(".js-chosen").chosen().val();
+                $('.js-filter-map').prop('disabled', values.length == 0);
+            });
+            
             $(document).on('click', '.js-filter-map', function (ev) {
                 var form = $('#filter-form');
                 $.ajax({
@@ -411,9 +427,9 @@ yukon.map.comprehensive = (function () {
                     $('#legend').empty();
                     for (var i = 0; i < data.map.legend.length; i++) {
                         var legendItem = data.map.legend[i];
-                        $('#legend').append('<div class=small-circle style=margin-left:5px;margin-bottom:5px;background:' + legendItem.hexColor + '><span style=margin-left:10px;>' + legendItem.text + '</span></div>');
-                        $('#legend').removeClass('dn');
+                        $('#legend').append('<span class=small-circle style=margin-left:5px;margin-bottom:5px;background:' + legendItem.hexColor + '></span><span style=margin-left:5px;>' + legendItem.text + '</span>');
                     }
+                    $('#legend').removeClass('dn');
                     yukon.ui.unbusy('.js-filter-map');
                 });
             });
@@ -500,7 +516,7 @@ yukon.map.comprehensive = (function () {
                     $('#comprehensive-map-container').css('padding-top', '0px');
                 } else {
                     //adjust height for mapping buttons
-                    $('#comprehensive-map-container').css('padding-bottom', '150px');
+                    $('#comprehensive-map-container').css('padding-bottom', '220px');
                     $('#comprehensive-map-container').css('padding-top', '0px');
                 }
                 //close any popups
