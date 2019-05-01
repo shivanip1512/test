@@ -149,7 +149,7 @@ DECLARE
 BEGIN
     SELECT COUNT(*) INTO table_exists 
     FROM USER_TABLES
-    WHERE table_name = 'NmToRfnDeviceData';
+    WHERE table_name = 'NMTORFNDEVICEDATA';
     
     IF table_exists > 0 THEN
         EXECUTE IMMEDIATE 'DROP TABLE NmToRfnDeviceData';
