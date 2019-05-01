@@ -51,7 +51,7 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
     }
     
     public String getTitle() {
-        return "Cap Control Asset Unvailability Report";
+        return "Cap Control Asset Unavailability Report";
     }
 
     public int getRowCount() {
