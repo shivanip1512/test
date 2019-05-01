@@ -176,8 +176,7 @@ ALTER TABLE DynamicRfnDeviceData
 
 ALTER TABLE DynamicRfnDeviceData
     ADD CONSTRAINT FK_DynRfnDevData_RfnAddr_GatId FOREIGN KEY (GatewayId)
-    REFERENCES RfnAddress (DeviceId)
-    ON DELETE SET NULL;
+    REFERENCES RfnAddress (DeviceId);
 
 INSERT INTO DBUpdates VALUES ('YUK-19858-1', '7.3.0', SYSDATE);
 /* @end YUK-19858-1 */

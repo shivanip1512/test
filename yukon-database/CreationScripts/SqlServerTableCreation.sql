@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/1/2019 10:03:19 AM                         */
+/* Created on:     5/1/2019 12:45:54 PM                         */
 /*==============================================================*/
 
 
@@ -13333,7 +13333,6 @@ go
 alter table DynamicRfnDeviceData
    add constraint FK_DynRfnDevData_RfnAddr_GatId foreign key (GatewayId)
       references RfnAddress (DeviceId)
-         on delete set null
 go
 
 alter table DynamicTags

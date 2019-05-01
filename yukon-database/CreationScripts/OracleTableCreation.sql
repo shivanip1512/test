@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/1/2019 10:05:46 AM                         */
+/* Created on:     5/1/2019 12:43:18 PM                         */
 /*==============================================================*/
 
 
@@ -12392,8 +12392,7 @@ alter table DynamicRfnDeviceData
 
 alter table DynamicRfnDeviceData
    add constraint FK_DynRfnDevData_RfnAddr_GatId foreign key (GatewayId)
-      references RfnAddress (DeviceId)
-      on delete set null;
+      references RfnAddress (DeviceId);
 
 alter table DynamicTags
    add constraint FK_DynamicTags_Point foreign key (PointID)
