@@ -161,7 +161,7 @@ END;
 CREATE TABLE DynamicRfnDeviceData  (
     DeviceId            NUMBER          NOT NULL,
     GatewayId           NUMBER,
-    LastTransferTime    TIMESTAMP       NOT NULL,
+    LastTransferTime    DATE            NOT NULL,
     CONSTRAINT PK_NmToRfnDeviceData PRIMARY KEY (DeviceId)
 );
 
