@@ -229,7 +229,7 @@
     <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.d.label">d.</entry> 
     <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.d.text">In addition to ACCOUNT_NO, DEVICE_TYPE, and SERIAL_NO, these fields are required to correctly enroll a load control device into a load control program.</entry>
     <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.e.label">e.</entry> 
-    <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.e.text">If an address group name (ADDR_GROUP) is not included, the import application picks an address group from the a list of groups assigned to the load control program (PROGRAM_NAME).</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.e.text">If an address group name (ADDR_GROUP) is not included, the import application picks an address group from the list of groups assigned to the load control program (PROGRAM_NAME).</entry>
     
     <!-- accountImportResults.jsp -->
     <entry key="yukon.web.modules.operator.accountImport.importErrorsContainer.title">Prescan Errors By Line Number</entry> 
