@@ -1784,49 +1784,49 @@ Java :
     jira : YUK-18343
     notes : 
   
-  - filename : log4j-api-2.9.1.jar
+  - filename : log4j-api-2.11.2.jar
     yukon group : Log4j
     project : Apache Log4j
     version : 2.9.1
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.9.1"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.11.2"
     md5 : 3a4888020b342c3a433ced39c56d89c2
     sha1 : c93f2d3bb0ec5ef7543c32b7664548c2a72e0d3f
     updated : 2018-04-25
     jira : YUK-18100
     notes : Apache Log4j API
   
-  - filename : log4j-core-2.9.1.jar
+  - filename : log4j-core-2.11.2.jar
     yukon group : Log4j
     project : Apache Log4j
     version : 2.9.1
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.9.1"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.11.2"
     md5 : a3a6bc23ffc5615efcb637e9fd8be7ec
     sha1 : 8c59f9db4e5eebf7e99aa0ed2eb129bd5d8ef4f8
     updated : 2018-04-25
     jira : YUK-18100
     notes : Apache Log4j Core
   
-  - filename : log4j-jcl-2.9.1.jar
+  - filename : log4j-jcl-2.11.2.jar
     yukon group : Log4j
     project : Apache Log4j
     version : 2.9.1
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-jcl/2.9.1"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-jcl/2.11.2"
     md5 : b299cf3cd1a2af1c606313113e5ce63e
     sha1 : 945fda607e942bfd36f1cdc1810417d318f9c3e6
     updated : 2018-04-25
     jira : YUK-18100
     notes : Apache Commons Logging Bridge for Log4j
   
-  - filename : log4j-slf4j-impl-2.9.1.jar
+  - filename : log4j-slf4j-impl-2.11.2.jar
     yukon group : Log4j
     project : Apache Log4j
     version : 2.9.1

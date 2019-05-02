@@ -1,10 +1,8 @@
 package com.cannontech.clientutils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,18 +10,22 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.zip.Deflater;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.AbstractOutputStreamAppender;
 import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
+import org.apache.logging.log4j.core.appender.rolling.DirectWriteRolloverStrategy;
 import org.apache.logging.log4j.core.appender.rolling.RollingFileManager;
 import org.apache.logging.log4j.core.appender.rolling.RolloverStrategy;
 import org.apache.logging.log4j.core.appender.rolling.TriggeringPolicy;
+import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
@@ -63,7 +65,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
     /**
      * The directory in which log files are created.
      */
-    private String directory = null;
+    private static String directory = null;
 
     /**
      * The prefix that is added to log file filenames.
@@ -120,18 +122,21 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
      */
     private String fileName;
 
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
     public YukonRollingFileAppender(final String name, final Filter filter, final Layout<? extends Serializable> layout,
             String fileName, String pattern, TriggeringPolicy policy, RolloverStrategy strategy, String applicationName,
             String directory, RollingFileManager manager) {
-        super(name, layout, filter, true, true, manager);
+        super(name, layout, filter, true, true, null, manager);
         this.fileName = fileName;
-        this.directory = directory;
         systemInfoString = CtiUtilities.getSystemInfoString();
         calendar = Calendar.getInstance();
         prefix = applicationName + "_";
         maxFileSize = BootstrapUtils.getLogMaxFileSize();
         logRetentionDays = BootstrapUtils.getLogRetentionDays();
-
+        zipOldLogFiles();
     }
 
     @PluginFactory
@@ -143,15 +148,15 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
             @PluginElement("Strategy") RolloverStrategy strategy) {
 
         String applicationName = BootstrapUtils.getApplicationName();
-        String directory = null;
         if (BootstrapUtils.isWebStartClient() && !MasterConfigHelper.isLocalConfigAvailable()) {
             directory = REMOTE_LOGGING_DIRECTORY;
         } else {
             directory = BootstrapUtils.getServerLogDir();
         }
-        String fileName = directory + applicationName + ".log";
-        // Check and rename if current file already exist with old creation date. 
-        checkForTimeBasedRollover(directory, applicationName);
+
+        String creationDate = new SimpleDateFormat(filenameDateFormat).format(new Date());
+        String fileName = directory + applicationName + "_" + creationDate + ".log";
+
         if (layout == null) {
             layout = PatternLayout.createDefaultLayout();
         }
@@ -160,14 +165,16 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
             pattern = directory + applicationName + "_" + "%d{" + filenameDateFormat + "}.log.zip";
         }
 
-        if (strategy == null) {
-            strategy = DefaultRolloverStrategy.newBuilder().withCompressionLevelStr(String.valueOf(Deflater.DEFAULT_COMPRESSION))
-                                                .withConfig(((Logger) LogManager.getLogger(
-                                                            YukonRollingFileAppender.class)).getContext().getConfiguration()).build();
+        Configuration config = ((Logger) LogManager.getLogger(YukonRollingFileAppender.class)).getContext().getConfiguration();
+        if (strategy == null || strategy instanceof DefaultRolloverStrategy) {
+            strategy = DirectWriteRolloverStrategy.newBuilder()
+                                                  .withMaxFiles("1")
+                                                  .withCompressionLevelStr("9")
+                                                  .withConfig(config)
+                                                  .build();
         }
-        final RollingFileManager manager = RollingFileManager.getFileManager(fileName, pattern, true, false, policy,
-            strategy, new File(fileName).toURI().toString(), layout, 8192, false, true, "wr", null, null,
-            ((Logger) LogManager.getLogger(YukonRollingFileAppender.class)).getContext().getConfiguration());
+        final RollingFileManager manager = RollingFileManager.getFileManager(null, pattern, true, false, policy,
+            strategy, new File(fileName).toURI().toString(), layout, 8192, false, true, "wr", null, null, config);
 
         instance = new YukonRollingFileAppender(name, filter, layout, fileName, pattern, policy, strategy, applicationName, directory,manager);
         
@@ -196,6 +203,8 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
                 // time in millis when tomorrow starts
                 tomorrow = calendar.getTimeInMillis();
                 this.getManager().checkRollover(event);
+                // Set current Dated file name to appender
+                setFileNameToAppender();
                 // Do any necessary log cleanup in the directory.
                 cleanUpOldLogFiles();
                 // Rename zipped file from .log.zip format to .zip format
@@ -362,53 +371,69 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
     }
 
     /**
-     * Check and roll current log file if creation date of log file is old.
-     * <p>
-     * This is used to identify actual log file creation date when sever is stopped for entire day or more.
-     * Restarting server next day will require rolling and zipping of old log file based on creation date.
-     * For Example : WebServer is running and stopped at 9PM on 1-1-2018 and current log file is Webserver.log.
-     * Restarting WebServer next day will continue logging to Webserver.log. 
-     * To prevent this logging on the same log file created on 1-1-2018, this method will first identify 
-     * the actual creation date of Webserver.log (1-1-2018 for our case) and rename this file to Webserver_20180101.log 
-     * and zip it to Webserver_20180101.log.zip format.
-     * Current logging will continue for next day (2-1-2018) on Webserver.log.
-     * </p>
+     * Zip old log files if present in the log directory.
      */
-    protected static void checkForTimeBasedRollover(String directory, String applicationName) {
-        File tmpDir = new File(directory + applicationName + ".log");
-        DateTime fileDate = null;
-        // Check if file is already existing
-        if (tmpDir.exists()) {
-            try (BufferedReader fileHeader = new BufferedReader(new FileReader(tmpDir))) {
-                fileDate = FileUtil.parseLogCreationDate(fileHeader.readLine());
-            } catch (Exception e) {
-                LOGGER.error("Unable to read file header from log file.");
+    private void zipOldLogFiles() {
+        File currentDirectory = new File(directory);
+        File[] filesForZipping = currentDirectory.listFiles(new LogFilesToZipFilter());
+        for (File file : filesForZipping) {
+            zipFile(file);
+        }
+    }
+
+    /**
+     * Zip passed log file.
+     */
+    private void zipFile(File file) {
+        try {
+            String fileName = FilenameUtils.removeExtension(file.getName());
+            File datedZipFile = new File(directory + fileName + ".zip");
+            ZipWriter zipWriter = new ZipWriter(datedZipFile);
+            FileInputStream fis = new FileInputStream(file);
+            zipWriter.writeRawInputStream(fis, file.getName());
+            zipWriter.close();
+            // Check if zip file is created
+            if (datedZipFile.exists()) {
+                // Delete .log file (fileName_YYYYMMDD.log)
+                file.delete();
             }
-            // Check if existing file is old (Try to get its creation date)
-            if (fileDate != null &&  fileDate.isBefore(new DateTime().withTimeAtStartOfDay())) {
-                String creationDate = new SimpleDateFormat(filenameDateFormat).format(fileDate.toDate());
-                // Rename current file (append file creation date i.e. fileName_date.log)
-                String datedFilePath = directory + applicationName + "_" + creationDate + ".log";
-                File newDatedFile = new File(datedFilePath);
-                if (tmpDir.renameTo(newDatedFile)) {
-                    try {
-                        File datedZipFile = new File(datedFilePath + ".zip");
-                        ZipWriter zipWriter = new ZipWriter(datedZipFile);
-                        FileInputStream fis = new FileInputStream(newDatedFile);
-                        zipWriter.writeRawInputStream(fis, newDatedFile.getName());
-                        zipWriter.close();
-                        // Check if zip file is created
-                        if (datedZipFile.exists()) {
-                            // Delete .log file (fileName_YYYYMMDD.log)
-                            newDatedFile.delete();
-                        }
-                    } catch (IOException e) {
-                        LOGGER.error("Unable to zip log file.");
-                    }
-                } else {
-                    LOGGER.error("Unable to rename existing log fileName.");
-                }
+        } catch (IOException e) {
+            LOGGER.error("Unable to zip log file.");
+        }
+    }
+
+    /**
+     * Filter for old unzipped log files present in the current log directory.
+     */
+    private class LogFilesToZipFilter implements FileFilter {
+        String regex = "^" + prefix + "([0-9]{2}|[0-9]{8})" + ".log";
+        @Override
+        public boolean accept(File file) {
+            if (file.getName().matches(regex)) {
+                return FileUtil.getLogCreationDate(file.getName(), prefix).before(new DateTime().withTimeAtStartOfDay().toDate());
+            } else {
+                return false;
             }
         }
+    }
+
+    /**
+     * Method to set current log file name (serviceName_YYYYMMDD.log) to the existing appenders.
+     */
+    private void setFileNameToAppender() {
+        Configuration config = LoggerContext.getContext(false).getConfiguration();
+        config.getAppenders().entrySet().stream().filter(e -> !"console".equals(e.getKey())).forEach(e -> {
+            YukonRollingFileAppender appender = (YukonRollingFileAppender) e.getValue();
+            String creationDate = new SimpleDateFormat(filenameDateFormat).format(new Date());
+            String applicationName = StringUtils.EMPTY;
+            if (appender instanceof YukonRfnRollingFileAppender) {
+                applicationName = BootstrapUtils.getApplicationName() + "_" + "RfnComms";
+            } else {
+                applicationName = BootstrapUtils.getApplicationName();
+            }
+            appender.setFileName(directory + applicationName + "_" + creationDate + ".log");
+            appender.start();
+            config.addAppender(appender);
+        });
     }
 }

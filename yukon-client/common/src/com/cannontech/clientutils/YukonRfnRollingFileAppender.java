@@ -2,7 +2,8 @@ package com.cannontech.clientutils;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.zip.Deflater;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Filter;
@@ -10,9 +11,11 @@ import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
+import org.apache.logging.log4j.core.appender.rolling.DirectWriteRolloverStrategy;
 import org.apache.logging.log4j.core.appender.rolling.RollingFileManager;
 import org.apache.logging.log4j.core.appender.rolling.RolloverStrategy;
 import org.apache.logging.log4j.core.appender.rolling.TriggeringPolicy;
+import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
@@ -50,10 +53,10 @@ public class YukonRfnRollingFileAppender extends YukonRollingFileAppender {
             @PluginElement("Strategy") RolloverStrategy strategy) {
 
         String directory = BootstrapUtils.getServerLogDir();
+        String creationDate = new SimpleDateFormat(filenameDateFormat).format(new Date());
         // Create RfnComms log for each application separately. Example : ServiceManager_RfnComms.log and Webserver_RfnComms.log
         String applicationName = BootstrapUtils.getApplicationName() + "_" + "RfnComms";
-        String fileName = directory + applicationName + ".log";
-        checkForTimeBasedRollover(directory, applicationName);
+        String fileName = directory + applicationName + "_" + creationDate +".log";
         if (layout == null) {
             layout = PatternLayout.createDefaultLayout();
         }
@@ -61,13 +64,15 @@ public class YukonRfnRollingFileAppender extends YukonRollingFileAppender {
         if (pattern == null) {
             pattern = directory + applicationName + "_" + "%d{" + filenameDateFormat + "}.log.zip";
         }
-
-        if (strategy == null) {
-            strategy = DefaultRolloverStrategy.newBuilder().withCompressionLevelStr(String.valueOf(Deflater.DEFAULT_COMPRESSION))
-                                                .withConfig(((Logger) LogManager.getLogger(
-                                                            YukonRollingFileAppender.class)).getContext().getConfiguration()).build();
+        Configuration config = ((Logger) LogManager.getLogger(YukonRollingFileAppender.class)).getContext().getConfiguration();
+        if (strategy == null || strategy instanceof DefaultRolloverStrategy) {
+            strategy = DirectWriteRolloverStrategy.newBuilder()
+                    .withMaxFiles("1")
+                    .withCompressionLevelStr("9")
+                    .withConfig(config)
+                    .build();
         }
-        final RollingFileManager manager = RollingFileManager.getFileManager(fileName, pattern, true, false, policy,
+        final RollingFileManager manager = RollingFileManager.getFileManager(null, pattern, true, false, policy,
             strategy, new File(fileName).toURI().toString(), layout, 8192, false, true, "wr", null, null,
             ((Logger) LogManager.getLogger(YukonRollingFileAppender.class)).getContext().getConfiguration());
 

@@ -25,9 +25,9 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/report"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/commander"/>
 	<classpathentry kind="lib" path="/third-party/jfreereport.jar" sourcepath="/third-party/linked-sources/jfreereport-0.8.6-4.zip"/>
-	<classpathentry kind="lib" path="/third-party/log4j-api-2.9.1.jar"/>
-	<classpathentry kind="lib" path="/third-party/log4j-core-2.9.1.jar"/>
-	<classpathentry kind="lib" path="/third-party/log4j-jcl-2.9.1.jar"/>
+	<classpathentry kind="lib" path="/third-party/log4j-api-2.11.2.jar"/>
+	<classpathentry kind="lib" path="/third-party/log4j-core-2.11.2.jar"/>
+	<classpathentry kind="lib" path="/third-party/log4j-jcl-2.11.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-io-2.4.jar"/>
 	<classpathentry kind="lib" path="/third-party/ecs-1.4.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/jopcbridge.jar"/>

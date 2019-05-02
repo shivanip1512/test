@@ -84,14 +84,6 @@ public class YukonLogManager {
         } else {
             defaultConsoleAppender(path);
         }
-        dumpDebugInfo();
-    }
-    
-    private static void dumpDebugInfo() {
-        Logger logger = getLogger("com.cannontech.sysinfo");
-        if (logger.isInfoEnabled()) {
-            logger.info("System info:\n" + CtiUtilities.getSystemInfoString());
-        }
     }
 
     /**

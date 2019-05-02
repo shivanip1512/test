@@ -72,9 +72,9 @@
         <include name="jradius-client.jar"/>
         <include name="jtds-1.3.1.jar"/>
         <include name="libthrift-0.11.0.jar"/>
-    	<include name="log4j-api-2.9.1.jar"/>
-    	<include name="log4j-core-2.9.1.jar"/>
-    	<include name="log4j-jcl-2.9.1.jar"/>
+    	<include name="log4j-api-2.11.2.jar"/>
+    	<include name="log4j-core-2.11.2.jar"/>
+    	<include name="log4j-jcl-2.11.2.jar"/>
         <include name="lucene-analyzers-common-6.0.0.jar"/>
         <include name="lucene-core-6.0.0.jar"/>
         <include name="lucene-queryparser-6.0.0.jar"/>
@@ -87,7 +87,7 @@
         <include name="quartz-2.2.1.jar"/>
         <include name="saaj.jar"/>
         <include name="slf4j-api-1.7.25.jar"/>
-        <include name="log4j-slf4j-impl-2.9.1.jar"/>
+        <include name="log4j-slf4j-impl-2.11.2.jar"/>
         <include name="spring-xml-3.0.7.RELEASE.jar"/>
         <include name="spring-ws-core-3.0.7.RELEASE.jar"/>
         <include name="stax2-api-3.1.4.jar"/>

@@ -29,6 +29,9 @@
 #define COMMANDER_LOG_NAME        "Commander"
 #define TRENDING_LOG_NAME         "Trending"
 #define TDC_LOG_NAME              "TDC"
+#define WATCHDOG_LOG_NAME         "Watchdog"
+#define SM_RF_COMMS_LOG_NAME      "ServiceManager_RfnComms"
+#define WS_RF_COMMS_LOG_NAME      "Webserver_RfnComms"
 #include "BackupSelectionDialog.rul"
 
 //global variable used to store service settings across the upgrade process
@@ -923,8 +926,8 @@ export prototype void PopulateJavaServiceAndClientNameList(BYREF VARIANT); //arr
 function void PopulateJavaServiceAndClientNameList(javaLogNamesArray) //be prototyped as VARIANT
 begin
     //if the array is too small, increase the size
-    if(SizeOf(javaLogNamesArray) < 9) then
-        Resize(javaLogNamesArray, 9);
+    if(SizeOf(javaLogNamesArray) < 12) then
+        Resize(javaLogNamesArray, 12);
     endif;
     //populate
     javaLogNamesArray(0) = WEB_SERVER_LOG_NAME;
@@ -936,27 +939,25 @@ begin
     javaLogNamesArray(6) = COMMANDER_LOG_NAME;
     javaLogNamesArray(7) = TRENDING_LOG_NAME;
     javaLogNamesArray(8) = TDC_LOG_NAME;
+    javaLogNamesArray(9) = WATCHDOG_LOG_NAME;
+    javaLogNamesArray(10) = SM_RF_COMMS_LOG_NAME;
+    javaLogNamesArray(11) = WS_RF_COMMS_LOG_NAME;
 end;
 
 //--------------------------------------------------------------------------------
 // Rename Installation day java services and client logs files.
-// We have to do this , as after log4j2 changes we will have current day logging file as "ApplicationName.log" 
-// file , and after rollover it will create a file with "ApplicationName_yyyyMMdd.log" file which will delete 
-// the existing current day "ApplicationName_yyyyMMdd.log" logging file which was present before installing the
-// 7.1.0 yukon version.
-// For eg. On Installation day we have log file for service manager as ServiceManager_yyyyMMdd.log format
-// than that file will be renamed as ServiceManager_0_yyyyMMdd.log file . 
+// Rename current java log files i.e serviceName.log to serviceName_YYYYMMDD.log format.
 //--------------------------------------------------------------------------------
-export prototype void RenameInstalledDateJavaServicesAndClientLog(string);
+export prototype void RenameInstalledJavaServicesAndClientLog(string);
 function void RenameInstalledDateJavaServicesAndClientLog(formattedDateString)
 number nCount;
-string sJavaLogNamesArray(9), sLogPath, sResult;
+string sJavaLogNamesArray(12), sLogPath, sResult;
 begin
         PopulateJavaServiceAndClientNameList(sJavaLogNamesArray);
         sLogPath = TARGETDIR + "\\Server\\Log\\";
         for nCount = 0 to (SizeOf(sJavaLogNamesArray)-1)
-           if (FindFile (sLogPath, sJavaLogNamesArray(nCount) + "_" + formattedDateString + ".log", sResult ) == 0) then
-                RenameFile (sLogPath + sJavaLogNamesArray(nCount) + "_" + formattedDateString + ".log", sLogPath + sJavaLogNamesArray(nCount) + "_0" + "_" + formattedDateString + ".log" );
+           if (FindFile (sLogPath, sJavaLogNamesArray(nCount) + ".log", sResult ) == 0) then
+                RenameFile (sLogPath + sJavaLogNamesArray(nCount) + ".log", sLogPath + sJavaLogNamesArray(nCount) + "_" + formattedDateString + ".log" );
            endif;
         endfor;
 end;

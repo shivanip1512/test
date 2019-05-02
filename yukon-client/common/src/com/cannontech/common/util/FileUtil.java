@@ -2,12 +2,10 @@ package com.cannontech.common.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -74,22 +72,6 @@ public final class FileUtil {
             @Override
             protected Date getFileDate(File file, Matcher matcher) throws ParseException {
                 return new SimpleDateFormat(fileNameDateFormat).parse(matcher.group(2).replaceFirst("_", ""));
-            }
-        },
-        // Accept file name like abc.log
-        NAME_LOG(Pattern.compile("(.+?)(\\.[^.]+$)"), "log"){
-            @Override
-            protected Date getFileDate(File file, Matcher matcher) throws ParseException {
-                // Read header line from current log file and parse log creation date
-                try (BufferedReader fileHeader = new BufferedReader(new FileReader(file))) {
-                    String[] headerArray = fileHeader.readLine().split("\\:");
-                    SimpleDateFormat dateFormat = new SimpleDateFormat(fileNameDateFormat);
-                    String logDateStr= dateFormat.format((new SimpleDateFormat("yyyy-MM-dd").parse(headerArray[1].trim()))); 
-                    return dateFormat.parse(logDateStr);
-                } catch (Exception e) {
-                    log.debug("Unable to parse log creation date for " + file.getName());
-                    return LocalDate.now(DateTimeZone.getDefault()).toDate();
-                }
             }
         };
 

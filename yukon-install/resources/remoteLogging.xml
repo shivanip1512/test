@@ -10,7 +10,7 @@
                 <!-- Time based triggering policy which will roll log files daily -->
                 <TimeBasedTriggeringPolicy interval="1"/>
             </Policies>
-            <DefaultRolloverStrategy />
+            <DirectWriteRolloverStrategy maxFiles="1"/>
         </YukonRollingFile>
         <Console name="console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d %d{zzz} [%t] %-5p %c - %m%n%throwable"/>

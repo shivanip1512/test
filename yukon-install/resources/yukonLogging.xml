@@ -10,7 +10,7 @@
                 <!-- Time based triggering policy which will roll log files daily -->
                 <TimeBasedTriggeringPolicy interval="1"/>
             </Policies>
-            <DefaultRolloverStrategy />
+            <DirectWriteRolloverStrategy maxFiles="1"/>
         </YukonRollingFile>
 
         <!-- Custom appender for rfn logger-->
@@ -19,7 +19,7 @@
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
             </Policies>
-            <DefaultRolloverStrategy />
+            <DirectWriteRolloverStrategy maxFiles="1"/>
         </YukonRfnRollingFile>
 
         <Console name="console" target="SYSTEM_OUT">

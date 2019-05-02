@@ -70,7 +70,7 @@ begin
     if(!CheckForBackUpFiles()) then
     BackupLoggingConfigFiles(formattedDateString);
     endif;
-    RenameInstalledDateJavaServicesAndClientLog(formattedDateString);
+    RenameInstalledJavaServicesAndClientLog(formattedDateString);
     // Delete Yukon Client if exist.
     RemoveOldYukonClientDirectory();
 	//make sure we have enough space for the selected features
@@ -494,11 +494,11 @@ begin
     Enable(BACKBUTTON);
 	CleanupTomcatWebapps();
 
-    if(IsInstalledVersionLesser("7.1.0")) then 
+    if(IsInstalledVersionLesser("7.3.0")) then 
         GetSystemInfo(DATE, nResult, sDateString);
         // Format date pattern in YYYYMMDD
         formattedDateString = FormatDatePattern(sDateString);
-        RenameInstalledDateJavaServicesAndClientLog(formattedDateString);
+        RenameInstalledJavaServicesAndClientLog(formattedDateString);
     endif;
 
     if(IsInstalledVersionLesser("7.1.2")) then
