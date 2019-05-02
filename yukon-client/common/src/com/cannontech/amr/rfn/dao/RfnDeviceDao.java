@@ -90,4 +90,24 @@ public interface RfnDeviceDao {
      */
     RfnDevice updateGatewayType(RfnDevice device);
 
+    /**
+     * Creates mappings for gateway to device
+     */
+    void createGatewayToDeviceMapping(int gatewayId, List<Integer> deviceIds);
+
+    /**
+     * Returns list of devices for gateway
+     */
+    List<Integer> getDevicesForGateway(int gatewayId);
+
+    /**
+     * Deletes all mappings of gateway to device. Should be used by simulator only.
+     */
+    void clearNmToRfnDeviceData();
+
+    /**
+     * Returns list of device ids for rfn identifiers
+     */
+    List<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers);
+
 }

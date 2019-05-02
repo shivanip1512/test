@@ -25,4 +25,16 @@ public class NetworkMap {
     public void setLegend(List<Legend> legend) {
         this.legend = legend;
     }
+    
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(System.getProperty("line.separator"));
+        builder.append(legend);
+        mappedDevices.forEach((k,v) ->{
+            builder.append(System.getProperty("line.separator"));
+            builder.append(" color:"+ k+" - devices:"+v.getFeatures().size());
+        });
+        return builder.toString();
+    }
 }

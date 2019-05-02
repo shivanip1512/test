@@ -94,5 +94,14 @@ public class NetworkMapFilter {
         public String getText() {
             return StringEscapeUtils.escapeHtml4(text);
         }
+        
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            builder.append(text);
+            builder.append(":");
+            builder.append(hexColor);
+            return builder.toString();
+        }
     }
 }

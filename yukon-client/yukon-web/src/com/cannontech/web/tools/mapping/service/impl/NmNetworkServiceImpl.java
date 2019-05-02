@@ -4,11 +4,13 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -29,6 +31,8 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.metadatamulti.EntityType;
+import com.cannontech.common.rfn.message.metadatamulti.GatewayNodes;
 import com.cannontech.common.rfn.message.metadatamulti.NodeData;
 import com.cannontech.common.rfn.message.metadatamulti.PrimaryGatewayComm;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
@@ -75,6 +79,7 @@ import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.math.IntMath;
 
 public class NmNetworkServiceImpl implements NmNetworkService {
@@ -394,7 +399,8 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 .collect(Collectors.toSet());
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = null;
         try {
-            metaData = metadataMultiService.getMetadata(devicesOtherThenGatways, Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_COMM, RfnMetadataMulti.NODE_DATA));
+            metaData = metadataMultiService.getMetadata(EntityType.NODE, devicesOtherThenGatways,
+                Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_COMM, RfnMetadataMulti.NODE_DATA));
         } catch (NmCommunicationException e) {
             throw new NmNetworkException(commsError, e, "commsError");
         }
@@ -535,45 +541,70 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             this.distanceInMiles = distanceInMiles;
         }
     }
-
+    
     @Override
-    public NetworkMap getNetworkMap(NetworkMapFilter filter) {
-
-        List<PaoIdentifier> allDevices =
-            cache.getAllDevices().stream().filter(device -> device.getPaoType().isRfn()).map(
-                device -> device.getPaoIdentifier()).collect(Collectors.toList());
-        Set<PaoLocation> deviceLocations = paoLocationDao.getLocations(allDevices);
-        Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(deviceLocations, c -> c.getPaoIdentifier());
-        NetworkMap map = new NetworkMap();
-
+    public NetworkMap getNetworkMap(NetworkMapFilter filter) throws NmNetworkException {        
         if (filter.getColorCodeBy() == ColorCodeBy.GATEWAY) {
-            List<List<PaoIdentifier>> subSets = partition(allDevices, filter.getSelectedGatewayIds().size());
-            for (int i = 0; i < subSets.size(); i++) {
-                RfnDevice gateway = rfnDeviceDao.getDeviceForId(filter.getSelectedGatewayIds().get(i));
-                Color color = Color.values()[i];
-                map.getLegend().add(new Legend(color.getHexColor(), gateway.getName()));
-                addLocationAndColorToNetworkMap(map, locations, subSets.get(i), color, gateway.getPaoIdentifier());
-            }
+            return getNetworkMapByGateway(filter);
         } else if (filter.getColorCodeBy() == ColorCodeBy.LINK_STRENGTH) {
-            List<List<PaoIdentifier>> subSets = partition(allDevices, LinkStrength.values().length);
-            for (int i = 0; i < subSets.size(); i++) {
-                LinkStrength linkStrength = LinkStrength.values()[i];
-                map.getLegend().add(new Legend(linkStrength.getColor().getHexColor(), linkStrength.name()));
-                Integer randomGatewayId = filter.getSelectedGatewayIds().get(new Random().nextInt(filter.getSelectedGatewayIds().size()));
-                PaoIdentifier randomGateway = rfnDeviceDao.getDeviceForId(randomGatewayId).getPaoIdentifier();
-                addLocationAndColorToNetworkMap(map, locations, subSets.get(i), linkStrength.getColor(), randomGateway.getPaoIdentifier());
-            }
-        } 
+            //the method below is hardcoded and will be removed when NM messaging is defined
+            return getNetworkMapByColor(filter);
+        }
+        throw new UnsupportedOperationException("Filter " +filter.getColorCodeBy() + " is not supported");
+    }
+
+    private NetworkMap getNetworkMapByGateway(NetworkMapFilter filter) throws NmNetworkException {
+        Map<RfnIdentifier, RfnGateway> gateways =
+            rfnGatewayService.getGatewaysByPaoIds(filter.getSelectedGatewayIds()).stream().collect(
+                Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
+        NetworkMap map = new NetworkMap();
+        try {
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = metadataMultiService.getMetadata(
+                EntityType.GATEWAY, Sets.newHashSet(gateways.keySet()), Set.of(RfnMetadataMulti.GATEWAY_NODES));
+            AtomicInteger i = new AtomicInteger(0);
+            metaData.forEach((gatewayPao, queryResult) -> {
+                Color color = Color.values()[i.getAndIncrement()];
+                map.getLegend().add(new Legend(color.getHexColor(), gateways.get(gatewayPao).getName()));
+                Set<PaoIdentifier> paos = getGatewayNodes(queryResult);
+                Set<PaoLocation> locations = paoLocationDao.getLocations(paos);
+                FeatureCollection features = paoLocationService.getFeatureCollection(locations);
+                map.getMappedDevices().put(color.getHexColor(), features);
+            });
+
+        } catch (NmCommunicationException e) {
+            throw new NmNetworkException(commsError, e, "commsError");
+        }
+        log.info("MAP-"+map);
+        System.out.println(map);
+        log.debug("MAP-"+map);
         return map;
     }
     
-    private List<List<PaoIdentifier>> partition(List<PaoIdentifier> allDevices, int divisor) {
-        int chunk = IntMath.divide(allDevices.size(), divisor, RoundingMode.CEILING);
-        return Lists.partition(allDevices, chunk);
+    private Set<PaoIdentifier> getGatewayNodes(RfnMetadataMultiQueryResult result) {
+        if (result.getResultType() == RfnMetadataMultiQueryResultType.OK) {
+            GatewayNodes gatewayNodes = (GatewayNodes) result.getMetadatas().get(RfnMetadataMulti.GATEWAY_NODES);
+            return rfnDeviceDao.getDeviceIdsForRfnIdentifiers(gatewayNodes.getAllNodes()).stream()
+                .map(deviceId -> cache.getAllPaosMap().get(deviceId).getPaoIdentifier())
+                .collect(Collectors.toSet());
+        }
+        return new HashSet<>();
     }
-
-    private void addLocationAndColorToNetworkMap(NetworkMap map, Map<PaoIdentifier, PaoLocation> locations,
-            List<PaoIdentifier> paos, Color color, PaoIdentifier gateway) {
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /***to be removed***/
+    
+    private void addLocationAndColorToNetworkMap(NetworkMap map, Map<PaoIdentifier, PaoLocation> locations, Set<PaoIdentifier> paos, Color color, PaoIdentifier gateway) {
         List<PaoLocation> locationList = new ArrayList<>();
         paos.forEach(pao -> {
             PaoLocation location = locations.get(pao);
@@ -587,5 +618,30 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         }
         FeatureCollection features = paoLocationService.getFeatureCollection(locationList);
         map.getMappedDevices().put(color.getHexColor(), features);
+    }
+
+    private NetworkMap getNetworkMapByColor(NetworkMapFilter filter) {
+        List<PaoIdentifier> allDevices =
+            cache.getAllDevices().stream().filter(device -> device.getPaoType().isRfn()).map(
+                device -> device.getPaoIdentifier()).collect(Collectors.toList());
+        Set<PaoLocation> deviceLocations = paoLocationDao.getLocations(allDevices);
+        Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(deviceLocations, c -> c.getPaoIdentifier());
+        NetworkMap map = new NetworkMap();
+        List<List<PaoIdentifier>> subSets = partition(allDevices, LinkStrength.values().length);
+        for (int i = 0; i < subSets.size(); i++) {
+            LinkStrength linkStrength = LinkStrength.values()[i];
+            map.getLegend().add(new Legend(linkStrength.getColor().getHexColor(), linkStrength.name()));
+            Integer randomGatewayId =
+                filter.getSelectedGatewayIds().get(new Random().nextInt(filter.getSelectedGatewayIds().size()));
+            PaoIdentifier randomGateway = rfnDeviceDao.getDeviceForId(randomGatewayId).getPaoIdentifier();
+            addLocationAndColorToNetworkMap(map, locations, Sets.newHashSet(subSets.get(i)), linkStrength.getColor(),
+                randomGateway.getPaoIdentifier());
+        }
+        return map;
+    }
+    
+    private List<List<PaoIdentifier>> partition(List<PaoIdentifier> allDevices, int divisor) {
+        int chunk = IntMath.divide(allDevices.size(), divisor, RoundingMode.CEILING);
+        return Lists.partition(allDevices, chunk);
     }
 }

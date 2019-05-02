@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.metadatamulti.EntityType;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
@@ -38,11 +39,11 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     private RequestReplyTemplateImpl<RfnMetadataMultiResponse> qrTemplate;    
     
     @Override
-    public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(Set<RfnIdentifier> identifiers,
+    public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(EntityType entity, Set<RfnIdentifier> identifiers,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException {
         BlockingJmsReplyHandler<RfnMetadataMultiResponse> reply = new BlockingJmsReplyHandler<>(RfnMetadataMultiResponse.class);
         try {
-            RfnMetadataMultiRequest request = new RfnMetadataMultiRequest();
+            RfnMetadataMultiRequest request = new RfnMetadataMultiRequest(entity);
             request.setRfnIdentifiers(identifiers);
             request.setRfnMetadatas(requests);
             qrTemplate.send(request, reply);
@@ -62,9 +63,9 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     }
     
     @Override
-    public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(RfnIdentifier identifier,
+    public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(EntityType entityType, RfnIdentifier identifier,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException {
-        return getMetadata(Sets.newHashSet(identifier), requests);
+        return getMetadata(entityType, Sets.newHashSet(identifier), requests);
     }
 
     @PostConstruct

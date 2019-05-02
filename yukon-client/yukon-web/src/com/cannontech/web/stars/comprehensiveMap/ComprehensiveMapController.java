@@ -26,6 +26,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy;
+import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.google.common.collect.Lists;
 
@@ -57,7 +58,13 @@ public class ComprehensiveMapController {
     @GetMapping("filter")
     public @ResponseBody Map<String, Object> filter(@ModelAttribute("filter") NetworkMapFilter filter) {
         Map<String, Object> json = new HashMap<>();
-        NetworkMap map = nmNetworkService.getNetworkMap(filter);
+        NetworkMap map = null;
+        try {
+            map = nmNetworkService.getNetworkMap(filter);
+        } catch (NmNetworkException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         json.put("map",  map);
         return json;
     }
@@ -65,7 +72,12 @@ public class ComprehensiveMapController {
     @GetMapping("search")
     public @ResponseBody Map<String, Object> searchForNode(String searchText, @ModelAttribute("filter") NetworkMapFilter filter) {
         Map<String, Object> json = new HashMap<>();
-        NetworkMap map = nmNetworkService.getNetworkMap(filter);
+        NetworkMap map;
+        try {
+            map = nmNetworkService.getNetworkMap(filter);
+        } catch (NmNetworkException e1) {
+            return null;
+        }
         Map<String, FeatureCollection> collections = map.getMappedDevices();
         for (FeatureCollection features : collections.values()) {
             // Search the devices on the map by Sensor SN and Meter Number

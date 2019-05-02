@@ -54,6 +54,7 @@ public interface NmNetworkService {
     
     /**
      * Returns a network map representation (legend and a list of devices by color).
+     * @throws NmNetworkException 
      */
-    NetworkMap getNetworkMap(NetworkMapFilter filter);
+    NetworkMap getNetworkMap(NetworkMapFilter filter) throws NmNetworkException;
 }

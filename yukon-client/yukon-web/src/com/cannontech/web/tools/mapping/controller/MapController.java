@@ -59,6 +59,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.metadatamulti.EntityType;
 import com.cannontech.common.rfn.message.metadatamulti.NodeData;
 import com.cannontech.common.rfn.message.metadatamulti.PrimaryGatewayComm;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
@@ -238,7 +239,7 @@ public class MapController {
                 String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.metadataError");
                 try {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
-                        metadataMultiService.getMetadata(rfnDevice.getRfnIdentifier(),
+                        metadataMultiService.getMetadata(EntityType.NODE, rfnDevice.getRfnIdentifier(),
                             Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_COMM, RfnMetadataMulti.NODE_DATA));
                     RfnMetadataMultiQueryResult metadata = metaData.get(rfnDevice.getRfnIdentifier());
                     if (metadata.getResultType() != RfnMetadataMultiQueryResultType.OK) {

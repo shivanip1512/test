@@ -1,15 +1,18 @@
 package com.cannontech.amr.rfn.dao.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -41,6 +44,7 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class RfnDeviceDaoImpl implements RfnDeviceDao {
@@ -103,7 +107,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             return false;
         }
     }
-    
+        
     @Override
     public RfnDevice getDeviceForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException {
 
@@ -119,6 +123,8 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                     .orElseThrow(() -> new NotFoundException("No cache results for " + rfnIdentifier));
         }
 
+        System.out.println(rfnIdentifier);
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
         sql.append("from YukonPaObject ypo");
@@ -372,5 +378,65 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         }
         
         return rfnDevices;
+    }
+    
+    @Transactional
+    @Override
+    public void createGatewayToDeviceMapping(int gatewayId, List<Integer> deviceIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        List<List<Object>> values = deviceIds.stream().map(deviceId -> {
+            List<Object> row = Lists.newArrayList(deviceId, gatewayId, new Instant());
+            return row;
+        }).collect(Collectors.toList());
+
+        sql.batchInsertInto("DynamicRfnDeviceData").columns("DeviceId", "GatewayId", "LastTransferTime").values(values);
+        jdbcTemplate.yukonBatchUpdate(sql);
+    }
+    
+    @Override
+    public List<Integer> getDevicesForGateway(int gatewayId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId");
+        sql.append("FROM DynamicRfnDeviceData");
+        sql.append("WHERE GatewayId").eq(gatewayId);
+        return jdbcTemplate.query(sql, new YukonRowMapper<Integer>() {
+            @Override
+            public Integer mapRow(YukonResultSet rs) throws SQLException {
+                return rs.getInt("DeviceId");
+            }
+        });
+    }
+    
+    @Override
+    public void clearNmToRfnDeviceData() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE from DynamicRfnDeviceData");
+        jdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public List<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers) {
+        SqlFragmentGenerator<RfnIdentifier> sql = new SqlFragmentGenerator<RfnIdentifier>() {
+            @Override
+            public SqlFragmentSource generate(List<RfnIdentifier> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("select DeviceId from RfnAddress");
+                sql.append("where");
+                sql.append(subList.stream().map(ident -> {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("(");
+                    sb.append("SerialNumber='").append(ident.getSensorSerialNumber()).append("'");
+                    sb.append(" and Manufacturer='").append(ident.getSensorManufacturer()).append("'");
+                    sb.append(" and Model='").append(ident.getSensorModel()).append("'");
+                    sb.append(")");
+                    return sb.toString();
+                }).collect(Collectors.joining(" OR ")));
+                return sql;
+            }
+        };
+        List<Integer> deviceIds = new ArrayList<>();
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        template.query(sql, rfnIdentifiers, (YukonResultSet rs) -> deviceIds.add(rs.getInt("deviceId")));
+        return  deviceIds;
     }
 }

@@ -19,10 +19,21 @@ public class RfnMetadataMultiRequest implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
+    private final EntityType entityType;
+    
     private Set<RfnIdentifier> rfnIdentifiers;
     
     private Set<RfnMetadataMulti> rfnMetadatas;
 
+    public RfnMetadataMultiRequest(EntityType entityType) {
+        super();
+        this.entityType = entityType;
+    }
+
+    public EntityType getEntityType() {
+        return entityType;
+    }
+    
     public Set<RfnIdentifier> getRfnIdentifiers() {
         return rfnIdentifiers;
     }
@@ -51,6 +62,7 @@ public class RfnMetadataMultiRequest implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((entityType == null) ? 0 : entityType.hashCode());
         result = prime * result + ((rfnIdentifiers == null) ? 0 : rfnIdentifiers.hashCode());
         result = prime * result + ((rfnMetadatas == null) ? 0 : rfnMetadatas.hashCode());
         return result;
@@ -65,6 +77,8 @@ public class RfnMetadataMultiRequest implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         RfnMetadataMultiRequest other = (RfnMetadataMultiRequest) obj;
+        if (entityType != other.entityType)
+            return false;
         if (rfnIdentifiers == null) {
             if (other.rfnIdentifiers != null)
                 return false;
@@ -80,8 +94,10 @@ public class RfnMetadataMultiRequest implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("RfnMetadataMultiRequest [rfnIdentifiers=%s, rfnMetadatas=%s]",
-                             rfnIdentifiers,
-                             rfnMetadatas);
+        return String
+            .format("RfnMetadataMultiRequest [entityType=%s, rfnIdentifiers=%s, rfnMetadatas=%s]",
+                    entityType,
+                    rfnIdentifiers,
+                    rfnMetadatas);
     }
 }
