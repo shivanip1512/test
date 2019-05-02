@@ -949,7 +949,7 @@ end;
 // Rename current java log files i.e serviceName.log to serviceName_YYYYMMDD.log format.
 //--------------------------------------------------------------------------------
 export prototype void RenameInstalledJavaServicesAndClientLog(string);
-function void RenameInstalledDateJavaServicesAndClientLog(formattedDateString)
+function void RenameInstalledJavaServicesAndClientLog(formattedDateString)
 number nCount;
 string sJavaLogNamesArray(12), sLogPath, sResult;
 begin
