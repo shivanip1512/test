@@ -574,8 +574,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         } catch (NmCommunicationException e) {
             throw new NmNetworkException(commsError, e, "commsError");
         }
-        log.info("MAP-"+map);
-        System.out.println(map);
+
         log.debug("MAP-"+map);
         return map;
     }
