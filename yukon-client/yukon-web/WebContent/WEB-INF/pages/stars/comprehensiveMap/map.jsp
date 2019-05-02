@@ -15,6 +15,8 @@
 
     <cti:msg2 var="tooManyGateways" key=".tooManyGateways"/>
     <input type="hidden" id="tooManyGatewaysError" value="${tooManyGateways}"/>
+    <cti:msg2 var="searchNoResultsFound" key=".searchNoResultsFound"/>
+    <input type="hidden" id="noResultsFoundError" value="${searchNoResultsFound}"/>
     
     <div id="comprehensive-map-container" style="height:100%;width:100%;background:white;">
         <div class="filter-section">
@@ -25,6 +27,11 @@
                 <cti:msg2 var="gatewayPlaceholder" key=".selectGateways"/>
                 <tags:selectWithItems items="${gateways}" path="selectedGatewayIds" itemLabel="name" itemValue="id"
                     inputClass="js-chosen" dataPlaceholder="${gatewayPlaceholder}"/>
+                    
+                <span class="fr">
+                    <cti:msg2 var="searchPlaceholder" key=".serialNumberOrMeterNumber"/>
+                    <i:inline key=".findDevice"/>&nbsp;<input id="findDevice" type="text" placeholder="${searchPlaceholder}" size="22"/>
+                </span>
                 
                 <div style="padding-top:5px">
                     <i:inline key=".colorCodeBy"/>&nbsp;

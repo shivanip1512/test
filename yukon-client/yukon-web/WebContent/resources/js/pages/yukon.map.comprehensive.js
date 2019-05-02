@@ -16,6 +16,10 @@ yukon.map.comprehensive = (function () {
     
     /** @type {ol.Map} - The openlayers map object. */
     _map = {},
+    
+    //dark blue
+    _routeColor = "#0000CC",
+    
     //order layers should display, Icons > Parent > Primary Route > Neighbors
     _neighborsLayerIndex = 0,
     _primaryRouteLayerIndex = 1,
@@ -32,6 +36,9 @@ yukon.map.comprehensive = (function () {
     _deviceScale = 0.8,
     _relayScale = 0.9,
     _gatewayScale = 1,
+    
+    _highlightDevice,
+    _highlightOldStyle,
         
     /** @type {Object.<number, {ol.Feature}>} - Map of pao id to feature for all device icons. */
     _icons = [], 
@@ -84,7 +91,7 @@ yukon.map.comprehensive = (function () {
             source.addFeature(icon);
         }
 
-        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: _icons}), rendererOptions: {zIndexing: true, yOrdering: true}});
+        var iconsLayer = new ol.layer.Vector({source: new ol.source.Vector({features: _icons}), rendererOptions: {zIndexing: true, yOrdering: true}});
         iconsLayer.setZIndex(zIndex);
         _map.addLayer(iconsLayer);
         
@@ -432,6 +439,53 @@ yukon.map.comprehensive = (function () {
                     $('#legend').removeClass('dn');
                     yukon.ui.unbusy('.js-filter-map');
                 });
+            });
+            
+            $("#findDevice").keyup(function(event) {
+                if (event.keyCode === 13) {
+                    var form = $('#filter-form'),
+                        searchText = $('#findDevice').val();
+                    //change last found device back
+                    if (_highlightDevice) {
+                        _highlightDevice.setStyle(_highlightOldStyle);
+                    }
+                    yukon.ui.removeAlerts();
+                    if (searchText) {
+                        $.ajax({
+                            url: yukon.url('/stars/comprehensiveMap/search?searchText=' + searchText),
+                            type: 'get',
+                            data: form.serialize()
+                        }).done( function(data) {
+                            if (data.paoId) {
+                                var source = _map.getLayers().getArray()[_tiles.length].getSource(),
+                                    features = source.getFeatures();
+                                for (var x in features) {
+                                    var feature = features[x];
+                                    if (feature.get("pao").paoId === data.paoId) {
+                                        _highlightDevice = feature;
+                                        _highlightOldStyle = feature.getStyle();
+                                        var largerStyle = feature.getStyle().clone(),
+                                            circleStyle = new ol.style.Style({
+                                            image: new ol.style.Circle({
+                                                radius: 8,
+                                                fill: new ol.style.Fill({color: _routeColor}),
+                                                stroke: new ol.style.Stroke({color: 'black', width: 2}) 
+                                            })
+                                        });
+                                        largerStyle.getImage().setScale(_largerScale);
+                                        feature.setStyle([circleStyle, largerStyle]);
+                                        _map.getView().setCenter(feature.getGeometry().getCoordinates());
+                                        _map.getView().setZoom(14);
+                                        break;
+                                    }
+                                }
+                            } else {
+                                var searchError = $('#noResultsFoundError').val();
+                                yukon.ui.alertError(searchError);
+                            }
+                        });
+                    }
+                }
             });
             
             /** Gets the neighbor data from Network Manager **/
