@@ -475,7 +475,7 @@ yukon.map.comprehensive = (function () {
                                         largerStyle.getImage().setScale(_largerScale);
                                         feature.setStyle([circleStyle, largerStyle]);
                                         _map.getView().setCenter(feature.getGeometry().getCoordinates());
-                                        _map.getView().setZoom(14);
+                                        _map.getView().setZoom(16);
                                         break;
                                     }
                                 }
