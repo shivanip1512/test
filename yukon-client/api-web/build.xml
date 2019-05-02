@@ -197,7 +197,7 @@
         <mkdir dir="${test.results.dir}" />
 
         <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
-        <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}">
+        <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}" fork="yes" forkmode="perBatch">
             <classpath id="junit.class.path">
                 <pathelement location="${srcdir}"/>
                 <pathelement location="${destdir}"/>
@@ -207,7 +207,7 @@
                 </fileset>
             </classpath>
             <formatter type="xml" />
-            <batchtest fork="yes" todir="${test.results.dir}">
+            <batchtest todir="${test.results.dir}">
                 <fileset dir="${destdir}">
                     <include name="**/*Test.class" />
                 </fileset>

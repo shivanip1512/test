@@ -171,7 +171,7 @@
         <mkdir dir="${test.results.dir}" />
 
         <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
-        <junit printsummary="yes" haltonerror="${halt}" haltonfailure="${halt}">
+        <junit printsummary="yes" haltonerror="${halt}" haltonfailure="${halt}" fork="yes" forkmode="perBatch">
             <classpath id="junit.class.path">
                 <dirset dir="test" />
                 <fileset dir="${yukon.lib}">
@@ -180,7 +180,7 @@
                 </fileset>
             </classpath>
             <formatter type="xml" />
-            <batchtest fork="yes" todir="${test.results.dir}">
+            <batchtest todir="${test.results.dir}">
                 <fileset dir="${testDir}">
                     <include name="**/*Test.class" />
                 </fileset>
