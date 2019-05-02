@@ -2,11 +2,11 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.ListModel;
 import javax.swing.SwingUtilities;
 
 import com.cannontech.clientutils.CTILogger;
@@ -19,7 +19,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.lm.MacroGroup;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -66,8 +65,14 @@ public class GroupMacroLoadGroupsPanel extends DataInputPanel implements AddRemo
                     
                     availableDevices = new Vector<LiteYukonPAObject>();
                     for (LiteYukonPAObject liteYukonPAObject : allDevices) {
-                        if (liteYukonPAObject.getPaoType().isLoadGroup() && liteYukonPAObject.getPaoType() != PaoType.MACRO_GROUP) {
-                            availableDevices.add(liteYukonPAObject);
+                        if (liteYukonPAObject.getPaoType().isLoadGroup()
+                            && liteYukonPAObject.getPaoType() != PaoType.MACRO_GROUP) {
+                            if (liteYukonPAObject.getPaoType() != PaoType.LM_GROUP_ECOBEE
+                                && liteYukonPAObject.getPaoType() != PaoType.LM_GROUP_HONEYWELL
+                                && liteYukonPAObject.getPaoType() != PaoType.LM_GROUP_NEST
+                                && liteYukonPAObject.getPaoType() != PaoType.LM_GROUP_ITRON) {
+                                availableDevices.add(liteYukonPAObject);
+                            }
                         }
                     }
                 }
@@ -163,11 +168,22 @@ public class GroupMacroLoadGroupsPanel extends DataInputPanel implements AddRemo
 
     @Override
     public boolean isInputValid() {
-        if (getLoadGroupsAddRemovePanel().rightListGetModel().getSize() < 1) {
+        ListModel rightListModel = getLoadGroupsAddRemovePanel().rightListGetModel();
+        if (rightListModel.getSize() < 1) {
             setErrorString("There needs to be at least 1 load group in this group macro");
             return false;
-        } else
-            return true;
+        }
+        
+        for (int i = 0; i < rightListModel.getSize(); i++) {
+
+            LiteYukonPAObject yukonPAObject = (LiteYukonPAObject) rightListModel.getElementAt(i);
+            if (yukonPAObject.getPaoType() == PaoType.LM_GROUP_ECOBEE || yukonPAObject.getPaoType() == PaoType.LM_GROUP_HONEYWELL
+                || yukonPAObject.getPaoType() == PaoType.LM_GROUP_NEST || yukonPAObject.getPaoType() == PaoType.LM_GROUP_ITRON) {
+                setErrorString("Remove Ecobee,Itron,Honeywell,Nest Load groups from Assigned list.");
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -305,8 +321,14 @@ public class GroupMacroLoadGroupsPanel extends DataInputPanel implements AddRemo
 
             availableGroups = new Vector<LiteYukonPAObject>();
             for (LiteYukonPAObject liteYukonPAObject : allDevices) {
-                if (liteYukonPAObject.getPaoType().isLoadGroup() && liteYukonPAObject.getLiteID() != ((MacroGroup) val).getPAObjectID().intValue()) {
-                    availableGroups.addElement(liteYukonPAObject);
+                if (liteYukonPAObject.getPaoType().isLoadGroup()
+                    && liteYukonPAObject.getLiteID() != ((MacroGroup) val).getPAObjectID().intValue()) {
+                    if (liteYukonPAObject.getPaoType() != PaoType.LM_GROUP_ECOBEE
+                        && liteYukonPAObject.getPaoType() != PaoType.LM_GROUP_HONEYWELL
+                        && liteYukonPAObject.getPaoType() != PaoType.LM_GROUP_NEST
+                        && liteYukonPAObject.getPaoType() != PaoType.LM_GROUP_ITRON) {
+                        availableGroups.addElement(liteYukonPAObject);
+                    }
                 }
             }
         }
