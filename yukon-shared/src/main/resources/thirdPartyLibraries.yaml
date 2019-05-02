@@ -1792,8 +1792,8 @@ Java :
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.11.2"
-    md5 : 3a4888020b342c3a433ced39c56d89c2
-    sha1 : c93f2d3bb0ec5ef7543c32b7664548c2a72e0d3f
+    md5 : a1867e4647dac2696ccb15b9857381fa
+    sha1 : c36f3385ea58f6186a012f11a1137d19ba967d72
     updated : 2018-04-25
     jira : YUK-18100
     notes : Apache Log4j API
@@ -1806,8 +1806,8 @@ Java :
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.11.2"
-    md5 : a3a6bc23ffc5615efcb637e9fd8be7ec
-    sha1 : 8c59f9db4e5eebf7e99aa0ed2eb129bd5d8ef4f8
+    md5 : 8da9b75725fb3357cb9872adf7711f9f
+    sha1 : 5bcfefcd7474c2f439576a1839ea0aeeec07f3b6
     updated : 2018-04-25
     jira : YUK-18100
     notes : Apache Log4j Core
@@ -1820,8 +1820,8 @@ Java :
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-jcl/2.11.2"
-    md5 : b299cf3cd1a2af1c606313113e5ce63e
-    sha1 : 945fda607e942bfd36f1cdc1810417d318f9c3e6
+    md5 : 31992af408aafc39258503be334bd67a
+    sha1 : f571fc374f4993baa5dc032ad53f61e1afc151f2
     updated : 2018-04-25
     jira : YUK-18100
     notes : Apache Commons Logging Bridge for Log4j
@@ -1834,8 +1834,8 @@ Java :
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl/2.9.1"
-    md5 : efe1d1f6d8e4ead7710d1481144702b8
-    sha1 : 0a97a849b18b3798c4af1a2ca5b10c66cef17e3a
+    md5 : fab118a17ee5b9ed25e8edb0bc193684
+    sha1 : dc9229ec21fd3caa9a4e4433702248961e666243
     updated : 2018-04-25
     jira : YUK-18100
     notes : Apache Log4j 2 SLF4J Binding
