@@ -151,7 +151,8 @@ INSERT INTO DBUpdates VALUES ('YUK-19780', '7.3.0', GETDATE());
 
 /* @start YUK-19858-1 */
 /* @start-block */
-DROP TABLE IF EXISTS NmToRfnDeviceData;
+IF OBJECT_ID('DynamicRfnDeviceData', 'U') IS NOT NULL 
+  DROP TABLE DynamicRfnDeviceData; 
 /* @end-block */
 
 CREATE TABLE DynamicRfnDeviceData (
@@ -179,6 +180,8 @@ GO
 
 INSERT INTO DBUpdates VALUES ('YUK-19858-1', '7.3.0', GETDATE());
 /* @end YUK-19858-1 */
+
+-- YOU ARE HERE
 
 /**************************************************************/
 /* VERSION INFO                                               */
