@@ -84,26 +84,22 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
 
     @Override
     public void createGatewayToDeviceMapping(int gatewayId, List<Integer> deviceIds) {
-        // TODO Auto-generated method stub
-        
+        throw new MethodNotImplementedException();
     }
 
     @Override
     public List<Integer> getDevicesForGateway(int gatewayId) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new MethodNotImplementedException();
     }
 
     @Override
     public void clearNmToRfnDeviceData() {
-        // TODO Auto-generated method stub
-        
+        throw new MethodNotImplementedException();
     }
 
     @Override
     public List<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new MethodNotImplementedException();
     }
 
 

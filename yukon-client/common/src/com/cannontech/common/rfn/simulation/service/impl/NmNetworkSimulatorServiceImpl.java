@@ -217,7 +217,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                 //map gateway to device
                 List<Integer> devicesIds = devicesForGateway.stream()
                     .map(device -> device.getLiteID()).collect(Collectors.toList());
-                rfnDeviceDao.createGatewayToDeviceMapping(gateway.getId() ,devicesIds);
+                rfnDeviceDao.createGatewayToDeviceMapping(gateway.getPaoIdentifier().getPaoId() ,devicesIds);
             }
             
             log.info("Inserting " + newLocations.size() + " locations.");

@@ -122,8 +122,6 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                     .map(litePao -> new RfnDevice(litePao.getPaoName(), litePao, rfnIdentifier))
                     .orElseThrow(() -> new NotFoundException("No cache results for " + rfnIdentifier));
         }
-
-        System.out.println(rfnIdentifier);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
