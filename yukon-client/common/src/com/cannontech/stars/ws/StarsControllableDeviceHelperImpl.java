@@ -520,17 +520,17 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             //Web Server/EIM : Update the location information only when both valid latitude/longitude are provided.
             //Web Server/EIM, if either of one is valid and other is blank, error message.
             //All Remaining case do not modify the location
-            boolean latitudePresentAndValid = false, longitudePresentAndValid = false, deleteLattide = false,
+            boolean latitudePresent = false, longitudePresent = false, deleteLattide = false,
                     deleteLongitude = false;
             if (dto.getLatitude() != null && dto.getLongitude() != null) {
-                latitudePresentAndValid = !SimpleXPathTemplate.isEmptyDouble(dto.getLatitude());
-                longitudePresentAndValid = !SimpleXPathTemplate.isEmptyDouble(dto.getLongitude());
+                latitudePresent = !SimpleXPathTemplate.isEmptyDouble(dto.getLatitude());
+                longitudePresent = !SimpleXPathTemplate.isEmptyDouble(dto.getLongitude());
                 deleteLattide = SimpleXPathTemplate.isEmptyDouble(dto.getLatitude());
                 deleteLongitude = SimpleXPathTemplate.isEmptyDouble(dto.getLongitude());
             }
             if (deleteLattide && deleteLongitude) {
                 paoLocationDao.delete(lib.getDeviceID());
-            } else if (latitudePresentAndValid && longitudePresentAndValid) {
+            } else if (latitudePresent && longitudePresent) {
                 saveLocation(dto, lib);
             } else if (!isEIMRequest && dto.getLatitude() == null && dto.getLongitude() == null) {
                 log.warn("Location data is not modified/inserted for serial number " + dto.getSerialNumber()
@@ -539,7 +539,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                 || (dto.getLatitude() != null && dto.getLongitude() == null)) {
                 saveLocation(dto, lib);
             } else if (isEIMRequest && (deleteLattide || deleteLongitude)
-                && (latitudePresentAndValid || longitudePresentAndValid)) {
+                && (latitudePresent || longitudePresent)) {
                 saveLocation(dto, lib);
             }else {
                 // do not modify the location
