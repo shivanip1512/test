@@ -31,6 +31,9 @@
     <entry key="yukon.web.error.i18nKeyMissing">An internationalized key is missing: {0}</entry>
     <entry key="yukon.web.error.dataArchivingIntervalTooLarge">Data Archiving Interval cannot be larger than Interval Data Gathering Duration.</entry>
     <entry key="yukon.web.error.isBlacklistedCharacter"><![CDATA[Field cannot be blank or include any of the following characters: ! # $ % & ' * ( ) ;  + = ? { } \ " | , / ; > <]]></entry>
+ 	<entry key="yukon.web.error.ipAddressRequired">IP Address is required.</entry>
+ 	<entry key="yukon.web.error.invalidIPHostName">Invalid IP/Host Name.</entry>
+ 	<entry key="yukon.web.error.invalidPort">Port must be integer between 0 and 65535.</entry>
 
     <entry key="yukon.web.error.noJs">For full functionality of this site it is necessary to enable JavaScript. Please contact your administrator to enable JavaScript in your web browser.</entry>
     

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rtu.model.RtuDnp;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -36,6 +37,11 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
         rtuDnpValidationUtil.validateName(rtuDnp, errors, false);
         validateCommPort(rtuDnp, errors);
         validateScanIntervals(rtuDnp, errors);
+        if (dbCache.getAllPaosMap().get(rtuDnp.getDeviceDirectCommSettings().getPortID()).getPaoType() == PaoType.TCPPORT) {
+            YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", rtuDnp.getIpAddress());
+            YukonValidationUtils.validatePort(errors, "port", rtuDnp.getPort());
+        }
+       
     }
 
     private void validateCommPort(RtuDnp rtuDnp, Errors errors) {

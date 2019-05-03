@@ -266,4 +266,29 @@ public class YukonValidationUtils extends ValidationUtils {
         }
         return true;
     }
+
+    public static void ipHostNameValidator(Errors errors, String field, String fieldValue ){
+       rejectIfEmptyOrWhitespace(errors, "ipAddress", "yukon.web.error.ipAddressRequired");       
+       Pattern ipHostNameMatcher =
+                Pattern.compile("^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])(\\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]))*$");
+       if (StringUtils.isNotBlank(fieldValue)) {
+           if (!ipHostNameMatcher.matcher(fieldValue).matches()) {
+               errors.rejectValue(field, "yukon.web.error.invalidIPHostName");
+           }
+       }
+   }
+    
+    public static void validatePort(Errors errors, String field, String fieldValue) {
+        rejectIfEmptyOrWhitespace(errors, "port", "yukon.web.error.invalidPort");
+        try {
+            Integer portID = Integer.valueOf(fieldValue);
+                if (!errors.hasFieldErrors(field)) {
+                    checkRange(errors, field, portID, 0, 65535, true);
+            }
+        } catch (Exception e) {
+            errors.rejectValue(field, "yukon.web.error.invalidPort");
+        }
+    }
 }
+
+  
