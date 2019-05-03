@@ -166,13 +166,17 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
         }
 
         Configuration config = ((Logger) LogManager.getLogger(YukonRollingFileAppender.class)).getContext().getConfiguration();
+        // Override the strategy if set DefaultRolloverStrategy from yukonLoggign.xml. 
         if (strategy == null || strategy instanceof DefaultRolloverStrategy) {
+            // maxFile : The maximum number of files to allow within the time period.
+            // compressionLevel : Sets the compression level, 0-9, where 0 = none and 9 = best compression.
             strategy = DirectWriteRolloverStrategy.newBuilder()
                                                   .withMaxFiles("1")
                                                   .withCompressionLevelStr("9")
                                                   .withConfig(config)
                                                   .build();
         }
+        // Passing fileName as null (1st param) so that manager can generate it dynamically with the help of pattern while rolling.
         final RollingFileManager manager = RollingFileManager.getFileManager(null, pattern, true, false, policy,
             strategy, new File(fileName).toURI().toString(), layout, 8192, false, true, "wr", null, null, config);
 

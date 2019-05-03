@@ -65,13 +65,17 @@ public class YukonRfnRollingFileAppender extends YukonRollingFileAppender {
             pattern = directory + applicationName + "_" + "%d{" + filenameDateFormat + "}.log.zip";
         }
         Configuration config = ((Logger) LogManager.getLogger(YukonRollingFileAppender.class)).getContext().getConfiguration();
+        // Override the strategy with DirectWriteRolloverStrategy if set DefaultRolloverStrategy from yukonLoggign.xml.
         if (strategy == null || strategy instanceof DefaultRolloverStrategy) {
+            // maxFile : The maximum number of files to allow in the time period matching the file pattern. Used along with Size based strategy.
+            // compressionLevel : Sets the compression level, 0-9, where 0 = none and 9 = best compression.
             strategy = DirectWriteRolloverStrategy.newBuilder()
-                    .withMaxFiles("1")
-                    .withCompressionLevelStr("9")
-                    .withConfig(config)
-                    .build();
+                                                  .withMaxFiles("1")
+                                                  .withCompressionLevelStr("9")
+                                                  .withConfig(config)
+                                                  .build();
         }
+        // Passing fileName as null (1st param) so that manager can generate it dynamically while rolling with the help of pattern.
         final RollingFileManager manager = RollingFileManager.getFileManager(null, pattern, true, false, policy,
             strategy, new File(fileName).toURI().toString(), layout, 8192, false, true, "wr", null, null,
             ((Logger) LogManager.getLogger(YukonRollingFileAppender.class)).getContext().getConfiguration());

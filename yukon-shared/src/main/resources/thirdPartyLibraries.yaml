@@ -1787,57 +1787,57 @@ Java :
   - filename : log4j-api-2.11.2.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.9.1
+    version : 2.11.2
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.11.2"
     md5 : a1867e4647dac2696ccb15b9857381fa
     sha1 : c36f3385ea58f6186a012f11a1137d19ba967d72
-    updated : 2018-04-25
-    jira : YUK-18100
+    updated : 2019-05-02
+    jira : YUK-19826
     notes : Apache Log4j API
   
   - filename : log4j-core-2.11.2.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.9.1
+    version : 2.11.2
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.11.2"
     md5 : 8da9b75725fb3357cb9872adf7711f9f
     sha1 : 5bcfefcd7474c2f439576a1839ea0aeeec07f3b6
-    updated : 2018-04-25
-    jira : YUK-18100
+    updated : 2019-05-02
+    jira : YUK-19826
     notes : Apache Log4j Core
   
   - filename : log4j-jcl-2.11.2.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.9.1
+    version : 2.11.2
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-jcl/2.11.2"
     md5 : 31992af408aafc39258503be334bd67a
     sha1 : f571fc374f4993baa5dc032ad53f61e1afc151f2
-    updated : 2018-04-25
-    jira : YUK-18100
+    updated : 2019-05-02
+    jira : YUK-19826
     notes : Apache Commons Logging Bridge for Log4j
   
   - filename : log4j-slf4j-impl-2.11.2.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.9.1
+    version : 2.11.2
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl/2.9.1"
     md5 : fab118a17ee5b9ed25e8edb0bc193684
     sha1 : dc9229ec21fd3caa9a4e4433702248961e666243
-    updated : 2018-04-25
-    jira : YUK-18100
+    updated : 2018-05-02
+    jira : YUK-19826
     notes : Apache Log4j 2 SLF4J Binding
   
   - filename : lucene-analyzers-common-6.0.0.jar
