@@ -30,6 +30,7 @@
 #define TRENDING_LOG_NAME         "Trending"
 #define TDC_LOG_NAME              "TDC"
 #define WATCHDOG_LOG_NAME         "Watchdog"
+#define SIMULATOR_LOG_NAME        "SimulatorsService"
 #define SM_RF_COMMS_LOG_NAME      "ServiceManager_RfnComms"
 #define WS_RF_COMMS_LOG_NAME      "Webserver_RfnComms"
 #include "BackupSelectionDialog.rul"
@@ -926,8 +927,8 @@ export prototype void PopulateJavaServiceAndClientNameList(BYREF VARIANT); //arr
 function void PopulateJavaServiceAndClientNameList(javaLogNamesArray) //be prototyped as VARIANT
 begin
     //if the array is too small, increase the size
-    if(SizeOf(javaLogNamesArray) < 12) then
-        Resize(javaLogNamesArray, 12);
+    if(SizeOf(javaLogNamesArray) < 13) then
+        Resize(javaLogNamesArray, 13);
     endif;
     //populate
     javaLogNamesArray(0) = WEB_SERVER_LOG_NAME;
@@ -940,8 +941,9 @@ begin
     javaLogNamesArray(7) = TRENDING_LOG_NAME;
     javaLogNamesArray(8) = TDC_LOG_NAME;
     javaLogNamesArray(9) = WATCHDOG_LOG_NAME;
-    javaLogNamesArray(10) = SM_RF_COMMS_LOG_NAME;
-    javaLogNamesArray(11) = WS_RF_COMMS_LOG_NAME;
+    javaLogNamesArray(10) = SIMULATOR_LOG_NAME;
+    javaLogNamesArray(11) = SM_RF_COMMS_LOG_NAME;
+    javaLogNamesArray(12) = WS_RF_COMMS_LOG_NAME;
 end;
 
 //--------------------------------------------------------------------------------
@@ -951,7 +953,7 @@ end;
 export prototype void RenameInstalledJavaServicesAndClientLog(string);
 function void RenameInstalledJavaServicesAndClientLog(formattedDateString)
 number nCount;
-string sJavaLogNamesArray(12), sLogPath, sResult;
+string sJavaLogNamesArray(13), sLogPath, sResult;
 begin
         PopulateJavaServiceAndClientNameList(sJavaLogNamesArray);
         sLogPath = TARGETDIR + "\\Server\\Log\\";
