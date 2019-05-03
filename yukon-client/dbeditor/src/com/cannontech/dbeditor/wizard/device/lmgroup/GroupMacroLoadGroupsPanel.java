@@ -50,17 +50,6 @@ public class GroupMacroLoadGroupsPanel extends DataInputPanel implements AddRemo
         }
     }
 
-    private boolean isValidLoadGroup(LiteYukonPAObject liteYukonPAObject) {
-
-        if (liteYukonPAObject.getPaoType() != PaoType.LM_GROUP_ECOBEE
-            && liteYukonPAObject.getPaoType() != PaoType.LM_GROUP_HONEYWELL
-            && liteYukonPAObject.getPaoType() != PaoType.LM_GROUP_NEST
-            && liteYukonPAObject.getPaoType() != PaoType.LM_GROUP_ITRON) {
-            return true;
-        }
-        return false;
-    }
-
     private MacroGroupAddRemovePanel getLoadGroupsAddRemovePanel() {
         if (ivjLoadGroupsAddRemovePanel == null) {
             try {
@@ -78,11 +67,9 @@ public class GroupMacroLoadGroupsPanel extends DataInputPanel implements AddRemo
 
                     availableDevices = new Vector<LiteYukonPAObject>();
                     for (LiteYukonPAObject liteYukonPAObject : allDevices) {
-                        if (liteYukonPAObject.getPaoType().isLoadGroup()
+                        if (liteYukonPAObject.getPaoType().supportsMacroGroup()
                             && liteYukonPAObject.getPaoType() != PaoType.MACRO_GROUP) {
-                            if (isValidLoadGroup(liteYukonPAObject)) {
                                 availableDevices.add(liteYukonPAObject);
-                            }
                         }
                     }
                 }
@@ -188,10 +175,7 @@ public class GroupMacroLoadGroupsPanel extends DataInputPanel implements AddRemo
 
         for (int i = 0; i < rightListModel.getSize(); i++) {
             LiteYukonPAObject yukonPAObject = (LiteYukonPAObject) rightListModel.getElementAt(i);
-            if (yukonPAObject.getPaoType() == PaoType.LM_GROUP_ECOBEE
-                || yukonPAObject.getPaoType() == PaoType.LM_GROUP_HONEYWELL
-                || yukonPAObject.getPaoType() == PaoType.LM_GROUP_NEST
-                || yukonPAObject.getPaoType() == PaoType.LM_GROUP_ITRON) {
+            if (!yukonPAObject.getPaoType().supportsMacroGroup()) {
                 paoTypes.add(yukonPAObject.getPaoType().getDbString());
             }
         }
@@ -337,11 +321,9 @@ public class GroupMacroLoadGroupsPanel extends DataInputPanel implements AddRemo
 
             availableGroups = new Vector<LiteYukonPAObject>();
             for (LiteYukonPAObject liteYukonPAObject : allDevices) {
-                if (liteYukonPAObject.getPaoType().isLoadGroup()
+                if (liteYukonPAObject.getPaoType().supportsMacroGroup()
                     && liteYukonPAObject.getLiteID() != ((MacroGroup) val).getPAObjectID().intValue()) {
-                    if (isValidLoadGroup(liteYukonPAObject)) {
-                        availableGroups.addElement(liteYukonPAObject);
-                    }
+                    availableGroups.addElement(liteYukonPAObject);
                 }
             }
         }

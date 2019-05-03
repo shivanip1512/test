@@ -1125,4 +1125,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public static ImmutableSet<PaoType> getGasMeterTypes() {
         return gasMeterTypes;
     }
+    
+    public boolean supportsMacroGroup() {
+        return (isLoadGroup() && (this != PaoType.LM_GROUP_ECOBEE && this != PaoType.LM_GROUP_HONEYWELL
+            && this != PaoType.LM_GROUP_NEST && this != PaoType.LM_GROUP_ITRON));
+    }
 }
