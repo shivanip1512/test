@@ -1192,7 +1192,7 @@ public class AccountImportService {
                 
                 // ADD HARDWARE
                 LmDeviceDto dto = dtoConverter.createNewDto(accountNumber, hwFields, energyCompany);
-                liteInv = deviceHelper.addDeviceToAccount(dto, result.getCurrentUser());
+                liteInv = deviceHelper.addDeviceToAccount(dto, result.getCurrentUser(), false);
                 
                 result.getHardwareAdded().add(hwFields[ImportFields.IDX_SERIAL_NO]);
             } else if (!result.isInsertSpecified()) {

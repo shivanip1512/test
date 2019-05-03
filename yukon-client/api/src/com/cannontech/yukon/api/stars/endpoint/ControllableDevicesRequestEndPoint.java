@@ -117,7 +117,7 @@ public class ControllableDevicesRequestEndPoint {
                         device.setLatitude(null);
                         device.setLongitude(null);
                     }
-                    starsControllableDeviceHelper.addDeviceToAccount(device, user);
+                    starsControllableDeviceHelper.addDeviceToAccount(device, user, true);
                 } else {
                     throw new StarsClientRequestException("This operation is not supported for this device type");
                 }

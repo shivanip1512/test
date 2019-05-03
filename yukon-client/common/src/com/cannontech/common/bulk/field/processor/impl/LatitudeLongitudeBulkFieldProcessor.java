@@ -13,6 +13,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.location.Origin;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -37,6 +38,11 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
                 throw new ProcessingException("Could not delete location of device with paoId " + device.getPaoIdentifier()
                     + ": " + e.getMessage(), "deleteLocation", e, device.getPaoIdentifier() );
             }
+        }
+        //If both latitude and longitude values are Double.NaN, then do not remove the location information.
+        if (SimpleXPathTemplate.isEmptyDouble(value.getLatitude())
+            && SimpleXPathTemplate.isEmptyDouble(value.getLongitude())) {
+            return;
         }
 
             locationValidation(device.getPaoIdentifier(), value.getLatitude(), value.getLongitude());

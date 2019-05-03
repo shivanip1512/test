@@ -190,7 +190,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
 
     @Override
     @Transactional
-    public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user) {
+    public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user, boolean isEIMRequest) {
         
         //Get energyCompany for the user
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
@@ -205,7 +205,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         }
                 
         // add device to account
-        liteInv = internalAddDeviceToAccount(dto, energyCompany, user, hardwareType);
+        liteInv = internalAddDeviceToAccount(dto, energyCompany, user, hardwareType, isEIMRequest);
 
         return liteInv;
     }
@@ -276,10 +276,8 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         return lib;
     }
 
-    private LiteInventoryBase internalAddDeviceToAccount(LmDeviceDto dto,
-                                                         EnergyCompany energyCompany, 
-                                                         LiteYukonUser user,
-                                                         HardwareType ht) {
+    private LiteInventoryBase internalAddDeviceToAccount(LmDeviceDto dto, EnergyCompany energyCompany,
+            LiteYukonUser user, HardwareType ht, boolean isEIMRequest) {
 
         boolean isNewDevice = false;
         LiteInventoryBase lib = getInventory(dto, energyCompany);
@@ -379,7 +377,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             }
         }
 
-        setLocationForHardware(ht, dto, lib);
+        setLocationForHardware(ht, dto, lib, isEIMRequest);
 
         return lib;
     }
@@ -464,19 +462,16 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             setInventoryValues(dto, lib, energyCompany);
 
             LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
+
+            // set location details.
+            setLocationForHardware(hardwareType, dto, lib, isEIMRequest);
+
             // call service to update device on the customer account
             lib = starsInventoryBaseService.updateDeviceOnAccount(lib, lsec, ecOperator, dto);
 
-            if (isEIMRequest) {
-                setLocationForHardwareEIM(hardwareType, dto, lib);
-            } else {
-                setLocationForHardware(hardwareType, dto, lib);
-            }
-            
-
         } else {
             // add device to account
-            lib = internalAddDeviceToAccount(dto, energyCompany, ecOperator, hardwareType);
+            lib = internalAddDeviceToAccount(dto, energyCompany, ecOperator, hardwareType, isEIMRequest);
         }
         return lib;
     };
@@ -516,34 +511,37 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     }
 
     /* Method to set or update the latitude and longitude for the hardware */
-    private void setLocationForHardware(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib) {
+    private void setLocationForHardware(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib,
+            boolean isEIMRequest) {
         if (hardwareType.isTwoWay() && lib.getDeviceID() > 0) {
+            //For EIM, If latitude/longitude are Empty then, we are setting it to Double.NaN. Delete location info.
+            //For Web Server, If latitude/longitude are DELETE/NULL then, we are setting it to Double.NaN. Delete location info.
+            //Web Server : If latitude/longitude are Empty then, we are setting it as null and location information should not get updated.
+            //Web Server/EIM : Update the location information only when both valid latitude/longitude are provided.
+            //Web Server/EIM, if either of one is valid and other is blank, error message.
+            //All Remaining case do not modify the location
+            boolean latitudePresentAndValid = false, longitudePresentAndValid = false, deleteLattide = false,
+                    deleteLongitude = false;
             if (dto.getLatitude() != null && dto.getLongitude() != null) {
-                saveLocation(dto, lib);
-            } else if (dto.getLatitude() == null && dto.getLongitude() == null) {
-                paoLocationDao.delete(lib.getDeviceID());
+                latitudePresentAndValid = !SimpleXPathTemplate.isEmptyDouble(dto.getLatitude());
+                longitudePresentAndValid = !SimpleXPathTemplate.isEmptyDouble(dto.getLongitude());
+                deleteLattide = SimpleXPathTemplate.isEmptyDouble(dto.getLatitude());
+                deleteLongitude = SimpleXPathTemplate.isEmptyDouble(dto.getLongitude());
             }
-        } else {
-            log.warn("Location data is not supported by " + dto.getDeviceType()
-                + " device type. No location data will be set for serial number " + dto.getSerialNumber());
-        }
-    }
-    
-    /* Method to set or update the latitude and longitude for the hardware for EIM server */
-    private void setLocationForHardwareEIM(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib) {
-
-        if (hardwareType.isTwoWay() && lib.getDeviceID() > 0) {
-            // checks if fields exist or not in the request. If the fields exist but are empty then it will
-            // remove the location details.
-            if (dto.getLatitude() != null && dto.getLongitude() != null
-                && !SimpleXPathTemplate.isEmptyDouble(dto.getLatitude())
-                && !SimpleXPathTemplate.isEmptyDouble(dto.getLongitude())) {
-                saveLocation(dto, lib);
-            } else if (dto.getLatitude() != null && dto.getLongitude() != null
-                && SimpleXPathTemplate.isEmptyDouble(dto.getLatitude())
-                && SimpleXPathTemplate.isEmptyDouble(dto.getLongitude())) {
+            if (deleteLattide && deleteLongitude) {
                 paoLocationDao.delete(lib.getDeviceID());
-            } else {
+            } else if (latitudePresentAndValid && longitudePresentAndValid) {
+                saveLocation(dto, lib);
+            } else if (!isEIMRequest && dto.getLatitude() == null && dto.getLongitude() == null) {
+                log.warn("Location data is not modified/inserted for serial number " + dto.getSerialNumber()
+                    + ". Latitude or longitude fields are not specified in the request.");
+            } else if ((dto.getLatitude() == null && dto.getLongitude() != null)
+                || (dto.getLatitude() != null && dto.getLongitude() == null)) {
+                saveLocation(dto, lib);
+            } else if (isEIMRequest && (deleteLattide || deleteLongitude)
+                && (latitudePresentAndValid || longitudePresentAndValid)) {
+                saveLocation(dto, lib);
+            }else {
                 // do not modify the location
                 log.warn("Location data is not modified for serial number " + dto.getSerialNumber()
                     + ". Latitude or longitude fields are not specified in the request.");

@@ -10,7 +10,7 @@ public interface StarsControllableDeviceHelper {
      * hardware device to the customer account. Handles only LMHardware devices
      * for now, will need to support other device types later.
      */
-    public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser ecOperator);
+    public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser ecOperator, boolean isEIMRequest);
 
     /**
      * For Import - Populates the Model object and calls Service to Update a

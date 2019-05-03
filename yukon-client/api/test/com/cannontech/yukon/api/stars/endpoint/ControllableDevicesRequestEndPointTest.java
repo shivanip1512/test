@@ -94,8 +94,7 @@ public class ControllableDevicesRequestEndPointTest {
             StarsControllableDeviceHelper {
 
         @Override
-        public LiteInventoryBase addDeviceToAccount(
-                LmDeviceDto deviceInfo, LiteYukonUser user) {
+        public LiteInventoryBase addDeviceToAccount(LmDeviceDto deviceInfo, LiteYukonUser user, boolean isEIMRequest) {
             if (deviceInfo.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
                 throw new StarsAccountNotFoundException("Account not found");
             } else if (deviceInfo.getAccountNumber()

@@ -152,13 +152,25 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
             && StringUtils.isNumeric(hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])) {
             dto.setDeviceVendorUserId(Integer.valueOf((hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])));
         }
-
-        if(!StringUtils.isBlank(hwFields[ImportFields.IDX_LATITUDE])){
-            dto.setLatitude(Double.valueOf(hwFields[ImportFields.IDX_LATITUDE]));
+        
+        // when latitude contains DELETE/NULL, set it to Double.NaN else set as it is.
+        if (StringUtils.isNotBlank(hwFields[ImportFields.IDX_LATITUDE])) {
+            if ("DELETE".equalsIgnoreCase(hwFields[ImportFields.IDX_LATITUDE])
+                || "NULL".equalsIgnoreCase(hwFields[ImportFields.IDX_LATITUDE])) {
+                dto.setLatitude(Double.NaN);
+            } else {
+                dto.setLatitude(Double.valueOf(hwFields[ImportFields.IDX_LATITUDE]));
+            }
         }
-
-        if(!StringUtils.isBlank(hwFields[ImportFields.IDX_LONGITUDE])){
-            dto.setLongitude(Double.valueOf(hwFields[ImportFields.IDX_LONGITUDE]));
+        
+        // when longitude contains DELETE/NULL, set it to Double.NaN else set as it is.
+        if (StringUtils.isNotBlank(hwFields[ImportFields.IDX_LONGITUDE])) {
+            if ("DELETE".equalsIgnoreCase(hwFields[ImportFields.IDX_LONGITUDE])
+                || "NULL".equalsIgnoreCase(hwFields[ImportFields.IDX_LONGITUDE])) {
+                dto.setLongitude(Double.NaN);
+            } else {
+                dto.setLongitude(Double.valueOf(hwFields[ImportFields.IDX_LONGITUDE]));
+            }
         }
     }
     
