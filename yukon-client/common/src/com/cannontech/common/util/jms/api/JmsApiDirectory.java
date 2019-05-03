@@ -1064,6 +1064,18 @@ public final class JmsApiDirectory {
             .receiver(YUKON_SERVICE_MANAGER)
             .build();
     
+    public static JmsApi<Serializable,?,?> RFN_DEVICE_CREATION_ALERT =
+            JmsApi.builder(Serializable.class)
+                  .name("RFN Device Creation Alert")
+                  .description("Yukon Service Manager passes alerts from RFN Device Creation Service to Yukon "
+                          + "Webserver AlertService when meter can't be automatically created")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.alert"))
+                  .requestMessage(Serializable.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_WEBSERVER)
+                  .build();
+    
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1092,6 +1104,7 @@ public final class JmsApiDirectory {
                 BROKER_SYSTEM_METRICS,
                 LM_ADDRESS_NOTIFICATION,
                 LOCATION,
+                RFN_DEVICE_CREATION_ALERT,
                 SIMULATORS,
                 ECOBEE_AUTH_TOKEN);
         

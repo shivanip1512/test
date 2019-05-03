@@ -1,8 +1,10 @@
 package com.cannontech.user.checker;
 
+import java.io.Serializable;
+
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public class NullUserChecker extends UserCheckerBase {
+public class NullUserChecker extends UserCheckerBase implements Serializable {
 
     private static final NullUserChecker instance = new NullUserChecker();
     

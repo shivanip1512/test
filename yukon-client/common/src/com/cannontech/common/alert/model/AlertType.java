@@ -15,6 +15,7 @@ public enum AlertType implements DisplayableEnum {
     DATA_STREAMING,
     DEMAND_RESET_COMPLETION,
     LOCATE_ROUTE,
+    RFN_DEVICE_CREATION_FROM_TEMPLATE_FAILED,
     ;
     
     private final static String keyPrefix = "yukon.web.alerts.types.";

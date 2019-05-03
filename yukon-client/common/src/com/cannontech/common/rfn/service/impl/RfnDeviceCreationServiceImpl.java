@@ -1,5 +1,6 @@
 package com.cannontech.common.rfn.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -7,10 +8,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -18,6 +21,8 @@ import org.springframework.util.CollectionUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.alert.model.AlertType;
+import com.cannontech.common.alert.model.SimpleAlert;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.constants.YukonDefinition;
@@ -35,6 +40,8 @@ import com.cannontech.common.rfn.endpoint.IgnoredTemplateException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
+import com.cannontech.common.util.ResolvableTemplate;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.core.dao.YukonListDao;
@@ -56,6 +63,8 @@ import com.google.common.collect.ImmutableSet;
 public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     
     private static final Logger log = YukonLogManager.getLogger(RfnDeviceCreationServiceImpl.class);
+    private static final String alertQueueName = JmsApiDirectory.RFN_DEVICE_CREATION_ALERT.getQueue().getName();
+    private static final int incomingMessageWaitMillis = 1000;
 
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DeviceCreationService deviceCreationService;
@@ -74,6 +83,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     private ConcurrentHashMultiset<String> unknownTemplatesEncountered = ConcurrentHashMultiset.create();
     private ConcurrentHashMultiset<RfnIdentifier> uncreatableDevices = ConcurrentHashMultiset.create();
     private Set<String> templatesToIgnore;
+    private JmsTemplate jmsTemplate;
     
     private AtomicInteger deviceLookupAttempt = new AtomicInteger();
     private AtomicInteger newDeviceCreated = new AtomicInteger();
@@ -169,6 +179,12 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                     }
                     throw e;
                 } catch (DeviceCreationException | EnergyCompanyNotFoundException e) {
+                    ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.RFN_DEVICE_CREATION_FROM_TEMPLATE_FAILED");
+                    resolvableTemplate.addData("rfnIdentifier", rfnIdentifier);
+                    resolvableTemplate.addData("templateName", templateName);
+                    SimpleAlert simpleAlert = new SimpleAlert(AlertType.RFN_DEVICE_CREATION_FROM_TEMPLATE_FAILED, new Date(), resolvableTemplate);
+                    jmsTemplate.convertAndSend(alertQueueName, simpleAlert);
+                    
                     int oldCount = uncreatableDevices.add(rfnIdentifier, 1);
                     if (oldCount == 0) {
                         // we may log this multiple times if the server is restarted, but this if statement
@@ -253,6 +269,12 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @ManagedAttribute
     public int getNewDeviceCreated() {
         return newDeviceCreated.get();
+    }
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setReceiveTimeout(incomingMessageWaitMillis);
     }
     
 }

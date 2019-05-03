@@ -1,10 +1,11 @@
 package com.cannontech.common.alert.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.cannontech.common.util.ResolvableTemplate;
 
-public class SimpleAlert extends BaseAlert {
+public class SimpleAlert extends BaseAlert implements Serializable {
 
     private AlertType alertType;
     

@@ -1,5 +1,6 @@
 package com.cannontech.common.alert.service.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.ObjectMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +22,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.alert.model.Alert;
 import com.cannontech.common.alert.model.IdentifiableAlert;
+import com.cannontech.common.alert.model.SimpleAlert;
 import com.cannontech.common.alert.service.AlertClearHandler;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.util.ReverseList;
@@ -26,7 +31,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
-public class AlertServiceImpl implements AlertService {
+public class AlertServiceImpl implements AlertService, MessageListener {
     private Logger log = YukonLogManager.getLogger(AlertServiceImpl.class);
     private GlobalSettingDao globalSettingDao;
     private TimeSource timeSource;
@@ -129,6 +134,23 @@ public class AlertServiceImpl implements AlertService {
             for (final AlertClearHandler handler: alertClearHandlers) {
                 handler.clear(unWrappedAlert, user);
             }
+        }
+    }
+
+    /** Implemented to receive alerts from service manager to web*/
+    @Override
+    public void onMessage(Message message) {
+        if(message instanceof ObjectMessage) {
+            ObjectMessage objMessage = (ObjectMessage) message;
+            try {
+                Serializable object = objMessage.getObject();
+                if (object instanceof SimpleAlert) {
+                    SimpleAlert simpleAlert = (SimpleAlert) object;
+                    add(simpleAlert);
+                }
+            } catch (Exception e) {
+                log.error("Unable to process message", e);
+            }  
         }
     }
 

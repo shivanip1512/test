@@ -13,6 +13,13 @@
         </property>   
         <property name="timeSource" ref="timeSource" />
     </bean>
+    
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="com.eaton.eas.yukon.alert"/>
+        <property name="pubSubDomain" value="false"/>
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="messageListener" ref="alertService"/>
+    </bean>
        
     <bean id="pointAlarmAlertGenerator" class="com.cannontech.common.alert.alarms.PointAlarmAlertGenerator">
         <property name="alertService" ref="alertService"/>

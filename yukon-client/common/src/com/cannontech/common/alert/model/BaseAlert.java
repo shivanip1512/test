@@ -1,12 +1,13 @@
 package com.cannontech.common.alert.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.user.checker.NullUserChecker;
 import com.cannontech.user.checker.UserChecker;
 
-public abstract class BaseAlert implements Alert {
+public abstract class BaseAlert implements Alert, Serializable {
 
     private Date date;
     private UserChecker userChecker = NullUserChecker.getInstance();
