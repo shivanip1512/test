@@ -3,6 +3,7 @@ package com.cannontech.web.stars.dr.operator.inventory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,6 +30,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.MeteringType;
@@ -57,6 +59,7 @@ public class AssetDashboardController {
     @Autowired private SelectionListService listService;
     @Autowired private InventoryCollectionFactoryImpl collectionFactory;
     @Autowired private EnergyCompanyDao ecDao;
+    @Autowired private InventoryDao inventoryDao;
     @Autowired @Qualifier("inventoryTasks") private RecentResultsCache<AbstractInventoryTask> taskCache;
     
     private static final String key = "yukon.web.modules.operator.inventory.home.";
@@ -106,8 +109,8 @@ public class AssetDashboardController {
             String title = accessor.getMessage(key + "fileUploadTitle");
             model.addAttribute("fileUploadTitle", title);
             
-            MeteringType type = ecSettingsDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ecId);
-            model.addAttribute("showAddMeter", type == MeteringType.yukon);
+            boolean showAddMeter = inventoryDao.accountMeterWarehouseIsNotEmpty(Set.of(ecId));
+            model.addAttribute("showAddMeter", showAddMeter);
             
             boolean showLinks = configSource.getBoolean(MasterConfigBoolean.DIGI_ENABLED);
             model.addAttribute("showLinks", showLinks);

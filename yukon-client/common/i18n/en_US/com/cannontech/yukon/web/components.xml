@@ -54,6 +54,7 @@
     <entry key="yukon.web.components.button.actions.label">Actions</entry>
     <entry key="yukon.web.components.button.accept.label">Accept</entry>
     <entry key="yukon.web.components.button.add.label">Add</entry>
+    <entry key="yukon.web.components.button.addExisting.label">Add Existing</entry>
     <entry key="yukon.web.components.button.apply.label">Apply</entry>
     <entry key="yukon.web.components.button.back.label">Back</entry>
     <entry key="yukon.web.components.button.build.label">Build</entry>

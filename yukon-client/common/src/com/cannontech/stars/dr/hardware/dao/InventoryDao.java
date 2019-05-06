@@ -197,4 +197,6 @@ public interface InventoryDao {
      * @param accountNumbers - valid Nest account numbers to exclude
      */
     List<Thermostat> getNestThermostatsNotInListedAccounts(EnergyCompany ec, Set<String> accountNumbers);
+
+    boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId);
 }

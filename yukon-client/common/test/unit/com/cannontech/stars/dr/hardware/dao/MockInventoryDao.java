@@ -220,4 +220,9 @@ public class MockInventoryDao implements InventoryDao {
     public List<Thermostat> getNestThermostatsNotInListedAccounts(EnergyCompany ec, Set<String> serialNumbers) {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId) {
+        throw new MethodNotImplementedException();
+    }
 }

@@ -34,6 +34,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -1079,6 +1080,45 @@ public class InventoryDaoImpl implements InventoryDao {
             });
         
         return hardware;
+    }
+    
+    @Override
+    public boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId) {
+        Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.STARS_ACCOUNT_ATTACHABLE_METER);
+
+        SqlStatementBuilder limiter1 = new SqlStatementBuilder();
+        limiter1.append("paobjectId IN (");
+        limiter1.append("  SELECT paobjectId");
+        limiter1.append("  FROM YukonPAObject ypo");
+        limiter1.append("  WHERE ypo.type ").in(paoTypes);
+        limiter1.append("    AND ypo.paobjectId NOT IN (SELECT deviceId FROM inventoryBase ib WHERE ib.DeviceId = ypo.PAObjectId) )");
+
+
+        SqlStatementBuilder limiter2 = new SqlStatementBuilder();
+        limiter2.append("paobjectId IN (");
+        limiter2.append("  SELECT deviceId");
+        limiter2.append("  FROM inventoryBase ib ");
+        limiter2.append("    JOIN YukonPAObject ypo ON ypo.PAObjectId = ib.DeviceId");
+        limiter2.append("    JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId");
+        limiter2.append("    JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
+        limiter2.append("  WHERE etim.EnergyCompanyId ").in(ecId);
+        limiter2.append("    AND ib.accountId = 0 ");
+        limiter2.append("    AND yle.YukonDefinitionId = ").append(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).append(")");
+        
+        SqlFragmentCollection whereClause = SqlFragmentCollection.newOrCollection();
+        whereClause.add(limiter1);
+        whereClause.add(limiter2);
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM yukonPAObject ");
+        String filterSql = whereClause.getSql();
+        if (!StringUtils.isEmpty(filterSql)) {
+            sql.append("WHERE");
+            sql.append(whereClause);
+        }
+        
+        
+        return jdbcTemplate.queryForInt(sql) > 0;
     }
 
 }

@@ -120,22 +120,15 @@ public class AssetReportServiceImpl implements AssetReportService {
                 sql.append("SELECT ib.InventoryId, ib.AccountId, ib.DeviceId, ib.DeviceLabel,");
                 sql.append("ca.AccountNumber,");
                 sql.append("ypo.PAOName, ypo.Type, ypo.PAObjectId,");
-                if (starsMetering) {
-                    sql.append("mhb.MeterNumber, mhb.MeterTypeId,");
-                } else {
-                    sql.append("dmg.MeterNumber,");
-                }
+                sql.append("COALESCE(dmg.MeterNumber, mhb.MeterNumber) MeterNumber,");
                 sql.append("lhb.ManufacturerSerialNumber, lhb.LmHardwareTypeId,");
                 sql.append("ecti.EnergyCompanyId");
 
                 sql.append("FROM InventoryBase ib");
                 sql.append("JOIN CustomerAccount ca ON ca.AccountId = ib.AccountId");
                 sql.append("LEFT JOIN YukonPAObject ypo ON ypo.PAObjectId = ib.DeviceId");
-                if (starsMetering) {
-                    sql.append("LEFT JOIN MeterHardwareBase mhb ON mhb.InventoryId = ib.InventoryId");
-                } else {
-                    sql.append("LEFT JOIN DeviceMeterGroup dmg ON dmg.DeviceId = ib.DeviceId");
-                }
+                sql.append("LEFT JOIN MeterHardwareBase mhb ON mhb.InventoryId = ib.InventoryId");
+                sql.append("LEFT JOIN DeviceMeterGroup dmg ON dmg.DeviceId = ib.DeviceId");
                 sql.append("LEFT JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId");
                 sql.append("LEFT JOIN EcToInventoryMapping ecti ON ecti.InventoryId = ib.InventoryId");
 

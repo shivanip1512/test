@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
@@ -996,6 +997,18 @@ public class OperatorHardwareController {
         boolean inventoryChecking = ecSettingDao.getBoolean(EnergyCompanySettingType.INVENTORY_CHECKING,
                 energyCompanyId);
         model.addAttribute("inventoryChecking", inventoryChecking);
+        
+        String deviceList = YukonSelectionListEnum.DEVICE_TYPE.getListName();
+        List<YukonListEntry> devicesTypes = selectionListService.getSelectionList(ec, deviceList).getYukonListEntries();  
+        
+        boolean canCreateStarsMeter = devicesTypes.stream().anyMatch(meter -> meter.getYukonDefID() == 1303);
+        boolean canCreateYukonMeter = inventoryDao.accountMeterWarehouseIsNotEmpty(Set.of(energyCompanyId));
+        boolean metersListIsEmpty = hardwareMap.get(HardwareClass.METER).isEmpty();
+        model.addAttribute("canCreateStarsMeter", canCreateStarsMeter);
+        model.addAttribute("canCreateYukonMeter", canCreateYukonMeter);
+        model.addAttribute("metersListIsEmpty", metersListIsEmpty);
+
+        
     }
 
     @RequestMapping("disable")

@@ -543,7 +543,7 @@
 
 <%-- METERS TABLE --%>
 <c:set var="meterTypes" value="${deviceTypeMap['METER']}"/>
-<c:if test="${fn:length(meterTypes) > 0 || !starsMeters}">
+<c:if test="${canCreateStarsMeter || canCreateYukonMeter || not metersListIsEmpty}">
     <tags:sectionContainer2 nameKey="meters" styleClass="stacked">
         <c:choose>
             <c:when test="${empty meters}">
@@ -654,12 +654,10 @@
                 <div class="action-area">
                     <form action="${meterCreateUrl}" method="get">
                         <input type="hidden" name="accountId" value="${accountId}">
-                        <c:choose>
-                            <c:when test="${starsMeters}">
+                            <c:if test="${canCreateStarsMeter}">
                                 <cti:button nameKey="add" type="submit" icon="icon-add"/>
-                            </c:when>
-
-                            <c:otherwise>
+                            </c:if>
+                            <c:if test="${canCreateYukonMeter}">
                                 <tags:pickerDialog extraArgs="${energyCompanyId}"
                                         id="meterPicker"
                                         type="availableMctPicker"
@@ -668,9 +666,8 @@
                                         endAction="addMeter"
                                         linkType="button"
                                         icon="icon-add"
-                                        nameKey="add"/>
-                            </c:otherwise>
-                        </c:choose>
+                                        nameKey="addExisting"/>
+                            </c:if>
                     </form>
                 </div>
             </cti:checkRolesAndProperties>
