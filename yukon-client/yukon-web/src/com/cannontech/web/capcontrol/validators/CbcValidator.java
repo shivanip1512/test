@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -37,11 +38,8 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
 
     @Override
     public void doValidation(CapControlCBC cbc, Errors errors) {
-
         validateName(cbc, errors);
-
         validateSerialNumber(cbc, errors);
-
         if (cbc.isTwoWay()) {
             validateCommPort(cbc, errors);
             if (!cbc.getDeviceScanRateMap().isEmpty()) {
@@ -51,7 +49,12 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
         if (cbc.isLogical()) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "parentRtuId", basekey + ".parentRTURequired");
         }
-
+        if (cbc.getPaoType().isTcpPortEligible() && 
+            dbCache.getAllPaosMap().get(cbc.getDeviceDirectCommSettings().getPortID()).getPaoType() == PaoType.TCPPORT) {
+            YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", cbc.getIpAddress());
+            YukonValidationUtils.validatePort(errors, "port", cbc.getPort());
+        }
+      
     }
 
     private void validateName(CapControlCBC cbc, Errors errors) {
