@@ -42,6 +42,7 @@ yukon.map.comprehensive = (function () {
         
     /** @type {Object.<number, {ol.Feature}>} - Map of pao id to feature for all device icons. */
     _icons = [], 
+    _mapLayers = [],
     
     /** @type {string} - The default projection code of our map tiles. */
     _destProjection = 'EPSG:3857',
@@ -59,6 +60,7 @@ yukon.map.comprehensive = (function () {
     _tiles = yukon.mapping.getTiles(),
     
     _loadDevices = function(color, devices) {
+        var layerIcons = [];
         var source = _map.getLayers().getArray()[_tiles.length].getSource();
         for (x in devices.features) {
             var feature = devices.features[x],
@@ -87,12 +89,14 @@ yukon.map.comprehensive = (function () {
                 icon.setGeometry(new ol.geom.Point(coord));
             }
         
+            layerIcons.push(icon);
             _icons.push(icon);
             source.addFeature(icon);
         }
 
-        var iconsLayer = new ol.layer.Vector({source: new ol.source.Vector({features: _icons}), rendererOptions: {zIndexing: true, yOrdering: true}});
+        var iconsLayer = new ol.layer.Vector({source: new ol.source.Vector({features: layerIcons}), rendererOptions: {zIndexing: true, yOrdering: true}});
         iconsLayer.setZIndex(zIndex);
+        _mapLayers.push(iconsLayer);
         _map.addLayer(iconsLayer);
         
         _updateZoom();
@@ -426,6 +430,20 @@ yukon.map.comprehensive = (function () {
                     type: 'get',
                     data: form.serialize()
                 }).done( function(data) {
+                    //clear any existing features
+                    var source = _map.getLayers().getArray()[_tiles.length].getSource();
+                    if (_icons.length > 0) {
+                        _icons.forEach(function(icon) {
+                           source.removeFeature(icon); 
+                        });
+                        _icons = [];
+                    }
+                    _mapLayers.forEach(function(layer) {
+                        layer.getSource().clear();
+                        _map.removeLayer(layer);
+                    });
+                    _icons = [];
+                    _mapLayers = [];
                     var map = data.map.mappedDevices;
                     Object.keys(map).forEach(function(key) {
                         var value = map[key];
