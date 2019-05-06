@@ -106,5 +106,7 @@ Demand Reset failed. Reason: {exceptionReason}</p>
 {notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.</a>
 ]]></entry>
 
-<entry key="yukon.common.alerts.RFN_DEVICE_CREATION_FROM_TEMPLATE_FAILED">{rfnIdentifier} failed with template {templateName}</entry>
+<entry key="yukon.common.alerts.RFN_DEVICE_CREATION_FROM_TEMPLATE_FAILED">Data collection for a meter with Serial Number "{sensorSerialNumber}" failed due to a conflict with an existing meter.
+ It reported in with Manufacturer "{sensorManufacturer}" and Model "{sensorModel}".
+ Please update the existing meter's information to match what is now being reported for the data to be archived.</entry>
 </properties>

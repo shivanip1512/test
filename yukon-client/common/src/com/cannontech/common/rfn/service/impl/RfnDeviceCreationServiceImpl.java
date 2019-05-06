@@ -179,18 +179,19 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                     }
                     throw e;
                 } catch (DeviceCreationException | EnergyCompanyNotFoundException e) {
-                    ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.RFN_DEVICE_CREATION_FROM_TEMPLATE_FAILED");
-                    resolvableTemplate.addData("rfnIdentifier", rfnIdentifier);
-                    resolvableTemplate.addData("templateName", templateName);
-                    SimpleAlert simpleAlert = new SimpleAlert(AlertType.RFN_DEVICE_CREATION_FROM_TEMPLATE_FAILED, new Date(), resolvableTemplate);
-                    jmsTemplate.convertAndSend(alertQueueName, simpleAlert);
-                    
                     int oldCount = uncreatableDevices.add(rfnIdentifier, 1);
                     if (oldCount == 0) {
                         // we may log this multiple times if the server is restarted, but this if statement
                         // seems to be a good idea to prevent excess 
                         rfnDeviceEventLogService.unableToCreateDeviceFromTemplate(templateName, rfnIdentifier.getSensorManufacturer(), rfnIdentifier.getSensorModel(), rfnIdentifier.getSensorSerialNumber());
                         log.warn("Unable to create device for " + rfnIdentifier, e);
+                        
+                        ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.RFN_DEVICE_CREATION_FROM_TEMPLATE_FAILED");
+                        resolvableTemplate.addData("sensorSerialNumber", rfnIdentifier.getSensorSerialNumber());
+                        resolvableTemplate.addData("sensorManufacturer", rfnIdentifier.getSensorManufacturer());
+                        resolvableTemplate.addData("sensorModel", rfnIdentifier.getSensorModel());
+                        SimpleAlert simpleAlert = new SimpleAlert(AlertType.RFN_DEVICE_CREATION_FROM_TEMPLATE_FAILED, new Date(), resolvableTemplate);
+                        jmsTemplate.convertAndSend(alertQueueName, simpleAlert);
                     }
                     throw e;
                 }
