@@ -87,21 +87,19 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
         throw new MethodNotImplementedException();
     }
 
-    @Override
-    public List<Integer> getDevicesForGateway(int gatewayId) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public void clearNmToRfnDeviceData() {
-        throw new MethodNotImplementedException();
-    }
 
     @Override
     public List<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers) {
         throw new MethodNotImplementedException();
     }
 
+    @Override
+    public List<RfnDevice> getDevicesForGateway(int gatewayId) {
+        throw new MethodNotImplementedException();
+    }
 
-
+    @Override
+    public void clearDynamicRfnDeviceData() {
+        throw new MethodNotImplementedException();
+    }
 }

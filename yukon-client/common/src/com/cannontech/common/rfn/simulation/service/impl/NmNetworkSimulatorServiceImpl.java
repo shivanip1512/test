@@ -152,7 +152,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     public void setupLocations() {
         log.info("Setting up locations");
         paoLocationDao.delete(Origin.SIMULATOR);
-        rfnDeviceDao.clearNmToRfnDeviceData();
+        rfnDeviceDao.clearDynamicRfnDeviceData();
             
         executor.execute(() -> {
             Map<PaoIdentifier, PaoLocation> locations =
@@ -393,11 +393,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         GatewayNodes nodes = new GatewayNodes();
                         RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
                         int connectedNodesWarningLimit = globalSettingDao.getInteger(GlobalSettingType.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD);
-                        List<Integer> deviceIds = rfnDeviceDao.getDevicesForGateway(gateway.getPaoIdentifier().getPaoId())
+                        Set<RfnIdentifier> devices = rfnDeviceDao.getDevicesForGateway(gateway.getPaoIdentifier().getPaoId())
                                 .stream().limit(connectedNodesWarningLimit)
-                                .collect(Collectors.toList());
-                        Set<RfnIdentifier> devices = rfnDeviceDao.getDevicesByPaoIds(deviceIds)
-                                .stream().map(device -> device.getRfnIdentifier())
+                                .map(device -> device.getRfnIdentifier())
                                 .collect(Collectors.toSet());
                         nodes.setReadyNodes(devices);                  
                         result.getMetadatas().put(RfnMetadataMulti.GATEWAY_NODES, nodes); 

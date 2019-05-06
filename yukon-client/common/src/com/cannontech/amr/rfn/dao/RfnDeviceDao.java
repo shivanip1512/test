@@ -98,16 +98,15 @@ public interface RfnDeviceDao {
     /**
      * Returns list of devices for gateway
      */
-    List<Integer> getDevicesForGateway(int gatewayId);
+    List<RfnDevice> getDevicesForGateway(int gatewayId);
 
     /**
      * Deletes all mappings of gateway to device. Should be used by simulator only.
      */
-    void clearNmToRfnDeviceData();
+    void clearDynamicRfnDeviceData();
 
     /**
      * Returns list of device ids for rfn identifiers
      */
     List<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers);
-
 }

@@ -392,21 +392,18 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     }
     
     @Override
-    public List<Integer> getDevicesForGateway(int gatewayId) {
+    public List<RfnDevice> getDevicesForGateway(int gatewayId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DeviceId");
-        sql.append("FROM DynamicRfnDeviceData");
-        sql.append("WHERE GatewayId").eq(gatewayId);
-        return jdbcTemplate.query(sql, new YukonRowMapper<Integer>() {
-            @Override
-            public Integer mapRow(YukonResultSet rs) throws SQLException {
-                return rs.getInt("DeviceId");
-            }
-        });
+        sql.append("SELECT ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("FROM DynamicRfnDeviceData dd");
+        sql.append("JOIN YukonPaObject ypo on dd.DeviceId = ypo.PAObjectID");
+        sql.append("JOIN RfnAddress rfn on dd.DeviceId = rfn.DeviceId");
+        sql.append("WHERE dd.GatewayId").eq(gatewayId);
+        return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }
     
     @Override
-    public void clearNmToRfnDeviceData() {
+    public void clearDynamicRfnDeviceData() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE from DynamicRfnDeviceData");
         jdbcTemplate.update(sql);
@@ -418,22 +415,25 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             @Override
             public SqlFragmentSource generate(List<RfnIdentifier> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("select DeviceId from RfnAddress");
-                sql.append("where");
-                sql.append(subList.stream().map(ident -> {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("(");
-                    sb.append("SerialNumber='").append(ident.getSensorSerialNumber()).append("'");
-                    sb.append(" and Manufacturer='").append(ident.getSensorManufacturer()).append("'");
-                    sb.append(" and Model='").append(ident.getSensorModel()).append("'");
-                    sb.append(")");
-                    return sb.toString();
-                }).collect(Collectors.joining(" OR ")));
+                sql.append("SELECT DeviceId from RfnAddress");
+                sql.append("WHERE ");
+                for (int i = 0; i < subList.size(); i++) {
+                    RfnIdentifier ident = subList.get(i);
+                    sql.append("(");
+                    sql.append("SerialNumber").eq(ident.getSensorSerialNumber());
+                    sql.append(" AND Manufacturer").eq(ident.getSensorManufacturer());
+                    sql.append(" AND Model").eq(ident.getSensorModel());
+                    sql.append(")");
+                    if (i < subList.size() - 1) {
+                        sql.append("OR");
+                    }
+                }
                 return sql;
             }
         };
         List<Integer> deviceIds = new ArrayList<>();
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        template.setChunkSize(500);
         template.query(sql, rfnIdentifiers, (YukonResultSet rs) -> deviceIds.add(rs.getInt("deviceId")));
         return  deviceIds;
     }
