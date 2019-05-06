@@ -563,12 +563,17 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 EntityType.GATEWAY, Sets.newHashSet(gateways.keySet()), Set.of(RfnMetadataMulti.GATEWAY_NODES));
             AtomicInteger i = new AtomicInteger(0);
             metaData.forEach((gatewayPao, queryResult) -> {
-                Color color = Color.values()[i.getAndIncrement()];
-                map.getLegend().add(new Legend(color.getHexColor(), gateways.get(gatewayPao).getName()));
-                Set<PaoIdentifier> paos = getGatewayNodes(queryResult);
-                Set<PaoLocation> locations = paoLocationDao.getLocations(paos);
-                FeatureCollection features = paoLocationService.getFeatureCollection(locations);
-                map.getMappedDevices().put(color.getHexColor(), features);
+                if (queryResult.getResultType() == RfnMetadataMultiQueryResultType.OK) {
+                    Color color = Color.values()[i.getAndIncrement()];
+                    map.getLegend().add(new Legend(color.getHexColor(), gateways.get(gatewayPao).getName()));
+                    Set<PaoIdentifier> paos = getGatewayNodes(queryResult);
+                    Set<PaoLocation> locations = paoLocationDao.getLocations(paos);
+                    FeatureCollection features = paoLocationService.getFeatureCollection(locations);
+                    map.getMappedDevices().put(color.getHexColor(), features);
+                } else {
+                    log.error("Getting meta data for gateway nodes failed. gateway {} result {} result message {}",
+                        gatewayPao, queryResult.getResultType(), queryResult.getResultMessage());
+                }
             });
 
         } catch (NmCommunicationException e) {

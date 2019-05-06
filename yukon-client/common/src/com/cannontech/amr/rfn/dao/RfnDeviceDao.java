@@ -93,7 +93,7 @@ public interface RfnDeviceDao {
     /**
      * Creates mappings for gateway to device
      */
-    void createGatewayToDeviceMapping(int gatewayId, List<Integer> deviceIds);
+    void saveDynamicRfnDeviceData(int gatewayId, List<Integer> deviceIds);
 
     /**
      * Returns list of devices for gateway

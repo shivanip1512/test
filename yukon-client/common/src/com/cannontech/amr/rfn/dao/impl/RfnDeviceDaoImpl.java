@@ -380,7 +380,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
     @Transactional
     @Override
-    public void createGatewayToDeviceMapping(int gatewayId, List<Integer> deviceIds) {
+    public void saveDynamicRfnDeviceData(int gatewayId, List<Integer> deviceIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         List<List<Object>> values = deviceIds.stream().map(deviceId -> {
             List<Object> row = Lists.newArrayList(deviceId, gatewayId, new Instant());
