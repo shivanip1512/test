@@ -280,13 +280,13 @@ public class YukonValidationUtils extends ValidationUtils {
     
     public static void validatePort(Errors errors, String field, String fieldValue) {
         rejectIfEmptyOrWhitespace(errors, "port", "yukon.web.error.invalidPort");
-        try {
-            Integer portID = Integer.valueOf(fieldValue);
-                if (!errors.hasFieldErrors(field)) {
-                    checkRange(errors, field, portID, 0, 65535, true);
+        if (!errors.hasFieldErrors(field)) {
+            try {
+                 Integer portID = Integer.valueOf(fieldValue);
+                 checkRange(errors, field, portID, 0, 65535, true);
+            } catch (Exception e) {
+                errors.rejectValue(field, "yukon.web.error.invalidPort");
             }
-        } catch (Exception e) {
-            errors.rejectValue(field, "yukon.web.error.invalidPort");
         }
     }
 }
