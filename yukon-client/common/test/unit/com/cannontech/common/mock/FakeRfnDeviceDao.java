@@ -83,7 +83,7 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     }
 
     @Override
-    public void createGatewayToDeviceMapping(int gatewayId, List<Integer> deviceIds) {
+    public void saveDynamicRfnDeviceData(int gatewayId, List<Integer> deviceIds) {
         throw new MethodNotImplementedException();
     }
 
