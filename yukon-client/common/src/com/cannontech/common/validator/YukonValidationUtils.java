@@ -267,10 +267,10 @@ public class YukonValidationUtils extends ValidationUtils {
     }
 
     public static void ipHostNameValidator(Errors errors, String field, String fieldValue ){
-       rejectIfEmptyOrWhitespace(errors, "ipAddress", "yukon.web.error.ipAddressRequired");       
-       Pattern ipHostNameMatcher =
+        Pattern ipHostNameMatcher =
                 Pattern.compile("^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])(\\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]))*$");
-       if (StringUtils.isNotBlank(fieldValue)) {
+        rejectIfEmptyOrWhitespace(errors, "ipAddress", "yukon.web.error.ipAddressRequired");       
+        if (!errors.hasFieldErrors(field)) {
            if (!ipHostNameMatcher.matcher(fieldValue).matches()) {
                errors.rejectValue(field, "yukon.web.error.invalidIPHostName");
            }
@@ -289,5 +289,6 @@ public class YukonValidationUtils extends ValidationUtils {
         }
     }
 }
+
 
   
