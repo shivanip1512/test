@@ -109,7 +109,9 @@ public class AssetDashboardController {
             String title = accessor.getMessage(key + "fileUploadTitle");
             model.addAttribute("fileUploadTitle", title);
             
-            boolean showAddMeter = inventoryDao.accountMeterWarehouseIsNotEmpty(Set.of(ecId));
+            
+            MeteringType type = ecSettingsDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ecId);
+            boolean showAddMeter = inventoryDao.accountMeterWarehouseIsNotEmpty(Set.of(ecId), false) && type == MeteringType.yukon;
             model.addAttribute("showAddMeter", showAddMeter);
             
             boolean showLinks = configSource.getBoolean(MasterConfigBoolean.DIGI_ENABLED);

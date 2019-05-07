@@ -222,7 +222,7 @@ public class MockInventoryDao implements InventoryDao {
     }
 
     @Override
-    public boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId) {
+    public boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId, boolean accountPage) {
         throw new MethodNotImplementedException();
     }
 }

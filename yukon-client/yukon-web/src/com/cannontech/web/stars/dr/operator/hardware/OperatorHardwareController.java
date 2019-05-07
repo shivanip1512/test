@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
@@ -1001,8 +1002,8 @@ public class OperatorHardwareController {
         String deviceList = YukonSelectionListEnum.DEVICE_TYPE.getListName();
         List<YukonListEntry> devicesTypes = selectionListService.getSelectionList(ec, deviceList).getYukonListEntries();  
         
-        boolean canCreateStarsMeter = devicesTypes.stream().anyMatch(meter -> meter.getYukonDefID() == 1303);
-        boolean canCreateYukonMeter = inventoryDao.accountMeterWarehouseIsNotEmpty(Set.of(energyCompanyId));
+        boolean canCreateStarsMeter = devicesTypes.stream().anyMatch(meter -> meter.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
+        boolean canCreateYukonMeter = inventoryDao.accountMeterWarehouseIsNotEmpty(Set.of(energyCompanyId), true);
         boolean metersListIsEmpty = hardwareMap.get(HardwareClass.METER).isEmpty();
         model.addAttribute("canCreateStarsMeter", canCreateStarsMeter);
         model.addAttribute("canCreateYukonMeter", canCreateYukonMeter);

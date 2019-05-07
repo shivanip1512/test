@@ -198,5 +198,5 @@ public interface InventoryDao {
      */
     List<Thermostat> getNestThermostatsNotInListedAccounts(EnergyCompany ec, Set<String> accountNumbers);
 
-    boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId);
+    boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId, boolean accountPage);
 }

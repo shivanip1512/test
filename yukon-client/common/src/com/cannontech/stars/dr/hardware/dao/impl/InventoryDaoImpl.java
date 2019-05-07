@@ -1083,9 +1083,11 @@ public class InventoryDaoImpl implements InventoryDao {
     }
     
     @Override
-    public boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId) {
+    public boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId, boolean accountPage) {
         Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.STARS_ACCOUNT_ATTACHABLE_METER);
-
+        //This sql replicates how the device picker populates it's pickerList.
+        
+        //This first limiter will limit the devices that do not have an inventory associated.
         SqlStatementBuilder limiter1 = new SqlStatementBuilder();
         limiter1.append("paobjectId IN (");
         limiter1.append("  SELECT paobjectId");
@@ -1093,7 +1095,7 @@ public class InventoryDaoImpl implements InventoryDao {
         limiter1.append("  WHERE ypo.type ").in(paoTypes);
         limiter1.append("    AND ypo.paobjectId NOT IN (SELECT deviceId FROM inventoryBase ib WHERE ib.DeviceId = ypo.PAObjectId) )");
 
-
+        //This limiter will add in mct devices to the picker list that have no account associated with it.
         SqlStatementBuilder limiter2 = new SqlStatementBuilder();
         limiter2.append("paobjectId IN (");
         limiter2.append("  SELECT deviceId");
@@ -1107,8 +1109,9 @@ public class InventoryDaoImpl implements InventoryDao {
         
         SqlFragmentCollection whereClause = SqlFragmentCollection.newOrCollection();
         whereClause.add(limiter1);
-        whereClause.add(limiter2);
-
+        if (accountPage) {
+            whereClause.add(limiter2);
+        }
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*) FROM yukonPAObject ");
         String filterSql = whereClause.getSql();
@@ -1116,9 +1119,9 @@ public class InventoryDaoImpl implements InventoryDao {
             sql.append("WHERE");
             sql.append(whereClause);
         }
-        
-        
-        return jdbcTemplate.queryForInt(sql) > 0;
+        int size = jdbcTemplate.queryForInt(sql);
+        return size > 0;
+//        return jdbcTemplate.queryForInt(sql) > 0;
     }
 
 }
