@@ -175,6 +175,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         sql.append("SELECT FormatID, FormatName");
         sql.append("FROM");
         sql.append(TABLE_NAME);
+        sql.append("ORDER BY FormatName");
         return yukonJdbcTemplate.query(sql,  formatIdAndFormatNameRowMapper);
     }
     
