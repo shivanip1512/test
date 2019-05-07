@@ -1192,7 +1192,7 @@ public class AccountImportService {
                 
                 // ADD HARDWARE
                 LmDeviceDto dto = dtoConverter.createNewDto(accountNumber, hwFields, energyCompany);
-                liteInv = deviceHelper.addDeviceToAccount(dto, result.getCurrentUser(), false);
+                liteInv = deviceHelper.addDeviceToAccount(dto, result.getCurrentUser());
                 
                 result.getHardwareAdded().add(hwFields[ImportFields.IDX_SERIAL_NO]);
             } else if (!result.isInsertSpecified()) {
@@ -1201,7 +1201,7 @@ public class AccountImportService {
                 // UPDATE HARDWARE
                 LmDeviceDto dto = dtoConverter.getDtoForHardware(accountNumber, liteInv, energyCompany);
                 dtoConverter.updateDtoWithHwFields(dto, hwFields, energyCompany);
-                liteInv = deviceHelper.updateDeviceOnAccount(dto, result.getCurrentUser(), false);
+                liteInv = deviceHelper.updateDeviceOnAccount(dto, result.getCurrentUser());
                 
                 result.getHardwareUpdated().add(hwFields[ImportFields.IDX_SERIAL_NO]);
             }

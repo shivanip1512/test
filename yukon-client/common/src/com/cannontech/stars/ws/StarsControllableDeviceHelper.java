@@ -10,7 +10,7 @@ public interface StarsControllableDeviceHelper {
      * hardware device to the customer account. Handles only LMHardware devices
      * for now, will need to support other device types later.
      */
-    public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser ecOperator, boolean isEIMRequest);
+    public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser ecOperator);
 
     /**
      * For Import - Populates the Model object and calls Service to Update a
@@ -18,7 +18,7 @@ public interface StarsControllableDeviceHelper {
      * Service Company etc. Handles only LMHardware devices for now, will need
      * to support other device types later.
      */
-    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser ecOperator, boolean isEIMRequest);
+    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser ecOperator);
 
     /**
      * For Import - Populates the Model object and calls Service to Remove a

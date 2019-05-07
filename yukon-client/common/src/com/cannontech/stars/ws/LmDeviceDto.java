@@ -4,6 +4,8 @@ import java.util.Date;
 
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.common.pao.model.GPS;
+
 /**
  * This is a LM device data transfer object, used when adding/updating a
  * device to an account.
@@ -21,8 +23,7 @@ public class LmDeviceDto {
     private String serviceCompanyName;
     private String inventoryRoute;
     private Date fieldRemoveDate;
-    private Double latitude;
-    private Double longitude;
+    private GPS gps;
     private Throwable throwable;    
 
     public String getAccountNumber() {
@@ -105,20 +106,12 @@ public class LmDeviceDto {
         this.deviceVendorUserId = deviceVendorUserId;
     }
 
-    public Double getLatitude() {
-        return latitude;
+    public GPS getGps() {
+        return gps;
     }
 
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
+    public void setGps(GPS gps) {
+        this.gps = gps;
     }
 
     public String toString() {
@@ -132,8 +125,8 @@ public class LmDeviceDto {
         tsc.append("fieldRemoveDate", getFieldRemoveDate());
         tsc.append("macAddress", getMacAddress());
         tsc.append("deviceVendorUserId", getDeviceVendorUserId());
-        tsc.append("latitude", getLatitude());
-        tsc.append("longitude", getLongitude());
+        tsc.append("latitude", (getGps() != null ? getGps().getLatitude() : null));
+        tsc.append("longitude", (getGps() != null ? getGps().getLongitude() : null));
         return tsc.toString();
     }
 

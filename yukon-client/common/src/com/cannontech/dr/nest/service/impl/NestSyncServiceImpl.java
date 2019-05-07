@@ -629,7 +629,7 @@ public class NestSyncServiceImpl implements NestSyncService{
             yukonListDao.getYukonListEntry(YukonDefinition.DEV_TYPE_NEST_THERMOSTAT.getDefinitionId(), energyCompany);
         String typeStr = yukonListEntry.iterator().next().getEntryText();
         deviceInfo.setDeviceType(typeStr);
-        LiteInventoryBase inventory = starsControllableDeviceHelper.addDeviceToAccount(deviceInfo, energyCompany.getUser(), false);
+        LiteInventoryBase inventory = starsControllableDeviceHelper.addDeviceToAccount(deviceInfo, energyCompany.getUser());
         NestSyncDetail detail = new NestSyncDetail(0, syncId, AUTO, NOT_FOUND_THERMOSTAT, AUTO_CREATED_THERMOSTAT);
         detail.addValue(ACCOUNT_NUMBER, accountNumber);
         detail.addValue(SERIAL_NUMBER, thermostat);

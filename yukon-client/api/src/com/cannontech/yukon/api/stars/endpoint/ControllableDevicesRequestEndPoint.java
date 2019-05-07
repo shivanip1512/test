@@ -13,6 +13,7 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
+import com.cannontech.common.pao.model.GPS;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -111,13 +112,7 @@ public class ControllableDevicesRequestEndPoint {
         for (LmDeviceDto device : devices) {
             try {
                 if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
-                    if (device.getLatitude() != null && device.getLongitude() != null
-                        && SimpleXPathTemplate.isEmptyDouble(device.getLatitude())
-                        && SimpleXPathTemplate.isEmptyDouble(device.getLongitude())) {
-                        device.setLatitude(null);
-                        device.setLongitude(null);
-                    }
-                    starsControllableDeviceHelper.addDeviceToAccount(device, user, true);
+                    starsControllableDeviceHelper.addDeviceToAccount(device, user);
                 } else {
                     throw new StarsClientRequestException("This operation is not supported for this device type");
                 }
@@ -157,7 +152,7 @@ public class ControllableDevicesRequestEndPoint {
                                                                 EventSource.API);
 
                 if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
-                    starsControllableDeviceHelper.updateDeviceOnAccount(device, user, true);
+                    starsControllableDeviceHelper.updateDeviceOnAccount(device, user);
                 } else {
                     throw new StarsClientRequestException("This operation is not supported for this device type");
                 }
@@ -316,12 +311,31 @@ public class ControllableDevicesRequestEndPoint {
             device.setFieldInstallDate(template.evaluateAsDate(fieldInstallDateStr));
             device.setFieldRemoveDate(template.evaluateAsDate(fieldRemoveDateStr));
             device.setMacAddress(template.evaluateAsString(macAddressStr));
-            device.setLatitude(template.evaluateAsDouble(latitudeStr, true));
-            device.setLongitude(template.evaluateAsDouble(longitudeStr, true));
+
+            Double lat = template.evaluateAsDouble(latitudeStr, Double.NaN);
+            Double lon = template.evaluateAsDouble(longitudeStr, Double.NaN);
+
+            GPS gps = buildGps(lat, lon);
+            if (gps != null) {
+                device.setGps(gps);
+            }
+
             device.setDeviceVendorUserId(template.evaluateAsInt(deviceVendorUserIdStr));
             device.setInventoryRoute(template.evaluateAsString(routeStr));
             return device;
         }
+    }
+
+    public static GPS buildGps(Double lat, Double lon) {
+        if (lat != null || lon != null) {
+            // if either are not null, then set GPS coordinates (actual data will be validated later)
+            // if Double.NaN (the key defaultValue used to evaluate), set to null
+            Double latNullable = (lat == null || lat.isNaN() ? null : lat);
+            Double lonNullable = (lon == null || lon.isNaN() ? null : lon);
+            GPS gps = new GPS(latNullable, lonNullable);
+            return gps;
+        }
+        return null;
     }
 
     @Autowired

@@ -13,7 +13,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.location.Origin;
-import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -27,10 +26,13 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
     @Autowired private EndpointEventLogService endpointEventLogService;
     @Autowired private IDatabaseCache cache;
     
+    public static Double IGNORE_FIELD = Double.NaN;
+    
     @Override
     public void updateField(SimpleDevice device, YukonDeviceDto value) throws ProcessingException {
-        // If both values are empty, remove the lat/long for the device.
-        if (value.getLatitude() == null && value.getLongitude() == null) {
+
+        if (isRemoveLocationData(value.getLatitude(), value.getLongitude())) {
+            // remove the lat/long for the device.
             try {
                 paoLocationDao.delete(device.getPaoIdentifier().getPaoId());
                 return;
@@ -39,13 +41,13 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
                     + ": " + e.getMessage(), "deleteLocation", e, device.getPaoIdentifier() );
             }
         }
-        //If both latitude and longitude values are Double.NaN, then do not remove the location information.
-        if (SimpleXPathTemplate.isEmptyDouble(value.getLatitude())
-            && SimpleXPathTemplate.isEmptyDouble(value.getLongitude())) {
+
+        if (isIgnoreLocationData(value.getLatitude(), value.getLongitude())) {
+            // do not remove the location information
             return;
         }
 
-            locationValidation(device.getPaoIdentifier(), value.getLatitude(), value.getLongitude());
+        locationValidation(device.getPaoIdentifier(), value.getLatitude(), value.getLongitude());
 
         try {
             PaoLocation location =
@@ -85,5 +87,15 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
                 "Valid Longitude (Must be between -180 and 180) not specified for device with paoId " + paoIdentifier,
                 "invalidLongitude", "-180", "180", paoIdentifier);
         }
+    }
+
+    /** Returns true when both values are empty */
+    private boolean isRemoveLocationData(Double latitude, Double longitude) {
+        return latitude == null && longitude == null;
+    }
+
+    /** Returns true when both latitude and longitude values are Double.NaN */
+    private boolean isIgnoreLocationData(Double latitude, Double longitude) {
+        return latitude != null && latitude.equals(IGNORE_FIELD) && longitude != null && longitude.equals(IGNORE_FIELD);
     }
 }

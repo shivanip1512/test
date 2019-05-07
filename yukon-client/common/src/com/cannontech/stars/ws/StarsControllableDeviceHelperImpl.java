@@ -27,11 +27,11 @@ import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.GPS;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
-import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
@@ -190,7 +190,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
 
     @Override
     @Transactional
-    public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user, boolean isEIMRequest) {
+    public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user) {
         
         //Get energyCompany for the user
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
@@ -205,7 +205,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         }
                 
         // add device to account
-        liteInv = internalAddDeviceToAccount(dto, energyCompany, user, hardwareType, isEIMRequest);
+        liteInv = internalAddDeviceToAccount(dto, energyCompany, user, hardwareType);
 
         return liteInv;
     }
@@ -277,7 +277,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     }
 
     private LiteInventoryBase internalAddDeviceToAccount(LmDeviceDto dto, EnergyCompany energyCompany,
-            LiteYukonUser user, HardwareType ht, boolean isEIMRequest) {
+            LiteYukonUser user, HardwareType ht) {
 
         boolean isNewDevice = false;
         LiteInventoryBase lib = getInventory(dto, energyCompany);
@@ -377,7 +377,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             }
         }
 
-        setLocationForHardware(ht, dto, lib, isEIMRequest);
+        setLocationForHardware(ht, dto, lib);
 
         return lib;
     }
@@ -443,7 +443,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     }
 
     @Override
-    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser ecOperator, boolean isEIMRequest) {
+    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser ecOperator) {
 
         //Get energyCompany for the user
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(ecOperator);
@@ -464,14 +464,14 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
 
             // set location details.
-            setLocationForHardware(hardwareType, dto, lib, isEIMRequest);
+            setLocationForHardware(hardwareType, dto, lib);
 
             // call service to update device on the customer account
             lib = starsInventoryBaseService.updateDeviceOnAccount(lib, lsec, ecOperator, dto);
 
         } else {
             // add device to account
-            lib = internalAddDeviceToAccount(dto, energyCompany, ecOperator, hardwareType, isEIMRequest);
+            lib = internalAddDeviceToAccount(dto, energyCompany, ecOperator, hardwareType);
         }
         return lib;
     };
@@ -511,40 +511,18 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     }
 
     /* Method to set or update the latitude and longitude for the hardware */
-    private void setLocationForHardware(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib,
-            boolean isEIMRequest) {
+    private void setLocationForHardware(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib) {
         if (hardwareType.isTwoWay() && lib.getDeviceID() > 0) {
-            //For EIM, If latitude/longitude are Empty then, we are setting it to Double.NaN. Delete location info.
-            //For Web Server, If latitude/longitude are DELETE/NULL then, we are setting it to Double.NaN. Delete location info.
-            //Web Server : If latitude/longitude are Empty then, we are setting it as null and location information should not get updated.
-            //Web Server/EIM : Update the location information only when both valid latitude/longitude are provided.
-            //Web Server/EIM, if either of one is valid and other is blank, error message.
-            //All Remaining case do not modify the location
-            boolean latitudePresent = false, longitudePresent = false, deleteLattide = false,
-                    deleteLongitude = false;
-            if (dto.getLatitude() != null && dto.getLongitude() != null) {
-                latitudePresent = !SimpleXPathTemplate.isEmptyDouble(dto.getLatitude());
-                longitudePresent = !SimpleXPathTemplate.isEmptyDouble(dto.getLongitude());
-                deleteLattide = SimpleXPathTemplate.isEmptyDouble(dto.getLatitude());
-                deleteLongitude = SimpleXPathTemplate.isEmptyDouble(dto.getLongitude());
-            }
-            if (deleteLattide && deleteLongitude) {
-                paoLocationDao.delete(lib.getDeviceID());
-            } else if (latitudePresent && longitudePresent) {
-                saveLocation(dto, lib);
-            } else if (!isEIMRequest && dto.getLatitude() == null && dto.getLongitude() == null) {
+            // If gps is null, do not modify location info.
+            // if gps.latitude and gps.longitude are null, delete location info.
+            // else save location info
+            if (dto.getGps() == null) {
                 log.warn("Location data is not modified/inserted for serial number " + dto.getSerialNumber()
                     + ". Latitude or longitude fields are not specified in the request.");
-            } else if ((dto.getLatitude() == null && dto.getLongitude() != null)
-                || (dto.getLatitude() != null && dto.getLongitude() == null)) {
-                saveLocation(dto, lib);
-            } else if (isEIMRequest && (deleteLattide || deleteLongitude)
-                && (latitudePresent || longitudePresent)) {
-                saveLocation(dto, lib);
-            }else {
-                // do not modify the location
-                log.warn("Location data is not modified for serial number " + dto.getSerialNumber()
-                    + ". Latitude or longitude fields are not specified in the request.");
+            } else if (dto.getGps().getLatitude() == null && dto.getGps().getLongitude() == null) {
+                paoLocationDao.delete(lib.getDeviceID());
+            } else {
+                saveLocation(dto.getGps(), lib);
             }
         } else {
             log.warn("Location data is not supported by " + dto.getDeviceType()
@@ -552,16 +530,16 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         }
     }
 
-    /* Method to save the location for the hardware */
-    private void saveLocation(LmDeviceDto deviceDto, LiteInventoryBase lib) {
+    /* Method to validate and save the location for the hardware */
+    private void saveLocation(GPS gps, LiteInventoryBase lib) {
         DisplayablePao displayablePaoHardware =
-                paoLoadingService.getDisplayablePao(paoDao.getYukonPao(lib.getDeviceID()));
+            paoLoadingService.getDisplayablePao(paoDao.getYukonPao(lib.getDeviceID()));
 
         try {
             latitudeLongitudeBulkFieldProcessor.locationValidation(displayablePaoHardware.getPaoIdentifier(),
-                deviceDto.getLatitude(), deviceDto.getLongitude());
-            PaoLocation newLocation = new PaoLocation(displayablePaoHardware.getPaoIdentifier(),
-                deviceDto.getLatitude(), deviceDto.getLongitude());
+                gps.getLatitude(), gps.getLongitude());
+            PaoLocation newLocation =
+                new PaoLocation(displayablePaoHardware.getPaoIdentifier(), gps.getLatitude(), gps.getLongitude());
             paoLocationDao.save(newLocation);
         } catch (ProcessingException e) {
             throw e;

@@ -303,7 +303,7 @@ public class LoadControlServiceInputsTestController {
         deviceInfo.setServiceCompanyName(ServletRequestUtils.getStringParameter(request, "serviceCompanyName"));
         deviceInfo.setDeviceLabel(ServletRequestUtils.getStringParameter(request, "deviceLabel"));        
 
-        starsControllableDeviceHelper.addDeviceToAccount(deviceInfo, userContext.getYukonUser(), false);
+        starsControllableDeviceHelper.addDeviceToAccount(deviceInfo, userContext.getYukonUser());
         results.add(deviceInfo.toString());
         
         return returnMav(request, results);
@@ -326,7 +326,7 @@ public class LoadControlServiceInputsTestController {
         deviceInfo.setServiceCompanyName(ServletRequestUtils.getStringParameter(request, "serviceCompanyName"));
         deviceInfo.setDeviceLabel(ServletRequestUtils.getStringParameter(request, "deviceLabel"));        
 
-        starsControllableDeviceHelper.updateDeviceOnAccount(deviceInfo, userContext.getYukonUser(), false);
+        starsControllableDeviceHelper.updateDeviceOnAccount(deviceInfo, userContext.getYukonUser());
         results.add(deviceInfo.toString());
         
         return returnMav(request, results);

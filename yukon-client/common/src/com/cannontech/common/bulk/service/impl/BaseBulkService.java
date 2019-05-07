@@ -40,6 +40,7 @@ import com.cannontech.common.bulk.field.impl.UpdateableDevice;
 import com.cannontech.common.bulk.field.impl.YukonDeviceDto;
 import com.cannontech.common.bulk.field.processor.BlankHandlingEnum;
 import com.cannontech.common.bulk.field.processor.impl.BulkYukonDeviceFieldProcessor;
+import com.cannontech.common.bulk.field.processor.impl.LatitudeLongitudeBulkFieldProcessor;
 import com.cannontech.common.bulk.iterator.CsvReaderIterator;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.UpdateableDeviceMapper;
@@ -418,7 +419,7 @@ public abstract class BaseBulkService {
                         if ("DELETE".equalsIgnoreCase(fieldStringValue) || "NULL".equalsIgnoreCase(fieldStringValue)) {
                             fieldStringValue = null;
                         } else if (StringUtils.isEmpty(fieldStringValue)) {
-                            fieldStringValue = Double.toString(Double.NaN);
+                            fieldStringValue = Double.toString(LatitudeLongitudeBulkFieldProcessor.IGNORE_FIELD);
                         }
                     }
 

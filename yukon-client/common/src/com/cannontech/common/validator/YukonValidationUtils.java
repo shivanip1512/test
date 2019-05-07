@@ -11,7 +11,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.ValidationUtils;
 
-import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -245,8 +244,8 @@ public class YukonValidationUtils extends ValidationUtils {
 
     /* Validation for checking the latitude */
     public static boolean isLatitudeInRange(Double latitude) {
-        if (latitude != null) {
-            if (SimpleXPathTemplate.isEmptyDouble(latitude) || latitude > 90 || latitude < -90) {
+        if (latitude != null && !Double.isNaN(latitude)) {
+            if (latitude > 90 || latitude < -90) {
                 return false;
             }
         } else {
@@ -257,8 +256,8 @@ public class YukonValidationUtils extends ValidationUtils {
 
     /* Validation for checking the longitude */
     public static boolean isLongitudeInRange(Double longitude) {
-        if (longitude != null) {
-            if (SimpleXPathTemplate.isEmptyDouble(longitude) || longitude > 180 || longitude < -180) {
+        if (longitude != null && !Double.isNaN(longitude)) {
+            if (longitude > 180 || longitude < -180) {
                 return false;
             }
         } else {

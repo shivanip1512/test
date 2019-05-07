@@ -15,6 +15,7 @@ import org.w3c.dom.Node;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.pao.model.GPS;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -94,7 +95,7 @@ public class ControllableDevicesRequestEndPointTest {
             StarsControllableDeviceHelper {
 
         @Override
-        public LiteInventoryBase addDeviceToAccount(LmDeviceDto deviceInfo, LiteYukonUser user, boolean isEIMRequest) {
+        public LiteInventoryBase addDeviceToAccount(LmDeviceDto deviceInfo, LiteYukonUser user) {
             if (deviceInfo.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
                 throw new StarsAccountNotFoundException("Account not found");
             } else if (deviceInfo.getAccountNumber()
@@ -109,8 +110,7 @@ public class ControllableDevicesRequestEndPointTest {
         }
 
         @Override
-        public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto deviceInfo, LiteYukonUser user,
-                boolean isEIMRequest) {
+        public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto deviceInfo, LiteYukonUser user) {
             if (deviceInfo.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
                 throw new StarsAccountNotFoundException("Account not found");
             } else if (deviceInfo.getAccountNumber()
@@ -417,7 +417,17 @@ public class ControllableDevicesRequestEndPointTest {
         //invoke test with unauthorized user
         impl.invokeRemoveDevice(reqElement, NOT_AUTH_USER);
     }
+    
+    @Test()
+    public void testIsValidGps() {
+        GPS gps = ControllableDevicesRequestEndPoint.buildGps(null, null);
+        assertTrue("buildGps null, null", gps == null);
+        gps = ControllableDevicesRequestEndPoint.buildGps(null, Double.valueOf(160.00));
+        assertTrue("buildGps null, valid", gps != null);
 
+        gps = ControllableDevicesRequestEndPoint.buildGps(Double.valueOf(45.00), Double.valueOf(160.00));
+        assertTrue("buildGps valid, valid", gps != null);
+    }
     private static class ControllableDeviceResultMapper implements
             ObjectMapper<Node, ControllableDeviceResult> {
 
