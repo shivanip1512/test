@@ -20,6 +20,7 @@ public class MappingServiceImpl implements MappingService {
     private final static String mappingStreetUrl = "https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=";
     private final static String mappingSatelliteUrl = "https://api.tiles.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.png?access_token=";
     private final static String mappingHybridUrl = "https://api.tiles.mapbox.com/v4/mapbox.streets-satellite/{z}/{x}/{y}.png?access_token=";
+    private final static String mappingElevationUrl = "https://{a-d}.tiles.mapbox.com/v4/mapbox.mapbox-terrain-v2/{z}/{x}/{y}.mvt?access_token=";
     private final static String mappingDevKey = "pk.eyJ1IjoiZWFzeXVrb25kZXYiLCJhIjoiY2lydzVjbnNyMGo3eHQxbmtidGVoNWt5bSJ9.ddhkDSTm2ONf47E9DVaNFw";
     private final static String mappingProdKey = "pk.eyJ1IjoiZWFzeXVrb24iLCJhIjoiY2p0aGVsajNqMmRpdDRibzN1aXczNDJiciJ9.pkeDA9vCymtYlubad4d4_A";
 
@@ -30,6 +31,7 @@ public class MappingServiceImpl implements MappingService {
         String streetUrl = configSource.getString(MasterConfigString.MAP_DEVICES_STREET_URL, mappingStreetUrl);
         String satelliteUrl = configSource.getString(MasterConfigString.MAP_DEVICES_SATELLITE_URL, mappingSatelliteUrl);
         String hybridUrl = configSource.getString(MasterConfigString.MAP_DEVICES_HYBRID_URL, mappingHybridUrl);
+        String elevationUrl = configSource.getString(MasterConfigString.MAP_DEVICES_ELEVATION_URL, mappingElevationUrl);
         String devMappingKey = configSource.getString(MasterConfigString.MAP_DEVICES_KEY, mappingDevKey);
         String prodMappingKey = configSource.getString(MasterConfigString.MAP_DEVICES_KEY, mappingProdKey);
         
@@ -57,6 +59,8 @@ public class MappingServiceImpl implements MappingService {
             mappingUrl = satelliteUrl + key;
         } else if (viewType.equals(MappingType.HYBRID.name())) {
             mappingUrl = hybridUrl + key;
+        } else if (viewType.equals(MappingType.ELEVATION.name())) {
+            mappingUrl = elevationUrl + key;
         }
     
         return mappingUrl;

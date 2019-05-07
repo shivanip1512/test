@@ -83,6 +83,7 @@
     <entry key="yukon.web.components.button.download.label">Download</entry>
     <entry key="yukon.web.components.button.downloadZip.label">Download ZIP</entry>
     <entry key="yukon.web.components.button.edit.label">Edit</entry>
+    <entry key="yukon.web.components.button.elevation.label">Elevation</entry>
     <entry key="yukon.web.components.button.enable.label">Enable</entry>
     <entry key="yukon.web.components.button.enable.labelBusy">Enabling</entry>
     <entry key="yukon.web.components.button.enabled.label">Enabled</entry>

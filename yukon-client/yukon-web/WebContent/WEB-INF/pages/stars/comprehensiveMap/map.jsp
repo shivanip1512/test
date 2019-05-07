@@ -54,6 +54,8 @@
                 <cti:button renderMode="buttonImage" title="${satellite}" data-layer="mqsat" icon="icon-map-sat"/>
                 <cti:button renderMode="buttonImage" title="${hybrid}" data-layer="hybrid" icon="icon-map-hyb"/>
             </div>
+            <cti:msg2 var="elevation" key="yukon.web.components.button.elevation.label"/>
+            <cti:button renderMode="buttonImage" title="${elevation}" icon="icon-trend-up" classes="fr js-elevation-layer"/>
         </div>
         <div id="legend" class="dn" style="min-height:20px;"></div>
     </div>

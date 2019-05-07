@@ -19,6 +19,7 @@ var yg = {
     map_devices_street_url: '<cti:getMappingUrl viewType="STREET"/>',
     map_devices_satellite_url: '<cti:getMappingUrl viewType="SATELLITE"/>',
     map_devices_hybrid_url: '<cti:getMappingUrl viewType="HYBRID"/>',
+    map_devices_elevation_url: '<cti:getMappingUrl viewType="ELEVATION"/>',
     
     events: {
         animationend: 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',

@@ -543,6 +543,26 @@ yukon.map.comprehensive = (function () {
                 });
             });
             
+            /** Add an elevation layer to the map **/
+            $(document).on('click', '.js-elevation-layer', function() {
+                var checked = $(this).hasClass('on');
+                if (checked) {
+                    $(this).removeClass('on');
+                    _map.removeLayer(_elevationLayer);
+                } else {
+                    _elevationLayer = new ol.layer.VectorTile({
+                        declutter: true,
+                        opacity: 0.6,
+                        source: new ol.source.VectorTile({
+                            format: new ol.format.MVT(),
+                            url: yg.map_devices_elevation_url
+                        }),
+                    })
+                    $(this).addClass('on');
+                    _map.addLayer(_elevationLayer);
+                }
+            });
+            
             /** Remove the coordinates for the device when the user clicks OK on the confirmation popup. **/
             $(document).on('yukon:tools:map:delete-coordinates', function(event) {
                 var paoId = $('#remove-pin').data("device-id"),
