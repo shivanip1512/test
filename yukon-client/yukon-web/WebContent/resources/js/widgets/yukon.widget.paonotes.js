@@ -64,8 +64,9 @@ yukon.widget.paonotes = (function () {
                     'command' : 'deletePaoNote',
                     'extraParameters' : extraParameters,
                     'containerID' : widget.container
+                }, function () {
+                    _updateNotesWidgets();
                 });
-                _updateNotesWidgets();
             });
             
             $(document).on('click', 'button[id^="js-save-note-btn-"]', function (event) {
