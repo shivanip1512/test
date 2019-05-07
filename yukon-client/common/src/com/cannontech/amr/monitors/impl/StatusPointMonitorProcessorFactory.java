@@ -4,6 +4,8 @@ import static org.joda.time.DateTime.now;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
@@ -30,10 +32,13 @@ import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.dynamic.RichPointDataListener;
+import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Iterables;
 
 public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryBase<StatusPointMonitor> {
@@ -47,6 +52,9 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     @Autowired private GlobalSettingDao globalSettingDao;
     private JmsTemplate jmsTemplate;
     private PointDataTrackingLogger trackingLogger = new PointDataTrackingLogger(log);
+    private Cache<Integer, PointValueHolder> recentStatusPoints = CacheBuilder.newBuilder()
+                       .expireAfterWrite(10, TimeUnit.SECONDS)
+                       .build();
 
     @Override
     protected List<StatusPointMonitor> getAllMonitors() {
@@ -131,6 +139,14 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                 boolean shouldSendMessage = shouldSendMessage(statusPointMonitorProcessor, nextValue, previousValue);
 
                 if (shouldSendMessage) {
+                    
+                    PointValueHolder cachedValue = recentStatusPoints.getIfPresent(richPointData.getPointValue().getId());
+                    if (cachedValue == null || richPointData.getPointValue().getPointDataTimeStamp().after(
+                        cachedValue.getPointDataTimeStamp())) {
+                        // if this is the most recent value, cache it
+                        recentStatusPoints.put(richPointData.getPointValue().getId(), richPointData.getPointValue());
+                    }
+                  
                     OutageJmsMessage outageJmsMessage = new OutageJmsMessage();
                     outageJmsMessage.setSource(statusPointMonitor.getName());
                     outageJmsMessage.setActionType(statusPointMonitorProcessor.getActionTypeEnum());
@@ -235,6 +251,11 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     }
 
     private PointValueHolder getPreviousValueForPoint(PointValueHolder pointValueQualityHolder) {
+        PointValueHolder cachedValue = recentStatusPoints.getIfPresent(pointValueQualityHolder.getId());
+        if (cachedValue != null
+            && cachedValue.getPointDataTimeStamp().before(pointValueQualityHolder.getPointDataTimeStamp())) {
+            return cachedValue;
+        }
         Date nextTimeStamp = pointValueQualityHolder.getPointDataTimeStamp();
         int pointId = pointValueQualityHolder.getId();
         Range<Date> dateRange = new Range<>(null, true, nextTimeStamp, false);
