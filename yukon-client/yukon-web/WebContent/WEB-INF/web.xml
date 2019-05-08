@@ -820,7 +820,7 @@
     
     <filter>
         <filter-name>resourceUrlEncodingFilter</filter-name>
-        <filter-class>org.springframework.web.servlet.resource.ResourceUrlEncodingFilter</filter-class>
+        <filter-class>com.cannontech.web.common.CustomResourceUrlEncodingFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>resourceUrlEncodingFilter</filter-name>

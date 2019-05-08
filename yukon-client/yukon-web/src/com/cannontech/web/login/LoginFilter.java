@@ -104,13 +104,6 @@ public class LoginFilter implements Filter {
         boolean isAjaxRequest = ServletUtil.isAjaxRequest(servletRequest);
         boolean excludedRequest = ServletUtil.isPathMatch(request, excludedFilePaths);
 
-        // To prevent internal server error caused by empty requestUri
-        if (request.getRequestURI().replaceAll("/+", "/").equals(request.getContextPath().concat("/"))) {
-            log.debug("Redirecting to /login.jsp");
-            doLoginRedirect(isAjaxRequest, request, response);
-            return;
-        }
-
         // For excluded requests, try to attach the userContext, but they may not be logged in.
         if (excludedRequest) {
             log.debug("Proceeding with request that passes exclusion filter");
