@@ -157,7 +157,9 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
             dto.setGps(gps);
         }
     }
-
+    /** 
+     * Returns GPS object when both latitude and longitude are not blank, else return <code>null<code>.
+     */
     private static GPS getLocationGps(String[] hwFields) {
         // If both are blank, return null else return GPS object(Example: lat: Blank, long : Invalid)
         if (StringUtils.isNotBlank(hwFields[ImportFields.IDX_LATITUDE])
@@ -165,7 +167,6 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
             Double lat = null;
             Double lon = null;
 
-            // when latitude contains DELETE/NULL, set it to Double.NaN else set as it is.
             if (("DELETE".equalsIgnoreCase(hwFields[ImportFields.IDX_LATITUDE])
                 || "NULL".equalsIgnoreCase(hwFields[ImportFields.IDX_LATITUDE]))
                 && ("DELETE".equalsIgnoreCase(hwFields[ImportFields.IDX_LONGITUDE])

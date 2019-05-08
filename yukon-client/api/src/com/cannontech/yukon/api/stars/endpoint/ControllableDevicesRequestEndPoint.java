@@ -326,6 +326,9 @@ public class ControllableDevicesRequestEndPoint {
         }
     }
 
+    /**
+     * Returns GPS object when both latitude and longitude are not <code>null<code>, else return <code>null<code>.
+     */
     public static GPS buildGps(Double lat, Double lon) {
         if (lat != null || lon != null) {
             // if either are not null, then set GPS coordinates (actual data will be validated later)
