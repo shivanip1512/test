@@ -45,7 +45,7 @@ public interface RecentPointValueDao {
         METER_NUMBER("dmg.MeterNumber"),
         DEVICE_TYPE("ypo.Type"),
         SERIAL_NUMBER_ADDRESS("SerialNumberAddress"),
-        PRIMARY_GATEWAY("drdd.GatewayId"),
+        PRIMARY_GATEWAY("GatewayName"),
         TIMESTAMP("Timestamp"),
         ROUTE("Route");
         
