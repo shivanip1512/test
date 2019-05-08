@@ -109,4 +109,6 @@ public interface RfnDeviceDao {
      * Returns list of device ids for rfn identifiers
      */
     List<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers);
+
+    Integer findDeviceBySensorSerialNumber(String sensorSerialNumber);
 }

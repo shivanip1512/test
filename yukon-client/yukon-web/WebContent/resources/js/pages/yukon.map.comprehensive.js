@@ -444,6 +444,7 @@ yukon.map.comprehensive = (function () {
                     });
                     _icons = [];
                     _mapLayers = [];
+                    _removeDeviceFocusLayers();
                     var map = data.map.mappedDevices;
                     Object.keys(map).forEach(function(key) {
                         var value = map[key];
@@ -461,8 +462,7 @@ yukon.map.comprehensive = (function () {
             
             $("#findDevice").keyup(function(event) {
                 if (event.keyCode === 13) {
-                    var form = $('#filter-form'),
-                        searchText = $('#findDevice').val();
+                    var searchText = $('#findDevice').val();
                     //change last found device back
                     if (_highlightDevice) {
                         _highlightDevice.setStyle(_highlightOldStyle);
@@ -472,14 +472,16 @@ yukon.map.comprehensive = (function () {
                         $.ajax({
                             url: yukon.url('/stars/comprehensiveMap/search?searchText=' + searchText),
                             type: 'get',
-                            data: form.serialize()
                         }).done( function(data) {
+                            var searchError = $('#noResultsFoundError').val();
                             if (data.paoId) {
+                                var foundOnMap = false;
                                 var source = _map.getLayers().getArray()[_tiles.length].getSource(),
                                     features = source.getFeatures();
                                 for (var x in features) {
                                     var feature = features[x];
                                     if (feature.get("pao").paoId === data.paoId) {
+                                        foundOnMap = true;
                                         _highlightDevice = feature;
                                         _highlightOldStyle = feature.getStyle();
                                         var largerStyle = feature.getStyle().clone(),
@@ -497,8 +499,10 @@ yukon.map.comprehensive = (function () {
                                         break;
                                     }
                                 }
+                                if (!foundOnMap) {
+                                    yukon.ui.alertError(searchError);
+                                }
                             } else {
-                                var searchError = $('#noResultsFoundError').val();
                                 yukon.ui.alertError(searchError);
                             }
                         });

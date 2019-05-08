@@ -102,4 +102,9 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     public void clearDynamicRfnDeviceData() {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public Integer findDeviceBySensorSerialNumber(String sensorSerialNumber) {
+        throw new MethodNotImplementedException();
+    }
 }
