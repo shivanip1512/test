@@ -27,6 +27,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
@@ -94,7 +95,24 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
         if (sortBy == null) {
             sql.append( "SELECT count(ypo.PAObjectId)");
         } else {
-            sql.append( "SELECT ypo.PAObjectId, rpv.PointId, Timestamp, Quality, Value, ypo.Type, p.PointType, dmg.MeterNumber, "+combineSerialNumberAndAddress+" as SerialNumberAddress, ypo.PAOName, ypo.DisableFlag, dr.RouteId, rypo.PAOName as Route");
+            sql.append( "SELECT "
+                           + "ypo.PAObjectId, "
+                           + "rpv.PointId, "
+                           + "drdd.GatewayId, "
+                           + "rpv.Timestamp, "
+                           + "rpv.Quality, "
+                           + "rpv.Value, "
+                           + "ypo.Type, "
+                           + "p.PointType, "
+                           + "dmg.MeterNumber, "
+                           + combineSerialNumberAndAddress+" as SerialNumberAddress, "
+                           + "ypo.PAOName, "
+                           + "ypo.DisableFlag, "
+                           + "dr.RouteId, "
+                           + "rypo.PAOName as Route, "
+                           + "drdd.GatewayId, "
+                           + "gypo.PAOName AS GatewayName, "
+                           + "gypo.Type AS GatewayType");
         }
         sql.append("FROM YukonPaObject ypo");
         if (ranges.containsKey(RangeType.UNAVAILABLE)) {
@@ -108,6 +126,8 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
         sql.append("LEFT JOIN DeviceRoutes dr ON ypo.PAObjectId = dr.deviceId");
         sql.append("LEFT JOIN YukonPaObject rypo ON dr.RouteId = rypo.PAObjectID");
         sql.append("LEFT JOIN RFNAddress rfna ON ypo.PAObjectId = rfna.DeviceId");
+        sql.append("LEFT JOIN DynamicRfnDeviceData drdd on ypo.PAObjectID = drdd.DeviceId");
+        sql.append("LEFT JOIN YukonPAObject gypo ON drdd.GatewayId = gypo.PAObjectID");
    
         sql.append("WHERE").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "ypo.PAObjectId"));
 
@@ -229,7 +249,11 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
                 detail.setRange(getRangeType(new Instant(pointDataTimeStamp)));
             }
             detail.setPaoIdentifier(rs.getPaoIdentifier("PAObjectId", "Type"));
+            if (rs.getEnum("GatewayType", PaoType.class) != null) {
+                detail.setGatewayPaoIdentifier(rs.getPaoIdentifier("GatewayId", "GatewayType"));
+            }
             detail.setDeviceName(rs.getString("PAOName"));
+            detail.setGatewayName(rs.getString("gatewayName"));
             detail.setMeterNumber(Objects.toString(rs.getString("MeterNumber"), ""));
             detail.setRoute(Objects.toString(rs.getString("Route"), ""));
             detail.setAddressSerialNumber(Objects.toString(rs.getString("SerialNumberAddress"), ""));

@@ -27,6 +27,7 @@
     <entry key="yukon.web.modules.amr.dataCollection.detail.meterNumber">Meter Number</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.deviceType">Device Type</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.serialNumberAddress">Serial Number/Address</entry>
+    <entry key="yukon.web.modules.amr.dataCollection.detail.primaryGateway">Primary Gateway</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.recentReading">Recent Reading</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.noRecentReadingFound">No recent reading found</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.timestamp">Timestamp</entry>

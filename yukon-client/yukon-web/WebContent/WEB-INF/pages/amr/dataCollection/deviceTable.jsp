@@ -14,7 +14,8 @@
     <tags:sort column="${deviceName}" />                
     <tags:sort column="${meterNumber}" />                
     <tags:sort column="${deviceType}" />                
-    <tags:sort column="${serialNumberAddress}" />                
+    <tags:sort column="${serialNumberAddress}" />
+    <tags:sort column="${primaryGateway}" />                
     <tags:sort column="${recentReading}" />                                
     <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
     <c:forEach var="device" items="${detail.resultList}">
@@ -44,6 +45,7 @@
             <td>${fn:escapeXml(device.meterNumber)}</td>
             <td>${fn:escapeXml(device.paoIdentifier.paoType.paoTypeName)}</td>
             <td>${fn:escapeXml(device.addressSerialNumber)}</td>
+            <td><cti:paoDetailUrl yukonPao="${device.gatewayPaoIdentifier}" newTab="true">${fn:escapeXml(device.gatewayName)}</cti:paoDetailUrl></td>
             <td>
                 <c:choose>
                     <c:when test="${device.value != null}">
