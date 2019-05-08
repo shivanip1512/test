@@ -912,6 +912,8 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Peak Total watts:                   { Unit: *s,     Modifiers: [ *Coin1                                                ], Models: *ADTR-RDTR-650 }
     - Cumulative Peak Total watts:                { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Coin2, *Cuml               ], Models: *ADTR-RDTR-650, Mapped: false }
     - Continuous Cumulative Peak Total watts:     { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Coin3, *Cont               ], Models: *ADTR-RDTR-650, Mapped: false }
+    - Coincident Total VARhours:                  { Unit: *Varh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Coin4                            ], Models: *ADTR-RDTR-650, Mapped: false }
+    - Coincident Power Factor:                    { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Coin5                            ], Models: *ADTR-RDTR-650 }
     - Previous Peak Total watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev                       ], Models: *ADTR-RDTR-650, Mapped: false }
     - Time of Previous Peak Total watts:          { Unit: *s,     Modifiers: [ *Coin1, *Prev                                         ], Models: *ADTR-RDTR-650 }
     - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net                        ], Models: *____-____-650 }

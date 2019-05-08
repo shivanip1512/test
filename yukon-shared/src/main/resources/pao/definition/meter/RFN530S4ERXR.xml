@@ -26,6 +26,7 @@
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
+        <pointInfo name="Coincident Power Factor" attributes="POWER_FACTOR_COIN"/>
         <pointInfo name="Current Angle Phase A" attributes="CURRENT_ANGLE_PHASE_A"/>
         <pointInfo name="Current Angle Phase B" attributes="CURRENT_ANGLE_PHASE_B"/>
         <pointInfo name="Current Angle Phase C" attributes="CURRENT_ANGLE_PHASE_C"/>
