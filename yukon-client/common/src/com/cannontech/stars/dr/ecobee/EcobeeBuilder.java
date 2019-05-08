@@ -12,6 +12,7 @@ import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteDevice;
@@ -43,7 +44,7 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
         createDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
     }
     
-    public void createDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
+    public PaoIdentifier createDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
         try {
             ecobeeCommunicationService.registerDevice(serialNumber);
             
@@ -54,6 +55,7 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
             // Update the Stars table with the device id
             inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, ecobeePao.getPaObjectId());
             ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
+            return ecobeePao.getPaoIdentifier();
         } catch (Exception e) {
             //Catch any exception here - only ecobee exceptions (most often communications) are expected, but we might
             //also have authentication exceptions (which cannot be explicitly caught here) or something unexpected.

@@ -25,6 +25,7 @@ import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.GPS;
@@ -339,10 +340,12 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                     throw new StarsInvalidArgumentException(e.getMessage(), e);
                 }
             } else if (ht.isNest()) {
-                nestBuilder.createDevice(lib.getInventoryID(), dto.getSerialNumber(), ht);
+                PaoIdentifier paoIdentifier = nestBuilder.createDevice(lib.getInventoryID(), dto.getSerialNumber(), ht);
+                lib.setDeviceID(paoIdentifier.getPaoId());
             } else if (ht.isEcobee()) {
                 try {
-                    ecobeeBuilder.createDevice(lib.getInventoryID(), dto.getSerialNumber(), ht);
+                    PaoIdentifier paoIdentifier = ecobeeBuilder.createDevice(lib.getInventoryID(), dto.getSerialNumber(), ht);
+                    lib.setDeviceID(paoIdentifier.getPaoId());
                 } catch (DeviceCreationException e) {
                     throw new StarsClientRequestException("Failed to register ecobee device with ecobee server.", e);
                 }
@@ -356,8 +359,9 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                     if (deviceVendorUserId == null) {
                         throw new StarsInvalidArgumentException("Valid UserId is required");
                     }
-                    honeywellBuilder.createDevice(lib.getInventoryID(), dto.getSerialNumber(), ht, macAddress,
-                        dto.getDeviceVendorUserId());
+                    PaoIdentifier paoIdentifier = honeywellBuilder.createDevice(lib.getInventoryID(),
+                        dto.getSerialNumber(), ht, macAddress, dto.getDeviceVendorUserId());
+                    lib.setDeviceID(paoIdentifier.getPaoId());
                 } catch (DeviceCreationException e) {
                     throw new StarsClientRequestException("Failed to register honeywell wifi device with honeywell server.", e);
                 }
