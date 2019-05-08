@@ -32,7 +32,6 @@ import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.dynamic.RichPointDataListener;
-import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.system.GlobalSettingType;
@@ -53,7 +52,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     private JmsTemplate jmsTemplate;
     private PointDataTrackingLogger trackingLogger = new PointDataTrackingLogger(log);
     private Cache<Integer, PointValueHolder> recentStatusPoints = CacheBuilder.newBuilder()
-                       .expireAfterWrite(10, TimeUnit.SECONDS)
+                       .expireAfterWrite(30, TimeUnit.SECONDS)
                        .build();
 
     @Override
@@ -125,6 +124,13 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
             PointValueHolder nextValue = richPointData.getPointValue();
             PointValueHolder previousValue = null; // store this outside the loop because it is valid for every processor 
             
+            PointValueHolder cachedValue = recentStatusPoints.getIfPresent(richPointData.getPointValue().getId());
+            if (cachedValue == null || richPointData.getPointValue().getPointDataTimeStamp().after(
+                cachedValue.getPointDataTimeStamp())) {
+                // if this is the most recent value, cache it
+                recentStatusPoints.put(nextValue.getId(), nextValue);
+            }
+            
             if (log.isDebugEnabled()) {
                 log.debug("Point %s caught by Status Point Monitor: %s with value: %s", richPointData.getPaoPointIdentifier(), statusPointMonitor, nextValue);
             }
@@ -138,15 +144,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                 
                 boolean shouldSendMessage = shouldSendMessage(statusPointMonitorProcessor, nextValue, previousValue);
 
-                if (shouldSendMessage) {
-                    
-                    PointValueHolder cachedValue = recentStatusPoints.getIfPresent(richPointData.getPointValue().getId());
-                    if (cachedValue == null || richPointData.getPointValue().getPointDataTimeStamp().after(
-                        cachedValue.getPointDataTimeStamp())) {
-                        // if this is the most recent value, cache it
-                        recentStatusPoints.put(richPointData.getPointValue().getId(), richPointData.getPointValue());
-                    }
-                  
+                if (shouldSendMessage) {                  
                     OutageJmsMessage outageJmsMessage = new OutageJmsMessage();
                     outageJmsMessage.setSource(statusPointMonitor.getName());
                     outageJmsMessage.setActionType(statusPointMonitorProcessor.getActionTypeEnum());
@@ -250,19 +248,23 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
         return processorPointValue == pointValueAsInt;
     }
 
-    private PointValueHolder getPreviousValueForPoint(PointValueHolder pointValueQualityHolder) {
-        PointValueHolder cachedValue = recentStatusPoints.getIfPresent(pointValueQualityHolder.getId());
-        if (cachedValue != null
-            && cachedValue.getPointDataTimeStamp().before(pointValueQualityHolder.getPointDataTimeStamp())) {
-            return cachedValue;
-        }
-        Date nextTimeStamp = pointValueQualityHolder.getPointDataTimeStamp();
-        int pointId = pointValueQualityHolder.getId();
+    private PointValueHolder getPreviousValueForPoint(PointValueHolder nextValue) {
+        Date nextTimeStamp = nextValue.getPointDataTimeStamp();
+        int pointId = nextValue.getId();
         Range<Date> dateRange = new Range<>(null, true, nextTimeStamp, false);
 		List<PointValueHolder> pointPrevValueList = rawPointHistoryDao.getLimitedPointData(pointId,dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), false,
 						Order.REVERSE, 1);
+        PointValueHolder cachedValue = recentStatusPoints.getIfPresent(pointId);
+        PointValueHolder rphValue = Iterables.getFirst(pointPrevValueList, null);
+        if (cachedValue != null
+            // next value is more recent that the value in cache
+            && nextTimeStamp.after(cachedValue.getPointDataTimeStamp())
+            // cached value is more recent then value in RPH
+            && cachedValue.getPointDataTimeStamp().after(rphValue.getPointDataTimeStamp())) {
+            return cachedValue;
+        }
 
-        return Iterables.getFirst(pointPrevValueList, null);
+        return rphValue;
     }
     
     @Autowired
