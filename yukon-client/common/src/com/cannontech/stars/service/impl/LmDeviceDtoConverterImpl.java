@@ -10,6 +10,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.model.ServiceCompanyDto;
+import com.cannontech.common.pao.model.GPS;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
@@ -67,12 +68,10 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
             && StringUtils.isNumeric(hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])) {
             dto.setDeviceVendorUserId(Integer.valueOf((hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])));
         }
-        if (!StringUtils.isBlank(hwFields[ImportFields.IDX_LATITUDE])) {
-            dto.setLatitude(Double.valueOf(hwFields[ImportFields.IDX_LATITUDE]));
-        }
 
-        if (!StringUtils.isBlank(hwFields[ImportFields.IDX_LONGITUDE])) {
-            dto.setLongitude(Double.valueOf(hwFields[ImportFields.IDX_LONGITUDE]));
+        GPS gps = getLocationGps(hwFields);
+        if (gps != null) {
+            dto.setGps(gps);
         }
 
         return dto;
@@ -153,13 +152,39 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
             dto.setDeviceVendorUserId(Integer.valueOf((hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])));
         }
 
-        if(!StringUtils.isBlank(hwFields[ImportFields.IDX_LATITUDE])){
-            dto.setLatitude(Double.valueOf(hwFields[ImportFields.IDX_LATITUDE]));
-        }
-
-        if(!StringUtils.isBlank(hwFields[ImportFields.IDX_LONGITUDE])){
-            dto.setLongitude(Double.valueOf(hwFields[ImportFields.IDX_LONGITUDE]));
+        GPS gps = getLocationGps(hwFields);
+        if (gps != null) {
+            dto.setGps(gps);
         }
     }
-    
+    /** 
+     * Returns GPS object when both latitude and longitude are not blank, else return <code>null<code>.
+     */
+    private static GPS getLocationGps(String[] hwFields) {
+        // If both are blank, return null else return GPS object(Example: lat: Blank, long : Invalid)
+        if (StringUtils.isNotBlank(hwFields[ImportFields.IDX_LATITUDE])
+            || StringUtils.isNotBlank(hwFields[ImportFields.IDX_LONGITUDE])) {
+            Double lat = null;
+            Double lon = null;
+
+            if (("DELETE".equalsIgnoreCase(hwFields[ImportFields.IDX_LATITUDE])
+                || "NULL".equalsIgnoreCase(hwFields[ImportFields.IDX_LATITUDE]))
+                && ("DELETE".equalsIgnoreCase(hwFields[ImportFields.IDX_LONGITUDE])
+                    || "NULL".equalsIgnoreCase(hwFields[ImportFields.IDX_LONGITUDE]))) {
+                // both sets must be DELETE or NULL, or will be invalid data
+                // do nothing, use null default
+            } else {
+                // this could have parse exception I think, which will catch any case but DELETE or NULL (as
+                // above if check)
+                lat = StringUtils.isNotBlank(hwFields[ImportFields.IDX_LATITUDE])
+                    ? Double.valueOf(hwFields[ImportFields.IDX_LATITUDE]) : null;
+                lon = StringUtils.isNotBlank(hwFields[ImportFields.IDX_LONGITUDE])
+                    ? Double.valueOf(hwFields[ImportFields.IDX_LONGITUDE]) : null;
+            }
+
+            GPS gps = new GPS(lat, lon);
+            return gps;
+        }
+        return null;
+    }
 }

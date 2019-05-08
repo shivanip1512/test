@@ -16,7 +16,7 @@
 
 package com.cannontech.common.util.xml;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -66,7 +66,6 @@ import com.cannontech.common.util.ObjectMapper;
  */
 public class SimpleXPathTemplate extends TransformerObjectSupport {
     private Properties namespaces;
-    private final static Double emptyFieldDouble = Double.NaN;
 
     /** Returns namespaces used in the XPath expression. */
     public Properties getNamespaces() {
@@ -148,16 +147,36 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     /**
      * Evaluate value at expression as a Double.
      * Returns null if the expression defines a node that does not exists.
-     * Return NaN if the expression exist but is empty.
-     * @param expression
-     * @return
+     * Returns null if the expression exists but is empty or not a Double.
      * @throws XPathException
      */
-    public Double evaluateAsDouble(String expression, boolean isNaNForBlank) throws XPathException {
+    public Double evaluateAsDouble(String expression) throws XPathException {
         checkArgument(expression != null);
 
-        Double num = null;
-        num = evaluateNumber(expression, isNaNForBlank);
+        Double num = evaluateNumber(expression);
+        return num == null ? null : num;
+    }
+    
+    /**
+     * Evaluate value at expression as a Double.
+     * Returns null if the expression defines a node that does not exists.
+     * Returns defaultWhenEmpty if the expression exists but is empty or not a Double.
+     *   - using defaultWhenEmpty = null is same as evaluteAsDouble(expression, null);
+     * @throws XPathException
+     */
+    public Double evaluateAsDouble(String expression, Double defaultWhenEmpty) throws XPathException {
+        checkArgument(expression != null);
+
+        if (evaluateAsString(expression) == null) {
+            // field does not exist, skip
+            return null;
+        }
+
+        Double num = evaluateNumber(expression);
+        if (num == null) {
+            // since we've already checked for expression = null above, we know this is an empty value
+            return defaultWhenEmpty;
+        }
         return num;
     }
 
@@ -168,7 +187,7 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
 	public Float evaluateAsFloat(String expression) {
         checkArgument(expression != null);
 
-    	Double num = evaluateNumber(expression, false);
+        Double num = evaluateNumber(expression);
         return num == null ? null : num.floatValue();
     }
 	
@@ -189,7 +208,7 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     public Long evaluateAsLong(String expression, Long defaultValue) {
         checkArgument(expression != null);
 
-        Double num = evaluateNumber(expression, false);
+        Double num = evaluateNumber(expression);
         if (num == null) {
             return defaultValue;
         }
@@ -211,7 +230,7 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     public Integer evaluateAsInt(String expression, Integer defaultInt) throws XPathException {
         checkArgument(expression != null);
 
-        Double num = evaluateNumber(expression, false);
+        Double num = evaluateNumber(expression);
         return (num == null) ? defaultInt : (Integer) num.intValue();
     }
     
@@ -223,20 +242,11 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
 	 * 
 	 * @throws NumberFormatException
 	 */
-    private Double evaluateNumber(String expression, boolean isNaNForBlank) throws NumberFormatException {
+    private Double evaluateNumber(String expression) throws NumberFormatException {
 
         // Check to see if it is empty. If it is return null.
-        if (!isNaNForBlank && StringUtils.isBlank(evaluateAsString(expression))) {
+        if (StringUtils.isBlank(evaluateAsString(expression))) {
             return null;
-        } else {
-            // checks if fields exist or not
-            if (evaluateAsString(expression) == null) {
-                return null;
-            }
-            // checks if fields are empty or whitespace characters
-            if (StringUtils.isBlank(evaluateAsString(expression))) {
-                return emptyFieldDouble;
-            }
         }
 
         Double num = (Double) evaluate(expression, XPathConstants.NUMBER);
@@ -244,11 +254,6 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
             throw new NumberFormatException();
         }
         return num;
-    }
-
-    /* public helper method for checking the empty field */
-    public static boolean isEmptyDouble(Double checkField) {
-        return checkField.equals(emptyFieldDouble);
     }
 
     /**

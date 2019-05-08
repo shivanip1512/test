@@ -33,11 +33,14 @@ import com.cannontech.common.bulk.field.BulkField;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.bulk.field.impl.BulkYukonDeviceFieldFactory;
+import com.cannontech.common.bulk.field.impl.LatitudeBulkField;
+import com.cannontech.common.bulk.field.impl.LongitudeBulkField;
 import com.cannontech.common.bulk.field.impl.NameBulkField;
 import com.cannontech.common.bulk.field.impl.UpdateableDevice;
 import com.cannontech.common.bulk.field.impl.YukonDeviceDto;
 import com.cannontech.common.bulk.field.processor.BlankHandlingEnum;
 import com.cannontech.common.bulk.field.processor.impl.BulkYukonDeviceFieldProcessor;
+import com.cannontech.common.bulk.field.processor.impl.LatitudeLongitudeBulkFieldProcessor;
 import com.cannontech.common.bulk.iterator.CsvReaderIterator;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.UpdateableDeviceMapper;
@@ -402,6 +405,8 @@ public abstract class BaseBulkService {
                     // normalized blank data
                     // if its blank and is to be ignored, set to null
                     // if its blank and blank handling is not applicable, set to null
+                    // if its lat/long and it contains DELETE/NULL, set to null so that location will be removed
+                    // if its lat/long and it is empty(After trimming), set to Double.NaN so that location will not be removed
                     // otherwise set as-is
                     BlankHandlingEnum blankHandlingEnum = bulkField.getBlankHandlingEnum();
                     if (StringUtils.isBlank(fieldStringValue)
@@ -410,6 +415,12 @@ public abstract class BaseBulkService {
                     } else if ((bulkField instanceof NameBulkField)
                         && !(PaoUtils.isValidPaoName(fieldStringValue))) {
                         throw new DeviceCreationException("Device name cannot include any of the following characters " + String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS),"invalidCharacters", String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS));
+                    } else if ((bulkField instanceof LatitudeBulkField || bulkField instanceof LongitudeBulkField)) {
+                        if ("DELETE".equalsIgnoreCase(fieldStringValue) || "NULL".equalsIgnoreCase(fieldStringValue)) {
+                            fieldStringValue = null;
+                        } else if (StringUtils.isEmpty(fieldStringValue)) {
+                            fieldStringValue = Double.toString(LatitudeLongitudeBulkFieldProcessor.IGNORE_FIELD);
+                        }
                     }
 
                     valueMap.put(inputSource.getField(), fieldStringValue);

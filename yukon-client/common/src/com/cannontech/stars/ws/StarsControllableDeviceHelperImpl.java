@@ -27,11 +27,11 @@ import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.GPS;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
-import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
@@ -276,10 +276,8 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         return lib;
     }
 
-    private LiteInventoryBase internalAddDeviceToAccount(LmDeviceDto dto,
-                                                         EnergyCompany energyCompany, 
-                                                         LiteYukonUser user,
-                                                         HardwareType ht) {
+    private LiteInventoryBase internalAddDeviceToAccount(LmDeviceDto dto, EnergyCompany energyCompany,
+            LiteYukonUser user, HardwareType ht) {
 
         boolean isNewDevice = false;
         LiteInventoryBase lib = getInventory(dto, energyCompany);
@@ -445,7 +443,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     }
 
     @Override
-    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser ecOperator, boolean isEIMRequest) {
+    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser ecOperator) {
 
         //Get energyCompany for the user
         EnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(ecOperator);
@@ -464,15 +462,12 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             setInventoryValues(dto, lib, energyCompany);
 
             LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
+
+            // set location details.
+            setLocationForHardware(hardwareType, dto, lib);
+
             // call service to update device on the customer account
             lib = starsInventoryBaseService.updateDeviceOnAccount(lib, lsec, ecOperator, dto);
-
-            if (isEIMRequest) {
-                setLocationForHardwareEIM(hardwareType, dto, lib);
-            } else {
-                setLocationForHardware(hardwareType, dto, lib);
-            }
-            
 
         } else {
             // add device to account
@@ -518,35 +513,16 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     /* Method to set or update the latitude and longitude for the hardware */
     private void setLocationForHardware(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib) {
         if (hardwareType.isTwoWay() && lib.getDeviceID() > 0) {
-            if (dto.getLatitude() != null && dto.getLongitude() != null) {
-                saveLocation(dto, lib);
-            } else if (dto.getLatitude() == null && dto.getLongitude() == null) {
-                paoLocationDao.delete(lib.getDeviceID());
-            }
-        } else {
-            log.warn("Location data is not supported by " + dto.getDeviceType()
-                + " device type. No location data will be set for serial number " + dto.getSerialNumber());
-        }
-    }
-    
-    /* Method to set or update the latitude and longitude for the hardware for EIM server */
-    private void setLocationForHardwareEIM(HardwareType hardwareType, LmDeviceDto dto, LiteInventoryBase lib) {
-
-        if (hardwareType.isTwoWay() && lib.getDeviceID() > 0) {
-            // checks if fields exist or not in the request. If the fields exist but are empty then it will
-            // remove the location details.
-            if (dto.getLatitude() != null && dto.getLongitude() != null
-                && !SimpleXPathTemplate.isEmptyDouble(dto.getLatitude())
-                && !SimpleXPathTemplate.isEmptyDouble(dto.getLongitude())) {
-                saveLocation(dto, lib);
-            } else if (dto.getLatitude() != null && dto.getLongitude() != null
-                && SimpleXPathTemplate.isEmptyDouble(dto.getLatitude())
-                && SimpleXPathTemplate.isEmptyDouble(dto.getLongitude())) {
+            // If gps is null, do not modify location info.
+            // if gps.latitude and gps.longitude are null, delete location info.
+            // else save location info
+            if (dto.getGps() == null) {
+                log.warn("Location data is not modified/inserted for serial number " + dto.getSerialNumber()
+                    + ". Latitude or longitude fields are not specified in the request.");
+            } else if (dto.getGps().getLatitude() == null && dto.getGps().getLongitude() == null) {
                 paoLocationDao.delete(lib.getDeviceID());
             } else {
-                // do not modify the location
-                log.warn("Location data is not modified for serial number " + dto.getSerialNumber()
-                    + ". Latitude or longitude fields are not specified in the request.");
+                saveLocation(dto.getGps(), lib);
             }
         } else {
             log.warn("Location data is not supported by " + dto.getDeviceType()
@@ -554,16 +530,16 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         }
     }
 
-    /* Method to save the location for the hardware */
-    private void saveLocation(LmDeviceDto deviceDto, LiteInventoryBase lib) {
+    /* Method to validate and save the location for the hardware */
+    private void saveLocation(GPS gps, LiteInventoryBase lib) {
         DisplayablePao displayablePaoHardware =
-                paoLoadingService.getDisplayablePao(paoDao.getYukonPao(lib.getDeviceID()));
+            paoLoadingService.getDisplayablePao(paoDao.getYukonPao(lib.getDeviceID()));
 
         try {
             latitudeLongitudeBulkFieldProcessor.locationValidation(displayablePaoHardware.getPaoIdentifier(),
-                deviceDto.getLatitude(), deviceDto.getLongitude());
-            PaoLocation newLocation = new PaoLocation(displayablePaoHardware.getPaoIdentifier(),
-                deviceDto.getLatitude(), deviceDto.getLongitude());
+                gps.getLatitude(), gps.getLongitude());
+            PaoLocation newLocation =
+                new PaoLocation(displayablePaoHardware.getPaoIdentifier(), gps.getLatitude(), gps.getLongitude());
             paoLocationDao.save(newLocation);
         } catch (ProcessingException e) {
             throw e;
