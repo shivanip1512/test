@@ -83,26 +83,26 @@ yukon.dr.ecobee = (function () {
                     },
                     error: function(xhr, status, error, $form) {
                         yukon.ui.unbusy(".js-request-runtime-report");
-                        var errList = xhr.responseJSON,
+                        var response = xhr.responseJSON,
                             i,
                             errorType,
                             showNothingSelected = false;
-                        // clear possibly leftover date range message
-                        $('#bad-date-range').hide();
-                        $('#missing-serial-numbers').hide();
-                        for (i = 0; i < errList.length; i += 1) {
-                            errorType = errList[i].errorType;
-                            if ('loadgroupsUnspecified' === errorType) {
-                                showNothingSelected = true;
-                            }
-                            if ('dateRangeError' === errorType) {
-                                $('#bad-date-range').show();
-                            }
-                            
-                            if ('loadgroupsMissingSerialNumbers' === errorType) {
-                                $('#missing-serial-numbers').show();
-                            }
+
+                        $("#start-date-invalid").toggleClass("dn", !("startDateError" in response));
+                        $("#end-date-invalid").toggleClass("dn", !("endDateError" in response));
+                        $("#bad-date-range").toggleClass("dn", !("dateRangeError" in response));
+
+                        var startDateError = (("dateRangeError" in response) || ("startDateError" in response));
+                        $("#startReportDate").toggleClass("error", startDateError);
+                        var endDateError = (("dateRangeError" in response) || ("endDateError" in response));
+                        $("#endReportDate").toggleClass("error", endDateError);
+
+                        if ("loadgroupsUnspecified" in response) {
+                            showNothingSelected = true;
                         }
+
+                        $("#missing-serial-numbers").toggleClass("dn", 'loadgroupsMissingSerialNumbers' !== errorType);
+
                         // initialize the date/time pickers
                         yukon.ui.initDateTimePickers().ancestorInit('#ecobee-download-popup');
                         

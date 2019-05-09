@@ -2,6 +2,7 @@ package com.cannontech.web.dr.ecobee;
 
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,16 +45,15 @@ import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
-import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
 import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyCategory;
 import com.cannontech.dr.ecobee.model.EcobeeReadResult;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationReport;
 import com.cannontech.dr.ecobee.model.EcobeeReconciliationResult;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeDiscrepancy;
-import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeReconciliationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -64,17 +64,15 @@ import com.cannontech.jobs.support.JobManagerException;
 import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
-import com.cannontech.stars.core.dao.EnergyCompanyDao;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.ecobee.service.DataDownloadService;
 import com.cannontech.web.dr.model.EcobeeSettings;
-import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.SHOW_ECOBEE)
@@ -87,15 +85,10 @@ public class EcobeeController {
 
     @Autowired private DataDownloadService dataDownloadService;
     @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
 
-    @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
-    @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
     @Autowired private EcobeeReconciliationService ecobeeReconciliation;
-    @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private JobManager jobManager;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
@@ -208,37 +201,54 @@ public class EcobeeController {
                                  String ecobeeEndReportDate,
                                  YukonUserContext userContext) throws IOException {
 
-        Instant startDate = new Instant(dateTimeFormatter.parseMillis(ecobeeStartReportDate));
-        Instant endDate = new Instant(dateTimeFormatter.parseMillis(ecobeeEndReportDate));
-        
-        Duration specifiedDuration = new Duration(startDate, endDate);
-        
-        List<Map<String, String>> errResponse = new ArrayList<>();
+        Map<String, String> errResponse = Maps.newHashMap();
         boolean validationError = false;
-        if (specifiedDuration.isLongerThan(Duration.standardDays(7)) ||
-                startDate.isAfter(endDate)) {
-            Map<String, String> json = new HashMap<>();
-            json.put("errorType", "dateRangeError");
-            errResponse.add(json);
+        Instant startDate = null;
+        try {
+            startDate = dateFormattingService.flexibleInstantParser(ecobeeStartReportDate, DateOnlyMode.START_OF_DAY,
+                userContext);
+        } catch (ParseException e) {
+            log.error(e);
+            errResponse.put("startDateError", "true");
             validationError = true;
             response.setStatus(HttpStatus.BAD_REQUEST.value());
         }
-        
+
+        Instant endDate = null;
+        try {
+            endDate =
+                dateFormattingService.flexibleInstantParser(ecobeeEndReportDate, DateOnlyMode.END_OF_DAY, userContext);
+        } catch (ParseException e) {
+            log.error(e);
+            errResponse.put("endDateError", "true");
+            validationError = true;
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+        }
+
+        if (validationError) {
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            JsonUtils.getWriter().writeValue(response.getOutputStream(), errResponse);
+            return null;
+        }
+
+        Duration specifiedDuration = new Duration(startDate, endDate);
+        if (specifiedDuration.isLongerThan(Duration.standardDays(7)) || startDate.isAfter(endDate)) {
+            errResponse.put("dateRangeError", "true");
+            validationError = true;
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+        }
+
         List<String> serialNumbers = null;
         if (loadGroupIds == null) {
             // Load groups are required.
-            Map<String, String> json = new HashMap<>();
-            json.put("errorType", "loadgroupsUnspecified");
-            errResponse.add(json);
+            errResponse.put("loadgroupsUnspecified", "true");
             validationError = true;
             response.setStatus(HttpStatus.BAD_REQUEST.value());
         } else {
             serialNumbers = drGroupDeviceMappingDao.getSerialNumbersForLoadGroups(Lists.newArrayList(loadGroupIds));
             if (serialNumbers.isEmpty()) {
                 // If list of serialNumbers is empty, tell client.
-                Map<String, String> json = new HashMap<>();
-                json.put("errorType", "loadgroupsMissingSerialNumbers");
-                errResponse.add(json);
+                errResponse.put("loadgroupsMissingSerialNumbers", "true");
                 validationError = true;
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
@@ -284,11 +294,10 @@ public class EcobeeController {
     
     @RequestMapping("/ecobee/download/settings")
     public String downloadSettings(ModelMap model) {
-        
-        DateTime now = new DateTime();
+
+        Date now = new Date();
         model.addAttribute("now", now);
-        model.addAttribute("oneDayAgo", new DateTime(now.minusDays(1)));
-        
+        model.addAttribute("oneDayAgo", new DateTime(now).minusDays(1).toDate());
         return "dr/ecobee/download.jsp";
     }
     
@@ -347,8 +356,8 @@ public class EcobeeController {
             EcobeeReadResult result = readResultsCache.getResult(key);
             downloads.put(key, result);
         }
-        DateTime now = new DateTime();
-        DateTime oneDayAgo = new DateTime(now.minusDays(1));
+        Date now = new Date();
+        Date oneDayAgo = new DateTime(now).minusDays(1).toDate();
         model.addAttribute("now", now);
         model.addAttribute("oneDayAgo", oneDayAgo);
         model.addAttribute("downloads", downloads);
