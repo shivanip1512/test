@@ -10,6 +10,7 @@ import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteHoneywellWifiThermostat;
@@ -46,7 +47,7 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
             hardware.getMacAddress(), hardware.getDeviceVendorUserId());
     }
     
-    public void createDevice(int inventoryId, String serialNumber, HardwareType hardwareType, String macAddress,
+    public PaoIdentifier createDevice(int inventoryId, String serialNumber, HardwareType hardwareType, String macAddress,
             Integer deviceVendorUserId) {
 
         boolean isMacAddressUnique = honeywellWifiThermostatDao.isHoneywellMacAddressUnique(macAddress);
@@ -65,6 +66,7 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
 
             // Update the Stars table with the device id
             inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, honeywellPao.getPaObjectId());
+            return honeywellPao.getPaoIdentifier();
           //TODO: Code to move device to the enrollmentset using honeywell service??
         } catch (Exception e) {
             //Catch any exception here - only honeywell exceptions (most often communications) are expected, but we might

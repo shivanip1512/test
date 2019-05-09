@@ -6,6 +6,7 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteDevice;
@@ -28,13 +29,14 @@ public class NestBuilder implements HardwareTypeExtensionProvider {
         createDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
     }
 
-    public void createDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
+    public PaoIdentifier createDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
         CompleteDevice pao = new CompleteDevice();
         pao.setPaoName(serialNumber);
         paoPersistenceService.createPaoWithDefaultPoints(pao, hardwareTypeToPaoType.get(hardwareType));
 
         // Update the Stars table with the device id
         inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, pao.getPaObjectId());
+        return pao.getPaoIdentifier();
     }
 
     @Override
