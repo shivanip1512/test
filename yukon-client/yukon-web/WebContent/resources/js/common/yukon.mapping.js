@@ -37,7 +37,7 @@ yukon.mapping = (function () {
           new ol.layer.Tile({ name: 'mqosm',
               source: new ol.source.XYZ({ name: 'mqosm',
                   url: yg.map_devices_street_url,
-                  attributions: [new ol.Attribution({
+                  attributions: [new ol.control.Attribution({
                       html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
                     })]
               })
@@ -45,7 +45,7 @@ yukon.mapping = (function () {
           new ol.layer.Tile({ name: 'mqsat', visible: false,
               source: new ol.source.XYZ({ name: 'mqsat', 
                 url: yg.map_devices_satellite_url,
-                attributions: [new ol.Attribution({
+                attributions: [new ol.control.Attribution({
                     html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
                   })]
               })
@@ -53,7 +53,7 @@ yukon.mapping = (function () {
           new ol.layer.Tile({ name: 'hybrid', visible: false,
               source: new ol.source.XYZ({ name: 'hybrid', 
                 url: yg.map_devices_hybrid_url,
-                attributions: [new ol.Attribution({
+                attributions: [new ol.control.Attribution({
                     html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
                   })]
               })

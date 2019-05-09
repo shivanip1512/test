@@ -3234,15 +3234,15 @@ JavaScript :
     notes : 
 
   - project : open-layers
-    version : 4.6.5
+    version : 5.3.0
     project URL : "https://openlayers.org/"
     license : BSD 2-clause
     license URLs : "https://raw.githubusercontent.com/openlayers/openlayers/master/LICENSE.md"
-    npm URL : "https://www.npmjs.com/package/ol/v/4.6.5"
-    md5 : 4cd26cd79f7c832a58ab391884999a80
-    sha1 : 6ff867fe56b4a37e705d013a1e74b353a5e977c5
-    jira : YUK-17860
-    updated : 2018-03-28
+    npm URL : "https://www.npmjs.com/package/ol/v/5.3.0"
+    md5 : ff1f13729b498edca3524e77dcc4dd01
+    sha1 : ed5d792b2a6f423ed42e2f57eb0d504fed57df25
+    jira : YUK-19887
+    updated : 2019-05-09
     notes : 
 
   - project : placeholder
