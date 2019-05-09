@@ -11,42 +11,44 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.springframework.lang.Nullable;
 import org.springframework.web.filter.GenericFilterBean;
-import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.resource.ResourceUrlProvider;
-import org.springframework.web.util.UrlPathHelper;
+import com.cannontech.clientutils.YukonLogManager;
+import org.apache.commons.lang3.StringUtils;
 
-public class CustomResourceUrlEncodingFilter extends GenericFilterBean{
-    private static final Log logger = LogFactory.getLog(ResourceUrlEncodingFilter.class);
-
+/**
+ * This class is custom filter which is same as ResourceUrlEncodingFilter.java of Spring MVC 5.1.5
+ * except one piece of code i.e. initLookupPath() is removed from setAttribute() method as it is not
+ * able to handle empty request URI and this filter wraps the {@link HttpServletResponse} and overrides
+ * its {@link HttpServletResponse#encodeURL(String) encodeURL} method in order to translate internal
+ * resource request URLs into public URL paths for external use
+ */
+public class CustomResourceUrlEncodingFilter extends GenericFilterBean {
+    private static final Logger log = YukonLogManager.getLogger(CustomResourceUrlEncodingFilter.class);
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
-            throw new ServletException("ResourceUrlEncodingFilter only supports HTTP requests");
+            throw new ServletException("CustomResourceUrlEncodingFilter only supports HTTP requests");
         }
         ResourceUrlEncodingRequestWrapper wrappedRequest =
-                new ResourceUrlEncodingRequestWrapper((HttpServletRequest) request);
+            new ResourceUrlEncodingRequestWrapper((HttpServletRequest) request);
         ResourceUrlEncodingResponseWrapper wrappedResponse =
-                new ResourceUrlEncodingResponseWrapper(wrappedRequest, (HttpServletResponse) response);
+            new ResourceUrlEncodingResponseWrapper(wrappedRequest, (HttpServletResponse) response);
         filterChain.doFilter(wrappedRequest, wrappedResponse);
     }
 
-
     private static class ResourceUrlEncodingRequestWrapper extends HttpServletRequestWrapper {
 
-        @Nullable
-        private ResourceUrlProvider resourceUrlProvider;
+        @Nullable private ResourceUrlProvider resourceUrlProvider;
 
-        @Nullable
-        private Integer indexLookupPath;
+        @Nullable private Integer indexLookupPath;
 
-        private String prefixLookupPath = "";
+        private String prefixLookupPath = StringUtils.EMPTY;
 
         ResourceUrlEncodingRequestWrapper(HttpServletRequest request) {
             super(request);
@@ -55,31 +57,14 @@ public class CustomResourceUrlEncodingFilter extends GenericFilterBean{
         @Override
         public void setAttribute(String name, Object value) {
             super.setAttribute(name, value);
-        }
-
-        private void initLookupPath(ResourceUrlProvider urlProvider) {
-            this.resourceUrlProvider = urlProvider;
-            if (this.indexLookupPath == null) {
-                UrlPathHelper pathHelper = this.resourceUrlProvider.getUrlPathHelper();
-                String requestUri = pathHelper.getRequestUri(this);
-                String lookupPath = pathHelper.getLookupPathForRequest(this);
-                this.indexLookupPath = requestUri.lastIndexOf(lookupPath);
-                this.prefixLookupPath = requestUri.substring(0, this.indexLookupPath);
-                if ("/".equals(lookupPath) && !"/".equals(requestUri)) {
-                    String contextPath = pathHelper.getContextPath(this);
-                    if (requestUri.equals(contextPath)) {
-                        this.indexLookupPath = requestUri.length();
-                        this.prefixLookupPath = requestUri;
-                    }
-                }
-            }
+            // Here I have removed initLookupPath() method as it is not able to handle empty request URI
         }
 
         @Nullable
         public String resolveUrlPath(String url) {
             if (this.resourceUrlProvider == null) {
-                logger.trace("ResourceUrlProvider not available via request attribute " +
-                        "ResourceUrlProviderExposingInterceptor.RESOURCE_URL_PROVIDER_ATTR");
+                log.trace("ResourceUrlProvider not available via request attribute "
+                    + "ResourceUrlProviderExposingInterceptor.RESOURCE_URL_PROVIDER_ATTR");
                 return null;
             }
             if (this.indexLookupPath != null && url.startsWith(this.prefixLookupPath)) {
@@ -107,7 +92,6 @@ public class CustomResourceUrlEncodingFilter extends GenericFilterBean{
         }
     }
 
-
     private static class ResourceUrlEncodingResponseWrapper extends HttpServletResponseWrapper {
 
         private final ResourceUrlEncodingRequestWrapper request;
@@ -126,6 +110,5 @@ public class CustomResourceUrlEncodingFilter extends GenericFilterBean{
             return super.encodeURL(url);
         }
     }
-    
 
 }
