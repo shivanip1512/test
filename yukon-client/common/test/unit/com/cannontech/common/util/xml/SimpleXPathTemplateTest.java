@@ -475,4 +475,99 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
         simpleXPathTemplate.evaluateAsIntegerList(null);
     }
+
+    /************************ evaluateAsDouble Tests ***************/
+    /**
+     * <testElement>
+     * <doubleElement>10.0</doubleElement>
+     * </testElement>
+     */
+    /**
+     * A valid expression passed into evaluateAsDouble
+     */
+    @Test
+    public void testevaluateAsDouble_validNode() {
+        Element testElement = generateElement("doubleElement", "10.00");
+        SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
+        Double doubleValue = simpleXPathTemplate.evaluateAsDouble("/testElement/doubleElement");
+        Assert.assertEquals(10.00, doubleValue.doubleValue());
+    }
+
+    /**
+     * A null expression passed into evaluateAsDouble
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testevaluateAsDouble_nullNode() {
+        Element testElement = generateElement("doubleElement");
+        SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
+        simpleXPathTemplate.evaluateAsDouble(null);
+    }
+
+    /**
+     * A String expression passed into evaluateAsDouble
+     */
+    @Test(expected = NumberFormatException.class)
+    public void testevaluateAsDouble_stringNode() {
+        Element testElement = generateElement("doubleElement", "foo");
+        SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
+        simpleXPathTemplate.evaluateAsDouble("/testElement/doubleElement");
+    }
+
+    /**
+     * A empty expression passed into evaluateAsDouble
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testevaluateAsDouble_emptyNode() {
+        Element testElement = generateElement("doubleElement", "");
+        SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
+        simpleXPathTemplate.evaluateAsDouble(null);
+    }
+
+    /************************ evaluateAsDouble with defaultWhenEmpty Tests ***************/
+    /**
+     * A valid expression passed into evaluateAsDouble
+     */
+    @Test
+    public void testevaluateAsDouble_defaultWhenEmpty_validNode() {
+        Element testElement = generateElement("doubleElement", "10.00");
+        SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
+        Double doubleValue = simpleXPathTemplate.evaluateAsDouble("/testElement/doubleElement", 15.00);
+        Assert.assertEquals(10.00, doubleValue.doubleValue());
+    }
+
+    /**
+     * A null expression passed into evaluateAsDouble
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testevaluateAsDouble_defaultWhenEmpty_nullNode() {
+        Element testElement = generateElement("doubleElement");
+
+        SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
+        Double doubleValue = simpleXPathTemplate.evaluateAsDouble(null, 10.00);
+
+        Assert.assertEquals(10.00, doubleValue.doubleValue());
+    }
+
+    /**
+     * A String expression passed into evaluateAsDouble
+     */
+    @Test(expected = NumberFormatException.class)
+    public void testevaluateAsDouble_defaultWhenEmpty_stringNode() {
+        Element testElement = generateElement("doubleElement", "foo");
+
+        SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
+        simpleXPathTemplate.evaluateAsDouble("/testElement/doubleElement", 10.00);
+    }
+
+    /**
+     * A empty expression passed into evaluateAsDouble
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testevaluateAsDouble_defaultWhenEmpty_emptyNode() {
+        Element testElement = generateElement("doubleElement", "");
+
+        SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
+        Double doubleValue = simpleXPathTemplate.evaluateAsDouble(null, 10.00);
+        Assert.assertEquals(10.00, doubleValue.doubleValue());
+    }
 }
