@@ -112,7 +112,7 @@ public class ScheduledDataImportHelper {
     public File getArchiveFile(Date startTime, File fileToProcess, String ext) {
         String archiveDirPath = CtiUtilities.getImportArchiveDirPath();
 
-        if (fileToProcess != null && fileToProcess.length() > 4) {
+        if (fileToProcess != null && fileToProcess.length() >= 2) {
             String fileName = fileToProcess.getName();
             String archiveFileName = getFileName(startTime, fileName, ext);
             return new File(archiveDirPath, archiveFileName);

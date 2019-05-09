@@ -198,7 +198,7 @@ public class AccountImportService {
      */
     private String getFilename(Date startTime, File fileToProcess, String ext) {
 
-        if (fileToProcess != null && fileToProcess.length() > 4) {
+        if (fileToProcess != null && fileToProcess.length() >= 2) {
             String fileName = fileToProcess.getName();
             //Removed .tmp extension from tempFile
             String archiveFileName =
