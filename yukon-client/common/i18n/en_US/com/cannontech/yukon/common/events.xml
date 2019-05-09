@@ -877,7 +877,7 @@
     <entry key="yukon.common.events.dr.itron.addGroup">Group {1} with group ID {7} creation request sent.</entry>
     <entry key="yukon.common.events.dr.itron.addGroup.7">Group Id</entry>
     <entry key="yukon.common.events.dr.itron.addProgram">Program {1} with program ID {7} creation request sent.</entry>
-    <entry key="yukon.common.events.dr.itron.7">Program Id</entry>
+    <entry key="yukon.common.events.dr.itron.addProgram.7">Program Id</entry>
     
     <entry key="yukon.common.events.dr.itron.addMacAddressesToGroup">Mac Address: {1} has been added to group: {2}.</entry>
     <entry key="yukon.common.events.dr.itron.getGroupIdFromItron">Retrieving Itron Group Id from group: {1}.</entry>
