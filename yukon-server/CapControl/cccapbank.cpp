@@ -1521,9 +1521,9 @@ bool CtiCCCapBank::handlePointResponseDeltaChange(long pointId, double newDelta,
     return _pointResponseManager.handlePointResponseDeltaChange(pointId,newDelta,staticDelta);
 }
 
-bool CtiCCCapBank::updatePointResponseDelta(const CtiCCMonitorPoint & point)
+bool CtiCCCapBank::updatePointResponseDelta(const CtiCCMonitorPoint & point, double maxDelta)
 {
-    return _pointResponseManager.updatePointResponseDelta(point);
+    return _pointResponseManager.updatePointResponseDelta(point, maxDelta);
 }
 
 bool CtiCCCapBank::updatePointResponsePreOpValue(long pointId, double value)

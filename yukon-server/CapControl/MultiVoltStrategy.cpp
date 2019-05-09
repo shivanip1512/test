@@ -143,7 +143,7 @@ void MultiVoltStrategy::setOffPeakLead(const double value)
 }
 
 
-const double MultiVoltStrategy::getMaximumDeltaVoltage() const
+double MultiVoltStrategy::getMaximumDeltaVoltage() const
 {
     return _maximumDeltaVoltage;
 }

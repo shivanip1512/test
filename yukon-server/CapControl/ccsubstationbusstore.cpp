@@ -6572,6 +6572,8 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
                     "MB.LowerBandwidth, "
                     "MB.Phase, "
                     "MB.OverrideStrategy, "
+                    "YP.PAOName, "
+                    "P.POINTNAME, "
                     "MBH.Value, "
                     "MBH.DateTime, "
                     "MBH.ScanInProgress "
@@ -6597,6 +6599,7 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
                     ") X "
                 "JOIN YukonPAObject YP ON X.PAObjectID = YP.PAObjectID "
                 "JOIN CCMonitorBankList MB ON YP.PAObjectID = MB.DeviceId "
+                "JOIN POINT P on MB.PointId = P.POINTID "
                 "LEFT OUTER JOIN DynamicCCMonitorBankHistory MBH ON MB.DeviceId = MBH.DeviceId AND MB.PointID = MBH.PointID";
 
             static const std::string where_sql =
@@ -6696,9 +6699,22 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
             {
                 if ( long busId = findSubBusIDbyCapBankID(thePair.second) )
                 {
-                    PointResponse defaultPointResponse(thePair.first, thePair.second, 0, _IVVC_DEFAULT_DELTA, false, busId);
                     if ( CtiCCCapBankPtr bank = findInMap(thePair.second, paobject_capbank_map) )
                     {
+                        std::string
+                            deviceName = "<uninitialized>",
+                            pointName  = "<uninitialized>";
+
+                        if ( auto searchResult = pointid_capbank_map->find( thePair.first ); searchResult != pointid_capbank_map->end() )
+                        {
+                            CtiCCCapBankPtr otherBank = searchResult->second;
+
+                            deviceName = otherBank->getPaoName();
+                            pointName  = otherBank->getTwoWayPoints().getPointById( thePair.first ).getPointName();
+                        }
+
+                        PointResponse defaultPointResponse( thePair.first, thePair.second, 0, _IVVC_DEFAULT_DELTA, false, busId, pointName, deviceName );
+
                         bank->addPointResponse(defaultPointResponse);
                     }
                 }
@@ -9834,12 +9850,19 @@ void CtiCCSubstationBusStore::handleMonitorPointDBChange(long reloadId, BYTE rel
                 "MB.LowerBandwidth, "
                 "MB.Phase, "
                 "MB.OverrideStrategy, "
+                "YP.PAOName, "
+                "P.POINTNAME, "
                 "MBH.Value, "
                 "MBH.DateTime, "
                 "MBH.ScanInProgress "
             "FROM "
                 "CCMonitorBankList MB "
-                "LEFT OUTER JOIN DynamicCCMonitorBankHistory MBH ON MB.DeviceId = MBH.DeviceId AND MB.PointID = MBH.PointID "
+                    "JOIN YukonPAObject YP "
+                        "ON YP.PAObjectID = MB.DeviceId "
+                    "JOIN POINT P "
+                        "ON MB.PointId = P.POINTID "
+                    "LEFT OUTER JOIN DynamicCCMonitorBankHistory MBH "
+                        "ON MB.DeviceId = MBH.DeviceId AND MB.PointID = MBH.PointID "
             "WHERE "
                 "MB.PointId = ?";
 

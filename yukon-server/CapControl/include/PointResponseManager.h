@@ -55,7 +55,7 @@ public:
      *
      * @return bool
      */
-    bool updatePointResponseDelta(const CtiCCMonitorPoint& monitorPoint);
+    bool updatePointResponseDelta(const CtiCCMonitorPoint& monitorPoint, double maxDelta);
 
     /**
      * Updates the PreOpValue for the PointResponse with the passed

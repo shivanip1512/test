@@ -42,7 +42,7 @@ bool PointResponseManager::handlePointResponseDeltaChange(long pointId, double n
     return true;
 }
 
-bool PointResponseManager::updatePointResponseDelta(const CtiCCMonitorPoint& point)
+bool PointResponseManager::updatePointResponseDelta(const CtiCCMonitorPoint& point, double maxDelta)
 {
     PointResponseMap::iterator itr = _pointResponses.find(point.getPointId());
 
@@ -52,7 +52,7 @@ bool PointResponseManager::updatePointResponseDelta(const CtiCCMonitorPoint& poi
         throw NotFoundException();
     }
 
-    itr->second.updateDelta(point.getNInAvg(),point.getValue());
+    itr->second.updateDelta(point.getNInAvg(),point.getValue(), point.getIdentifier(), maxDelta);
 
     return true;
 }

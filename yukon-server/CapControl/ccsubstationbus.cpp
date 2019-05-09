@@ -5425,22 +5425,29 @@ bool CtiCCSubstationBus::isBankSelectedByVerificationStrategy(int verificationSt
 
 void CtiCCSubstationBus::updatePointResponsePreOpValues(CtiCCCapBank* capBank)
 {
-    CTILOG_INFO(dout, "Updating POINT RESPONSE PREOPVALUES for CapBank: " <<capBank->getPaoName() << " Device ID: " << capBank->getPaoName() << " has " << capBank->getPointResponses().size() << " point responses");
+    CTILOG_INFO( dout, "Updating PreOpValue for CapBank: " << capBank->getPaoName() << " - has " << capBank->getPointResponses().size() << " point responses." );
 
-    for (int i = 0; i < _multipleMonitorPoints.size(); i++)
+    for ( const auto & point : _multipleMonitorPoints )
     {
-        const CtiCCMonitorPoint & point = *_multipleMonitorPoints[i];
+        double      value = point->getValue();
+        std::string ID    = point->getIdentifier();
 
         try
         {
-            if (capBank->updatePointResponsePreOpValue(point.getPointId(),point.getValue()))
+            if ( 110.0 < value && value < 130.0 )
             {
-                CTILOG_INFO(dout, "Device Id: " << capBank->getPaoName() << " Point Id: " << point.getPointId( )<< " Value: " << point.getValue());
+                CTILOG_INFO( dout, ID << " -- PreOpValue: " << value );
             }
+            else
+            {
+                CTILOG_WARN( dout, ID << " -- PreOpValue: " << value << " -- outside valid voltage range." );
+            }
+
+            capBank->updatePointResponsePreOpValue( point->getPointId(), value );
         }
         catch (NotFoundException& e)
         {
-            CTILOG_WARN(dout, "Error Updating PreOpValue for deltas. PointId not found: " << point.getPointId());
+            CTILOG_WARN(dout, "Error Updating PreOpValue for deltas. PointId not found: " << point->getPointId());
         }
     }
 }
@@ -5486,7 +5493,7 @@ void CtiCCSubstationBus::updatePointResponseDeltas(std::set<long> pointIds)
             {
                 try
                 {
-                    capBank->updatePointResponseDelta(point);
+                    capBank->updatePointResponseDelta(point, getStrategy()->getMaximumDeltaVoltage());
                 }
                 catch (NotFoundException& e)
                 {
@@ -5541,7 +5548,7 @@ void CtiCCSubstationBus::updatePointResponseDeltas()
                                 const CtiCCMonitorPoint & point = *_multipleMonitorPoints[k];
                                 try
                                 {
-                                    currentCapBank->updatePointResponseDelta(point);
+                                    currentCapBank->updatePointResponseDelta(point, getStrategy()->getMaximumDeltaVoltage());
                                 }
                                 catch (NotFoundException& e)
                                 {
@@ -7901,6 +7908,8 @@ void CtiCCSubstationBus::addDefaultPointResponses( std::set< std::pair<long, int
     {
         long mPointId = mPoint->getPointId();
         long bankId = mPoint->getDeviceId();
+        std::string pointName = mPoint->getPointName();
+        std::string deviceName = mPoint->getDeviceName();
 
         for each(const map<long, CtiCCMonitorPointPtr>::value_type & response in _monitorPoints )
         {
@@ -7909,7 +7918,10 @@ void CtiCCSubstationBus::addDefaultPointResponses( std::set< std::pair<long, int
             PointResponsePtr pResponse = getPointResponse(prKey);
             if (pResponse == NULL)
             {
-                pResponse = boost::shared_ptr<PointResponse>(new PointResponse(responsePointId, bankId, 0, _IVVC_DEFAULT_DELTA, false, getPaoId()));
+                pResponse = boost::shared_ptr<PointResponse>(new PointResponse(
+                    responsePointId, bankId, 0, _IVVC_DEFAULT_DELTA, false, getPaoId(), pointName, deviceName ));
+
+
                 _pointResponses.insert(make_pair(prKey, pResponse));
                 requiredPointResponses.insert(make_pair(responsePointId, bankId));
             }

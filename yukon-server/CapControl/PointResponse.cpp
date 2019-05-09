@@ -12,14 +12,17 @@ extern unsigned long _CC_DEBUG;
 namespace Cti {
 namespace CapControl {
 
-PointResponse::PointResponse(long pointId, long deviceId, double preOpValue, double delta, bool staticDelta, long busId)
+PointResponse::PointResponse(long pointId, long deviceId, double preOpValue, double delta, bool staticDelta, long busId,
+                             const std::string & pointName, const std::string & deviceName)
     :   _pointId( pointId ),
         _deviceId( deviceId ),
         _preOpValue( preOpValue ),
         _delta( delta ),
         _staticDelta( staticDelta ),
         _busId( busId ),
-        _isDirty( false )
+        _isDirty( false ),
+        _pointName(pointName),
+        _deviceName(deviceName)
 {
 }
 
@@ -68,25 +71,48 @@ void PointResponse::setStaticDelta(bool staticDelta)
     _isDirty |= setVariableIfDifferent( _staticDelta, staticDelta );
 }
 
-void PointResponse::updateDelta(long nInAvg, double value)
+void PointResponse::updateDelta(long nInAvg, double value, const std::string & identifier, double maxDelta)
 {
     if ( ! _staticDelta)
     {
-        if (_CC_DEBUG & (CC_DEBUG_MULTIVOLT | CC_DEBUG_IVVC))
+        if ( 110.0 < _preOpValue && _preOpValue < 130.0  )
         {
-            CTILOG_DEBUG(dout, "Point Delta: Device ID: " << _deviceId <<" Point ID: " << _pointId << " preOpValue: " << _preOpValue << " currentValue: " << value);
+            CTILOG_DEBUG( dout, identifier << " to Point ID: " << _pointId << " -- preOpValue: " << _preOpValue );
+        }
+        else
+        {
+            CTILOG_WARN( dout, identifier << " to Point ID: " << _pointId << " -- preOpValue: " << _preOpValue
+                                << " -- outside valid voltage limits. Aborting Delta voltage update." );
+            return;
+        }
+
+        if ( 110.0 < value && value < 130.0  )
+        {
+            CTILOG_DEBUG( dout, identifier << " to Point ID: " << _pointId << " -- currentValue: " << value );
+        }
+        else
+        {
+            CTILOG_WARN( dout, identifier << " to Point ID: " << _pointId << " -- currentValue: " << value
+                                << " -- outside valid voltage limits. Aborting Delta voltage update." );
+            return;
         }
 
         double new_nInAvg = nInAvg != 0 ? nInAvg:1;
         double fabsy = std::fabs(_preOpValue - value);
         double delta = ((_delta*(new_nInAvg - 1.0 )) + fabsy) / new_nInAvg;
 
-        if (_CC_DEBUG & (CC_DEBUG_MULTIVOLT | CC_DEBUG_IVVC))
+        if ( delta <= maxDelta )
         {
-            CTILOG_DEBUG(dout, "Point Delta: Device ID: " << _deviceId <<" Point ID: " << _pointId << " fabs: " << fabsy << " delta: " << delta);
-        }
+            CTILOG_INFO( dout, identifier << " to Point ID: " << _pointId << " -- delta voltage updated from: "
+                                << _delta << " to " << delta << " with N: " << new_nInAvg );
 
-        setDelta( delta );
+            setDelta( delta );
+        }
+        else
+        {
+            CTILOG_WARN( dout, identifier << " to Point ID: " << _pointId << " -- calculated delta voltage: " << delta
+                                <<  " exceeds maximum allowable: " << maxDelta << " -- Aborting Delta voltage update." );
+        }
     }
 }
 

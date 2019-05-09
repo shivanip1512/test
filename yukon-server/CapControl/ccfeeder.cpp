@@ -4256,22 +4256,29 @@ bool CtiCCFeeder::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPo
 
 void CtiCCFeeder::updatePointResponsePreOpValues(CtiCCCapBank* capBank)
 {
-    CTILOG_INFO(dout, "Updating POINT RESPONSE PREOPVALUES for CapBank: " <<capBank->getPaoName() << " Device ID: " << capBank->getPaoName() << " has " << capBank->getPointResponses().size() << " point responses");
+    CTILOG_INFO( dout, "Updating PreOpValue for CapBank: " << capBank->getPaoName() << " - has " << capBank->getPointResponses().size() << " point responses." );
 
-    for (int i = 0; i < _multipleMonitorPoints.size(); i++)
+    for ( const auto & point : _multipleMonitorPoints )
     {
-        const CtiCCMonitorPoint & point = *_multipleMonitorPoints[i];
+        double      value = point->getValue();
+        std::string ID    = point->getIdentifier();
 
         try
         {
-            if (capBank->updatePointResponsePreOpValue(point.getPointId(),point.getValue()))
+            if ( 110.0 < value && value < 130.0 )
             {
-                CTILOG_INFO(dout, "Device ID: " << capBank->getPaoName() << " Point ID: " << point.getPointId( )<< " Value: " << point.getValue());
+                CTILOG_INFO( dout, ID << " -- PreOpValue: " << value );
             }
+            else
+            {
+                CTILOG_WARN( dout, ID << " -- PreOpValue: " << value << " -- outside valid voltage range." );
+            }
+
+            capBank->updatePointResponsePreOpValue( point->getPointId(), value );
         }
         catch (NotFoundException& e)
         {
-            CTILOG_WARN(dout, "Error Updating PreOpValue for deltas. PointId not found: " << point.getPointId());
+            CTILOG_WARN(dout, "Error Updating PreOpValue for deltas. PointId not found: " << point->getPointId());
         }
     }
 }
@@ -4298,7 +4305,7 @@ void CtiCCFeeder::updatePointResponseDeltas()
                     const CtiCCMonitorPoint & point = *_multipleMonitorPoints[j];
                     try
                     {
-                       currentCapBank->updatePointResponseDelta(point);
+                       currentCapBank->updatePointResponseDelta(point, getStrategy()->getMaximumDeltaVoltage());
                     }
                     catch (NotFoundException& e)
                     {

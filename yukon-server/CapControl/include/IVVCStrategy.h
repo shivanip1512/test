@@ -65,7 +65,7 @@ public:
 
     const unsigned getMaxConsecutiveCapBankOps(const bool isPeak) const;
 
-    const double getMaximumDeltaVoltage() const;
+    double getMaximumDeltaVoltage() const override;
 
     virtual void registerControllable(const long paoid);
     virtual void unregisterControllable(const long paoid);

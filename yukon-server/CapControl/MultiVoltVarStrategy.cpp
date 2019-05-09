@@ -167,7 +167,7 @@ double MultiVoltVarStrategy::getOffPeakPFSetPoint() const
 }
 
 
-const double MultiVoltVarStrategy::getMaximumDeltaVoltage() const
+double MultiVoltVarStrategy::getMaximumDeltaVoltage() const
 {
     return _maximumDeltaVoltage;
 }

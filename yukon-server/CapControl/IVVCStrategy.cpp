@@ -386,7 +386,7 @@ const bool IVVCStrategy::getReportCommStatisticsByPhase() const
     return _reportCommStatisticsByPhase;
 }
 
-const double IVVCStrategy::getMaximumDeltaVoltage() const
+double IVVCStrategy::getMaximumDeltaVoltage() const
 {
     return _maximumDeltaVoltage;
 }

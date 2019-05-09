@@ -155,6 +155,8 @@ public:
     virtual double getUpperVoltLimit( const bool isPeak ) const;
     virtual double getLowerVoltLimit( const bool isPeak ) const;
 
+    virtual double getMaximumDeltaVoltage() const;
+
 private:
 
     long        _strategyID;
