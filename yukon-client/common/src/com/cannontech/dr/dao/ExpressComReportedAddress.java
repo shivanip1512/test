@@ -73,6 +73,9 @@ public class ExpressComReportedAddress extends LmReportedAddress implements Seri
     }
     
     public Set<ExpressComReportedAddressRelay> getRelays() {
+        if(relays == null) {
+            relays = new HashSet<>();
+        }
         return relays;
     }
     

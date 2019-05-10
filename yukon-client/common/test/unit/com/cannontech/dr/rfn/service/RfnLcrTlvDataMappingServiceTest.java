@@ -194,7 +194,7 @@ public class RfnLcrTlvDataMappingServiceTest {
             assertEquals(resultAddress.getZip(), 5);
             assertEquals(resultAddress.getUda(), 6);
             assertEquals(resultAddress.getRequired(), 7);
-            assertEquals(resultAddress.getRelays(), null);
+            assertEquals(resultAddress.getRelays().size(), 0);
             assertEquals(resultAddress.getTimestamp(), now);
         }
         
@@ -222,7 +222,7 @@ public class RfnLcrTlvDataMappingServiceTest {
         data.put(FieldType.RELAY_N_PROGRAM_ADDRESS, getBytes((short)0x0303)); // relay 3 program 3
         data.put(FieldType.RELAY_N_PROGRAM_ADDRESS, getBytes((short)0x0404)); // relay 4 program 4
         
-/*        {
+        {
             // Tests "new" addressing with relays and no currentAddress (yuk-19945)
             Object result = ReflectionTestUtils.invokeMethod(service, "generateUpdatedAddressingFromMessage", data, devicePaoId, null);
             ExpressComReportedAddress resultAddress = (ExpressComReportedAddress)result;
@@ -235,9 +235,9 @@ public class RfnLcrTlvDataMappingServiceTest {
             assertEquals(resultAddress.getZip(), 5);
             assertEquals(resultAddress.getUda(), 6);
             assertEquals(resultAddress.getRequired(), 7);
-            assertEquals(resultAddress.getRelays().size(), 3);
+            assertEquals(resultAddress.getRelays().size(), 4);
             assertEquals(resultAddress.getTimestamp(), now);
-        }*/
+        }
 
         
         {
