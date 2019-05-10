@@ -3,10 +3,9 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://yukon.cannontech.com/api ../EnrolledDevicesByAccountNumberRequest.xsd"
            version="1.0">
-           
-	<accountNumber>12361236</accountNumber>
-	
-	<startDateTime>2009-11-25T15:07:40Z</startDateTime>
-    <stopDateTime>2009-11-25T17:07:40Z</stopDateTime>
+            
+           <accountNumber>12361236</accountNumber>
+           <startDateTime>2009-11-25T15:07:40Z</startDateTime>
+           <stopDateTime>2009-11-25T17:07:40Z</stopDateTime>
     
 </enrolledDevicesByAccountNumberRequest>

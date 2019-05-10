@@ -1,0 +1,25 @@
+<enrolledDevicesByAccountNumberResponse
+    xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://yukon.cannontech.com/api ../EnrolledDevicesByAccountNumberResponse.xsd"
+    version="1.1">
+    <enrolledDevicesList>
+        <enrolledDevice>
+            <serialNumber>1234</serialNumber>
+            <programsList>
+                <program>
+                   <programName>pqr</programName>
+                  <relay>1</relay>
+               </program>
+            </programsList>
+        </enrolledDevice>
+        <enrolledDevice>
+            <serialNumber>3456</serialNumber>
+            <programsList>
+                <program>
+                    <programName>pqr</programName>
+                    <relay>1</relay>
+                 </program>
+            </programsList>
+        </enrolledDevice>
+    </enrolledDevicesList>
+</enrolledDevicesByAccountNumberResponse>

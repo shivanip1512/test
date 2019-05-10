@@ -25,7 +25,15 @@ public class Program {
     private int applianceCategoryId;
     private PaoType paoType;
     private String descriptionUrl;
-    
+    private Integer relay;
+
+    public Integer getRelay() {
+        return relay;
+    }
+
+    public void setRelay(Integer relay) {
+        this.relay = relay;
+    }
     /**
      * Get the assigned (STARS) program id.
      * @return the assigned program id.
@@ -159,6 +167,7 @@ public class Program {
         
         return true;
     }
+    
 
 	@Override
 	public int hashCode() {

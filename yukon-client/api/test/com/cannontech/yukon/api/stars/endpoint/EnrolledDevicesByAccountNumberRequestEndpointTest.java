@@ -86,7 +86,7 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
                 // valid case, return 1 result now;
                 List<EnrolledDevicePrograms> result = Lists.newArrayList();
                 result.add(new EnrolledDevicePrograms("Valid",
-                                                      Collections.EMPTY_LIST));
+                    Collections.EMPTY_MAP));
                 return result;
             }
         }
@@ -258,7 +258,7 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
             SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(from);
 
             EnrolledDevicePrograms deviceResult = new EnrolledDevicePrograms(template.evaluateAsString(serialNumberRespStr),
-                                                                             Collections.EMPTY_LIST);
+                                                                             Collections.EMPTY_MAP);
 
             return deviceResult;
         }
