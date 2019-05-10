@@ -26,7 +26,7 @@
         <category type="tou"/>
     </configuration>
     <pointInfos>
-        <pointInfo name="Avg Voltage" attributes="AVERAGE_VOLTAGE"/>
+        <pointInfo name="Avg Voltage" attributes="AVERAGE_VOLTAGE,AVERAGE_VOLTAGE_PHASE_A"/>
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
