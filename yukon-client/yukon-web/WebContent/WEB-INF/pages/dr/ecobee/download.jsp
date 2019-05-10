@@ -21,8 +21,8 @@
     </tags:nameValueContainer2>
 
     <div style="width:500px;">
-        <div class="dib error dn" style="width: 160px;float:left;margin-left: 144px;" id="start-date-invalid"><i:inline key=".download.invalidStartDate"/></div>
-        <div class="dib error dn" style="width: 150px;float:right;margin-right: 35px;" id="end-date-invalid"><i:inline key=".download.invalidEndDate"/></div>
+        <div class="dib error dn" style="width: 160px;float:left;margin-left: 144px;" id="start-date-invalid"><i:inline key="yukon.web.error.date.validRequired"/></div>
+        <div class="dib error dn" style="width: 150px;float:right;margin-right: 35px;" id="end-date-invalid"><i:inline key="yukon.web.error.date.validRequired"/></div>
     </div>
     <div style="clear: both;"></div>
     <div class="error dn" id="bad-date-range"><i:inline key=".download.dateOutOfRange"/></div>

@@ -498,8 +498,6 @@
 <entry key="yukon.web.modules.dr.ecobee.details.download.inProgress">Download In Progress</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.ready">Ready</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.failed">Failed</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.download.invalidStartDate">Invalid start date.</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.download.invalidEndDate">Invalid end date.</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.maxDayRange">(Maximum Seven Day Range)</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.dateOutOfRange">The selected date range is too long.</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.missingSerialNumbers">No device serial numbers exist for specified load group(s).</entry>
