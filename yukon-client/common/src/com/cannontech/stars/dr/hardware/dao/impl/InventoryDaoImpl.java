@@ -1083,7 +1083,7 @@ public class InventoryDaoImpl implements InventoryDao {
     }
     
     @Override
-    public boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId, boolean accountPage) {
+    public boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId, boolean includeMctsWithNoAccount) {
         Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.STARS_ACCOUNT_ATTACHABLE_METER);
         //This sql replicates how the device picker populates it's pickerList.
         
@@ -1109,7 +1109,7 @@ public class InventoryDaoImpl implements InventoryDao {
         
         SqlFragmentCollection whereClause = SqlFragmentCollection.newOrCollection();
         whereClause.add(limiter1);
-        if (accountPage) {
+        if (includeMctsWithNoAccount) {
             whereClause.add(limiter2);
         }
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -1119,9 +1119,7 @@ public class InventoryDaoImpl implements InventoryDao {
             sql.append("WHERE");
             sql.append(whereClause);
         }
-        int size = jdbcTemplate.queryForInt(sql);
-        return size > 0;
-//        return jdbcTemplate.queryForInt(sql) > 0;
+        return jdbcTemplate.queryForInt(sql) > 0;
     }
 
 }
