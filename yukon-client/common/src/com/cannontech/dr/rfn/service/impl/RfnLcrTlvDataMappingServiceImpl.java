@@ -286,6 +286,33 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
     public void storeAddressingData(JmsTemplate jmsTemplate, ListMultimap<FieldType, byte[]> data, RfnDevice device) {
 
         ExpressComReportedAddress currentAddress = expressComReportedAddressDao.findCurrentAddress(device.getPaoIdentifier().getPaoId());
+        ExpressComReportedAddress address = generateUpdatedAddressingFromMessage(data, device.getPaoIdentifier().getPaoId(), currentAddress);
+        
+        // This is a quick exit if the address is older than the newer
+        // It is un-necessary but is being kept to avoid refactoring changes
+        if (address == null) {
+            log.info("Current addressing from" + currentAddress.getTimestamp().toDate() + " is newer than newly reported at "
+                    + address.getTimestamp().toDate() + " for device " + device.getName() + ", ignoring older addressing information");
+            return;
+        }
+
+        log.debug(String.format("Received LM Address for %s - ", address, device.getName()));
+        
+        if (currentAddress != null) {
+            expressComReportedAddressDao.save(address, currentAddress);
+        } else {
+            expressComReportedAddressDao.insertAddress(address);
+        }
+
+        jmsTemplate.convertAndSend(JmsApiDirectory.LM_ADDRESS_NOTIFICATION.getQueue().getName(), address);
+
+    }
+
+    // Combines the currentAddress with the data provided from the incoming message
+    // If the received data is older than the currentAddress data this returns null to avoid overwriting newer data
+    private ExpressComReportedAddress generateUpdatedAddressingFromMessage(ListMultimap<FieldType, byte[]> data,
+                                                                           int devicePaoId,
+                                                                           ExpressComReportedAddress currentAddress) {
         ExpressComReportedAddress address;
         if (currentAddress != null) {
             address = currentAddress.clone();
@@ -293,14 +320,12 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             address = new ExpressComReportedAddress();
         }
 
-        address.setDeviceId(device.getPaoIdentifier().getPaoId());
-
+        address.setDeviceId(devicePaoId);
         address.setTimestamp(new Instant(ByteUtil.getLong(data.get(FieldType.UTC).get(0)) * 1000));
+        
         // reject to save old addressing information in database
         if (currentAddress!= null && currentAddress.getTimestamp().isAfter(address.getTimestamp())) {
-            log.info("Current addressing from" + currentAddress.getTimestamp().toDate() + " is newer than newly reported at "
-                + address.getTimestamp().toDate() + " for device " + device.getName() + ", ignoring older addressing information");
-            return;
+            return null;
         }
 
         updateIfPresent(data, FieldType.SPID, address::setSpid);
@@ -331,17 +356,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
 
             address.setRelays(new HashSet<>(relays.values()));
         }
-
-        log.debug(String.format("Received LM Address for %s - ", address, device.getName()));
-        
-        if (currentAddress != null) {
-            expressComReportedAddressDao.save(address, currentAddress);
-        } else {
-            expressComReportedAddressDao.insertAddress(address);
-        }
-
-        jmsTemplate.convertAndSend(JmsApiDirectory.LM_ADDRESS_NOTIFICATION.getQueue().getName(), address);
-
+        return address;
     }
 
     private void updateIfPresent(ListMultimap<FieldType, byte[]> data, FieldType fieldType, Consumer<Integer> setter) {
