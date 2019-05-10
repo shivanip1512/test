@@ -12,9 +12,12 @@
             <tags:nameValue2 nameKey=".deviceName">
                 <tags:input path="name" />
             </tags:nameValue2>
-            <tags:nameValue2 nameKey="yukon.common.address">
-                <tags:input path="deviceAddress.slaveAddress" />
-            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".masterAddress">
+                   <tags:input path="deviceAddress.masterAddress" />
+             </tags:nameValue2>
+             <tags:nameValue2 nameKey=".slaveAddress">
+                   <tags:input path="deviceAddress.slaveAddress" />
+             </tags:nameValue2>
             <tags:nameValue2 nameKey=".copy.copyPoints">
                 <tags:switchButton path="copyPointFlag" offNameKey=".no.label"
                     onNameKey=".yes.label" disabled="${!isPointsAvailable}" 

@@ -13,11 +13,17 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.yukon.IDatabaseCache;
 
+import java.util.List;
+import com.cannontech.core.dao.DeviceDao;
+import java.util.function.Function;
+
 @Service
 public class RtuDnpValidationUtil extends ValidationUtils {
-    @Autowired private PaoDao paoDao;
+	@Autowired private DeviceDao deviceDao;
+	@Autowired private PaoDao paoDao;
     @Autowired private IDatabaseCache dbCache;
-
+    
+    private static final String basekey = "yukon.web.modules.operator.rtuDetail.error";
     public void validateName(RtuDnp rtuDnp, Errors errors, boolean isCopyOperation) {
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
         if (!errors.hasFieldErrors("name")) {
@@ -48,13 +54,36 @@ public class RtuDnpValidationUtil extends ValidationUtils {
         }
     }
 
-    public void validateSlaveAddress(RtuDnp rtuDnp, Errors errors) {
+    public void validateMasterSlaveAddress(RtuDnp rtuDnp, Errors errors, boolean isCopyOperation) {
 
         DeviceAddress deviceAddress = rtuDnp.getDeviceAddress();
         if (!errors.hasFieldErrors("deviceAddress.slaveAddress")) {
             YukonValidationUtils.checkRange(errors, "deviceAddress.slaveAddress", deviceAddress.getSlaveAddress(), 0,
-                2147483647, true);
+                65535, true);
+        }
+        
+        if(!errors.hasFieldErrors("deviceAddress.masterAddress")) {
+            YukonValidationUtils.checkRange(errors, "deviceAddress.masterAddress", deviceAddress.getMasterAddress(), 0,
+                65535, true);
+        }
+
+        if (!errors.hasFieldErrors("deviceAddress.masterAddress") && !errors.hasFieldErrors("deviceAddress.slaveAddress")) {
+            List<Integer> devicesWithSameAddress =
+                deviceDao.getDevicesByDeviceAddress(deviceAddress.getMasterAddress(), deviceAddress.getSlaveAddress());
+
+            if (!devicesWithSameAddress.isEmpty()) {
+            				String deviceName =
+                    		devicesWithSameAddress.stream().findFirst().map(new Function<Integer, String>() {
+                            @Override
+                            public String apply(Integer id) {
+                                return dbCache.getAllPaosMap().get(id).getPaoName();
+                            }
+                        }).get();
+
+                    errors.rejectValue("deviceAddress.masterAddress", basekey + ".masterSlave",
+                        new Object[] { deviceName }, "Master/Slave combination in use");
+                    errors.rejectValue("deviceAddress.slaveAddress", "yukon.common.blank");
+            }
         }
     }
-
 }

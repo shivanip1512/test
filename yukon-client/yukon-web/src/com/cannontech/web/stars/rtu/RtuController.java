@@ -221,7 +221,7 @@ public class RtuController {
     public String copy(@ModelAttribute("rtu") RtuDnp newRtu, BindingResult result, ModelMap model, FlashScope flash,
             HttpServletResponse response) throws JsonGenerationException, JsonMappingException, IOException {
         rtuDnpValidationUtil.validateName(newRtu, result, true);
-        rtuDnpValidationUtil.validateSlaveAddress(newRtu, result);
+        rtuDnpValidationUtil.validateMasterSlaveAddress(newRtu, result, true);
         if (result.hasErrors()) {
             List<RtuPointDetail> rtuPointDetails = rtuDnpService.getRtuPointDetail(newRtu.getId());
             if (CollectionUtils.isNotEmpty(rtuPointDetails)) {

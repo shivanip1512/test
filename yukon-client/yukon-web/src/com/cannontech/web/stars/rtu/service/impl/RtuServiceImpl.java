@@ -135,11 +135,13 @@ public class RtuServiceImpl implements RtuService{
     public Integer copyRtu(RtuDnp rtuDnp) {
         String newName = rtuDnp.getName();
         Integer slaveAddress = rtuDnp.getDeviceAddress().getSlaveAddress();
+        Integer masterAddress = rtuDnp.getDeviceAddress().getMasterAddress();
         boolean copyPointFlag = rtuDnp.isCopyPointFlag();
         Integer oldRtuId = rtuDnp.getId();
         rtuDnp = rtuDnpService.getRtuDnp(oldRtuId);
         rtuDnp.setName(newName);
         rtuDnp.getDeviceAddress().setSlaveAddress(slaveAddress);
+        rtuDnp.getDeviceAddress().setMasterAddress(masterAddress);
         rtuDnp.setId(null);
         int newPaoId = rtuDnpService.save(rtuDnp);
         rtuDnp.setId(newPaoId);
