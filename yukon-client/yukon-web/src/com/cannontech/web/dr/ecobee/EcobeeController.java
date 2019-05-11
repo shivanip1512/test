@@ -202,7 +202,7 @@ public class EcobeeController {
                                  YukonUserContext userContext) throws IOException {
 
         Map<String, String> errResponse = Maps.newHashMap();
-        boolean validationError = false;
+        boolean isValidationError = false;
         Instant startDate = null;
         try {
             startDate = dateFormattingService.flexibleInstantParser(ecobeeStartReportDate, DateOnlyMode.START_OF_DAY,
@@ -210,8 +210,7 @@ public class EcobeeController {
         } catch (ParseException e) {
             log.error(e);
             errResponse.put("startDateError", "true");
-            validationError = true;
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            isValidationError = true;
         }
 
         Instant endDate = null;
@@ -221,11 +220,11 @@ public class EcobeeController {
         } catch (ParseException e) {
             log.error(e);
             errResponse.put("endDateError", "true");
-            validationError = true;
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            isValidationError = true;
         }
 
-        if (validationError) {
+        if (isValidationError) {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             JsonUtils.getWriter().writeValue(response.getOutputStream(), errResponse);
             return null;
@@ -234,7 +233,7 @@ public class EcobeeController {
         Duration specifiedDuration = new Duration(startDate, endDate);
         if (specifiedDuration.isLongerThan(Duration.standardDays(7)) || startDate.isAfter(endDate)) {
             errResponse.put("dateRangeError", "true");
-            validationError = true;
+            isValidationError = true;
             response.setStatus(HttpStatus.BAD_REQUEST.value());
         }
 
@@ -242,18 +241,18 @@ public class EcobeeController {
         if (loadGroupIds == null) {
             // Load groups are required.
             errResponse.put("loadgroupsUnspecified", "true");
-            validationError = true;
+            isValidationError = true;
             response.setStatus(HttpStatus.BAD_REQUEST.value());
         } else {
             serialNumbers = drGroupDeviceMappingDao.getSerialNumbersForLoadGroups(Lists.newArrayList(loadGroupIds));
             if (serialNumbers.isEmpty()) {
                 // If list of serialNumbers is empty, tell client.
                 errResponse.put("loadgroupsMissingSerialNumbers", "true");
-                validationError = true;
+                isValidationError = true;
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
         }
-        if (validationError == true) {
+        if (isValidationError == true) {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             JsonUtils.getWriter().writeValue(response.getOutputStream(), errResponse);
             return null;
