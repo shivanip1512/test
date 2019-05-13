@@ -127,7 +127,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
             PointValueHolder previousValue = null; // store this outside the loop because it is valid for every processor 
             
             if (log.isDebugEnabled()) {
-                log.debug("Point %s caught by Status Point Monitor: %s with value: %s", richPointData.getPaoPointIdentifier(), statusPointMonitor, nextValue);
+                log.debug("Point {} caught by Status Point Monitor: {} with value: {}", richPointData.getPaoPointIdentifier(), statusPointMonitor, nextValue);
             }
             
             for (StatusPointMonitorProcessor statusPointMonitorProcessor : statusPointMonitor.getProcessors()) {
