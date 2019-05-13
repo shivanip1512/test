@@ -2,8 +2,11 @@ package com.cannontech.amr.monitors.impl;
 
 import static org.joda.time.DateTime.now;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
@@ -34,6 +37,8 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Iterables;
 
 public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryBase<StatusPointMonitor> {
@@ -47,6 +52,10 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     @Autowired private GlobalSettingDao globalSettingDao;
     private JmsTemplate jmsTemplate;
     private PointDataTrackingLogger trackingLogger = new PointDataTrackingLogger(log);
+    private Cache<Integer, PointValueHolder> recentStatusPoints = CacheBuilder.newBuilder()
+                       .expireAfterWrite(30, TimeUnit.SECONDS)
+                       .build();
+    private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @Override
     protected List<StatusPointMonitor> getAllMonitors() {
@@ -234,14 +243,46 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
         return processorPointValue == pointValueAsInt;
     }
 
-    private PointValueHolder getPreviousValueForPoint(PointValueHolder pointValueQualityHolder) {
-        Date nextTimeStamp = pointValueQualityHolder.getPointDataTimeStamp();
-        int pointId = pointValueQualityHolder.getId();
+    /**
+     * Returns value RPH or cached value. Updates cache with the recent value.
+     */
+    private PointValueHolder getPreviousValueForPoint(PointValueHolder nextValue) {
+        Date nextTimeStamp = nextValue.getPointDataTimeStamp();
+        int pointId = nextValue.getId();
         Range<Date> dateRange = new Range<>(null, true, nextTimeStamp, false);
-		List<PointValueHolder> pointPrevValueList = rawPointHistoryDao.getLimitedPointData(pointId,dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), false,
-						Order.REVERSE, 1);
-
-        return Iterables.getFirst(pointPrevValueList, null);
+        List<PointValueHolder> pointPrevValueList = rawPointHistoryDao.getLimitedPointData(pointId,dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), false,
+                        Order.REVERSE, 1);
+        PointValueHolder cachedValue = recentStatusPoints.getIfPresent(pointId);
+        PointValueHolder rphValue = Iterables.getFirst(pointPrevValueList, null);
+        boolean returnCachedValue = false;
+        if (cachedValue != null
+            // next value is more recent that the value in cache
+            && nextTimeStamp.after(cachedValue.getPointDataTimeStamp())
+            // cached value is more recent then value in RPH
+            && cachedValue.getPointDataTimeStamp().after(rphValue.getPointDataTimeStamp())) {
+            returnCachedValue = true;
+        }
+        
+        if (cachedValue == null || nextTimeStamp.after(cachedValue.getPointDataTimeStamp())) {
+            // if this is the most recent value, cache it
+            logPointValueDebugString("added to cache", nextValue);
+            recentStatusPoints.put(pointId, nextValue);
+        }
+        PointValueHolder returnValue = returnCachedValue ? cachedValue : rphValue;
+        logPointValueDebugString("currentValue", nextValue);
+        logPointValueDebugString("cachedValue", cachedValue);
+        logPointValueDebugString("rphValue", rphValue);
+        if(returnCachedValue) {
+            logPointValueDebugString("returning cached value", returnValue);
+        } else {
+            logPointValueDebugString("returning RPH value", returnValue);
+        }
+        return returnValue ;
+    }
+    
+    private void logPointValueDebugString(String valueType, PointValueHolder value) {
+        log.debug("Point value {} - id:{} timestamp:{} value:{}", valueType, value.getId(),
+            format.format(value.getPointDataTimeStamp()), value.getValue());
     }
     
     @Autowired
