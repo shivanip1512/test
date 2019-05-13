@@ -2,6 +2,7 @@ package com.cannontech.amr.monitors.impl;
 
 import static org.joda.time.DateTime.now;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -54,6 +55,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     private Cache<Integer, PointValueHolder> recentStatusPoints = CacheBuilder.newBuilder()
                        .expireAfterWrite(30, TimeUnit.SECONDS)
                        .build();
+    private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @Override
     protected List<StatusPointMonitor> getAllMonitors() {
@@ -123,13 +125,6 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
 
             PointValueHolder nextValue = richPointData.getPointValue();
             PointValueHolder previousValue = null; // store this outside the loop because it is valid for every processor 
-            
-            PointValueHolder cachedValue = recentStatusPoints.getIfPresent(richPointData.getPointValue().getId());
-            if (cachedValue == null || richPointData.getPointValue().getPointDataTimeStamp().after(
-                cachedValue.getPointDataTimeStamp())) {
-                // if this is the most recent value, cache it
-                recentStatusPoints.put(nextValue.getId(), nextValue);
-            }
             
             if (log.isDebugEnabled()) {
                 log.debug("Point %s caught by Status Point Monitor: %s with value: %s", richPointData.getPaoPointIdentifier(), statusPointMonitor, nextValue);
@@ -248,6 +243,9 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
         return processorPointValue == pointValueAsInt;
     }
 
+    /**
+     * Returns value RPH or cached value. Updates cache with the recent value.
+     */
     private PointValueHolder getPreviousValueForPoint(PointValueHolder nextValue) {
         Date nextTimeStamp = nextValue.getPointDataTimeStamp();
         int pointId = nextValue.getId();
@@ -256,15 +254,35 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
 						Order.REVERSE, 1);
         PointValueHolder cachedValue = recentStatusPoints.getIfPresent(pointId);
         PointValueHolder rphValue = Iterables.getFirst(pointPrevValueList, null);
+        boolean returnCachedValue = false;
         if (cachedValue != null
             // next value is more recent that the value in cache
             && nextTimeStamp.after(cachedValue.getPointDataTimeStamp())
             // cached value is more recent then value in RPH
             && cachedValue.getPointDataTimeStamp().after(rphValue.getPointDataTimeStamp())) {
-            return cachedValue;
+            returnCachedValue = true;
         }
-
-        return rphValue;
+        
+        if (cachedValue == null || nextTimeStamp.after(cachedValue.getPointDataTimeStamp())) {
+            // if this is the most recent value, cache it
+            logPointValueDebugString("added to cache", nextValue);
+            recentStatusPoints.put(pointId, nextValue);
+        }
+        PointValueHolder returnValue = returnCachedValue ? cachedValue : rphValue;
+        logPointValueDebugString("currentValue", nextValue);
+        logPointValueDebugString("cachedValue", cachedValue);
+        logPointValueDebugString("rphValue", rphValue);
+        if(returnCachedValue) {
+            logPointValueDebugString("returning cached value", returnValue);
+        } else {
+            logPointValueDebugString("returning RPH value", returnValue);
+        }
+        return returnValue ;
+    }
+    
+    private void logPointValueDebugString(String valueType, PointValueHolder value) {
+        log.debug("Point value {} - id:{} timestamp:{} value:{}", valueType, value.getId(),
+            format.format(value.getPointDataTimeStamp()), value.getValue());
     }
     
     @Autowired
