@@ -162,6 +162,7 @@
     <entry key="yukon.common.pao.LM_GROUP_HONEYWELL">Honeywell Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_ITRON">Itron Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_NEST">Nest Group</entry>
+    <entry key="yukon.common.pao.LM_GROUP_METER_DISCONNECT">Meter Disconnect Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_RFN_EXPRESSCOMM">RFN Expresscom Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_GOLAY">Golay Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_MCT">MCT Group</entry>

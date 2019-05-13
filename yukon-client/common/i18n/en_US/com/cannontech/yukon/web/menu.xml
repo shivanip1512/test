@@ -36,6 +36,7 @@
 <entry key="yukon.web.menu.dr.programs">Programs</entry>
 <entry key="yukon.web.menu.dr.loadGroups">Load Groups</entry>
 <entry key="yukon.web.menu.dr.estimatedLoad">Estimated Load</entry>
+<entry key="yukon.web.menu.dr.setup">Setup</entry>
 <entry key="yukon.web.menu.dr.ci">C&amp;I Curtailment</entry>
 
 <!-- Volt/Var (IVVC and Cap Control) -->

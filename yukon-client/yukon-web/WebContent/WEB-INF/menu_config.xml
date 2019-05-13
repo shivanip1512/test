@@ -107,6 +107,12 @@
         </permissions>
         <link>/dr/estimatedLoad/home</link>
       </option>
+      <option name="setup">
+        <permissions>
+            <role name="DEMAND_RESPONSE" />
+        </permissions>
+        <link>/dr/setup/list</link>
+      </option>
       <option name="ci">
         <permissions>
           <roleProperty name="CURTAILMENT_IS_OPERATOR" />

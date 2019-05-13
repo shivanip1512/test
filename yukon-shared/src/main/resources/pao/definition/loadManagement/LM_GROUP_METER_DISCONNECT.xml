@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="LM_GROUP_METER_DISCONNECT" displayGroup="Demand Response" displayName="Meter Disconnect Group" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>LM.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="LM_GROUP"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="CONTROL STATUS" init="true" attributes="LM_GROUP_STATUS"/>
+    </pointInfos>
+</pao>

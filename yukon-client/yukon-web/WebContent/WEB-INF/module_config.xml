@@ -529,6 +529,19 @@
           <page name="searchResults" type="BASIC" hideSearch="true">
             <link>/dr/search</link>
           </page>
+          <page name="setup" type="BASIC" hideSearch="true">
+            <link>/dr/setup/list</link>
+            <pages>
+                <page name="setup.loadGroup.VIEW" type="DETAIL">
+                    <link>/dr/setup/loadGroup/{id}</link>
+                    <labelArgument>${loadGroup.name}</labelArgument>
+                </page>
+                <page name="setup.loadGroup.EDIT" type="BASIC" hideFavorite="true">
+                    <labelArgument>${loadGroup.name}</labelArgument>
+                </page>
+                <page name="setup.loadGroup.CREATE" type="BASIC"/>
+            </pages>
+          </page>
           <page name="assetAvailability.detail" type="BASIC"/>
         </pages>
       </page>
