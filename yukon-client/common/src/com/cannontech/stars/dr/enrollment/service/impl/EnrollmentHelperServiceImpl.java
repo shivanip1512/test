@@ -266,22 +266,24 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
      * @param enrollment the Program Enrollment 
      */
     private void verifyRelay(LoadGroup loadGroup, ProgramEnrollment enrollment) {
-        int enrollmentRelay = enrollment.getRelay();
-        //For Itron, the relay should match the relay specified in the Group
-        if (loadGroup.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_ITRON) {
-            int relayFromGroup = itronDao.getVirtualRelayId(loadGroup.getLoadGroupId());
-            //if no relay was provided, set it to the relay specified in the Itron group
-            if (enrollmentRelay == 0) {
-                enrollment.setRelay(relayFromGroup);
-                return;
-            }
-            //error if relay does not match group
-            if (enrollmentRelay != relayFromGroup) {
-                EnrollmentException e = new EnrollmentException("Relay selected for enrollment does not match the Load Group: " + loadGroup.getName() + ".");
-                YukonMessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.operator.enrollmentError.relay", loadGroup.getName());
-                e.setDetailMessage(message);
-                log.error(e.getMessage());
-                throw e;
+        if (loadGroup != null) {
+            int enrollmentRelay = enrollment.getRelay();
+            //For Itron, the relay should match the relay specified in the Group
+            if (loadGroup.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_ITRON) {
+                int relayFromGroup = itronDao.getVirtualRelayId(loadGroup.getLoadGroupId());
+                //if no relay was provided, set it to the relay specified in the Itron group
+                if (enrollmentRelay == 0) {
+                    enrollment.setRelay(relayFromGroup);
+                    return;
+                }
+                //error if relay does not match group
+                if (enrollmentRelay != relayFromGroup) {
+                    EnrollmentException e = new EnrollmentException("Relay selected for enrollment does not match the Load Group: " + loadGroup.getName() + ".");
+                    YukonMessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.operator.enrollmentError.relay", loadGroup.getName());
+                    e.setDetailMessage(message);
+                    log.error(e.getMessage());
+                    throw e;
+                }
             }
         }
     }
