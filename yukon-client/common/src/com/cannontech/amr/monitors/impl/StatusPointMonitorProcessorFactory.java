@@ -2,7 +2,6 @@ package com.cannontech.amr.monitors.impl;
 
 import static org.joda.time.DateTime.now;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -55,8 +54,6 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     private Cache<Integer, PointValueHolder> recentStatusPoints = CacheBuilder.newBuilder()
                        .expireAfterWrite(30, TimeUnit.SECONDS)
                        .build();
-    private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
     @Override
     protected List<StatusPointMonitor> getAllMonitors() {
         return statusPointMonitorDao.getAllStatusPointMonitors();
@@ -127,7 +124,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
             PointValueHolder previousValue = null; // store this outside the loop because it is valid for every processor 
             
             if (log.isDebugEnabled()) {
-                log.debug("Point %s caught by Status Point Monitor: %s with value: %s", richPointData.getPaoPointIdentifier(), statusPointMonitor, nextValue);
+                log.debug("Point {} caught by Status Point Monitor: {} with value: {}", richPointData.getPaoPointIdentifier(), statusPointMonitor, nextValue);
             }
             
             for (StatusPointMonitorProcessor statusPointMonitorProcessor : statusPointMonitor.getProcessors()) {
@@ -139,7 +136,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                 
                 boolean shouldSendMessage = shouldSendMessage(statusPointMonitorProcessor, nextValue, previousValue);
 
-                if (shouldSendMessage) {
+                if (shouldSendMessage) {                  
                     OutageJmsMessage outageJmsMessage = new OutageJmsMessage();
                     outageJmsMessage.setSource(statusPointMonitor.getName());
                     outageJmsMessage.setActionType(statusPointMonitorProcessor.getActionTypeEnum());
@@ -214,16 +211,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
             log.error("Caught exception when converting non-int state type to an int", e);
         }
         
-        log.debug(processor);
-        log.debug("Should Send Message: " + shouldSendMessage);
-        log.debug("Next point value: " + nextPointValue.getValue() + " for pointId: " + nextPointValue.getId());
-        
-        if (prevPointValue != null) {
-            log.debug("Previous point value: " + prevPointValue.getValue() + " for pointId: " + prevPointValue.getId());
-        } else {
-            log.debug("Previous point value was not retrieved because it was not needed.");
-        }
-        
+        log.debug("Should Send Message: {} proccessor: {}", shouldSendMessage, processor);
         return shouldSendMessage;
     }
     
@@ -265,24 +253,13 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
         
         if (cachedValue == null || nextTimeStamp.after(cachedValue.getPointDataTimeStamp())) {
             // if this is the most recent value, cache it
-            logPointValueDebugString("added to cache", nextValue);
             recentStatusPoints.put(pointId, nextValue);
         }
         PointValueHolder returnValue = returnCachedValue ? cachedValue : rphValue;
-        logPointValueDebugString("currentValue", nextValue);
-        logPointValueDebugString("cachedValue", cachedValue);
-        logPointValueDebugString("rphValue", rphValue);
-        if(returnCachedValue) {
-            logPointValueDebugString("returning cached value", returnValue);
-        } else {
-            logPointValueDebugString("returning RPH value", returnValue);
-        }
-        return returnValue ;
-    }
-    
-    private void logPointValueDebugString(String valueType, PointValueHolder value) {
-        log.debug("Point value {} - id:{} timestamp:{} value:{}", valueType, value.getId(),
-            format.format(value.getPointDataTimeStamp()), value.getValue());
+        log.debug("Next point value: {} for pointId: {}", nextValue.getValue(), nextValue.getId());
+        log.debug("Previous point value: {} for pointId: {} cached: {}", returnValue.getValue(), returnValue.getId(), returnCachedValue);
+        
+        return returnValue;
     }
     
     @Autowired
