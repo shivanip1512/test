@@ -334,8 +334,8 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Override
     public Integer findDeviceBySensorSerialNumber(String sensorSerialNumber) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select DeviceId");
-        sql.append("from RfnAddress where SerialNumber").eq(sensorSerialNumber);
+        sql.append("SELECT DeviceId");
+        sql.append("FROM RfnAddress WHERE SerialNumber").eq(sensorSerialNumber);
         
         try {
             return jdbcTemplate.queryForInt(sql);
