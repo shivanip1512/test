@@ -266,6 +266,9 @@
                 <entry key="VOLTAGE_REGULATOR">
                     <ref bean="voltageRegulatorBackingService"/>
                 </entry>
+                <entry key="VOLTAGE_DELTA">
+                    <ref bean="voltageDeltaBackingService"/>
+                </entry>
                 <entry key="MSP_DEVICE_GROUP_SYNC">
                     <ref bean="multispeakDeviceGroupSyncBackingService"/>
                 </entry> 
@@ -532,6 +535,8 @@
     <bean id="voltageRegulatorModeUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorModeUpdaterHandler"/>
     <bean id="voltageRegulatorTapHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorTapHandler"/>
     <bean id="voltageRegulatorTapTooltipHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorTapTooltipHandler"/>
+    
+    <bean id="voltageDeltaBackingService" class="com.cannontech.web.updater.capcontrol.VoltageDeltaBackingService"/>
 
     <bean id="cbcAreaFormattingService" class="com.cannontech.web.updater.capcontrol.AreaFormattingService"
           parent="abstractAreaFormattingService"/>

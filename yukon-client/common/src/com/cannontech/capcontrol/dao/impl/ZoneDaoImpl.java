@@ -558,6 +558,37 @@ public class ZoneDaoImpl implements ZoneDao {
         
         return yukonJdbcTemplate.query(sqlBuilder, pointDeltaRowMapper);
     }
+    
+    @Override
+    public Double getPreOpForPoint(Integer bankId, Integer pointId) {
+        
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT DMPR.PreOpValue");
+        sqlBuilder.append("FROM DynamicCCMonitorPointResponse DMPR");
+        sqlBuilder.append("WHERE DMPR.DeviceId").eq(bankId);
+        sqlBuilder.append("AND DMPR.PointID").eq(pointId);
+        
+        try {
+            return yukonJdbcTemplate.queryForObject(sqlBuilder, TypeRowMapper.DOUBLE);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+    
+    @Override
+    public Double getDeltaForPoint(Integer bankId, Integer pointId) {
+        
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT DMPR.Delta");
+        sqlBuilder.append("FROM DynamicCCMonitorPointResponse DMPR");
+        sqlBuilder.append("WHERE DMPR.DeviceId").eq(bankId);
+        sqlBuilder.append("AND DMPR.PointID").eq(pointId);
+        try {
+            return yukonJdbcTemplate.queryForObject(sqlBuilder, TypeRowMapper.DOUBLE);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 
     @Override
     public List<Integer> getMonitorPointsForBank(int deviceId) {

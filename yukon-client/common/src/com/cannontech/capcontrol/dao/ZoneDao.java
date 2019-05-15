@@ -156,6 +156,22 @@ public interface ZoneDao {
     public List<CapBankPointDelta> getAllPointDeltasForBankIds(List<Integer> bankIds);
     
     /**
+     * Returns latest pre-op value for the specified point
+     * @param bankId
+     * @param pointId
+     * @return preOpValue 
+     */
+    public Double getPreOpForPoint(Integer bankId, Integer pointId);
+    
+    /**
+     * Returns latest delta value for the specified point
+     * @param bankId
+     * @param pointId
+     * @return deltaValue
+     */
+    public Double getDeltaForPoint(Integer bankId, Integer pointId);
+    
+    /**
      * Returns a list of Point Ids for the given Cap Bank Id.
      * @param bankId
      * @return

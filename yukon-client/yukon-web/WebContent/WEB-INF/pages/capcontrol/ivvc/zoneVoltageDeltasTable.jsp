@@ -31,7 +31,7 @@
                         <td>${fn:escapeXml(pointDelta.bankName)}</td>
                         <td>${fn:escapeXml(pointDelta.affectedDeviceName)}</td>
                         <td>${fn:escapeXml(pointDelta.affectedPointName)}</td>
-                        <td>${fn:escapeXml(pointDelta.preOpValue)}</td>
+                        <td><cti:dataUpdaterValue type="VOLTAGE_DELTA" identifier="${pointDelta.bankId}/${pointDelta.pointId}/PRE_OP"/></td>
                         <c:choose>
                             <c:when test="${hasEditingRole}">
                                 <td><label><input type="checkbox" class="js-static-delta"
@@ -44,7 +44,7 @@
                                 <td class="editable">
                                     <cti:msg2 var="deltaTitle" key=".deltas.deltaTitle" />
                                     <div class="js-view-delta anchorUnderlineHover" title="${deltaTitle}">
-                                        ${fn:escapeXml(pointDelta.deltaRounded)}
+                                        <cti:dataUpdaterValue type="VOLTAGE_DELTA" identifier="${pointDelta.bankId}/${pointDelta.pointId}/VOLTAGE_DELTA"/>
                                     </div>
                                     <div class="js-edit-delta dn">
                                         <input type="text" style="margin-right: 5px; width: 30px;"
@@ -56,7 +56,7 @@
                             </c:when>
                             <c:otherwise>
                                 <td><input type="checkbox" disabled="disabled" <c:if test="${pointDelta.staticDelta}">checked="checked"</c:if>></td>
-                                <td><div>${fn:escapeXml(pointDelta.deltaRounded)}</div></td>
+                                <td><div><cti:dataUpdaterValue type="VOLTAGE_DELTA" identifier="${pointDelta.bankId}/${pointDelta.pointId}/VOLTAGE_DELTA"/></div></td>
                             </c:otherwise>
                         </c:choose>
                     </tr>
