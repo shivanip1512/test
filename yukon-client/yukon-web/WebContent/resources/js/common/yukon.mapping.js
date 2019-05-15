@@ -18,6 +18,10 @@ yukon.mapping = (function () {
     //Line Color depends on ETX Band 1 - #006622(GREEN), 2 - #669900(LIGHT GREEN), 3 - #CCA300(YELLOW), 4 - #FF6600(ORANGE), 5 and up - #FF0000(RED)
     _neighborColors = ['#006622', '#669900', '#CCA300', '#FF6600', '#FF0000'],  
     
+    /** @type {string} - The default projection code of our map tiles. */
+    _destProjection = 'EPSG:3857',
+    _srcProjection = 'EPSG:4326',
+    
     /** @type {Object.<string, {ol.style.Style}>} - A cache of styles to avoid creating lots of objects using lots of memory. */
     _styles = { 
         'METER_ELECTRIC': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-meter-elec-grey.png'), anchor: [0.5, 1.0] }) }),
@@ -92,6 +96,14 @@ yukon.mapping = (function () {
         
         getTiles: function() {
             return _tiles;
+        },
+        
+        getDestProjection: function() {
+            return _destProjection;
+        },
+        
+        getSrcProjection: function() {
+            return _srcProjection;
         },
         
         displayCommonPopupProperties: function(pao) {
@@ -189,6 +201,27 @@ yukon.mapping = (function () {
             $('#marker-info').show();
         },
         
+        displayParentNodePopupProperties: function(parent) {
+            var parentData = parent.data;
+            $('.js-node-sn-display').toggleClass('dn', (parentData.nodeSN === null || parent.gatewayType));
+            $('.js-node-sn').text(parentData.nodeSN);
+            $('.js-serial-number-display').toggleClass('dn', (parentData.rfnIdentifier.sensorSerialNumber === null || parent.gatewayType));
+            $('.js-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
+            $('.js-gateway-serial-number-display').toggleClass('dn', (parentData.rfnIdentifier.sensorSerialNumber === null || !parent.gatewayType));
+            $('.js-gateway-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
+            $('.js-ip-address-display').toggleClass('dn', parent.ipAddress === null);
+            $('.js-ip-address').text(parent.ipAddress);
+            $('.js-mac-address-display').toggleClass('dn', parentData.nodeMacAddress === null);
+            $('.js-mac-address').text(parentData.nodeMacAddress);
+            $('.js-distance-display').toggleClass('dn', parent.distanceDisplay === null);
+            $('.js-distance').text(parent.distanceDisplay);
+            $('#neighbor-info').hide();
+            $('#device-info').hide();
+            $('#route-info').hide();
+            $('#parent-info').show();
+            $('#marker-info').show();
+        },
+        
         getNeighborLineColor: function(etxBand) {
             //Line Color is based on ETX Band - see colors above
             var lineColor = _neighborColors[4];
@@ -255,6 +288,64 @@ yukon.mapping = (function () {
                     break;
             }
             $('.js-status').addClass(statusClass);
+        },
+        
+        displayMappingPopup: function(feature, overlay) {
+            var geometry = feature.getGeometry(),
+                coord = geometry.getCoordinates(),
+                properties = feature.getProperties(),
+                parent = properties.parent,
+                neighbor = properties.neighbor,
+                routeInfo = properties.routeInfo,
+                nearby = properties.nearby;
+            if (parent != null) {
+                mod.displayCommonPopupProperties(parent);
+                mod.displayParentNodePopupProperties(parent);
+                overlay.setPosition(coord);
+            } else if (routeInfo != null) {
+                mod.displayCommonPopupProperties(routeInfo);
+                mod.displayPrimaryRoutePopupProperties(routeInfo);
+                overlay.setPosition(coord);
+            } else if (neighbor != null) {
+                mod.displayCommonPopupProperties(neighbor);
+                mod.displayNeighborPopupProperties(neighbor);
+                overlay.setPosition(coord);
+            } else {
+                $('#parent-info').hide();
+                $('#neighbor-info').hide();
+                $('#route-info').hide();
+                var url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
+                $('#device-info').load(url, function() {
+                    if (nearby != null) {
+                        $('.js-distance').text(nearby.distance.distance.toFixed(4) + " ");
+                        $('.js-distance-display').show();
+                    }
+                    $('#device-info').show();
+                    $('#marker-info').show();
+                    overlay.setPosition(coord);
+                    var deviceStatus = $('.js-status').text();
+                    mod.updateDeviceStatusClass(deviceStatus);
+                });
+                //close any lingering delete dialogs to simplify handling
+                var deleteDialog = $('#confirm-delete');
+                if (deleteDialog.hasClass('ui-dialog-content')) {
+                    deleteDialog.dialog('destroy');
+                }
+            }
+        },
+        
+        updateZoom: function(map) {
+            var source = map.getLayers().getArray()[_tiles.length].getSource();
+            var features = source.getFeatures();
+            if (features != null && features.length > 1) {
+                map.getView().fit(source.getExtent(), map.getSize());
+                if (map.getView().getZoom() > 16){
+                    map.getView().setZoom(16);
+                }
+            } else {
+                map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
+                map.getView().setZoom(13);
+            }
         },
 
     };

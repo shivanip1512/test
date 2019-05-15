@@ -62,8 +62,8 @@ yukon.map.network = (function () {
     /** @type {boolean} - This is a boolean variable indicating if the _doubleClickZoomInteraction and _doubleClickZoomInteraction interactions are blocked */
     _interactionsBlocked = false,
     
-    /** @type {string} - The default projection code of our map tiles. */
-    _destProjection = 'EPSG:3857',
+    _destProjection = yukon.mapping.getDestProjection(),
+    _srcProjection = yukon.mapping.getSrcProjection(),
     
     _styles = yukon.mapping.getStyles(),
     _tiles = yukon.mapping.getTiles(),
@@ -160,7 +160,7 @@ yukon.map.network = (function () {
         _parentIconLayer = iconsLayer;
         _map.addLayer(iconsLayer);
         
-        _updateZoom();
+        yukon.mapping.updateZoom(_map);
         
         _makeCurrentDeviceStandOut();
     },
@@ -320,7 +320,7 @@ yukon.map.network = (function () {
         }
         _map.addLayer(iconsLayer);
         
-        _updateZoom();
+        yukon.mapping.updateZoom(_map);
         
         if (!isFocusDevice) {
             _makeCurrentDeviceStandOut();
@@ -428,7 +428,7 @@ yukon.map.network = (function () {
         }
         _map.addLayer(iconsLayer);
         
-        _updateZoom();
+        yukon.mapping.updateZoom(_map);
         
         if (!isFocusDevice) {
             _makeCurrentDeviceStandOut();
@@ -474,7 +474,7 @@ yukon.map.network = (function () {
         _nearbyIconLayer = iconsLayer;
         _map.addLayer(iconsLayer);
         
-        _updateZoom();
+        yukon.mapping.updateZoom(_map);
         
         _makeCurrentDeviceStandOut();
     },
@@ -533,22 +533,8 @@ yukon.map.network = (function () {
         }
         _map.removeLayer(_nearbyIconLayer);
         _nearbyIcons = [];
-        _updateZoom();
+        yukon.mapping.updateZoom(_map);
         _checkToGoBackToDeviceOriginalStyle();
-    },
-    
-    _updateZoom = function() {
-        var source = _map.getLayers().getArray()[_tiles.length].getSource();
-        var features = source.getFeatures();
-        if (features != null && features.length > 1) {
-            _map.getView().fit(source.getExtent(), _map.getSize());
-            if (_map.getView().getZoom() > 16){
-                _map.getView().setZoom(16);
-            }
-        } else {
-            _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
-            _map.getView().setZoom(13);
-        }
     },
     
     mod = {
@@ -570,7 +556,7 @@ yukon.map.network = (function () {
                     ],
                     layers: _tiles,
                     target: 'device-location',
-                    view: new ol.View({ center: ol.proj.transform([-97.734375, 40.529458], 'EPSG:4326', 'EPSG:3857'), zoom: 4 })
+                    view: new ol.View({ center: ol.proj.transform([-97.734375, 40.529458], _srcProjection, _destProjection), zoom: 4 })
                 });
                 _destProjection = _map.getView().getProjection().getCode();
                 _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
@@ -596,62 +582,7 @@ yukon.map.network = (function () {
                         }
                     });
                     if (feature) {
-                        var geometry = feature.getGeometry(),
-                            coord = geometry.getCoordinates(),
-                            properties = feature.getProperties(),
-                            parent = properties.parent,
-                            neighbor = properties.neighbor,
-                            routeInfo = properties.routeInfo,
-                            nearby = properties.nearby;
-
-                        if (parent != null) {
-                            var parentData = parent.data;
-                            yukon.mapping.displayCommonPopupProperties(parent);
-                            $('.js-node-sn-display').toggleClass('dn', (parentData.nodeSN === null || parent.gatewayType));
-                            $('.js-node-sn').text(parentData.nodeSN);
-                            $('.js-serial-number-display').toggleClass('dn', (parentData.rfnIdentifier.sensorSerialNumber === null || parent.gatewayType));
-                            $('.js-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
-                            $('.js-gateway-serial-number-display').toggleClass('dn', (parentData.rfnIdentifier.sensorSerialNumber === null || !parent.gatewayType));
-                            $('.js-gateway-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
-                            $('.js-ip-address-display').toggleClass('dn', parent.ipAddress === null);
-                            $('.js-ip-address').text(parent.ipAddress);
-                            $('.js-mac-address-display').toggleClass('dn', parentData.nodeMacAddress === null);
-                            $('.js-mac-address').text(parentData.nodeMacAddress);
-                            $('.js-distance-display').toggleClass('dn', parent.distanceDisplay === null);
-                            $('.js-distance').text(parent.distanceDisplay);
-                            $('#neighbor-info').hide();
-                            $('#device-info').hide();
-                            $('#route-info').hide();
-                            $('#parent-info').show();
-                            $('#marker-info').show();
-                            _overlay.setPosition(coord);
-                        } else if (neighbor != null) {
-                            yukon.mapping.displayCommonPopupProperties(neighbor);
-                            yukon.mapping.displayNeighborPopupProperties(neighbor);
-                            _overlay.setPosition(coord);
-                        } else if (routeInfo != null) {
-                            yukon.mapping.displayCommonPopupProperties(routeInfo);
-                            yukon.mapping.displayPrimaryRoutePopupProperties(routeInfo);
-                            _overlay.setPosition(coord);
-                        } else {
-                            $('#parent-info').hide();
-                            $('#neighbor-info').hide();
-                            $('#route-info').hide();
-                            if (feature.get('pao') != null) {
-                                url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
-                                $('#device-info').load(url, function() {
-                                    if (nearby != null) {
-                                        $('.js-distance').text(nearby.distance.distance.toFixed(4) + " ");
-                                        $('.js-distance-display').show();
-                                    }
-                                    $('#device-info').show();
-                                    $('#marker-info').show();
-                                    _overlay.setPosition(coord);
-                                    var deviceStatus = $('.js-status').text();
-                                    yukon.mapping.updateDeviceStatusClass(deviceStatus);
-                                });
-                            }
-                        }
+                        yukon.mapping.displayMappingPopup(feature, _overlay);
                     } else {
                         var target = ev.originalEvent.target;
                         //check if user clicked on the cog, the error hide-reveal, or notes icon
@@ -696,6 +627,8 @@ yukon.map.network = (function () {
                                        id = properties.pao.paoId;
                                    if (id == paoId) {
                                        source.removeFeature(features[x]);
+                                       _map.getView().fit(source.getExtent(), _map.getSize());
+                                       //yukon.mapping.updateZoom(_map);
                                        break;
                                    }
                                 }
@@ -725,7 +658,7 @@ yukon.map.network = (function () {
                                 source.addFeature(icon);
                             });
                             _map.addLayer(_neighborIconLayer);
-                            _updateZoom();
+                            yukon.mapping.updateZoom(_map);
                             _makeCurrentDeviceStandOut();
                         } else {
                             var fc = yukon.fromJson('#geojson'),
@@ -754,7 +687,7 @@ yukon.map.network = (function () {
                         });
                         _map.removeLayer(_neighborIconLayer);
                         _removeDeviceFocusLayers();
-                        _updateZoom();
+                        yukon.mapping.updateZoom(_map);
                         _checkToGoBackToDeviceOriginalStyle();
                     }
                 });
@@ -793,7 +726,7 @@ yukon.map.network = (function () {
                                 source.addFeature(icon);
                             });
                             _map.addLayer(_primaryRouteIconLayer);
-                            _updateZoom();
+                            yukon.mapping.updateZoom(_map);
                             _makeCurrentDeviceStandOut();
                         } else {
                             var fc = yukon.fromJson('#geojson'),
@@ -821,7 +754,7 @@ yukon.map.network = (function () {
                         });
                         _map.removeLayer(_primaryRouteIconLayer);
                         _removeDeviceFocusLayers();
-                        _updateZoom();
+                        yukon.mapping.updateZoom(_map);
                         _checkToGoBackToDeviceOriginalStyle();
                     }
                 });
@@ -855,7 +788,7 @@ yukon.map.network = (function () {
                             source.addFeature(_parentIcon);
                             _map.addLayer(_parentLine);
                             _map.addLayer(_parentIconLayer);
-                            _updateZoom();
+                            yukon.mapping.updateZoom(_map);
                             _makeCurrentDeviceStandOut();
                         } else {
                             var fc = yukon.fromJson('#geojson'),
@@ -879,7 +812,7 @@ yukon.map.network = (function () {
                         source.removeFeature(_parentIcon);
                         _map.removeLayer(_parentLine);
                         _map.removeLayer(_parentIconLayer);
-                        _updateZoom();
+                        yukon.mapping.updateZoom(_map);
                         _checkToGoBackToDeviceOriginalStyle();
                     }
 
@@ -927,7 +860,7 @@ yukon.map.network = (function () {
                     }
                     //close any popups
                     $('#marker-info').hide();
-                    _updateZoom();
+                    yukon.mapping.updateZoom(_map);
                     _map.updateSize();
                 });
                 

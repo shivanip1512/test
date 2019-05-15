@@ -42,10 +42,9 @@ yukon.map.comprehensive = (function () {
         
     /** @type {Object.<number, {ol.Feature}>} - Map of pao id to feature for all device icons. */
     _icons = [], 
-    _mapLayers = [],
     
-    /** @type {string} - The default projection code of our map tiles. */
-    _destProjection = 'EPSG:3857',
+    _destProjection = yukon.mapping.getDestProjection(),
+    _srcProjection = yukon.mapping.getSrcProjection(),
     
     /** @type {ol.interaction.DoubleClickZoom} - The openlayers interaction object for zoom on double click. */
     _doubleClickZoomInteraction,
@@ -70,6 +69,7 @@ yukon.map.comprehensive = (function () {
                 style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'];
                 icon = new ol.Feature({ device: feature, pao: pao });
             
+            icon.setId(feature.id);
             icon.setStyle(style);
 
             var currentStyle = icon.getStyle().clone(),
@@ -93,42 +93,18 @@ yukon.map.comprehensive = (function () {
             _icons.push(icon);
             source.addFeature(icon);
         }
-
-        var iconsLayer = new ol.layer.Vector({source: new ol.source.Vector({features: layerIcons}), rendererOptions: {zIndexing: true, yOrdering: true}});
-        iconsLayer.setZIndex(zIndex);
-        _mapLayers.push(iconsLayer);
-        _map.addLayer(iconsLayer);
         
-        _updateZoom();
+        yukon.mapping.updateZoom(_map);
         
     },
     
     _findFocusDevice = function(deviceId, makeLarger) {
-        //check icons first
-        var exists = [];
-        for (var i in _icons) {
-            if (_icons[i].get('pao').paoId === deviceId) {
-                exists.push(_icons[i]);
-                break;
+        var source = _map.getLayers().getArray()[_tiles.length].getSource();
+            feature = source.getFeatureById(deviceId);
+            if (feature && makeLarger) {
+                _makeDeviceIconLarger(feature);
             }
-        }
-        //check focus devices next
-        if (exists.length === 0) {
-            exists = _deviceFocusIcons.filter(function (device) {
-                if (device.getProperties().routeInfo != null) {
-                    return device.getProperties().routeInfo.device.paoIdentifier.paoId === deviceId;
-                } else if (device.getProperties().neighbor != null) {
-                    return device.getProperties().neighbor.device.paoIdentifier.paoId === deviceId;
-                }
-            });
-        }
-        if (exists.length > 0) {
-            var focusDevice = exists[0];
-            if (makeLarger) {
-                _makeDeviceIconLarger(focusDevice);
-            }
-            return focusDevice;
-        }
+            return feature;
     },
     
     _removeDeviceFocusLayers = function() {
@@ -197,9 +173,9 @@ yukon.map.comprehensive = (function () {
         for (var x in routeInfo) {
             var route = routeInfo[x],
                 feature = route.location.features[0],
-                src_projection = 'EPSG:4326',
                 style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
                 icon = new ol.Feature({ routeInfo: route });
+            icon.setId(feature.id);
             
             //check if device already exists on map...the first device will always be the original device so make the icon larger
             var deviceFound = _findFocusDevice(feature.properties.paoIdentifier.paoId, x == 0);
@@ -214,10 +190,10 @@ yukon.map.comprehensive = (function () {
                 if (x == 0) {
                     _makeDeviceIconLarger(icon);
                 }
-                if (src_projection === _destProjection) {
+                if (_srcProjection === _destProjection) {
                     icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
                 } else {
-                    var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+                    var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
                     icon.setGeometry(new ol.geom.Point(coord));
                 }
                 
@@ -277,10 +253,10 @@ yukon.map.comprehensive = (function () {
         for (var x in neighbors) {
             var neighbor = neighbors[x],
             feature = neighbor.location.features[0],
-            src_projection = 'EPSG:4326',
             style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
             icon = new ol.Feature({ neighbor: neighbor });
-            
+            icon.setId(feature.id);
+
             //check if neighbor already exists on map
             var neighborFound = _findFocusDevice(feature.properties.paoIdentifier.paoId, false);
             if (neighborFound) {
@@ -292,10 +268,10 @@ yukon.map.comprehensive = (function () {
                 icon.set("pao", feature.properties.paoIdentifier);
                 _setScaleForDevice(icon);
 
-                if (src_projection === _destProjection) {
+                if (_srcProjection === _destProjection) {
                     icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
                 } else {
-                    var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+                    var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
                     icon.setGeometry(new ol.geom.Point(coord));
                 }
                 
@@ -337,20 +313,6 @@ yukon.map.comprehensive = (function () {
         _map.addLayer(iconsLayer);
     },
     
-    _updateZoom = function() {
-        var source = _map.getLayers().getArray()[_tiles.length].getSource();
-        var features = source.getFeatures();
-        if (features != null && features.length > 1) {
-            _map.getView().fit(source.getExtent(), _map.getSize());
-            if (_map.getView().getZoom() > 16){
-                _map.getView().setZoom(16);
-            }
-        } else {
-            _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
-            _map.getView().setZoom(13);
-        }
-    },
-    
     mod = {
         
         /** Initialize this module. */
@@ -373,7 +335,7 @@ yukon.map.comprehensive = (function () {
                 ],
                 layers: _tiles,
                 target: 'comprehensive-map',
-                view: new ol.View({ center: ol.proj.transform([-97.734375, 40.529458], 'EPSG:4326', 'EPSG:3857'), zoom: 4 })
+                view: new ol.View({ center: ol.proj.transform([-97.734375, 40.529458], _srcProjection, _destProjection), zoom: 4 })
             });
             _destProjection = _map.getView().getProjection().getCode();
             _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
@@ -384,21 +346,7 @@ yukon.map.comprehensive = (function () {
             _map.on('click', function(ev) {
                 var feature = _map.forEachFeatureAtPixel(ev.pixel, function(feature, layer) { return feature; });
                 if (feature && feature.get('pao') != null) {
-                    var 
-                    geometry = feature.getGeometry(),
-                    coord = geometry.getCoordinates(),
-                    properties = feature.getProperties();
-                    var url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
-                    $('#device-info').load(url, function() {
-                        $('#device-info').show();
-                        $('#marker-info').show();
-                        _overlay.setPosition(coord);
-                    });
-                    //close any lingering delete dialogs to simplify handling
-                    var deleteDialog = $('#confirm-delete');
-                    if (deleteDialog.hasClass('ui-dialog-content')) {
-                        deleteDialog.dialog('destroy');
-                    }
+                    yukon.mapping.displayMappingPopup(feature, _overlay);
                 } else {
                     var target = ev.originalEvent.target;
                     //check if user clicked on the cog, the error hide-reveal, or notes icon
@@ -438,12 +386,6 @@ yukon.map.comprehensive = (function () {
                         });
                         _icons = [];
                     }
-                    _mapLayers.forEach(function(layer) {
-                        layer.getSource().clear();
-                        _map.removeLayer(layer);
-                    });
-                    _icons = [];
-                    _mapLayers = [];
                     _removeDeviceFocusLayers();
                     var map = data.map.mappedDevices;
                     Object.keys(map).forEach(function(key) {
@@ -475,31 +417,24 @@ yukon.map.comprehensive = (function () {
                         }).done( function(data) {
                             var searchError = $('#noResultsFoundError').val();
                             if (data.paoId) {
-                                var foundOnMap = false;
                                 var source = _map.getLayers().getArray()[_tiles.length].getSource(),
-                                    features = source.getFeatures();
-                                for (var x in features) {
-                                    var feature = features[x];
-                                    if (feature.get("pao").paoId === data.paoId) {
-                                        foundOnMap = true;
-                                        _highlightDevice = feature;
-                                        _highlightOldStyle = feature.getStyle();
-                                        var largerStyle = feature.getStyle().clone(),
-                                            circleStyle = new ol.style.Style({
-                                            image: new ol.style.Circle({
-                                                radius: 8,
-                                                fill: new ol.style.Fill({color: _routeColor}),
-                                                stroke: new ol.style.Stroke({color: 'black', width: 2}) 
-                                            })
-                                        });
-                                        largerStyle.getImage().setScale(_largerScale);
-                                        feature.setStyle([circleStyle, largerStyle]);
-                                        _map.getView().setCenter(feature.getGeometry().getCoordinates());
-                                        _map.getView().setZoom(16);
-                                        break;
-                                    }
-                                }
-                                if (!foundOnMap) {
+                                    feature = source.getFeatureById(data.paoId);
+                                if (feature) {
+                                    _highlightDevice = feature;
+                                    _highlightOldStyle = feature.getStyle();
+                                    var largerStyle = feature.getStyle().clone(),
+                                        circleStyle = new ol.style.Style({
+                                        image: new ol.style.Circle({
+                                            radius: 8,
+                                            fill: new ol.style.Fill({color: _routeColor}),
+                                            stroke: new ol.style.Stroke({color: 'black', width: 2}) 
+                                        })
+                                    });
+                                    largerStyle.getImage().setScale(_largerScale);
+                                    feature.setStyle([circleStyle, largerStyle]);
+                                    _map.getView().setCenter(feature.getGeometry().getCoordinates());
+                                    _map.getView().setZoom(16);
+                                } else {
                                     yukon.ui.alertError(searchError);
                                 }
                             } else {
@@ -580,16 +515,9 @@ yukon.map.comprehensive = (function () {
                         $('#confirm-delete').dialog('destroy');
                         yukon.ui.removeAlerts();
                         var source = _map.getLayers().getArray()[_tiles.length].getSource(),
-                            features = source.getFeatures();
-                        if (features != null && features.length > 0) {
-                            for (x in features) {
-                               var properties = features[x].getProperties(),
-                                   id = properties.pao.paoId;
-                               if (id == paoId) {
-                                   source.removeFeature(features[x]);
-                                   break;
-                               }
-                            }
+                            feature = source.getFeatureById(paoId);
+                        if (feature) {
+                            source.removeFeature(feature);
                         }
                     },
                     error: function(xhr, status, error) {
@@ -617,7 +545,7 @@ yukon.map.comprehensive = (function () {
                 }
                 //close any popups
                 $('#marker-info').hide();
-                _updateZoom();
+                yukon.mapping.updateZoom(_map);
                 _map.updateSize();
             });
             
