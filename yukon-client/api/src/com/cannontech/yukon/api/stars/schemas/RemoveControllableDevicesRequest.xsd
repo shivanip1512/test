@@ -28,8 +28,7 @@
                                             <xsd:extension base="yukon:ControllableDevice">
                                                 <xsd:sequence>
                                                     <xsd:element name="fieldRemoveDate" type="xsd:dateTime" minOccurs="0"/>
-                                                    <xsd:element name="latitude" type="xsd:double" minOccurs="0"/>
-                                                    <xsd:element name="longitude" type="xsd:double" minOccurs="0"/>
+                                                    <xsd:element name="gps" type="yukon:GPSLocation" minOccurs="0"/>
                                                 </xsd:sequence>
                                             </xsd:extension>
                                         </xsd:complexContent>

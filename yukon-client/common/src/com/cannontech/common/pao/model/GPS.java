@@ -5,6 +5,10 @@ public class GPS {
     private Double latitude;
     private Double longitude;
 
+    public GPS() {
+        super();
+    }
+
     public GPS(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
@@ -16,5 +20,13 @@ public class GPS {
 
     public Double getLongitude() {
         return longitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 }
