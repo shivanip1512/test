@@ -26,6 +26,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.web.support.LocalizationBackingBean.Choice;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class LocalizationService implements ApplicationContextAware {
     private static final String themesFolderName = CtiUtilities.getYukonBase() + "/Server/Config/Themes/";
@@ -250,7 +251,7 @@ public class LocalizationService implements ApplicationContextAware {
                 }
                 
                 Set<String> oldKeys = properties.stringPropertyNames();
-                Set<String> dupKeys = newProperties.stringPropertyNames();
+                Set<String> dupKeys = Sets.newHashSet(newProperties.stringPropertyNames());
                 
                 dupKeys.retainAll(oldKeys);
                 
