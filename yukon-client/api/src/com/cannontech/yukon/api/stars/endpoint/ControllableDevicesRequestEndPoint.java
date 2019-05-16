@@ -71,6 +71,9 @@ public class ControllableDevicesRequestEndPoint {
     static final String routeStr = "y:routeName";
     static final String fieldInstallDateStr = "y:fieldInstallDate";
     static final String fieldRemoveDateStr = "y:fieldRemoveDate";
+    static final String gpsStr = "//y:gps";
+    static final String parentLatitudeStr = "y:gps/y:latitude";
+    static final String parentLongitudeStr = "y:gps/y:longitude";
     static final String latitudeStr = "y:latitude";
     static final String longitudeStr = "y:longitude";
 
@@ -305,14 +308,13 @@ public class ControllableDevicesRequestEndPoint {
         }
     }
 
-    public static class ControllableDeviceDTOMapper implements
-            ObjectMapper<Node, LmDeviceDto> {
+    public static class ControllableDeviceDTOMapper implements ObjectMapper<Node, LmDeviceDto> {
 
         @Override
         public LmDeviceDto map(Node from) throws ObjectMappingException {
             // create template and parse data
             SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(from);
-
+            GPS gpsLocation = new GPS();
             LmDeviceDto device = new LmDeviceDto();
             device.setAccountNumber(template.evaluateAsString(accountNumberStr));
             device.setSerialNumber(template.evaluateAsString(serialNumberStr));
@@ -323,18 +325,52 @@ public class ControllableDevicesRequestEndPoint {
             device.setFieldRemoveDate(template.evaluateAsDate(fieldRemoveDateStr));
             device.setMacAddress(template.evaluateAsString(macAddressStr));
 
-            Double lat = template.evaluateAsDouble(latitudeStr, Double.NaN);
-            Double lon = template.evaluateAsDouble(longitudeStr, Double.NaN);
+            gpsLocation = validateGPSFields(template);
 
-            GPS gps = buildGps(lat, lon);
-            if (gps != null) {
-                device.setGps(gps);
+            if (gpsLocation != null) {
+                device.setGps(gpsLocation);
             }
 
             device.setDeviceVendorUserId(template.evaluateAsInt(deviceVendorUserIdStr));
             device.setInventoryRoute(template.evaluateAsString(routeStr));
             return device;
         }
+    }
+
+    /**
+     * validateGPSFields
+     * This method is for validating fields of GPS tag in XML.
+     * If Parent tag(<api:gps>) is parent in request then Latitude and longitude fields are compulsory.
+     * If GPS field is present and both latitude and longitude fields values are blank then it should save
+     * successfully.
+     * In request in case latitude or longitude is missing it that case there will be error message latitude
+     * or longitude field is missing.
+     */
+    private static GPS validateGPSFields(SimpleXPathTemplate template) {
+        GPS gps = new GPS();
+        Node GPS = template.evaluateAsNode(gpsStr);
+        Node parentLatitude = template.evaluateAsNode(parentLatitudeStr);
+        Node parentLongitude = template.evaluateAsNode(parentLongitudeStr);
+        Node latitude = template.evaluateAsNode(latitudeStr);
+        Node longitude = template.evaluateAsNode(longitudeStr);
+
+        if ((latitude != null || longitude != null) && GPS == null) {
+            throw new StarsClientRequestException("Latitude and longitute fields parent GPS field is missing");
+        } else if (GPS != null) {
+            if (parentLatitude == null && parentLongitude == null) {
+                throw new StarsClientRequestException(
+                    "Latitude and longitute  Fields are required if parent GPS field present.");
+            } else if (parentLatitude == null && parentLongitude != null) {
+                throw new StarsClientRequestException("Latitude Field is required in GPS parent field");
+            } else if (parentLatitude != null && parentLongitude == null) {
+                throw new StarsClientRequestException("Longitude Field is required in GPS parent field");
+            } else {
+                gps = buildGps(template.evaluateAsDouble(parentLatitudeStr, Double.NaN),
+                    template.evaluateAsDouble(parentLongitudeStr, Double.NaN));
+            }
+
+        }
+        return gps;
     }
 
     /**

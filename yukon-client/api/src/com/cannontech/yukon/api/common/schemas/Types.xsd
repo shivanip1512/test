@@ -145,6 +145,24 @@
             <xsd:element name="name" type="xsd:string"/>
         </xsd:sequence>
     </xsd:complexType>
+    
+     <xsd:complexType name="GPSLocation">
+        <xsd:annotation>
+            <xsd:documentation>A geographical location as expressed in a geographic coordinate system. The GPSLocation SHALL be expressed using the WGS84 datum. This object SHOULD be used for expressing all types of GPS data. </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="latitude" type="xsd:double">
+                <xsd:annotation>
+                    <xsd:documentation>The latitude portion of a geographical location.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="longitude" type="xsd:double">
+                <xsd:annotation>
+                    <xsd:documentation>The longitude portion of a geographical location.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
 </xsd:schema>
 
 
