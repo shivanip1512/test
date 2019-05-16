@@ -30,7 +30,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
-import com.cannontech.stars.dr.program.dao.ProgramRelayRowMapper;
+import com.cannontech.stars.dr.program.dao.ProgramRowMapper;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.google.common.base.Functions;
@@ -254,8 +254,14 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 			sql.append("AND (lmhcg.GroupEnrollStop").gte(startTime).append("OR lmhcg.GroupEnrollStop IS NULL)");
 		}
 
-		List<Program> programList = yukonJdbcTemplate.query(sql, new ProgramRelayRowMapper(yukonJdbcTemplate));
-
+		List<Program> programList = yukonJdbcTemplate.query(sql, new ProgramRowMapper(yukonJdbcTemplate) {
+            @Override
+            public Program mapRow(YukonResultSet rs) throws SQLException {
+                Program program = super.mapRow(rs);
+                program.setRelay(rs.getInt("Relay"));
+                return program;
+            }
+        });
 
 		return programList;
 	}
