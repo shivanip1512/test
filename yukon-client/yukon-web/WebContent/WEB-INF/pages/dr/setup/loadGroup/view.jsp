@@ -37,7 +37,7 @@
                 <tags:nameValue2 nameKey=".type">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <form:select path="type">
-                            <form:option value=""><cti:msg2 key="yukon.common.none.choice"/></form:option>
+                            <form:option value=""><cti:msg2 key="yukon.web.components.button.select.label"/></form:option>
                             <c:forEach var="switchType" items="${switchTypes}">
                                 <form:option value="${switchType}"><i:inline key="${switchType}"/></form:option>
                             </c:forEach>
@@ -48,7 +48,7 @@
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".kWCapacity">
-                    <tags:input path="kWCapacity" autofocus="autofocus"/>
+                    <tags:input path="kWCapacity"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".disableGroup">
                     <tags:switchButton path="disableGroup" offNameKey="yukon.common.no" onNameKey="yukon.common.yes" />

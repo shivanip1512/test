@@ -2,7 +2,7 @@ package com.cannontech.common.dr.setup;
 
 import com.cannontech.common.pao.PaoType;
 
-public class BaseLMLoadGroup {
+public class LoadGroupBase {
 
     private Integer id;
     private String name;

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.dr.setup.BaseLMLoadGroup;
+import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -24,15 +24,15 @@ import com.google.common.collect.Lists;
 @Controller
 @CheckRole(YukonRole.DEMAND_RESPONSE)
 @RequestMapping("/setup/loadGroup")
-public class SetupLoadGroupController {
+public class LoadGroupSetupController {
     
     private static final String baseKey = "yukon.web.modules.dr.setup.loadGroup.";
-    private static final Logger log = YukonLogManager.getLogger(SetupLoadGroupController.class);
+    private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
 
     @GetMapping("/create")
     public String create(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        BaseLMLoadGroup loadGroup = new BaseLMLoadGroup();
+        LoadGroupBase loadGroup = new LoadGroupBase();
         model.addAttribute("loadGroup", loadGroup);
         List<PaoType> switchTypes = Lists.newArrayList(PaoType.LM_GROUP_METER_DISCONNECT);
         model.addAttribute("switchTypes", switchTypes);
@@ -42,7 +42,7 @@ public class SetupLoadGroupController {
     @GetMapping("/{id}")
     public String view(ModelMap model, @PathVariable int id) {
         model.addAttribute("mode", PageEditMode.VIEW);
-        BaseLMLoadGroup loadGroup = mockBaseLMLoadGroup();
+        LoadGroupBase loadGroup = mockBaseLMLoadGroup();
         model.addAttribute("loadGroup", loadGroup);
         return "dr/setup/loadGroup/view.jsp";
     }
@@ -50,14 +50,14 @@ public class SetupLoadGroupController {
     @GetMapping("/{id}/edit")
     public String edit(ModelMap model) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        BaseLMLoadGroup loadGroup = mockBaseLMLoadGroup();
+        LoadGroupBase loadGroup = mockBaseLMLoadGroup();
         model.addAttribute("loadGroup", loadGroup);
         return "dr/setup/loadGroup/view.jsp";
     }
     
     // TODO: Remove unused parameters
     @PostMapping("/save")
-    public String save(@ModelAttribute BaseLMLoadGroup loadGroup, FlashScope flash) {
+    public String save(@ModelAttribute LoadGroupBase loadGroup, FlashScope flash) {
         // TODO: Validate Load Group
         // TODO: If error, bindAndForward
         // TODO: else, save
@@ -73,8 +73,8 @@ public class SetupLoadGroupController {
         return "redirect:/dr/setup/loadGroup/" + 123;
     }
 
-    private BaseLMLoadGroup mockBaseLMLoadGroup() {
-        BaseLMLoadGroup loadGroup = new BaseLMLoadGroup();
+    private LoadGroupBase mockBaseLMLoadGroup() {
+        LoadGroupBase loadGroup = new LoadGroupBase();
         loadGroup.setId(123);
         loadGroup.setName("Test Load Group");
         loadGroup.setkWCapacity(10.33f);
