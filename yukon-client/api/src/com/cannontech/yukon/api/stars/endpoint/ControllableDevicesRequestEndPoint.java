@@ -155,11 +155,12 @@ public class ControllableDevicesRequestEndPoint {
                                                                 device.getAccountNumber(),
                                                                 device.getSerialNumber(),
                                                                 EventSource.API);
-
-                if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
-                    starsControllableDeviceHelper.updateDeviceOnAccount(device, user);
-                } else {
-                    throw new StarsClientRequestException("This operation is not supported for this device type");
+                if (device.getThrowable() == null) {
+                    if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
+                        starsControllableDeviceHelper.updateDeviceOnAccount(device, user);
+                    } else {
+                        throw new StarsClientRequestException("This operation is not supported for this device type");
+                    }
                 }
             } catch (StarsClientRequestException | ProcessingException e) {
                 // store error and continue to process all devices
@@ -195,11 +196,12 @@ public class ControllableDevicesRequestEndPoint {
                                                                  device.getAccountNumber(),
                                                                  device.getSerialNumber(),
                                                                  EventSource.API);
-
-                if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
-                    starsControllableDeviceHelper.removeDeviceFromAccount(device, user);
-                } else {
-                    throw new StarsClientRequestException("This operation is not supported for this device type");
+                if (device.getThrowable() == null) {
+                    if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
+                        starsControllableDeviceHelper.removeDeviceFromAccount(device, user);
+                    } else {
+                        throw new StarsClientRequestException("This operation is not supported for this device type");
+                    }
                 }
             } catch (StarsClientRequestException | ProcessingException e) {
                 // store error and continue to process all devices
