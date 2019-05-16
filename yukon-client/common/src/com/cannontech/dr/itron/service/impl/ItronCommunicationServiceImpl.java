@@ -1,7 +1,5 @@
 package com.cannontech.dr.itron.service.impl;
 
-import static com.cannontech.core.dao.PersistedSystemValueKey.ITRON_READ_GROUP_ID;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -299,7 +297,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         //add new mac addresses to group
         List<String> macAddresses = Lists.newArrayList(deviceDao.getDeviceMacAddresses(deviceIds).values());
         long itronReadGroupId = addMacAddressesToGroup(READ_GROUP, macAddresses);
-        persistedSystemValueDao.setValue(ITRON_READ_GROUP_ID, itronReadGroupId);
         //update logs
         UpdateDeviceEventLogsRequest updateLogsRequest = new UpdateDeviceEventLogsRequest();
         updateLogsRequest.getGroupIDs().add(itronReadGroupId);
