@@ -119,10 +119,12 @@ public class ControllableDevicesRequestEndPoint {
         // run service
         for (LmDeviceDto device : devices) {
             try {
-                if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
-                    starsControllableDeviceHelper.addDeviceToAccount(device, user);
-                } else {
-                    throw new StarsClientRequestException("This operation is not supported for this device type");
+                if (device.getThrowable() == null) {
+                    if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
+                        starsControllableDeviceHelper.addDeviceToAccount(device, user);
+                    } else {
+                        throw new StarsClientRequestException("This operation is not supported for this device type");
+                    }
                 }
             } catch (StarsClientRequestException | ProcessingException e) {
                 // store error and continue to process all devices
@@ -160,11 +162,12 @@ public class ControllableDevicesRequestEndPoint {
                                                                 device.getAccountNumber(),
                                                                 device.getSerialNumber(),
                                                                 EventSource.API);
-
-                if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
-                    starsControllableDeviceHelper.updateDeviceOnAccount(device, user);
-                } else {
-                    throw new StarsClientRequestException("This operation is not supported for this device type");
+                if (device.getThrowable() == null) {
+                    if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
+                        starsControllableDeviceHelper.updateDeviceOnAccount(device, user);
+                    } else {
+                        throw new StarsClientRequestException("This operation is not supported for this device type");
+                    }
                 }
             } catch (StarsClientRequestException | ProcessingException e) {
                 // store error and continue to process all devices
@@ -202,11 +205,12 @@ public class ControllableDevicesRequestEndPoint {
                                                                  device.getAccountNumber(),
                                                                  device.getSerialNumber(),
                                                                  EventSource.API);
-
-                if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
-                    starsControllableDeviceHelper.removeDeviceFromAccount(device, user);
-                } else {
-                    throw new StarsClientRequestException("This operation is not supported for this device type");
+                if (device.getThrowable() == null) {
+                    if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
+                        starsControllableDeviceHelper.removeDeviceFromAccount(device, user);
+                    } else {
+                        throw new StarsClientRequestException("This operation is not supported for this device type");
+                    }
                 }
             } catch (StarsClientRequestException | ProcessingException e) {
                 // store error and continue to process all devices
@@ -324,13 +328,16 @@ public class ControllableDevicesRequestEndPoint {
             device.setFieldInstallDate(template.evaluateAsDate(fieldInstallDateStr));
             device.setFieldRemoveDate(template.evaluateAsDate(fieldRemoveDateStr));
             device.setMacAddress(template.evaluateAsString(macAddressStr));
+            try {
+                gpsLocation = validateGPSFields(template);
 
-            gpsLocation = validateGPSFields(template);
-
-            if (gpsLocation != null) {
-                device.setGps(gpsLocation);
+                if (gpsLocation != null) {
+                    device.setGps(gpsLocation);
+                }
+            } catch (StarsClientRequestException e) {
+                // store error and continue to map all devices.
+                device.setThrowable(e);
             }
-
             device.setDeviceVendorUserId(template.evaluateAsInt(deviceVendorUserIdStr));
             device.setInventoryRoute(template.evaluateAsString(routeStr));
             return device;
