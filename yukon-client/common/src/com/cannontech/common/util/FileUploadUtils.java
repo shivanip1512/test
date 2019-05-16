@@ -1,13 +1,19 @@
 package com.cannontech.common.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,8 +66,24 @@ public class FileUploadUtils {
     private static void validateFileUpload(MultipartFile file) throws FileImportException, IOException {
         if (file == null || StringUtils.isBlank(file.getOriginalFilename())) {
             throw new NoImportFileException("yukon.web.import.error.noImportFile");
-        } else if (file.getInputStream().available() <= 0) {
+        } else {
+            validateEmptyFile(file.getInputStream());
+        }
+    }
+    
+    private static void validateEmptyFile(InputStream inputStream) throws EmptyImportFileException, IOException {
+        if (inputStream.available() <= 0) {
             throw new EmptyImportFileException("yukon.web.import.error.emptyFile");
+        } else {
+            BOMInputStream bomInputStream = new BOMInputStream(inputStream, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
+                ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
+            InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream);
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+            String x = reader.readLine();
+            reader.close();
+            if (StringUtils.isBlank(x)) {
+                throw new EmptyImportFileException("yukon.web.import.error.emptyFile");
+            }
         }
     }
 
@@ -84,8 +106,7 @@ public class FileUploadUtils {
             CSVReader csvReaderWithDelimeter = new CSVReaderBuilder(fileReader).withCSVParser(parser).build();
             String[] csvData = csvReaderWithDelimeter.readNext();
             String[] csvRecord = csvReader.readNext();
-            if (file.length() > 2 && (csvData != null && csvRecord == null)) {
-                //file.length() > 2 this check is for when we create empty CSV file with Excel, default size of that CSV file will be 2 bytes.
+            if (csvData != null && csvRecord == null) {
                 if (csvReaderWithDelimeter.readNext() != null)
                     throw new ImportFileFormatException("yukon.common.validDataFileRequired.error");
             }
@@ -93,14 +114,21 @@ public class FileUploadUtils {
     }
 
     /**
-     * Validate file type and return true if it is valid CSV file
+     * Validate file type and empty file return true if it is valid CSV non empty file 
      */
     public static boolean validateCsvFileContentType(Path path) {
 
         try {
+            if (StringUtils.isBlank(path.toFile().getName()) || !Files.isRegularFile(path)) {
+                return false;
+            }
             validateUploadFileType(path.toFile());
+            validateEmptyFile(new FileInputStream(path.toFile()));
         } catch (ImportFileFormatException e) {
-            log.error("Import file must be text or CSV "+ path.toFile().getName());
+            log.error("Import file must be text or CSV " + path.toFile().getName());
+            return false;
+        } catch (EmptyImportFileException e) {
+            log.warn("File " + path.toFile().getName() + " is empty");
             return false;
         } catch (IOException e) {
             // do nothing

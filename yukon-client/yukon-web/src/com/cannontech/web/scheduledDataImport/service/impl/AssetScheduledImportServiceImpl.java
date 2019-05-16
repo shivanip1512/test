@@ -83,15 +83,8 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
         ScheduledDataImportResult dataImportResult = new ScheduledDataImportResult();
         if (importPathCheck) {
             try (Stream<Path> paths = Files.walk(Paths.get(importPath))) {
-                paths.filter(path -> (Files.isRegularFile(path) && FileUploadUtils.validateCsvFileContentType(path)
-                    && path.toFile().length() >= 2)).forEach(path -> {
-                        // Check if a file is empty or not based on byte size (length >= 2). (if remove the
-                        // data from excel, it still give you empty string for row)
-                        if (path.toFile().length() == 2) {
-                            // default size of empty CSV file is 2 bytes
-                            log.warn("File '" + path.getFileName().toString() + "' is empty.");
-                        }
-                        Instant startTime = Instant.now();
+                paths.filter(path -> FileUploadUtils.validateCsvFileContentType(path)).forEach(path -> {
+                    Instant startTime = Instant.now();
                     String errorFileName = null;
                     AccountImportResult result = new AccountImportResult();
 
