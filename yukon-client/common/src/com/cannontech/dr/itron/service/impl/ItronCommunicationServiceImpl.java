@@ -144,7 +144,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug(XmlUtils.getPrettyXml(request));
             AddHANDeviceResponse response = (AddHANDeviceResponse) ItronEndpointManager.DEVICE.getTemplate(settingDao).marshalSendAndReceive(url, request);
             log.debug("ITRON-addDevice url:{} mac address:{} result:{}.", url, response.getMacID(), "success");
-            itronEventLogService.addHANDevice(hardware.getDisplayName(), hardware.getMacAddress());
+            itronEventLogService.addHANDevice(hardware.getSerialNumber(), hardware.getMacAddress());
             log.debug(XmlUtils.getPrettyXml(response));
             if (!response.getErrors().isEmpty()) {
                 throw new ItronAddDeviceException(response);
