@@ -7,8 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,6 @@ import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.dao.ProgramRowMapper;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
-import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -227,7 +226,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT pwp.ProgramID, ProgramOrder, ywc.Description, ywc.url, AlternateDisplayName");
-		sql.append("	, PAOName, yle.EntryText as ChanceOfControl, ApplianceCategoryID, LogoLocation, ypo.Type ");
+		sql.append("  , PAOName, yle.EntryText as ChanceOfControl, ApplianceCategoryID, LogoLocation, ypo.Type, lmhcg.Relay");
 		sql.append("FROM LMProgramWebPublishing pwp");
 		sql.append("	JOIN YukonWebConfiguration ywc ON pwp.WebsettingsID = ywc.ConfigurationID");
 		sql.append("	JOIN YukonPAObject ypo ON ypo.PAObjectID = pwp.DeviceID");
@@ -255,8 +254,14 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 			sql.append("AND (lmhcg.GroupEnrollStop").gte(startTime).append("OR lmhcg.GroupEnrollStop IS NULL)");
 		}
 
-		List<Program> programList = yukonJdbcTemplate.query(sql, new ProgramRowMapper(yukonJdbcTemplate));
-
+		List<Program> programList = yukonJdbcTemplate.query(sql, new ProgramRowMapper(yukonJdbcTemplate) {
+            @Override
+            public Program mapRow(YukonResultSet rs) throws SQLException {
+                Program program = super.mapRow(rs);
+                program.setRelay(rs.getInt("Relay"));
+                return program;
+            }
+        });
 
 		return programList;
 	}

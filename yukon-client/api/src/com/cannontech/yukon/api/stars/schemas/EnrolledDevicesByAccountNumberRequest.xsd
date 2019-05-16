@@ -8,12 +8,14 @@ targetNamespace="http://yukon.cannontech.com/api">
   
     <xsd:annotation>
      	<xsd:documentation xml:lang="en">
-    		Item #7 from BG&amp;E Phase 3 SoW - Appendix C.
-        	An override is an opt out.
-        	Should return a list of device serial numbers present on the provided account 
-        	and for each serial number a list of the programs in which it is enrolled 
-        	(currently or during date range of Start and Stop if provided)
-     	</xsd:documentation>
+         Item #7 from BG&amp;E Phase 3 SoW - Appendix C.
+         An override is an opt out.
+         The EnrolledDevicesByAccountNumberRequest can be made using a version attribute of either "1.0" or "1.1".
+                In the case of "1.0", the response will contain list of device serial numbers present on the provided account and for each serial number a list of the programs in which it is enrolled 
+                (currently or during date range of Start and Stop if provided)
+                In the case of "1.1", the response will contain list of device serial numbers present on the provided account and for each serial number a list of the programs with program name and Relay associated with that program in which it is enrolled 
+                (currently or during date range of Start and Stop if provided)
+         </xsd:documentation>
     </xsd:annotation>
 
     <xsd:complexType name="EnrolledDevicesByAccountNumberRequest">

@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.enrollment.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.MappingList;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -460,16 +459,14 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 
             List<Program> programs =
                 enrollmentDao.getEnrolledProgramIdsByInventory(lmHardware.getInventoryID(), startDate, stopDate);
-            MappingList<Program, String> programNames =
-                new MappingList<>(programs, new ObjectMapper<Program, String>() {
-                    @Override
-                    public String map(Program from) {
-                        return from.getProgramPaoName();
-                    }
-                });
+            Map<String, Integer> enrolledPrograms = new HashMap<>();
+            for (Program program : programs) {
+                enrolledPrograms.put(program.getProgramName(), program.getRelay());
+            }
 
-            if (programNames.size() > 0) {
-                EnrolledDevicePrograms enrolledDevicePrograms = new EnrolledDevicePrograms(serialNumber, programNames);
+            if (enrolledPrograms.keySet().size() > 0) {
+                EnrolledDevicePrograms enrolledDevicePrograms =
+                    new EnrolledDevicePrograms(serialNumber, enrolledPrograms);
                 enrolledDeviceProgramsList.add(enrolledDevicePrograms);
             }
         }
