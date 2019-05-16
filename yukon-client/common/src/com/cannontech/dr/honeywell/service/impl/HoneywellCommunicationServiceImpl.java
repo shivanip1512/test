@@ -133,7 +133,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             HttpHeaders httpHeaders = getHttpHeaders(url, HttpMethod.DELETE, null);
             httpHeaders.add("UserId", userId);
 
-            HttpEntity<?> requestEntity = new HttpEntity<Object>(httpHeaders);
+            HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
 
             HttpEntity<String> response =
                 restTemplate.exchange(uri, HttpMethod.DELETE, requestEntity, String.class);
@@ -159,7 +159,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                 String body = JsonUtils.toJson(thermostatId);
 
                 HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.PUT, body);
-                HttpEntity<String> reqEntity = new HttpEntity<String>(body, newheaders);
+                HttpEntity<String> reqEntity = new HttpEntity<>(body, newheaders);
                 UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
 
                 HttpEntity<String> response =
@@ -224,7 +224,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
             DREventRequest request = new DREventRequest(parameters.getEventId(),
                                                         parameters.getStartTime(),
-                                                        Boolean.FALSE,
+                                                        Boolean.TRUE, //allow opt-out on Honeywell portal & device
                                                         parameters.getRandomizationInterval(),
                                                         DutyCyclePeriod.HALFHOUR,
                                                         1,
@@ -232,7 +232,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                                                         parameters.getDurationSeconds());
 
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-            HttpEntity<?> requestEntity = new HttpEntity<Object>(request,
+            HttpEntity<?> requestEntity = new HttpEntity<>(request,
                                                                  getHttpHeaders(url,
                                                                                 HttpMethod.POST,
                                                                                 JsonUtils.toJson(request)));
@@ -267,7 +267,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
 
-            HttpEntity<?> requestEntity = new HttpEntity<Object>(getHttpHeaders(url,
+            HttpEntity<?> requestEntity = new HttpEntity<>(getHttpHeaders(url,
                                                                                 HttpMethod.POST,
                                                                                 null));
 
@@ -383,8 +383,9 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                 for (String param : parameters) {
                     paramsLeft--;
                     canonizedStr += param.replace('=', ':');
-                    if (paramsLeft > 0)
+                    if (paramsLeft > 0) {
                         canonizedStr += canonizedStr + "\n";
+                    }
                 }
             }
         } catch (MalformedURLException e) {
@@ -404,7 +405,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         try {
             String url = getUrlBase() + getGatewayByMacIdUrlPart;
 
-            MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
+            MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
             HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.GET, null);
 
             newheaders.add("UserId", userId);
@@ -446,12 +447,12 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     public List<HoneywellDREvent> getDREventsForDevice(Integer thermostatId, String userId) {
         log.debug("Get DR events for device " + thermostatId);
 
-        List<HoneywellDREvent> drEvents = new ArrayList<HoneywellDREvent>();
+        List<HoneywellDREvent> drEvents = new ArrayList<>();
         try {
             String url = getUrlBase() + drEventsForDeviceUrlPart + thermostatId;
             HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.GET, null);
             newheaders.add("UserId", userId);
-            HttpEntity<?> requestEntity = new HttpEntity<Object>(newheaders);
+            HttpEntity<?> requestEntity = new HttpEntity<>(newheaders);
 
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
             ResponseEntity<List<HoneywellDREvent>> response =
