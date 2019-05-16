@@ -159,7 +159,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                 String body = JsonUtils.toJson(thermostatId);
 
                 HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.PUT, body);
-                HttpEntity<String> reqEntity = new HttpEntity<String>(body, newheaders);
+                HttpEntity<String> reqEntity = new HttpEntity<>(body, newheaders);
                 UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
 
                 HttpEntity<String> response =
@@ -224,7 +224,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
             DREventRequest request = new DREventRequest(parameters.getEventId(),
                                                         parameters.getStartTime(),
-                                                        Boolean.FALSE,
+                                                        Boolean.TRUE, //allow opt-out on Honeywell portal & device
                                                         parameters.getRandomizationInterval(),
                                                         DutyCyclePeriod.HALFHOUR,
                                                         1,
