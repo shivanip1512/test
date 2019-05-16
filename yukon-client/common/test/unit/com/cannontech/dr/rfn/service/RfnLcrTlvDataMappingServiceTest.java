@@ -140,11 +140,8 @@ public class RfnLcrTlvDataMappingServiceTest {
     @Test 
     public void test_generateUpdatedAddressingFromMessage() {
         // Fixed "now" for the test with milliseconds removed for comparison with device that doesn't support ms
-        Instant now;
-        {
-            Instant instant = Instant.now();
-            now = new Instant(instant.getMillis()-instant.getMillis()%1000);
-        }
+        Instant now = Instant.now();
+        now = new Instant(now.getMillis()-now.getMillis()%1000);
         
         final int devicePaoId = 1234;
         
