@@ -205,6 +205,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             @Override
             public void receivedLastValue(PaoIdentifier pao, String value) {
                 CollectionActionLogDetail detail = new CollectionActionLogDetail(pao, CollectionActionDetail.SUCCESS);
+                detail.setLastValue(value);
                 result.addDeviceToGroup(CollectionActionDetail.SUCCESS, pao, detail);
             }
 

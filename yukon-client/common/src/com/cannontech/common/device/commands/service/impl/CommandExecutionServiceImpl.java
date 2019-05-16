@@ -136,6 +136,7 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
                 public void receivedLastResultString(CommandRequestDevice command, String value) {
                     CollectionActionLogDetail detail =
                         new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.SUCCESS);
+                    detail.setLastValue(value);
                     result.addDeviceToGroup(CollectionActionDetail.SUCCESS, command.getDevice(), detail);
                     devices.remove(command.getDevice());
                 }
