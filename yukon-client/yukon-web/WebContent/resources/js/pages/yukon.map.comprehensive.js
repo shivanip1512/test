@@ -382,7 +382,9 @@ yukon.map.comprehensive = (function () {
                     var source = _map.getLayers().getArray()[_tiles.length].getSource();
                     if (_icons.length > 0) {
                         _icons.forEach(function(icon) {
-                           source.removeFeature(icon); 
+                            if (source.getFeatureById(icon.get('pao').paoId)) {
+                                source.removeFeature(icon); 
+                            }
                         });
                         _icons = [];
                     }
@@ -409,13 +411,13 @@ yukon.map.comprehensive = (function () {
                     if (_highlightDevice) {
                         _highlightDevice.setStyle(_highlightOldStyle);
                     }
-                    yukon.ui.removeAlerts();
+                    var searchError = $('.js-no-results-found');
+                    searchError.addClass('dn');
                     if (searchText) {
                         $.ajax({
                             url: yukon.url('/stars/comprehensiveMap/search?searchText=' + searchText),
                             type: 'get',
                         }).done( function(data) {
-                            var searchError = $('#noResultsFoundError').val();
                             if (data.paoId) {
                                 var source = _map.getLayers().getArray()[_tiles.length].getSource(),
                                     feature = source.getFeatureById(data.paoId);
@@ -435,10 +437,10 @@ yukon.map.comprehensive = (function () {
                                     _map.getView().setCenter(feature.getGeometry().getCoordinates());
                                     _map.getView().setZoom(16);
                                 } else {
-                                    yukon.ui.alertError(searchError);
+                                    searchError.removeClass('dn');
                                 }
                             } else {
-                                yukon.ui.alertError(searchError);
+                                searchError.removeClass('dn');
                             }
                         });
                     }
@@ -519,6 +521,8 @@ yukon.map.comprehensive = (function () {
                         if (feature) {
                             source.removeFeature(feature);
                         }
+                        var successMsg = $('#coordinatesDeletedMsg').val();
+                        yukon.ui.alertSuccess(successMsg);
                     },
                     error: function(xhr, status, error) {
                         var errorMsg = xhr.responseJSON.message;

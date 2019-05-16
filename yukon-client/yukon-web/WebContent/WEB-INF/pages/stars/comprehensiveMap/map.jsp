@@ -15,8 +15,8 @@
 
     <cti:msg2 var="tooManyGateways" key=".tooManyGateways"/>
     <input type="hidden" id="tooManyGatewaysError" value="${tooManyGateways}"/>
-    <cti:msg2 var="searchNoResultsFound" key=".searchNoResultsFound"/>
-    <input type="hidden" id="noResultsFoundError" value="${searchNoResultsFound}"/>
+    <cti:msg2 var="coordinatesDeleted" key="yukon.web.modules.operator.mapNetwork.location.delete.successful"/>
+    <input id="coordinatesDeletedMsg" type="hidden" value="${coordinatesDeleted}"/>
                 
     <div id="comprehensive-map-container" style="height:100%;width:100%;background:white;">
         <div class="filter-section">
@@ -44,6 +44,7 @@
             <span class="fl">
                 <cti:msg2 var="searchPlaceholder" key=".serialNumberOrMeterNumber"/>
                 <i:inline key=".findDevice"/>&nbsp;<input id="findDevice" type="text" placeholder="${searchPlaceholder}" size="22"/>
+                <span class="js-no-results-found error dn"><i:inline key=".searchNoResultsFound"/></span>
             </span>
             <div id="map-tiles" class="fr button-group">
                 <cti:msg2 var="map" key="yukon.web.components.button.map.label"/>

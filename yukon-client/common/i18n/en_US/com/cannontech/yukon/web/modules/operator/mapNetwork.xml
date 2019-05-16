@@ -86,6 +86,7 @@
     <entry key="yukon.web.modules.operator.mapNetwork.exception.metadataError">There was a problem getting the device details from Network Manager.</entry>
     
     <entry key="yukon.web.modules.operator.mapNetwork.location.update.successful">Location was successfully updated.</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.location.delete.successful">Coordinates have successfully been deleted.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.location.changeCoordinates.title">Change Coordinates</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.location.changeCoordinates.confirmation">Are you sure you want to update the coordinates to the following?</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.location.latitude">Latitude</entry>
