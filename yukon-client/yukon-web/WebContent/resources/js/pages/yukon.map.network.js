@@ -627,8 +627,6 @@ yukon.map.network = (function () {
                                        id = properties.pao.paoId;
                                    if (id == paoId) {
                                        source.removeFeature(features[x]);
-                                       _map.getView().fit(source.getExtent(), _map.getSize());
-                                       //yukon.mapping.updateZoom(_map);
                                        break;
                                    }
                                 }
