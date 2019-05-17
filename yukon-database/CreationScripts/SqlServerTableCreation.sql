@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/1/2019 1:59:02 PM                          */
+/* Created on:     5/17/2019 3:02:18 PM                         */
 /*==============================================================*/
 
 
@@ -1919,6 +1919,15 @@ create index INDX_CRE_ExType_ExId_ExStart on CommandRequestExec (
 CommandRequestExecType ASC,
 CommandRequestExecId ASC,
 StartTime ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_CRE_StartDesc_ExecContId                         */
+/*==============================================================*/
+create index INDX_CRE_StartDesc_ExecContId on CommandRequestExec (
+StartTime DESC,
+CommandRequestExecContextId ASC
 )
 go
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/1/2019 2:00:13 PM                          */
+/* Created on:     5/17/2019 3:01:24 PM                         */
 /*==============================================================*/
 
 
@@ -1800,6 +1800,14 @@ create index INDX_CRE_ExType_ExId_ExStart on CommandRequestExec (
    CommandRequestExecType ASC,
    CommandRequestExecId ASC,
    StartTime ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_CRE_StartDesc_ExecContId                         */
+/*==============================================================*/
+create index INDX_CRE_StartDesc_ExecContId on CommandRequestExec (
+   StartTime DESC,
+   CommandRequestExecContextId ASC
 );
 
 /*==============================================================*/

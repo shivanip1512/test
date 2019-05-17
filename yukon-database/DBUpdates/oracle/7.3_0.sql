@@ -181,6 +181,15 @@ ALTER TABLE DynamicRfnDeviceData
 INSERT INTO DBUpdates VALUES ('YUK-19858-1', '7.3.0', SYSDATE);
 /* @end YUK-19858-1 */
 
+/* @start YUK-19963 */
+CREATE INDEX INDX_CRE_StartDesc_ExecContId ON CommandRequestExec (
+    StartTime DESC,
+    CommandRequestExecContextId ASC
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-19963', '7.3.0', SYSDATE);
+/* @end YUK-19963 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
