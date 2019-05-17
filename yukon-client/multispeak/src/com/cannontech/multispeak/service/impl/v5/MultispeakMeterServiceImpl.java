@@ -163,7 +163,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private CommandExecutionService commandExecutionService;    
+    @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private GlobalSettingDao globalSettingDao;
@@ -1587,8 +1587,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 }
             };
 
-        commandExecutionService.execute(plcCommandRequests, callback,
-            DeviceRequestType.MULTISPEAK_OUTAGE_DETECTION_PING_COMMAND, yukonUserContext.getYukonUser());
+        if (CollectionUtils.isNotEmpty(plcCommandRequests)) {
+            commandExecutionService.execute(plcCommandRequests, callback, DeviceRequestType.MULTISPEAK_OUTAGE_DETECTION_PING_COMMAND, yukonUserContext.getYukonUser());
+        }
     }
 
     private EndDeviceStateKind getForStatusCode(int statusCode) {
@@ -1892,9 +1893,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     log.warn("processingExceptionOccurred for cdEvent " + reason);
                 }
             };
+            
         if (CollectionUtils.isNotEmpty(plcCommandRequests)) {
-            commandExecutionService.execute(plcCommandRequests, callback,
-                DeviceRequestType.MULTISPEAK_CONNECT_DISCONNECT, yukonUserContext.getYukonUser());
+            commandExecutionService.execute(plcCommandRequests, callback, DeviceRequestType.MULTISPEAK_CONNECT_DISCONNECT, yukonUserContext.getYukonUser());
         }
     }
 
