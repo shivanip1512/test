@@ -9,6 +9,15 @@ ADD ItronEventId NUMBER;
 INSERT INTO DBUpdates VALUES ('YUK-19773', '7.2.2', SYSDATE);
 /* @end YUK-19773 */
 
+/* @start YUK-19963 */
+CREATE INDEX INDX_CRE_StartDesc_ExecContId ON CommandRequestExec (
+    StartTime DESC,
+    CommandRequestExecContextId ASC
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-19963', '7.2.2', SYSDATE);
+/* @end YUK-19963 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
