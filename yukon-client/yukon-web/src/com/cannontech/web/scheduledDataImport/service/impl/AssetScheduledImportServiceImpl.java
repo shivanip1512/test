@@ -83,7 +83,7 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
         ScheduledDataImportResult dataImportResult = new ScheduledDataImportResult();
         if (importPathCheck) {
             try (Stream<Path> paths = Files.walk(Paths.get(importPath))) {
-                paths.filter(path -> FileUploadUtils.validateCsvFileContentType(path)).forEach(path -> {
+                paths.filter(FileUploadUtils::validateCsvFileContentType).forEach(path -> {
                     Instant startTime = Instant.now();
                     String errorFileName = null;
                     AccountImportResult result = new AccountImportResult();

@@ -122,8 +122,8 @@ public class FileUploadUtils {
             if (StringUtils.isBlank(path.toFile().getName()) || !Files.isRegularFile(path)) {
                 return false;
             }
-            validateUploadFileType(path.toFile());
             validateEmptyFile(new FileInputStream(path.toFile()));
+            validateUploadFileType(path.toFile());
         } catch (ImportFileFormatException e) {
             log.error("Import file must be text or CSV " + path.toFile().getName());
             return false;
