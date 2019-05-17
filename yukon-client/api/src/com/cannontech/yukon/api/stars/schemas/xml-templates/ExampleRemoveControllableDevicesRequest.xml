@@ -25,10 +25,6 @@
             <serialNumber>500000008</serialNumber>
             <deviceType>LCR-6600 (RFN)</deviceType>
             <fieldRemoveDate>2008-11-28T17:07:40Z</fieldRemoveDate>
-            <gps>
-            <latitude>89.0</latitude>
-            <longitude>120</longitude>
-            </gps>
         </controllableDevice>
     </controllableDeviceList>
 </removeControllableDevicesRequest>

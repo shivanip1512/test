@@ -78,7 +78,8 @@ public class ControllableDevicesRequestEndPoint {
     static final String longitudeStr = "y:longitude";
 
     private static ControllableDeviceDTOMapper deviceElementMapper = new ControllableDeviceDTOMapper();
-
+    private static RemoveControllableDeviceDTOMapper removeDeviceElementMapper = new RemoveControllableDeviceDTOMapper();
+    
     // Response elements
     static final String newDevicesRespStr = "newControllableDevicesResponse";
     static final String updateDevicesRespStr = "updateControllableDevicesResponse";
@@ -192,7 +193,7 @@ public class ControllableDevicesRequestEndPoint {
         
         // create template and parse data
         SimpleXPathTemplate template = YukonXml.getXPathTemplateForElement(removeControllableDevicesRequest);
-        List<LmDeviceDto> devices = template.evaluate(removeDeviceElementStr, deviceElementMapper);        
+        List<LmDeviceDto> devices = template.evaluate(removeDeviceElementStr, removeDeviceElementMapper);        
 
         // check authorization
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES, user);
@@ -205,12 +206,10 @@ public class ControllableDevicesRequestEndPoint {
                                                                  device.getAccountNumber(),
                                                                  device.getSerialNumber(),
                                                                  EventSource.API);
-                if (device.getThrowable() == null) {
                     if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
                         starsControllableDeviceHelper.removeDeviceFromAccount(device, user);
                     } else {
                         throw new StarsClientRequestException("This operation is not supported for this device type");
-                    }
                 }
             } catch (StarsClientRequestException | ProcessingException e) {
                 // store error and continue to process all devices
@@ -311,6 +310,18 @@ public class ControllableDevicesRequestEndPoint {
             return desiredErrorCodeMapper;
         }
     }
+    
+    public static class RemoveControllableDeviceDTOMapper implements ObjectMapper<Node, LmDeviceDto> {
+
+        @Override
+        public LmDeviceDto map(Node from) throws ObjectMappingException {
+            SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(from);
+            LmDeviceDto device = new LmDeviceDto();
+            buildDTOMapper(template, device, from);
+            return device;
+        }
+
+    }
 
     public static class ControllableDeviceDTOMapper implements ObjectMapper<Node, LmDeviceDto> {
 
@@ -320,14 +331,8 @@ public class ControllableDevicesRequestEndPoint {
             SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(from);
             GPS gpsLocation = new GPS();
             LmDeviceDto device = new LmDeviceDto();
-            device.setAccountNumber(template.evaluateAsString(accountNumberStr));
-            device.setSerialNumber(template.evaluateAsString(serialNumberStr));
-            device.setDeviceType(template.evaluateAsString(deviceTypeStr));
-            device.setDeviceLabel(template.evaluateAsString(deviceLabelStr));
-            device.setServiceCompanyName(template.evaluateAsString(serviceCompanyNameStr));
-            device.setFieldInstallDate(template.evaluateAsDate(fieldInstallDateStr));
-            device.setFieldRemoveDate(template.evaluateAsDate(fieldRemoveDateStr));
-            device.setMacAddress(template.evaluateAsString(macAddressStr));
+            device = buildDTOMapper(template, device, from);
+
             try {
                 gpsLocation = validateGPSFields(template);
 
@@ -338,10 +343,27 @@ public class ControllableDevicesRequestEndPoint {
                 // store error and continue to map all devices.
                 device.setThrowable(e);
             }
-            device.setDeviceVendorUserId(template.evaluateAsInt(deviceVendorUserIdStr));
-            device.setInventoryRoute(template.evaluateAsString(routeStr));
+
             return device;
+
         }
+    }
+
+    private static LmDeviceDto buildDTOMapper(SimpleXPathTemplate template, LmDeviceDto device, Node from) {
+
+        device.setAccountNumber(template.evaluateAsString(accountNumberStr));
+        device.setSerialNumber(template.evaluateAsString(serialNumberStr));
+        device.setDeviceType(template.evaluateAsString(deviceTypeStr));
+        device.setDeviceLabel(template.evaluateAsString(deviceLabelStr));
+        device.setServiceCompanyName(template.evaluateAsString(serviceCompanyNameStr));
+        device.setFieldInstallDate(template.evaluateAsDate(fieldInstallDateStr));
+        device.setFieldRemoveDate(template.evaluateAsDate(fieldRemoveDateStr));
+        device.setMacAddress(template.evaluateAsString(macAddressStr));
+        device.setDeviceVendorUserId(template.evaluateAsInt(deviceVendorUserIdStr));
+        device.setInventoryRoute(template.evaluateAsString(routeStr));
+        
+        return device;
+        
     }
 
     /**
