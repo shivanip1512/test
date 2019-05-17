@@ -535,8 +535,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 log.warn("processingExceptionOccurred for odEvent " + reason);
             }
         };
-
-        commandRequestService.execute(plcCommandRequests, callback, DeviceRequestType.MULTISPEAK_OUTAGE_DETECTION_PING_COMMAND, yukonUserContext.getYukonUser());
+        
+        if (CollectionUtils.isNotEmpty(plcCommandRequests)) {
+            commandRequestService.execute(plcCommandRequests, callback, DeviceRequestType.MULTISPEAK_OUTAGE_DETECTION_PING_COMMAND, yukonUserContext.getYukonUser());
+        }
     }
 
     /**
@@ -1131,10 +1133,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             public void processingExceptionOccurred(String reason) {
                 log.warn("processingExceptionOccurred for cdEvent " + reason);
             }
-            };
+        };
+        
         if (CollectionUtils.isNotEmpty(plcCommandRequests)) {
-            commandRequestService.execute(plcCommandRequests, callback, DeviceRequestType.MULTISPEAK_CONNECT_DISCONNECT,
-                yukonUserContext.getYukonUser());
+            commandRequestService.execute(plcCommandRequests, callback, DeviceRequestType.MULTISPEAK_CONNECT_DISCONNECT, yukonUserContext.getYukonUser());
         }
     }
 
