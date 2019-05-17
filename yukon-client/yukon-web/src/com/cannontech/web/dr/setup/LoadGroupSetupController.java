@@ -52,6 +52,8 @@ public class LoadGroupSetupController {
         model.addAttribute("mode", PageEditMode.EDIT);
         LoadGroupBase loadGroup = mockBaseLMLoadGroup();
         model.addAttribute("loadGroup", loadGroup);
+        List<PaoType> switchTypes = Lists.newArrayList(PaoType.LM_GROUP_METER_DISCONNECT);
+        model.addAttribute("switchTypes", switchTypes);
         return "dr/setup/loadGroup/view.jsp";
     }
     
