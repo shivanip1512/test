@@ -63321,6 +63321,26 @@
               <indexName>Indx_CmdReqExec_ContId</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
+          <entry>
+            <string>INDX_CRE_StartDesc_ExecContId</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>CommandRequestExec</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>StartTime</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>CommandRequestExec</i__tableName>
+                  <i__ordinalPosition>2</i__ordinalPosition>
+                  <i__columnName>CommandRequestExecContextId</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>INDX_CRE_StartDesc_ExecContId</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
         </i__indexes>
       </com.cariboulake.db.schemacompare.business.domain.db.Table>
     </entry>
