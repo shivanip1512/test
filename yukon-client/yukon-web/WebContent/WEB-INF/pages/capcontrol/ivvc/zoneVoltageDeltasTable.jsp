@@ -47,7 +47,7 @@
                                         <cti:dataUpdaterValue type="VOLTAGE_DELTA" identifier="${pointDelta.bankId}/${pointDelta.pointId}/VOLTAGE_DELTA"/>
                                     </div>
                                     <div class="js-edit-delta dn">
-                                        <input type="text" style="margin-right: 5px; width: 30px;"
+                                        <input class="js-edit-delta-value" type="text" style="margin-right: 5px; width: 50px;"
                                             name="editDeltaInput"
                                             value="${fn:escapeXml(pointDelta.delta)}">
                                         <a href="javascript:void(0);" class="js-cancel-edit"><i:inline key="yukon.common.cancel"/></a>

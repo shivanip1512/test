@@ -23,6 +23,8 @@ yukon.da.voltageDeltas = (function () {
 
             init : function () {
                 $(document).on('click', '.js-view-delta', function(e) {
+                    var currentValue = $(this).text().trim();
+                    $(this).siblings('.js-edit-delta').find('.js-edit-delta-value').val(currentValue);
                     $(this).hide()
                         .siblings('.js-edit-delta').show().find('input').focus();
                     $('#delta-form-buttons').find('button').prop('disabled', false);
