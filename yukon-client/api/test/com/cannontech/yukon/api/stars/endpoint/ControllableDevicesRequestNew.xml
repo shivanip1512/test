@@ -12,6 +12,10 @@
             <fieldInstallDate>2008-10-28T17:07:40Z</fieldInstallDate>
             <serviceCompanyName>Honeywell</serviceCompanyName>
             <routeName>Route Name 1 (name)</routeName>
+            <gps>
+                <latitude>46</latitude>
+                <longitude>45</longitude>
+            </gps>
         </controllableDevice>
         <controllableDevice>
             <accountNumber>InvalidArgument</accountNumber>
@@ -21,6 +25,10 @@
             <fieldInstallDate>2008-10-28T17:07:40Z</fieldInstallDate>
             <serviceCompanyName>Honeywell</serviceCompanyName>
             <routeName>Route Name 1 (name)</routeName>
+            <gps>
+                <latitude>44</latitude>
+                <longitude>44</longitude>
+            </gps>
         </controllableDevice>
         <controllableDevice>
             <accountNumber>ClientRequestError</accountNumber>
@@ -30,6 +38,10 @@
             <fieldInstallDate>2008-10-28T17:07:40Z</fieldInstallDate>
             <serviceCompanyName>Honeywell</serviceCompanyName>
             <routeName>Route Name 1 (name)</routeName>
+            <gps>
+                <latitude>33</latitude>
+                <longitude>44</longitude>
+            </gps>
         </controllableDevice>
         <controllableDevice>
             <accountNumber>Valid</accountNumber>
@@ -39,6 +51,10 @@
             <fieldInstallDate>2008-10-28T17:07:40Z</fieldInstallDate>
             <serviceCompanyName>Honeywell</serviceCompanyName>
             <routeName>Route Name 1 (name)</routeName>
+            <gps>
+                <latitude>54</latitude>
+                <longitude>44</longitude>
+            </gps>
         </controllableDevice>
     </controllableDeviceList>
 </newControllableDevicesRequest>
