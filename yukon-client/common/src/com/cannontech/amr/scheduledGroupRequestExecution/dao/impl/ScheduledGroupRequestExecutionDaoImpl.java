@@ -79,28 +79,25 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         sql.append("SELECT CRE2.*");
         sql.append("FROM (");
         sql.append("    SELECT"); 
-        sql.append("        SGCR.JobId,");
         sql.append("        CRE.CommandRequestExecId,");
         sql.append("        ROW_NUMBER() OVER (ORDER BY CRE.StartTime DESC) RN"); 
         sql.append("    FROM ScheduledGrpCommandRequest SGCR"); 
         sql.append("    JOIN CommandRequestExec CRE"); 
         sql.append("        ON SGCR.CommandRequestExecContextId = CRE.CommandRequestExecContextId");
-        sql.append("    WHERE SGCR.JobID = ").appendArgument(jobId);
+        sql.append("    WHERE SGCR.JobID").eq(jobId);
         if (cutoff != null) {
-            sql.append("AND CRE.StartTime <= ").appendArgument(cutoff);
+            sql.append("AND CRE.StartTime").lte(cutoff);
         }
         sql.append(") LatestCre"); 
         sql.append("JOIN CommandRequestExec CRE2"); 
         sql.append("    ON LatestCre.CommandRequestExecId = CRE2.CommandRequestExecId"); 
         sql.append("WHERE LatestCre.RN = 1");
         
-        List<CommandRequestExecution> cres = yukonJdbcTemplate.queryForLimitedResults(sql, new CommandRequestExecutionRowAndFieldMapper(), 1);
-        
-        if (cres.size() > 0) {
-            return cres.get(0);
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, new CommandRequestExecutionRowAndFieldMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null; //no results found
         }
-
-        return null;
     }
     
     // GET JOBS BY RANGE
