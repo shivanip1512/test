@@ -11,6 +11,10 @@
             <deviceLabel>Upstairs</deviceLabel>
             <fieldInstallDate>2008-10-28T17:07:40Z</fieldInstallDate>
             <serviceCompanyName>Honeywell</serviceCompanyName>
+            <gps>
+                <latitude>46</latitude>
+                <longitude>45</longitude>
+            </gps>
         </controllableDevice>
         <controllableDevice>
             <accountNumber>InvalidArgument</accountNumber>
@@ -19,6 +23,10 @@
             <deviceLabel>Backyard AC</deviceLabel>
             <fieldInstallDate>2008-10-28T17:07:40Z</fieldInstallDate>
             <serviceCompanyName>Honeywell</serviceCompanyName>
+            <gps>
+                <latitude>44</latitude>
+                <longitude>44</longitude>
+            </gps>
         </controllableDevice>
         <controllableDevice>
             <accountNumber>ClientRequestError</accountNumber>
@@ -27,6 +35,10 @@
             <deviceLabel>Backyard AC</deviceLabel>
             <fieldInstallDate>2008-10-28T17:07:40Z</fieldInstallDate>
             <serviceCompanyName>Honeywell</serviceCompanyName>
+            <gps>
+                <latitude>33</latitude>
+                <longitude>44</longitude>
+            </gps>
         </controllableDevice>
         <controllableDevice>
             <accountNumber>Valid</accountNumber>
@@ -35,6 +47,10 @@
             <deviceLabel>Backyard AC</deviceLabel>
             <fieldInstallDate>2008-10-28T17:07:40Z</fieldInstallDate>
             <serviceCompanyName>Honeywell</serviceCompanyName>
+             <gps>
+                <latitude>54</latitude>
+                <longitude>44</longitude>
+             </gps>
         </controllableDevice>        
     </controllableDeviceList>
 </updateControllableDevicesRequest>
