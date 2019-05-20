@@ -142,7 +142,7 @@
             </bean>
         </constructor-arg>
     </bean>
-
+    
     <bean class="com.cannontech.dr.honeywell.service.impl.HoneywellRestProxyFactory"
             factory-bean="honeywellRestProxyFactory"
             factory-method="createInstance">
@@ -158,4 +158,21 @@
     <bean class="com.cannontech.dr.pxwhite.service.impl.PxWhiteCommunicationServiceImpl"/>
     
     <bean class="com.cannontech.dr.itron.dao.impl.ItronDaoImpl"/>
+    
+    <!-- Setup -->
+    <bean id="customDefaultResponseErrorHandler" class = "com.cannontech.web.dr.errorHandler.CustomDefaultResponseErrorHandler" />
+    <bean id="drRestTemplate" class="org.springframework.web.client.RestTemplate">
+        <property name="messageConverters">
+            <list>
+                <bean class = "org.springframework.http.converter.StringHttpMessageConverter"/>
+                <bean class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
+                <ref bean="jacksonHttpMessageConverter"/>
+            </list>
+        </property>
+        <property name="errorHandler" ref="customDefaultResponseErrorHandler"></property>
+     </bean>
+    
+    <bean class="com.cannontech.dr.loadgroup.service.impl.LoadGroupSetupServiceImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.LoadGroupSetupValidator" />
+    <bean class="com.cannontech.web.dr.setup.SetupControllerHelper"/>
 </beans>

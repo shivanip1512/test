@@ -3,13 +3,25 @@ package com.cannontech.web.dr.setup;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.LoadGroupBase;
@@ -28,6 +40,9 @@ public class LoadGroupSetupController {
     
     private static final String baseKey = "yukon.web.modules.dr.setup.loadGroup.";
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
+    
+    @Autowired private RestTemplate drRestTemplate;
+    @Autowired private SetupControllerHelper helper;
 
     @GetMapping("/create")
     public String create(ModelMap model) {
@@ -40,49 +55,72 @@ public class LoadGroupSetupController {
     }
 
     @GetMapping("/{id}")
-    public String view(ModelMap model, @PathVariable int id) {
+    public String view(ModelMap model, @PathVariable int id, FlashScope flash) {
         model.addAttribute("mode", PageEditMode.VIEW);
-        LoadGroupBase loadGroup = mockBaseLMLoadGroup();
+        LoadGroupBase loadGroup = retrieveGroup(id);
+        if (loadGroup == null) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
+            return "redirect:/dr/setup/list";
+        }
         model.addAttribute("loadGroup", loadGroup);
         return "dr/setup/loadGroup/view.jsp";
     }
 
     @GetMapping("/{id}/edit")
-    public String edit(ModelMap model) {
+    public String edit(ModelMap model, @PathVariable int id, FlashScope flash) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        LoadGroupBase loadGroup = mockBaseLMLoadGroup();
+        LoadGroupBase loadGroup = retrieveGroup(id);
+        if (loadGroup == null) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
+            return "redirect:/dr/setup/list";
+        }
         model.addAttribute("loadGroup", loadGroup);
         List<PaoType> switchTypes = Lists.newArrayList(PaoType.LM_GROUP_METER_DISCONNECT);
         model.addAttribute("switchTypes", switchTypes);
         return "dr/setup/loadGroup/view.jsp";
     }
     
-    // TODO: Remove unused parameters
     @PostMapping("/save")
-    public String save(@ModelAttribute LoadGroupBase loadGroup, FlashScope flash) {
-        // TODO: Validate Load Group
-        // TODO: If error, bindAndForward
-        // TODO: else, save
-        
-        // TODO: Remove this log
-        log.info("Load Group object to be saved");
-        log.info("Id:" + loadGroup.getId());
-        log.info("Name:" + loadGroup.getName());
-        log.info("Type:" + loadGroup.getType());
-        log.info("Disable Control:" + loadGroup.isDisableControl());
-        log.info("Disable Group:" + loadGroup.isDisableGroup());
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.saved"));
-        return "redirect:/dr/setup/loadGroup/" + 123;
-    }
+    public String save(@ModelAttribute LoadGroupBase loadGroup, BindingResult result, FlashScope flash, RedirectAttributes redirectAttributes) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-    private LoadGroupBase mockBaseLMLoadGroup() {
-        LoadGroupBase loadGroup = new LoadGroupBase();
-        loadGroup.setId(123);
-        loadGroup.setName("Test Load Group");
-        loadGroup.setkWCapacity(10.33f);
-        loadGroup.setDisableControl(true);
-        loadGroup.setDisableGroup(false);
-        loadGroup.setType(PaoType.LM_GROUP_METER_DISCONNECT);
+        HttpEntity<LoadGroupBase> requestEntity = new HttpEntity<LoadGroupBase>(loadGroup, headers);
+        String url = "http://localhost:8080/yukon/dr/api/setup/loadGroup/save";
+
+        try {
+            ResponseEntity<Object> response = drRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Object.class);
+            if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
+                BindException error = new BindException(loadGroup, "loadGroupBase");
+                helper.populateBindingError(result, error, response);
+            }
+            if (response.getStatusCode() == HttpStatus.OK) {
+                int groupId = (int) response.getBody();
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.saved"));
+                return "redirect:/dr/setup/loadGroup/" + groupId;
+            }
+        } catch (RestClientException ex) {
+            log.error("Error creating load group " + ex);
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error"));
+            return "redirect:/dr/setup/list";
+        }
+        return null;
+    }
+    
+    /* Make a rest call for retrieving group */
+    private LoadGroupBase retrieveGroup(int id) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String url = "http://localhost:8080/yukon/dr/api/setup/loadGroup/" + id;
+        LoadGroupBase loadGroup = null;
+        try {
+            ResponseEntity<LoadGroupBase> response = drRestTemplate.getForEntity(url, LoadGroupBase.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                loadGroup = response.getBody();
+            }
+        } catch (RestClientException ex) {
+            log.error("Error retrieving load group " + ex);
+        }
         return loadGroup;
     }
 

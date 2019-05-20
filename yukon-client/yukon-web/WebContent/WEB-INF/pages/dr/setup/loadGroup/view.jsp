@@ -29,6 +29,7 @@
     <cti:url var="action" value="/dr/setup/loadGroup/save" />
     <form:form modelAttribute="loadGroup" action="${action}" method="post">
         <cti:csrfToken />
+        <form:hidden path="id"/>
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".name">

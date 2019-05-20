@@ -1,6 +1,8 @@
 package com.cannontech.common.dr.setup;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.model.CompleteLoadGroupBase;
 
 public class LoadGroupBase {
 
@@ -57,5 +59,31 @@ public class LoadGroupBase {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+    
+    public static LoadGroupBase of(CompleteLoadGroupBase loadGroup) {
+        LoadGroupBase group = new LoadGroupBase();
+        group.setName(loadGroup.getPaoName());
+        group.setId(loadGroup.getPaObjectId());
+        group.setType(loadGroup.getPaoType());
+        group.setkWCapacity(loadGroup.getkWCapacity());
+        group.setDisableControl(loadGroup.isControlInhibit());
+        group.setDisableGroup(loadGroup.isDisabled());
+        
+        return group;
+    }
+    
+    public CompleteLoadGroupBase asCompletePao() {
+        CompleteLoadGroupBase completeLoadGroup = new CompleteLoadGroupBase();
+        if (id != null) {
+            PaoIdentifier paoId = new PaoIdentifier(id, type);
+            completeLoadGroup.setPaoIdentifier(paoId);
+        }
+        completeLoadGroup.setPaoName(name);
+        completeLoadGroup.setDisabled(disableGroup);
+        completeLoadGroup.setControlInhibit(disableControl);
+        completeLoadGroup.setkWCapacity(kWCapacity);
+
+        return completeLoadGroup;
     }
 }
