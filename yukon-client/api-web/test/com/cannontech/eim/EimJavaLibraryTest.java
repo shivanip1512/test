@@ -149,6 +149,7 @@ public class EimJavaLibraryTest {
         "tomcat-util-scan.jar",
         "tomcat-util.jar",
         "tomcat-websocket.jar",
+        "validation-api-2.0.1.Final.jar",
         "websocket-api.jar",
         "wrapper.jar",
         "wrapperApp.jar",

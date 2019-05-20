@@ -2847,7 +2847,21 @@ Java :
     updated : 2018-09-12
     jira : YUK-18790
     notes : 
-  
+
+  - filename : validation-api-2.0.1.Final.jar
+    yukon group : Common
+    project : Apache Tomcat
+    version : 2.0.1
+    project URL : "http://beanvalidation.org"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/javax.validation/validation-api/2.0.1.Final"
+    md5 : 5d02c034034a7a16725ceff787e191d6
+    sha1 : cb855558e6271b1b32e716d24cb85c7f583ce09e
+    updated : 2019-06-20
+    jira : YUK-19927
+    notes : 
+      
   - filename : websocket-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
