@@ -48,6 +48,9 @@ public class LoadGroupSetupController {
     public String create(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
         LoadGroupBase loadGroup = new LoadGroupBase();
+        if (model.containsAttribute("loadGroup")) {
+            loadGroup = (LoadGroupBase) model.get("loadGroup");
+        }
         model.addAttribute("loadGroup", loadGroup);
         List<PaoType> switchTypes = Lists.newArrayList(PaoType.LM_GROUP_METER_DISCONNECT);
         model.addAttribute("switchTypes", switchTypes);
@@ -93,6 +96,7 @@ public class LoadGroupSetupController {
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadGroup, "loadGroupBase");
                 helper.populateBindingError(result, error, response);
+                return bindAndForward(loadGroup, result, redirectAttributes);
             }
             if (response.getStatusCode() == HttpStatus.OK) {
                 int groupId = (int) response.getBody();
@@ -124,4 +128,13 @@ public class LoadGroupSetupController {
         return loadGroup;
     }
 
+    
+    private String bindAndForward(LoadGroupBase loadGroup, BindingResult result, RedirectAttributes attrs) {
+        attrs.addFlashAttribute("loadGroup", loadGroup);
+        attrs.addFlashAttribute("org.springframework.validation.BindingResult.loadGroup", result);
+        if (loadGroup.getId() == null) {
+            return "redirect:/dr/setup/loadGroup/create";
+        }
+        return "redirect:/dr/setup/loadGroup/" + loadGroup.getId() + "/edit";
+    }
 }

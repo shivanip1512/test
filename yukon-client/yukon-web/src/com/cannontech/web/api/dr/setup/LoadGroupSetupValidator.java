@@ -32,9 +32,11 @@ public class LoadGroupSetupValidator extends SimpleValidator<LoadGroupBase> {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", loadGroup.getName(), 60);
         }
         if (!errors.hasFieldErrors("name")) {
-            LiteYukonPAObject unique = paoDao.findUnique(loadGroup.getName(), type);
-            if (unique != null) {
-                errors.rejectValue("name", key + "groupName.unique");
+            if (type != null) {
+                LiteYukonPAObject unique = paoDao.findUnique(loadGroup.getName(), type);
+                if (unique != null) {
+                    errors.rejectValue("name", key + "groupName.unique");
+                }
             }
         }
         if (!errors.hasFieldErrors("name")) {

@@ -8,17 +8,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 
+/**
+ * Helper class for all DR setup controllers. 
+ *
+ */
 public class SetupControllerHelper {
-    
+
+    // Populate binding error from the error object received from rest call.
     public void populateBindingError(BindingResult result, BindException error, ResponseEntity<Object> errorResponse) {
         LinkedHashMap<?, ?> errorObject = (LinkedHashMap<?, ?>) errorResponse.getBody();
         ArrayList<?> fieldError = (ArrayList<?>) errorObject.get("fieldErrors");
         ArrayList<?> globalError = (ArrayList<?>) errorObject.get("globalErrors");
 
-        for (int i = 0; i < fieldError.size(); i++) {
-            LinkedHashMap<?, ?> map1 = (LinkedHashMap<?, ?>) fieldError.get(i);
-            error.rejectValue(map1.get("field").toString(), StringUtils.EMPTY, map1.get("code").toString());
-        }
+        fieldError.stream().forEach(e -> {
+            error.rejectValue(((LinkedHashMap<?, ?>) e).get("field").toString(), StringUtils.EMPTY,
+                ((LinkedHashMap<?, ?>) e).get("code").toString());
+        });
+
+        globalError.stream().forEach(e -> {
+            error.reject(((LinkedHashMap<?, ?>) e).get("code").toString());
+        });
         result.addAllErrors(error);
     }
 
