@@ -84,6 +84,12 @@ public class MeterEventStatusTypeGroupings {
         //PLC & RFN
         builder.add(BuiltInAttribute.REVERSE_POWER_FLAG);
         builder.add(BuiltInAttribute.TAMPER_FLAG);
+        
+        // RFN tamper flags, group as Tamper vs Metering
+        builder.add(BuiltInAttribute.TAMPER_NO_USAGE_OVER_24_HOURS);
+        builder.add(BuiltInAttribute.TAMPER_REVERSE_WH_DETECTED);
+        builder.add(BuiltInAttribute.TAMPER_LARGE_INCREASE_AFTER_OUTAGE);
+        builder.add(BuiltInAttribute.TAMPER_LARGE_DECREASE_AFTER_OUTAGE);
         tamper = builder.build();
     }
     
@@ -104,7 +110,18 @@ public class MeterEventStatusTypeGroupings {
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
         //RFN
         builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_DEMAND_EVENT));
-        builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_METERING_EVENT));
+        
+        for (BuiltInAttribute meteringEvent : BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_METERING_EVENT)) {
+            if (meteringEvent == BuiltInAttribute.TAMPER_NO_USAGE_OVER_24_HOURS ||
+                meteringEvent == BuiltInAttribute.TAMPER_REVERSE_WH_DETECTED ||
+                meteringEvent == BuiltInAttribute.TAMPER_LARGE_INCREASE_AFTER_OUTAGE ||
+                meteringEvent == BuiltInAttribute.TAMPER_LARGE_DECREASE_AFTER_OUTAGE) {
+                //skip...these are added in buildTamperTypes()
+            } else {
+                builder.add(meteringEvent);
+            }
+        }
+        
         metering = builder.build();
     }
     
