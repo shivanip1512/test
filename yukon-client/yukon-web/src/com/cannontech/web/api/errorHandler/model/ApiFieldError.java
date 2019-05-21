@@ -24,20 +24,24 @@ public class ApiFieldError {
     public String getField() {
         return field;
     }
+    
     public void setField(String field) {
         this.field = field;
     }
+    
     public String getCode() {
         return code;
     }
+    
     public void setCode(String code) {
         this.code = code;
     }
+    
     public Object getRejectedValue() {
         return rejectedValue;
     }
+    
     public void setRejectedValue(Object rejectedValue) {
         this.rejectedValue = rejectedValue;
     }
-
 }

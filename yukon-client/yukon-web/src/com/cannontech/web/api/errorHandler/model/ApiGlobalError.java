@@ -17,7 +17,6 @@ public class ApiGlobalError {
     public ApiGlobalError() {
     }
     
-    
     public String getCode() {
         return code;
     }

@@ -24,13 +24,17 @@ public class ApiErrorsView {
     public List<ApiFieldError> getFieldErrors() {
         return fieldErrors;
     }
+    
     public void setFieldErrors(List<ApiFieldError> fieldErrors) {
         this.fieldErrors = fieldErrors;
     }
+    
     public List<ApiGlobalError> getGlobalErrors() {
         return globalErrors;
     }
+    
     public void setGlobalErrors(List<ApiGlobalError> globalErrors) {
         this.globalErrors = globalErrors;
     }
+    
 }
