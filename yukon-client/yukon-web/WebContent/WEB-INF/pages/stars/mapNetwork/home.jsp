@@ -6,6 +6,8 @@
 <cti:standardPage module="operator" page="mapNetwork">
     
     <input type="hidden" class="js-device-id" value="${deviceId}"/>
+    <cti:msg2 var="coordinatesDeleted" key=".location.delete.successful"/>
+    <input id="coordinatesDeletedMsg" type="hidden" value="${coordinatesDeleted}"/>
     
     <div class="column-10-14 clearfix">
         <div class="column one">
