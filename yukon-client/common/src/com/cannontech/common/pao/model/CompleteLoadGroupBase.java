@@ -7,14 +7,14 @@ import com.cannontech.common.pao.annotation.YukonPaoField;
 @YukonPao(tableName = "LMGROUP", idColumnName = "DeviceId", paoTypes = PaoType.LM_GROUP_METER_DISCONNECT)
 public class CompleteLoadGroupBase extends CompleteDevice {
 
-    private float kWCapacity = 0.0f;
+    private double kWCapacity = 0.0;
 
     @YukonPaoField
-    public float getkWCapacity() {
+    public double getkWCapacity() {
         return kWCapacity;
     }
 
-    public void setkWCapacity(float kWCapacity) {
+    public void setkWCapacity(double kWCapacity) {
         this.kWCapacity = kWCapacity;
     }
 
@@ -22,7 +22,9 @@ public class CompleteLoadGroupBase extends CompleteDevice {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + Float.floatToIntBits(kWCapacity);
+        long temp;
+        temp = Double.doubleToLongBits(kWCapacity);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
 
@@ -35,7 +37,7 @@ public class CompleteLoadGroupBase extends CompleteDevice {
         if (getClass() != obj.getClass())
             return false;
         CompleteLoadGroupBase other = (CompleteLoadGroupBase) obj;
-        if (Float.floatToIntBits(kWCapacity) != Float.floatToIntBits(other.kWCapacity))
+        if (Double.doubleToLongBits(kWCapacity) != Double.doubleToLongBits(other.kWCapacity))
             return false;
         return true;
     }

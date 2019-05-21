@@ -49,7 +49,7 @@ public class ApiValidationExceptionHandler extends ResponseEntityExceptionHandle
                 .stream()
                 .map(fieldError -> new ApiFieldError(
                         fieldError.getField(),
-                        messageSourceAccessor.getMessage(fieldError.getCode()),
+                        messageSourceAccessor.getMessage(fieldError.getCode(), fieldError.getArguments()),
                         fieldError.getRejectedValue())
                 )
                 .collect(Collectors.toList());

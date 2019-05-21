@@ -76,6 +76,8 @@ public class LoadGroupSetupController {
         if (loadGroup == null) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
             return "redirect:/dr/setup/list";
+        } else if (model.containsAttribute("loadGroup")) {
+            loadGroup = (LoadGroupBase) model.get("loadGroup");
         }
         model.addAttribute("loadGroup", loadGroup);
         List<PaoType> switchTypes = Lists.newArrayList(PaoType.LM_GROUP_METER_DISCONNECT);

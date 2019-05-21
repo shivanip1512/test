@@ -37,12 +37,8 @@
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".type">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
-                        <form:select path="type">
-                            <form:option value=""><cti:msg2 key="yukon.web.components.button.select.label"/></form:option>
-                            <c:forEach var="switchType" items="${switchTypes}">
-                                <form:option value="${switchType}"><i:inline key="${switchType}"/></form:option>
-                            </c:forEach>
-                        </form:select>
+                        <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl"/>
+                        <tags:selectWithItems items="${switchTypes}" path="type" defaultItemLabel="${selectLbl}" defaultItemValue=""/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
                         <i:inline key="${loadGroup.type}"/>
