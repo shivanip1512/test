@@ -8,9 +8,7 @@
 
 <cti:standardPage module="operator" page="gateways.list">
 
-<c:set var="showPageActions" value="${false}"/>
 <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
-    <c:set var="showPageActions" value="${true}"/>
 
     <div id="gateway-create-popup" class="dn"
         data-dialog
@@ -48,34 +46,32 @@
     </div>
 </cti:checkRolesAndProperties>
 
-<c:if test="${showPageActions}">
-    <div id="page-actions" class="dn">
-        <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
-            <cm:dropdownOption data-popup="#gateway-create-popup" icon="icon-plus-green">
-                <i:inline key=".create.gateway.label"/>
-            </cm:dropdownOption>
-        </cti:checkRolesAndProperties>
-        <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
-            <cm:dropdownOption data-popup="#gateway-cert-popup" icon="icon-drive-go">
-                <i:inline key=".cert.update.label"/>
-            </cm:dropdownOption>
-        </cti:checkRolesAndProperties>
-        <cti:url var="comprehensiveMapUrl" value="/stars/comprehensiveMap/home"/>
-        <cm:dropdownOption key="yukon.web.modules.operator.comprehensiveMap.pageName" href="${comprehensiveMapUrl}" icon="icon-map-pins"/>
-        <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
-            <cm:dropdownOption data-popup="#firmware-server-popup" icon="icon-drive-go"
-                classes="update-servers disabled" disabled="true">
+<div id="page-actions" class="dn">
+    <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+        <cm:dropdownOption data-popup="#gateway-create-popup" icon="icon-plus-green">
+            <i:inline key=".create.gateway.label"/>
+        </cm:dropdownOption>
+    </cti:checkRolesAndProperties>
+    <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+        <cm:dropdownOption data-popup="#gateway-cert-popup" icon="icon-drive-go">
+            <i:inline key=".cert.update.label"/>
+        </cm:dropdownOption>
+    </cti:checkRolesAndProperties>
+    <cti:url var="comprehensiveMapUrl" value="/stars/comprehensiveMap/home"/>
+    <cm:dropdownOption key="yukon.web.modules.operator.comprehensiveMap.pageName" href="${comprehensiveMapUrl}" icon="icon-map-pins"/>
+    <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+        <cm:dropdownOption data-popup="#firmware-server-popup" icon="icon-drive-go"
+            classes="update-servers disabled" disabled="true">
 
-                <i:inline key=".updateServer.set"/>
-            </cm:dropdownOption>
-            <cm:dropdownOption data-popup="#send-firmware-upgrade-popup" icon="icon-drive-go"
-                classes="update-servers disabled" disabled="true">
+            <i:inline key=".updateServer.set"/>
+        </cm:dropdownOption>
+        <cm:dropdownOption data-popup="#send-firmware-upgrade-popup" icon="icon-drive-go"
+            classes="update-servers disabled" disabled="true">
 
-                <i:inline key=".firmwareUpdate"/>
-            </cm:dropdownOption>
-        </cti:checkRolesAndProperties>
-    </div>
-</c:if>
+            <i:inline key=".firmwareUpdate"/>
+        </cm:dropdownOption>
+    </cti:checkRolesAndProperties>
+</div>
 
 <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
     <div id="gateway-cert-popup" class="dn" data-dialog 

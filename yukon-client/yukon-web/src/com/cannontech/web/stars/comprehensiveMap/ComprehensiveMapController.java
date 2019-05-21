@@ -16,9 +16,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy;
@@ -29,12 +34,17 @@ import com.google.common.collect.Lists;
 
 @RequestMapping("/comprehensiveMap/*")
 @Controller
+@CheckRoleProperty({YukonRoleProperty.INFRASTRUCTURE_ADMIN, 
+                    YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE, 
+                    YukonRoleProperty.INFRASTRUCTURE_DELETE, 
+                    YukonRoleProperty.INFRASTRUCTURE_VIEW})
 public class ComprehensiveMapController {
     
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private NmNetworkService nmNetworkService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private MeterDao meterDao;
+    @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @GetMapping("home")
     public String home(ModelMap model) {
@@ -52,14 +62,15 @@ public class ComprehensiveMapController {
     }
     
     @GetMapping("filter")
-    public @ResponseBody Map<String, Object> filter(@ModelAttribute("filter") NetworkMapFilter filter) {
+    public @ResponseBody Map<String, Object> filter(@ModelAttribute("filter") NetworkMapFilter filter, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         NetworkMap map = null;
         try {
             map = nmNetworkService.getNetworkMap(filter);
         } catch (NmNetworkException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            String errorMsg = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.nmError");
+            json.put("errorMsg",  errorMsg);
         }
         json.put("map",  map);
         return json;

@@ -162,7 +162,6 @@ yukon.map.comprehensive = (function () {
         var source = _map.getLayers().getArray()[_tiles.length].getSource(),
             focusDevice = _findFocusDevice(deviceId, true),
             focusPoints = focusDevice.getGeometry().getCoordinates(),
-            routeColor = '#808080',
             routeLineWidth = 2.5;
 
         _primaryRoutePreviousPoints = null;
@@ -219,7 +218,7 @@ yukon.map.comprehensive = (function () {
                     })]
                 }),
                 style: new ol.style.Style({
-                    stroke: new ol.style.Stroke({ color: routeColor, width: routeLineWidth })
+                    stroke: new ol.style.Stroke({ color: _routeColor, width: routeLineWidth })
                 })
             });
             
@@ -378,28 +377,33 @@ yukon.map.comprehensive = (function () {
                     type: 'get',
                     data: form.serialize()
                 }).done( function(data) {
-                    //clear any existing features
-                    var source = _map.getLayers().getArray()[_tiles.length].getSource();
-                    if (_icons.length > 0) {
-                        _icons.forEach(function(icon) {
-                            if (source.getFeatureById(icon.get('pao').paoId)) {
-                                source.removeFeature(icon); 
-                            }
+                    if (data.errorMsg) {
+                        yukon.ui.alertError(data.errorMsg);
+                    } else {
+                        //clear any existing features
+                        var source = _map.getLayers().getArray()[_tiles.length].getSource();
+                        if (_icons.length > 0) {
+                            _icons.forEach(function(icon) {
+                                if (source.getFeatureById(icon.get('pao').paoId)) {
+                                    source.removeFeature(icon); 
+                                }
+                            });
+                            _icons = [];
+                        }
+                        _removeDeviceFocusLayers();
+                        var map = data.map.mappedDevices;
+                        Object.keys(map).forEach(function(key) {
+                            var value = map[key];
+                            _loadDevices(key, value);
                         });
-                        _icons = [];
+                        $('#legend').empty();
+                        for (var i = 0; i < data.map.legend.length; i++) {
+                            var legendItem = data.map.legend[i];
+                            $('#legend').append('<span class=small-circle style=margin-left:5px;margin-bottom:5px;background:' + legendItem.hexColor + '></span><span style=margin-left:5px;>' + legendItem.text + '</span>');
+                        }
+                        $('#legend').removeClass('dn');
                     }
-                    _removeDeviceFocusLayers();
-                    var map = data.map.mappedDevices;
-                    Object.keys(map).forEach(function(key) {
-                        var value = map[key];
-                        _loadDevices(key, value);
-                    });
-                    $('#legend').empty();
-                    for (var i = 0; i < data.map.legend.length; i++) {
-                        var legendItem = data.map.legend[i];
-                        $('#legend').append('<span class=small-circle style=margin-left:5px;margin-bottom:5px;background:' + legendItem.hexColor + '></span><span style=margin-left:5px;>' + legendItem.text + '</span>');
-                    }
-                    $('#legend').removeClass('dn');
+                }).always(function () {
                     yukon.ui.unbusy('.js-filter-map');
                 });
             });
