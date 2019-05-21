@@ -445,7 +445,7 @@ yukon.namespace = function (ns) {
                     }
                 }
             
-            alertbox.empty().removeClass('error success info warning pending').addClass(args.messageClass);
+            alertbox.empty().removeClass('error success info warning pending dn').addClass(args.messageClass);
             
             if (messages.length > 1) {
                 list = $('<ul class="simple-list">');
