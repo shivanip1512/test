@@ -17,23 +17,24 @@ struct LMGroupFactoryRegister
 {
     LMGroupFactoryRegister()
     {
-        g_lmGroupFactory.registerSerializer <::LMGroupDigiSEP,       Thrift::LMGroupDigiSEP>    ( &populateThrift, NULL, "LMGroupDigiSEP" );
-        g_lmGroupFactory.registerSerializer <::LMGroupEcobee,        Thrift::LMGroupEcobee>     ( &populateThrift, NULL, "LMGroupEcobee" );
-        g_lmGroupFactory.registerSerializer <::LMGroupHoneywell,     Thrift::LMGroupHoneywell>  ( &populateThrift, NULL, "LMGroupHoneywell" );
-        g_lmGroupFactory.registerSerializer <::LMGroupNest,          Thrift::LMGroupNest>       ( &populateThrift, NULL, "LMGroupNest" );
-        g_lmGroupFactory.registerSerializer <::LMGroupItron,         Thrift::LMGroupItron>      ( &populateThrift, NULL, "LMGroupItron" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupEmetcon,    Thrift::LMGroupEmetcon>    ( &populateThrift, NULL, "LMGroupEmetcon" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupExpresscom, Thrift::LMGroupExpresscom> ( &populateThrift, NULL, "LMGroupExpresscom" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupGolay,      Thrift::LMGroupGolay>      ( &populateThrift, NULL, "LMGroupGolay" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupMacro,      Thrift::LMGroupMacro>      ( &populateThrift, NULL, "LMGroupMacro" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupMCT,        Thrift::LMGroupMCT>        ( &populateThrift, NULL, "LMGroupMCT" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupPoint,      Thrift::LMGroupPoint>      ( &populateThrift, NULL, "LMGroupPoint" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupRipple,     Thrift::LMGroupRipple>     ( &populateThrift, NULL, "LMGroupRipple" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupSA105,      Thrift::LMGroupSA105>      ( &populateThrift, NULL, "LMGroupSA105" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupSA205,      Thrift::LMGroupSA205>      ( &populateThrift, NULL, "LMGroupSA205" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupSA305,      Thrift::LMGroupSA305>      ( &populateThrift, NULL, "LMGroupSA305" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupSADigital,  Thrift::LMGroupSADigital>  ( &populateThrift, NULL, "LMGroupSADigital" );
-        g_lmGroupFactory.registerSerializer <::CtiLMGroupVersacom,   Thrift::LMGroupVersacom>   ( &populateThrift, NULL, "LMGroupVersacom" );
+        g_lmGroupFactory.registerSerializer <::LMGroupDigiSEP,          Thrift::LMGroupDigiSEP>         ( &populateThrift, NULL, "LMGroupDigiSEP" );
+        g_lmGroupFactory.registerSerializer <::LMGroupEcobee,           Thrift::LMGroupEcobee>          ( &populateThrift, NULL, "LMGroupEcobee" );
+        g_lmGroupFactory.registerSerializer <::LMGroupHoneywell,        Thrift::LMGroupHoneywell>       ( &populateThrift, NULL, "LMGroupHoneywell" );
+        g_lmGroupFactory.registerSerializer <::LMGroupNest,             Thrift::LMGroupNest>            ( &populateThrift, NULL, "LMGroupNest" );
+        g_lmGroupFactory.registerSerializer <::LMGroupItron,            Thrift::LMGroupItron>           ( &populateThrift, NULL, "LMGroupItron" );
+        g_lmGroupFactory.registerSerializer <::LMGroupMeterDisconnect,  Thrift::LMGroupMeterDisconnect> ( &populateThrift, NULL, "LMGroupMeterDisconnect" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupEmetcon,       Thrift::LMGroupEmetcon>         ( &populateThrift, NULL, "LMGroupEmetcon" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupExpresscom,    Thrift::LMGroupExpresscom>      ( &populateThrift, NULL, "LMGroupExpresscom" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupGolay,         Thrift::LMGroupGolay>           ( &populateThrift, NULL, "LMGroupGolay" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupMacro,         Thrift::LMGroupMacro>           ( &populateThrift, NULL, "LMGroupMacro" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupMCT,           Thrift::LMGroupMCT>             ( &populateThrift, NULL, "LMGroupMCT" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupPoint,         Thrift::LMGroupPoint>           ( &populateThrift, NULL, "LMGroupPoint" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupRipple,        Thrift::LMGroupRipple>          ( &populateThrift, NULL, "LMGroupRipple" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupSA105,         Thrift::LMGroupSA105>           ( &populateThrift, NULL, "LMGroupSA105" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupSA205,         Thrift::LMGroupSA205>           ( &populateThrift, NULL, "LMGroupSA205" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupSA305,         Thrift::LMGroupSA305>           ( &populateThrift, NULL, "LMGroupSA305" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupSADigital,     Thrift::LMGroupSADigital>       ( &populateThrift, NULL, "LMGroupSADigital" );
+        g_lmGroupFactory.registerSerializer <::CtiLMGroupVersacom,      Thrift::LMGroupVersacom>        ( &populateThrift, NULL, "LMGroupVersacom" );
     }
 };
 
@@ -139,6 +140,19 @@ MessagePtr<Thrift::LMGroupNest>::type populateThrift(const ::LMGroupNest& imsg)
 MessagePtr<Thrift::LMGroupItron>::type populateThrift(const ::LMGroupItron& imsg)
 {
     MessagePtr<Thrift::LMGroupItron>::type omsg( new Thrift::LMGroupItron );
+
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+
+    return omsg;
+}
+
+//=============================================================================
+//  LMGroupMeterDisconnect
+//=============================================================================
+
+MessagePtr<Thrift::LMGroupMeterDisconnect>::type populateThrift(const ::LMGroupMeterDisconnect& imsg)
+{
+    MessagePtr<Thrift::LMGroupMeterDisconnect>::type omsg( new Thrift::LMGroupMeterDisconnect );
 
     omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 

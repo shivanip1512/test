@@ -198,6 +198,12 @@
     <ClCompile Include="lmgroupitron.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lmgroupmeterdisconnect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MeterDisconnectGear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BeatThePeakControlInterface.h">
@@ -405,6 +411,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\lmgroupitron.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lmgroupmeterdisconnect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MeterDisconnectControlInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MeterDisconnectGear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

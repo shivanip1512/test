@@ -47,6 +47,7 @@
 #define LMGROUPHONEYWELL_ID                     642
 #define LMGROUPNEST_ID                          643
 #define LMGROUPITRON_ID                         644
+#define LMGROUPMETERDISCONNECT_ID               645
 
 
 /* Various debug levels */

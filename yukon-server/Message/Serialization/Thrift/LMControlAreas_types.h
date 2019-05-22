@@ -49,6 +49,8 @@ class LMGroupNest;
 
 class LMGroupItron;
 
+class LMGroupMeterDisconnect;
+
 class LMGroupEmetcon;
 
 class LMGroupExpresscom;
@@ -1150,6 +1152,42 @@ class LMGroupItron : public virtual ::apache::thrift::TBase {
 void swap(LMGroupItron &a, LMGroupItron &b);
 
 std::ostream& operator<<(std::ostream& out, const LMGroupItron& obj);
+
+
+class LMGroupMeterDisconnect : public virtual ::apache::thrift::TBase {
+ public:
+
+  LMGroupMeterDisconnect(const LMGroupMeterDisconnect&);
+  LMGroupMeterDisconnect& operator=(const LMGroupMeterDisconnect&);
+  LMGroupMeterDisconnect() {
+  }
+
+  virtual ~LMGroupMeterDisconnect() throw();
+  LMGroupBase _baseMessage;
+
+  void __set__baseMessage(const LMGroupBase& val);
+
+  bool operator == (const LMGroupMeterDisconnect & rhs) const
+  {
+    if (!(_baseMessage == rhs._baseMessage))
+      return false;
+    return true;
+  }
+  bool operator != (const LMGroupMeterDisconnect &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const LMGroupMeterDisconnect & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(LMGroupMeterDisconnect &a, LMGroupMeterDisconnect &b);
+
+std::ostream& operator<<(std::ostream& out, const LMGroupMeterDisconnect& obj);
 
 
 class LMGroupEmetcon : public virtual ::apache::thrift::TBase {

@@ -38,6 +38,12 @@ const IM_EX_MSG OutboundQueue
     OutboundQueue::ItronRestore
     {"yukon.notif.stream.dr.ItronRestoreMessage"};
 const IM_EX_MSG OutboundQueue
+    OutboundQueue::MeterDisconnectControl
+    {"yukon.notif.stream.dr.MeterDisconnectControlMessage"};
+const IM_EX_MSG OutboundQueue
+    OutboundQueue::MeterDisconnectRestore
+    {"yukon.notif.stream.dr.MeterDisconnectRestoreMessage"};
+const IM_EX_MSG OutboundQueue
     OutboundQueue::HistoryRowAssociationResponse
     {"yukon.notif.stream.dr.HistoryRowAssociationResponse"};
 const IM_EX_MSG OutboundQueue

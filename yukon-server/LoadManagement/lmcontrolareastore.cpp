@@ -36,6 +36,7 @@
 #include "NestCriticalCycleGear.h"
 #include "NestStandardCycleGear.h"
 #include "ItronCycleGear.h"
+#include "MeterDisconnectGear.h"
 #include "resolvers.h"
 #include "devicetypes.h"
 #include "dbaccess.h"
@@ -969,6 +970,10 @@ void CtiLMControlAreaStore::reset()
                     else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::ItronCycleMethod) )
                     {
                         newDirectGear = CTIDBG_new Cti::LoadManagement::ItronCycleGear(rdr);
+                    }
+                    else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::MeterDisconnectMethod) )
+                    {
+                        newDirectGear = CTIDBG_new Cti::LoadManagement::MeterDisconnectGear(rdr);
                     }
                     else if (rdr["settings"].isNull())
                     {

@@ -343,7 +343,10 @@
     <ClInclude Include="include\ItronControlInterface.h" />
     <ClInclude Include="include\ItronCycleGear.h" />
     <ClInclude Include="include\lmgroupitron.h" />
+    <ClInclude Include="include\lmgroupmeterdisconnect.h" />
     <ClInclude Include="include\lmgroupnest.h" />
+    <ClInclude Include="include\MeterDisconnectControlInterface.h" />
+    <ClInclude Include="include\MeterDisconnectGear.h" />
     <ClInclude Include="include\NestControlinterface.h" />
     <ClInclude Include="include\SmartGroupBase.h" />
   </ItemGroup>
@@ -367,6 +370,7 @@
     <ClCompile Include="ItronCycleGear.cpp" />
     <ClCompile Include="lmgrouphoneywell.cpp" />
     <ClCompile Include="lmgroupitron.cpp" />
+    <ClCompile Include="lmgroupmeterdisconnect.cpp" />
     <ClCompile Include="lmgroupnest.cpp" />
     <ClCompile Include="LMScheduledMessageHolder.cpp" />
     <ClCompile Include="lm_group_serialization.cpp">
@@ -455,6 +459,7 @@
     </ClCompile>
     <ClCompile Include="loadmanager.cpp">
     </ClCompile>
+    <ClCompile Include="MeterDisconnectGear.cpp" />
     <ClCompile Include="NestCriticalCycleGear.cpp" />
     <ClCompile Include="NestStandardCycleGear.cpp" />
     <ClCompile Include="sepcyclegear.cpp">

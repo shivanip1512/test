@@ -22,6 +22,8 @@ public:
     static const OutboundQueue NestRestore;
     static const OutboundQueue ItronCyclingControl;
     static const OutboundQueue ItronRestore;
+    static const OutboundQueue MeterDisconnectControl;
+    static const OutboundQueue MeterDisconnectRestore;
     static const OutboundQueue HistoryRowAssociationResponse;
     static const OutboundQueue IvvcAnalysisMessage;
     static const OutboundQueue CapControlOperationMessage;

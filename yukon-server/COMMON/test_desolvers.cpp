@@ -162,6 +162,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("HONEYWELL GROUP")
         ("NEST GROUP")
         ("ITRON GROUP")
+        ("METER DISCONNECT GROUP")
         ("MCT GROUP")
         ("GOLAY GROUP")
         ("SA-DIGITAL GROUP")
@@ -185,7 +186,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("MACRO GROUP")
         ("SYSTEM")
         ("VIRTUAL SYSTEM")
-            .repeat(9830, empty);
+            .repeat(9829, empty);
 
     std::vector<std::string> results;
 
