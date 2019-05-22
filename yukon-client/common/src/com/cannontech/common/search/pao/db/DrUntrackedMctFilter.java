@@ -21,6 +21,7 @@ public class DrUntrackedMctFilter implements SqlFilter {
     public SqlFragmentSource getWhereClauseFragment() {
         
         Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.STARS_ACCOUNT_ATTACHABLE_METER);
+        paoTypes.addAll(PaoType.getRfMeterTypes());
 
         SqlStatementBuilder drTrackableMeter = new SqlStatementBuilder();
         drTrackableMeter.append("paobjectId IN (");

@@ -25,6 +25,7 @@ public class AvailableMctFilter implements SqlFilter {
     public SqlFragmentSource getWhereClauseFragment() {
         
     	Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.STARS_ACCOUNT_ATTACHABLE_METER);
+        paoTypes.addAll(PaoType.getRfMeterTypes());
 
         SqlStatementBuilder limiter1 = new SqlStatementBuilder();
         limiter1.append("paobjectId IN (");

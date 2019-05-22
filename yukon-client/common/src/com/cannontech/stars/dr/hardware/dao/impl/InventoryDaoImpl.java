@@ -1085,6 +1085,8 @@ public class InventoryDaoImpl implements InventoryDao {
     @Override
     public boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId, boolean includeMctsWithNoAccount) {
         Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.STARS_ACCOUNT_ATTACHABLE_METER);
+        paoTypes.addAll(PaoType.getRfMeterTypes());
+
         //This sql replicates how the device picker populates it's pickerList.
         
         //This first limiter will limit the devices that do not have an inventory associated.
