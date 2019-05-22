@@ -1,8 +1,7 @@
 package com.cannontech.common.rfn.message.metadatamulti;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
@@ -10,51 +9,33 @@ public class GatewayNodes implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
-    private Set<RfnIdentifier> readyNodes = new HashSet<>();
+    private RfnIdentifier gatewayRfnIdentifier;
     
-    private Set<RfnIdentifier> notReadyNodes = new HashSet<>();
-    
-    private Set<RfnIdentifier> unknownNodes = new HashSet<>();
+    private Map<RfnIdentifier, NodeComm> nodeComms;
 
-    public Set<RfnIdentifier> getReadyNodes() {
-        return readyNodes;
+    public RfnIdentifier getGatewayRfnIdentifier() {
+        return gatewayRfnIdentifier;
     }
 
-    public void setReadyNodes(Set<RfnIdentifier> readyNodes) {
-        this.readyNodes = readyNodes;
+    public void setGatewayRfnIdentifier(RfnIdentifier gatewayRfnIdentifier) {
+        this.gatewayRfnIdentifier = gatewayRfnIdentifier;
     }
 
-    public Set<RfnIdentifier> getNotReadyNodes() {
-        return notReadyNodes;
+    public Map<RfnIdentifier, NodeComm> getNodeComms() {
+        return nodeComms;
     }
 
-    public void setNotReadyNodes(Set<RfnIdentifier> notReadyNodes) {
-        this.notReadyNodes = notReadyNodes;
-    }
-
-    public Set<RfnIdentifier> getUnknownNodes() {
-        return unknownNodes;
-    }
-
-    public void setUnknownNodes(Set<RfnIdentifier> unknownNodes) {
-        this.unknownNodes = unknownNodes;
-    }
-    
-    public Set<RfnIdentifier> getAllNodes(){
-        Set<RfnIdentifier> allNodes = new HashSet<>();
-        allNodes.addAll(readyNodes);
-        allNodes.addAll(notReadyNodes);
-        allNodes.addAll(unknownNodes);
-        return allNodes;
+    public void setNodeComms(Map<RfnIdentifier, NodeComm> nodeComms) {
+        this.nodeComms = nodeComms;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((notReadyNodes == null) ? 0 : notReadyNodes.hashCode());
-        result = prime * result + ((readyNodes == null) ? 0 : readyNodes.hashCode());
-        result = prime * result + ((unknownNodes == null) ? 0 : unknownNodes.hashCode());
+        result =
+            prime * result + ((gatewayRfnIdentifier == null) ? 0 : gatewayRfnIdentifier.hashCode());
+        result = prime * result + ((nodeComms == null) ? 0 : nodeComms.hashCode());
         return result;
     }
 
@@ -67,29 +48,23 @@ public class GatewayNodes implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         GatewayNodes other = (GatewayNodes) obj;
-        if (notReadyNodes == null) {
-            if (other.notReadyNodes != null)
+        if (gatewayRfnIdentifier == null) {
+            if (other.gatewayRfnIdentifier != null)
                 return false;
-        } else if (!notReadyNodes.equals(other.notReadyNodes))
+        } else if (!gatewayRfnIdentifier.equals(other.gatewayRfnIdentifier))
             return false;
-        if (readyNodes == null) {
-            if (other.readyNodes != null)
+        if (nodeComms == null) {
+            if (other.nodeComms != null)
                 return false;
-        } else if (!readyNodes.equals(other.readyNodes))
-            return false;
-        if (unknownNodes == null) {
-            if (other.unknownNodes != null)
-                return false;
-        } else if (!unknownNodes.equals(other.unknownNodes))
+        } else if (!nodeComms.equals(other.nodeComms))
             return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return String.format("GatewayNodes [readyNodes=%s, notReadyNodes=%s, unknownNodes=%s]",
-                             readyNodes,
-                             notReadyNodes,
-                             unknownNodes);
+        return String.format("GatewayNodes [gatewayRfnIdentifier=%s, nodeComms=%s]",
+                             gatewayRfnIdentifier,
+                             nodeComms);
     }
 }

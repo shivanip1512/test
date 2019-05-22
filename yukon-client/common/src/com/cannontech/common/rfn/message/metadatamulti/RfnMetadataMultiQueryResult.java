@@ -8,7 +8,7 @@ public class RfnMetadataMultiQueryResult implements Serializable {
     private static final long serialVersionUID = 1L;
     
     // The resultType will always be OK as long as NM can find a node for the device.
-    // A query is not treated as a failure if it can't find any data for a metadataMulti (
+    // A query is not treated as a failure if it can’t find any data for a metadataMulti (
     //     e.x., no primary gateway).
     // A query may fail due to NM DB error or service error. In that case,
     //     the whole responseType is treated as not OK.
@@ -16,11 +16,11 @@ public class RfnMetadataMultiQueryResult implements Serializable {
 
     // The following result message is per device.
     // NM will do its best to provide more info, especially in case of not OK, besides
-    //     being indicated by the resultType's constant name (i.e., NO_NODE).
+    //     being indicated by the resultType's constant name (i.e., NM_ENTITY_NOT_FOUND).
     private String resultMessage;
 
     // The entry of the following Map will match the element of the request rfnMetadatas Set.
-    // Sometimes you may get a null result for some entries, e.x.,
+    // Sometimes you may get a null value for some entries, e.x.,
     //     when a device has no primary gateway, its PrimaryGatewayComm is null.
     private Map<RfnMetadataMulti, Object> metadatas;
 

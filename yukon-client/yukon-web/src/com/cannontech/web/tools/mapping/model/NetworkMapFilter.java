@@ -3,6 +3,8 @@ package com.cannontech.web.tools.mapping.model;
 import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 
@@ -36,6 +38,11 @@ public class NetworkMapFilter {
         this.linkStrength = linkStrength;
     }
     
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            + System.getProperty("line.separator");
+    }
     
     public enum ColorCodeBy implements DisplayableEnum {
         GATEWAY,

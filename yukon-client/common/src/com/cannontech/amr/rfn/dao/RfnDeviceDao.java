@@ -2,6 +2,7 @@ package com.cannontech.amr.rfn.dao;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -99,6 +100,11 @@ public interface RfnDeviceDao {
      * Returns list of devices for gateway
      */
     List<RfnDevice> getDevicesForGateway(int gatewayId);
+    
+    /**
+     * Returns limited list of RfnIdentifier for gateway. Used by simulator.
+     */
+    List<RfnIdentifier> getRfnIdentifiersForGateway(int gatewayId, int rowLimit);
 
     /**
      * Deletes all mappings of gateway to device. Should be used by simulator only.
@@ -108,7 +114,7 @@ public interface RfnDeviceDao {
     /**
      * Returns list of device ids for rfn identifiers
      */
-    List<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers);
+    Set<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers);
 
     Integer findDeviceBySensorSerialNumber(String sensorSerialNumber);
 }

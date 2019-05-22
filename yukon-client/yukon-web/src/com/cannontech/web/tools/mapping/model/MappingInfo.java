@@ -6,7 +6,7 @@ import org.geojson.FeatureCollection;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
-import com.cannontech.common.rfn.message.metadatamulti.CommStatusType;
+import com.cannontech.common.rfn.message.metadatamulti.NodeCommStatus;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -16,7 +16,7 @@ public abstract class MappingInfo {
 
     private RfnDevice device;
     private FeatureCollection location;
-    private CommStatusType status = CommStatusType.UNKNOWN;
+    private NodeCommStatus status = NodeCommStatus.NOT_READY;
     private ConnectionStatus connectionStatus = ConnectionStatus.DISCONNECTED;
     private double distanceInMiles;
     private double distanceInKm;
@@ -55,11 +55,11 @@ public abstract class MappingInfo {
         this.distanceInMiles = distanceInMiles;
     }
 
-    public CommStatusType getStatus() {
+    public NodeCommStatus getStatus() {
         return status;
     }
 
-    public void setStatus(CommStatusType status) {
+    public void setStatus(NodeCommStatus status) {
         this.status = status;
     }
 

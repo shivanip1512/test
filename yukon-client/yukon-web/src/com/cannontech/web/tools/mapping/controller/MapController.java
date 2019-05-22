@@ -60,8 +60,8 @@ import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.EntityType;
+import com.cannontech.common.rfn.message.metadatamulti.NodeComm;
 import com.cannontech.common.rfn.message.metadatamulti.NodeData;
-import com.cannontech.common.rfn.message.metadatamulti.PrimaryGatewayComm;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
@@ -240,18 +240,18 @@ public class MapController {
                 try {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
                         metadataMultiService.getMetadata(EntityType.NODE, rfnDevice.getRfnIdentifier(),
-                            Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_COMM, RfnMetadataMulti.NODE_DATA));
+                            Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODES, RfnMetadataMulti.NODE_DATA));
                     RfnMetadataMultiQueryResult metadata = metaData.get(rfnDevice.getRfnIdentifier());
                     if (metadata.getResultType() != RfnMetadataMultiQueryResultType.OK) {
                         log.error("NM returned query result:" + metadata.getResultType() + " message:" + metadata.getResultMessage()
                             + " for device:" + rfnDevice);
                         model.addAttribute("errorMsg", nmError);
                     } else {
-                        PrimaryGatewayComm comm = (PrimaryGatewayComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_COMM);
+                        NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODES);
                         if (comm != null) {
-                            RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(comm.getRfnIdentifier());
+                            RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(comm.getMeterRfnIdentifier());
                             RfnGateway rfnGateway = rfnGatewayService.getGatewayByPaoId(gateway.getPaoIdentifier().getPaoId());
-                            String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getCommStatusType());
+                            String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getNodeCommStatus());
                             model.addAttribute("deviceStatus", statusString);
                             model.addAttribute("primaryGatewayName", rfnGateway.getNameWithIPAddress());
                             model.addAttribute("primaryGateway", gateway);

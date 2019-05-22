@@ -1,13 +1,10 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,8 +30,8 @@ import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.EntityType;
 import com.cannontech.common.rfn.message.metadatamulti.GatewayNodes;
+import com.cannontech.common.rfn.message.metadatamulti.NodeComm;
 import com.cannontech.common.rfn.message.metadatamulti.NodeData;
-import com.cannontech.common.rfn.message.metadatamulti.PrimaryGatewayComm;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
@@ -70,17 +67,14 @@ import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.Color;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.Legend;
-import com.cannontech.web.tools.mapping.model.NetworkMapFilter.LinkStrength;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.model.Parent;
 import com.cannontech.web.tools.mapping.model.RouteInfo;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.math.IntMath;
 
 public class NmNetworkServiceImpl implements NmNetworkService {
 
@@ -113,9 +107,6 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private RequestReplyTemplate<RfnNeighborDataReply> neighborReplyTemplate;
     private RequestReplyTemplate<RfnParentReply> parentReplyTemplate;
     
-    
-    @Autowired private IDatabaseCache cache;
-
     @PostConstruct
     public void init() {
         routeReplyTemplate =
@@ -400,7 +391,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = null;
         try {
             metaData = metadataMultiService.getMetadata(EntityType.NODE, devicesOtherThenGatways,
-                Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_COMM, RfnMetadataMulti.NODE_DATA));
+                Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODES, RfnMetadataMulti.NODE_DATA));
         } catch (NmCommunicationException e) {
             throw new NmNetworkException(commsError, e, "commsError");
         }
@@ -444,19 +435,22 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 info.setErrorMsg(info.getAccessor().getMessage(metadataErrorKey));
                 return;
             }
-            PrimaryGatewayComm comm = (PrimaryGatewayComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_COMM);
-            if (comm != null) {
-                info.setStatus(comm.getCommStatusType());
+          
+            if (metadata.getMetadatas() != null
+                && metadata.getMetadatas().containsKey(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM)) {
+                NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
+                info.setStatus(comm.getNodeCommStatus());
+                RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(
+                    findDevice(comm.getGatewayRfnIdentifier()).getPaoIdentifier().getPaoId());
+                info.setPrimaryGateway(gateway.getNameWithIPAddress());
+                info.setPrimaryGatewayUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(gateway));
             } else {
-                // ignore, status will be set to "UNKNOWN"
+                // ignore, status will be set to "NOT_READY"
                 log.error("NM didn't return communication status for " + info.getDevice());
             }
-            
-            RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(findDevice(comm.getRfnIdentifier()).getPaoIdentifier().getPaoId());
-            info.setPrimaryGateway(gateway.getNameWithIPAddress());
-            info.setPrimaryGatewayUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(gateway));
-            NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
-            if (nodeData != null) {
+
+            if (metadata.getMetadatas() != null && metadata.getMetadatas().containsKey(RfnMetadataMulti.NODE_DATA)) {
+                NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
                 info.setMacAddress(nodeData.getMacAddress());
             } else {
                 log.error("NM didn't return node data for " + info.getDevice());
@@ -547,32 +541,41 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         if (filter.getColorCodeBy() == ColorCodeBy.GATEWAY) {
             return getNetworkMapByGateway(filter);
         } else if (filter.getColorCodeBy() == ColorCodeBy.LINK_STRENGTH) {
-            //the method below is hardcoded and will be removed when NM messaging is defined
-            return getNetworkMapByColor(filter);
+          //  return getNetworkMapByColor(filter);
         }
         throw new UnsupportedOperationException("Filter " +filter.getColorCodeBy() + " is not supported");
     }
 
+    /**
+     * Returns network map by gateway
+     */
     private NetworkMap getNetworkMapByGateway(NetworkMapFilter filter) throws NmNetworkException {
+        log.debug("Getting network map by gateway filter: {}" , filter);
         Map<RfnIdentifier, RfnGateway> gateways =
             rfnGatewayService.getGatewaysByPaoIds(filter.getSelectedGatewayIds()).stream().collect(
                 Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
         NetworkMap map = new NetworkMap();
         try {
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = metadataMultiService.getMetadata(
-                EntityType.GATEWAY, Sets.newHashSet(gateways.keySet()), Set.of(RfnMetadataMulti.GATEWAY_NODES));
+                EntityType.GATEWAY, Sets.newHashSet(gateways.keySet()), Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODES));
             AtomicInteger i = new AtomicInteger(0);
+            log.debug("Loading locations");
             metaData.forEach((gatewayPao, queryResult) -> {
-                if (queryResult.getResultType() == RfnMetadataMultiQueryResultType.OK) {
+                if (queryResult.getResultType() == RfnMetadataMultiQueryResultType.OK
+                    && queryResult.getMetadatas() != null && queryResult.getMetadatas().containsKey(RfnMetadataMulti.PRIMARY_GATEWAY_NODES)) {
+                    GatewayNodes gatewayNodes = (GatewayNodes) queryResult.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODES);
+                    RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(gatewayPao);
                     Color color = Color.values()[i.getAndIncrement()];
                     map.getLegend().add(new Legend(color.getHexColor(), gateways.get(gatewayPao).getName()));
-                    Set<PaoIdentifier> paos = getGatewayNodes(queryResult);
-                    Set<PaoLocation> locations = paoLocationDao.getLocations(paos);
+                    Set<Integer> paoIds = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(gatewayNodes.getNodeComms().keySet());
+                    paoIds.add(gateway.getPaoIdentifier().getPaoId());
+                    Set<PaoLocation> locations = paoLocationDao.getLocations(paoIds);
                     FeatureCollection features = paoLocationService.getFeatureCollection(locations);
                     map.getMappedDevices().put(color.getHexColor(), features);
                 } else {
-                    log.error("Getting meta data for gateway nodes failed. gateway {} result {} result message {}",
-                        gatewayPao, queryResult.getResultType(), queryResult.getResultMessage());
+                    String meta = queryResult.getMetadatas() == null ? "" : queryResult.getMetadatas().keySet().toString();
+                    log.error("Getting meta data for gateway nodes failed. gateway {} result {} {} result message {}",
+                        gatewayPao, meta, queryResult.getResultType(), queryResult.getResultMessage());
                 }
             });
 
@@ -582,70 +585,5 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         log.debug("MAP-"+map);
         return map;
-    }
-    
-    private Set<PaoIdentifier> getGatewayNodes(RfnMetadataMultiQueryResult result) {
-        if (result.getResultType() == RfnMetadataMultiQueryResultType.OK) {
-            GatewayNodes gatewayNodes = (GatewayNodes) result.getMetadatas().get(RfnMetadataMulti.GATEWAY_NODES);
-            return rfnDeviceDao.getDeviceIdsForRfnIdentifiers(gatewayNodes.getAllNodes()).stream()
-                .map(deviceId -> cache.getAllPaosMap().get(deviceId).getPaoIdentifier())
-                .collect(Collectors.toSet());
-        }
-        return new HashSet<>();
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /***to be removed***/
-    
-    private void addLocationAndColorToNetworkMap(NetworkMap map, Map<PaoIdentifier, PaoLocation> locations, Set<PaoIdentifier> paos, Color color, PaoIdentifier gateway) {
-        List<PaoLocation> locationList = new ArrayList<>();
-        paos.forEach(pao -> {
-            PaoLocation location = locations.get(pao);
-            if (location != null && !pao.getPaoType().isRfGateway()) {
-                locationList.add(location);
-            }
-        });
-        PaoLocation gatewayLocation = paoLocationDao.getLocation(gateway.getPaoId());
-        if (gatewayLocation != null) {
-            locationList.add(gatewayLocation);
-        }
-        FeatureCollection features = paoLocationService.getFeatureCollection(locationList);
-        map.getMappedDevices().put(color.getHexColor(), features);
-    }
-
-    private NetworkMap getNetworkMapByColor(NetworkMapFilter filter) {
-        List<PaoIdentifier> allDevices =
-            cache.getAllDevices().stream().filter(device -> device.getPaoType().isRfn()).map(
-                device -> device.getPaoIdentifier()).collect(Collectors.toList());
-        Set<PaoLocation> deviceLocations = paoLocationDao.getLocations(allDevices);
-        Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(deviceLocations, c -> c.getPaoIdentifier());
-        NetworkMap map = new NetworkMap();
-        List<List<PaoIdentifier>> subSets = partition(allDevices, LinkStrength.values().length);
-        for (int i = 0; i < subSets.size(); i++) {
-            LinkStrength linkStrength = LinkStrength.values()[i];
-            map.getLegend().add(new Legend(linkStrength.getColor().getHexColor(), linkStrength.name()));
-            Integer randomGatewayId =
-                filter.getSelectedGatewayIds().get(new Random().nextInt(filter.getSelectedGatewayIds().size()));
-            PaoIdentifier randomGateway = rfnDeviceDao.getDeviceForId(randomGatewayId).getPaoIdentifier();
-            addLocationAndColorToNetworkMap(map, locations, Sets.newHashSet(subSets.get(i)), linkStrength.getColor(),
-                randomGateway.getPaoIdentifier());
-        }
-        return map;
-    }
-    
-    private List<List<PaoIdentifier>> partition(List<PaoIdentifier> allDevices, int divisor) {
-        int chunk = IntMath.divide(allDevices.size(), divisor, RoundingMode.CEILING);
-        return Lists.partition(allDevices, chunk);
     }
 }

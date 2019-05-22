@@ -2,6 +2,7 @@ package com.cannontech.common.mock;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -89,7 +90,7 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
 
 
     @Override
-    public List<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers) {
+    public Set<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers) {
         throw new MethodNotImplementedException();
     }
 
@@ -105,6 +106,11 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
 
     @Override
     public Integer findDeviceBySensorSerialNumber(String sensorSerialNumber) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<RfnIdentifier> getRfnIdentifiersForGateway(int gatewayId, int rowLimit) {
         throw new MethodNotImplementedException();
     }
 }

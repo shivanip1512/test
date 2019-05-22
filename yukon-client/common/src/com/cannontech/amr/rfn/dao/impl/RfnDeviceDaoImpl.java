@@ -1,12 +1,13 @@
 package com.cannontech.amr.rfn.dao.impl;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -30,6 +31,7 @@ import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -40,6 +42,9 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
@@ -55,6 +60,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Autowired private AsyncDynamicDataSource dynamicDataSource;
     @Autowired private IDatabaseCache cache;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     private RfnIdentifierCache rfnIdentifierCache;
 
     private final static YukonRowMapper<RfnDevice> rfnDeviceRowMapper = new YukonRowMapper<RfnDevice>() {
@@ -416,6 +422,37 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     }
     
     @Override
+    public List<RfnIdentifier> getRfnIdentifiersForGateway(int gatewayId, int rowLimit) {
+        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
+
+        SqlBuilder sqla = builder.buildFor(DatabaseVendor.getMsDatabases());
+        sqla.append("SELECT TOP " + rowLimit  + " rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sqla.append("FROM DynamicRfnDeviceData dd");
+        sqla.append("JOIN YukonPaObject ypo on dd.DeviceId = ypo.PAObjectID");
+        sqla.append("JOIN RfnAddress rfn on dd.DeviceId = rfn.DeviceId");
+        sqla.append("WHERE dd.GatewayId").eq(gatewayId);
+        
+        SqlBuilder sqlb = builder.buildOther();
+        sqlb.append("SELECT rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sqlb.append("FROM DynamicRfnDeviceData dd");
+        sqlb.append("JOIN YukonPaObject ypo on dd.DeviceId = ypo.PAObjectID");
+        sqlb.append("JOIN RfnAddress rfn on dd.DeviceId = rfn.DeviceId");
+        sqlb.append("WHERE dd.GatewayId").eq(gatewayId);
+        sqlb.append("AND ROWNUM").lte(rowLimit);
+        
+        return jdbcTemplate.query(builder, new YukonRowMapper<RfnIdentifier>() {
+            @Override
+            public RfnIdentifier mapRow(YukonResultSet rs) throws SQLException {
+                RfnIdentifier rfnIdentifier = new RfnIdentifier(
+                    rs.getStringSafe("SerialNumber"),
+                    rs.getStringSafe("Manufacturer"), 
+                    rs.getStringSafe("Model"));
+                return rfnIdentifier;
+            }
+        });
+    }
+    
+    @Override
     public void clearDynamicRfnDeviceData() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE from DynamicRfnDeviceData");
@@ -423,7 +460,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     }
     
     @Override
-    public List<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers) {
+    public Set<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers) {
         SqlFragmentGenerator<RfnIdentifier> sql = new SqlFragmentGenerator<RfnIdentifier>() {
             @Override
             public SqlFragmentSource generate(List<RfnIdentifier> subList) {
@@ -444,9 +481,9 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                 return sql;
             }
         };
-        List<Integer> deviceIds = new ArrayList<>();
+        Set<Integer> deviceIds = new HashSet<>();
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-        template.setChunkSize(500);
+        template.setChunkSize(600);
         template.query(sql, rfnIdentifiers, (YukonResultSet rs) -> deviceIds.add(rs.getInt("deviceId")));
         return  deviceIds;
     }

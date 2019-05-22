@@ -17,6 +17,13 @@ public interface PaoLocationDao {
      */
     Set<PaoLocation> getLocations(Iterable<? extends YukonPao> paos);
     
+    /**
+     * Get most recent location for each device id.
+     * Paos without a location are ignored. If no paos have a
+     * location, an empty set is returned.
+     */
+    Set<PaoLocation> getLocations(Set<Integer> paoIds);
+    
     /** Returns the location for the pao or null if the pao does not have a location. */
     PaoLocation getLocation(int paoId);
     

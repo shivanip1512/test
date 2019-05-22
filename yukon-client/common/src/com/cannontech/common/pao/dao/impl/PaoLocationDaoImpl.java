@@ -66,6 +66,11 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
     
     @Override
     public Set<PaoLocation> getLocations(Iterable<? extends YukonPao> paos) {
+       return getLocations(Sets.newHashSet(PaoUtils.asPaoIdList(paos)));
+    }
+    
+    @Override
+    public Set<PaoLocation> getLocations(Set<Integer> paoIds) {
         
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
@@ -81,7 +86,7 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
         
         final Set<PaoLocation> locations = Sets.newHashSet();
         ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(jdbcTemplate);
-        chunkingTemplate.query(sqlGenerator, PaoUtils.asPaoIdList(paos), new YukonRowCallbackHandler() {
+        chunkingTemplate.query(sqlGenerator, paoIds, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 PaoLocation location = mapper.mapRow(rs);
