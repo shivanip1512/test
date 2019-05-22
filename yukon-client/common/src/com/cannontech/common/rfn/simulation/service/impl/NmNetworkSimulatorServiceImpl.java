@@ -406,7 +406,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         RfnDevice gateway2 = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
                         Set<Neighbor> neighbors = getDevicesForGateway(gateway2).stream()
                                 .map(neighbor -> getNeighborFromSettings(neighbor)).collect(Collectors.toSet());
-                        result.getMetadatas().put(metaData, neighbors); 
+                        neighborhood.setNeighbors(neighbors);
+                        result.getMetadatas().put(metaData, neighborhood); 
                         break;
                     default:
                         break;
