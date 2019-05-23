@@ -447,6 +447,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     }
 
     @Override
+    @Transactional
     public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser ecOperator) {
 
         //Get energyCompany for the user
@@ -481,6 +482,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     };
 
     @Override
+    @Transactional
     public void removeDeviceFromAccount(LmDeviceDto dto, LiteYukonUser ecOperator) {
         
         LiteInventoryBase liteInv = null;
