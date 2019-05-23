@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -44,7 +46,9 @@ public class ComprehensiveMapController {
     @Autowired private NmNetworkService nmNetworkService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private MeterDao meterDao;
-    @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    
+    private static final Logger log = YukonLogManager.getLogger(ComprehensiveMapController.class);
     
     @GetMapping("home")
     public String home(ModelMap model) {
@@ -70,9 +74,10 @@ public class ComprehensiveMapController {
             map = nmNetworkService.getNetworkMap(filter);
         } catch (NmNetworkException e) {
             String errorMsg = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.nmError");
-            json.put("errorMsg",  errorMsg);
+            log.error(errorMsg, e);
+            json.put("errorMsg", errorMsg);
         }
-        json.put("map",  map);
+        json.put("map", map);
         return json;
     }
     
