@@ -294,7 +294,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private long updateDeviceLogsBeforeRead(List<Integer> deviceIds) {      
         //add new mac addresses to group
         List<String> macAddresses = Lists.newArrayList(deviceDao.getDeviceMacAddresses(deviceIds).values());
-        Long itronReadGroupId = createOrUpdateGroup(READ_GROUP, macAddresses);
+        long itronReadGroupId = createOrUpdateGroup(READ_GROUP, macAddresses);
         //update event logs
         UpdateDeviceEventLogsRequest updateLogsRequest = new UpdateDeviceEventLogsRequest();
         updateLogsRequest.getGroupIDs().add(itronReadGroupId);
