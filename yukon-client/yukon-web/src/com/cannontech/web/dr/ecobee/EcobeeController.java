@@ -259,7 +259,7 @@ public class EcobeeController {
         }
         
         String resultKey = dataDownloadService.start(serialNumbers, Range.inclusive(startDate, endDate), userContext.getJodaTimeZone());
-        
+
         ecobeeEventLogService.dataDownloaded(userContext.getYukonUser(), startDate, endDate, Arrays.toString(loadGroupIds), 
                                                     EventSource.OPERATOR);
         
