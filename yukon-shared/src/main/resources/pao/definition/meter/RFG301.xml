@@ -12,13 +12,13 @@
         <tag name="GAS_METER_DETAIL_DISPLAYABLE"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Battery Voltage" init="true"/>
+        <pointInfo name="Battery Voltage" init="true" attributes="BATTERY_VOLTAGE"/>
         <pointInfo name="Gas Usage" init="true" attributes="USAGE_GAS, USAGE"/>
         <pointInfo name="Gas Usage per Interval" init="true" attributes="GAS_USAGE_PER_INTERVAL"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
         <pointInfo name="Magnet Tampering" attributes="MAGNET_TAMPERING"/>
         <pointInfo name="Register Removal" attributes="REGISTER_REMOVAL"/>
         <pointInfo name="Reverse Flow" attributes="REVERSE_FLOW"/>
-        <pointInfo name="Temperature" init="true"/>
+        <pointInfo name="Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
     </pointInfos>
 </pao>

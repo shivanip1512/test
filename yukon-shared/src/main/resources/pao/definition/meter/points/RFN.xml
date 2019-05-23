@@ -10,7 +10,7 @@ Note: For attributes that reference the modifiers of "Quadrant" directly, the mo
 Note: Look at BuiltInAttribute as that follows the same convention. 
 -->
     <highestOffsets>
-        <analog offset="389"/>
+        <analog offset="388"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
         <status offset="96"/>
@@ -1889,12 +1889,6 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
-    </point>
-    <point offset="389" type="Analog">
-        <name>Battery Voltage</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="1"/>
     </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="0" type="CalcAnalog">
