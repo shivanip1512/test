@@ -4,9 +4,12 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,6 +32,8 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -38,6 +43,7 @@ import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.PagingResultSetExtractor;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -55,16 +61,17 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
+    @Autowired private RfnGatewayService rfnGatewayService;
 
     private static final Logger log = YukonLogManager.getLogger(RecentPointValueDaoImpl.class);
     SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, List<DeviceGroup> groups,
-            boolean includeDisabled, Map<RangeType, Range<Instant>> ranges, PagingParameters paging, SortBy sortBy, Direction direction) {
+            boolean includeDisabled, Integer[] selectedGatewayIds, Map<RangeType, Range<Instant>> ranges, PagingParameters paging, SortBy sortBy, Direction direction) {
 
-        SqlStatementBuilder allRowsSql = buildDetailSelect(group, groups, includeDisabled, ranges, sortBy, direction);
-        SqlStatementBuilder countSql = buildDetailSelect(group, groups, includeDisabled, ranges, null, null);
+        SqlStatementBuilder allRowsSql = buildDetailSelect(group, groups, includeDisabled, selectedGatewayIds, ranges, sortBy, direction);
+        SqlStatementBuilder countSql = buildDetailSelect(group, groups, includeDisabled, selectedGatewayIds, ranges, null, null);
         
         int start = paging.getStartIndex();
         int count = paging.getItemsPerPage();
@@ -79,26 +86,60 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
         
         return searchResult;
     }
+    
+    @Override
+    public List<RfnGateway> getRfnGatewayList(DeviceGroup group, List<DeviceGroup> groups, boolean includeDisabled) {       
+        SqlStatementBuilder allGateways = buildGatewaySelect(group, groups, includeDisabled);
+        List<RfnGateway> gatewayResult = new ArrayList<>();    
+        List<Integer> results = jdbcTemplate.query(allGateways, TypeRowMapper.INTEGER);
+        results.forEach(item -> gatewayResult.add(rfnGatewayService.getGatewayByPaoId(item.intValue())));
+        return gatewayResult;
+    }
+    
+    /**
+     * Creates sql string that selects all non-null gateways in the specified group/s
+     */
+    private SqlStatementBuilder buildGatewaySelect(DeviceGroup group, List<DeviceGroup> groups, boolean includeDisabled) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append( "SELECT DISTINCT drdd.GatewayId");      
+        sql.append("FROM YukonPaObject ypo");
+        sql.append("LEFT JOIN DynamicRfnDeviceData drdd on ypo.PAObjectID = drdd.DeviceId");
+        
+        sql.append("WHERE").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "ypo.PAObjectId"));
+
+        if(groups != null && !groups.isEmpty()){
+            sql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(groups, "ypo.PAObjectId"));
+        }
+   
+        if (!includeDisabled) {
+            sql.append("AND ypo.DisableFlag").eq_k(YNBoolean.NO);
+        }
+        
+        sql.append("AND drdd.GatewayId IS NOT NULL");
+
+        sql.append("ORDER BY drdd.GatewayId asc");
+
+        return sql;
+    }
 
     /**
      * If sortBy is not returns count sql, otherwise returns all the fields
      */
     private SqlStatementBuilder buildDetailSelect(DeviceGroup group, List<DeviceGroup> groups, boolean includeDisabled,
-            Map<RangeType, Range<Instant>> ranges, SortBy sortBy, Direction direction) {
+            Integer[] selectedGatewayIds, Map<RangeType, Range<Instant>> ranges, SortBy sortBy, Direction direction) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
         String combineSerialNumberAndAddress="COALESCE(rfna.SerialNumber, CAST(dcs.Address AS varchar))";
         if(databaseVendor.isOracle()){
             combineSerialNumberAndAddress="COALESCE(rfna.SerialNumber, TO_CHAR(dcs.Address))";
         }
-        
         if (sortBy == null) {
             sql.append( "SELECT count(ypo.PAObjectId)");
         } else {
             sql.append( "SELECT "
                            + "ypo.PAObjectId, "
                            + "rpv.PointId, "
-                           + "drdd.GatewayId, "
                            + "rpv.Timestamp, "
                            + "rpv.Quality, "
                            + "rpv.Value, "
@@ -137,6 +178,11 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
    
         if (!includeDisabled) {
             sql.append("AND ypo.DisableFlag").eq_k(YNBoolean.NO);
+        }
+        
+        if (selectedGatewayIds != null) {
+            HashSet<Integer> gatewaySet = new HashSet<>(Arrays.asList(selectedGatewayIds));
+            sql.append("AND drdd.GatewayId").in(gatewaySet);
         }
         
         sql.append(getRangeSql(ranges));
@@ -344,11 +390,11 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
     }
 
     @Override
-    public int getDeviceCount(DeviceGroup group, boolean includeDisabled, RangeType type, Range<Instant> range) {
+    public int getDeviceCount(DeviceGroup group, boolean includeDisabled, Integer[] selectedGatewayIds, RangeType type, Range<Instant> range) {
         
         Map<RangeType, Range<Instant>> ranges = new HashMap<>();
         ranges.put(type, range);
-        SqlStatementBuilder countSql = buildDetailSelect(group, null, includeDisabled, ranges, null, null);
+        SqlStatementBuilder countSql = buildDetailSelect(group, null, includeDisabled, selectedGatewayIds, ranges, null, null);
         return jdbcTemplate.queryForInt(countSql);
     }
     

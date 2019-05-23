@@ -25,6 +25,8 @@ yukon.ami.dataCollection.detail = (function () {
                         
             yukon.widget.dataCollection.buildChart(chart, data);
             
+            $(".js-chosen").chosen({width: "300px"});
+            
             $(document).on('click', '.js-download', function () {
                 var form = $('#collectionDetail');
                 form.attr('action', yukon.url('/amr/dataCollection/download'));

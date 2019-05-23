@@ -12,6 +12,7 @@
     <entry key="yukon.web.modules.amr.dataCollection.detail.rangeType.EXPECTED">Expected</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.rangeType.OUTDATED">Outdated</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.rangeType.UNAVAILABLE">Unreported</entry>
+    <entry key="yukon.web.modules.amr.dataCollection.detail.selectGateways">Select Gateways</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.filter.label">Filter</entry>
     
     <entry key="yukon.web.modules.amr.dataCollection.detail.filteredResults">Filtered Results:</entry>

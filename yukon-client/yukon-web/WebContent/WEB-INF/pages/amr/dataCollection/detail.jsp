@@ -63,6 +63,20 @@
                                 <tags:check name="ranges" key=".rangeType.${range}" classes="M0" buttonTextClasses="${buttonText}" checked="${checked}" value="${range}"></tags:check>
                             </c:forEach>
                         </div>
+                    </tags:nameValue2>                    
+                    <tags:nameValue2 nameKey=".primaryGateway">
+                         <cti:msg2 var="gatewayPlaceholder" key=".selectGateways"/>
+                        <select name="selectedGatewayIds" class="js-chosen" multiple="multiple" data-placeholder="${gatewayPlaceholder}">
+                            <c:forEach var="gateway" items="${gateways}">
+                                <c:set var="checked" value=""/>
+                                <c:forEach var="selectedGateway" items="${selectedGateways}">
+                                    <c:if test="${gateway.id == selectedGateway}">
+                                        <c:set var="checked" value="selected='selected'"/>
+                                    </c:if>
+                                </c:forEach>
+                                <option value="${gateway.id}" ${checked}>${gateway.name}</option>
+                            </c:forEach>
+                        </select>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div class="action-area">
@@ -72,7 +86,6 @@
         </div>
     
     </form>
-
 
     <span class="fwn"><i:inline key=".filteredResults"/></span>
     <span class="badge">${detail.hitCount}</span>&nbsp;<i:inline key=".devices"/>
@@ -97,6 +110,9 @@
         <cti:param name="includeDisabled" value="${includeDisabled}"/>
         <c:forEach var="range" items="${ranges}">
             <cti:param name="ranges" value="${range}"/>
+        </c:forEach>
+        <c:forEach var="gateway" items="${selectedGateways}">
+            <cti:param name="selectedGatewayIds" value="${gateway}"/>
         </c:forEach>
     </cti:url>
     <div data-url="${dataUrl}">

@@ -36,6 +36,7 @@ public interface DataCollectionWidgetService {
      * @param group - finds only devices within the group and its subgroups
      * @param groups - can be null, otherwise finds devices that are in "group" and in "groups"
      * @param includeDisabled - if false only enabled devices will be returned
+     * @param selectedGatewayIds - can be null, otherwise contains list of gatewayId's to filter with 
      * @param ranges - time periods,  can't be null
      * @param paging - paging information, can't be null
      * @param sortBy - used by order by, can't be null
@@ -43,7 +44,7 @@ public interface DataCollectionWidgetService {
      * @return
      */
     SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, List<DeviceGroup> groups,
-            boolean includeDisabled, List<RangeType> ranges, PagingParameters paging, SortBy sortBy,
+            boolean includeDisabled, Integer[] selectedGatewayIds, List<RangeType> ranges, PagingParameters paging, SortBy sortBy,
             Direction direction);
 
     /**

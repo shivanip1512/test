@@ -135,10 +135,10 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
     private DataCollectionSummary recalculate(DeviceGroup group, boolean includeDisabled,
             Map<RangeType, Range<Instant>> ranges, Instant lastCollectionTime) {
         DataCollectionSummary summary = new DataCollectionSummary(lastCollectionTime);
-        summary.setAvailable(rpvDao.getDeviceCount(group, includeDisabled, RangeType.AVAILABLE, ranges.get(RangeType.AVAILABLE)));
-        summary.setExpected(rpvDao.getDeviceCount(group, includeDisabled, RangeType.EXPECTED, ranges.get(RangeType.EXPECTED)));
-        summary.setOutdated(rpvDao.getDeviceCount(group, includeDisabled, RangeType.OUTDATED, ranges.get(RangeType.OUTDATED)));
-        summary.setUnavailable(rpvDao.getDeviceCount(group, includeDisabled, RangeType.UNAVAILABLE, ranges.get(RangeType.UNAVAILABLE)));
+        summary.setAvailable(rpvDao.getDeviceCount(group, includeDisabled, null, RangeType.AVAILABLE, ranges.get(RangeType.AVAILABLE)));
+        summary.setExpected(rpvDao.getDeviceCount(group, includeDisabled, null, RangeType.EXPECTED, ranges.get(RangeType.EXPECTED)));
+        summary.setOutdated(rpvDao.getDeviceCount(group, includeDisabled, null, RangeType.OUTDATED, ranges.get(RangeType.OUTDATED)));
+        summary.setUnavailable(rpvDao.getDeviceCount(group, includeDisabled, null, RangeType.UNAVAILABLE, ranges.get(RangeType.UNAVAILABLE)));
         summary.calculatePrecentages();
         log.debug(summary);
         if (includeDisabled) {
@@ -193,13 +193,13 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
    
     @Override
     public SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, List<DeviceGroup> groups,
-            boolean includeDisabled, List<RangeType> ranges, PagingParameters paging, SortBy sortBy,
+            boolean includeDisabled, Integer[] selectedGatewayIds, List<RangeType> ranges, PagingParameters paging, SortBy sortBy,
             Direction direction) {
         Map<RangeType, Range<Instant>> allRanges = getRanges();
         log.debug("Getting device collection results:");
         allRanges.keySet().removeIf(type -> !ranges.contains(type));
         allRanges.forEach((k, v) -> log.debug(getLogString(k, v)));
-        return rpvDao.getDeviceCollectionResult(group, groups, includeDisabled, allRanges, paging, sortBy, direction);
+        return rpvDao.getDeviceCollectionResult(group, groups, includeDisabled, selectedGatewayIds, allRanges, paging, sortBy, direction);
     }
 
     @Autowired

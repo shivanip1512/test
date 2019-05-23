@@ -30,6 +30,7 @@ import com.cannontech.common.bulk.collection.DeviceMemoryCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionUrl;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.device.data.collection.dao.RecentPointValueDao;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.RangeType;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.SortBy;
 import com.cannontech.common.device.data.collection.dao.model.DeviceCollectionDetail;
@@ -48,6 +49,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.DateFormattingService;
@@ -79,10 +81,12 @@ public class DataCollectionController {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private DeviceMemoryCollectionProducer producer;
+    @Autowired private RecentPointValueDao recentPointValueDao;
     
     private final static String baseKey = "yukon.web.modules.amr.dataCollection.detail.";
     private final static String widgetKey = "yukon.web.widgets.";
     private Logger log = YukonLogManager.getLogger(DataCollectionController.class);
+    List<RfnGateway> gateways;
     
     @RequestMapping(value="updateChart", method=RequestMethod.GET)
     public @ResponseBody Map<String, Object> updateChart(String deviceGroup, Boolean includeDisabled, YukonUserContext userContext) throws Exception {
@@ -124,29 +128,29 @@ public class DataCollectionController {
     }
     
     @RequestMapping("detail")
-    public String detail(ModelMap model, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges, YukonUserContext userContext,
-                         @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
+    public String detail(ModelMap model, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges, 
+                         Integer[] selectedGatewayIds, YukonUserContext userContext, @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
                          @DefaultItemsPerPage(value=250) PagingParameters paging) throws Exception {
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
         DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, includeDisabled);
         model.addAttribute("summary", summary);
         model.addAttribute("rangeTypes", RangeType.values());
-        
-        getDeviceResults(model, sorting, paging, userContext, deviceGroup, deviceSubGroups, includeDisabled, ranges);
+        getDeviceResults(model, sorting, paging, userContext, deviceGroup, deviceSubGroups, includeDisabled, ranges, selectedGatewayIds);
+        model.addAttribute("gateways", gateways);
 
         return "dataCollection/detail.jsp";
     }
-    
+       
     @RequestMapping("deviceResults")
     public String deviceResults(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
             PagingParameters paging, ModelMap model, YukonUserContext userContext, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges, 
-            HttpServletRequest request, FlashScope flash) throws ServletException {
-        getDeviceResults(model, sorting, paging, userContext, deviceGroup, deviceSubGroups, includeDisabled, ranges);
+            Integer[] selectedGatewayIds, HttpServletRequest request, FlashScope flash) throws ServletException {
+        getDeviceResults(model, sorting, paging, userContext, deviceGroup, deviceSubGroups, includeDisabled, ranges, selectedGatewayIds);
         return "dataCollection/deviceTable.jsp";
     }
     
-    private void getDeviceResults(ModelMap model, SortingParameters sorting, PagingParameters paging, 
-                                  YukonUserContext userContext, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges) {
+    private void getDeviceResults(ModelMap model, SortingParameters sorting, PagingParameters paging, YukonUserContext userContext, 
+                                  String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges, Integer[] selectedGatewayIds) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
@@ -160,10 +164,14 @@ public class DataCollectionController {
         model.addAttribute("deviceSubGroups", deviceSubGroups);
         model.addAttribute("includeDisabled", includeDisabled);
         model.addAttribute("ranges", ranges);
+        model.addAttribute("selectedGateways", selectedGatewayIds);
 
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
-        SearchResults<DeviceCollectionDetail> detail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
+        SearchResults<DeviceCollectionDetail> detail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled, 
+                                                             selectedGatewayIds, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
+
+        gateways = recentPointValueDao.getRfnGatewayList(group, subGroups, includeDisabled);
 
         for (DetailSortBy column : DetailSortBy.values()) {
             String text = accessor.getMessage(column);
@@ -186,7 +194,7 @@ public class DataCollectionController {
         model.addAttribute("readAttributeType", CollectionActionUrl.READ_ATTRIBUTE);
         
     }
-    
+       
     private List<DeviceGroup> retrieveSubGroups(String[] deviceSubGroups) {
         List<DeviceGroup> subGroups = new ArrayList<>();
         if (deviceSubGroups != null) {
@@ -199,11 +207,11 @@ public class DataCollectionController {
     
     @RequestMapping(value="collectionAction", method=RequestMethod.GET)
     public String collectionAction(CollectionActionUrl actionType, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled,
-                                   RangeType[] ranges, RedirectAttributes attrs) {
+                                   RangeType[] ranges, Integer[] selectedGatewayIds, RedirectAttributes attrs) {
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         SearchResults<DeviceCollectionDetail> allDetail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled,
-                                                                  Lists.newArrayList(ranges), PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
+                                                                  selectedGatewayIds, Lists.newArrayList(ranges), PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
         List<YukonPao> devices = allDetail.getResultList().stream().map(d -> new SimpleDevice(d.getPaoIdentifier())).collect(Collectors.toList());
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
@@ -228,7 +236,7 @@ public class DataCollectionController {
     
     @RequestMapping("download")
     public String download(YukonUserContext userContext, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges, 
-                          @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
+                          Integer[] selectedGatewayIds, @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
                           @DefaultItemsPerPage(value=250) PagingParameters paging,
                           HttpServletResponse response) throws IOException {
         paging = PagingParameters.EVERYTHING;
@@ -237,7 +245,7 @@ public class DataCollectionController {
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         SearchResults<DeviceCollectionDetail> details = dataCollectionWidgetService.getDeviceCollectionResult(group,
-            subGroups, includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
+            subGroups, includeDisabled, selectedGatewayIds, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
 
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String[] headerRow = new String[10];
