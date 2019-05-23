@@ -41,7 +41,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -105,7 +104,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Autowired private ItronDao itronDao;
     @Autowired private ItronEventLogService itronEventLogService;
     @Autowired private InventoryDao inventoryDao;
-    @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private List<SoapFaultParser> soapFaultParsers;
     
     private static final Set<String> faultCodesToIgnore = Sets.newHashSet("UtilServicePointID.Exists", "macID.exists");
@@ -295,14 +293,28 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private long updateDeviceLogsBeforeRead(List<Integer> deviceIds) {      
         //add new mac addresses to group
         List<String> macAddresses = Lists.newArrayList(deviceDao.getDeviceMacAddresses(deviceIds).values());
-        long itronReadGroupId = addMacAddressesToGroup(READ_GROUP, macAddresses);
-        //update logs
+        long itronReadGroupId = createOrUpdateGroup(READ_GROUP, macAddresses);
+        //update event logs
         UpdateDeviceEventLogsRequest updateLogsRequest = new UpdateDeviceEventLogsRequest();
         updateLogsRequest.getGroupIDs().add(itronReadGroupId);
         updateDeviceLogs(updateLogsRequest);
         return itronReadGroupId;
     }
 
+    /**
+     * Attempt to edit the specified group, setting the mac addresses. If that operation fails, assume that the group
+     * isn't created yet, and create the group, setting the mac addresses. If that also fails, an exception is thrown.
+     */
+    private long createOrUpdateGroup(String groupName, List<String> macAddresses) {
+        try {
+            return addMacAddressesToGroup(groupName, macAddresses, false);
+        } catch (Exception e) {
+            // (Ignoring exception here - it should already have been logged)
+            log.info("Editing Itron group failed, attempting to create group.");
+            return addMacAddressesToGroup(groupName, macAddresses, true);
+        }
+    }
+    
     /**
      * Asks Itron to go get the latest data from the device and update itself.
      */
@@ -371,10 +383,11 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             Map<Integer, Integer> inventoryIdsToDeviceIds = inventoryDao.getDeviceIds(inventoryIds);
             List<String> macAddresses =
                 Lists.newArrayList(deviceDao.getDeviceMacAddresses(inventoryIdsToDeviceIds.values()).values());
-            return addMacAddressesToGroup(String.valueOf(group.getLiteID()), macAddresses);
+            return createOrUpdateGroup(String.valueOf(group.getLiteID()), macAddresses);
         } else {
             //remove all devices from group
-            return addMacAddressesToGroup(String.valueOf(group.getLiteID()), new ArrayList<>());
+            //TODO: YUK-19991 - this is broken - we can't update an Itron group to be empty...
+            return createOrUpdateGroup(String.valueOf(group.getLiteID()), new ArrayList<>());
         }
     }
     
@@ -621,23 +634,28 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * Sends request to itron to add mac addresses to a group.
      * @return itron group id
      */
-    private long addMacAddressesToGroup(String lmGroupId, List<String> macAddresses) {
+    private long addMacAddressesToGroup(String lmGroupId, List<String> macAddresses, boolean createGroup) {
         String url = ItronEndpointManager.DEVICE.getUrl(settingDao);
 
         try {
             ESIGroupRequestType requestType = DeviceManagerHelper.buildGroupEditRequest(lmGroupId, macAddresses);
-            JAXBElement<ESIGroupRequestType> request = new ObjectFactory().createEditESIGroupRequest(requestType);
+            JAXBElement<ESIGroupRequestType> request;
+            if (createGroup) {
+                request = new ObjectFactory().createAddESIGroupRequest(requestType);
+            } else {
+                request = new ObjectFactory().createEditESIGroupRequest(requestType);
+            }
             macAddresses.forEach(macAddress ->
                 itronEventLogService.addMacAddressToGroup(macAddress, lmGroupId)
             );
-            log.debug("ITRON-addMacAddressToGroup url:{} lm group id:{} mac addresses:{}.", url, lmGroupId,
-                macAddresses);
+            log.debug("ITRON-addMacAddressToGroup url:{} lm group id:{} mac addresses:{} create group: {}.", url, lmGroupId,
+                macAddresses, createGroup);
             log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));
             JAXBElement<ESIGroupResponseType> response =
                 (JAXBElement<ESIGroupResponseType>) ItronEndpointManager.DEVICE.getTemplate(settingDao).marshalSendAndReceive(url,
                     request);
-            log.debug("ITRON-addMacAddressToGroup url:{} lm group id:{} mac addresses:{} result:{}.", url,
-                lmGroupId, macAddresses, "success");
+            log.debug("ITRON-addMacAddressToGroup url:{} lm group id:{} mac addresses:{} create group: {} result:{}.", 
+                      url, lmGroupId, macAddresses, createGroup, "success");
             log.debug(XmlUtils.getPrettyXml(new ESIGroupResponseTypeHolder(response.getValue())));
             itronEventLogService.addGroup(lmGroupId, response.getValue().getGroupID());
             if (!response.getValue().getErrors().isEmpty()) {
