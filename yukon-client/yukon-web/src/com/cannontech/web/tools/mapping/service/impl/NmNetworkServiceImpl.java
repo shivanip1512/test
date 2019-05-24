@@ -391,7 +391,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = null;
         try {
             metaData = metadataMultiService.getMetadata(EntityType.NODE, devicesOtherThenGatways,
-                Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODES, RfnMetadataMulti.NODE_DATA));
+                Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA));
         } catch (NmCommunicationException e) {
             throw new NmNetworkException(commsError, e, "commsError");
         }
