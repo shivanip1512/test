@@ -2,6 +2,7 @@ package com.cannontech.common.rfn.message.metadatamulti;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -125,5 +126,12 @@ public enum RfnMetadataMulti implements Serializable {
 
     public int getMaxEntity() {
         return maxEntity;
+    }
+    
+    public static int getChunkSize(Set<RfnMetadataMulti> requests) {
+        return requests.stream()
+                .min(Comparator.comparing(RfnMetadataMulti::getMaxEntity))
+                .get()
+                .getMaxEntity();
     }
 }

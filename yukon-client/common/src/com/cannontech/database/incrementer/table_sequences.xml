@@ -435,5 +435,8 @@
      <sequence name="ScheduledDataImportHistory">
         <table name="ScheduledDataImportHistory" identitycolumn="EntryId" initsequence="true"/>
       </sequence>
+      <sequence name="RfnMetadataMultiRequest">
+        <table name="RfnMetadataMultiRequest" identitycolumn="requestIdentifier"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

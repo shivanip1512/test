@@ -1,9 +1,9 @@
 package com.cannontech.common.rfn.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -29,6 +29,8 @@ import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiService {
@@ -39,6 +41,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configSource;
     @Autowired private ScheduledExecutor executor;
+    @Autowired private NextValueHelper nextValueHelper;
     
     private static final Logger log = YukonLogManager.getLogger(RfnMetadataMultiServiceImpl.class);
 
@@ -48,22 +51,53 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(EntityType entity, Set<RfnIdentifier> identifiers,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException {
         BlockingJmsReplyHandler<RfnMetadataMultiResponse> reply = new BlockingJmsReplyHandler<>(RfnMetadataMultiResponse.class);
+        
+        int chunkSize = RfnMetadataMulti.getChunkSize(requests);
+        List<List<RfnIdentifier>> parts = Lists.partition(new ArrayList<>(identifiers), chunkSize);
+        
+        int requestIdentifier = nextValueHelper.getNextValue("RfnMetadataMultiRequest");
+        
+        NmCommunicationException exception = null;
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> result = new HashMap<>();
+        for (int i = 0; i < parts.size(); i++) {
+            try {
+                result.putAll(getMetaData(entity, identifiers, requests, reply, requestIdentifier + "-" +(i +1)));
+            } catch (NmCommunicationException e) {
+                exception = e;
+            }
+        }
+        
+        if(result.isEmpty()) {
+            //throw last exception received
+            throw exception;
+        }
+        
+        return result;
+    }
+
+    /**
+     * return meta data for a "chunk" of identifiers
+     */
+    private Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetaData(EntityType entity,
+            Set<RfnIdentifier> identifiers, Set<RfnMetadataMulti> requests,
+            BlockingJmsReplyHandler<RfnMetadataMultiResponse> reply, String requestIdentifier)
+            throws NmCommunicationException {
         try {
             RfnMetadataMultiRequest request = new RfnMetadataMultiRequest(entity);
+            request.setRequestID(requestIdentifier);
             request.setRfnIdentifiers(identifiers);
             request.setRfnMetadatas(requests);
-            int randomIdentifier = new Random().nextInt();
-            log.debug("RfnMetadataMultiRequest identifier: {}", randomIdentifier);
+            log.debug("RfnMetadataMultiRequest identifier: {}", requestIdentifier);
             qrTemplate.send(request, reply);
             RfnMetadataMultiResponse response = reply.waitForCompletion();
-            log.debug("RfnMetadataMultiRequest identifier: {} response: {}", randomIdentifier, response.getResponseType());
+            log.debug("RfnMetadataMultiRequest identifier: {} response: {}", requestIdentifier, response.getResponseType());
                         
             if (response.getResponseType() == RfnMetadataMultiResponseType.OK) {
                 updatePrimaryGatewayToDeviceMapping(response);
                 return response.getQueryResults();
             } else {
-                String error =
-                    nmError + " Reply type:" + response.getResponseType() + " Message:" + response.getResponseMessage();
+                String error = nmError + " Reply type:" + response.getResponseType() + " Message:"
+                    + response.getResponseMessage() + "Request Identifier:" + requestIdentifier;
                 log.error(error);
                 throw new NmCommunicationException(error);
             }
