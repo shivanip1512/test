@@ -6,7 +6,7 @@ import org.geojson.FeatureCollection;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
-import com.cannontech.common.rfn.message.metadatamulti.NodeCommStatus;
+import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

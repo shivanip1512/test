@@ -15,6 +15,8 @@ public class RfnMetadataMultiResponse implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
+    private final String requestID; // to correlate response to request
+    
     // If responseType is not OK, suggest to ignore the whole response.
     private RfnMetadataMultiResponseType responseType;
 
@@ -27,6 +29,15 @@ public class RfnMetadataMultiResponse implements Serializable {
     //     you specified in the request.
     // Note: some result may be an error type.
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> queryResults;
+
+    public RfnMetadataMultiResponse(String requestID) {
+        super();
+        this.requestID = requestID;
+    }
+
+    public String getRequestID() {
+        return requestID;
+    }
 
     public RfnMetadataMultiResponseType getResponseType() {
         return responseType;
@@ -57,6 +68,7 @@ public class RfnMetadataMultiResponse implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((queryResults == null) ? 0 : queryResults.hashCode());
+        result = prime * result + ((requestID == null) ? 0 : requestID.hashCode());
         result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
         result = prime * result + ((responseType == null) ? 0 : responseType.hashCode());
         return result;
@@ -76,6 +88,11 @@ public class RfnMetadataMultiResponse implements Serializable {
                 return false;
         } else if (!queryResults.equals(other.queryResults))
             return false;
+        if (requestID == null) {
+            if (other.requestID != null)
+                return false;
+        } else if (!requestID.equals(other.requestID))
+            return false;
         if (responseMessage == null) {
             if (other.responseMessage != null)
                 return false;
@@ -89,7 +106,8 @@ public class RfnMetadataMultiResponse implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("RfnMetadataMultiResponse [responseType=%s, responseMessage=%s, queryResults=%s]",
+            .format("RfnMetadataMultiResponse [requestID=%s, responseType=%s, responseMessage=%s, queryResults=%s]",
+                    requestID,
                     responseType,
                     responseMessage,
                     queryResults);

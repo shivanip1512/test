@@ -1,4 +1,4 @@
-package com.cannontech.common.rfn.message.metadatamulti.neighbor;
+package com.cannontech.common.rfn.message.neighbor;
 
 public enum NeighborFlag {
     NEIGHBOR_FLAG_PRIMARY_FORWARD(1),           // PF: Primary forward neighbor

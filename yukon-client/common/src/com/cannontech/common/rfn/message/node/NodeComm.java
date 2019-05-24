@@ -1,4 +1,4 @@
-package com.cannontech.common.rfn.message.metadatamulti;
+package com.cannontech.common.rfn.message.node;
 
 import java.io.Serializable;
 
@@ -8,20 +8,20 @@ public class NodeComm implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
-    private RfnIdentifier meterRfnIdentifier;
+    private RfnIdentifier deviceRfnIdentifier; // can't be null
     
-    private RfnIdentifier gatewayRfnIdentifier;
+    private RfnIdentifier gatewayRfnIdentifier; // null indicates no primary gateway
     
-    private NodeCommStatus nodeCommStatus; // Node Communication Status
+    private NodeCommStatus nodeCommStatus; // null indicates unknown Communication Status
     
     private long nodeCommStatusTimestamp; // Node Communication Status obtained at
 
-    public RfnIdentifier getMeterRfnIdentifier() {
-        return meterRfnIdentifier;
+    public RfnIdentifier getDeviceRfnIdentifier() {
+        return deviceRfnIdentifier;
     }
 
-    public void setMeterRfnIdentifier(RfnIdentifier meterRfnIdentifier) {
-        this.meterRfnIdentifier = meterRfnIdentifier;
+    public void setDeviceRfnIdentifier(RfnIdentifier deviceRfnIdentifier) {
+        this.deviceRfnIdentifier = deviceRfnIdentifier;
     }
 
     public RfnIdentifier getGatewayRfnIdentifier() {
@@ -53,9 +53,9 @@ public class NodeComm implements Serializable {
         final int prime = 31;
         int result = 1;
         result =
-            prime * result + ((gatewayRfnIdentifier == null) ? 0 : gatewayRfnIdentifier.hashCode());
+            prime * result + ((deviceRfnIdentifier == null) ? 0 : deviceRfnIdentifier.hashCode());
         result =
-            prime * result + ((meterRfnIdentifier == null) ? 0 : meterRfnIdentifier.hashCode());
+            prime * result + ((gatewayRfnIdentifier == null) ? 0 : gatewayRfnIdentifier.hashCode());
         result = prime * result + ((nodeCommStatus == null) ? 0 : nodeCommStatus.hashCode());
         result =
             prime * result + (int) (nodeCommStatusTimestamp ^ (nodeCommStatusTimestamp >>> 32));
@@ -71,15 +71,15 @@ public class NodeComm implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         NodeComm other = (NodeComm) obj;
+        if (deviceRfnIdentifier == null) {
+            if (other.deviceRfnIdentifier != null)
+                return false;
+        } else if (!deviceRfnIdentifier.equals(other.deviceRfnIdentifier))
+            return false;
         if (gatewayRfnIdentifier == null) {
             if (other.gatewayRfnIdentifier != null)
                 return false;
         } else if (!gatewayRfnIdentifier.equals(other.gatewayRfnIdentifier))
-            return false;
-        if (meterRfnIdentifier == null) {
-            if (other.meterRfnIdentifier != null)
-                return false;
-        } else if (!meterRfnIdentifier.equals(other.meterRfnIdentifier))
             return false;
         if (nodeCommStatus != other.nodeCommStatus)
             return false;
@@ -91,10 +91,11 @@ public class NodeComm implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("NodeComm [meterRfnIdentifier=%s, gatewayRfnIdentifier=%s, nodeCommStatus=%s, nodeCommStatusTimestamp=%s]",
-                    meterRfnIdentifier,
+            .format("NodeComm [deviceRfnIdentifier=%s, gatewayRfnIdentifier=%s, nodeCommStatus=%s, nodeCommStatusTimestamp=%s]",
+                    deviceRfnIdentifier,
                     gatewayRfnIdentifier,
                     nodeCommStatus,
                     nodeCommStatusTimestamp);
     }
+
 }

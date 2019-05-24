@@ -1,4 +1,4 @@
-package com.cannontech.common.rfn.message.metadatamulti.neighbor;
+package com.cannontech.common.rfn.message.neighbor;
 
 import java.util.Arrays;
 

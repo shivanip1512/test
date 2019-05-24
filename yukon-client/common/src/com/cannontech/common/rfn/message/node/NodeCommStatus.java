@@ -1,4 +1,4 @@
-package com.cannontech.common.rfn.message.metadatamulti;
+package com.cannontech.common.rfn.message.node;
 
 import java.util.Arrays;
 

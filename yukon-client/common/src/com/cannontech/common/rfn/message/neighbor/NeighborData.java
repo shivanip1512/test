@@ -1,27 +1,29 @@
-package com.cannontech.common.rfn.message.metadatamulti.neighbor;
+package com.cannontech.common.rfn.message.neighbor;
 
 import java.io.Serializable;
 import java.util.Set;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
-public class Neighbor implements Serializable {
+public class NeighborData implements Serializable {
     
     private static final long serialVersionUID = 1L;
-
+    
     private RfnIdentifier myRfnIdentifier;
-
+    
     private RfnIdentifier neighborRfnIdentifier;
     
-    private String neighborMacAddress; 
-        // neighborMacAddress is already part of NeighborData
-        // neighborMacAddress can also be queried by RfnMetadataMulti.NodeData.
+    // The following xxxSerialNumber could be Node S/N or Gateway S/N
     
-    private String neighborSerialNumber; // Node S/N or Gateway S/N
-        //    Node neighborSerialNumber can also be queried by RfnMetadataMulti.NodeData.
-        // Gateway neighborSerialNumber can be retrieved from neighborRfnIdentifier
+    // private String mySerialNumber;
 
+    private String neighborSerialNumber;
+    
+    // The following are data from table ROUTE_DATA_POINT
+    
     private long neighborDataTimestamp;
+
+    private String neighborMacAddress; 
     
     private Float neighborLinkCost;
        
@@ -55,14 +57,6 @@ public class Neighbor implements Serializable {
         this.neighborRfnIdentifier = neighborRfnIdentifier;
     }
 
-    public String getNeighborMacAddress() {
-        return neighborMacAddress;
-    }
-
-    public void setNeighborMacAddress(String neighborMacAddress) {
-        this.neighborMacAddress = neighborMacAddress;
-    }
-
     public String getNeighborSerialNumber() {
         return neighborSerialNumber;
     }
@@ -77,6 +71,14 @@ public class Neighbor implements Serializable {
 
     public void setNeighborDataTimestamp(long neighborDataTimestamp) {
         this.neighborDataTimestamp = neighborDataTimestamp;
+    }
+
+    public String getNeighborMacAddress() {
+        return neighborMacAddress;
+    }
+
+    public void setNeighborMacAddress(String neighborMacAddress) {
+        this.neighborMacAddress = neighborMacAddress;
     }
 
     public Float getNeighborLinkCost() {
@@ -174,7 +176,7 @@ public class Neighbor implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Neighbor other = (Neighbor) obj;
+        NeighborData other = (NeighborData) obj;
         if (currentLinkPower != other.currentLinkPower)
             return false;
         if (currentLinkRate != other.currentLinkRate)
@@ -237,12 +239,12 @@ public class Neighbor implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("Neighbor [myRfnIdentifier=%s, neighborRfnIdentifier=%s, neighborMacAddress=%s, neighborSerialNumber=%s, neighborDataTimestamp=%s, neighborLinkCost=%s, lastCommTime=%s, nextCommTime=%s, neighborFlags=%s, numSamples=%s, etxBand=%s, currentLinkRate=%s, currentLinkPower=%s]",
+            .format("Neighbor [myRfnIdentifier=%s, neighborRfnIdentifier=%s, neighborSerialNumber=%s, neighborDataTimestamp=%s, neighborMacAddress=%s, neighborLinkCost=%s, lastCommTime=%s, nextCommTime=%s, neighborFlags=%s, numSamples=%s, etxBand=%s, currentLinkRate=%s, currentLinkPower=%s]",
                     myRfnIdentifier,
                     neighborRfnIdentifier,
-                    neighborMacAddress,
                     neighborSerialNumber,
                     neighborDataTimestamp,
+                    neighborMacAddress,
                     neighborLinkCost,
                     lastCommTime,
                     nextCommTime,

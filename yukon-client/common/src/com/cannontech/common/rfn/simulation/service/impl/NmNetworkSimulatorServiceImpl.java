@@ -46,20 +46,13 @@ import com.cannontech.common.rfn.message.metadata.RfnMetadataReplyType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataRequest;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataResponse;
 import com.cannontech.common.rfn.message.metadatamulti.GatewayNodes;
-import com.cannontech.common.rfn.message.metadatamulti.NodeComm;
-import com.cannontech.common.rfn.message.metadatamulti.NodeCommStatus;
-import com.cannontech.common.rfn.message.metadatamulti.NodeData;
-import com.cannontech.common.rfn.message.metadatamulti.NodeType;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
-import com.cannontech.common.rfn.message.metadatamulti.neighbor.LinkPower;
-import com.cannontech.common.rfn.message.metadatamulti.neighbor.LinkRate;
-import com.cannontech.common.rfn.message.metadatamulti.neighbor.Neighbor;
-import com.cannontech.common.rfn.message.metadatamulti.neighbor.NeighborFlag;
-import com.cannontech.common.rfn.message.metadatamulti.neighbor.Neighborhood;
+import com.cannontech.common.rfn.message.neighbor.LinkPower;
+import com.cannontech.common.rfn.message.neighbor.Neighbor;
 import com.cannontech.common.rfn.message.network.NeighborData;
 import com.cannontech.common.rfn.message.network.NeighborFlagType;
 import com.cannontech.common.rfn.message.network.ParentData;
@@ -74,6 +67,10 @@ import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
 import com.cannontech.common.rfn.message.network.RouteData;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
+import com.cannontech.common.rfn.message.node.NodeComm;
+import com.cannontech.common.rfn.message.node.NodeCommStatus;
+import com.cannontech.common.rfn.message.node.NodeData;
+import com.cannontech.common.rfn.message.node.NodeType;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
@@ -363,7 +360,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
      */
     private RfnMetadataMultiResponse getMetadataMultiResponse(RfnMetadataMultiRequest request) {
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        RfnMetadataMultiResponse reply = new RfnMetadataMultiResponse();
+        RfnMetadataMultiResponse reply = new RfnMetadataMultiResponse(request.getRequestID());
         reply.setResponseType(settings.getMetadataResponseType());
         reply.setQueryResults(new HashMap<>());
         request.getRfnIdentifiers().forEach(identifier -> {
@@ -399,16 +396,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         nodes.setNodeComms(nodeComms);
                         result.getMetadatas().put(metaData, nodes); 
                         break;
-                    case NEIGHBORS:
-                        Neighborhood neighborhood = new Neighborhood();
-                        //gateway
-                        neighborhood.setMyRfnIdentifier(identifier);
-                        RfnDevice gateway2 = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
-                        Set<Neighbor> neighbors = getDevicesForGateway(gateway2).stream()
-                                .map(neighbor -> getNeighborFromSettings(neighbor)).collect(Collectors.toSet());
-                        neighborhood.setNeighbors(neighbors);
-                        result.getMetadatas().put(metaData, neighborhood); 
-                        break;
+                  
                     default:
                         break;
                     
@@ -421,7 +409,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     
     private Neighbor getNeighborFromSettings(RfnIdentifier device) {
         Neighbor neighbor = new Neighbor();
-        neighbor.setEtxBand(settings.getNeighborData().getEtxBand());
+       /* neighbor.setEtxBand(settings.getNeighborData().getEtxBand());
         neighbor.setLastCommTime(settings.getNeighborData().getLastCommTime());
         neighbor.setCurrentLinkPower(LinkPower.LINK_POWER_125_mW);
         neighbor.setCurrentLinkRate(LinkRate.LINK_RATE_FOUR_X);
@@ -433,7 +421,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         neighbor.setNextCommTime(settings.getNeighborData().getNextCommTime());
         neighbor.setNumSamples(settings.getNeighborData().getNumSamples());
         neighbor.setMyRfnIdentifier(device);
-        neighbor.setNeighborSerialNumber(device.getSensorSerialNumber());
+        neighbor.setNeighborSerialNumber(device.getSensorSerialNumber());*/
         return neighbor;
     }
     
@@ -448,7 +436,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         comm.setNodeCommStatusTimestamp(1517588257267L);
         comm.setNodeCommStatus(isReady ? NodeCommStatus.READY : NodeCommStatus.NOT_READY);
         comm.setGatewayRfnIdentifier(gateway);
-        comm.setMeterRfnIdentifier(device);
+        comm.setDeviceRfnIdentifier(device);
         return comm;
     }
  

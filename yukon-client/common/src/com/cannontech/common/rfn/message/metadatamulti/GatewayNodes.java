@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.node.NodeComm;
 
 public class GatewayNodes implements Serializable {
     
@@ -11,6 +12,8 @@ public class GatewayNodes implements Serializable {
 
     private RfnIdentifier gatewayRfnIdentifier;
     
+    // Map each device (deviceRfnIdentifier) for the gateway
+    //  to its communication object (i.e., NodeComm)
     private Map<RfnIdentifier, NodeComm> nodeComms;
 
     public RfnIdentifier getGatewayRfnIdentifier() {

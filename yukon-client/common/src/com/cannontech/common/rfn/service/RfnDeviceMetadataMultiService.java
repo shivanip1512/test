@@ -29,7 +29,6 @@ public interface RfnDeviceMetadataMultiService {
      * 
      * @throws NmCommunicationException if there was communication error or if NM returned an error
      */
-
-    Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(EntityType entityType, Set<RfnIdentifier> identifiers,
+    Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(EntityType entity, Set<RfnIdentifier> identifiers,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException;
 }
