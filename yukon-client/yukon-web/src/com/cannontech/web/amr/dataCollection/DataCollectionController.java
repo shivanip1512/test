@@ -86,7 +86,6 @@ public class DataCollectionController {
     private final static String baseKey = "yukon.web.modules.amr.dataCollection.detail.";
     private final static String widgetKey = "yukon.web.widgets.";
     private Logger log = YukonLogManager.getLogger(DataCollectionController.class);
-    List<RfnGateway> gateways;
     
     @RequestMapping(value="updateChart", method=RequestMethod.GET)
     public @ResponseBody Map<String, Object> updateChart(String deviceGroup, Boolean includeDisabled, YukonUserContext userContext) throws Exception {
@@ -136,7 +135,6 @@ public class DataCollectionController {
         model.addAttribute("summary", summary);
         model.addAttribute("rangeTypes", RangeType.values());
         getDeviceResults(model, sorting, paging, userContext, deviceGroup, deviceSubGroups, includeDisabled, ranges, selectedGatewayIds);
-        model.addAttribute("gateways", gateways);
 
         return "dataCollection/detail.jsp";
     }
@@ -154,6 +152,7 @@ public class DataCollectionController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
+        List<RfnGateway> gateways = recentPointValueDao.getRfnGatewayList(group, subGroups, includeDisabled);
         if (ranges == null) {
             ranges = RangeType.values();
         }
@@ -165,13 +164,12 @@ public class DataCollectionController {
         model.addAttribute("includeDisabled", includeDisabled);
         model.addAttribute("ranges", ranges);
         model.addAttribute("selectedGateways", selectedGatewayIds);
+        model.addAttribute("gateways", gateways);
 
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         SearchResults<DeviceCollectionDetail> detail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled, 
                                                              selectedGatewayIds, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
-
-        gateways = recentPointValueDao.getRfnGatewayList(group, subGroups, includeDisabled);
 
         for (DetailSortBy column : DetailSortBy.values()) {
             String text = accessor.getMessage(column);

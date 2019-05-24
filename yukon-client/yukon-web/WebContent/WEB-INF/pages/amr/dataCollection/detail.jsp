@@ -74,7 +74,7 @@
                                         <c:set var="checked" value="selected='selected'"/>
                                     </c:if>
                                 </c:forEach>
-                                <option value="${gateway.id}" ${checked}>${gateway.name}</option>
+                                <option value="${gateway.id}" ${checked}>${fn:escapeXml(gateway.name)}</option>
                             </c:forEach>
                         </select>
                     </tags:nameValue2>
