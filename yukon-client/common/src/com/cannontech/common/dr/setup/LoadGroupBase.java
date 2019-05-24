@@ -1,8 +1,7 @@
 package com.cannontech.common.dr.setup;
 
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.model.CompleteLoadGroupBase;
+import com.cannontech.database.data.device.lm.LMGroup;
 
 public class LoadGroupBase {
 
@@ -61,29 +60,16 @@ public class LoadGroupBase {
         this.id = id;
     }
     
-    public static LoadGroupBase of(CompleteLoadGroupBase loadGroup) {
+    public static LoadGroupBase of(LMGroup loadGroup) {
         LoadGroupBase group = new LoadGroupBase();
-        group.setName(loadGroup.getPaoName());
-        group.setId(loadGroup.getPaObjectId());
+        group.setName(loadGroup.getPAOName());
+        group.setId(loadGroup.getPAObjectID());
         group.setType(loadGroup.getPaoType());
-        group.setkWCapacity(loadGroup.getkWCapacity());
-        group.setDisableControl(loadGroup.isControlInhibit());
+        group.setkWCapacity(loadGroup.getLmGroup().getKwCapacity());
+        boolean disableControl = loadGroup.getDevice().getControlInhibit() == 'N' ? false : true;
+        group.setDisableControl(disableControl);
         group.setDisableGroup(loadGroup.isDisabled());
-        
-        return group;
-    }
-    
-    public CompleteLoadGroupBase asCompletePao() {
-        CompleteLoadGroupBase completeLoadGroup = new CompleteLoadGroupBase();
-        if (id != null) {
-            PaoIdentifier paoId = new PaoIdentifier(id, type);
-            completeLoadGroup.setPaoIdentifier(paoId);
-        }
-        completeLoadGroup.setPaoName(name);
-        completeLoadGroup.setDisabled(disableGroup);
-        completeLoadGroup.setControlInhibit(disableControl);
-        completeLoadGroup.setkWCapacity(kWCapacity);
 
-        return completeLoadGroup;
+        return group;
     }
 }

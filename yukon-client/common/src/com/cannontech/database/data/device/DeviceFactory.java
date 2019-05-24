@@ -25,6 +25,7 @@ import com.cannontech.database.data.device.lm.LMGroupGolay;
 import com.cannontech.database.data.device.lm.LMGroupHoneywell;
 import com.cannontech.database.data.device.lm.LMGroupItron;
 import com.cannontech.database.data.device.lm.LMGroupMCT;
+import com.cannontech.database.data.device.lm.LMGroupMeterDisconnect;
 import com.cannontech.database.data.device.lm.LMGroupNest;
 import com.cannontech.database.data.device.lm.LMGroupPlcExpressCom;
 import com.cannontech.database.data.device.lm.LMGroupPoint;
@@ -422,6 +423,9 @@ public final class DeviceFactory {
         case MACRO_GROUP:
             returnDevice = new MacroGroup();
             break;
+        case LM_GROUP_METER_DISCONNECT:
+            returnDevice = new LMGroupMeterDisconnect();
+            break;    
 
         case CAPBANK:
             returnDevice = new CapBank();

@@ -33,7 +33,6 @@
                 <value>com.cannontech.common.pao.model.CompleteZbEndpoint</value>
                 <value>com.cannontech.common.pao.model.CompleteWeatherLocation</value>
                 <value>com.cannontech.common.pao.model.CompleteHoneywellWifiThermostat</value>
-                <value>com.cannontech.common.pao.model.CompleteLoadGroupBase</value>
             </set>
         </constructor-arg>
         <constructor-arg name="paoPartClasses">

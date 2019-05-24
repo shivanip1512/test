@@ -45,8 +45,8 @@ public class LoadGroupSetupRestController {
     @PostMapping("/save")
     public ResponseEntity<Object> save(@Valid @RequestBody LoadGroupBase loadGroup) {
         try {
-            PaoIdentifier pao = loadGroupService.save(loadGroup);
-            return new ResponseEntity<>(pao.getPaoId(), HttpStatus.OK);
+            int paoId = loadGroupService.save(loadGroup);
+            return new ResponseEntity<>(paoId, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Exception while saving load group details " + e);
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, "Exception in saving group", e);
