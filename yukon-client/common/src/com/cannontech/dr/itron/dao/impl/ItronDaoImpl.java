@@ -39,8 +39,8 @@ public class ItronDaoImpl implements ItronDao {
     public List<Long> getAllItronGroupIds() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ItronGroupId");
-        sql.append("WHERE ItronGroupId IS NOT NULL");
         sql.append("FROM LMGroupItronMapping");
+        sql.append("WHERE ItronGroupId IS NOT NULL");
         return jdbcTemplate.query(sql, TypeRowMapper.LONG);
     }
 
