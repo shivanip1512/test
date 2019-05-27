@@ -70,6 +70,8 @@
 <entry key="yukon.exception.processingException.INVALID_CHARS">Name cannot include any of the following characters: / \ , ' " |</entry>
 <entry key="yukon.exception.processingException.INVALID_CONFIG_ADD">Unable to attach configuration "{2}" to {1}. Using the default configuration instead.</entry>
 <entry key="yukon.exception.processingException.INVALID_CONFIG_UPDATE">Unable to attach configuration "{2}" to {1}. Existing configuration still in use.</entry>
+<entry key="yukon.exception.processingException.latitude.numberError">Latitude must be numeric.</entry>
+<entry key="yukon.exception.processingException.longitude.numberError">Longitude must be numeric.</entry>
 
 <entry key="yukon.exception.deviceCreationException.invalidChars">Device name cannot be blank or include any of the following characters: / \\ ,\" ' |</entry>
 <entry key="yukon.exception.deviceCreationException.invalidCharacters">Device name cannot be blank or include any of the following characters: {0}</entry>

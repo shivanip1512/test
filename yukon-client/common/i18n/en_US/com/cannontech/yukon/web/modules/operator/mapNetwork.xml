@@ -91,6 +91,8 @@
     <entry key="yukon.web.modules.operator.mapNetwork.location.changeCoordinates.confirmation">Are you sure you want to update the coordinates to the following?</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.location.latitude">Latitude</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.location.longitude">Longitude</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.location.latitude.numberError">Latitude must be Numeric.</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.location.longitude.numberError">Longitude must be Numeric.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.location.notSet">(no location set)</entry>
     
     <entry key="yukon.web.modules.operator.mapNetwork.location"><![CDATA[Location <em class="subtle">(optional)</em>]]></entry>

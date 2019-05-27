@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.events.loggers.EndpointEventLogService;
@@ -11,11 +13,13 @@ import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.model.DistanceUnit;
+import com.cannontech.common.pao.model.GPS;
 import com.cannontech.common.pao.model.PaoDistance;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
@@ -69,5 +73,27 @@ public class LocationServiceImpl implements LocationService{
         Collections.sort(nearby, ON_DISTANCE);
         
         return nearby;
+    }
+    /**
+     * Returns GPS object if latitude and longitude contains number else throw StarsInvalidArgumentException
+     */
+    public static GPS isValidLocationFormat(String latitude, String longitude) {
+        GPS gps = new GPS();
+        boolean isvalidLatitude = NumberUtils.isNumber(latitude);
+        boolean isvalidLongitude = NumberUtils.isNumber(longitude);
+        if (!(isvalidLatitude || isvalidLongitude)) {
+            throw new StarsInvalidArgumentException("Latitude and Longitude must be Numeric.");
+        }
+        if (isvalidLatitude) {
+            gps.setLatitude(StringUtils.isNotBlank(latitude) ? Double.valueOf(latitude) : null);
+        } else {
+            throw new StarsInvalidArgumentException("Latitude must be Numeric.");
+        }
+        if (isvalidLongitude) {
+            gps.setLongitude(StringUtils.isNotBlank(longitude) ? Double.valueOf(longitude) : null);
+        } else {
+            throw new StarsInvalidArgumentException("Longitude must be Numeric.");
+        }
+        return gps;
     }
 }

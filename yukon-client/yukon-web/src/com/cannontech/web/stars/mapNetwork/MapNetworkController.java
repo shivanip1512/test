@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -110,39 +111,56 @@ public class MapNetworkController {
         return "mapNetwork/home.jsp";
     }
     
-    @RequestMapping(value="saveCoordinates")
+    @RequestMapping(value = "saveCoordinates", method = RequestMethod.POST)
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
-    public String saveCoordinates(HttpServletResponse resp, @RequestParam("deviceId") int deviceId, @RequestParam("latitude") Double latitude, 
-                  @RequestParam("longitude") Double longitude, FlashScope flash, YukonUserContext userContext) throws ServletException {
+    public String saveCoordinates(HttpServletResponse resp, HttpServletRequest request,
+            @ModelAttribute("location") Location location, BindingResult bindingResult, FlashScope flash,
+            YukonUserContext userContext) throws ServletException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         boolean errorFound = false;
-        Location target = new Location();
-        target.setLatitude(latitude);
-        target.setLongitude(longitude);
-        DataBinder binder = new DataBinder(target);
+        String errorMsg = StringUtils.EMPTY;
+        if (bindingResult.hasErrors()) {
+            if (bindingResult.hasFieldErrors("latitude")) {
+                json.put("error", true);
+                json.put("latError", true);
+                errorMsg = accessor.getMessage(nameKey + "location.latitude.numberError");
+            }
+            if (bindingResult.hasFieldErrors("longitude")) {
+                json.put("error", true);
+                json.put("lonError", true);
+                errorMsg = errorMsg + accessor.getMessage(nameKey + "location.longitude.numberError");
+            }
+        }
+        if (!errorMsg.isEmpty()) {
+            json.put("errorMessages", errorMsg);
+            return JsonUtils.writeResponse(resp, json);
+        }
+        DataBinder binder = new DataBinder(location);
         binder.setValidator(locationValidator);
         binder.validate();
         BindingResult results = binder.getBindingResult();
         List<String> errorMessages = new ArrayList<>();
         results.getAllErrors().stream().forEach(e -> errorMessages.add(accessor.getMessage(e.getCode())));
-        if (errorMessages.size()!=0) {
-           errorFound = true; 
+
+        if (errorMessages.size() != 0) {
+            errorFound = true;
         }
         if (!errorFound) {
-            if (latitude == null && longitude == null) {
-                paoLocationService.deleteLocationForPaoId(deviceId);
+            if (location.getLatitude() == null && location.getLongitude() == null) {
+                paoLocationService.deleteLocationForPaoId(location.getPaoId());
             } else {
-                paoLocationService.saveLocationForPaoId(deviceId, latitude, longitude);
+                paoLocationService.saveLocationForPaoId(location.getPaoId(), location.getLatitude(),
+                    location.getLongitude());
             }
             flash.setConfirm(new YukonMessageSourceResolvable(nameKey + "location.update.successful"));
             json.put("success", true);
         } else {
-            json.put("error",  true);
-            json.put("errorMessages",  StringUtils.join(errorMessages, " "));
+            json.put("error", true);
+            json.put("errorMessages", StringUtils.join(errorMessages, " "));
         }
 
-        return JsonUtils.writeResponse(resp, json);    
+        return JsonUtils.writeResponse(resp, json);
     }
     
     @RequestMapping("parentNode")

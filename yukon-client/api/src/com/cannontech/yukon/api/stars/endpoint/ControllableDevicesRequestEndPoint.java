@@ -14,6 +14,7 @@ import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.pao.model.GPS;
+import com.cannontech.common.pao.service.impl.LocationServiceImpl;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -382,14 +383,14 @@ public class ControllableDevicesRequestEndPoint {
             } else if (parentLatitude != null && parentLongitude == null) {
                 throw new StarsClientRequestException("Longitude Field is required in GPS parent field");
             } else {
-                gps = buildGps(template.evaluateAsDouble(parentLatitudeStr, Double.NaN),
-                    template.evaluateAsDouble(parentLongitudeStr, Double.NaN));
+                GPS location = LocationServiceImpl.isValidLocationFormat(template.evaluateAsString(parentLatitudeStr),
+                    template.evaluateAsString(parentLongitudeStr));
+                gps = buildGps(location.getLatitude(), location.getLongitude());
             }
-
         }
         return gps;
     }
-
+    
     /**
      * Returns GPS object when both latitude and longitude are not <code>null<code>, else return <code>null<code>.
      */

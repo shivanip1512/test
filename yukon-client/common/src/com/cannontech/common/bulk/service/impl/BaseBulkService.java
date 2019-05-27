@@ -15,6 +15,7 @@ import java.util.UUID;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.TypeMismatchException;
@@ -59,6 +60,7 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.web.input.Input;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputSource;
@@ -383,69 +385,82 @@ public abstract class BaseBulkService {
         this.temporaryDeviceGroupService = temporaryDeviceGroupService;
     }
 
-    public static UpdateableDevice setupUpdateableDevice(String[] row, SimpleDevice device, List<BulkField<?, SimpleDevice>> bulkFields, Map<BulkField<?, SimpleDevice>, Integer> bulkFieldIndexMap) {
+    public static UpdateableDevice setupUpdateableDevice(String[] row, SimpleDevice device,
+            List<BulkField<?, SimpleDevice>> bulkFields, Map<BulkField<?, SimpleDevice>, Integer> bulkFieldIndexMap) {
 
         UpdateableDevice updateableDevice = null;
-        
+
         try {
-            
+
             Map<String, String> valueMap = new HashMap<String, String>();
             List<Input<?>> inputList = new ArrayList<Input<?>>();
-    
+
             for (BulkField<?, SimpleDevice> bulkField : bulkFields) {
-    
+
                 try {
-                    
+
                     int fieldIndex = bulkFieldIndexMap.get(bulkField);
                     String fieldStringValue = StringUtils.trim(row[fieldIndex]);
-        
+
                     InputSource<?> inputSource = bulkField.getInputSource();
                     inputList.add(inputSource);
-                    
+
                     // normalized blank data
                     // if its blank and is to be ignored, set to null
                     // if its blank and blank handling is not applicable, set to null
-                    // if its lat/long and it contains DELETE/NULL, set to null so that location will be removed
-                    // if its lat/long and it is empty(After trimming), set to Double.NaN so that location will not be removed
+                    // if its lat/long and it contains DELETE/NULL, set to null so that location will be
+                    // removed
+                    // if its lat/long and it is empty(After trimming), set to Double.NaN so that location
+                    // will not be removed
                     // otherwise set as-is
                     BlankHandlingEnum blankHandlingEnum = bulkField.getBlankHandlingEnum();
                     if (StringUtils.isBlank(fieldStringValue)
-                        && (blankHandlingEnum.equals(BlankHandlingEnum.IGNORE_BLANK) || blankHandlingEnum.equals(BlankHandlingEnum.NOT_APPLICABLE))) {
+                        && (blankHandlingEnum.equals(BlankHandlingEnum.IGNORE_BLANK)
+                            || blankHandlingEnum.equals(BlankHandlingEnum.NOT_APPLICABLE))) {
                         fieldStringValue = null;
-                    } else if ((bulkField instanceof NameBulkField)
-                        && !(PaoUtils.isValidPaoName(fieldStringValue))) {
-                        throw new DeviceCreationException("Device name cannot include any of the following characters " + String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS),"invalidCharacters", String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS));
+                    } else if ((bulkField instanceof NameBulkField) && !(PaoUtils.isValidPaoName(fieldStringValue))) {
+                        throw new DeviceCreationException(
+                            "Device name cannot include any of the following characters "
+                                + String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS),
+                            "invalidCharacters", String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS));
                     } else if ((bulkField instanceof LatitudeBulkField || bulkField instanceof LongitudeBulkField)) {
                         if ("DELETE".equalsIgnoreCase(fieldStringValue) || "NULL".equalsIgnoreCase(fieldStringValue)) {
                             fieldStringValue = null;
                         } else if (StringUtils.isEmpty(fieldStringValue)) {
                             fieldStringValue = Double.toString(LatitudeLongitudeBulkFieldProcessor.IGNORE_FIELD);
                         }
+                        if (bulkField instanceof LatitudeBulkField && !NumberUtils.isNumber(fieldStringValue)) {
+                            throw new ProcessingException("Latitude field must be Numeric.", "latitude.numberError");
+                        }
+                        if (bulkField instanceof LongitudeBulkField && !NumberUtils.isNumber(fieldStringValue)) {
+                            throw new ProcessingException("Longitude field must be Numeric.", "longitude.numberError");
+                        }
+
                     }
 
                     valueMap.put(inputSource.getField(), fieldStringValue);
-                
+
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    throw new DeviceCreationException("Incomplete row.","incompleteRow", e);
+                    throw new DeviceCreationException("Incomplete row.", "incompleteRow", e);
                 }
             }
-    
+
             // make InputRoot obj
             InputRoot inputRoot = new InputRoot();
             inputRoot.setInputList(inputList);
-    
+
             // apply values to dto
             YukonDeviceDto yukonDeviceDtoObj = new YukonDeviceDto();
             InputUtil.applyProperties(inputRoot, yukonDeviceDtoObj, valueMap);
-    
+
             // updateableDevice
             updateableDevice = new UpdateableDevice();
             updateableDevice.setDeviceDto(yukonDeviceDtoObj);
             updateableDevice.setDevice(device);
-            
-        }
-        catch (TypeMismatchException e) {
-            throw new ObjectMappingException("Contains invalid value: " + (e.getValue() == null ? "":e.getValue()), "invalidValue", (e.getValue() == null ? "":e.getValue()), e);
+
+        } catch (TypeMismatchException e) {
+            throw new ObjectMappingException("Contains invalid value: " + (e.getValue() == null ? "" : e.getValue()),
+                "invalidValue", (e.getValue() == null ? "" : e.getValue()), e);
         }
 
         return updateableDevice;

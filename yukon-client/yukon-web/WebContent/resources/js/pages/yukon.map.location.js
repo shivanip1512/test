@@ -21,14 +21,27 @@ yukon.map.location = (function () {
             if (_initialized) return;
 
             $(document).on('click', '.js-save-coordinates', function() {
-                var deviceId = $('.js-device-id').val(),
-                latitude = $('.js-latitude-input').val(),
-                longitude = $('.js-longitude-input').val();
+            	var location = {
+            			paoId : $('.js-device-id').val(),
+            			latitude : $('.js-latitude-input').val(),
+            			longitude : $('.js-longitude-input').val()
+            		}
                 $.ajax({
-                    url: yukon.url('/stars/mapNetwork/saveCoordinates?' + $.param({ deviceId: deviceId, latitude: latitude, longitude: longitude })),
+                	type: "POST",
+                    url: yukon.url('/stars/mapNetwork/saveCoordinates'),
+                    data: location,
                     success: function(results) {
+                    	$('.js-latitude-input').removeClass("error");
+                    	$('.js-longitude-input').removeClass("error");
                         if (results.error) {
+                            yukon.ui.removeAlerts();
                             $('.js-location-error').html(results.errorMessages);
+                            if(results.latError){
+                                $('.js-latitude-input').addClass("error");
+                            }
+                            if(results.lonError){
+                                $('.js-longitude-input').addClass("error");
+                            }
                         } else {
                             window.location.reload();
                         }
