@@ -11,6 +11,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.pao.model.GPS;
+import com.cannontech.common.pao.service.impl.LocationServiceImpl;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
@@ -157,15 +158,15 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
             dto.setGps(gps);
         }
     }
-    /** 
+
+    /**
      * Returns GPS object when both latitude and longitude are not blank, else return <code>null<code>.
      */
     private static GPS getLocationGps(String[] hwFields) {
         // If both are blank, return null else return GPS object(Example: lat: Blank, long : Invalid)
         if (StringUtils.isNotBlank(hwFields[ImportFields.IDX_LATITUDE])
             || StringUtils.isNotBlank(hwFields[ImportFields.IDX_LONGITUDE])) {
-            Double lat = null;
-            Double lon = null;
+            GPS gps=new GPS(null,null);
 
             if (("DELETE".equalsIgnoreCase(hwFields[ImportFields.IDX_LATITUDE])
                 || "NULL".equalsIgnoreCase(hwFields[ImportFields.IDX_LATITUDE]))
@@ -175,14 +176,9 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
                 // do nothing, use null default
             } else {
                 // this could have parse exception I think, which will catch any case but DELETE or NULL (as
-                // above if check)
-                lat = StringUtils.isNotBlank(hwFields[ImportFields.IDX_LATITUDE])
-                    ? Double.valueOf(hwFields[ImportFields.IDX_LATITUDE]) : null;
-                lon = StringUtils.isNotBlank(hwFields[ImportFields.IDX_LONGITUDE])
-                    ? Double.valueOf(hwFields[ImportFields.IDX_LONGITUDE]) : null;
+                // above if check)      
+                gps =LocationServiceImpl.isValidLocationFormat(hwFields[ImportFields.IDX_LATITUDE], hwFields[ImportFields.IDX_LONGITUDE]);
             }
-
-            GPS gps = new GPS(lat, lon);
             return gps;
         }
         return null;
