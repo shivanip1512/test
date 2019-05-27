@@ -2,6 +2,8 @@ package com.cannontech.web.dr.setup;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -39,6 +41,7 @@ import com.google.common.collect.Lists;
 public class LoadGroupSetupController {
     
     private static final String baseKey = "yukon.web.modules.dr.setup.loadGroup.";
+    private static final String drLoadGroupBaseUrl = "/setup/loadGroup/";
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
     
     @Autowired private RestTemplate drRestTemplate;
@@ -58,9 +61,10 @@ public class LoadGroupSetupController {
     }
 
     @GetMapping("/{id}")
-    public String view(ModelMap model, @PathVariable int id, FlashScope flash) {
+    public String view(ModelMap model, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.VIEW);
-        LoadGroupBase loadGroup = retrieveGroup(id);
+        String url = helper.getApiURL(request, request.getPathInfo());
+        LoadGroupBase loadGroup = retrieveGroup(id, url);
         if (loadGroup == null) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
             return "redirect:/dr/setup/list";
@@ -70,9 +74,10 @@ public class LoadGroupSetupController {
     }
 
     @GetMapping("/{id}/edit")
-    public String edit(ModelMap model, @PathVariable int id, FlashScope flash) {
+    public String edit(ModelMap model, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        LoadGroupBase loadGroup = retrieveGroup(id);
+        String url = helper.getApiURL(request, drLoadGroupBaseUrl + id);
+        LoadGroupBase loadGroup = retrieveGroup(id, url);
         if (loadGroup == null) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
             return "redirect:/dr/setup/list";
@@ -86,12 +91,12 @@ public class LoadGroupSetupController {
     }
     
     @PostMapping("/save")
-    public String save(@ModelAttribute LoadGroupBase loadGroup, BindingResult result, FlashScope flash, RedirectAttributes redirectAttributes) {
+    public String save(@ModelAttribute LoadGroupBase loadGroup, BindingResult result, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<LoadGroupBase> requestEntity = new HttpEntity<LoadGroupBase>(loadGroup, headers);
-        String url = "http://localhost:8080/yukon/dr/api/setup/loadGroup/save";
+        String url = helper.getApiURL(request, request.getPathInfo());
 
         try {
             ResponseEntity<Object> response = drRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Object.class);
@@ -114,10 +119,9 @@ public class LoadGroupSetupController {
     }
     
     /* Make a rest call for retrieving group */
-    private LoadGroupBase retrieveGroup(int id) {
+    private LoadGroupBase retrieveGroup(int id, String url) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        String url = "http://localhost:8080/yukon/dr/api/setup/loadGroup/" + id;
         LoadGroupBase loadGroup = null;
         try {
             ResponseEntity<LoadGroupBase> response = drRestTemplate.getForEntity(url, LoadGroupBase.class);

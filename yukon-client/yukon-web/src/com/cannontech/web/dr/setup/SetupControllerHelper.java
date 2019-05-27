@@ -3,6 +3,8 @@ package com.cannontech.web.dr.setup;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -29,6 +31,14 @@ public class SetupControllerHelper {
             error.reject(((LinkedHashMap<?, ?>) e).get("code").toString());
         });
         result.addAllErrors(error);
+    }
+
+    public String getApiURL(HttpServletRequest request, String pathURL) {
+        StringBuffer baseURL = request.getRequestURL();
+        String apiURL;
+        apiURL = baseURL.substring(0, baseURL.indexOf(request.getPathInfo()));
+        apiURL = apiURL + "/api" + pathURL;
+        return apiURL;
     }
 
 }
