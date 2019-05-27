@@ -154,8 +154,8 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
                     logService.importCompleted(accessor.getMessage(baseKey + "dataImportSchedule") + " - " + accessor.getMessage(typeKey + "ASSET_IMPORT"),
                         path.getFileName().toString(), fileImportResult.getSuccessCount(), fileImportResult.getFailureCount());
                 });
-            } catch (IOException e) {
-                log.error("Error occured while processing files due to I/O errors: " + e);
+            } catch (Exception e) {
+                log.error("Error occured while processing files: " + e);
                 logService.scheduleImportError(scheduleName, accessor.getMessage(typeKey + "ASSET_IMPORT"),
                     e.toString());
             }
