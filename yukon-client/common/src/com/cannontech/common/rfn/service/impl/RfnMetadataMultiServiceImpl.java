@@ -51,17 +51,16 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(EntityType entity, Set<RfnIdentifier> identifiers,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException {
         BlockingJmsReplyHandler<RfnMetadataMultiResponse> reply = new BlockingJmsReplyHandler<>(RfnMetadataMultiResponse.class);
-        
-        int chunkSize = RfnMetadataMulti.getChunkSize(requests);
-        List<List<RfnIdentifier>> parts = Lists.partition(new ArrayList<>(identifiers), chunkSize);
-        
+        log.debug("identifiers {}", identifiers.size());
+        List<List<RfnIdentifier>> parts = Lists.partition(Lists.newArrayList(identifiers), RfnMetadataMulti.getChunkSize(requests));
+        log.debug("parts {}", parts.size());
         int requestIdentifier = nextValueHelper.getNextValue("RfnMetadataMultiRequest");
         
         NmCommunicationException exception = null;
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> result = new HashMap<>();
         for (int i = 0; i < parts.size(); i++) {
             try {
-                result.putAll(getMetaData(entity, identifiers, requests, reply, requestIdentifier + "-" +(i +1)));
+                result.putAll(getMetaData(entity, parts.get(i), requests, reply, requestIdentifier + "-" +(i +1)));
             } catch (NmCommunicationException e) {
                 exception = e;
             }
@@ -79,19 +78,20 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
      * return meta data for a "chunk" of identifiers
      */
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetaData(EntityType entity,
-            Set<RfnIdentifier> identifiers, Set<RfnMetadataMulti> requests,
+            List<RfnIdentifier> identifiers, Set<RfnMetadataMulti> requests,
             BlockingJmsReplyHandler<RfnMetadataMultiResponse> reply, String requestIdentifier)
             throws NmCommunicationException {
         try {
             RfnMetadataMultiRequest request = new RfnMetadataMultiRequest(entity);
             request.setRequestID(requestIdentifier);
-            request.setRfnIdentifiers(identifiers);
+            request.setRfnIdentifiers(Sets.newHashSet(identifiers));
             request.setRfnMetadatas(requests);
-            log.debug("RfnMetadataMultiRequest identifier: {}", requestIdentifier);
+            log.debug("RfnMetadataMultiRequest identifier {} metadatas {} rfn ids {}", requestIdentifier, requests,
+                identifiers.size());
             qrTemplate.send(request, reply);
             RfnMetadataMultiResponse response = reply.waitForCompletion();
-            log.debug("RfnMetadataMultiRequest identifier: {} response: {}", requestIdentifier, response.getResponseType());
-                        
+            log.debug("RfnMetadataMultiResponse identifier {} response {}", requestIdentifier, response.getResponseType());
+              
             if (response.getResponseType() == RfnMetadataMultiResponseType.OK) {
                 updatePrimaryGatewayToDeviceMapping(response);
                 return response.getQueryResults();

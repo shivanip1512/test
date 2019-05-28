@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.google.common.collect.Lists;
 
 public class NetworkMapFilter {
 
@@ -73,17 +74,22 @@ public class NetworkMapFilter {
     }
     
     public enum LinkStrength {
-        GOOD(Color.GREEN),
-        OK(Color.BLUE),
-        WEAK(Color.ORANGE),
-        UNVERIFIED(Color.GREY);
+        GOOD(Color.GREEN, Lists.newArrayList(1,2)),
+        OK(Color.BLUE, Lists.newArrayList(3)),
+        WEAK(Color.ORANGE, Lists.newArrayList(4,5)),
+        UNVERIFIED(Color.GREY, Lists.newArrayList());
         
         private Color color;
-        LinkStrength(Color color) {
+        private List<Integer> linkStrength;
+        LinkStrength(Color color, List<Integer> linkStrength) {
             this.color = color;
+            this.linkStrength = linkStrength;
         }
         public Color getColor() {
             return color;
+        }
+        public boolean containsLinkStrength(float linkStrength) {
+            return this.linkStrength.contains((int)linkStrength);
         }
     }
     

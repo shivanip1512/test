@@ -1,6 +1,7 @@
 package com.cannontech.web.tools.mapping.service;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
@@ -54,7 +55,7 @@ public interface NmNetworkService {
     
     /**
      * Returns a network map representation (legend and a list of devices by color).
-     * @throws NmNetworkException 
+     * @throws NmNetworkException, nmCommunicationException  
      */
-    NetworkMap getNetworkMap(NetworkMapFilter filter) throws NmNetworkException;
+    NetworkMap getNetworkMap(NetworkMapFilter filter) throws NmNetworkException, NmCommunicationException;
 }

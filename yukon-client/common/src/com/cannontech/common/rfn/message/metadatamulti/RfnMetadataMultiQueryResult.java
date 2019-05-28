@@ -47,6 +47,11 @@ public class RfnMetadataMultiQueryResult implements Serializable {
     public void setMetadatas(Map<RfnMetadataMulti, Object> metadatas) {
         this.metadatas = metadatas;
     }
+    
+    public boolean isValidResultForMulti(RfnMetadataMulti multi) {
+       return this.getResultType() == RfnMetadataMultiQueryResultType.OK
+                && this.getMetadatas() != null && this.getMetadatas().containsKey(multi);
+    }
 
     @Override
     public int hashCode() {

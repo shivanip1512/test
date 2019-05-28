@@ -51,7 +51,7 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
             log.trace("Sending requestMessage to producer " + requestMessage.toString());
         }
         if (rfnLogger.isInfoEnabled()) {
-            rfnLogger.info("<<< " + requestPayload.toString());
+           // rfnLogger.info("<<< " + requestPayload.toString());
         }
         producer.send(requestMessage);
         

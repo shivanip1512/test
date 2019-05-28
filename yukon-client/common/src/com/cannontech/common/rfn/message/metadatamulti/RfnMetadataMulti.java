@@ -59,7 +59,7 @@ public enum RfnMetadataMulti implements Serializable {
     //             RfnMetadata.NODE_ADDRESS
     //             RfnMetadata.NODE_FIRMWARE_VERSION
     //             RfnMetadata.NODE_TYPE
-    NODE_DATA(NodeData.class, 1, EntityType.NODE),
+    NODE_DATA(NodeData.class, 1000, EntityType.NODE),
 
     // This replaces RfnMetadata.NUM_ASSOCIATIONS
     // null indicates the meter doesn't support battery node association.

@@ -68,9 +68,9 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
                 try {
                     JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
                     if (!internalMessage && rfnLogger.isInfoEnabled()) {
-                        rfnLogger.info("<<< " + requestPayload.toString());
+                       // rfnLogger.info("<<< " + requestPayload.toString());
                     } else if (internalMessage && rfnLogger.isDebugEnabled()) {
-                        rfnLogger.debug("<<< " + requestPayload.toString());
+                       // rfnLogger.debug("<<< " + requestPayload.toString());
                     }
                     if (log.isTraceEnabled()) {
                         log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
