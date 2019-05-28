@@ -65,16 +65,17 @@ public class LmDeviceDtoConverterImplTest {
     }
 
     @Test(expected = StarsInvalidArgumentException.class)
-    public void testIsInValidLatitude() throws Exception {
+    public void test_invalidLatitude_forString() {
         String[] locationData = new String[29];
-
-        locationData[27] = null;
-        locationData[28] = Double.toString(160.00);
-        ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
 
         locationData[27] = "xyz";
         locationData[28] = Double.toString(160.00);
         ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+    }
+
+    @Test(expected = StarsInvalidArgumentException.class)
+    public void test_invalidLatitude_forNaN() {
+        String[] locationData = new String[29];
 
         locationData[27] = Double.toString(Double.NaN);
         locationData[28] = Double.toString(160.00);
@@ -82,43 +83,75 @@ public class LmDeviceDtoConverterImplTest {
     }
 
     @Test(expected = StarsInvalidArgumentException.class)
-    public void testIsInValidLongitude() throws Exception {
+    public void test_invalidLatitude_forNull() {
         String[] locationData = new String[29];
 
-        locationData[27] = Double.toString(70.00);
-        locationData[28] = null;
+        locationData[27] = null;
+        locationData[28] = Double.toString(160.00);
         ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+    }
+
+    @Test(expected = StarsInvalidArgumentException.class)
+    public void test_invalidLongitude_forString() {
+        String[] locationData = new String[29];
 
         locationData[27] = Double.toString(45.00);
         locationData[28] = "xyz";
         ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+    }
+
+    @Test(expected = StarsInvalidArgumentException.class)
+    public void test_invalidLongitude_forNaN() {
+        String[] locationData = new String[29];
 
         locationData[27] = Double.toString(45.00);
         locationData[28] = Double.toString(Double.NaN);
         ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
-
     }
 
     @Test(expected = StarsInvalidArgumentException.class)
-    public void testIsInValidLatitudeandLongitude() {
+    public void test_invalidLongitude_forNull() {
+        String[] locationData = new String[29];
+
+        locationData[27] = Double.toString(45.00);
+        locationData[28] = null;
+        ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+    }
+
+    @Test(expected = StarsInvalidArgumentException.class)
+    public void test_invalidLatitudeandLongitude_forString() {
         String[] locationData = new String[29];
 
         locationData[27] = "xyz";
         locationData[28] = "xyz";
         ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+    }
+
+    @Test(expected = StarsInvalidArgumentException.class)
+    public void test_invalidLatitudeandLongitude_forNaN() {
+        String[] locationData = new String[29];
 
         locationData[27] = Double.toString(Double.NaN);
         locationData[28] = Double.toString(Double.NaN);
         ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+    }
+
+    @Test(expected = StarsInvalidArgumentException.class)
+    public void test_invalidLatitudeandLongitude_forNaNandNull() {
+        String[] locationData = new String[29];
 
         locationData[27] = Double.toString(Double.NaN);
         locationData[28] = null;
         ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+    }
+
+    @Test(expected = StarsInvalidArgumentException.class)
+    public void test_invalidLatitudeandLongitude_forNullandNaN() {
+        String[] locationData = new String[29];
 
         locationData[27] = null;
         locationData[28] = Double.toString(Double.NaN);
         ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
-
     }
 
 }
