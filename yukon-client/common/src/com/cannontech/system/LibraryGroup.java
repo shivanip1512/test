@@ -36,6 +36,7 @@ public enum LibraryGroup {
     SCHEDULING("Scheduling"),
     SPRING("Spring"),
     SPRING_WEB_SERVICES("Spring Web Services"),
+    SPRING_REST_SERVICES("Spring Rest Services"),
     SQL("SQL"),
     SUPPORT_BUNDLE("Support bundle"),
     SWING_EVENTS("Swing events"),
