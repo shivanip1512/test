@@ -6,8 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,8 +44,8 @@ public class LoadGroupSetupController {
     private static final String drLoadGroupBaseUrl = "/setup/loadGroup/";
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
     
-    @Autowired private RestTemplate apiRestTemplate;
     @Autowired private ApiControllerHelper helper;
+    @Autowired private APIRequestHelper apiRequestHelper;
 
     @GetMapping("/create")
     public String create(ModelMap model) {
@@ -94,13 +92,9 @@ public class LoadGroupSetupController {
     
     @PostMapping("/save")
     public String save(@ModelAttribute LoadGroupBase loadGroup, YukonUserContext userContext, BindingResult result, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
-
-        HttpHeaders headers =  APIRequestHelper.getHttpHeaders(userContext, request);
-        HttpEntity<LoadGroupBase> requestEntity = new HttpEntity<LoadGroupBase>(loadGroup, headers);
         String url = helper.getApiURL(request, request.getPathInfo());
-
         try {
-            ResponseEntity<Object> response = apiRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Object.class);
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, loadGroup);
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadGroup, "loadGroupBase");
                 helper.populateBindingError(result, error, response);
@@ -121,13 +115,11 @@ public class LoadGroupSetupController {
     
     /* Make a rest call for retrieving group */
     private LoadGroupBase retrieveGroup(YukonUserContext userContext, HttpServletRequest request, int id, String url) {
-        HttpHeaders headers =  APIRequestHelper.getHttpHeaders(userContext, request);
         LoadGroupBase loadGroup = null;
         try {
-            ResponseEntity<LoadGroupBase> response =
-                    apiRestTemplate.exchange(url, HttpMethod.GET, new HttpEntity<Object>(headers), LoadGroupBase.class);
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, LoadGroupBase.class);
             if (response.getStatusCode() == HttpStatus.OK) {
-                loadGroup = response.getBody();
+                loadGroup = (LoadGroupBase) response.getBody();
             }
         } catch (RestClientException ex) {
             log.error("Error retrieving load group " + ex);
