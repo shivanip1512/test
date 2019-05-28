@@ -34,20 +34,12 @@ public class ApiControllerHelper {
     }
 
     /**
-     *  Generate dynamic URL for API calls
+     * Generate dynamic URL for API calls
      */
     public String getApiURL(HttpServletRequest request, String pathURL) {
-
-        String url = request.getRequestURL().toString();
-        String baseURL = url.substring(0, url.length() - request.getRequestURI().length());
-        String apiURL;
-        String contextPath = request.getContextPath();
-        if (contextPath.isBlank()) {
-            apiURL = baseURL + "/api" + request.getServletPath() + pathURL;
-        } else {
-            apiURL = baseURL + contextPath + "/api" + request.getServletPath() + pathURL;
-        }
-        apiURL = apiURL.replaceAll("(?<!\\:)/+", "/");
+        StringBuffer baseURL = request.getRequestURL();
+        String apiURL = baseURL.substring(0, baseURL.indexOf(request.getServletPath())) + "/api"
+            + request.getServletPath() + pathURL;
         return apiURL;
     }
 
