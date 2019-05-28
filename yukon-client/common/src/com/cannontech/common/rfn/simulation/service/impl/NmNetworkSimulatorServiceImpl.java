@@ -2,6 +2,7 @@ package com.cannontech.common.rfn.simulation.service.impl;
 
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -339,10 +340,12 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         ObjectMessage requestMessage = (ObjectMessage) metaDataMultiMessage;
                         if (requestMessage.getObject() instanceof RfnMetadataMultiRequest) {
                             RfnMetadataMultiRequest request = (RfnMetadataMultiRequest) requestMessage.getObject();
-                            int randomIdentifier = new Random().nextInt();
-                            log.debug("RfnMetadataMultiRequest identifier: {}", randomIdentifier);
+                            log.debug("RfnMetadataMultiRequest identifier {} metadatas {} rfn ids {}",
+                                request.getRequestID(), request.getRfnIdentifiers().size(), request.getRfnMetadatas());
                             RfnMetadataMultiResponse reply = getMetadataMultiResponse(request);
-                            log.debug("RfnMetadataMultiRequest identifier: {} response: {}", randomIdentifier, reply.getResponseType());
+                            log.debug("RfnMetadataMultiRequest identifier {} metadatas {} rfn ids {} response: {}",
+                                request.getRequestID(), request.getRfnIdentifiers().size(), request.getRfnMetadatas(),
+                                reply.getResponseType());
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
                         }
                     }
@@ -396,7 +399,15 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         nodes.setNodeComms(nodeComms);
                         result.getMetadatas().put(metaData, nodes); 
                         break;
-                  
+                    case PRIMARY_FORWARD_NEIGHBOR_DATA:
+                        //Populate all fields
+                        NeighborData neighborData = new NeighborData();
+                        neighborData.setRfnIdentifier(identifier);
+                        List<Integer> linkCost = Arrays.asList(1, 2, 3, 4, 5);
+                        int randomElement = linkCost.get(new Random().nextInt(linkCost.size()));
+                        neighborData.setNeighborLinkCost((float) randomElement);
+                        result.getMetadatas().put(metaData, neighborData); 
+                        break;
                     default:
                         break;
                     
