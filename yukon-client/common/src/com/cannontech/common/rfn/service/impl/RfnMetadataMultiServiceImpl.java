@@ -52,7 +52,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
             Set<RfnMetadataMulti> requests) throws NmCommunicationException {
         BlockingJmsReplyHandler<RfnMetadataMultiResponse> reply = new BlockingJmsReplyHandler<>(RfnMetadataMultiResponse.class);
         log.debug("identifiers {}", identifiers.size());
-        List<List<RfnIdentifier>> parts = Lists.partition(Lists.newArrayList(identifiers), RfnMetadataMulti.getChunkSize(requests));
+        List<List<RfnIdentifier>> parts = Lists.partition(Lists.newArrayList(identifiers), RfnMetadataMulti.getMaxEntity(requests));
         log.debug("parts {}", parts.size());
         int requestIdentifier = nextValueHelper.getNextValue("RfnMetadataMultiRequest");
         

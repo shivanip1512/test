@@ -128,7 +128,7 @@ public enum RfnMetadataMulti implements Serializable {
         return maxEntity;
     }
     
-    public static int getChunkSize(Set<RfnMetadataMulti> requests) {
+    public static int getMaxEntity(Set<RfnMetadataMulti> requests) {
         return requests.stream()
                 .min(Comparator.comparing(RfnMetadataMulti::getMaxEntity))
                 .get()

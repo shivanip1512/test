@@ -22,6 +22,7 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.NotFoundException;
@@ -78,7 +79,7 @@ public class ComprehensiveMapController {
         NetworkMap map = null;
         try {
             map = nmNetworkService.getNetworkMap(filter);
-        } catch (NmNetworkException e) {
+        } catch (NmNetworkException | NmCommunicationException e) {
             String errorMsg = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.nmError");
             log.error(errorMsg, e);
             json.put("errorMsg", errorMsg);
