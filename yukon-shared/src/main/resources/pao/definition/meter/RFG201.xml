@@ -16,13 +16,6 @@
     </configuration>
     <pointInfos>
         <pointInfo name="Battery Voltage" init="true" attributes="BATTERY_VOLTAGE"/>
-        <pointInfo name="Meter Read - Checksum error" attributes="METER_READ_CHECKSUM_ERROR"/>
-        <pointInfo name="Meter Read - Error reading serial number" attributes="METER_READ_ERROR_READING_SERIAL_NUMBER"/>
-        <pointInfo name="Meter Read - Field exceeded maximum digits" attributes="METER_READ_FIELD_EXCEEDED_MAXIMUM_DIGITS"/>
-        <pointInfo name="Meter Read - No encoder found" attributes="METER_READ_NO_ENCODER_FOUND"/>
-        <pointInfo name="Meter Read - No EOF detected" attributes="METER_READ_NO_EOF_DETECTED"/>
-        <pointInfo name="Meter Read - Parity error" attributes="METER_READ_PARITY_ERROR"/>
-        <pointInfo name="Meter Read - Protocol cannot be determined" attributes="METER_READ_PROTOCOL_CANNOT_BE_DETERMINED"/>
         <pointInfo name="Tamper - Cable Cut" attributes="TAMPER_CABLE_CUT"/>
         <pointInfo name="Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
         <pointInfo name="Gas Usage" init="true" attributes="USAGE_GAS, USAGE"/>
