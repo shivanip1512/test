@@ -2,8 +2,11 @@ package com.cannontech.web.stars.comprehensiveMap;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +25,9 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -46,6 +51,7 @@ public class ComprehensiveMapController {
     @Autowired private NmNetworkService nmNetworkService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private MeterDao meterDao;
+    @Autowired private PaoDao paoDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private static final Logger log = YukonLogManager.getLogger(ComprehensiveMapController.class);
@@ -82,25 +88,32 @@ public class ComprehensiveMapController {
     }
     
     @GetMapping("search")
-    public @ResponseBody Map<String, Object> searchForNode(String searchText) {
-        //search for a Sensor Serial Number with the provided text
+    public @ResponseBody Map<String, Object> searchForNode(String searchText) {        
         Map<String, Object> json = new HashMap<>();
-        Integer deviceId = rfnDeviceDao.findDeviceBySensorSerialNumber(searchText);
-        if (deviceId != null) {
-            json.put("paoId", deviceId);
-            return json;
+        //List<Integer> foundPaoIds = new ArrayList<Integer>();
+        Set<Integer> foundPaoIds = new HashSet<Integer>();
+        //search for a Sensor Serial Number with the provided text
+        Integer sensor = rfnDeviceDao.findDeviceBySensorSerialNumber(searchText);
+        if (sensor != null) {
+            foundPaoIds.add(sensor);
         }
         //search for a Meter Number with the provided text
         try {
             YukonMeter meter = meterDao.getForMeterNumber(searchText);
             if (meter != null) {
-                json.put("paoId", meter.getDeviceId());
-                return json;
+                foundPaoIds.add(meter.getDeviceId());
             }
         } catch (NotFoundException e) {
-            return json;
+            //continue looking for matches
         }
-
+        //search by partial device name
+        List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(searchText, true);
+        if (!paos.isEmpty()) {
+            List<Integer> paoIds = paos.stream().map(pao -> pao.getPaoIdentifier().getPaoId()).collect(Collectors.toList());
+            foundPaoIds.addAll(paoIds);
+        }
+        
+        json.put("paoIds", foundPaoIds);
         return json;
     }
     

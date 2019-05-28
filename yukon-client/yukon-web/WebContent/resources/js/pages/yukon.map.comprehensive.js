@@ -37,8 +37,7 @@ yukon.map.comprehensive = (function () {
     _relayScale = 0.9,
     _gatewayScale = 1,
     
-    _highlightDevice,
-    _highlightOldStyle,
+    _highlightedDevices = [],
         
     /** @type {Object.<number, {ol.Feature}>} - Map of pao id to feature for all device icons. */
     _icons = [], 
@@ -59,7 +58,6 @@ yukon.map.comprehensive = (function () {
     _tiles = yukon.mapping.getTiles(),
     
     _loadDevices = function(color, devices) {
-        var layerIcons = [];
         var source = _map.getLayers().getArray()[_tiles.length].getSource();
         for (x in devices.features) {
             var feature = devices.features[x],
@@ -80,16 +78,15 @@ yukon.map.comprehensive = (function () {
             
             icon.setStyle(currentStyle);
             
-            _setScaleForDevice(icon);
-            
             if (src_projection === _destProjection) {
                 icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
             } else {
                 var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
                 icon.setGeometry(new ol.geom.Point(coord));
             }
+            
+            _setScaleForDevice(icon);
         
-            layerIcons.push(icon);
             _icons.push(icon);
             source.addFeature(icon);
         }
@@ -132,11 +129,13 @@ yukon.map.comprehensive = (function () {
         var currentStyle = feature.getStyle().clone(),
             scale = _deviceScale,
             pao = feature.get('pao');
-        //make larger if relay
+        //make larger and put on top layer if relay or gateway
         if (pao.paoType === 'RFN_RELAY') {
             scale = _relayScale;
+            currentStyle.setZIndex(_relayLayerIndex);
         } else if (pao.paoType === 'RFN_GATEWAY' || pao.paoType === 'GWY800') {
             scale = _gatewayScale;
+            currentStyle.setZIndex(_gatewayLayerIndex);
         }
         currentStyle.getImage().setScale(scale);
         feature.setStyle(currentStyle);
@@ -411,9 +410,13 @@ yukon.map.comprehensive = (function () {
             $("#findDevice").keyup(function(event) {
                 if (event.keyCode === 13) {
                     var searchText = $('#findDevice').val();
-                    //change last found device back
-                    if (_highlightDevice) {
-                        _highlightDevice.setStyle(_highlightOldStyle);
+                    //remove last highlighted devices
+                    if (_highlightedDevices.length > 0) {
+                        var source = _map.getLayers().getArray()[_tiles.length].getSource();
+                        _highlightedDevices.forEach(function(device) {
+                           source.removeFeature(device);
+                        });
+                        _highlightedDevices = [];
                     }
                     var searchError = $('.js-no-results-found');
                     searchError.addClass('dn');
@@ -422,24 +425,35 @@ yukon.map.comprehensive = (function () {
                             url: yukon.url('/stars/comprehensiveMap/search?searchText=' + searchText),
                             type: 'get',
                         }).done( function(data) {
-                            if (data.paoId) {
-                                var source = _map.getLayers().getArray()[_tiles.length].getSource(),
-                                    feature = source.getFeatureById(data.paoId);
-                                if (feature) {
-                                    _highlightDevice = feature;
-                                    _highlightOldStyle = feature.getStyle();
-                                    var largerStyle = feature.getStyle().clone(),
-                                        circleStyle = new ol.style.Style({
-                                        image: new ol.style.Circle({
-                                            radius: 8,
-                                            fill: new ol.style.Fill({color: _routeColor}),
-                                            stroke: new ol.style.Stroke({color: 'black', width: 2}) 
-                                        })
+                            if (data.paoIds) {
+                                var foundADevice = false,
+                                    source = _map.getLayers().getArray()[_tiles.length].getSource();
+                                data.paoIds.forEach(function(paoId) {
+                                    var feature = source.getFeatureById(paoId);
+                                    if (feature) {
+                                        foundADevice = true;
+                                        var clonedFeature = feature.clone(),
+                                            largerStyle = clonedFeature.getStyle().clone(),
+                                            circleStyle = new ol.style.Style({
+                                            image: new ol.style.Circle({
+                                                radius: 8,
+                                                fill: new ol.style.Fill({color: _routeColor}),
+                                                stroke: new ol.style.Stroke({color: 'black', width: 2}) 
+                                            })
+                                        });
+                                        largerStyle.getImage().setScale(_largerScale);
+                                        clonedFeature.setStyle([circleStyle, largerStyle]);
+                                        _highlightedDevices.push(clonedFeature);
+                                        source.addFeature(clonedFeature);
+                                    }
+                                });
+                                if (foundADevice) { 
+                                    var allCoordinates = [];
+                                    _highlightedDevices.forEach(function(device) {
+                                        var coordinates = device.getGeometry().getCoordinates();
+                                        allCoordinates.push(coordinates);
                                     });
-                                    largerStyle.getImage().setScale(_largerScale);
-                                    feature.setStyle([circleStyle, largerStyle]);
-                                    _map.getView().setCenter(feature.getGeometry().getCoordinates());
-                                    _map.getView().setZoom(16);
+                                    _map.getView().fit(ol.extent.boundingExtent(allCoordinates), {'maxZoom': 16});
                                 } else {
                                     searchError.removeClass('dn');
                                 }

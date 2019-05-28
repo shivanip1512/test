@@ -42,7 +42,7 @@
         <div id="comprehensive-map" class="map"></div>
         <div class="buffered">
             <span class="fl">
-                <cti:msg2 var="searchPlaceholder" key=".serialNumberOrMeterNumber"/>
+                <cti:msg2 var="searchPlaceholder" key=".meterNumberOrName"/>
                 <i:inline key=".findDevice"/>&nbsp;<input id="findDevice" type="text" placeholder="${searchPlaceholder}" size="22"/>
                 <span class="js-no-results-found error dn"><i:inline key=".searchNoResultsFound"/></span>
             </span>
