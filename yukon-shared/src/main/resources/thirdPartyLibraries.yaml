@@ -1559,21 +1559,7 @@ Java :
     updated : 2006-02-02
     jira : none
     notes : 
-  
-  - filename : jjwt-0.5.1.jar
-    yukon group : Azure
-    project : JSON Web Token
-    version : 0.5.1
-    project URL : "https://github.com/jwtk/jjwt"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt/0.5.1"
-    md5 : 310839c9c58817984408d22b5c8b8ab9
-    sha1 : b512a8baa19e10f95e1f71a0b1e7cbd8af4e9a8b
-    updated : 2016-09-28
-    jira : YUK-15740
-    notes : 
-  
+
   - filename : jjwt-impl-0.10.6.jar
     yukon group : Spring Rest Services
     project : JSON Web Token
