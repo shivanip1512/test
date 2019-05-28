@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.pao.model.GPS;
+import com.cannontech.stars.util.StarsInvalidArgumentException;
 
 public class LmDeviceDtoConverterImplTest {
 
@@ -20,61 +21,12 @@ public class LmDeviceDtoConverterImplTest {
         GPS gps = ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
         assertTrue("buildGps null, null", gps == null);
 
-        locationData[27] = null;
-        locationData[28] = Double.toString(160.00);
-        gps = ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
-        assertTrue("buildGps null, valid", gps != null);
-        assertTrue("Latitude null : null", gps.getLatitude() == null);
-        assertTrue("Longitude valid : valid", gps.getLongitude() == 160.00);
-
-        locationData[27] = Double.toString(70.00);
-        locationData[28] = null;
-        gps = ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
-        assertTrue("buildGps valid, null", gps != null);
-        assertTrue("Latitude valid : valid", gps.getLatitude() == 70.00);
-        assertTrue("Longitude null : null", gps.getLongitude() == null);
-
         locationData[27] = Double.toString(45.00);
         locationData[28] = Double.toString(160.00);
         gps = ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
         assertTrue("buildGps valid, valid", gps != null);
         assertTrue("Latitude valid : valid", gps.getLatitude() == 45.00);
         assertTrue("Longitude valid : valid", gps.getLongitude() == 160.00);
-
-        locationData[27] = Double.toString(Double.NaN);
-        locationData[28] = Double.toString(160.00);
-        gps = ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
-        assertTrue("buildGps NaN, valid", gps != null);
-        assertTrue("Latitude NaN : NaN", gps.getLatitude().isNaN());
-        assertTrue("Longitude valid : valid", gps.getLongitude() == 160.00);
-
-        locationData[27] = Double.toString(45.00);
-        locationData[28] = Double.toString(Double.NaN);
-        gps = ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
-        assertTrue("buildGps valid, NaN", gps != null);
-        assertTrue("Latitude valid : valid", gps.getLatitude() == 45.00);
-        assertTrue("Longitude NaN : NaN", gps.getLongitude().isNaN());
-
-        locationData[27] = Double.toString(Double.NaN);
-        locationData[28] = Double.toString(Double.NaN);
-        gps = ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
-        assertTrue("buildGps NaN, NaN", gps != null);
-        assertTrue("Latitude NaN : NaN", gps.getLatitude().isNaN());
-        assertTrue("Longitude NaN : NaN", gps.getLongitude().isNaN());
-
-        locationData[27] = Double.toString(Double.NaN);
-        locationData[28] = null;
-        gps = ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
-        assertTrue("buildGps NaN, null", gps != null);
-        assertTrue("Latitude NaN : NaN", gps.getLatitude().isNaN());
-        assertTrue("Longitude null : null", gps.getLongitude() == null);
-
-        locationData[27] = null;
-        locationData[28] = Double.toString(Double.NaN);
-        gps = ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
-        assertTrue("buildGps null, NaN", gps != null);
-        assertTrue("Latitude null : null", gps.getLatitude() == null);
-        assertTrue("Longitude NaN : NaN", gps.getLongitude().isNaN());
 
         locationData[27] = Double.toString(245.00);
         locationData[28] = Double.toString(260.00);
@@ -110,6 +62,63 @@ public class LmDeviceDtoConverterImplTest {
         assertTrue("buildGps DELETE, NULL", gps != null);
         assertTrue("Latitude DELETE : null", gps.getLatitude() == null);
         assertTrue("Longitude NULL : null", gps.getLongitude() == null);
+    }
+
+    @Test(expected = StarsInvalidArgumentException.class)
+    public void testIsInValidLatitude() throws Exception {
+        String[] locationData = new String[29];
+
+        locationData[27] = null;
+        locationData[28] = Double.toString(160.00);
+        ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+
+        locationData[27] = "xyz";
+        locationData[28] = Double.toString(160.00);
+        ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+
+        locationData[27] = Double.toString(Double.NaN);
+        locationData[28] = Double.toString(160.00);
+        ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+    }
+
+    @Test(expected = StarsInvalidArgumentException.class)
+    public void testIsInValidLongitude() throws Exception {
+        String[] locationData = new String[29];
+
+        locationData[27] = Double.toString(70.00);
+        locationData[28] = null;
+        ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+
+        locationData[27] = Double.toString(45.00);
+        locationData[28] = "xyz";
+        ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+
+        locationData[27] = Double.toString(45.00);
+        locationData[28] = Double.toString(Double.NaN);
+        ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+
+    }
+
+    @Test(expected = StarsInvalidArgumentException.class)
+    public void testIsInValidLatitudeandLongitude() {
+        String[] locationData = new String[29];
+
+        locationData[27] = "xyz";
+        locationData[28] = "xyz";
+        ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+
+        locationData[27] = Double.toString(Double.NaN);
+        locationData[28] = Double.toString(Double.NaN);
+        ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+
+        locationData[27] = Double.toString(Double.NaN);
+        locationData[28] = null;
+        ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+
+        locationData[27] = null;
+        locationData[28] = Double.toString(Double.NaN);
+        ReflectionTestUtils.invokeMethod(impl, "getLocationGps", new Object[] { locationData });
+
     }
 
 }

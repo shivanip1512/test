@@ -166,7 +166,7 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
         // If both are blank, return null else return GPS object(Example: lat: Blank, long : Invalid)
         if (StringUtils.isNotBlank(hwFields[ImportFields.IDX_LATITUDE])
             || StringUtils.isNotBlank(hwFields[ImportFields.IDX_LONGITUDE])) {
-            GPS gps=new GPS(null,null);
+            GPS gps = new GPS(null, null);
 
             if (("DELETE".equalsIgnoreCase(hwFields[ImportFields.IDX_LATITUDE])
                 || "NULL".equalsIgnoreCase(hwFields[ImportFields.IDX_LATITUDE]))
@@ -176,8 +176,9 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
                 // do nothing, use null default
             } else {
                 // this could have parse exception I think, which will catch any case but DELETE or NULL (as
-                // above if check)      
-                gps =LocationServiceImpl.isValidLocationFormat(hwFields[ImportFields.IDX_LATITUDE], hwFields[ImportFields.IDX_LONGITUDE]);
+                // above if check)
+                gps = LocationServiceImpl.isValidLocationFormat(hwFields[ImportFields.IDX_LATITUDE],
+                    hwFields[ImportFields.IDX_LONGITUDE]);
             }
             return gps;
         }

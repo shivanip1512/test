@@ -21,6 +21,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -111,11 +112,10 @@ public class MapNetworkController {
         return "mapNetwork/home.jsp";
     }
     
-    @RequestMapping(value = "saveCoordinates", method = RequestMethod.POST)
+    @PostMapping("saveCoordinates")
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
-    public String saveCoordinates(HttpServletResponse resp, HttpServletRequest request,
-            @ModelAttribute("location") Location location, BindingResult bindingResult, FlashScope flash,
-            YukonUserContext userContext) throws ServletException {
+    public String saveCoordinates(HttpServletResponse resp, @ModelAttribute("location") Location location,
+            BindingResult bindingResult, FlashScope flash, YukonUserContext userContext) throws ServletException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         boolean errorFound = false;
@@ -162,7 +162,7 @@ public class MapNetworkController {
 
         return JsonUtils.writeResponse(resp, json);
     }
-    
+
     @RequestMapping("parentNode")
     public @ResponseBody Map<String, Object> parentNode(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
         Map<String, Object> json = new HashMap<>();

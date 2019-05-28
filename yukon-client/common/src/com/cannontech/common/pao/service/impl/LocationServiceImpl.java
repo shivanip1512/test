@@ -74,26 +74,23 @@ public class LocationServiceImpl implements LocationService{
         
         return nearby;
     }
+
     /**
      * Returns GPS object if latitude and longitude contains number else throw StarsInvalidArgumentException
      */
     public static GPS isValidLocationFormat(String latitude, String longitude) {
-        GPS gps = new GPS();
-        boolean isvalidLatitude = NumberUtils.isNumber(latitude);
-        boolean isvalidLongitude = NumberUtils.isNumber(longitude);
-        if (!(isvalidLatitude || isvalidLongitude)) {
+        boolean isValidLatitude = NumberUtils.isNumber(latitude);
+        boolean isValidLongitude = NumberUtils.isNumber(longitude);
+        if (!(isValidLatitude || isValidLongitude)) {
             throw new StarsInvalidArgumentException("Latitude and Longitude must be Numeric.");
-        }
-        if (isvalidLatitude) {
-            gps.setLatitude(StringUtils.isNotBlank(latitude) ? Double.valueOf(latitude) : null);
-        } else {
+        } else if (!isValidLatitude) {
             throw new StarsInvalidArgumentException("Latitude must be Numeric.");
-        }
-        if (isvalidLongitude) {
-            gps.setLongitude(StringUtils.isNotBlank(longitude) ? Double.valueOf(longitude) : null);
-        } else {
+        } else if (!isValidLongitude) {
             throw new StarsInvalidArgumentException("Longitude must be Numeric.");
         }
+        GPS gps = new GPS();
+        gps.setLatitude(StringUtils.isNotBlank(latitude) ? Double.valueOf(latitude) : null);
+        gps.setLongitude(StringUtils.isNotBlank(longitude) ? Double.valueOf(longitude) : null);
         return gps;
     }
 }

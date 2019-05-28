@@ -22,28 +22,28 @@ yukon.map.location = (function () {
 
             $(document).on('click', '.js-save-coordinates', function() {
             	var location = {
-            			paoId : $('.js-device-id').val(),
-            			latitude : $('.js-latitude-input').val(),
-            			longitude : $('.js-longitude-input').val()
-            		}
+            	    paoId : $('.js-device-id').val(),
+            	    latitude : $('.js-latitude-input').val(),
+            	    longitude : $('.js-longitude-input').val()
+            	}
                 $.ajax({
-                	type: "POST",
+                    type: "POST",
                     url: yukon.url('/stars/mapNetwork/saveCoordinates'),
                     data: location,
                     success: function(results) {
-                    	$('.js-latitude-input').removeClass("error");
+                        $('.js-latitude-input').removeClass("error");
                     	$('.js-longitude-input').removeClass("error");
                         if (results.error) {
                             yukon.ui.removeAlerts();
                             $('.js-location-error').html(results.errorMessages);
                             if(results.latError){
-                                $('.js-latitude-input').addClass("error");
+                                $('.js-latitude-input').toggleClass("error");
                             }
                             if(results.lonError){
-                                $('.js-longitude-input').addClass("error");
+                                $('.js-longitude-input').toggleClass("error");
                             }
                         } else {
-                            window.location.reload();
+                              window.location.reload();
                         }
                     }
                 });
