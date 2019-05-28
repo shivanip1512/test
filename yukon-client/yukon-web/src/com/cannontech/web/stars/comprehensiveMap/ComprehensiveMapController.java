@@ -91,7 +91,6 @@ public class ComprehensiveMapController {
     @GetMapping("search")
     public @ResponseBody Map<String, Object> searchForNode(String searchText) {        
         Map<String, Object> json = new HashMap<>();
-        //List<Integer> foundPaoIds = new ArrayList<Integer>();
         Set<Integer> foundPaoIds = new HashSet<Integer>();
         //search for a Sensor Serial Number with the provided text
         Integer sensor = rfnDeviceDao.findDeviceBySensorSerialNumber(searchText);
