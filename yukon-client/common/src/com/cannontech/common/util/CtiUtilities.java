@@ -32,6 +32,7 @@ import java.util.UUID;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -457,6 +458,13 @@ public final class CtiUtilities {
                 "TX", "UT", "VT", "VA", "VI", "WA", "WV", "WI", "WY" };
 
         return s;
+    }
+
+    /**
+     * Return uniqueKey used in exception handling to identify error in log files.
+     */
+    public final static String getYKUniqueKey() {
+        return "YK" + RandomStringUtils.randomNumeric(10);
     }
 
     /**

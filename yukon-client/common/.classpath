@@ -279,7 +279,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-web-5.1.5.RELEASE.jar" sourcepath="C:/Users/E9915066/Desktop/spring-framework-5.1.5.RELEASE/libs/spring-web-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-web-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-web-5.1.5.RELEASE-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -561,6 +561,21 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-0.9.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/azure-servicebus-0.9.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/commons-configuration2-2.1.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/jjwt-api-0.10.6.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/jjwt-impl-0.10.6.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/jjwt-jackson-0.10.6.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

@@ -193,7 +193,7 @@ public class ErrorHelperFilter implements Filter {
     }
 
     private String setupUniqueLogKey(ServletRequest request) {
-        String uniqueKey = "YK" + RandomStringUtils.randomNumeric(10);
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
         request.setAttribute(LOG_KEY, uniqueKey);
         return uniqueKey;
     }

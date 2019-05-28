@@ -1,4 +1,4 @@
-package com.cannontech.web.dr.setup;
+package com.cannontech.web.api.validation;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -11,10 +11,10 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 
 /**
- * Helper class for all DR setup controllers. 
+ * Helper class for controller (MVC) that called Rest Api. 
  *
  */
-public class SetupControllerHelper {
+public class ApiControllerHelper {
 
     // Populate binding error from the error object received from rest call.
     public void populateBindingError(BindingResult result, BindException error, ResponseEntity<Object> errorResponse) {
@@ -33,11 +33,21 @@ public class SetupControllerHelper {
         result.addAllErrors(error);
     }
 
+    /**
+     *  Generate dynamic URL for API calls
+     */
     public String getApiURL(HttpServletRequest request, String pathURL) {
-        StringBuffer baseURL = request.getRequestURL();
+
+        String url = request.getRequestURL().toString();
+        String baseURL = url.substring(0, url.length() - request.getRequestURI().length());
         String apiURL;
-        apiURL = baseURL.substring(0, baseURL.indexOf(request.getPathInfo()));
-        apiURL = apiURL + "/api" + pathURL;
+        String contextPath = request.getContextPath();
+        if (contextPath.isBlank()) {
+            apiURL = baseURL + "/api" + request.getServletPath() + pathURL;
+        } else {
+            apiURL = baseURL + contextPath + "/api" + request.getServletPath() + pathURL;
+        }
+
         return apiURL;
     }
 

@@ -18,15 +18,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.LoadGroupBase;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
-import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 
 @RestController
-@RequestMapping("/api/setup/loadGroup")
-public class LoadGroupSetupRestController {
+@RequestMapping("/dr/setup/loadGroup")
+public class LoadGroupSetupApiController {
 
-    private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupRestController.class);
+    private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupApiController.class);
     @Autowired LoadGroupSetupService loadGroupService;
     @Autowired LoadGroupSetupValidator loadGroupValidator;
     
@@ -40,8 +38,7 @@ public class LoadGroupSetupRestController {
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, "Exception while retrieving group", e);
         } 
     }
-    
-    @IgnoreCsrfCheck
+
     @PostMapping("/save")
     public ResponseEntity<Object> save(@Valid @RequestBody LoadGroupBase loadGroup) {
         try {

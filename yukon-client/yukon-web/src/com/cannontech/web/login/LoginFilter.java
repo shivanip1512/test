@@ -68,6 +68,7 @@ public class LoginFilter implements Filter {
                          "/soap/*",
                          "/multispeak/v3/*",
                          "/multispeak/v5/*", 
+                         "/api/**",
                          "/servlet/PWordRequest",
                          "/servlet/StarsPWordRequest",
                          "/**/*.js",

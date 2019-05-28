@@ -37,6 +37,11 @@
     </filter>
 
     <filter>
+        <filter-name>jwtFilter</filter-name>
+        <filter-class>com.cannontech.web.filter.TokenAuthenticationFilter</filter-class>
+    </filter>
+
+    <filter>
         <filter-name>timerFilter</filter-name>
         <filter-class>com.cannontech.web.filter.TimerFilter</filter-class>
     </filter>
@@ -76,6 +81,11 @@
     <filter-mapping>
         <filter-name>loginFilter</filter-name>
         <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>jwtFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
@@ -252,6 +262,12 @@
 
     <servlet>
         <servlet-name>amr</servlet-name>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>api</servlet-name>
         <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -655,6 +671,11 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>api</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>reports</servlet-name>
         <url-pattern>/reports/*</url-pattern>
     </servlet-mapping>
@@ -862,6 +883,7 @@
         <servlet-name>billing</servlet-name>
         <servlet-name>layout</servlet-name>
         <servlet-name>springRedirect</servlet-name>
+        <servlet-name>api</servlet-name>
         <url-pattern>/analysis/Reports.jsp</url-pattern>
         <url-pattern>/billing/*</url-pattern>
     </filter-mapping>

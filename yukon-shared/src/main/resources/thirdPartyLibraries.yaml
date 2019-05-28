@@ -1574,6 +1574,48 @@ Java :
     jira : YUK-15740
     notes : 
   
+  - filename : jjwt-impl-0.10.6.jar
+    yukon group : Spring Rest Services
+    project : JSON Web Token
+    version : 0.10.6
+    project URL : "https://github.com/jwtk/jjwt"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl/0.10.6"
+    md5 : a38bc6fe2ccc617f602860dd51dcf630
+    sha1 : 64dc5fa8e9e478d81f1f43d8282e3c894ba8486c
+    updated : 2019-05-28
+    jira : YUK-19930
+    notes : 
+    
+  - filename : jjwt-api-0.10.6.jar
+    yukon group : Spring Rest Services
+    project : JSON Web Token
+    version : 0.10.6
+    project URL : "https://github.com/jwtk/jjwt"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api/0.10.6"
+    md5 : 39b470e7fa199e386108cd593c3b9d87
+    sha1 : 1584bf477855dc588c1c0e3eafab777e9a492fcc
+    updated : 2019-05-28
+    jira : YUK-19930
+    notes : 
+    
+  - filename : jjwt-jackson-0.10.6.jar
+    yukon group : Spring Rest Services
+    project : JSON Web Token
+    version : 0.10.6
+    project URL : "https://github.com/jwtk/jjwt"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson/0.10.6"
+    md5 : 42fa46e851067098589210135ab6e908
+    sha1 : 42202de245848931bed85f269870e23b258f451a
+    updated : 2019-05-28
+    jira : YUK-19930
+    notes : 
+  
   - filename : jna-4.5.0.jar
     yukon group : Yet Another Java Service Wrapper
     project : Java Native Access

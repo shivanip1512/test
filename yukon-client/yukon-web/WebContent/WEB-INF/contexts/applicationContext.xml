@@ -1366,10 +1366,9 @@
      <bean class="com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory"/>
      
      <bean class="com.cannontech.web.common.schedule.ScheduleControllerHelper"/>
-     
      <!-- Setup -->
-    <bean id="customDefaultResponseErrorHandler" class = "com.cannontech.web.dr.errorHandler.CustomDefaultResponseErrorHandler" />
-    <bean id="drRestTemplate" class="org.springframework.web.client.RestTemplate">
+    <bean id="customDefaultResponseErrorHandler" class = "com.cannontech.web.api.client.errorHandler.CustomDefaultResponseErrorHandler" />
+    <bean id="apiRestTemplate" class="org.springframework.web.client.RestTemplate">
         <property name="messageConverters">
             <list>
                 <bean class = "org.springframework.http.converter.StringHttpMessageConverter"/>
@@ -1382,6 +1381,7 @@
     
     <bean class="com.cannontech.dr.loadgroup.service.impl.LoadGroupSetupServiceImpl"/>
     <bean class="com.cannontech.web.api.dr.setup.LoadGroupSetupValidator" />
-    <bean class="com.cannontech.web.dr.setup.SetupControllerHelper"/>
+    <bean class="com.cannontech.web.api.validation.ApiControllerHelper"/>
+    <bean class="com.cannontech.web.api.token.TokenHelper"/>
      
 </beans>

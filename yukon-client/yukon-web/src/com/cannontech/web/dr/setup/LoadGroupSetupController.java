@@ -10,7 +10,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -30,7 +29,10 @@ import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.api.APIRequestHelper;
+import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.collect.Lists;
@@ -44,8 +46,8 @@ public class LoadGroupSetupController {
     private static final String drLoadGroupBaseUrl = "/setup/loadGroup/";
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
     
-    @Autowired private RestTemplate drRestTemplate;
-    @Autowired private SetupControllerHelper helper;
+    @Autowired private RestTemplate apiRestTemplate;
+    @Autowired private ApiControllerHelper helper;
 
     @GetMapping("/create")
     public String create(ModelMap model) {
@@ -61,10 +63,10 @@ public class LoadGroupSetupController {
     }
 
     @GetMapping("/{id}")
-    public String view(ModelMap model, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
+    public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.VIEW);
         String url = helper.getApiURL(request, request.getPathInfo());
-        LoadGroupBase loadGroup = retrieveGroup(id, url);
+        LoadGroupBase loadGroup = retrieveGroup(userContext, request, id, url);
         if (loadGroup == null) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
             return "redirect:/dr/setup/list";
@@ -74,10 +76,10 @@ public class LoadGroupSetupController {
     }
 
     @GetMapping("/{id}/edit")
-    public String edit(ModelMap model, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
+    public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.EDIT);
         String url = helper.getApiURL(request, drLoadGroupBaseUrl + id);
-        LoadGroupBase loadGroup = retrieveGroup(id, url);
+        LoadGroupBase loadGroup = retrieveGroup(userContext, request, id, url);
         if (loadGroup == null) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
             return "redirect:/dr/setup/list";
@@ -91,15 +93,14 @@ public class LoadGroupSetupController {
     }
     
     @PostMapping("/save")
-    public String save(@ModelAttribute LoadGroupBase loadGroup, BindingResult result, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+    public String save(@ModelAttribute LoadGroupBase loadGroup, YukonUserContext userContext, BindingResult result, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
+        HttpHeaders headers =  APIRequestHelper.getHttpHeaders(userContext, request);
         HttpEntity<LoadGroupBase> requestEntity = new HttpEntity<LoadGroupBase>(loadGroup, headers);
         String url = helper.getApiURL(request, request.getPathInfo());
 
         try {
-            ResponseEntity<Object> response = drRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Object.class);
+            ResponseEntity<Object> response = apiRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Object.class);
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadGroup, "loadGroupBase");
                 helper.populateBindingError(result, error, response);
@@ -119,12 +120,12 @@ public class LoadGroupSetupController {
     }
     
     /* Make a rest call for retrieving group */
-    private LoadGroupBase retrieveGroup(int id, String url) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+    private LoadGroupBase retrieveGroup(YukonUserContext userContext, HttpServletRequest request, int id, String url) {
+        HttpHeaders headers =  APIRequestHelper.getHttpHeaders(userContext, request);
         LoadGroupBase loadGroup = null;
         try {
-            ResponseEntity<LoadGroupBase> response = drRestTemplate.getForEntity(url, LoadGroupBase.class);
+            ResponseEntity<LoadGroupBase> response =
+                    apiRestTemplate.exchange(url, HttpMethod.GET, new HttpEntity<Object>(headers), LoadGroupBase.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 loadGroup = response.getBody();
             }

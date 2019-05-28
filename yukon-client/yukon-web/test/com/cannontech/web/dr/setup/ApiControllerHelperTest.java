@@ -31,14 +31,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SetupControllerHelperTest {
+import com.cannontech.web.api.validation.ApiControllerHelper;
+
+public class ApiControllerHelperTest {
     private HttpServletRequest req;
-    private SetupControllerHelper helper;
+    private ApiControllerHelper helper;
 
     @Before
     public void setUp() throws Exception {
         req = createMockRequest();
-        helper = new SetupControllerHelper();
+        helper = new ApiControllerHelper();
     }
 
     @After
@@ -50,7 +52,7 @@ public class SetupControllerHelperTest {
     public void testgetValidApiURL() {
         String pathURL = "/setup/loadGroup/save";
         String url = helper.getApiURL(req, pathURL);
-        assertTrue("The url is valid", url.equals("http://localhost:8080/dr/api/setup/loadGroup/save"));
+        assertTrue("The url is valid", url.equals("http://localhost:8080/api/dr/setup/loadGroup/save"));
     }
 
     @Test
@@ -130,7 +132,7 @@ public class SetupControllerHelperTest {
 
             @Override
             public String getRequestURI() {
-                return null;
+                return "/dr/setup/loadGroup/save";
             }
 
             @Override
@@ -146,7 +148,7 @@ public class SetupControllerHelperTest {
 
             @Override
             public String getServletPath() {
-                return null;
+                return "/dr";
             }
 
             @Override
