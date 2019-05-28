@@ -131,7 +131,6 @@ Class-Path: ./
  jersey-core-1.13.jar 
  jersey-json-1.13.jar 
  jettison-1.1.jar 
- jjwt-0.5.1.jar 
  jjwt-api-0.10.6.jar 
  jjwt-impl-0.10.6.jar 
  jjwt-jackson-0.10.6.jar 

@@ -554,7 +554,6 @@
 	<classpathentry kind="lib" path="/third-party/jersey-core-1.13.jar"/>
 	<classpathentry kind="lib" path="/third-party/jersey-json-1.13.jar"/>
 	<classpathentry kind="lib" path="/third-party/jettison-1.1.jar"/>
-	<classpathentry kind="lib" path="/third-party/jjwt-0.5.1.jar"/>
 	<classpathentry kind="lib" path="/third-party/jsr305-1.3.9.jar"/>
 	<classpathentry kind="lib" path="/third-party/mail-1.4.5-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/mail-1.4.5.jar"/>

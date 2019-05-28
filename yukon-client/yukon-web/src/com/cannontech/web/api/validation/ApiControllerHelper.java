@@ -47,7 +47,7 @@ public class ApiControllerHelper {
         } else {
             apiURL = baseURL + contextPath + "/api" + request.getServletPath() + pathURL;
         }
-
+        apiURL = apiURL.replaceAll("(?<!\\:)/+", "/");
         return apiURL;
     }
 
