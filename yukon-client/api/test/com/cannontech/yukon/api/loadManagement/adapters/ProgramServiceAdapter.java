@@ -11,6 +11,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.core.dao.NotFoundException;
@@ -198,6 +199,16 @@ public class ProgramServiceAdapter implements ProgramService {
                                                      boolean observeConstraintsAndExecute,
                                                      LiteYukonUser user) throws NotFoundException,
             TimeoutException, NotAuthorizedException, BadServerResponseException {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Override
+    public List<ProgramData> getAllTodaysProgram() {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Override
+    public List<ProgramData> getAllNearestDayScheduledProgram() {
         throw new UnsupportedOperationException("Not Implemented");
     }
 

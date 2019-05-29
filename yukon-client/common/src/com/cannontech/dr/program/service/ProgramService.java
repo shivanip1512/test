@@ -11,6 +11,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.core.dao.NotFoundException;
@@ -280,4 +281,16 @@ public interface ProgramService {
      * for the program with the specified id.
      */
     public void disableAndSupressRestoration(int programId);
+    
+    /**
+     * Returns list of all program which are executed today or scheduled to execute today 
+     * 
+     */
+    public List<ProgramData> getAllTodaysProgram();
+    
+    /**
+     * Returns list of all program which are scheduled to execute on nearest day
+     * 
+     */
+    public List<ProgramData> getAllNearestDayScheduledProgram();
 }

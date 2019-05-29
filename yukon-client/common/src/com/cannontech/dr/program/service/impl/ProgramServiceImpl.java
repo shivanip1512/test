@@ -10,11 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -32,6 +35,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatedObject;
@@ -777,5 +781,70 @@ public class ProgramServiceImpl implements ProgramService {
 
         return program.createScheduledStartMsg(startDate, stopDate, gearNumber,
                                                null, additionalInfo, constraintId);
+    }
+
+    @Override
+    public List<ProgramData> getAllTodaysProgram() {
+        Set<LMProgramBase> allLMProgramBase = loadControlClientConnection.getAllProgramsSet();
+        List<ProgramData> todaysProgram = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(allLMProgramBase)) {
+            // Get list of todays programs (without keeping state in mind)
+            DateTime todayStartTime = DateTime.now().withTimeAtStartOfDay();
+            DateTime todayStopTime = todayStartTime.plusHours(24);
+            Interval interval = new Interval(todayStartTime, todayStopTime); 
+            todaysProgram = filterProgramsForInterval(allLMProgramBase, interval);
+        }
+        return todaysProgram;
+    }
+
+    @Override
+    public List<ProgramData> getAllNearestDayScheduledProgram() {
+        Set<LMProgramBase> allLMProgramBase = loadControlClientConnection.getAllProgramsSet();
+        List<ProgramData> scheduledProgramsForNearestDay = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(allLMProgramBase)) {
+            DateTime now = DateTime.now();
+            long startOfTomorrow = now.withTimeAtStartOfDay().plusHours(24).getMillis();
+            // Get all the program which are scheduled to start in future and sort them based on startTime
+            List<LMProgramBase> allScheduledPrograms =
+                                    allLMProgramBase.stream()
+                                                    .filter(p -> p.getStartTime().getTimeInMillis() >= startOfTomorrow)
+                                                    .sorted((p1, p2) -> p1.getStartTime().compareTo(p2.getStartTime()))
+                                                    .collect(Collectors.toList());
+
+            // Get the list scheduled programs for nearest day
+            if (CollectionUtils.isNotEmpty(allScheduledPrograms)) {
+                DateTime nearestScheduledStartTime = new DateTime(allScheduledPrograms
+                                                                     .stream()
+                                                                     .findFirst().get()
+                                                                     .getStartTime()
+                                                                     .getTimeInMillis())
+                                                                     .withTimeAtStartOfDay();
+                DateTime nearestScheduledStopTime = nearestScheduledStartTime.plusHours(24);
+                Interval nearestScheduledInterval = new Interval(nearestScheduledStartTime, nearestScheduledStopTime);
+                scheduledProgramsForNearestDay = 
+                          filterProgramsForInterval(allScheduledPrograms, nearestScheduledInterval);
+            }
+        }
+        return scheduledProgramsForNearestDay;
+    }
+
+    /**
+     *  Filter programs which started with-in the passed interval and returns
+     *  list of ProgramData objects from the filtered programs
+     */
+    private List<ProgramData> filterProgramsForInterval(Collection<LMProgramBase> programs, Interval interval) {
+        return programs.stream()
+                       .filter(program -> interval.contains(program.getStartTime().getTimeInMillis()))
+                       .map(program -> buildProgramData(program))
+                       .collect(Collectors.toList());
+    }
+
+    /**
+     *  Build ProgramData object from passed LMProgramBase object
+     */
+    private ProgramData buildProgramData(LMProgramBase lmProgramBase) {
+       return new ProgramData.ProgramDataBuilder(lmProgramBase.getYukonID().intValue())
+                             .setProgramName(lmProgramBase.getYukonName())
+                             .build();
     }
 }
