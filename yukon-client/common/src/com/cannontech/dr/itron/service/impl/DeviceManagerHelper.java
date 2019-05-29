@@ -14,6 +14,7 @@ import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddD2GAttributeType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.AddHANDeviceRequest;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.DeviceGroupType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.DeviceIdentifierAttributeType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIGroupRequestType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIType;
@@ -135,15 +136,10 @@ public class DeviceManagerHelper implements SoapFaultParser {
     public static ESIGroupRequestType buildGroupEditRequest(String lmGroupId, List<String> macAddresses) {
         ESIGroupRequestType requestType = new ESIGroupRequestType();
         requestType.setGroupName(lmGroupId);
+        requestType.setGroupType(DeviceGroupType.STATIC_GROUP);
         StaticGroupMemberListType type = new StaticGroupMemberListType();
         type.getMacIDs().addAll(macAddresses);
         requestType.setStaticGroupMemberList(type);
-        return requestType;
-    }
-
-    public static ESIGroupRequestType buildGroupAddRequest(String lmGroupId) {
-        ESIGroupRequestType requestType = new ESIGroupRequestType();
-        requestType.setGroupName(lmGroupId);
         return requestType;
     }
     
@@ -152,7 +148,7 @@ public class DeviceManagerHelper implements SoapFaultParser {
         SoapFaultDetail soapFaultDetail = e.getSoapFault().getFaultDetail();
         soapFaultDetail.getDetailEntries().forEachRemaining(detail -> {
             SoapFaultDetailElement detailElementChild =
-                (SoapFaultDetailElement) soapFaultDetail.getDetailEntries().next();
+                soapFaultDetail.getDetailEntries().next();
             Source detailSource = detailElementChild.getSource();
             ErrorFault fault = (ErrorFault) ItronEndpointManager.DEVICE.getMarshaller().unmarshal(detailSource);
             log.debug(XmlUtils.getPrettyXml(fault));
