@@ -257,9 +257,9 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
         Message message = e.getMessage();
         log.debug("messageReceived " + message.getClass().getName()  + getDebugMessageText(message)
             + " from MACS Service " + message);
-        if (waiting.contains(message.getSOE_Tag())) {
-            waiting.remove(message.getSOE_Tag());
-            cachedMessages.put(message.getSOE_Tag(), message);
+        if (waiting.contains(message.getSoeTag())) {
+            waiting.remove(message.getSoeTag());
+            cachedMessages.put(message.getSoeTag(), message);
         }
     }
     
@@ -280,7 +280,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
     private int sendMessage(Message message, String userName, DateTime now) throws MacsException {
         int soeTag = nextValueHelper.getNextValue("MACSServiceRequest");
         waiting.add(soeTag);
-        message.setSOE_Tag(soeTag);
+        message.setSoeTag(soeTag);
         message.setUserName(userName);
         message.setTimeStamp(now.toDate());
         try {

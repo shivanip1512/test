@@ -12,6 +12,8 @@ import com.cannontech.database.data.point.PointType;
 
 public class PointData extends com.cannontech.message.util.Message implements PointValueQualityHolder
 {
+    private static final long serialVersionUID = -2987200556094493247L;
+
     private static final String TRACKING_DELIMITER = " trkid ";
 
     private int id;
@@ -21,7 +23,7 @@ public class PointData extends com.cannontech.message.util.Message implements Po
     private double value;
     private String str = "";
     private Date time = new Date();
-    private String trackingId;  //  just for memoization
+    private transient String trackingId;  //  just for memoization
 
     private long millis;
 

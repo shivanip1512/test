@@ -414,7 +414,7 @@ public String toString()
 
 	public int getSOETag()
 	{
-		return getPointData().getSOE_Tag();
+		return getPointData().getSoeTag();
 	}
 
 	public PointQuality getPointQuality()
@@ -434,7 +434,7 @@ public String toString()
 
 	public void setSOETag( int newTag_ ) 
 	{
-		getPointData().setSOE_Tag( newTag_ );
+		getPointData().setSoeTag( newTag_ );
 	}
 
 	public void setTime( Date newDate_ ) 
