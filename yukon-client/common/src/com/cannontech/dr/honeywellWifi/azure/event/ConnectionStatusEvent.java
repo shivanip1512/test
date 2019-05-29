@@ -50,5 +50,38 @@ public class ConnectionStatusEvent extends AbstractHoneywellWifiData {
         return "ConnectionStatusEvent [connectionStatus=" + connectionStatus + ", deviceId=" + deviceId + ", macId="
                + macId + "]";
     }
-    
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((connectionStatus == null) ? 0 : connectionStatus.hashCode());
+        result = prime * result + ((deviceId == null) ? 0 : deviceId.hashCode());
+        result = prime * result + ((macId == null) ? 0 : macId.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ConnectionStatusEvent other = (ConnectionStatusEvent) obj;
+        if (connectionStatus != other.connectionStatus)
+            return false;
+        if (deviceId == null) {
+            if (other.deviceId != null)
+                return false;
+        } else if (!deviceId.equals(other.deviceId))
+            return false;
+        if (macId == null) {
+            if (other.macId != null)
+                return false;
+        } else if (!macId.equals(other.macId))
+            return false;
+        return true;
+    }
 }

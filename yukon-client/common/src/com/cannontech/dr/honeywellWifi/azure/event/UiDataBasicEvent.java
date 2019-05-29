@@ -169,4 +169,137 @@ public class UiDataBasicEvent extends AbstractHoneywellWifiData {
                + systemSwitchPosition + ", deadband=" + deadband + ", displayedTempStatus=" + displayedTempStatus
                + ", deviceId=" + deviceId + ", macId=" + macId + "]";
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                 + ((coolLowerSetpointLimit == null) ? 0 : coolLowerSetpointLimit.hashCode());
+        result = prime * result + ((coolSetpoint == null) ? 0 : coolSetpoint.hashCode());
+        result = prime * result
+                 + ((coolUpperSetpointLimit == null) ? 0 : coolUpperSetpointLimit.hashCode());
+        result = prime * result + ((created == null) ? 0 : created.hashCode());
+        result = prime * result + ((deadband == null) ? 0 : deadband.hashCode());
+        result = prime * result + ((deviceId == null) ? 0 : deviceId.hashCode());
+        result = prime * result + ((displayedTemp == null) ? 0 : displayedTemp.hashCode());
+        result =
+            prime * result + ((displayedTempStatus == null) ? 0 : displayedTempStatus.hashCode());
+        result = prime * result + ((displayedUnits == null) ? 0 : displayedUnits.hashCode());
+        result = prime * result
+                 + ((heatLowerSetpointLimit == null) ? 0 : heatLowerSetpointLimit.hashCode());
+        result = prime * result + ((heatSetpoint == null) ? 0 : heatSetpoint.hashCode());
+        result = prime * result
+                 + ((heatUpperSetpointLimit == null) ? 0 : heatUpperSetpointLimit.hashCode());
+        result = prime * result + ((macId == null) ? 0 : macId.hashCode());
+        result = prime * result
+                 + ((scheduledCoolSetpoint == null) ? 0 : scheduledCoolSetpoint.hashCode());
+        result = prime * result
+                 + ((scheduledHeatSetpoint == null) ? 0 : scheduledHeatSetpoint.hashCode());
+        result = prime * result + ((statusHeat == null) ? 0 : statusHeat.hashCode());
+        result = prime * result + ((switchEmergencyHeatAllowed == null) ? 0
+                : switchEmergencyHeatAllowed.hashCode());
+        result =
+            prime * result + ((systemSwitchPosition == null) ? 0 : systemSwitchPosition.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        UiDataBasicEvent other = (UiDataBasicEvent) obj;
+        if (coolLowerSetpointLimit == null) {
+            if (other.coolLowerSetpointLimit != null)
+                return false;
+        } else if (!coolLowerSetpointLimit.equals(other.coolLowerSetpointLimit))
+            return false;
+        if (coolSetpoint == null) {
+            if (other.coolSetpoint != null)
+                return false;
+        } else if (!coolSetpoint.equals(other.coolSetpoint))
+            return false;
+        if (coolUpperSetpointLimit == null) {
+            if (other.coolUpperSetpointLimit != null)
+                return false;
+        } else if (!coolUpperSetpointLimit.equals(other.coolUpperSetpointLimit))
+            return false;
+        if (created == null) {
+            if (other.created != null)
+                return false;
+        } else if (!created.equals(other.created))
+            return false;
+        if (deadband == null) {
+            if (other.deadband != null)
+                return false;
+        } else if (!deadband.equals(other.deadband))
+            return false;
+        if (deviceId == null) {
+            if (other.deviceId != null)
+                return false;
+        } else if (!deviceId.equals(other.deviceId))
+            return false;
+        if (displayedTemp == null) {
+            if (other.displayedTemp != null)
+                return false;
+        } else if (!displayedTemp.equals(other.displayedTemp))
+            return false;
+        if (displayedTempStatus == null) {
+            if (other.displayedTempStatus != null)
+                return false;
+        } else if (!displayedTempStatus.equals(other.displayedTempStatus))
+            return false;
+        if (displayedUnits != other.displayedUnits)
+            return false;
+        if (heatLowerSetpointLimit == null) {
+            if (other.heatLowerSetpointLimit != null)
+                return false;
+        } else if (!heatLowerSetpointLimit.equals(other.heatLowerSetpointLimit))
+            return false;
+        if (heatSetpoint == null) {
+            if (other.heatSetpoint != null)
+                return false;
+        } else if (!heatSetpoint.equals(other.heatSetpoint))
+            return false;
+        if (heatUpperSetpointLimit == null) {
+            if (other.heatUpperSetpointLimit != null)
+                return false;
+        } else if (!heatUpperSetpointLimit.equals(other.heatUpperSetpointLimit))
+            return false;
+        if (macId == null) {
+            if (other.macId != null)
+                return false;
+        } else if (!macId.equals(other.macId))
+            return false;
+        if (scheduledCoolSetpoint == null) {
+            if (other.scheduledCoolSetpoint != null)
+                return false;
+        } else if (!scheduledCoolSetpoint.equals(other.scheduledCoolSetpoint))
+            return false;
+        if (scheduledHeatSetpoint == null) {
+            if (other.scheduledHeatSetpoint != null)
+                return false;
+        } else if (!scheduledHeatSetpoint.equals(other.scheduledHeatSetpoint))
+            return false;
+        if (statusHeat == null) {
+            if (other.statusHeat != null)
+                return false;
+        } else if (!statusHeat.equals(other.statusHeat))
+            return false;
+        if (switchEmergencyHeatAllowed == null) {
+            if (other.switchEmergencyHeatAllowed != null)
+                return false;
+        } else if (!switchEmergencyHeatAllowed.equals(other.switchEmergencyHeatAllowed))
+            return false;
+        if (systemSwitchPosition == null) {
+            if (other.systemSwitchPosition != null)
+                return false;
+        } else if (!systemSwitchPosition.equals(other.systemSwitchPosition))
+            return false;
+        return true;
+    }
 }

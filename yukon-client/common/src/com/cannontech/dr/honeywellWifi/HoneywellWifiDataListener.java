@@ -195,6 +195,10 @@ public class HoneywellWifiDataListener {
             }
         }
         
+        return getData(messageBody, message);
+    }
+    
+    private HoneywellWifiData getData(String messageBody, BrokeredMessage message) {
         ObjectMapper jsonParser = new ObjectMapper();
         HoneywellWifiMessageWrapper messageWrapper = null;
         try {
@@ -207,8 +211,7 @@ public class HoneywellWifiDataListener {
             return unknown;
         }
         
-        HoneywellWifiData data = getMessageData(messageWrapper, message);
-        return data;
+        return getMessageData(messageWrapper, message);
     }
     
     /**
@@ -219,6 +222,19 @@ public class HoneywellWifiDataListener {
         String jsonPayload = StringEscapeUtils.unescapeJava(messageWrapper.getJson());
         try {
             HoneywellWifiData data = jsonParser.readValue(jsonPayload, messageWrapper.getType().getMessageClass());
+            if(messageWrapper.getType().name() == "UNKNOWN") {
+                log.info("Received new event of unknown data type, enable debugging for more information.");
+                
+                if(log.isDebugEnabled() && originalMessage.getBody() != null) {
+                    String unknownEventMessage;
+                    Scanner scanner = new Scanner(originalMessage.getBody());
+                    //Scans the entire input in one token. See http://stackoverflow.com/a/5445161/299996
+                    Scanner entireInputScanner = scanner.useDelimiter("\\A");
+                    unknownEventMessage = entireInputScanner.next();
+                    scanner.close();
+                    log.debug("Unknown Event Message Body " + unknownEventMessage);
+                }
+            }
             data.setOriginalMessage(originalMessage);
             data.setMessageWrapper(messageWrapper);
             return data;

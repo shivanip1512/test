@@ -77,5 +77,54 @@ public class EquipmentStatusEvent extends AbstractHoneywellWifiData {
         return "EquipmentStatusEvent [equipmentStatus=" + equipmentStatus + ", fanStatus=" + fanStatus + ", deviceId="
                + deviceId + ", macId=" + macId + "]";
     }
-    
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((deviceId == null) ? 0 : deviceId.hashCode());
+        result = prime * result + ((equipmentStatus == null) ? 0 : equipmentStatus.hashCode());
+        result = prime * result + ((fanStatus == null) ? 0 : fanStatus.hashCode());
+        result = prime * result + ((macId == null) ? 0 : macId.hashCode());
+        result = prime * result
+                 + ((previousEquipmentStatus == null) ? 0 : previousEquipmentStatus.hashCode());
+        result = prime * result + ((previousFanStatus == null) ? 0 : previousFanStatus.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        EquipmentStatusEvent other = (EquipmentStatusEvent) obj;
+        if (deviceId == null) {
+            if (other.deviceId != null)
+                return false;
+        } else if (!deviceId.equals(other.deviceId))
+            return false;
+        if (equipmentStatus != other.equipmentStatus)
+            return false;
+        if (fanStatus == null) {
+            if (other.fanStatus != null)
+                return false;
+        } else if (!fanStatus.equals(other.fanStatus))
+            return false;
+        if (macId == null) {
+            if (other.macId != null)
+                return false;
+        } else if (!macId.equals(other.macId))
+            return false;
+        if (previousEquipmentStatus != other.previousEquipmentStatus)
+            return false;
+        if (previousFanStatus == null) {
+            if (other.previousFanStatus != null)
+                return false;
+        } else if (!previousFanStatus.equals(other.previousFanStatus))
+            return false;
+        return true;
+    }
 }

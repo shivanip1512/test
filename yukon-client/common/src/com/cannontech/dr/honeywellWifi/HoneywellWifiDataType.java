@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import com.cannontech.dr.honeywellWifi.azure.event.ApplicationAccessAddedEvent;
+import com.cannontech.dr.honeywellWifi.azure.event.ApplicationAccessRemovedEvent;
 import com.cannontech.dr.honeywellWifi.azure.event.ConnectionStatusEvent;
 import com.cannontech.dr.honeywellWifi.azure.event.DemandResponseEvent;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatusEvent;
@@ -20,6 +21,7 @@ public enum HoneywellWifiDataType {
     EQUIPMENT_STATUS_EVENT("EquipmentStatusEvent", EquipmentStatusEvent.class),
     CONNECTION_STATUS_EVENT("ConnectionStatusEvent", ConnectionStatusEvent.class),
     APPLICATION_ACCESS_ADDED_EVENT("ApplicationAccessAddedEvent", ApplicationAccessAddedEvent.class),
+    APPLICATION_ACCESS_REMOVED_EVENT("ApplicationAccessRemovedEvent", ApplicationAccessRemovedEvent.class),
     UNKNOWN("", UnknownEvent.class);
     
     private String jsonString;
