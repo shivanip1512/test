@@ -506,7 +506,7 @@ public class ViewCreator
 			{
 				sig.setPointID( Integer.parseInt(rowData[i][1].toString()) );			
 				sig.setTimeStamp( new ModifiedDate( ((Timestamp)rowData[i][2]).getTime() ) );
-				sig.setSOE_Tag( Integer.parseInt(rowData[i][3].toString()) );
+				sig.setSoeTag( Integer.parseInt(rowData[i][3].toString()) );
 				sig.setLogType( Integer.parseInt(rowData[i][4].toString()) );
 				sig.setCategoryID( Integer.parseInt(rowData[i][5].toString()) );
 				sig.setAction( CommonUtils.createString( rowData[i][6] ) );

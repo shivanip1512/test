@@ -33,7 +33,7 @@ public class MessageSerializer extends
                                         com.cannontech.messaging.serialization.thrift.generated.Message thriftMessage,
                                         Message msg) {
         msg.setPriority(thriftMessage.get_messagePriority());
-        msg.setSOE_Tag(thriftMessage.get_soe());
+        msg.setSoeTag(thriftMessage.get_soe());
         msg.setSource(thriftMessage.get_src());
         msg.setTimeStamp(ConverterHelper.millisecToDate(thriftMessage.get_messageTime()));
         msg.setUserName(thriftMessage.get_usr());
@@ -45,7 +45,7 @@ public class MessageSerializer extends
                                         com.cannontech.messaging.serialization.thrift.generated.Message entity) {
         entity.set_messagePriority((byte)msg.getPriority());
         entity.set_messageTime(ConverterHelper.dateToMillisec(msg.getTimeStamp()));
-        entity.set_soe(msg.getSOE_Tag());
+        entity.set_soe(msg.getSoeTag());
         entity.set_src(msg.getSource());
         entity.set_usr(msg.getUserName());
     }

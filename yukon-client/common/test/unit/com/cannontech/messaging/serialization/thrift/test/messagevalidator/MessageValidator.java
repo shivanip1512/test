@@ -14,7 +14,7 @@ public class MessageValidator extends AutoInitializedClassValidator<Message> {
     public void populateExpectedValue(Message ctrlObj, RandomGenerator generator) {
         ctrlObj.setTimeStamp(generator.generateDate());
         ctrlObj.setPriority(generator.generateInt(0, 15));
-        ctrlObj.setSOE_Tag(generator.generateInt());
+        ctrlObj.setSoeTag(generator.generateInt());
         ctrlObj.setUserName(generator.generateString());
         ctrlObj.setSource(generator.generateString());
     }

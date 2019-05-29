@@ -1,5 +1,6 @@
 package com.cannontech.message.util;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -8,11 +9,13 @@ import com.cannontech.common.util.CtiUtilities;
  * Message is the base message type for all messages.  
  * It corresponds to the C++ base message class CtiMessage.
  */
-public class Message {
+public class Message implements Serializable {
+    
+    private static final long serialVersionUID = -5133067389097578007L;
     
     private Date timeStamp;
     private int priority = 7;
-    private int SOE_Tag;
+    private int soeTag;
     private String userName = CtiUtilities.getUserName();
     private String source = CtiUtilities.DEFAULT_MSG_SOURCE;
     
@@ -37,12 +40,12 @@ public class Message {
         this.priority = priority;
     }
     
-    public int getSOE_Tag() {
-        return SOE_Tag;
+    public int getSoeTag() {
+        return soeTag;
     }
     
-    public void setSOE_Tag(int sOE_Tag) {
-        SOE_Tag = sOE_Tag;
+    public void setSoeTag(int soeTag) {
+        this.soeTag = soeTag;
     }
     
     public String getUserName() {
@@ -63,8 +66,8 @@ public class Message {
     
     @Override
     public String toString() {
-        return String.format("Message [timeStamp=%s, priority=%s, SOE_Tag=%s, userName=%s, source=%s]", 
-                timeStamp, priority, SOE_Tag, userName, source);
+        return String.format("Message [timeStamp=%s, priority=%s, soeTag=%s, userName=%s, source=%s]", 
+                timeStamp, priority, soeTag, userName, source);
     }
     
 }
