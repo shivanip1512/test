@@ -110,7 +110,7 @@ public interface JsonSerializers {
         public HoneywellWifiDataType deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) 
                 throws IOException, JsonProcessingException {
             Optional<HoneywellWifiDataType> optionalType = HoneywellWifiDataType.forJsonString(jsonParser.getValueAsString());
-            return optionalType.orElse(null);
+            return optionalType.orElse(HoneywellWifiDataType.UNKNOWN);
         }
     }
     
