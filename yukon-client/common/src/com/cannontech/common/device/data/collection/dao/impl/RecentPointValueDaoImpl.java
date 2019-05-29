@@ -89,11 +89,12 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
     
     @Override
     public List<RfnGateway> getRfnGatewayList(DeviceGroup group, List<DeviceGroup> groups, boolean includeDisabled) {       
-        SqlStatementBuilder allGateways = buildGatewaySelect(group, groups, includeDisabled);
-        List<RfnGateway> gatewayResult = new ArrayList<>();    
-        List<Integer> results = jdbcTemplate.query(allGateways, TypeRowMapper.INTEGER);
-        results.forEach(item -> gatewayResult.add(rfnGatewayService.getGatewayByPaoId(item.intValue())));
-        return gatewayResult;
+        SqlStatementBuilder allGatewaysSql = buildGatewaySelect(group, groups, includeDisabled);
+
+        return jdbcTemplate.query(allGatewaysSql, TypeRowMapper.INTEGER)
+                            .stream()
+                            .map(rfnGatewayService::getGatewayByPaoId)
+                            .collect(Collectors.toList());
     }
     
     /**
@@ -101,7 +102,6 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
      */
     private SqlStatementBuilder buildGatewaySelect(DeviceGroup group, List<DeviceGroup> groups, boolean includeDisabled) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-
         sql.append( "SELECT DISTINCT drdd.GatewayId");      
         sql.append("FROM YukonPaObject ypo");
         sql.append("LEFT JOIN DynamicRfnDeviceData drdd on ypo.PAObjectID = drdd.DeviceId");
