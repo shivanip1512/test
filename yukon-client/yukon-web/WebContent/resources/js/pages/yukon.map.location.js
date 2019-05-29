@@ -83,8 +83,15 @@ yukon.map.location = (function () {
                     {
                          text: yg.text.ok, 
                          click: function() {
+                        	 var location = {
+                              	    paoId : feature.get('pao').paoId,
+                              	    latitude : latitude,
+                              	    longitude : longitude
+                             }
                              $.ajax({
-                                 url: yukon.url('/stars/mapNetwork/saveCoordinates?' + $.param({ deviceId: feature.get('pao').paoId, latitude: latitude, longitude: longitude })),
+                                 type: "POST",
+                                 url: yukon.url('/stars/mapNetwork/saveCoordinates'),
+                                 data: location,
                                  success: function(results) {
                                      window.location.reload();
                                  }

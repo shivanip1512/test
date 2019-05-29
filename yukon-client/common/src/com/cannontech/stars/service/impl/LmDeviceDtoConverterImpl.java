@@ -177,7 +177,7 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
             } else {
                 // this could have parse exception I think, which will catch any case but DELETE or NULL (as
                 // above if check)
-                gps = LocationServiceImpl.isValidLocationFormat(hwFields[ImportFields.IDX_LATITUDE],
+                gps = LocationServiceImpl.getValidLocationFormat(hwFields[ImportFields.IDX_LATITUDE],
                     hwFields[ImportFields.IDX_LONGITUDE]);
             }
             return gps;
