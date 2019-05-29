@@ -406,6 +406,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         List<Integer> linkCost = Arrays.asList(1, 2, 3, 4, 5);
                         int randomElement = linkCost.get(new Random().nextInt(linkCost.size()));
                         neighborData.setNeighborLinkCost((float) randomElement);
+                        List<Integer> numSamples = Arrays.asList(49, 50, 51);
+                        randomElement = numSamples.get(new Random().nextInt(numSamples.size()));
+                        neighborData.setNumSamples(randomElement);
                         result.getMetadatas().put(metaData, neighborData); 
                         break;
                     default:
