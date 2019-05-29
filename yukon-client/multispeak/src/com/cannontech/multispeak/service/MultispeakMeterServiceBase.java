@@ -36,6 +36,7 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.substation.dao.SubstationDao;
@@ -215,6 +216,13 @@ public class MultispeakMeterServiceBase {
                 manufacturer = manufacturerModel[0];
                 model = manufacturerModel[1];
             } else {
+                
+                // could possibly add something in here that defaults to the default meter definition, 
+                // would also just have to "pick" if there are multiple setups for paoType 
+//                List<RfnManufacturerModel> defaultTemplate = RfnManufacturerModel.getForType(templateMeter.getPaoType());
+//                manufacturer = defaultTemplate.get(0).getManufacturer();
+//                model = defaultTemplate.get(0).getModel();
+                        
                 throw new BadConfigurationException("Template Manufacturer/Model not configured correctly.");
             }
         }
