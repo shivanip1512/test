@@ -818,7 +818,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                                                                                                                     responseUrl,
                                                                                                                                     readingChangedNotification);
                         List<ErrorObject> errObjects = null;
-                        if (readingChangedNotificationResponse != null) {
+                        if (readingChangedNotificationResponse != null && readingChangedNotificationResponse.getReadingChangedNotificationResult() != null) {
                             List<ErrorObject> responseErrorObjects = readingChangedNotificationResponse.getReadingChangedNotificationResult().getErrorObject();
                             errObjects = responseErrorObjects;
                         }
@@ -919,7 +919,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                                                                                                                 responseUrl,
                                                                                                                                 formattedBlockNotification);
                     List<ErrorObject> errObjects = null;
-                    if (formattedBlockNotificationResponse != null) {
+                    if (formattedBlockNotificationResponse != null && formattedBlockNotificationResponse.getFormattedBlockNotificationResult() != null) {
                         List<ErrorObject> responseErrorObjects = formattedBlockNotificationResponse.getFormattedBlockNotificationResult().getErrorObject();
                         errObjects = responseErrorObjects;
                     }
