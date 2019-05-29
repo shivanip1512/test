@@ -604,21 +604,27 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             log.debug("Recieved neighbor data for {} devices", neighborMetaData.size());
             
             log.debug("Loading locations");
-            filter.getLinkStrength().forEach(linkStrength -> {
-                Set<RfnIdentifier> neighbors = neighborMetaData.values().stream()
-                        .filter(result -> result.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA))
-                        .map(result -> {
-                            return (NeighborData) result.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA);
-                        }).filter(neighborData -> linkStrength.containsLinkStrength(neighborData.getNeighborLinkCost()))
-                        .map(neighborData -> neighborData.getRfnIdentifier())
-                        .collect(Collectors.toSet());
+            Map<LinkStrength, List<NeighborData>> groupedNeighbors =
+                    neighborMetaData.values().stream()
+                    .filter(result -> result.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA))
+                    .map(result -> {
+                        return (NeighborData) result.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA);
+                    }).collect(Collectors.groupingBy(neighborData -> LinkStrength.getLinkStrength(neighborData), HashMap::new, Collectors.toList()));
+                
+            groupedNeighbors.forEach((linkStrength, neighbors) -> {
+                Set<RfnIdentifier> ids = neighbors.stream()
+                    .map(NeighborData::getRfnIdentifier)
+                    .collect(Collectors.toSet());
                 //linkStrength needs i18n
-                addDevicesToMap(map, linkStrength.getColor().getHexColor(), linkStrength.name(), neighbors);
+                addDevicesToMap(map, linkStrength.getColor().getHexColor(), linkStrength.name(), ids);
             });
         } catch (NmCommunicationException e) {
             throw new NmNetworkException(commsError, e, "commsError");
         }
 
+        //add gateways
+        addDevicesToMap(map, "#000000", null, metaData.keySet());
+        
         log.debug("MAP-"+map);
         return map;
     }
@@ -644,7 +650,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      * Add legend and devices location to a map
      */
     private void addDevicesToMap(NetworkMap map, String hexColor, String legend, Set<RfnIdentifier> devices) {
-        map.getLegend().add(new Legend(hexColor, legend));
+        if(legend != null) {
+            map.getLegend().add(new Legend(hexColor, legend));
+        }
         Set<Integer> paoIds = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(devices);
         Set<PaoLocation> locations = paoLocationDao.getLocations(paoIds);
         FeatureCollection features = paoLocationService.getFeatureCollection(locations);

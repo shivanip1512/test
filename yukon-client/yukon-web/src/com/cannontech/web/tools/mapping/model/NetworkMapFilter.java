@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.rfn.message.network.NeighborData;
 import com.google.common.collect.Lists;
 
 public class NetworkMapFilter {
@@ -74,22 +75,30 @@ public class NetworkMapFilter {
     }
     
     public enum LinkStrength {
-        GOOD(Color.GREEN, Lists.newArrayList(1,2)),
-        OK(Color.BLUE, Lists.newArrayList(3)),
-        WEAK(Color.ORANGE, Lists.newArrayList(4,5)),
+        GOOD(Color.GREEN, Lists.newArrayList(1f,2f)),
+        OK(Color.BLUE, Lists.newArrayList(3f)),
+        WEAK(Color.ORANGE, Lists.newArrayList(4f,5f)),
         UNVERIFIED(Color.GREY, Lists.newArrayList());
         
+        private static int UNVERIFIED_LIMIT = 50;
+        
         private Color color;
-        private List<Integer> linkStrength;
-        LinkStrength(Color color, List<Integer> linkStrength) {
+        private List<Float> linkCost;
+        LinkStrength(Color color, List<Float> linkCost) {
             this.color = color;
-            this.linkStrength = linkStrength;
+            this.linkCost = linkCost;
         }
         public Color getColor() {
             return color;
         }
-        public boolean containsLinkStrength(float linkStrength) {
-            return this.linkStrength.contains((int)linkStrength);
+        public static LinkStrength getLinkStrength(NeighborData neighborData) {
+            if(neighborData.getNumSamples() < UNVERIFIED_LIMIT) {
+                return LinkStrength.UNVERIFIED;
+            }
+            return Lists.newArrayList(LinkStrength.values())
+                    .stream().filter(ls -> ls.linkCost.contains(neighborData.getNeighborLinkCost()))
+                    .findFirst()
+                    .orElseThrow(() -> new UnsupportedOperationException("Undefined link cost " + neighborData.getNeighborLinkCost()));
         }
     }
     
