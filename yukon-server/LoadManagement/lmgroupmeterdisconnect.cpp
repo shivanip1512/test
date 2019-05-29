@@ -89,7 +89,7 @@ bool LMGroupMeterDisconnect::sendShedControl( long controlMinutes )
 {
     CTILOG_WARN( dout, _groupTypeName << " Shed command is unsupported for LM Group: " << getPAOName() );
 
-    return true;
+    return false;
 }
 
 bool LMGroupMeterDisconnect::doesStopRequireCommandAt( const CtiTime & currentTime ) const
