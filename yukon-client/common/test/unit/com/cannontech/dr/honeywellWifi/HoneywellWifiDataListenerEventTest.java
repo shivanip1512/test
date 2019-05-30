@@ -38,7 +38,7 @@ public class HoneywellWifiDataListenerEventTest {
     }
 
     @Test
-    public void test_uiDataBasicEvent() {
+    public void test_uiDataBasicEvent_BasicParsing() {
         final Instant created = Instant.now();
         final Double displayedTemp = 78.0;
         final Double heatSetpoint = 62.0;
@@ -77,7 +77,7 @@ public class HoneywellWifiDataListenerEventTest {
                                                               switchEmergencyHeatAllowed, systemSwitchPosition, deadband, displayedTempStatus, deviceId, macId);
         
         Assert.assertEquals("Create Date Mismatch", expectedEvent.getCreatedDate(), actualEvent.getCreatedDate());
-        Assert.assertEquals("Displayed Temperature Mismathc", expectedEvent.getDisplayedTemp(), actualEvent.getDisplayedTemp());
+        Assert.assertEquals("Displayed Temperature Mismatch", expectedEvent.getDisplayedTemp(), actualEvent.getDisplayedTemp());
         Assert.assertEquals("Heat Set Point Mismatch", expectedEvent.getHeatSetpoint(), actualEvent.getHeatSetpoint());
         Assert.assertEquals("Cool Set Point Mismatch", expectedEvent.getCoolSetpoint(), actualEvent.getCoolSetpoint());
         Assert.assertEquals("Displayed Units Mismatch", expectedEvent.getDisplayedUnits(), actualEvent.getDisplayedUnits());
@@ -97,7 +97,7 @@ public class HoneywellWifiDataListenerEventTest {
     }
     
     @Test
-    public void test_demandResponseEvent() {
+    public void test_demandResponseEvent_BasicParsing() {
         final Integer demandResponseId = 1202;
         final EventPhase phase = EventPhase.NOT_STARTED;
         final Boolean optedOut = false;
@@ -136,7 +136,7 @@ public class HoneywellWifiDataListenerEventTest {
     }
     
     @Test
-    public void test_equipmentStatusEvent() {
+    public void test_equipmentStatusEvent_BasicParsing() {
         final EquipmentStatus equipmentStatus = EquipmentStatus.OFF;
         final EquipmentStatus previouseEquipmentStatus = EquipmentStatus.OFF;
         final String fanStatus = "On";
@@ -164,7 +164,7 @@ public class HoneywellWifiDataListenerEventTest {
     }
     
     @Test
-    public void test_connectionStatusEvent() {
+    public void test_connectionStatusEvent_BasicParsing() {
         final ConnectionStatus connectionStatus = ConnectionStatus.CONNECTION_LOST;
         final Integer deviceId = 35208;
         final String macId = "00D02D6317ED";
@@ -186,7 +186,7 @@ public class HoneywellWifiDataListenerEventTest {
     }
     
     @Test
-    public void test_applicationAccessAddedEvent() {
+    public void test_applicationAccessAddedEvent_BasicParsing() {
         final int userId = 7697;
         final int locationId = 27594;
         final String macId = "00D02D786734";
@@ -215,7 +215,7 @@ public class HoneywellWifiDataListenerEventTest {
     }
     
     @Test
-    public void test_applicationAccessRemovedEvent() {
+    public void test_applicationAccessRemovedEvent_BasicParsing() {
         final Integer userId = 17219;
         final Integer locationId = 27330;
         final String macId = "00D02D52330F";
@@ -242,7 +242,7 @@ public class HoneywellWifiDataListenerEventTest {
     }
      
     @Test
-    public void test_unknownEvent() {
+    public void test_unknownEvent_BasicParsing() {
         BrokeredMessage message = new BrokeredMessage();
         
         String json = "{\r\n" + 
