@@ -623,7 +623,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         }
 
         //add gateways
-        addDevicesToMap(map, "#000000", null, metaData.keySet());
+        addDevicesToMap(map, "#ffffff", null, metaData.keySet());
         
         log.debug("MAP-"+map);
         return map;
