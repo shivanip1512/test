@@ -215,6 +215,7 @@ pipeline {
 
 						archiveArtifacts artifacts: 'yukon-build/dist/*'
 					}catch(Exception){
+						currentBuild.result = 'FAILURE'
 						//Added sleep so that it capture full log for current stage
 						sleep(5)
 						sendEmailNotification("${env.STAGE_NAME}")
@@ -259,11 +260,9 @@ def sendEmailNotification(String stageName){
 	}
 	//Code for getting logs 
 	def logString = "\nLogs : "
-	for(String line : currentBuild.rawBuild.getLog(500)){
+	for(String line : currentBuild.rawBuild.getLog(100)){
 	    if(line?.trim()){
-	        if(line.startsWith("["+stageName+"]") || line.startsWith("[Pipeline] ["+stageName+"]")){
-		        logString += "\n"+ line
-	        }
+			logString += "\n"+ line
 	    }
 	}
 	emailext body: "${stageName} Failed : Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}\n ${changeString}     ${logString}",
