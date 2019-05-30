@@ -222,10 +222,10 @@ public class HoneywellWifiDataListener {
         String jsonPayload = StringEscapeUtils.unescapeJava(messageWrapper.getJson());
         try {
             HoneywellWifiData data = jsonParser.readValue(jsonPayload, messageWrapper.getType().getMessageClass());
-            if(messageWrapper.getType().name() == "UNKNOWN") {
+            if (messageWrapper.getType().name() == "UNKNOWN") {
                 log.info("Received new event of unknown data type, enable debugging for more information.");
                 
-                if(log.isDebugEnabled() && originalMessage.getBody() != null) {
+                if (log.isDebugEnabled() && originalMessage.getBody() != null) {
                     String unknownEventMessage;
                     Scanner scanner = new Scanner(originalMessage.getBody());
                     //Scans the entire input in one token. See http://stackoverflow.com/a/5445161/299996
