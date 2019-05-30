@@ -3,9 +3,15 @@ package com.cannontech.common.util;
 import static org.junit.Assert.assertEquals;
 
 import java.text.ParseException;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -177,5 +183,40 @@ public class TimeUtilTest {
         long expectedResult = 0;
         assertEquals("Remaining hours should have been " + expectedResult, expectedResult,
             TimeUtil.hoursRemainingAfterConveritngToDays(totalHours));
+    }
+
+    @Test
+    public void test_convertToLocalInstant_EDT() {
+        final String zoneId = TimeZone.getTimeZone("America/New_York").getID();
+        DateTimeZone.setDefault(DateTimeZone.forID(zoneId));
+        DateTimeFormatter timeFormater = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
+        Instant instantInUTC = timeFormater.parseDateTime("2010-01-01 10:10:00").toInstant();
+        Instant instantInEDT = TimeUtil.convertToLocalInstant(instantInUTC);
+        Instant expectedInstant = timeFormater.parseDateTime("2010-01-01 05:10:00").toInstant();
+        assertEquals("UTC Instant " + instantInUTC + " conversion to EDT Time Zone is " + instantInEDT, expectedInstant,
+            instantInEDT);
+    }
+
+    @Test
+    public void test_convertToLocalInstant_IST() {
+        final String zoneId = TimeZone.getTimeZone("Asia/Kolkata").getID();
+        DateTimeZone.setDefault(DateTimeZone.forID(zoneId));
+        DateTimeFormatter timeFormater = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
+        Instant instantInUTC = timeFormater.parseDateTime("2010-01-01 10:10:00").toInstant();
+        Instant instantInIST = TimeUtil.convertToLocalInstant(instantInUTC);
+        Instant expectedInstant = timeFormater.parseDateTime("2010-01-01 15:40:00").toInstant();
+        assertEquals("UTC Instant " + instantInUTC + " conversion to IST Time Zone is " + instantInIST, expectedInstant,
+            instantInIST);
+    }
+
+    @Test
+    public void test_convertToLocalInstant_WithoutZone() {
+        DateTimeFormatter timeFormater = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
+        Instant instantInUTC = timeFormater.parseDateTime("2010-01-01 10:10:00").toInstant();
+        Instant instantInlocal = TimeUtil.convertToLocalInstant(instantInUTC);
+        long serverTimeZone = DateTimeZone.getDefault().convertLocalToUTC(instantInlocal.getMillis(), true);
+        Instant instantInServerTimezone = new Instant(serverTimeZone);
+        assertEquals("UTC Instant " + instantInUTC + " to local time zone conversion is " + instantInlocal
+            + " and local to UTC conversion is " + instantInServerTimezone, instantInUTC, instantInServerTimezone);
     }
 }

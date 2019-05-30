@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
@@ -42,6 +43,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -207,6 +209,8 @@ public class EcobeeController {
         try {
             startDate = dateFormattingService.flexibleInstantParser(ecobeeStartReportDate, DateOnlyMode.START_OF_DAY,
                 userContext);
+            // convert the instant as per server timezone so that the date from UI is passed to Ecobee
+            startDate = TimeUtil.convertToLocalInstant(startDate);
         } catch (ParseException e) {
             log.error(e);
             errResponse.put("startDateError", "true");
@@ -215,8 +219,10 @@ public class EcobeeController {
 
         Instant endDate = null;
         try {
-            endDate =
-                dateFormattingService.flexibleInstantParser(ecobeeEndReportDate, DateOnlyMode.END_OF_DAY, userContext);
+            endDate = dateFormattingService.flexibleInstantParser(ecobeeEndReportDate, DateOnlyMode.START_OF_DAY,
+                userContext);
+            // convert the instant as per server timezone so that the date from UI is passed to Ecobee
+            endDate = TimeUtil.convertToLocalInstant(endDate);
         } catch (ParseException e) {
             log.error(e);
             errResponse.put("endDateError", "true");
