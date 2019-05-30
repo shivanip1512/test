@@ -1,11 +1,12 @@
 package com.cannontech.common.rfn.service.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -78,46 +79,63 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
      * return meta data for a "chunk" of identifiers
      */
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetaData(EntityType entity,
-            List<RfnIdentifier> identifiers, Set<RfnMetadataMulti> requests,
+            List<RfnIdentifier> identifiers, Set<RfnMetadataMulti> multi,
             BlockingJmsReplyHandler<RfnMetadataMultiResponse> reply, String requestIdentifier)
             throws NmCommunicationException {
         try {
             RfnMetadataMultiRequest request = new RfnMetadataMultiRequest(entity);
             request.setRequestID(requestIdentifier);
             request.setRfnIdentifiers(Sets.newHashSet(identifiers));
-            request.setRfnMetadatas(requests);
-            log.debug("RfnMetadataMultiRequest identifier {} metadatas {} rfn ids {}", requestIdentifier, requests,
+            request.setRfnMetadatas(multi);
+            log.debug("RfnMetadataMultiRequest identifier {} metadatas {} rfn ids {}", requestIdentifier, multi,
                 identifiers.size());
             qrTemplate.send(request, reply);
             RfnMetadataMultiResponse response = reply.waitForCompletion();
             log.debug("RfnMetadataMultiResponse identifier {} response {}", requestIdentifier, response.getResponseType());
-              
-            if (response.getResponseType() == RfnMetadataMultiResponseType.OK) {
-                updatePrimaryGatewayToDeviceMapping(response);
-                return response.getQueryResults();
-            } else {
-                String error = nmError + " Reply type:" + response.getResponseType() + " Message:"
-                    + response.getResponseMessage() + "Request Identifier:" + requestIdentifier;
-                log.error(error);
-                throw new NmCommunicationException(error);
-            }
+            validateResponse(response, multi, requestIdentifier);
+            updatePrimaryGatewayToDeviceMapping(response);
+            return response.getQueryResults();
         } catch (ExecutionException e) {
             log.error(commsError, e);
             throw new NmCommunicationException(commsError, e);
         }
     }
 
+    private void validateResponse(RfnMetadataMultiResponse response, Set<RfnMetadataMulti> request,
+            String requestIdentifier) throws NmCommunicationException {
+        if (response.getResponseType() != RfnMetadataMultiResponseType.OK) {
+            String error = nmError + " Reply type:" + response.getResponseType() + " Message:"
+                + response.getResponseMessage() + " request identifier " + requestIdentifier;
+            log.error(error);
+            throw new NmCommunicationException(error);
+        }
+        if (response.getQueryResults() == null) {
+            String error = "No query results recieved reply type " + response.getResponseType() + " request identifier:"
+                + requestIdentifier;
+            log.error(error);
+            throw new NmCommunicationException(error);
+        }
+        
+        request.forEach(reply -> {
+            Optional<RfnMetadataMultiQueryResult> foundReply = response.getQueryResults().values()
+                    .stream().filter(result -> result.isValidResultForMulti(reply)).findFirst();
+            if(foundReply.isEmpty()) {
+                log.error("Requested {} was not found in response or was found with result not OK request identifier {}", request, requestIdentifier);
+            }
+        });
+    }
+
     private void updatePrimaryGatewayToDeviceMapping(RfnMetadataMultiResponse response) {
         executor.execute(() -> {
-            List<NodeComm> nodeComms = new ArrayList<>();
-            response.getQueryResults().values().forEach(value -> {
-                Object comm = value.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
-                if (comm != null) {
-                    nodeComms.add((NodeComm) comm);
-                }
-            });
-            log.debug("Updating device to gateway mapping for {} nodes", nodeComms.size());
-            // create/update table mapping
+            Set<NodeComm> comms = response.getQueryResults().values().stream()
+                    .filter(result -> result.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM))
+                    .map(result -> {
+                        return (NodeComm) result.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
+                }).collect(Collectors.toSet());
+            
+            if(!comms.isEmpty()) {
+                log.debug("Updating device to gateway mapping for {} nodes", comms.size());
+            }
         });
     }
     
