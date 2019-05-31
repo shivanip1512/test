@@ -3,10 +3,8 @@ package com.cannontech.common.util;
 import static org.junit.Assert.assertEquals;
 
 import java.text.ParseException;
-import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
@@ -185,17 +183,6 @@ public class TimeUtilTest {
             TimeUtil.hoursRemainingAfterConveritngToDays(totalHours));
     }
 
-/*    @Test
-    public void test_convertToLocalInstant_EDT() {
-        DateTimeZone.setDefault(DateTimeZone.forID("America/New_York"));
-        DateTimeFormatter timeFormater = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
-        Instant instantInUTC = timeFormater.parseDateTime("2010-01-01 10:10:00").toInstant();
-        Instant instantInEDT = TimeUtil.convertToLocalInstant(instantInUTC);
-        Instant expectedInstant = timeFormater.parseDateTime("2010-01-01 05:10:00").toInstant();
-        assertEquals("UTC Instant " + instantInUTC + " conversion to EDT Time Zone is " + instantInEDT, expectedInstant,
-            instantInEDT);
-    }
-
     @Test
     public void test_convertToLocalInstant_IST() {
         DateTimeZone.setDefault(DateTimeZone.forID("Asia/Kolkata"));
@@ -205,6 +192,18 @@ public class TimeUtilTest {
         Instant expectedInstant = timeFormater.parseDateTime("2010-01-01 15:40:00").toInstant();
         assertEquals("UTC Instant " + instantInUTC + " conversion to IST Time Zone is " + instantInIST, expectedInstant,
             instantInIST);
+        DateTimeZone.setDefault(DateTimeZone.forID("America/Chicago"));
+    }
+
+    @Test
+    public void test_convertToLocalInstant_CDT() {
+        DateTimeZone.setDefault(DateTimeZone.forID("America/Chicago"));
+        DateTimeFormatter timeFormater = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
+        Instant instantInUTC = timeFormater.parseDateTime("2010-01-01 10:10:00").toInstant();
+        Instant instantInCDT = TimeUtil.convertToLocalInstant(instantInUTC);
+        Instant expectedInstant = timeFormater.parseDateTime("2010-01-01 04:10:00").toInstant();
+        assertEquals("Date in UTC" + instantInUTC.toDate() + " conversion to CDT Date is " + instantInCDT.toDate(),
+            expectedInstant.toDate(), instantInCDT.toDate());
     }
 
     @Test
@@ -216,5 +215,5 @@ public class TimeUtilTest {
         Instant instantInServerTimezone = new Instant(serverTimeZone);
         assertEquals("UTC Instant " + instantInUTC + " to local time zone conversion is " + instantInlocal
             + " and local to UTC conversion is " + instantInServerTimezone, instantInUTC, instantInServerTimezone);
-    }*/
+    }
 }
