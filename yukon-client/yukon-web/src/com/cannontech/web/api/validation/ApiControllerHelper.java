@@ -16,7 +16,9 @@ import org.springframework.validation.BindingResult;
  */
 public class ApiControllerHelper {
 
-    // Populate binding error from the error object received from rest call.
+    /**
+     * Populate binding error from the error object received from rest call. 
+     */
     public void populateBindingError(BindingResult result, BindException error, ResponseEntity<? extends Object> errorResponse) {
         LinkedHashMap<?, ?> errorObject = (LinkedHashMap<?, ?>) errorResponse.getBody();
         ArrayList<?> fieldError = (ArrayList<?>) errorObject.get("fieldErrors");

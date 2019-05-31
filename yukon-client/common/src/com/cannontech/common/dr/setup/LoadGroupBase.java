@@ -8,7 +8,7 @@ public class LoadGroupBase {
     private Integer id;
     private String name;
     private PaoType type;
-    private double kWCapacity;
+    private Double kWCapacity;
     private boolean disableGroup;
     private boolean disableControl;
 
@@ -28,11 +28,11 @@ public class LoadGroupBase {
         this.type = type;
     }
 
-    public double getkWCapacity() {
+    public Double getkWCapacity() {
         return kWCapacity;
     }
 
-    public void setkWCapacity(double kWCapacity) {
+    public void setkWCapacity(Double kWCapacity) {
         this.kWCapacity = kWCapacity;
     }
 

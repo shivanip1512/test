@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -91,7 +90,9 @@ public class LoadGroupSetupController {
     }
     
     @PostMapping("/save")
-    public String save(@ModelAttribute LoadGroupBase loadGroup, YukonUserContext userContext, BindingResult result, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+    public String save(@ModelAttribute LoadGroupBase loadGroup, BindingResult result, YukonUserContext userContext,
+            FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+
         String url = helper.getApiURL(request, request.getPathInfo());
         try {
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, loadGroup);
@@ -113,7 +114,9 @@ public class LoadGroupSetupController {
         return null;
     }
     
-    /* Make a rest call for retrieving group */
+    /**
+     * Make a rest call for retrieving group 
+     */
     private LoadGroupBase retrieveGroup(YukonUserContext userContext, HttpServletRequest request, int id, String url) {
         LoadGroupBase loadGroup = null;
         try {
