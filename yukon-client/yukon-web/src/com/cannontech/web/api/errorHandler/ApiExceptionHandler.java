@@ -2,9 +2,13 @@ package com.cannontech.web.api.errorHandler;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
 import org.apache.logging.log4j.Logger;
@@ -12,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -27,7 +32,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -35,10 +39,12 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.api.errorHandler.model.ApiError;
 import com.cannontech.web.api.errorHandler.model.ApiFieldError;
 import com.cannontech.web.api.errorHandler.model.ApiGlobalError;
 import com.cannontech.web.api.token.AuthenticationException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.RestController;
 
 @ControllerAdvice(annotations = RestController.class)
@@ -76,25 +82,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @Override
-    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
-            final HttpRequestMethodNotSupportedException ex, final HttpHeaders headers, final HttpStatus status,
-            final WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-
-        final StringBuilder builder = new StringBuilder();
-        builder.append(ex.getMethod());
-        builder.append(" method is not supported for this request. Supported methods are ");
-        ex.getSupportedHttpMethods().forEach(t -> builder.append(t + " "));
-
-        final ApiError apiError =
-            new ApiError(HttpStatus.METHOD_NOT_ALLOWED.value(), builder.toString(), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.METHOD_NOT_ALLOWED);
-    }
-
-    
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     protected ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex,
             WebRequest request) {
@@ -222,18 +209,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @Override
-    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
-            HttpStatus status, WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-
-        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND.value(),
-            String.format("Could not find the %s method for URL %s", ex.getHttpMethod(), ex.getRequestURL()), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<Object> handleAll(final Exception ex, final WebRequest request) {
 
@@ -253,12 +228,57 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      *  Log API processing error with root cause.
      */
-    private void logApiException(final WebRequest request, Throwable t, String uniqueKey) {
+    private static void logApiException(final WebRequest request, Throwable t, String uniqueKey) {
         Throwable rc = CtiUtilities.getRootCause(t);
         String url = ((ServletWebRequest) request).getRequest().getRequestURL().toString();
         log.error(" API processing error with {" + uniqueKey + "}: " + url, t);
         log.error("Root cause was: ", rc);
 
+    }
+
+    /**
+     * Build json response for no Handler Found in application.
+     */
+    public static void noHandlerFoundException(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
+        String url = ServletUtil.getFullURL(request);
+        log.error(uniqueKey + " No mapping for " + request.getMethod() + " " + url);
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND.value(),
+            String.format("Could not find the %s method for URL %s", request.getMethod(), url), uniqueKey);
+        parseToJson(response, apiError, HttpStatus.NOT_FOUND);
+
+    }
+
+    /**
+     * Handle Method Not Supported exception for API calls
+     */
+    
+    public static void handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex,
+            HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
+        logApiException(new ServletWebRequest(request), ex, uniqueKey);
+        final StringBuilder builder = new StringBuilder();
+        builder.append(ex.getMethod());
+        builder.append(" method is not supported for this request. Supported methods are ");
+        ex.getSupportedHttpMethods().forEach(t -> builder.append(t + " "));
+
+        final ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED.value(), builder.toString(), uniqueKey);
+
+        parseToJson(response, apiError, HttpStatus.METHOD_NOT_ALLOWED);
+
+    }
+
+    public static void parseToJson(HttpServletResponse response, ApiError apiError, HttpStatus httpStatus)
+            throws IOException {
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(httpStatus.value());
+        ObjectMapper mapper = new ObjectMapper();
+        try (PrintWriter out = response.getWriter()) {
+            out.print(mapper.writeValueAsString(apiError));
+            out.flush();
+        }
     }
 
 }

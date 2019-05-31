@@ -1,7 +1,6 @@
 package com.cannontech.web.filter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -19,11 +18,11 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.api.errorHandler.ApiExceptionHandler;
 import com.cannontech.web.api.errorHandler.model.ApiError;
 import com.cannontech.web.api.token.AuthenticationException;
 import com.cannontech.web.api.token.RequestContext;
 import com.cannontech.web.api.token.TokenHelper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 /**
@@ -40,15 +39,15 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             throws IOException, ServletException {
 
         // Validate all api calls except login request
-        boolean apiLoginrequest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/token"));
+        boolean apiLogin​R​equest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/token"));
 
-        if (!apiLoginrequest) {
+        if (!apiLogin​R​equest) {
             try {
                 String authToken = TokenHelper.resolveToken(request);
 
                 if (authToken != null) {
                     String userId = TokenHelper.getUserId(authToken); // validate token and get userId from claim
-                    log.debug("Recieved API request " + request.getHeader("Host") + request.getContextPath() +  " for" + userId);
+                    log.debug("Recieved API request for " + request.getHeader("Host") + request.getContextPath() +  " for" + userId);
 
                     if (userId != null) {
                         LiteYukonUser user = userDao.getLiteYukonUser(Integer.valueOf(userId));
@@ -73,15 +72,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
      */
     private void buildApiError(HttpServletResponse response, Exception e) throws IOException {
         String uniqueKey = CtiUtilities.getYKUniqueKey();
-        log.error(uniqueKey + " Expired or invalid token" + e);
+        log.error(uniqueKey + " Expired or invalid token", e);
         final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), "Authentication Required", uniqueKey);
-        ObjectMapper mapper = new ObjectMapper();
-        response.setContentType("application/json");
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        PrintWriter out = response.getWriter();
-        out.print(mapper.writeValueAsString(apiError));
-        out.flush();
-        out.close();
+        ApiExceptionHandler.parseToJson(response, apiError, HttpStatus.UNAUTHORIZED);
     }
 
     @Override

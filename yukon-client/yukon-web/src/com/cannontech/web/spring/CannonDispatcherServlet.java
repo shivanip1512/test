@@ -6,16 +6,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeansException;
-import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.spring.CannonXmlWebApplicationContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.api.errorHandler.ApiExceptionHandler;
 import com.cannontech.web.util.ErrorHelperFilter;
 import com.google.common.collect.Lists;
 
@@ -77,11 +78,28 @@ public class CannonDispatcherServlet extends DispatcherServlet {
     protected void noHandlerFound(HttpServletRequest request, HttpServletResponse response) throws Exception {
         boolean apiLoginrequest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/**"));
         if (apiLoginrequest) {
-            String url = ServletUtil.getFullURL(request);
-            throw new NoHandlerFoundException(request.getMethod(), url,
-                new ServletServerHttpRequest(request).getHeaders());
+            ApiExceptionHandler.noHandlerFoundException(request, response);
+            return;
         }
         super.noHandlerFound(request, response);
+    }
+
+    /**
+     *  Handle HttpRequestMethodNotSupportedException for API calls.
+     */
+    @Override
+    protected ModelAndView processHandlerException(HttpServletRequest request, HttpServletResponse response,
+            Object handler, Exception ex) throws Exception {
+        if (ex instanceof HttpRequestMethodNotSupportedException) {
+            boolean apiLoginrequest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/**"));
+            if (apiLoginrequest) {
+
+                ApiExceptionHandler.handleHttpRequestMethodNotSupported((HttpRequestMethodNotSupportedException) ex,
+                    request, response);
+                return null;
+            }
+        }
+        return super.processHandlerException(request, response, handler, ex);
     }
 
 }

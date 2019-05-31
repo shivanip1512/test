@@ -27,6 +27,9 @@ public class TokenHelper {
         secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     }
 
+    /**
+     * Generate JWT token based on different claims (Issuer, Subject, Audience , IssuedAt, Expiration)
+     */
     public static String createToken(Integer userId) {
 
         ZonedDateTime now = ZonedDateTime.now();
@@ -46,6 +49,9 @@ public class TokenHelper {
  
     }
 
+    /**
+     * Retrieve token from request header (Authorization: Bearer <token>).
+     */
     public static String resolveToken(HttpServletRequest req) {
 
         String token = Optional.ofNullable(req.getHeader("Authorization"))
@@ -56,10 +62,18 @@ public class TokenHelper {
         return token;
     }
 
+    /**
+     * Return UserId from token and also validate token based on secretKey.
+     */
     public static String getUserId(String token) {
         final Claims claims = getAllClaimsFromToken(token);
         return claims.getSubject();
     }
+
+    /**
+     * Validate token and return claims (Issuer, Subject, Audience , IssuedAt) associated with token.
+     * If token is expired or invalid then throw {AuthenticationException} exception.
+     */
 
     private static Claims getAllClaimsFromToken(String token) {
         try {
@@ -74,6 +88,10 @@ public class TokenHelper {
 
     }
 
+    /**
+     *  Check expiration of generated token
+     *  if token is valid then return true otherwise false.
+     */
     public static boolean checkExpiredJwt(String token) {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
