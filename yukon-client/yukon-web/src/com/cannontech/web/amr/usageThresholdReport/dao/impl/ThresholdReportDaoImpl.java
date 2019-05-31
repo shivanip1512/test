@@ -16,6 +16,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.search.result.SearchResults;
@@ -111,6 +112,10 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
             detail.setDeviceName(rs.getString("PAOName"));
             detail.setMeterNumber(Objects.toString(rs.getString("MeterNumber"), ""));
             detail.setAddressSerialNumber(Objects.toString(rs.getString("SerialNumberAddress"), ""));
+            if (rs.getEnum("GatewayType",  PaoType.class) != null) {
+                detail.setGatewayPaoIdentifier(rs.getPaoIdentifier("GatewayId", "GatewayType"));
+            }
+            detail.setGatewayName(rs.getString("gatewayName"));
             detail.setEnabled(rs.getBoolean("DisableFlag"));
             return detail;
         }
@@ -149,7 +154,23 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         if (sortBy == null) {
             sql.append( "SELECT count(utrr.PaoId)");
         } else {
-            sql.append( "SELECT utrr.PaoId, utrr.PointId, utrr.FirstTimestamp, utrr.FirstValue, utrr.LastTimestamp, utrr.LastValue, utrr.Delta, ypo.Type, p.PointType, dmg.MeterNumber, "+combineSerialNumberAndAddress+" as SerialNumberAddress, ypo.PAOName, ypo.DisableFlag");
+            sql.append( "SELECT "
+                            + "utrr.PaoId, "
+                            + "utrr.PointId, "
+                            + "utrr.FirstTimestamp, "
+                            + "utrr.FirstValue, "
+                            + "utrr.LastTimestamp, "
+                            + "utrr.LastValue, "
+                            + "utrr.Delta, "
+                            + "ypo.Type, "
+                            + "p.PointType, "
+                            + "dmg.MeterNumber, "
+                            + combineSerialNumberAndAddress+" as SerialNumberAddress, "
+                            + "ypo.PAOName, "
+                            + "ypo.DisableFlag, "
+                            + "drdd.GatewayId, "
+                            + "gypo.PAOName AS GatewayName, "
+                            + "gypo.Type AS GatewayType");
         }
     
         sql.append("FROM UsageThresholdReportRow utrr");
@@ -158,6 +179,8 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         sql.append("LEFT JOIN DeviceMeterGroup dmg ON utrr.PaoId = dmg.deviceId");
         sql.append("LEFT JOIN DeviceCarrierSettings dcs ON utrr.PaoId = dcs.deviceId");
         sql.append("LEFT JOIN RFNAddress rfna ON utrr.PaoId = rfna.DeviceId");
+        sql.append("LEFT JOIN DynamicRfnDeviceData drdd on ypo.PAObjectID = drdd.DeviceId");
+        sql.append("LEFT JOIN YukonPAObject gypo ON drdd.GatewayId = gypo.PAObjectID");
 
         sql.append("WHERE UsageThresholdReportId").eq(reportId);
 

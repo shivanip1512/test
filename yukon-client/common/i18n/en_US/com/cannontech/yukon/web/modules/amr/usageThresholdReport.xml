@@ -65,6 +65,7 @@
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.meterNumber">Meter Number</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.deviceType">Device Type</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.serialNumberAddress">Serial Number/Address</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.primaryGateway">Primary Gateway</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.delta">Delta</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.earliestReading">Earliest Reading</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.latestReading">Latest Reading</entry>

@@ -16,6 +16,7 @@ public interface ThresholdReportDao {
         METER_NUMBER("dmg.MeterNumber"),
         DEVICE_TYPE("ypo.Type"),
         SERIAL_NUMBER_ADDRESS("SerialNumberAddress"),
+        PRIMARY_GATEWAY("GatewayName"),
         DELTA("Delta"),
         EARLIEST_READING("FirstTimestamp"),
         LATEST_READING("LastTimestamp");

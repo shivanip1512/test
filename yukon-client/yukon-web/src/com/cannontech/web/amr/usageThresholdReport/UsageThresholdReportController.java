@@ -43,7 +43,6 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
@@ -245,22 +244,23 @@ public class UsageThresholdReportController {
     
     private String[] getHeaderRows(YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String[] headerRow = new String[14];
+        String[] headerRow = new String[15];
 
         headerRow[0] = accessor.getMessage(DetailSortBy.deviceName);
         headerRow[1] = accessor.getMessage(DetailSortBy.meterNumber);
         headerRow[2] = accessor.getMessage(DetailSortBy.deviceType);
         headerRow[3] = accessor.getMessage(DetailSortBy.serialNumberAddress);
-        headerRow[4] = accessor.getMessage(DetailSortBy.delta);
-        headerRow[5] = accessor.getMessage(baseKey + "dataAvailability");
-        headerRow[6] = accessor.getMessage(baseKey + "earliest.timestamp");
-        headerRow[7] = accessor.getMessage(baseKey + "earliest.value");
-        headerRow[8] = accessor.getMessage(baseKey + "earliest.units");
-        headerRow[9] = accessor.getMessage(baseKey + "earliest.quality");
-        headerRow[10] = accessor.getMessage(baseKey + "latest.timestamp");
-        headerRow[11] = accessor.getMessage(baseKey + "latest.value");
-        headerRow[12] = accessor.getMessage(baseKey + "latest.units");
-        headerRow[13] = accessor.getMessage(baseKey + "latest.quality");
+        headerRow[4] = accessor.getMessage(DetailSortBy.primaryGateway);
+        headerRow[5] = accessor.getMessage(DetailSortBy.delta);
+        headerRow[6] = accessor.getMessage(baseKey + "dataAvailability");
+        headerRow[7] = accessor.getMessage(baseKey + "earliest.timestamp");
+        headerRow[8] = accessor.getMessage(baseKey + "earliest.value");
+        headerRow[9] = accessor.getMessage(baseKey + "earliest.units");
+        headerRow[10] = accessor.getMessage(baseKey + "earliest.quality");
+        headerRow[11] = accessor.getMessage(baseKey + "latest.timestamp");
+        headerRow[12] = accessor.getMessage(baseKey + "latest.value");
+        headerRow[13] = accessor.getMessage(baseKey + "latest.units");
+        headerRow[14] = accessor.getMessage(baseKey + "latest.quality");
         
         return headerRow;
     }
@@ -269,34 +269,35 @@ public class UsageThresholdReportController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         List<String[]> dataRows = Lists.newArrayList();
         for (ThresholdReportDetail detail: allDevicesReport.getDetail().getResultList()) {
-            String[] dataRow = new String[14];
+            String[] dataRow = new String[15];
             dataRow[0] = detail.getDeviceName();
             dataRow[1] = detail.getMeterNumber();
             dataRow[2] = detail.getPaoIdentifier().getPaoType().getPaoTypeName();
             dataRow[3] = detail.getAddressSerialNumber();
+            dataRow[4] = detail.getGatewayName();
             if (detail.getDelta() != null) {
-                dataRow[4] = detail.getDelta().toString();
+                dataRow[5] = detail.getDelta().toString();
             }
             if (detail.getAvailability() != null) {
-                dataRow[5] = accessor.getMessage(baseKey + "dataAvailability." + detail.getAvailability().name());
+                dataRow[6] = accessor.getMessage(baseKey + "dataAvailability." + detail.getAvailability().name());
             }
             PointValueQualityHolder earlyRead = detail.getEarliestReading();
             if (earlyRead != null) {
-                dataRow[6] = pointFormattingService.getValueString(earlyRead, Format.DATE, userContext);
-                dataRow[7] = pointFormattingService.getValueString(earlyRead, Format.VALUE, userContext);
-                dataRow[8] = pointFormattingService.getValueString(earlyRead, Format.UNIT, userContext);
-                dataRow[9] = pointFormattingService.getValueString(earlyRead, Format.QUALITY, userContext);
+                dataRow[7] = pointFormattingService.getValueString(earlyRead, Format.DATE, userContext);
+                dataRow[8] = pointFormattingService.getValueString(earlyRead, Format.VALUE, userContext);
+                dataRow[9] = pointFormattingService.getValueString(earlyRead, Format.UNIT, userContext);
+                dataRow[10] = pointFormattingService.getValueString(earlyRead, Format.QUALITY, userContext);
             } else {
-                dataRow[6] = accessor.getMessage(baseKey + "noReadingFound");
+                dataRow[7] = accessor.getMessage(baseKey + "noReadingFound");
             }
             PointValueQualityHolder lateRead = detail.getLatestReading();
             if (lateRead != null) {
-                dataRow[10] = pointFormattingService.getValueString(lateRead, Format.DATE, userContext);
-                dataRow[11] = pointFormattingService.getValueString(lateRead, Format.VALUE, userContext);
-                dataRow[12] = pointFormattingService.getValueString(lateRead, Format.UNIT, userContext);
-                dataRow[13] = pointFormattingService.getValueString(lateRead, Format.QUALITY, userContext);
+                dataRow[11] = pointFormattingService.getValueString(lateRead, Format.DATE, userContext);
+                dataRow[12] = pointFormattingService.getValueString(lateRead, Format.VALUE, userContext);
+                dataRow[13] = pointFormattingService.getValueString(lateRead, Format.UNIT, userContext);
+                dataRow[14] = pointFormattingService.getValueString(lateRead, Format.QUALITY, userContext);
             } else {
-                dataRow[10] = accessor.getMessage(baseKey + "noReadingFound");
+                dataRow[11] = accessor.getMessage(baseKey + "noReadingFound");
             }
             dataRows.add(dataRow);
         }
@@ -309,6 +310,7 @@ public class UsageThresholdReportController {
         meterNumber(SortBy.METER_NUMBER),
         deviceType(SortBy.DEVICE_TYPE),
         serialNumberAddress(SortBy.SERIAL_NUMBER_ADDRESS),
+        primaryGateway(SortBy.PRIMARY_GATEWAY),
         delta(SortBy.DELTA),
         earliestReading(SortBy.EARLIEST_READING),
         latestReading(SortBy.LATEST_READING);

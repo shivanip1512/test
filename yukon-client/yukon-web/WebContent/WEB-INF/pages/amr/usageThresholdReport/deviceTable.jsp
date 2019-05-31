@@ -69,7 +69,7 @@
             <tags:sort column="${deviceName}" />                
             <tags:sort column="${meterNumber}" />                
             <tags:sort column="${deviceType}" />                
-            <tags:sort column="${serialNumberAddress}" />
+            <tags:sort column="${primaryGateway}" />
             <tags:sort column="${delta}" />    
             <tags:sort column="${earliestReading}" />                
             <tags:sort column="${latestReading}" />                            
@@ -90,7 +90,7 @@
                     <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${fn:escapeXml(device.deviceName)}</cti:paoDetailUrl></td>
                     <td>${fn:escapeXml(device.meterNumber)}</td>
                     <td>${fn:escapeXml(device.paoIdentifier.paoType.paoTypeName)}</td>
-                    <td>${fn:escapeXml(device.addressSerialNumber)}</td>
+                    <td><cti:paoDetailUrl yukonPao="${device.gatewayPaoIdentifier}" newTab="true">${fn:escapeXml(device.gatewayName)}</cti:paoDetailUrl></td>
                     <td class="wsnw">
                         <fmt:formatNumber pattern="###.#" value="${device.delta}"/>
                          <c:if test="${device.earliestReading != null}">
