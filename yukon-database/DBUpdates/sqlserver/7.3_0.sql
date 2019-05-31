@@ -193,12 +193,12 @@ CREATE INDEX INDX_CRE_StartDesc_ExecContId ON CommandRequestExec (
 INSERT INTO DBUpdates VALUES ('YUK-19963', '7.3.0', GETDATE());
 /* @end YUK-19963 */
 
-/* @start YUK-19489 */
+/* @start YUK-19489-1 */
 EXECUTE sp_refreshview 'CCCBCCVMSState_View';
 EXECUTE sp_refreshview 'CCInventory_View';
 
 UPDATE YukonWebConfiguration
-SET AlternateDisplayName = ''
+SET AlternateDisplayName = ','
 WHERE AlternateDisplayName IS NULL;
 GO
 
@@ -206,13 +206,15 @@ ALTER TABLE YukonWebConfiguration
 ALTER COLUMN AlternateDisplayName VARCHAR(200) NOT NULL;
 GO
 
-/* In the case where the default rule already exists, this will error */
-/* @error ignore-begin */
-ALTER TABLE EncryptionKey 
-ADD DEFAULT 'ExpresscomOneWay' 
-FOR EncryptionKeyType;
-GO
-/* @error ignore-end */
+BEGIN
+    DECLARE @ConstraintName VARCHAR(200)
+
+    SELECT @ConstraintName = name FROM sys.default_constraints
+    WHERE parent_object_id = OBJECT_ID('EncryptionKey')
+
+    IF @ConstraintName IS NOT NULL
+    EXEC('ALTER TABLE EncryptionKey DROP CONSTRAINT ' + @ConstraintName)
+END;
 
 DROP INDEX Indx_CCEventLog_Type_Date_Sub ON CCEventLog;
 GO
@@ -240,8 +242,8 @@ EXEC sp_rename 'FK_NSDetail_NSValue', 'FK_NestSDetail_NestSValue';
 GO
 /* @error ignore-end */
 
-INSERT INTO DBUpdates VALUES ('YUK-19489', '7.3.0', GETDATE());
-/* @end YUK-19489 */
+INSERT INTO DBUpdates VALUES ('YUK-19489-1', '7.3.0', GETDATE());
+/* @end YUK-19489-1 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

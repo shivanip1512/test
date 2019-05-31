@@ -193,9 +193,9 @@ CREATE INDEX INDX_CRE_StartDesc_ExecContId ON CommandRequestExec (
 INSERT INTO DBUpdates VALUES ('YUK-19963', '7.3.0', SYSDATE);
 /* @end YUK-19963 */
 
-/* @start YUK-19489 */
+/* @start YUK-19489-1 */
 UPDATE YukonWebConfiguration
-SET AlternateDisplayName = ''
+SET AlternateDisplayName = ','
 WHERE AlternateDisplayName IS NULL;
 
 /* In the case where a column is already NULL or NOT NULL, oracle will error */
@@ -205,7 +205,7 @@ MODIFY AlternateDisplayName VARCHAR2(200) NOT NULL;
 /* @error ignore-end */
 
 ALTER TABLE EncryptionKey
-MODIFY EncryptionKeyType DEFAULT 'ExpresscomOneWay';
+MODIFY EncryptionKeyType DEFAULT NULL;
 
 ALTER TABLE CCEventLog
 MODIFY EventSubtype NUMBER;
@@ -223,8 +223,8 @@ MODIFY UserID NUMERIC NOT NULL;
 ALTER TABLE NestSyncValue RENAME CONSTRAINT FK_NSDetail_NSValue TO FK_NestSDetail_NestSValue;
 /* @error ignore-end */
 
-INSERT INTO DBUpdates VALUES ('YUK-19489', '7.3.0', SYSDATE);
-/* @end YUK-19489 */
+INSERT INTO DBUpdates VALUES ('YUK-19489-1', '7.3.0', SYSDATE);
+/* @end YUK-19489-1 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
