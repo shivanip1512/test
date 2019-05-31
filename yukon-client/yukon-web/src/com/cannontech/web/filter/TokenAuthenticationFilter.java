@@ -21,7 +21,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.api.errorHandler.ApiExceptionHandler;
 import com.cannontech.web.api.errorHandler.model.ApiError;
 import com.cannontech.web.api.token.AuthenticationException;
-import com.cannontech.web.api.token.RequestContext;
+import com.cannontech.common.api.token.APIRequestContext;
 import com.cannontech.web.api.token.TokenHelper;
 import com.google.common.collect.Lists;
 
@@ -54,7 +54,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                         if (!user.isEnabled() || user.isForceReset()) {
                             throw new AuthenticationException("Expired user" + user.getUsername());
                         }
-                        RequestContext.getContext().setLiteYukonUser(user);
+                        APIRequestContext.getContext().setLiteYukonUser(user);
                     }
 
                 }

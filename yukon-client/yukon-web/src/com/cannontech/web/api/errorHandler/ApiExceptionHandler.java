@@ -35,6 +35,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -63,6 +64,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), "Authentication Required", uniqueKey);
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
     }
+    
+ // 401
+    @ExceptionHandler({NotAuthorizedException.class})
+    public ResponseEntity<Object> handleNotAuthorizedException(final Exception ex, final WebRequest request) {
+
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
+        logApiException(request, ex, uniqueKey);
+
+        final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), "User Not Authorized", uniqueKey);
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
+    }
+
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     protected ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex,

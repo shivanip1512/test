@@ -10,6 +10,7 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import com.cannontech.common.api.token.APIRequestContext;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
@@ -21,7 +22,11 @@ public final class SpringWebUtil {
         
         LiteYukonUser user = (LiteYukonUser) requestAttributes.getAttribute(ServletUtil.ATT_YUKON_USER, 
                                                             RequestAttributes.SCOPE_SESSION);
-        
+
+        if (user == null) {
+            user = APIRequestContext.getContext().getLiteYukonUser();
+        }
+
         if (user == null) {
             throw new ServletRequestBindingException("Required user not found in request.");
         }
