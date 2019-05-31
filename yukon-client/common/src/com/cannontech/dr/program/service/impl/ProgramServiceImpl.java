@@ -784,46 +784,53 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public List<ProgramData> getAllTodaysProgram() {
-        Set<LMProgramBase> allLMProgramBase = loadControlClientConnection.getAllProgramsSet();
+    public List<ProgramData> getAllTodaysPrograms() {
         List<ProgramData> todaysProgram = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(allLMProgramBase)) {
-            // Get list of todays programs (without keeping state in mind)
-            DateTime todayStartTime = DateTime.now().withTimeAtStartOfDay();
-            DateTime todayStopTime = todayStartTime.plusHours(24);
-            Interval interval = new Interval(todayStartTime, todayStopTime); 
-            todaysProgram = filterProgramsForInterval(allLMProgramBase, interval);
+        try {
+            Set<LMProgramBase> allLMProgramBase = loadControlClientConnection.getAllProgramsSet();
+            if (CollectionUtils.isNotEmpty(allLMProgramBase)) {
+                // Get list of todays programs (without keeping state in mind)
+                DateTime todayStartTime = DateTime.now().withTimeAtStartOfDay();
+                DateTime todayStopTime = todayStartTime.plusHours(24);
+                Interval interval = new Interval(todayStartTime, todayStopTime);
+                todaysProgram = filterProgramsForInterval(allLMProgramBase, interval);
+            }
+        } catch (ConnectionException e) {
+            log.warn(e.getMessage());
         }
         return todaysProgram;
     }
 
     @Override
-    public List<ProgramData> getAllNearestDayScheduledProgram() {
-        Set<LMProgramBase> allLMProgramBase = loadControlClientConnection.getAllProgramsSet();
+    public List<ProgramData> getProgramsScheduledForNextControlDayAfterToday() {
         List<ProgramData> scheduledProgramsForNearestDay = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(allLMProgramBase)) {
-            DateTime now = DateTime.now();
-            long startOfTomorrow = now.withTimeAtStartOfDay().plusHours(24).getMillis();
-            // Get all the program which are scheduled to start in future and sort them based on startTime
-            List<LMProgramBase> allScheduledPrograms =
-                                    allLMProgramBase.stream()
-                                                    .filter(p -> p.getStartTime().getTimeInMillis() >= startOfTomorrow)
-                                                    .sorted((p1, p2) -> p1.getStartTime().compareTo(p2.getStartTime()))
-                                                    .collect(Collectors.toList());
+        try {
+            Set<LMProgramBase> allLMProgramBase = loadControlClientConnection.getAllProgramsSet();
+            if (CollectionUtils.isNotEmpty(allLMProgramBase)) {
+                DateTime now = DateTime.now();
+                long startOfTomorrow = now.withTimeAtStartOfDay().plusHours(24).getMillis();
+                // Get all the program which are scheduled to start in future (after today) and sort them based on startTime
+                List<LMProgramBase> scheduledProgramsAfterToday =
+                                        allLMProgramBase.stream()
+                                                        .filter(p -> p.getStartTime().getTimeInMillis() >= startOfTomorrow)
+                                                        .sorted((p1, p2) -> p1.getStartTime().compareTo(p2.getStartTime()))
+                                                        .collect(Collectors.toList());
 
-            // Get the list scheduled programs for nearest day
-            if (CollectionUtils.isNotEmpty(allScheduledPrograms)) {
-                DateTime nearestScheduledStartTime = new DateTime(allScheduledPrograms
-                                                                     .stream()
-                                                                     .findFirst().get()
-                                                                     .getStartTime()
-                                                                     .getTimeInMillis())
-                                                                     .withTimeAtStartOfDay();
-                DateTime nearestScheduledStopTime = nearestScheduledStartTime.plusHours(24);
-                Interval nearestScheduledInterval = new Interval(nearestScheduledStartTime, nearestScheduledStopTime);
-                scheduledProgramsForNearestDay = 
-                          filterProgramsForInterval(allScheduledPrograms, nearestScheduledInterval);
+                // Get the list of scheduled programs for next control day (after today)
+                if (CollectionUtils.isNotEmpty(scheduledProgramsAfterToday)) {
+                    DateTime nextDayWithAProgramScheduled = new DateTime(scheduledProgramsAfterToday
+                                                                         .get(0)
+                                                                         .getStartTime()
+                                                                         .getTimeInMillis())
+                                                                         .withTimeAtStartOfDay();
+                   Interval nextDayWithProgramScheduledInterval = new Interval(nextDayWithAProgramScheduled,
+                                                                       nextDayWithAProgramScheduled.plusHours(24));
+                   scheduledProgramsForNearestDay = 
+                              filterProgramsForInterval(scheduledProgramsAfterToday, nextDayWithProgramScheduledInterval);
+                }
             }
+        } catch (ConnectionException e) {
+            log.warn(e.getMessage());
         }
         return scheduledProgramsForNearestDay;
     }

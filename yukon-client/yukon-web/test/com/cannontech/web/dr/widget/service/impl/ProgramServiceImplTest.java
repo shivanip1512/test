@@ -66,7 +66,7 @@ public class ProgramServiceImplTest {
     public void test_getTodaysProgram() {
         EasyMock.expect(loadControlClientConnection.getAllProgramsSet()).andReturn(programs);
         EasyMock.replay(loadControlClientConnection);
-        List<ProgramData> todaysPrograms = ReflectionTestUtils.invokeMethod(programServiceImplTest, "getAllTodaysProgram");
+        List<ProgramData> todaysPrograms = ReflectionTestUtils.invokeMethod(programServiceImplTest, "getAllTodaysPrograms");
         // todaysPrograms should contain program which will execute today i.e todaysProgram
         assertTrue(todaysPrograms.size() == 1 && "todaysProgram".equals(todaysPrograms.get(0).getProgramName()));
     }
@@ -75,7 +75,7 @@ public class ProgramServiceImplTest {
     public void test_getTodaysProgram_withEmptyProgramSet() {
         EasyMock.expect(loadControlClientConnection.getAllProgramsSet()).andReturn(emptyPrograms);
         EasyMock.replay(loadControlClientConnection);
-        List<ProgramData> todaysPrograms = ReflectionTestUtils.invokeMethod(programServiceImplTest, "getAllTodaysProgram");
+        List<ProgramData> todaysPrograms = ReflectionTestUtils.invokeMethod(programServiceImplTest, "getAllTodaysPrograms");
         // todaysPrograms will be empty
         assertTrue(todaysPrograms.size() == 0);
     }
@@ -84,7 +84,7 @@ public class ProgramServiceImplTest {
     public void test_getSchedulePrograms() {
         EasyMock.expect(loadControlClientConnection.getAllProgramsSet()).andReturn(programs);
         EasyMock.replay(loadControlClientConnection);
-        List<ProgramData> futurePrograms = ReflectionTestUtils.invokeMethod(programServiceImplTest, "getAllNearestDayScheduledProgram");
+        List<ProgramData> futurePrograms = ReflectionTestUtils.invokeMethod(programServiceImplTest, "getProgramsScheduledForNextControlDayAfterToday");
         // futurePrograms should contain program which will execute on 1st in future i.e futureProgram1
         assertTrue(futurePrograms.size() == 1 && "futureProgram1".equals(futurePrograms.get(0).getProgramName()));
     }
@@ -93,7 +93,7 @@ public class ProgramServiceImplTest {
     public void test_getSchedulePrograms_withEmptyProgramSet() {
         EasyMock.expect(loadControlClientConnection.getAllProgramsSet()).andReturn(emptyPrograms);
         EasyMock.replay(loadControlClientConnection);
-        List<ProgramData> futurePrograms = ReflectionTestUtils.invokeMethod(programServiceImplTest, "getAllNearestDayScheduledProgram");
+        List<ProgramData> futurePrograms = ReflectionTestUtils.invokeMethod(programServiceImplTest, "getProgramsScheduledForNextControlDayAfterToday");
         // futurePrograms will be empty
         assertTrue(futurePrograms.size() == 0);
     }

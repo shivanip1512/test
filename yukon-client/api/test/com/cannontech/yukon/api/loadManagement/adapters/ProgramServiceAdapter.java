@@ -203,12 +203,12 @@ public class ProgramServiceAdapter implements ProgramService {
     }
 
     @Override
-    public List<ProgramData> getAllTodaysProgram() {
+    public List<ProgramData> getAllTodaysPrograms() {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
-    public List<ProgramData> getAllNearestDayScheduledProgram() {
+    public List<ProgramData> getProgramsScheduledForNextControlDayAfterToday() {
         throw new UnsupportedOperationException("Not Implemented");
     }
 

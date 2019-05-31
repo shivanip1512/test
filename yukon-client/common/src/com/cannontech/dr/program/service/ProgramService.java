@@ -286,11 +286,11 @@ public interface ProgramService {
      * Returns list of all program which are executed today or scheduled to execute today 
      * 
      */
-    public List<ProgramData> getAllTodaysProgram();
+    public List<ProgramData> getAllTodaysPrograms();
     
     /**
-     * Returns list of all program which are scheduled to execute on nearest day
+     * Returns list of all program which are scheduled to execute for next control day after today
      * 
      */
-    public List<ProgramData> getAllNearestDayScheduledProgram();
+    public List<ProgramData> getProgramsScheduledForNextControlDayAfterToday();
 }
