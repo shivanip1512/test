@@ -418,56 +418,7 @@ public class ControllableDevicesRequestEndPointTest {
         impl.invokeRemoveDevice(reqElement, NOT_AUTH_USER);
     }
     
-    @Test()
-    public void testIsValidGps() {
-        GPS gps = ControllableDevicesRequestEndPoint.buildGps(null, null);
-        assertTrue("buildGps null, null", gps == null);
-        
-        gps = ControllableDevicesRequestEndPoint.buildGps(null, Double.valueOf(160.00));
-        assertTrue("buildGps null, valid", gps != null);
-        assertTrue("Latitude null : null", gps.getLatitude() == null);
-        assertTrue("Longitude valid : valid", gps.getLongitude() == 160.00);
-        
-        gps = ControllableDevicesRequestEndPoint.buildGps(Double.valueOf(70.00), null);
-        assertTrue("buildGps valid, null", gps != null);
-        assertTrue("Latitude valid : valid", gps.getLatitude() == 70.00);
-        assertTrue("Longitude null : null", gps.getLongitude() == null);
-
-        gps = ControllableDevicesRequestEndPoint.buildGps(Double.valueOf(45.00), Double.valueOf(160.00));
-        assertTrue("buildGps valid, valid", gps != null);
-        assertTrue("Latitude valid : valid", gps.getLatitude() == 45.00);
-        assertTrue("Longitude valid : valid", gps.getLongitude() == 160.00);
-        
-        gps = ControllableDevicesRequestEndPoint.buildGps(Double.valueOf(Double.NaN), Double.valueOf(160.00));
-        assertTrue("buildGps NaN, valid", gps != null);
-        assertTrue("Latitude NaN : null", gps.getLatitude() == null);
-        assertTrue("Longitude valid : valid", gps.getLongitude() == 160.00);
-        
-        gps = ControllableDevicesRequestEndPoint.buildGps(Double.valueOf(70.00), Double.valueOf(Double.NaN));
-        assertTrue("buildGps valid, NaN", gps != null);
-        assertTrue("Latitude valid : valid", gps.getLatitude() == 70.00);
-        assertTrue("Longitude NaN : null", gps.getLongitude() == null);
-        
-        gps = ControllableDevicesRequestEndPoint.buildGps(Double.valueOf(Double.NaN), Double.valueOf(Double.NaN));
-        assertTrue("buildGps NaN, NaN", gps != null);
-        assertTrue("Latitude NaN : null", gps.getLatitude() == null);
-        assertTrue("Longitude NaN : null", gps.getLongitude() == null);
-        
-        gps = ControllableDevicesRequestEndPoint.buildGps(Double.valueOf(Double.NaN), null);
-        assertTrue("buildGps NaN, null", gps != null);
-        assertTrue("Latitude NaN : null", gps.getLatitude() == null);
-        assertTrue("Longitude null : null", gps.getLongitude() == null);
-        
-        gps = ControllableDevicesRequestEndPoint.buildGps(null, Double.valueOf(Double.NaN));
-        assertTrue("buildGps null, NaN", gps != null);
-        assertTrue("Latitude null : null", gps.getLatitude() == null);
-        assertTrue("Longitude NaN : null", gps.getLongitude() == null);
-        
-        gps = ControllableDevicesRequestEndPoint.buildGps(Double.valueOf(200.00), Double.valueOf(260.00));
-        assertTrue("buildGps invalid, invalid", gps != null);
-        assertTrue("Latitude invalid : invalid", gps.getLatitude() == 200.00);
-        assertTrue("Longitude invalid : invalid", gps.getLongitude() == 260.00);
-    }
+  
     private static class ControllableDeviceResultMapper implements
             ObjectMapper<Node, ControllableDeviceResult> {
 

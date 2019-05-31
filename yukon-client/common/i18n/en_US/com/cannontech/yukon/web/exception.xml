@@ -100,6 +100,6 @@
 <entry key="yukon.exception.objectMappingException.invalidMeterNumber">Device with meter number: {0} not found.</entry>
 <entry key="yukon.exception.objectMappingException.invalidId">Device with id: {0} not found.</entry>
 <entry key="yukon.exception.objectMappingException.invalidName">Device with name {0} not found.</entry>
-<entry key="yukon.exception.objectMappingException.invalidValue">Contains invalid value: {0}</entry>
+<entry key="yukon.exception.objectMappingException.invalidValue">Contains invalid value {0}</entry>
 
 </properties>

@@ -383,27 +383,11 @@ public class ControllableDevicesRequestEndPoint {
             } else if (parentLatitude != null && parentLongitude == null) {
                 throw new StarsClientRequestException("Longitude Field is required in GPS parent field");
             } else {
-                GPS location = LocationServiceImpl.getValidLocationFormat(template.evaluateAsString(parentLatitudeStr),
+                gps = LocationServiceImpl.getValidLocationFormat(template.evaluateAsString(parentLatitudeStr),
                     template.evaluateAsString(parentLongitudeStr));
-                gps = buildGps(location.getLatitude(), location.getLongitude());
             }
         }
         return gps;
-    }
-    
-    /**
-     * Returns GPS object when both latitude and longitude are not <code>null<code>, else return <code>null<code>.
-     */
-    public static GPS buildGps(Double lat, Double lon) {
-        if (lat != null || lon != null) {
-            // if either are not null, then set GPS coordinates (actual data will be validated later)
-            // if Double.NaN (the key defaultValue used to evaluate), set to null
-            Double latNullable = (lat == null || lat.isNaN() ? null : lat);
-            Double lonNullable = (lon == null || lon.isNaN() ? null : lon);
-            GPS gps = new GPS(latNullable, lonNullable);
-            return gps;
-        }
-        return null;
     }
 
     @Autowired

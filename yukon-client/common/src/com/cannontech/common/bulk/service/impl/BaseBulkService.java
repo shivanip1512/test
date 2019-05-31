@@ -410,8 +410,6 @@ public abstract class BaseBulkService {
                     // if its blank and blank handling is not applicable, set to null
                     // if its lat/long and it contains DELETE/NULL, set to null so that location will be
                     // removed
-                    // if its lat/long and it is empty(After trimming), set to Double.NaN so that location
-                    // will not be removed
                     // otherwise set as-is
                     BlankHandlingEnum blankHandlingEnum = bulkField.getBlankHandlingEnum();
                     if (StringUtils.isBlank(fieldStringValue)
@@ -429,13 +427,6 @@ public abstract class BaseBulkService {
                         } else if (StringUtils.isEmpty(fieldStringValue)) {
                             fieldStringValue = Double.toString(LatitudeLongitudeBulkFieldProcessor.IGNORE_FIELD);
                         }
-                        if (bulkField instanceof LatitudeBulkField && !NumberUtils.isNumber(fieldStringValue)) {
-                            throw new ProcessingException("Latitude field must be Numeric.", "latitude.numberError");
-                        }
-                        if (bulkField instanceof LongitudeBulkField && !NumberUtils.isNumber(fieldStringValue)) {
-                            throw new ProcessingException("Longitude field must be Numeric.", "longitude.numberError");
-                        }
-
                     }
 
                     valueMap.put(inputSource.getField(), fieldStringValue);
@@ -460,7 +451,7 @@ public abstract class BaseBulkService {
 
         } catch (TypeMismatchException e) {
             throw new ObjectMappingException("Contains invalid value: " + (e.getValue() == null ? "" : e.getValue()),
-                "invalidValue", (e.getValue() == null ? "" : e.getValue()), e);
+                "invalidValue", ("in field "+e.getPropertyName() + ":- " + (e.getValue() == null ? "" : e.getValue())), e);
         }
 
         return updateableDevice;

@@ -89,8 +89,8 @@ public class LocationServiceImpl implements LocationService{
             throw new StarsInvalidArgumentException("Longitude must be Numeric.");
         }
         GPS gps = new GPS();
-        gps.setLatitude(StringUtils.isNotBlank(latitude) ? Double.valueOf(latitude) : null);
-        gps.setLongitude(StringUtils.isNotBlank(longitude) ? Double.valueOf(longitude) : null);
+        gps.setLatitude(Double.valueOf(latitude));
+        gps.setLongitude(Double.valueOf(longitude));
         return gps;
     }
 }
