@@ -182,13 +182,49 @@ INSERT INTO DBUpdates VALUES ('YUK-19858-1', '7.3.0', SYSDATE);
 /* @end YUK-19858-1 */
 
 /* @start YUK-19963 */
+/* Will error via. already existing if 7.2.2 or later creation scripts were ran. */
+/* @error ignore-begin */
 CREATE INDEX INDX_CRE_StartDesc_ExecContId ON CommandRequestExec (
     StartTime DESC,
     CommandRequestExecContextId ASC
 );
+/* @error ignore-end */
 
 INSERT INTO DBUpdates VALUES ('YUK-19963', '7.3.0', SYSDATE);
 /* @end YUK-19963 */
+
+/* @start YUK-19489 */
+UPDATE YukonWebConfiguration
+SET AlternateDisplayName = ''
+WHERE AlternateDisplayName IS NULL;
+
+/* In the case where a column is already NULL or NOT NULL, oracle will error */
+/* @error ignore-begin */
+ALTER TABLE YukonWebConfiguration
+MODIFY AlternateDisplayName VARCHAR2(200) NOT NULL;
+/* @error ignore-end */
+
+ALTER TABLE EncryptionKey
+MODIFY EncryptionKeyType DEFAULT 'ExpresscomOneWay';
+
+ALTER TABLE CCEventLog
+MODIFY EventSubtype NUMBER;
+
+UPDATE HoneywellWifiThermostat
+SET UserID = 0
+WHERE UserID IS NULL;
+
+/* In the case where a column is already NULL or NOT NULL, oracle will error */
+/* @error ignore-begin */
+ALTER TABLE HoneywellWifiThermostat
+MODIFY UserID NUMERIC NOT NULL;
+
+/* In the case where the FK is already named correctly, this will error because the incorrect name cannot be found */
+ALTER TABLE NestSyncValue RENAME CONSTRAINT FK_NSDetail_NSValue TO FK_NestSDetail_NestSValue;
+/* @error ignore-end */
+
+INSERT INTO DBUpdates VALUES ('YUK-19489', '7.3.0', SYSDATE);
+/* @end YUK-19489 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

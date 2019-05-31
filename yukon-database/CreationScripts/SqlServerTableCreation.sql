@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/17/2019 3:02:18 PM                         */
+/* Created on:     5/30/2019 2:03:09 PM                         */
 /*==============================================================*/
 
 
@@ -5544,7 +5544,7 @@ create table EncryptionKey (
    EncryptionKeyId      numeric              not null,
    Name                 varchar(128)         not null,
    PublicKey            varchar(3800)        null,
-   EncryptionKeyType    varchar(128)         not null,
+   EncryptionKeyType    varchar(128)         not null default 'ExpresscomOneWay',
    PrivateKey           text                 not null,
    Timestamp            datetime             null,
    constraint PK_EncryptionKey primary key (EncryptionKeyId)
@@ -11291,7 +11291,7 @@ create table YukonWebConfiguration (
    ConfigurationID      numeric              not null,
    LogoLocation         varchar(100)         null,
    Description          varchar(500)         null,
-   AlternateDisplayName varchar(200)         null,
+   AlternateDisplayName varchar(200)         not null,
    URL                  varchar(100)         null,
    constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
 )

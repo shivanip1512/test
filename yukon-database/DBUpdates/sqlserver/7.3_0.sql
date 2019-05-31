@@ -182,13 +182,66 @@ INSERT INTO DBUpdates VALUES ('YUK-19858-1', '7.3.0', GETDATE());
 /* @end YUK-19858-1 */
 
 /* @start YUK-19963 */
+/* Will error via. already existing if 7.2.2 or later creation scripts were ran. */
+/* @error ignore-begin */
 CREATE INDEX INDX_CRE_StartDesc_ExecContId ON CommandRequestExec (
     StartTime DESC,
     CommandRequestExecContextId ASC
 );
+/* @error ignore-end */
 
 INSERT INTO DBUpdates VALUES ('YUK-19963', '7.3.0', GETDATE());
 /* @end YUK-19963 */
+
+/* @start YUK-19489 */
+EXECUTE sp_refreshview 'CCCBCCVMSState_View';
+EXECUTE sp_refreshview 'CCInventory_View';
+
+UPDATE YukonWebConfiguration
+SET AlternateDisplayName = ''
+WHERE AlternateDisplayName IS NULL;
+GO
+
+ALTER TABLE YukonWebConfiguration
+ALTER COLUMN AlternateDisplayName VARCHAR(200) NOT NULL;
+GO
+
+/* In the case where the default rule already exists, this will error */
+/* @error ignore-begin */
+ALTER TABLE EncryptionKey 
+ADD DEFAULT 'ExpresscomOneWay' 
+FOR EncryptionKeyType;
+GO
+/* @error ignore-end */
+
+DROP INDEX Indx_CCEventLog_Type_Date_Sub ON CCEventLog;
+GO
+
+ALTER TABLE CCEventLog
+ALTER COLUMN EventSubtype NUMERIC;
+GO
+
+CREATE INDEX Indx_CCEventLog_Type_Date_Sub
+ON CCEventLog (EventType, DateTime, EventSubtype, PointID);
+GO
+
+UPDATE HoneywellWifiThermostat
+SET UserID = 0
+WHERE UserID IS NULL;
+GO
+
+ALTER TABLE HoneywellWifiThermostat
+ALTER COLUMN UserID NUMERIC NOT NULL;
+GO
+
+/* In the case where the FK is already named correctly, this will error because the incorrect name cannot be found */
+/* @error ignore-begin */
+EXEC sp_rename 'FK_NSDetail_NSValue', 'FK_NestSDetail_NestSValue';
+GO
+/* @error ignore-end */
+
+INSERT INTO DBUpdates VALUES ('YUK-19489', '7.3.0', GETDATE());
+/* @end YUK-19489 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

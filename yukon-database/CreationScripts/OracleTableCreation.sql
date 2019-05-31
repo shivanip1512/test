@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/17/2019 3:01:24 PM                         */
+/* Created on:     5/30/2019 2:04:02 PM                         */
 /*==============================================================*/
 
 
@@ -5267,7 +5267,7 @@ create table EncryptionKey  (
    EncryptionKeyId      NUMBER                          not null,
    Name                 VARCHAR2(128)                   not null,
    PublicKey            VARCHAR2(3800),
-   EncryptionKeyType    VARCHAR2(128)                   not null,
+   EncryptionKeyType    VARCHAR2(128)                  default 'ExpresscomOneWay' not null,
    PrivateKey           CLOB                            not null,
    Timestamp            DATE,
    constraint PK_EncryptionKey primary key (EncryptionKeyId)
@@ -10671,7 +10671,7 @@ create table YukonWebConfiguration  (
    ConfigurationID      NUMBER                          not null,
    LogoLocation         VARCHAR2(100),
    Description          VARCHAR2(500),
-   AlternateDisplayName VARCHAR2(200),
+   AlternateDisplayName VARCHAR2(200)                   not null,
    URL                  VARCHAR2(100),
    constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
 );
