@@ -65,6 +65,7 @@ pipeline {
 	                        
 	                        //junit './yukon-client/*/test/testResults/*.xml'
 	                        }catch(Exception){
+								currentBuild.result = 'FAILURE'
 								//Added sleep so that it capture full log for current stage
 								sleep(5)
 								sendEmailNotification("${env.STAGE_NAME}")
@@ -122,6 +123,7 @@ pipeline {
 	
 	                        stash name: 'yukon-server', includes: 'yukon-server/bin/*, yukon-server/pdb/*, yukon-server/Message/Static_Release/ctithriftmsg/I386/*'
                         	}catch(Exception){
+								currentBuild.result = 'FAILURE'
 								//Added sleep so that it capture full log for current stage
 								sleep(5)
 								sendEmailNotification("${env.STAGE_NAME}")
