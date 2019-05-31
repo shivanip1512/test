@@ -185,10 +185,9 @@ public class TimeUtilTest {
             TimeUtil.hoursRemainingAfterConveritngToDays(totalHours));
     }
 
-/*    @Test
+    @Test
     public void test_convertToLocalInstant_EDT() {
-        final String zoneId = TimeZone.getTimeZone("America/New_York").getID();
-        DateTimeZone.setDefault(DateTimeZone.forID(zoneId));
+        DateTimeZone.setDefault(DateTimeZone.forID("America/New_York"));
         DateTimeFormatter timeFormater = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
         Instant instantInUTC = timeFormater.parseDateTime("2010-01-01 10:10:00").toInstant();
         Instant instantInEDT = TimeUtil.convertToLocalInstant(instantInUTC);
@@ -199,8 +198,7 @@ public class TimeUtilTest {
 
     @Test
     public void test_convertToLocalInstant_IST() {
-        final String zoneId = TimeZone.getTimeZone("Asia/Kolkata").getID();
-        DateTimeZone.setDefault(DateTimeZone.forID(zoneId));
+        DateTimeZone.setDefault(DateTimeZone.forID("Asia/Kolkata"));
         DateTimeFormatter timeFormater = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
         Instant instantInUTC = timeFormater.parseDateTime("2010-01-01 10:10:00").toInstant();
         Instant instantInIST = TimeUtil.convertToLocalInstant(instantInUTC);
@@ -218,5 +216,5 @@ public class TimeUtilTest {
         Instant instantInServerTimezone = new Instant(serverTimeZone);
         assertEquals("UTC Instant " + instantInUTC + " to local time zone conversion is " + instantInlocal
             + " and local to UTC conversion is " + instantInServerTimezone, instantInUTC, instantInServerTimezone);
-    }*/
+    }
 }
