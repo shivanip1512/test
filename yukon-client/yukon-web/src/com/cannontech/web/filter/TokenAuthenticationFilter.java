@@ -39,9 +39,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             throws IOException, ServletException {
 
         // Validate all api calls except login request
-        boolean apiLogin​R​equest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/token"));
+        boolean apiLoginRequest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/token"));
 
-        if (!apiLogin​R​equest) {
+        if (!apiLoginRequest) {
             try {
                 String authToken = TokenHelper.resolveToken(request);
 
