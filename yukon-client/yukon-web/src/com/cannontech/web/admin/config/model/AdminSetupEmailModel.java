@@ -4,11 +4,8 @@ public class AdminSetupEmailModel {
     private String from;
     private String to;
 
-    public AdminSetupEmailModel()
-    {
-        from = "yukon@Eaton.com";
-        to = "testTo@Eaton.com";
-    }
+    public AdminSetupEmailModel(){}
+    
     public String getTo() {
         return to;
     }

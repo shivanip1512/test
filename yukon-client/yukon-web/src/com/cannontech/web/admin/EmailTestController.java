@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.dao.ContactDao;
-import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
@@ -40,6 +39,7 @@ public class EmailTestController {
         String userDefaultEmail = contactDao.getUserEmail(user);
         String mailFromAddress = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS); 
         AdminSetupEmailModel email = new AdminSetupEmailModel();
+        
         email.setFrom(mailFromAddress);
         email.setTo(userDefaultEmail);
         model.addAttribute("email", email);
@@ -49,19 +49,9 @@ public class EmailTestController {
     @RequestMapping(value="/config/emailTest", method=RequestMethod.POST)
     public String sendEmail(@ModelAttribute("email") AdminSetupEmailModel email, BindingResult result, ModelMap model, LiteYukonUser user, HttpServletResponse resp) throws MessagingException {
         
-        String userDefaultEmail = contactDao.getUserEmail(user);
-        LiteContact liteContact = contactDao.findContactByEmail(userDefaultEmail);
-        String genBody = "YUKON SYSTEM TEST: A test email notification was requested by a user with the following information:\nContact Name: " + liteContact.getContFirstName()
-        + " " + liteContact.getContLastName()+"\nUsername: "+user.getUsername();
-        String mailFromAddress = email.getFrom();
+        String genBody = "Yukon Email Test: A test email notification was requested by user " + user.getUsername();
+   
         
-      //if user has not entered preferred MAIL_FROM_ADDRESS, set to AdminSetupEmailModel default yukon@eaton.com
-        if (mailFromAddress == null) { 
-            email.setTo("");
-            mailFromAddress = email.getFrom();
-        }
-        
-        InternetAddress mailFromInternetAddress = new InternetAddress(mailFromAddress);
         emailTestValidator.validate(email, result);
         if (result.hasErrors())
         {
@@ -70,12 +60,9 @@ public class EmailTestController {
             return "config/emailTest.jsp";
         }
         
-        InternetAddress postTo = new InternetAddress(email.getTo());
-        InternetAddress[] postArray = new InternetAddress[]{postTo};
-        InternetAddress[] postBcc = null;
-        InternetAddress[] postCc = null;
+        InternetAddress[] postTo = InternetAddress.parse(email.getTo());
         
-        EmailMessage testEmailMessage = new EmailMessage(mailFromInternetAddress, postArray,postCc, postBcc,"Yukon Test Email", genBody);
+        EmailMessage testEmailMessage = new EmailMessage(postTo, "[yukon] Yukon Test Email", genBody);
         try
         {
             EmailService emailService = YukonSpringHook.getBean(EmailService.class);

@@ -24,15 +24,12 @@ yukon.adminSetup.config = (function () {
                 $('#adminSetup-testEmail-form').ajaxSubmit({
                     success: function (result, status, xhr, $form) {
                         $('#adminSetup-testEmail-popup').dialog('close');
+                        yukon.ui.alertSuccess('An email has been sent.');
                     },
                     error: function (xhr, status, error, $form) {
                         $('#adminSetup-testEmail-popup').html(xhr.responseText);
                     }
                 });
-            });
-            
-            $('.js-hide-dropdown').click(function () {
-                $('.dropdown-menu').hide()
             });
             
             _initialized = true;

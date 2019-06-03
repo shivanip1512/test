@@ -11,12 +11,12 @@
 <cti:standardPage module="adminSetup" page="config">
 
 <div id="page-actions" class="dn">
-    <cm:dropdownOption key="yukon.web.modules.adminSetup.config.testEmail" data-popup=".js-test-email-dialog" icon= "icon-email"/>
+    <cm:dropdownOption key="yukon.web.modules.adminSetup.config.testEmail" data-popup=".js-test-email-dialog" icon="icon-email"/>
 </div>
 
-<div class= "dn js-test-email-dialog" id = "adminSetup-testEmail-popup" data-dialog
+<div class="dn js-test-email-dialog" id="adminSetup-testEmail-popup" data-dialog
     data-title="<cti:msg2 key="yukon.web.modules.adminSetup.config.testEmail"/>"
-    data-ok-text="<cti:msg2 key="yukon.web.modules.adminSetup.config.Send"/>"
+    data-ok-text="<cti:msg2 key="yukon.web.modules.adminSetup.config.testEmail.send"/>"
     data-url="<cti:url value="/admin/config/emailTestPopup"/>"
     data-event="yukon:adminSetup:config:sendTestEmail">
 </div>
