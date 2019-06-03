@@ -28,7 +28,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
-import com.cannontech.web.api.APIRequestHelper;
+import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
@@ -44,7 +44,7 @@ public class LoadGroupSetupController {
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
     
     @Autowired private ApiControllerHelper helper;
-    @Autowired private APIRequestHelper apiRequestHelper;
+    @Autowired private ApiRequestHelper apiRequestHelper;
 
     @GetMapping("/create")
     public String create(ModelMap model) {

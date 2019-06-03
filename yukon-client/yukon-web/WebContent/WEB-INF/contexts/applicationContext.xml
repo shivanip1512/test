@@ -1384,6 +1384,6 @@
     <bean class="com.cannontech.web.api.dr.setup.LoadGroupSetupValidator" />
     <bean class="com.cannontech.web.api.validation.ApiControllerHelper"/>
     <bean class="com.cannontech.web.api.token.TokenHelper"/>
-    <bean class="com.cannontech.web.api.APIRequestHelper"/>
+    <bean class="com.cannontech.web.api.ApiRequestHelper"/>
      
 </beans>

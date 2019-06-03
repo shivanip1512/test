@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.token.TokenHelper;
 
-public class APIRequestHelper {
+public class ApiRequestHelper {
 
     private final static String authToken = "authToken";
     @Autowired private RestTemplate apiRestTemplate;
