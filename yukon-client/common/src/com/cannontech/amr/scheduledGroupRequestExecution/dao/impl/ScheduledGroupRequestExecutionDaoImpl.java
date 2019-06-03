@@ -74,24 +74,30 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     @Override
     public CommandRequestExecution findLatestCommandRequestExecutionForJobId(int jobId, Date cutoff) {
     	
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT CRE.* FROM ScheduledGrpCommandRequest SGCR");
-    	sql.append("JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecContextId = CRE.CommandRequestExecContextId)");
-    	sql.append("WHERE SGCR.JobID = ").appendArgument(jobId);
-    	
-    	if (cutoff != null) {
-        	sql.append("AND CRE.StartTime <= ").appendArgument(cutoff);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT CRE2.*");
+        sql.append("FROM (");
+        sql.append("    SELECT"); 
+        sql.append("        CRE.CommandRequestExecId,");
+        sql.append("        ROW_NUMBER() OVER (ORDER BY CRE.StartTime DESC) RN"); 
+        sql.append("    FROM ScheduledGrpCommandRequest SGCR"); 
+        sql.append("    JOIN CommandRequestExec CRE"); 
+        sql.append("        ON SGCR.CommandRequestExecContextId = CRE.CommandRequestExecContextId");
+        sql.append("    WHERE SGCR.JobID").eq(jobId);
+        if (cutoff != null) {
+            sql.append("AND CRE.StartTime").lte(cutoff);
         }
-    	
-    	sql.append("ORDER BY CRE.StartTime DESC");
-    	
-    	List<CommandRequestExecution> cres = yukonJdbcTemplate.queryForLimitedResults(sql, new CommandRequestExecutionRowAndFieldMapper(), 1);
-    	
-    	if (cres.size() > 0) {
-    		return cres.get(0);
-    	}
-
-        return null;
+        sql.append(") LatestCre"); 
+        sql.append("JOIN CommandRequestExec CRE2"); 
+        sql.append("    ON LatestCre.CommandRequestExecId = CRE2.CommandRequestExecId"); 
+        sql.append("WHERE LatestCre.RN = 1");
+        
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, new CommandRequestExecutionRowAndFieldMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null; //no results found
+        }
     }
     
     // GET JOBS BY RANGE
