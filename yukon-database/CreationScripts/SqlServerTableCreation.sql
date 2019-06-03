@@ -1923,6 +1923,15 @@ StartTime ASC
 go
 
 /*==============================================================*/
+/* Index: INDX_CRE_StartDesc_ExecContId                         */
+/*==============================================================*/
+create index INDX_CRE_StartDesc_ExecContId on CommandRequestExec (
+StartTime DESC,
+CommandRequestExecContextId ASC
+)
+go
+
+/*==============================================================*/
 /* Table: CommandRequestExecRequest                             */
 /*==============================================================*/
 create table CommandRequestExecRequest (

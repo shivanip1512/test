@@ -18,6 +18,15 @@ AND POINTNAME = 'kVAr (Quadrants 1 3)';
 INSERT INTO DBUpdates VALUES ('YUK-19667', '7.1.4', GETDATE());
 /* @end YUK-19667 */
 
+/* @start YUK-19963 */
+CREATE INDEX INDX_CRE_StartDesc_ExecContId ON CommandRequestExec (
+    StartTime DESC,
+    CommandRequestExecContextId ASC
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-19963', '7.1.4', GETDATE());
+/* @end YUK-19963 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1803,6 +1803,14 @@ create index INDX_CRE_ExType_ExId_ExStart on CommandRequestExec (
 );
 
 /*==============================================================*/
+/* Index: INDX_CRE_StartDesc_ExecContId                         */
+/*==============================================================*/
+create index INDX_CRE_StartDesc_ExecContId on CommandRequestExec (
+   StartTime DESC,
+   CommandRequestExecContextId ASC
+);
+
+/*==============================================================*/
 /* Table: CommandRequestExecRequest                             */
 /*==============================================================*/
 create table CommandRequestExecRequest  (
