@@ -388,6 +388,15 @@ public class ControllableDevicesRequestEndPoint {
                 String latitude = template.evaluateAsString(parentLatitudeStr);
                 String longitude = template.evaluateAsString(parentLongitudeStr);
                 try {
+                    /*
+                     * Added this check because if we keep empty latitude and longitude values that is
+                     * allowed,
+                     * eg.<gps>
+                     *      <latitude></latitude>
+                     *      <longitude></longitude>
+                     * </gps>
+                     * In case of empty latitude and longitude device should be successfully enrolled.
+                     */
                     if (StringUtils.isNotEmpty(latitude) || StringUtils.isNotEmpty(longitude)) {
                         gps = LocationServiceImpl.getValidLocationFormat(latitude, longitude);
                     }
