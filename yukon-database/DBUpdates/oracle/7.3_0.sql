@@ -182,7 +182,7 @@ INSERT INTO DBUpdates VALUES ('YUK-19858-1', '7.3.0', SYSDATE);
 /* @end YUK-19858-1 */
 
 /* @start YUK-19963 */
-/* Will error via. already existing if 7.2.2 or later creation scripts were ran. */
+/* Will error via. already existing if 7.1.4 or later creation scripts were ran. */
 /* @error ignore-begin */
 CREATE INDEX INDX_CRE_StartDesc_ExecContId ON CommandRequestExec (
     StartTime DESC,
