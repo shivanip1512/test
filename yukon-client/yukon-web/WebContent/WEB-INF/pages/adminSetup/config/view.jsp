@@ -6,8 +6,20 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
 
 <cti:standardPage module="adminSetup" page="config">
+
+<div id="page-actions" class="dn">
+    <cm:dropdownOption key="yukon.web.modules.adminSetup.config.testEmail" data-popup=".js-test-email-dialog" icon= "icon-email"/>
+</div>
+
+<div class= "dn js-test-email-dialog" id = "adminSetup-testEmail-popup" data-dialog
+    data-title="<cti:msg2 key="yukon.web.modules.adminSetup.config.testEmail"/>"
+    data-ok-text="<cti:msg2 key="yukon.web.modules.adminSetup.config.Send"/>"
+    data-url="<cti:url value="/admin/config/emailTestPopup"/>"
+    data-event="yukon:adminSetup:config:sendTestEmail">
+</div>
 
 <div class="clear dashboard">
     <c:forEach items="${categories}" var="category">
@@ -48,4 +60,5 @@
     </c:forEach>
 </div>
 
+<cti:includeScript link="/resources/js/pages/yukon.adminSetup.config.js"/>
 </cti:standardPage>
