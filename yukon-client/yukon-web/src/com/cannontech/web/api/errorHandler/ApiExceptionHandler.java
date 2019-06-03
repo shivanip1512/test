@@ -33,7 +33,6 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -239,11 +238,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         String uniqueKey = CtiUtilities.getYKUniqueKey();
         logApiException(request, ex, uniqueKey);
 
-        if (ex.getCause() instanceof ResponseStatusException) {
-            final ApiError apiError =
-                new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), uniqueKey);
-            return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
         final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),
             "Unexpected exception - cause unknown", uniqueKey);
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
