@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.lm.LMFactory;
@@ -34,6 +35,9 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     @Override
     public LoadGroupBase retrieve(int loadGroupId) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(loadGroupId);
+        if (pao == null) {
+            throw new NotFoundException("Id not found");
+        }
         LMGroup loadGroup = (LMGroup) dbPersistentDao.retrieveDBPersistent(pao);
         LoadGroupBase loadGroupBase = LoadGroupBase.of(loadGroup);
         return loadGroupBase;
