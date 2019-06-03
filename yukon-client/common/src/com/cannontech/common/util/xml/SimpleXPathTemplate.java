@@ -156,29 +156,6 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         Double num = evaluateNumber(expression);
         return num == null ? null : num;
     }
-    
-    /**
-     * Evaluate value at expression as a Double.
-     * Returns null if the expression defines a node that does not exists.
-     * Returns defaultWhenEmpty if the expression exists but is empty or not a Double.
-     *   - using defaultWhenEmpty = null is same as evaluteAsDouble(expression, null);
-     * @throws XPathException
-     */
-    public Double evaluateAsDouble(String expression, Double defaultWhenEmpty) throws XPathException {
-        checkArgument(expression != null);
-
-        if (evaluateAsString(expression) == null) {
-            // field does not exist, skip
-            return null;
-        }
-
-        Double num = evaluateNumber(expression);
-        if (num == null) {
-            // since we've already checked for expression = null above, we know this is an empty value
-            return defaultWhenEmpty;
-        }
-        return num;
-    }
 
     /**
      * Evaluate value at expression as a Float.

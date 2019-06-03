@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,7 +18,6 @@ import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
@@ -82,11 +80,11 @@ public class LocationServiceImpl implements LocationService{
         boolean isValidLatitude = NumberUtils.isNumber(latitude);
         boolean isValidLongitude = NumberUtils.isNumber(longitude);
         if (!(isValidLatitude || isValidLongitude)) {
-            throw new StarsInvalidArgumentException("Latitude and Longitude must be Numeric.");
+            throw new IllegalArgumentException("Latitude and Longitude must be Numeric.");
         } else if (!isValidLatitude) {
-            throw new StarsInvalidArgumentException("Latitude must be Numeric.");
+            throw new IllegalArgumentException("Latitude must be Numeric.");
         } else if (!isValidLongitude) {
-            throw new StarsInvalidArgumentException("Longitude must be Numeric.");
+            throw new IllegalArgumentException("Longitude must be Numeric.");
         }
         GPS gps = new GPS();
         gps.setLatitude(Double.valueOf(latitude));

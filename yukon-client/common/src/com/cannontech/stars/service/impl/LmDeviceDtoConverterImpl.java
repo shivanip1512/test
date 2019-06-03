@@ -19,6 +19,7 @@ import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.service.LmDeviceDtoConverter;
+import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.util.ImportFields;
 import com.cannontech.stars.ws.LmDeviceDto;
@@ -177,8 +178,12 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
             } else {
                 // this could have parse exception I think, which will catch any case but DELETE or NULL (as
                 // above if check)
-                gps = LocationServiceImpl.getValidLocationFormat(hwFields[ImportFields.IDX_LATITUDE],
-                    hwFields[ImportFields.IDX_LONGITUDE]);
+                try {
+                    gps = LocationServiceImpl.getValidLocationFormat(hwFields[ImportFields.IDX_LATITUDE],
+                        hwFields[ImportFields.IDX_LONGITUDE]);
+                } catch (IllegalArgumentException e) {
+                    throw new StarsInvalidArgumentException(e.getMessage());
+                }
             }
             return gps;
         }

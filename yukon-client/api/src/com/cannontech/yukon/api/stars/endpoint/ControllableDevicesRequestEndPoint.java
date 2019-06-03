@@ -383,8 +383,12 @@ public class ControllableDevicesRequestEndPoint {
             } else if (parentLatitude != null && parentLongitude == null) {
                 throw new StarsClientRequestException("Longitude Field is required in GPS parent field");
             } else {
-                gps = LocationServiceImpl.getValidLocationFormat(template.evaluateAsString(parentLatitudeStr),
-                    template.evaluateAsString(parentLongitudeStr));
+                try {
+                    gps = LocationServiceImpl.getValidLocationFormat(template.evaluateAsString(parentLatitudeStr),
+                        template.evaluateAsString(parentLongitudeStr));
+                } catch (IllegalArgumentException e) {
+                    throw new StarsInvalidArgumentException(e.getMessage());
+                }
             }
         }
         return gps;
