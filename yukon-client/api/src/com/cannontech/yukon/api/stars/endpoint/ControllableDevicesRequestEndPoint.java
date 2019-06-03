@@ -2,6 +2,7 @@ package com.cannontech.yukon.api.stars.endpoint;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -369,12 +370,13 @@ public class ControllableDevicesRequestEndPoint {
         Node GPS = template.evaluateAsNode(gpsStr);
         Node parentLatitude = template.evaluateAsNode(parentLatitudeStr);
         Node parentLongitude = template.evaluateAsNode(parentLongitudeStr);
-        Node latitude = template.evaluateAsNode(latitudeStr);
-        Node longitude = template.evaluateAsNode(longitudeStr);
+        Node latitudeNode = template.evaluateAsNode(latitudeStr);
+        Node longitudeNode = template.evaluateAsNode(longitudeStr);
 
-        if ((latitude != null || longitude != null) && GPS == null) {
+        if ((latitudeNode != null || longitudeNode != null) && GPS == null) {
             throw new StarsClientRequestException("Latitude and longitute fields parent GPS field is missing");
         } else if (GPS != null) {
+
             if (parentLatitude == null && parentLongitude == null) {
                 throw new StarsClientRequestException(
                     "Latitude and longitute  Fields are required if parent GPS field present.");
@@ -383,15 +385,19 @@ public class ControllableDevicesRequestEndPoint {
             } else if (parentLatitude != null && parentLongitude == null) {
                 throw new StarsClientRequestException("Longitude Field is required in GPS parent field");
             } else {
+                String latitude = template.evaluateAsString(parentLatitudeStr);
+                String longitude = template.evaluateAsString(parentLongitudeStr);
                 try {
-                    gps = LocationServiceImpl.getValidLocationFormat(template.evaluateAsString(parentLatitudeStr),
-                        template.evaluateAsString(parentLongitudeStr));
+                    if (StringUtils.isNotEmpty(latitude) || StringUtils.isNotEmpty(longitude)) {
+                        gps = LocationServiceImpl.getValidLocationFormat(latitude, longitude);
+                    }
                 } catch (IllegalArgumentException e) {
                     throw new StarsInvalidArgumentException(e.getMessage());
                 }
             }
         }
         return gps;
+
     }
 
     @Autowired

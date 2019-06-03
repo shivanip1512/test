@@ -74,7 +74,7 @@ public class LocationServiceImpl implements LocationService{
     }
 
     /**
-     * Returns GPS object if latitude and longitude contains number else throw StarsInvalidArgumentException
+     * Returns GPS object if latitude and longitude contains number else throw IllegalArgumentException
      */
     public static GPS getValidLocationFormat(String latitude, String longitude) {
         boolean isValidLatitude = NumberUtils.isNumber(latitude);
