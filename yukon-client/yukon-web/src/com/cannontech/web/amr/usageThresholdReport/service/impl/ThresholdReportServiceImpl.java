@@ -52,9 +52,9 @@ public class ThresholdReportServiceImpl implements ThresholdReportService{
     }
     
     @Override
-    public ThresholdReport getReportDetail(int reportId, ThresholdReportFilter filter, PagingParameters paging,
+    public ThresholdReport getReportDetail(int reportId, ThresholdReportFilter filter, Integer[] selectedGatewayIds, PagingParameters paging,
             SortBy sortBy, Direction direction) {
-        return thresholdReportDao.getReportDetail(reportId, filter, paging, sortBy, direction);
+        return thresholdReportDao.getReportDetail(reportId, filter, selectedGatewayIds, paging, sortBy, direction);
     }
     
     @Transactional

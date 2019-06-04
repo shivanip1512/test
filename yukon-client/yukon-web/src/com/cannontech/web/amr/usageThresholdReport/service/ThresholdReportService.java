@@ -15,7 +15,7 @@ public interface ThresholdReportService {
     /**
      * Returns filtered report.
      */
-    ThresholdReport getReportDetail(int reportId, ThresholdReportFilter filter,
+    ThresholdReport getReportDetail(int reportId, ThresholdReportFilter filter, Integer[] selectedGatewayIds,
             PagingParameters paging, SortBy sortBy, Direction direction);
 
     /**

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReport;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportCriteria;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
@@ -55,6 +56,13 @@ public interface ThresholdReportDao {
     /**
      * Returns report.
      */
-    ThresholdReport getReportDetail(int reportId, ThresholdReportFilter filter, PagingParameters paging, SortBy sortBy,
+    ThresholdReport getReportDetail(int reportId, ThresholdReportFilter filter, Integer[] selectedGatewayIds, PagingParameters paging, SortBy sortBy,
             Direction direction);
+    /**
+     * Returns the RfnGateway List
+     * 
+     * @param reportId - UsageThresholdReportId
+     * @return
+     */
+    List<RfnGateway> getRfnGatewayList(int reportId);
 }

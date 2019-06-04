@@ -2,7 +2,9 @@ package com.cannontech.web.amr.usageThresholdReport.dao.impl;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -19,12 +21,15 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.InstantRangeLogHelper;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -49,6 +54,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private RfnGatewayService rfnGatewayService;
     private CriteriaRowMapper criteriaRowMapper = new CriteriaRowMapper();
             
     private static class CriteriaRowMapper implements YukonRowMapper<ThresholdReportCriteria> {
@@ -67,11 +73,11 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
     
     @Override
     public ThresholdReport getReportDetail(int reportId,
-            ThresholdReportFilter filter, PagingParameters paging, SortBy sortBy, Direction direction) {
+            ThresholdReportFilter filter, Integer[] selectedGatewayIds, PagingParameters paging, SortBy sortBy, Direction direction) {
         ThresholdReportCriteria criteria = getReport(reportId);
         log.debug("Report Detail for report id="+reportId +" filter="+filter+" criteria="+criteria);
-        SqlStatementBuilder allRowsSql = buildDetailSelect(reportId, criteria, filter, sortBy, direction);
-        SqlStatementBuilder countSql = buildDetailSelect(reportId, criteria, filter, null, null);
+        SqlStatementBuilder allRowsSql = buildDetailSelect(reportId, criteria, filter, selectedGatewayIds, sortBy, direction);
+        SqlStatementBuilder countSql = buildDetailSelect(reportId, criteria, filter, selectedGatewayIds, null, null);
         int totalCount = jdbcTemplate.queryForInt(countSql);
         
         int start = paging.getStartIndex();
@@ -121,6 +127,34 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         }
     }
     
+    @Override
+    public List<RfnGateway> getRfnGatewayList(int reportId){
+        SqlStatementBuilder allGatewaysSql = buildGatewaySelect(reportId);
+        
+        return jdbcTemplate.query(allGatewaysSql, TypeRowMapper.INTEGER)
+                .stream()
+                .map(rfnGatewayService::getGatewayByPaoId)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Creates sql string that selects all non-null gateways in the specified UsageThresholdReportId (reportId)
+     */
+    private SqlStatementBuilder buildGatewaySelect(int reportId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT drdd.GatewayId");
+        sql.append("FROM UsageThresholdReportRow utrr");
+        sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectId = utrr.PaoId");
+        sql.append("LEFT JOIN DynamicRfnDeviceData drdd on ypo.PAObjectID = drdd.DeviceId");
+        sql.append("WHERE utrr.UsageThresholdReportId").eq(reportId);
+        sql.append("AND drdd.GatewayId IS NOT NULL");
+        sql.append("ORDER BY drdd.GatewayId asc");
+
+        log.debug(sql.getDebugSql());
+        
+        return sql;
+    }
+    
     /**
      * Adds availability information to detail
      */
@@ -143,7 +177,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
      * If sortBy is null returns count sql, otherwise returns search sql.
      */
     private SqlStatementBuilder buildDetailSelect(int reportId, ThresholdReportCriteria criteria,
-            ThresholdReportFilter filter, SortBy sortBy, Direction direction) {
+            ThresholdReportFilter filter, Integer[] selectedGatewayIds, SortBy sortBy, Direction direction) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
         String combineSerialNumberAndAddress="COALESCE(rfna.SerialNumber, CAST(dcs.Address AS varchar))";
@@ -245,6 +279,11 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
 
         if (!filter.isIncludeDisabled()) {
             sql.append("AND ypo.DisableFlag").eq_k(YNBoolean.NO);
+        }
+        
+        if (selectedGatewayIds != null) {
+            HashSet<Integer> gatewaySet = new HashSet<>(Arrays.asList(selectedGatewayIds));
+            sql.append("AND drdd.GatewayId").in(gatewaySet);
         }
         
         if (sortBy != null) {

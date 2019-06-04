@@ -36,6 +36,8 @@ yukon.ami.usageThresholdReport = (function () {
                 _filterResults();
             });
             
+            $(".js-primary-gateway-select").chosen({width: "300px"});
+            
             $(document).on('click', '.js-download', function () {
                 var form = $('#filter-results-form');
                 var data = form.serialize();

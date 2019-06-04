@@ -5,6 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="amr" page="usageThresholdReport.results">
 
@@ -59,6 +60,20 @@
                                 <tags:check name="availability" key=".dataAvailability.${availability}" classes="M0" value="${availability}" checked="true" buttonTextStyle="color:${availability.color}"></tags:check>
                             </c:forEach>
                         </div>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".primaryGateway">
+                         <cti:msg2 var="gatewayPlaceholder" key="yukon.web.modules.amr.usageThresholdReport.results.dataAvailability.selectGateways"/>
+                        <select name="selectedGatewayIds" class="js-primary-gateway-select" multiple="multiple" data-placeholder="${gatewayPlaceholder}">
+                            <c:forEach var="gateway" items="${gateways}">
+                                <c:set var="checked" value=""/>
+                                <c:forEach var="selectedGateway" items="${selectedGateways}">
+                                    <c:if test="${gateway.id == selectedGateway}">
+                                        <c:set var="checked" value="selected='selected'"/>
+                                    </c:if>
+                                </c:forEach>
+                                <option value="${gateway.id}" ${checked}>${fn:escapeXml(gateway.name)}</option>
+                            </c:forEach>
+                        </select>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <cti:button classes="primary action js-filter fr" nameKey="filter"/>

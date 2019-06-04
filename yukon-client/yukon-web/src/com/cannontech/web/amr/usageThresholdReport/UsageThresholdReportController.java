@@ -46,6 +46,7 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
@@ -55,6 +56,7 @@ import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.usageThresholdReport.dao.ThresholdReportDao;
 import com.cannontech.web.amr.usageThresholdReport.dao.ThresholdReportDao.SortBy;
 import com.cannontech.web.amr.usageThresholdReport.model.DataAvailability;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdDescriptor;
@@ -88,6 +90,7 @@ public class UsageThresholdReportController {
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PointFormattingService pointFormattingService;
     @Autowired private PaoNotesService paoNotesService;
+    @Autowired private ThresholdReportDao thresholdReportDao;
     
     @RequestMapping(value="report", method = RequestMethod.GET)
     public String report(ModelMap model, YukonUserContext userContext) {
@@ -113,7 +116,7 @@ public class UsageThresholdReportController {
     @RequestMapping(value="report", method = RequestMethod.POST)
     public String runReport(@ModelAttribute ThresholdReportCriteria criteria, ModelMap model, HttpServletRequest request, 
                             @RequestParam String minDate, @RequestParam String maxDate, YukonUserContext userContext, 
-                            FlashScope flashScope, RedirectAttributes redirectAtts) throws Exception {
+                            FlashScope flashScope, RedirectAttributes redirectAtts, Integer[] selectedGatewayIds) throws Exception {
         model.addAttribute("dataAvailabilityOptions", DataAvailability.values());
         model.addAttribute("thresholdOptions", ThresholdDescriptor.values());
         DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
@@ -148,11 +151,14 @@ public class UsageThresholdReportController {
         filter.setThreshold(criteria.getThreshold());
         model.addAttribute("filter", filter);
         model.addAttribute("criteria", criteria);
+        List<RfnGateway> gateways = thresholdReportDao.getRfnGatewayList(criteria.getReportId());
+        model.addAttribute("gateways", gateways);
+        model.addAttribute("selectedGateways", selectedGatewayIds);    
         return "usageThresholdReport/results.jsp";
     }
     
     @RequestMapping(value="results", method = RequestMethod.GET)
-    public String filterResults(int reportId, String[] deviceSubGroups, boolean includeDisabled, 
+    public String filterResults(int reportId, String[] deviceSubGroups, boolean includeDisabled, Integer[] selectedGatewayIds,
                                 ThresholdDescriptor thresholdDescriptor, double threshold, DataAvailability[] availability,
                                 @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
                                 @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, YukonUserContext userContext) {
@@ -165,7 +171,7 @@ public class UsageThresholdReportController {
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
-        ThresholdReport report = reportService.getReportDetail(reportId, filter, paging, sortBy.getValue(), dir);
+        ThresholdReport report = reportService.getReportDetail(reportId, filter, selectedGatewayIds, paging, sortBy.getValue(), dir);
         model.addAttribute("report", report);
         List<SimpleDevice> devices = report.getAllDevices();
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
@@ -208,15 +214,14 @@ public class UsageThresholdReportController {
     
     @RequestMapping("download")
     public String download(YukonUserContext userContext, int reportId, String[] deviceSubGroups, boolean includeDisabled, 
-                           ThresholdDescriptor thresholdDescriptor, double threshold, DataAvailability[] availability,
-                          @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
-                          @DefaultItemsPerPage(value=250) PagingParameters paging,
-                          HttpServletResponse response) throws IOException {
+                           Integer[] selectedGatewayIds, ThresholdDescriptor thresholdDescriptor, double threshold, 
+                           DataAvailability[] availability, @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
+                          @DefaultItemsPerPage(value=250) PagingParameters paging, HttpServletResponse response) throws IOException {
         ThresholdReportFilter filter = createFilter(deviceSubGroups, includeDisabled, thresholdDescriptor, threshold, availability);
 
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
-        ThresholdReport allDevicesReport = reportService.getReportDetail(reportId, filter, PagingParameters.EVERYTHING, sortBy.getValue(), dir);
+        ThresholdReport allDevicesReport = reportService.getReportDetail(reportId, filter, selectedGatewayIds, PagingParameters.EVERYTHING, sortBy.getValue(), dir);
         
         String[] headerRow = getHeaderRows(userContext);
         List<String[]> dataRows = getDataRows(allDevicesReport, userContext);
@@ -232,7 +237,7 @@ public class UsageThresholdReportController {
         ThresholdReportFilter filter = new ThresholdReportFilter();
         filter.setThresholdDescriptor(null);
         filter.setAvailability(Lists.newArrayList(DataAvailability.values()));
-        ThresholdReport allDevicesReport = reportService.getReportDetail(reportId, filter, PagingParameters.EVERYTHING, DetailSortBy.deviceName.value, Direction.asc);
+        ThresholdReport allDevicesReport = reportService.getReportDetail(reportId, filter, null, PagingParameters.EVERYTHING, DetailSortBy.deviceName.value, Direction.asc);
 
         String[] headerRow = getHeaderRows(userContext);
         List<String[]> dataRows = getDataRows(allDevicesReport, userContext);

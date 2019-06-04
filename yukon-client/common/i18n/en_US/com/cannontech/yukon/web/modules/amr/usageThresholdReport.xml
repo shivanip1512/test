@@ -59,6 +59,7 @@
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.dataAvailability.PARTIAL">Partial</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.dataAvailability.UNSUPPORTED">Unsupported</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.dataAvailability.NONE">None</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.dataAvailability.selectGateways">Select Gateways</entry>
     
     <!-- TABLE COLUMN HEADERS -->
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.deviceName">Device Name</entry>
