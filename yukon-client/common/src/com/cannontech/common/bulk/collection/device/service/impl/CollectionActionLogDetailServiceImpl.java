@@ -186,7 +186,7 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 if (result.getAction().contains(LAST_VALUE)) {
                     if (StringUtils.isNotEmpty(detail.getLastValue())) {
                         value = detail.getLastValue().replaceAll("/", "");
-                        value = value.replaceAll("\n", "");
+                        value = value.replaceAll("\n", " ");
                     }
                     fields.add(value);
                 }
