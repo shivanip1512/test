@@ -1,5 +1,8 @@
 package com.cannontech.web.admin;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletResponse;
@@ -14,14 +17,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.config.model.AdminSetupEmailModel;
 import com.cannontech.web.admin.validator.EmailTestValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -31,6 +38,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class EmailTestController {
     @Autowired private ContactDao contactDao;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private EmailTestValidator emailTestValidator;
     
     @RequestMapping(value="/config/emailTestPopup", method=RequestMethod.GET)
@@ -47,11 +55,13 @@ public class EmailTestController {
     }
     
     @RequestMapping(value="/config/emailTest", method=RequestMethod.POST)
-    public String sendEmail(@ModelAttribute("email") AdminSetupEmailModel email, BindingResult result, ModelMap model, LiteYukonUser user, HttpServletResponse resp) throws MessagingException {
+    public String sendEmail(@ModelAttribute("email") AdminSetupEmailModel email, BindingResult result, ModelMap model, YukonUserContext userContext, HttpServletResponse resp) throws MessagingException {
         
-        String genBody = "Yukon Email Test: A test email notification was requested by user " + user.getUsername();
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String genBody = accessor.getMessage("yukon.web.modules.adminSetup.config.testEmail.body", userContext.getYukonUser().getUsername());
+        String subject = accessor.getMessage("yukon.web.modules.adminSetup.config.testEmail.subject");
+        Map<String, Object> json = new HashMap<>();
    
-        
         emailTestValidator.validate(email, result);
         if (result.hasErrors())
         {
@@ -59,10 +69,11 @@ public class EmailTestController {
             model.addAttribute("email",email);
             return "config/emailTest.jsp";
         }
-        
+        else
+        {
         InternetAddress[] postTo = InternetAddress.parse(email.getTo());
         
-        EmailMessage testEmailMessage = new EmailMessage(postTo, "[yukon] Yukon Test Email", genBody);
+        EmailMessage testEmailMessage = new EmailMessage(postTo, subject, genBody);
         try
         {
             EmailService emailService = YukonSpringHook.getBean(EmailService.class);
@@ -72,7 +83,12 @@ public class EmailTestController {
         {
             CTILogger.error( e.getMessage(), e );
         }
-        return null;
+        
+        String alertBody = accessor.getMessage("yukon.web.modules.adminSetup.config.testEmail.alert",email.getTo());
+        json.put("successMessage", alertBody);
+        resp.setContentType("application/json");
+        return JsonUtils.writeResponse(resp, json);
+        }
     }
 
 }

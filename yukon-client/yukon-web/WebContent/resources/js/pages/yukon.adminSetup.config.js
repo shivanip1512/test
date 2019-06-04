@@ -22,9 +22,9 @@ yukon.adminSetup.config = (function () {
             
             $(document).on("yukon:adminSetup:config:sendTestEmail", function (ev) {
                 $('#adminSetup-testEmail-form').ajaxSubmit({
-                    success: function (result, status, xhr, $form) {
+                    success: function (data, status, xhr, $form) {
                         $('#adminSetup-testEmail-popup').dialog('close');
-                        yukon.ui.alertSuccess('An email has been sent.');
+                        yukon.ui.alertSuccess(data.successMessage);
                     },
                     error: function (xhr, status, error, $form) {
                         $('#adminSetup-testEmail-popup').html(xhr.responseText);
