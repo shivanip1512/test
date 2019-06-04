@@ -39,6 +39,19 @@
             <hr>
         </div>
         
+        <div id="filtered-devices" class="dn PB10">
+            <span class="fwn"><i:inline key="yukon.common.filteredResults"/></span>
+            <span class="badge js-number-devices"></span>&nbsp;<i:inline key="yukon.common.devices"/>
+            <input type="hidden" id="collection-group"/>
+        
+            <span class="js-cog-menu">
+                <cm:dropdown icon="icon-cog">
+                    <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" linkId="collectionActionLink" newTab="true"/> 
+                    <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="js-download"/>  
+                </cm:dropdown>
+            </span>
+        </div>
+        
         <div id="comprehensive-map" class="map"></div>
         <div class="buffered">
             <span class="fl">

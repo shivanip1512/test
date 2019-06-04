@@ -25,6 +25,14 @@ public class NetworkMap {
     public void setLegend(List<Legend> legend) {
         this.legend = legend;
     }
+    //used in JS
+    public int getTotalDevices() {
+        int totalNumber = 0;
+        for (FeatureCollection feature : mappedDevices.values()) {
+            totalNumber += feature.getFeatures().size();
+        }
+        return totalNumber;
+    }
     
     @Override
     public String toString() {

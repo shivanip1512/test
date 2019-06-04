@@ -401,8 +401,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         break;
                     case PRIMARY_FORWARD_NEIGHBOR_DATA:
                         //Populate all fields
-                        NeighborData neighborData = new NeighborData();
-                        neighborData.setRfnIdentifier(identifier);
+                        com.cannontech.common.rfn.message.neighbor.NeighborData neighborData = new com.cannontech.common.rfn.message.neighbor.NeighborData();
+                        neighborData.setNeighborRfnIdentifier(identifier);
                         List<Integer> linkCost = Arrays.asList(1, 2, 3, 4, 5);
                         int randomElement = linkCost.get(new Random().nextInt(linkCost.size()));
                         neighborData.setNeighborLinkCost((float) randomElement);

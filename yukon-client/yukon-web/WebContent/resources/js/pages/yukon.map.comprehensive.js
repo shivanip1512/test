@@ -401,10 +401,20 @@ yukon.map.comprehensive = (function () {
                             $('#legend').append('<span class=small-circle style=margin-left:5px;margin-bottom:5px;background:' + legendItem.hexColor + '></span><span style=margin-left:5px;>' + legendItem.text + '</span>');
                         }
                         $('#legend').removeClass('dn');
+                        //display devices cog
+                        $('#filtered-devices').removeClass('dn');
+                        $('.js-number-devices').html(data.map.totalDevices);
+                        $('#collectionActionLink').attr('href', yukon.url(data.collectionActionRedirect));
+                        $('#collection-group').val(data.collectionGroup);
                     }
                 }).always(function () {
                     yukon.ui.unbusy('.js-filter-map');
                 });
+            });
+            
+            $(document).on('click', '.js-download', function () {
+                var collectionGroup = $('#collection-group').val();
+                window.location = yukon.url('/stars/comprehensiveMap/download?groupName=' + collectionGroup);
             });
             
             $("#findDevice").keyup(function(event) {
