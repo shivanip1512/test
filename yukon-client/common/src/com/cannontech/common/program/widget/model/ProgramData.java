@@ -2,13 +2,15 @@ package com.cannontech.common.program.widget.model;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
+
 public class ProgramData {
 
     private int programId;
     private int programHistoryId;
     private String programName;
-    private Date startDateTime;
-    private Date stopDateTime;
+    private DateTime startDateTime;
+    private DateTime stopDateTime;
     private String gearName;
     private String action;
     private Date eventTime;
@@ -36,11 +38,11 @@ public class ProgramData {
         return programName;
     }
 
-    public Date getStartDateTime() {
+    public DateTime getStartDateTime() {
         return startDateTime;
     }
 
-    public Date getStopDateTime() {
+    public DateTime getStopDateTime() {
         return stopDateTime;
     }
 
@@ -62,8 +64,8 @@ public class ProgramData {
         private String programName;
         private String gearName;
         private String action;
-        private Date startDateTime;
-        private Date stopDateTime;
+        private DateTime startDateTime;
+        private DateTime stopDateTime;
         private Date eventTime;
 
         public ProgramDataBuilder(int programId) {
@@ -94,12 +96,12 @@ public class ProgramData {
             return this;
         }
 
-        public ProgramDataBuilder setStartDateTime(Date startDateTime) {
+        public ProgramDataBuilder setStartDateTime(DateTime startDateTime) {
             this.startDateTime = startDateTime;
             return this;
         }
 
-        public ProgramDataBuilder setStopDateTime(Date stopDateTime) {
+        public ProgramDataBuilder setStopDateTime(DateTime stopDateTime) {
             this.stopDateTime = stopDateTime;
             return this;
         }

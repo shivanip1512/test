@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.Duration;
 
@@ -203,12 +204,7 @@ public class ProgramServiceAdapter implements ProgramService {
     }
 
     @Override
-    public List<ProgramData> getAllTodaysPrograms() {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-
-    @Override
-    public List<ProgramData> getProgramsScheduledForNextControlDayAfterToday() {
+    public Map<String, List<ProgramData>> buildProgramWidgetData(YukonUserContext userContext) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.Duration;
 
@@ -283,14 +284,7 @@ public interface ProgramService {
     public void disableAndSupressRestoration(int programId);
     
     /**
-     * Returns list of all program which are executed today or scheduled to execute today 
-     * 
+     * Build data for Program widget.
      */
-    public List<ProgramData> getAllTodaysPrograms();
-    
-    /**
-     * Returns list of all program which are scheduled to execute for next control day after today
-     * 
-     */
-    public List<ProgramData> getProgramsScheduledForNextControlDayAfterToday();
+    public Map<String, List<ProgramData>> buildProgramWidgetData(YukonUserContext userContext);
 }

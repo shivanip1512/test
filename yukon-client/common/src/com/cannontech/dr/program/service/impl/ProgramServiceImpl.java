@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +29,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -50,6 +52,7 @@ import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.program.filter.ForLoadGroupFilter;
@@ -59,6 +62,7 @@ import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.ProgramUtils;
@@ -100,9 +104,10 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired private ScenarioDao scenarioDao;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired @Qualifier("main") private Executor executor;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private static final long PROGRAM_CHANGE_TIMEOUT_MS = 5000;
-
+    private static final int MAX_PROGRAM_TO_DISPLAY_ON_WIDGET = 10;
     private final RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
 
@@ -784,7 +789,41 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public List<ProgramData> getAllTodaysPrograms() {
+    public Map<String, List<ProgramData>> buildProgramWidgetData(YukonUserContext userContext) {
+        Map<String, List<ProgramData>> programWidgetData = new HashMap<>();
+
+        int todaysProgramsCount = 0; 
+        List<ProgramData> todaysPrograms = getAllTodaysPrograms();
+        if (CollectionUtils.isNotEmpty(todaysPrograms)) {
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            programWidgetData.put(accessor.getMessage("yukon.web.widgets.programWidget.today"), todaysPrograms);
+            todaysProgramsCount = todaysPrograms.size();
+        }
+        // List of Programs which are scheduled to execute for next control day after today
+        List<ProgramData> futureProgramsToDisplay = new ArrayList<>();
+        if (todaysProgramsCount < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
+            List<ProgramData> futurePrograms = getProgramsScheduledForNextControlDayAfterToday();
+            if (CollectionUtils.isNotEmpty(futurePrograms)) {
+                int maxFutureProgramsCount = MAX_PROGRAM_TO_DISPLAY_ON_WIDGET - todaysProgramsCount;
+                futureProgramsToDisplay = limitData(futurePrograms, maxFutureProgramsCount);
+                String date = dateFormattingService.format(futureProgramsToDisplay.get(0).getStartDateTime(),
+                    DateFormatEnum.DATE_MMDDYYYY, userContext);
+                programWidgetData.put(date, futureProgramsToDisplay);
+            }
+        }
+        //TODO After YUK-19014
+        // If (todaysProgramsCount + futureProgramsToDisplay) < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET
+        // Call for Past Program list and return List<ProgramData> object based on the size of programWidgetData
+        // Max number of records can be equal to MAX_PROGRAM_TO_DISPLAY_ON_WIDGET.
+        return programWidgetData; 
+    }
+
+    /**
+     * Returns list of all program which are executed today or scheduled to execute today 
+     * 
+     */
+
+    private List<ProgramData> getAllTodaysPrograms() {
         List<ProgramData> todaysProgram = new ArrayList<>();
         try {
             Set<LMProgramBase> allLMProgramBase = loadControlClientConnection.getAllProgramsSet();
@@ -801,8 +840,11 @@ public class ProgramServiceImpl implements ProgramService {
         return todaysProgram;
     }
 
-    @Override
-    public List<ProgramData> getProgramsScheduledForNextControlDayAfterToday() {
+    /**
+     * Returns list of all program which are scheduled to execute for next control day after today
+     * 
+     */
+    private List<ProgramData> getProgramsScheduledForNextControlDayAfterToday() {
         List<ProgramData> scheduledProgramsForNearestDay = new ArrayList<>();
         try {
             Set<LMProgramBase> allLMProgramBase = loadControlClientConnection.getAllProgramsSet();
@@ -836,12 +878,20 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     /**
+     * Return top Elements based on passed maxLimit.
+     */
+    private List<ProgramData> limitData(List<ProgramData> programs, int maxLimit) {
+        return programs.stream().limit(maxLimit).collect(Collectors.toList());
+    }
+
+    /**
      *  Filter programs which started with-in the passed interval and returns
      *  list of ProgramData objects from the filtered programs
      */
     private List<ProgramData> filterProgramsForInterval(Collection<LMProgramBase> programs, Interval interval) {
         return programs.stream()
-                       .filter(program -> interval.contains(program.getStartTime().getTimeInMillis()))
+                       .filter(p -> interval.contains(p.getStartTime().getTimeInMillis()))
+                       .sorted((p1, p2) -> p1.getStartTime().compareTo(p2.getStartTime()))
                        .map(program -> buildProgramData(program))
                        .collect(Collectors.toList());
     }
@@ -852,6 +902,8 @@ public class ProgramServiceImpl implements ProgramService {
     private ProgramData buildProgramData(LMProgramBase lmProgramBase) {
        return new ProgramData.ProgramDataBuilder(lmProgramBase.getYukonID().intValue())
                              .setProgramName(lmProgramBase.getYukonName())
+                             .setStartDateTime(new DateTime(lmProgramBase.getStartTime()
+                                                                         .getTimeInMillis()))
                              .build();
     }
 }
