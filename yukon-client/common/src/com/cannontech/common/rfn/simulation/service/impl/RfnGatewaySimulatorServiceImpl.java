@@ -452,7 +452,6 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                         
                         Object message = jmsTemplate.receive(dataQueue);
                         if (message != null && message instanceof ObjectMessage) {
-                            log.info("Processing gateway data message");
                             ObjectMessage requestMessage = (ObjectMessage) message;
                             GatewayDataRequest request = (GatewayDataRequest) requestMessage.getObject();
                             

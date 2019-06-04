@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.common.rfn.message.network.NeighborData;
+import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.google.common.collect.Lists;
 
 public class NetworkMapFilter {

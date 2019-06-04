@@ -33,7 +33,7 @@ import com.cannontech.common.rfn.message.metadatamulti.GatewayNodes;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
-import com.cannontech.common.rfn.message.network.NeighborData;
+import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.cannontech.common.rfn.message.network.ParentData;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReply;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
@@ -341,7 +341,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             throw new NmNetworkException(commsError, e, "commsError");
         }
 
-        Map<NeighborData, RfnDevice>  dataToDevice = response.getNeighborData().stream()
+        Map<com.cannontech.common.rfn.message.network.NeighborData, RfnDevice>  dataToDevice = response.getNeighborData().stream()
             .collect(Collectors.toMap(data -> data, data -> findDevice(data.getRfnIdentifier())));
         
         
@@ -356,7 +356,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
         List<RfnDevice> neighborsWithoutLocation = new ArrayList<>();
         List<Neighbor> neighbors = new ArrayList<>();        
-        for (NeighborData data : response.getNeighborData()) {
+        for (com.cannontech.common.rfn.message.network.NeighborData data : response.getNeighborData()) {
             RfnDevice neighborDevice = dataToDevice.get(data);
             if (neighborDevice != null) {
                 PaoLocation neighborLocation = locations.get(neighborDevice.getPaoIdentifier());
@@ -567,21 +567,15 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 Set<RfnIdentifier> devices = Sets.newHashSet(gatewayNodes.getNodeComms().keySet());
                 devices.add(gatewayPao);
                 addDevicesToMap(map, color.getHexColor(), gateway.getName(), devices);
-
-            } else {
-                String meta = queryResult.getMetadatas() == null ? "" : queryResult.getMetadatas().keySet().toString();
-                log.error("Getting meta data for gateway nodes failed. gateway {} result {} {} result message {}",
-                    gatewayPao, meta, queryResult.getResultType(), queryResult.getResultMessage());
             }
         });
-
 
         log.debug("MAP-"+map);
         return map;
     }
 
     /**
-     * Returns network map by gateway
+     * Returns network map by link strength
      */
     private NetworkMap getNetworkMapByLinkStrength(NetworkMapFilter filter) throws NmNetworkException, NmCommunicationException {
         log.debug("Getting network map by link stength filter: {}" , filter);
@@ -612,11 +606,13 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     }).collect(Collectors.groupingBy(neighborData -> LinkStrength.getLinkStrength(neighborData), HashMap::new, Collectors.toList()));
                 
             groupedNeighbors.forEach((linkStrength, neighbors) -> {
-                Set<RfnIdentifier> ids = neighbors.stream()
-                    .map(NeighborData::getRfnIdentifier)
-                    .collect(Collectors.toSet());
-                //linkStrength needs i18n
-                addDevicesToMap(map, linkStrength.getColor().getHexColor(), linkStrength.name(), ids);
+                if(filter.getLinkStrength().contains(linkStrength)) {
+                    Set<RfnIdentifier> ids = neighbors.stream()
+                        .map(NeighborData::getNeighborRfnIdentifier)
+                        .collect(Collectors.toSet());
+                    //linkStrength needs i18n
+                    addDevicesToMap(map, linkStrength.getColor().getHexColor(), linkStrength.name(), ids);
+                }
             });
         } catch (NmCommunicationException e) {
             throw new NmNetworkException(commsError, e, "commsError");
