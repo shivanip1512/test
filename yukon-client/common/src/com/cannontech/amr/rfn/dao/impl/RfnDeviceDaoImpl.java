@@ -2,7 +2,6 @@ package com.cannontech.amr.rfn.dao.impl;
 
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,6 +30,7 @@ import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -62,6 +62,10 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     private RfnIdentifierCache rfnIdentifierCache;
+    
+    
+    private final Map<String, Integer> rfnCache = new HashMap<>();
+    @Autowired private ScheduledExecutor executor;
 
     private final static YukonRowMapper<RfnDevice> rfnDeviceRowMapper = new YukonRowMapper<RfnDevice>() {
         @Override
@@ -81,6 +85,22 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @PostConstruct
     private void init() {
         rfnIdentifierCache = new RfnIdentifierCache(jdbcTemplate, dynamicDataSource);
+        executor.execute(() -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("select SerialNumber, Manufacturer, Model, DeviceId");
+            sql.append("from RfnAddress");
+            jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+                @Override
+                public void processRow(YukonResultSet rs) throws SQLException {
+                    RfnIdentifier rfnIdentifier =
+                            new RfnIdentifier(rs.getStringSafe("SerialNumber"), 
+                                                   rs.getStringSafe("Manufacturer"), 
+                                                   rs.getStringSafe("Model"));
+                    int deviceId = rs.getInt("DeviceId");
+                    rfnCache.put(rfnIdentifier.getCombinedIdentifier(), deviceId);
+                }
+            });
+        });
     }
     
     @Override
@@ -461,12 +481,15 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
     @Override
     public Set<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers) {
-        SqlFragmentGenerator<RfnIdentifier> sql = new SqlFragmentGenerator<RfnIdentifier>() {
+      /*  SqlFragmentGenerator<RfnIdentifier> sql = new SqlFragmentGenerator<RfnIdentifier>() {
             @Override
             public SqlFragmentSource generate(List<RfnIdentifier> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT DeviceId from RfnAddress");
                 sql.append("WHERE ");
+                sql.append("SerialNumber ").in(subList.stream().map(d -> d.getSensorSerialNumber()).collect(Collectors.toList()));
+              
+                ssql.append("WHERE ");
                 for (int i = 0; i < subList.size(); i++) {
                     RfnIdentifier ident = subList.get(i);
                     sql.append("(");
@@ -485,6 +508,12 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
         template.setChunkSize(600);
         template.query(sql, rfnIdentifiers, (YukonResultSet rs) -> deviceIds.add(rs.getInt("deviceId")));
-        return  deviceIds;
+        return  deviceIds;*/
+        
+        return Lists.newArrayList(rfnIdentifiers).stream()
+                .filter(device -> rfnCache.containsKey(device.getCombinedIdentifier()))
+                .map(device -> rfnCache.get(device.getCombinedIdentifier()))
+                .collect(Collectors.toSet());
+           
     }
 }
