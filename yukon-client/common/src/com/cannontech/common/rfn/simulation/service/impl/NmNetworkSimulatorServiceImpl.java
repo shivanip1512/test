@@ -47,14 +47,14 @@ import com.cannontech.common.rfn.message.metadata.RfnMetadataReplyType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataRequest;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataResponse;
 import com.cannontech.common.rfn.message.metadatamulti.GatewayNodes;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
-import com.cannontech.common.rfn.message.neighbor.LinkPower;
 import com.cannontech.common.rfn.message.neighbor.Neighbor;
-import com.cannontech.common.rfn.message.network.NeighborData;
+import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.cannontech.common.rfn.message.network.NeighborFlagType;
 import com.cannontech.common.rfn.message.network.ParentData;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReply;
@@ -362,63 +362,89 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
      * Returns generated metadata multi response
      */
     private RfnMetadataMultiResponse getMetadataMultiResponse(RfnMetadataMultiRequest request) {
-        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        RfnMetadataMultiResponse reply = new RfnMetadataMultiResponse(request.getRequestID());
-        reply.setResponseType(settings.getMetadataResponseType());
-        reply.setQueryResults(new HashMap<>());
-        request.getRfnIdentifiers().forEach(identifier -> {
-            RfnMetadataMultiQueryResult result = new RfnMetadataMultiQueryResult();
-            result.setResultType(settings.getMetadataQueryResponseType());
-            result.setResultMessage(settings.getMetadataResponseString());
-            result.setMetadatas(new HashMap<>());
-            request.getRfnMetadatas().forEach(metaData -> {
-                switch(metaData) {
-                    case PRIMARY_GATEWAY_NODE_COMM:
-                         RfnGateway randomGateway = gateways.get(new Random().nextInt(gateways.size()));
-                         //we are returning a random gateway which will cause the gateway to device mapping to update
-                         result.getMetadatas().put(metaData, getNodeComm(identifier, randomGateway.getRfnIdentifier())); 
-                         break;
-                    case NODE_DATA:
-                        NodeData node = new NodeData();
-                        node.setFirmwareVersion("Simulated Firmware Version");
-                        node.setHardwareVersion("1.1.1 (Sim)");
-                        node.setInNetworkTimestamp(1517588257267L);
-                        node.setMacAddress("11:22:33:44:91:11");
-                        node.setNetworkAddress("00C36E09081400");
-                        node.setNodeSerialNumber(settings.getRouteData().getSerialNumber());
-                        node.setNodeType(NodeType.ELECTRIC_NODE);
-                        node.setProductNumber("123456789 (Sim)");
-                        result.getMetadatas().put(metaData, node); 
-                        break;
-                    case PRIMARY_GATEWAY_NODES:
-                        GatewayNodes nodes = new GatewayNodes();
-                        RfnDevice gateway1 = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
-                        Map<RfnIdentifier, NodeComm> nodeComms = getDevicesForGateway(gateway1).stream()
-                                .collect(Collectors.toMap(Function.identity(),  device -> getNodeComm(device, gateway1.getRfnIdentifier())));
-                        nodes.setGatewayRfnIdentifier(identifier);
-                        nodes.setNodeComms(nodeComms);
-                        result.getMetadatas().put(metaData, nodes); 
-                        break;
-                    case PRIMARY_FORWARD_NEIGHBOR_DATA:
-                        //Populate all fields
-                        NeighborData neighborData = new NeighborData();
-                        neighborData.setRfnIdentifier(identifier);
-                        List<Integer> linkCost = Arrays.asList(1, 2, 3, 4, 5);
-                        int randomElement = linkCost.get(new Random().nextInt(linkCost.size()));
-                        neighborData.setNeighborLinkCost((float) randomElement);
-                        List<Integer> numSamples = Arrays.asList(49, 50, 51);
-                        randomElement = numSamples.get(new Random().nextInt(numSamples.size()));
-                        neighborData.setNumSamples(randomElement);
-                        result.getMetadatas().put(metaData, neighborData); 
-                        break;
-                    default:
-                        break;
-                    
+        RfnMetadataMultiResponse response = new RfnMetadataMultiResponse(request.getRequestID());
+        response.setResponseType(settings.getMetadataResponseType());
+        response.setQueryResults(new HashMap<>());
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = getResults(request);
+        response.getQueryResults().putAll(results);
+        return response;
+    }
+    
+    private Map<RfnIdentifier, RfnMetadataMultiQueryResult> getResults(RfnMetadataMultiRequest request) {
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = new HashMap<>();
+        request.getRfnMetadatas().forEach(metaData -> {
+            switch(metaData) {
+            case PRIMARY_GATEWAY_NODE_COMM:
+                List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+                 RfnGateway randomGateway = gateways.get(new Random().nextInt(gateways.size()));
+                 request.getRfnIdentifiers().forEach(device ->{
+                     RfnMetadataMultiQueryResult result = getEmptyResult();
+                     //we are returning a random gateway which will cause the gateway to device mapping to update
+                     result.getMetadatas().put(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, getNodeComm(device, randomGateway.getRfnIdentifier()));
+                     results.put(device, result);
+                 });
+                 break;
+            case NODE_DATA:
+                NodeData node = new NodeData();
+                node.setFirmwareVersion("Simulated Firmware Version");
+                node.setHardwareVersion("1.1.1 (Sim)");
+                node.setInNetworkTimestamp(1517588257267L);
+                node.setMacAddress("11:22:33:44:91:11");
+                node.setNetworkAddress("00C36E09081400");
+                node.setNodeSerialNumber(settings.getRouteData().getSerialNumber());
+                node.setNodeType(NodeType.ELECTRIC_NODE);
+                node.setProductNumber("123456789 (Sim)");
+                request.getRfnIdentifiers().forEach(device ->{
+                    RfnMetadataMultiQueryResult result = getEmptyResult();
+                    result.getMetadatas().put(RfnMetadataMulti.NODE_DATA, node);
+                    results.put(device, result);
+                });
+                break;
+            case PRIMARY_GATEWAY_NODES:
+                request.getRfnIdentifiers().forEach(gatewayIdentifier -> {
+                    GatewayNodes nodes = new GatewayNodes();
+                    RfnMetadataMultiQueryResult result = getEmptyResult();
+                    RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(gatewayIdentifier);
+                    List<RfnIdentifier> devices  = getDevicesForGateway(gateway);
+                    Map<RfnIdentifier, NodeComm> nodeComms = devices.stream().collect(Collectors.toMap(Function.identity(),
+                            device -> getNodeComm(device, gatewayIdentifier)));
+                    nodes.setGatewayRfnIdentifier(gatewayIdentifier);
+                    nodes.setNodeComms(nodeComms);
+                    result.getMetadatas().put(RfnMetadataMulti.PRIMARY_GATEWAY_NODES, nodes);
+                    results.put(gatewayIdentifier, result);
+                });
+                break;
+            case PRIMARY_FORWARD_NEIGHBOR_DATA:
+                 for(RfnIdentifier rfn: request.getRfnIdentifiers()) {
+                    RfnMetadataMultiQueryResult result = getEmptyResult();
+                    // Populate all fields
+                    NeighborData neighborData = new NeighborData();
+                    neighborData.setNeighborRfnIdentifier(rfn);
+                    List<Integer> linkCost = Arrays.asList(1, 2, 3, 4, 5);
+                    int randomElement = linkCost.get(new Random().nextInt(linkCost.size()));
+                    neighborData.setNeighborLinkCost((float) randomElement);
+                    List<Integer> numSamples = Arrays.asList(49, 50, 51);
+                    randomElement = numSamples.get(new Random().nextInt(numSamples.size()));
+                    neighborData.setNumSamples(randomElement);
+                    result.getMetadatas().put(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA, neighborData);
+                    results.put(rfn, result);
                 }
-            });
-            reply.getQueryResults().put(identifier, result);
-        });
-        return reply;
+                break;
+            default:
+                break;
+            }
+        });      
+        return results;
+    }
+
+    /**
+     * Returns empty success result
+     */
+    private RfnMetadataMultiQueryResult getEmptyResult() {
+        RfnMetadataMultiQueryResult result = new RfnMetadataMultiQueryResult();
+         result.setResultType(RfnMetadataMultiQueryResultType.OK);
+         result.setMetadatas(new HashMap<>());
+        return result;
     }
     
     private Neighbor getNeighborFromSettings(RfnIdentifier device) {
@@ -477,7 +503,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             simulatedNmMappingSettings.setMetadataResponseString((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_METADATA_RESPONSE_STRING.getDefaultValue());
 
             //NeighborData
-            NeighborData neighborData = new NeighborData();
+            com.cannontech.common.rfn.message.network.NeighborData neighborData = new com.cannontech.common.rfn.message.network.NeighborData();
             neighborData.setNeighborAddress((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_ADDR.getDefaultValue());
             neighborData.setEtxBand((short) ((int)YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_EXT_BAND.getDefaultValue()));
             neighborData.setLastCommTime(new Date().getTime());
@@ -670,7 +696,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         List<RfnDevice> neighbors = getNeighbors(device, max);
 
         RfnNeighborDataReply reply = new RfnNeighborDataReply();
-        Set<NeighborData> neighborData = getNeighborDataFromSettings(neighbors);
+        Set<com.cannontech.common.rfn.message.network.NeighborData> neighborData = getNeighborDataFromSettings(neighbors);
         
         reply.setReplyType(settings.getNeighborReplyType());
         reply.setRfnIdentifier(device.getRfnIdentifier());
@@ -707,10 +733,10 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         return routeData;
     }
     
-    private  Set<NeighborData> getNeighborDataFromSettings(List<RfnDevice> neighbors){
-        Set<NeighborData> neighborData = new HashSet<>();
+    private  Set<com.cannontech.common.rfn.message.network.NeighborData> getNeighborDataFromSettings(List<RfnDevice> neighbors){
+        Set<com.cannontech.common.rfn.message.network.NeighborData> neighborData = new HashSet<>();
         for (RfnDevice device : neighbors) {
-            NeighborData data = new  NeighborData();
+            com.cannontech.common.rfn.message.network.NeighborData data = new com.cannontech.common.rfn.message.network.NeighborData();
             data.setEtxBand(settings.getNeighborData().getEtxBand());
             data.setLastCommTime(settings.getNeighborData().getLastCommTime());
             data.setLinkPower(settings.getNeighborData().getLinkPower());
