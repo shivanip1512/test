@@ -28,10 +28,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.service.NotSupportedException;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.amr.outageProcessing.OutageMonitorEditorController;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cariboulake.db.schemacompare.app.SchemaCompare;
 import com.cariboulake.db.schemacompare.app.SchemaCompareConnection;
@@ -41,8 +41,9 @@ import com.cariboulake.db.schemacompare.business.domain.dbcompare.DbDifferences;
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
 public class DatabaseValidationController implements ResourceLoaderAware {
-    private final static Logger log = YukonLogManager.getLogger(OutageMonitorEditorController.class);
+    private final static Logger log = YukonLogManager.getLogger(DatabaseValidationController.class);
 
+    @Autowired private DatabaseVendorResolver databaseVendorResolver;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private JdbcTemplate jdbcTemplate;
 
@@ -62,17 +63,9 @@ public class DatabaseValidationController implements ResourceLoaderAware {
         }
         
         // Checks to see if the database being checked is oracle or not.
-        boolean displayOracleWarning = false;
-        try{
-            displayOracleWarning = isDatabaseOracle();
-        }catch (MetaDataAccessException e) {
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
-            map.addAttribute("msgError", messageSourceAccessor.getMessage("yukon.web.modules.support.databaseValidate.msgError.noAccessToMetadata"));
-            log.error(e.getStackTrace());
-            return "database/validate.jsp";
-        }
-        
+        boolean displayOracleWarning = databaseVendorResolver.getDatabaseVendor().isOracle();
         map.addAttribute("displayOracleWarning", displayOracleWarning);
+        
         return "database/validate.jsp";
     }
     
@@ -93,16 +86,16 @@ public class DatabaseValidationController implements ResourceLoaderAware {
             
             // Builds up the compare
             SchemaCompare schemaCompare = new SchemaCompare();
-            SchemaCompareConnection schCompConn1 = 
-                new SchemaCompareConnection("Local Database", connection);
-            SchemaCompareConnection schCompConn2 = 
-                new SchemaCompareConnection(xmlCompareFile.getName(), 
-                                            xmlCompareFile.getPath());
-            SchemaCompareParameters schCompParams = new SchemaCompareParameters(schCompConn1, schCompConn2);
-            DbDifferences schemaDifferences = schemaCompare.checkDifferences(schCompParams);
+            SchemaCompareConnection schCompConn1 = new SchemaCompareConnection("Local Database", connection);
+            SchemaCompareConnection schCompConn2 = new SchemaCompareConnection(xmlCompareFile.getName(), xmlCompareFile.getPath());
             
+            SchemaCompareParameters schCompParams = new SchemaCompareParameters(schCompConn1, schCompConn2);
+            log.info("DB Schema validation comparison started.");
+            DbDifferences schemaDifferences = schemaCompare.checkDifferences(schCompParams);
+            log.info("DB Schema validation comparison completed.");
             // Writes the comparison information to the browser
             StringWriter stringWriter = new StringWriter();
+            log.info("DB Schema validation printing differences.");
             schemaDifferences.printDifferences(stringWriter);
             PrintWriter writer = response.getWriter();
             writer.write("<pre>");
@@ -136,30 +129,14 @@ public class DatabaseValidationController implements ResourceLoaderAware {
      * @throws MetaDataAccessException
      */
     private Resource getDatabaseXMLFile(final YukonUserContext context) throws UnsupportedOperationException, MetaDataAccessException  {
-        String databaseProductName = (String)JdbcUtils.extractDatabaseMetaData(jdbcTemplate.getDataSource(), "getDatabaseProductName");
-        
-        if (databaseProductName.contains("SQL Server")) {
+        if (databaseVendorResolver.getDatabaseVendor().isSqlServer()) {
             return resourceLoader.getResource("classpath:com/cannontech/database/snapshot/mssql.xml");
-        }
-        if (databaseProductName.contains("Oracle")) {
+        } else if (databaseVendorResolver.getDatabaseVendor().isOracle()) {
             return resourceLoader.getResource("classpath:com/cannontech/database/snapshot/oracle.xml");
+        } else {
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+            throw new UnsupportedOperationException(messageSourceAccessor.getMessage("yukon.web.modules.support.databaseValidate.msgError.valitationNotSupported"));
         }
-        
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
-        throw new UnsupportedOperationException(messageSourceAccessor.getMessage("yukon.web.modules.support.databaseValidate.msgError.valitationNotSupported"));
-    }
-    
-    /**
-     * 
-     * @return
-     * @throws MetaDataAccessException
-     */
-    private boolean isDatabaseOracle() throws MetaDataAccessException {
-        String databaseProductName = (String)JdbcUtils.extractDatabaseMetaData(jdbcTemplate.getDataSource(), "getDatabaseProductName");
-        if (databaseProductName.contains("Oracle")) {
-            return true;
-        }
-        return false;
     }
     
     @Override

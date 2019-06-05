@@ -83,7 +83,6 @@
     <entry key="yukon.web.modules.support.databaseValidate.oracleWarning">Validation of your database schema is in progress (this process may take several minutes).</entry>
     <entry key="yukon.web.modules.support.databaseValidate.loading">loading...</entry>
     <entry key="yukon.web.modules.support.databaseValidate.msgError.alreadyRunning">Database validation process is already running.  Please try again later.</entry>
-    <entry key="yukon.web.modules.support.databaseValidate.msgError.noAccessToMetadata">System does not have access to database metadata.  Database validation cannot be completed.</entry>
     <entry key="yukon.web.modules.support.databaseValidate.msgError.valitationNotSupported">Your current database configuration is not currently supported by our validation system.</entry>
 
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.pageName">Jobs</entry>
