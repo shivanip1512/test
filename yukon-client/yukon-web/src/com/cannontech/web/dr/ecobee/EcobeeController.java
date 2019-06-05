@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Duration;
-import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +42,9 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.RecentResultsCache;
-import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
@@ -204,24 +202,18 @@ public class EcobeeController {
 
         Map<String, String> errResponse = Maps.newHashMap();
         boolean isValidationError = false;
-        Instant startDate = null;
+        LocalDate startDate = null;
         try {
-            startDate = dateFormattingService.flexibleInstantParser(ecobeeStartReportDate, DateOnlyMode.START_OF_DAY,
-                userContext);
-            // convert the instant as per server timezone so that the date from UI is passed to Ecobee
-            startDate = TimeUtil.convertToLocalInstant(startDate);
+            startDate = dateFormattingService.parseLocalDate(ecobeeStartReportDate, userContext);
         } catch (ParseException e) {
             log.error(e);
             errResponse.put("startDateError", "true");
             isValidationError = true;
         }
 
-        Instant endDate = null;
+        LocalDate endDate = null;
         try {
-            endDate = dateFormattingService.flexibleInstantParser(ecobeeEndReportDate, DateOnlyMode.START_OF_DAY,
-                userContext);
-            // convert the instant as per server timezone so that the date from UI is passed to Ecobee
-            endDate = TimeUtil.convertToLocalInstant(endDate);
+            endDate = dateFormattingService.parseLocalDate(ecobeeEndReportDate, userContext);
         } catch (ParseException e) {
             log.error(e);
             errResponse.put("endDateError", "true");
@@ -235,7 +227,7 @@ public class EcobeeController {
             return null;
         }
 
-        Duration specifiedDuration = new Duration(startDate, endDate);
+        Duration specifiedDuration = new Duration(startDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
         if (specifiedDuration.isLongerThan(Duration.standardDays(7)) || startDate.isAfter(endDate)) {
             errResponse.put("dateRangeError", "true");
             isValidationError = true;
@@ -270,13 +262,14 @@ public class EcobeeController {
         
         model.addAttribute("key", resultKey);
         EcobeeReadResult result = readResultsCache.getResult(resultKey);
-        
-        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
-        log.info("startDateRange: " + result.getStartDateRange().toString(formatter) + " endDateRange: " +
-            result.getEndDateRange().toString(formatter));
+
+        DateTimeFormatter formatter =
+            dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE_YYYYMMdd, YukonUserContext.system);
+        log.info("startDate: " + result.getStartDateRange().toString(formatter) + " endDate: "
+            + result.getEndDateRange().toString(formatter));
         model.addAttribute("download", result);
         model.addAttribute("hideRow", true);
-        
+
         return "dr/ecobee/download.row.jsp";
     }
     
@@ -284,15 +277,16 @@ public class EcobeeController {
     public void download(HttpServletResponse response, String key) throws IOException {
         
         EcobeeReadResult result = readResultsCache.getResult(key);
-        
+
         if (!result.isComplete()) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
         } else {
-            DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
-            String startDateRange = result.getStartDateRange().toString(formatter);
-            String endDateRange = result.getEndDateRange().toString(formatter);
-            log.info("startDateRange: " + startDateRange + " endDateRange: " + endDateRange);
-            WebFileUtils.writeToCSV(response, result.getFile(), "ecobee_data_" + startDateRange + "_" + endDateRange + ".csv");
+            DateTimeFormatter formatter =
+                dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE_YYYYMMdd, YukonUserContext.system);
+            String startDate = result.getStartDateRange().toString(formatter);
+            String endDate = result.getEndDateRange().toString(formatter);
+            log.info("startDate: " + startDate + " endDate: " + endDate);
+            WebFileUtils.writeToCSV(response, result.getFile(), "ecobee_data_" + startDate + "_" + endDate + ".csv");
         }
     }
     

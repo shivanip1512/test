@@ -26,6 +26,7 @@ import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -460,8 +461,8 @@ public class EcobeeCommunicationServiceImplTest {
             this.endDate = endDate;
         }
 
-        public Range<Instant> getDateRange() {
-            return Range.inclusive(startDate.toInstant(), endDate.toInstant());
+        public Range<LocalDate> getDateRange() {
+            return Range.inclusive(startDate.toLocalDate(), endDate.toLocalDate());
         }
     }
 

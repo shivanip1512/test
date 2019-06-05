@@ -3,16 +3,24 @@ package com.cannontech.common.util;
 import static org.junit.Assert.assertEquals;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.GregorianCalendar;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.dr.ecobee.message.RuntimeReportJobRequest;
+import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class TimeUtilTest {
     private Calendar baseTime;
@@ -20,6 +28,9 @@ public class TimeUtilTest {
     private Calendar halfDayAgo;
     private Calendar oneDayAgo;
     private Calendar twoDaysAgo;
+    private RuntimeReportJobRequest runtimeReportJobRequestTest;
+
+    @Autowired TimeUtil timeUtil;
     
     @Before
     public void setUp() {
@@ -45,7 +56,37 @@ public class TimeUtilTest {
         oneDayAgo = null;
         twoDaysAgo = null;
     }
-    
+
+    @Test
+    public void test_checkTimeConversion() {
+        DateTimeFormatter timeFormater = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+
+        LocalDate instantStartDate = timeFormater.parseDateTime("2010-01-01 23:59:59").toLocalDate();
+        LocalDate instantEndDate = timeFormater.parseDateTime("2011-01-01 00:00:00").toLocalDate();
+
+        Collection<String> testCollection = new ArrayList<>();
+        SelectionType testSelection = SelectionType.THERMOSTATS;
+
+        runtimeReportJobRequestTest = new RuntimeReportJobRequest(instantStartDate, instantEndDate, testCollection,
+            testSelection, testCollection);
+
+        System.out.println("\nWithout UTC Time Formatter");
+        System.out.println("Start Date \n" + instantStartDate.toString());
+        System.out.println(runtimeReportJobRequestTest.getStartDate());
+        System.out.println("End Date \n" + instantEndDate.toString());
+        System.out.println(runtimeReportJobRequestTest.getEndDate());
+
+        try {
+            String requestJson = JsonUtils.toJson(runtimeReportJobRequestTest);
+            System.out.print(requestJson);
+            assertEquals("json is not correct", requestJson,
+                "{\"selection\":{\"selectionType\":\"thermostats\",\"selectionMatch\":\"\"},\"startDate\":\"2010-01-01\",\"endDate\":\"2011-01-01\",\"columns\":\"\"}");
+
+        } catch (JsonProcessingException e) {
+
+        }
+    }
+
     @Test
     public void test_differenceInDays_sameDay() {
         int expectedResult = 0;
@@ -181,39 +222,5 @@ public class TimeUtilTest {
         long expectedResult = 0;
         assertEquals("Remaining hours should have been " + expectedResult, expectedResult,
             TimeUtil.hoursRemainingAfterConveritngToDays(totalHours));
-    }
-
-    @Test
-    public void test_convertToLocalInstant_IST() {
-        DateTimeZone.setDefault(DateTimeZone.forID("Asia/Kolkata"));
-        DateTimeFormatter timeFormater = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
-        Instant instantInUTC = timeFormater.parseDateTime("2010-01-01 10:10:00").toInstant();
-        Instant instantInIST = TimeUtil.convertToLocalInstant(instantInUTC);
-        Instant expectedInstant = timeFormater.parseDateTime("2010-01-01 15:40:00").toInstant();
-        assertEquals("UTC Instant " + instantInUTC + " conversion to IST Time Zone is " + instantInIST, expectedInstant,
-            instantInIST);
-        DateTimeZone.setDefault(DateTimeZone.forID("America/Chicago"));
-    }
-
-    @Test
-    public void test_convertToLocalInstant_CDT() {
-        DateTimeZone.setDefault(DateTimeZone.forID("America/Chicago"));
-        DateTimeFormatter timeFormater = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
-        Instant instantInUTC = timeFormater.parseDateTime("2010-01-01 10:10:00").toInstant();
-        Instant instantInCDT = TimeUtil.convertToLocalInstant(instantInUTC);
-        Instant expectedInstant = timeFormater.parseDateTime("2010-01-01 04:10:00").toInstant();
-        assertEquals("Date in UTC" + instantInUTC.toDate() + " conversion to CDT Date is " + instantInCDT.toDate(),
-            expectedInstant.toDate(), instantInCDT.toDate());
-    }
-
-    @Test
-    public void test_convertToLocalInstant_WithoutZone() {
-        DateTimeFormatter timeFormater = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
-        Instant instantInUTC = timeFormater.parseDateTime("2010-01-01 10:10:00").toInstant();
-        Instant instantInlocal = TimeUtil.convertToLocalInstant(instantInUTC);
-        long serverTimeZone = DateTimeZone.getDefault().convertLocalToUTC(instantInlocal.getMillis(), true);
-        Instant instantInServerTimezone = new Instant(serverTimeZone);
-        assertEquals("UTC Instant " + instantInUTC + " to local time zone conversion is " + instantInlocal
-            + " and local to UTC conversion is " + instantInServerTimezone, instantInUTC, instantInServerTimezone);
     }
 }

@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -1105,8 +1106,8 @@ public class DevEventLogCreationService {
             @Override
             public void execute(DevEventLog devEventLog) {
                 LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
-                Instant endDate = Instant.now();
-                Instant startDate = Instant.now().minus(Duration.standardDays(1));
+                LocalDate endDate = LocalDate.now();
+                LocalDate startDate = LocalDate.now().minusDays(1);
                 String loadGroupIds = devEventLog.getIndicatorString() + "123, 456, 789";
 
                 ecobeeEventLogService.syncIssueFixed(yukonUser, EcobeeDiscrepancyType.EXTRANEOUS_DEVICE.toString(), devEventLog.getEventSource());

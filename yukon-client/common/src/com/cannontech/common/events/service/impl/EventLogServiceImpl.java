@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -155,6 +156,12 @@ public class EventLogServiceImpl implements EventLogService {
             @Override
             public Date map(ReadableInstant from) throws ObjectMappingException {
                 return new Instant(from).toDate();
+            }
+        }));
+        builder.add(ArgumentMapper.create(LocalDate.class, Types.TIMESTAMP, new ObjectMapper<LocalDate, Date>() {
+            @Override
+            public Date map(LocalDate date) throws ObjectMappingException {
+                return new LocalDate(date).toDate();
             }
         }));
         builder.add(ArgumentMapper.create(PaoIdentifier.class, Types.VARCHAR, new ObjectMapper<PaoIdentifier, String>() {

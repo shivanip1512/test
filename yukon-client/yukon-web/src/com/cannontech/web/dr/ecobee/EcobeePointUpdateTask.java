@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Duration;
-import org.joda.time.Instant;
-import org.joda.time.MutableDateTime;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -48,12 +46,9 @@ public class EcobeePointUpdateTask extends YukonTaskBase {
             ecobeeDevicesBySerialNumber.put(ecobeeSerialNumber, pao);
         }
 
-        MutableDateTime startDate = new MutableDateTime();
-        startDate.addDays(-1);
-        startDate.setMillisOfDay(0);
-        Instant start = startDate.toInstant();
-        Instant end = start.plus(Duration.standardDays(1));
-        Range<Instant> dateRange = Range.inclusive(start, end);
+        LocalDate startDate = new LocalDate().minusDays(1);
+        LocalDate endDate = new LocalDate();
+        Range<LocalDate> dateRange = Range.inclusive(startDate, endDate);
 
         if (log.isInfoEnabled()) {
             log.info("Reading device data for " + ecobeeDevices.size() + " ecobee devices. Time range: "

@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -366,7 +367,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
 
     @Override
     public synchronized List<EcobeeDeviceReadings> readDeviceData(SelectionType selectionType, Collection<String> selectionMatch,
-            Range<Instant> dateRange) {
+            Range<LocalDate> dateRange) {
 
         List<EcobeeDeviceReadings> deviceReadings = new ArrayList<>();
         try {
@@ -407,7 +408,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
      * @throws EcobeeCommunicationException if Yukon cannot log in or connect to Ecobee API
      */
     private RuntimeReportJobResponse createRuntimeReportJob(SelectionType selectionType,
-            Collection<String> selectionMatch, Range<Instant> dateRange) {
+            Collection<String> selectionMatch, Range<LocalDate> dateRange) {
         RuntimeReportJobRequest request = new RuntimeReportJobRequest(dateRange.getMin(), dateRange.getMax(),
             selectionMatch, selectionType, deviceReadColumns);
         if (log.isDebugEnabled()) {

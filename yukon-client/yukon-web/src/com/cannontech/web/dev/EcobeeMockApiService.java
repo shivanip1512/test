@@ -145,8 +145,8 @@ public class EcobeeMockApiService {
             String csvFile = dirPath + fileName;
             try(CSVWriter csvWriter = new CSVWriter(new FileWriter(csvFile))) {
                 csvWriter.writeNext(ecobeeDataHeader);
-                Instant startTime = request.getStartDate();
-                Instant endTime = request.getEndDate();
+                Instant startTime = request.getStartDate().toDateTimeAtStartOfDay().toInstant();
+                Instant endTime = request.getEndDate().plusDays(1).toDateTimeAtStartOfDay().toInstant();
                 for (Instant intervalStart = startTime; intervalStart.isBefore(endTime); intervalStart =
                                         intervalStart.plus(fiveMinutes)) {
                     csvWriter.writeNext(generateEcobeeReading(intervalStart));

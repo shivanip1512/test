@@ -11,6 +11,7 @@ import java.util.concurrent.Executor;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
     @Autowired @Qualifier("ecobeeReads") private RecentResultsCache<EcobeeReadResult> readResultsCache;
 
     @Override
-    public String start(final List<String> serialNumbers, final Range<Instant> dateRange, final DateTimeZone timeZone) throws IOException {
+    public String start(final List<String> serialNumbers, final Range<LocalDate> dateRange, final DateTimeZone timeZone) throws IOException {
         
         final File file = File.createTempFile("ecobee_data_" + Instant.now().getMillis(), ".csv");
         file.deleteOnExit();
@@ -58,7 +59,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
         return resultKey;
     }
     
-    private void runTask(List<String> serialNumbers, Range<Instant> dateRange, DateTimeZone timeZone, File file, 
+    private void runTask(List<String> serialNumbers, Range<LocalDate> dateRange, DateTimeZone timeZone, File file, 
                          EcobeeReadResult result) {
         
         try (FileWriter output = new FileWriter(file)) {

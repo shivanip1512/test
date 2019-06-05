@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -52,9 +53,9 @@ public class DataDownloadServiceImplTest {
     }
     
     private void test_runTask(List<String> serialNumbers) throws Exception {
-        Instant start = new Instant(1339529000); //about 3/8/2015
-        Instant end = new Instant(1425929000); 
-        Range<Instant> dateRange = new Range<>(start, true, end, true);
+        LocalDate start = new LocalDate(new Instant(1339529000), timeZone); // about 3/8/2015
+        LocalDate end = new LocalDate(new Instant(1425929000), timeZone);
+        Range<LocalDate> dateRange = new Range<>(start, true, end, true);
         
         File file = File.createTempFile("data_download_test" + Instant.now().getMillis(), ".csv");
         
@@ -86,15 +87,16 @@ public class DataDownloadServiceImplTest {
         }
         
         @Override
-        public List<EcobeeDeviceReadings> readDeviceData(SelectionType type , Collection<String> serialNumbers, Range<Instant> dateRange) {
+        public List<EcobeeDeviceReadings> readDeviceData(SelectionType type , Collection<String> serialNumbers, Range<LocalDate> dateRange) {
 
             List<EcobeeDeviceReadings> deviceReadings = new ArrayList<>();
 
             for (String serialNumber : serialNumbers) {
                 List<EcobeeDeviceReading> expectedReadings = new ArrayList<>();
 
-                LocalDateTime thermostatStartTime = dateRange.getMin().toDateTime().withZone(timeZone).toLocalDateTime();
-                LocalDateTime thermostatEndTime = dateRange.getMax().toDateTime().withZone(timeZone).toLocalDateTime();
+                LocalDateTime thermostatStartTime =
+                    dateRange.getMin().toDateTimeAtStartOfDay(timeZone).toLocalDateTime();
+                LocalDateTime thermostatEndTime = dateRange.getMax().toDateTimeAtStartOfDay(timeZone).toLocalDateTime();
 
                 for (LocalDateTime reportTime = thermostatStartTime; reportTime.isBefore(thermostatEndTime); reportTime = reportTime.plusMinutes(5)) {
                     EcobeeDeviceReading reading = new EcobeeDeviceReading(95f, 75f, 75f, 75f, 0, "", reportTime.toDateTime(timeZone).toInstant());

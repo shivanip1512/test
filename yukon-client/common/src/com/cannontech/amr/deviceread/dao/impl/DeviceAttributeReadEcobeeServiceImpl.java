@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.joda.time.MutableDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -110,15 +110,14 @@ public class DeviceAttributeReadEcobeeServiceImpl implements DeviceAttributeRead
         }
 
         // Set end of range at 1 hour before current time (which is about the most recent data ecobee will have)
+        // Since we are only reading "today" this will have the effect of possibly reading "yesterday"
         MutableDateTime mutableDateTime = new MutableDateTime();
-        mutableDateTime.addHours(-1);;
-        Instant end = mutableDateTime.toInstant();
+        mutableDateTime.addHours(-1);
 
-        // Set start of range at the start of the current day.
-        mutableDateTime.setMillisOfDay(0);
-        Instant start = mutableDateTime.toInstant();
+        LocalDate start = new LocalDate(mutableDateTime);
+        LocalDate end = start;
 
-        Range<Instant> dateRange = Range.inclusive(start, end);
+        Range<LocalDate> dateRange = Range.inclusive(start, end);
 
         List<EcobeeDeviceReadings> allDeviceReadings = ecobeeCommunicationService.readDeviceData(SelectionType.THERMOSTATS, ecobeeDevices.keySet(), dateRange);
         for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {

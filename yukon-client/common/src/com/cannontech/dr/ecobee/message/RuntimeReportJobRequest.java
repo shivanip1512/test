@@ -2,12 +2,12 @@ package com.cannontech.dr.ecobee.message;
 
 import java.util.Collection;
 
-import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 
 import com.cannontech.dr.JsonSerializers.FROM_BASIC_CSV;
-import com.cannontech.dr.JsonSerializers.FROM_DATE;
+import com.cannontech.dr.JsonSerializers.FROM_LOCAL_DATE;
 import com.cannontech.dr.JsonSerializers.TO_BASIC_CSV;
-import com.cannontech.dr.JsonSerializers.TO_DATE;
+import com.cannontech.dr.JsonSerializers.TO_LOCAL_DATE;
 import com.cannontech.dr.ecobee.message.partial.Selection;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -22,11 +22,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class RuntimeReportJobRequest {
     private final Selection selection;
-    private final Instant startDate;
-    private final Instant endDate;
+    private final LocalDate startDate;
+    private final LocalDate endDate;
     private final Collection<String> columns;
 
-    public RuntimeReportJobRequest(Instant startDate, Instant endDate, Collection<String> selectionMatch, SelectionType selectionType,
+    public RuntimeReportJobRequest(LocalDate startDate, LocalDate endDate, Collection<String> selectionMatch, SelectionType selectionType,
             Collection<String> columns) {
         this.selection = new Selection(selectionType, selectionMatch);
         this.startDate = startDate;
@@ -35,8 +35,8 @@ public class RuntimeReportJobRequest {
     }
 
   @JsonCreator
-  public RuntimeReportJobRequest(@JsonProperty("selection") Selection selection, @JsonDeserialize(using=FROM_DATE.class) @JsonProperty("startDate") Instant startDate,
-          @JsonDeserialize(using=FROM_DATE.class) @JsonProperty("endDate") Instant endDate,
+  public RuntimeReportJobRequest(@JsonProperty("selection") Selection selection, @JsonDeserialize(using=FROM_LOCAL_DATE.class) @JsonProperty("startDate") LocalDate startDate,
+          @JsonDeserialize(using=FROM_LOCAL_DATE.class) @JsonProperty("endDate") LocalDate endDate,
           @JsonDeserialize(using=FROM_BASIC_CSV.class) @JsonProperty("columns") Collection<String> columns) {
     this.selection = selection;
     this.startDate = startDate;
@@ -44,13 +44,13 @@ public class RuntimeReportJobRequest {
     this.columns = columns;
   }
 
-    @JsonSerialize(using=TO_DATE.class)
-    public Instant getStartDate() {
+    @JsonSerialize(using=TO_LOCAL_DATE.class)
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    @JsonSerialize(using=TO_DATE.class)
-    public Instant getEndDate() {
+    @JsonSerialize(using=TO_LOCAL_DATE.class)
+    public LocalDate getEndDate() {
         return endDate;
     }
 

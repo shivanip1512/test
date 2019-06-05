@@ -1,6 +1,6 @@
 package com.cannontech.common.events.loggers;
 
-import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
@@ -21,8 +21,8 @@ public interface EcobeeEventLogService {
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="ecobee")
     public void dataDownloaded(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                               @Arg(ArgEnum.startDate) Instant startReportDate,
-                               @Arg(ArgEnum.endDate) Instant endReportDate,
+                               @Arg(ArgEnum.startDate) LocalDate startReportDate,
+                               @Arg(ArgEnum.endDate) LocalDate endReportDate,
                                @Arg(ArgEnum.loadGroupIds) String loadGroupIds,
                                @Arg(ArgEnum.eventSource) EventSource source);
 }

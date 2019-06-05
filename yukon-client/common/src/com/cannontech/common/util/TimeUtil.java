@@ -483,12 +483,4 @@ public static int differenceMinutes(Date from, Date to) {
         } else
             return 0;
     }
-    
-    /**
-     * Converts the UTC instant to local instant
-     */
-    public static Instant convertToLocalInstant(Instant instantInUTC) {
-        long utcOffset = DateTimeZone.getDefault().convertUTCToLocal(instantInUTC.getMillis());
-        return new Instant(utcOffset);
-    }
 }

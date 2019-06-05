@@ -3,7 +3,7 @@ package com.cannontech.dr.ecobee.service;
 import java.util.Collection;
 import java.util.List;
 
-import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
@@ -124,6 +124,6 @@ public interface EcobeeCommunicationService {
      */
 
     List<EcobeeDeviceReadings> readDeviceData(SelectionType selectionType, Collection<String> selectionMatch,
-            Range<Instant> dateRange);
+            Range<LocalDate> dateRange);
 
 }

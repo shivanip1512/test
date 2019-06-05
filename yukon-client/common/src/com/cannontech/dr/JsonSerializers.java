@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -222,6 +223,17 @@ public interface JsonSerializers {
         }
     }
 
+    class TO_LOCAL_DATE extends JsonSerializer<LocalDate> {
+        private static final DateTimeFormatter ecobeeDateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+
+        @Override
+        public void serialize(LocalDate date, JsonGenerator jsonGenerator, SerializerProvider notUsed)
+                throws IOException, JsonProcessingException {
+            String dateString = ecobeeDateFormatter.print(date);
+            jsonGenerator.writeString(dateString);
+        }
+    }
+
     class FROM_DATE extends JsonDeserializer<Instant> {
         private static final DateTimeFormatter ecobeeDateFormatter =
             DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
@@ -230,6 +242,17 @@ public interface JsonSerializers {
         public Instant deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
                 throws IOException, JsonProcessingException {
             return ecobeeDateFormatter.parseDateTime(paramJsonParser.getValueAsString()).toInstant();
+        }
+    }
+
+    class FROM_LOCAL_DATE extends JsonDeserializer<LocalDate> {
+        private static final DateTimeFormatter ecobeeDateFormatter =
+            DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
+
+        @Override
+        public LocalDate deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
+                throws IOException, JsonProcessingException {
+            return ecobeeDateFormatter.parseLocalDate(paramJsonParser.getValueAsString());
         }
     }
 

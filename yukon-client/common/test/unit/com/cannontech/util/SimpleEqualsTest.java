@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.joda.time.LocalDate;
 import org.joda.time.Instant;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -524,6 +525,7 @@ public class SimpleEqualsTest {
             case "byte" : case "Byte" : return (byte) uniqueNumber;
             case "long" : case "Long" : return (long) uniqueNumber;
             case "short" : case "Short" : return (short) uniqueNumber;
+            case "LocalDate" : return new LocalDate().plusDays(uniqueNumber);
             case "Instant" : return new Instant(uniqueNumber);
             case "Date" : return new Date(uniqueNumber);
             case "PaoIdentifier" :
