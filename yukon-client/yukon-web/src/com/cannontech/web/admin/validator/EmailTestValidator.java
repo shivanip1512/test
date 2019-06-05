@@ -12,7 +12,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.web.admin.config.model.AdminSetupEmailModel;
 
 @Component
-public class EmailTestValidator extends SimpleValidator<AdminSetupEmailModel>{
+public class EmailTestValidator extends SimpleValidator<AdminSetupEmailModel> {
     public static final String MSGKEY_EMAIL_REQUIRED = "yukon.web.modules.operator.accountGeneral.email.required";
     public static final String FIELDNAME_EMAIL = "to";
     public static final String MSGKEY_EMAIL_INVALID = "yukon.web.modules.operator.accountGeneral.email.invalid";
@@ -23,17 +23,14 @@ public class EmailTestValidator extends SimpleValidator<AdminSetupEmailModel>{
     }
     
     @Override
-    public void doValidation(AdminSetupEmailModel emailModel, Errors errors)
-    {
+    public void doValidation(AdminSetupEmailModel emailModel, Errors errors) {
         String email = emailModel.getTo();
         if (!StringUtils.isEmpty(email)) {
             YukonValidationUtils.checkExceedsMaxLength(errors, FIELDNAME_EMAIL, email, MAX_NOTIFICATION_LENGTH);
             if (!emailValidator.isValid(email)) {
                 errors.rejectValue(FIELDNAME_EMAIL, MSGKEY_EMAIL_INVALID);
             }
-        }
-        else
-        {
+        } else {
             errors.rejectValue(FIELDNAME_EMAIL, MSGKEY_EMAIL_REQUIRED);
         }
     }

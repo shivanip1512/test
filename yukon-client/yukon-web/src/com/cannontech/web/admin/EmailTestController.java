@@ -43,11 +43,9 @@ public class EmailTestController {
     
     @RequestMapping(value="/config/emailTestPopup", method=RequestMethod.GET)
     public String testEmailPage(ModelMap model, LiteYukonUser user) throws Exception {
-        
         String userDefaultEmail = contactDao.getUserEmail(user);
         String mailFromAddress = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS); 
         AdminSetupEmailModel email = new AdminSetupEmailModel();
-        
         email.setFrom(mailFromAddress);
         email.setTo(userDefaultEmail);
         model.addAttribute("email", email);
@@ -56,38 +54,29 @@ public class EmailTestController {
     
     @RequestMapping(value="/config/emailTest", method=RequestMethod.POST)
     public String sendEmail(@ModelAttribute("email") AdminSetupEmailModel email, BindingResult result, ModelMap model, YukonUserContext userContext, HttpServletResponse resp) throws MessagingException {
-        
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String genBody = accessor.getMessage("yukon.web.modules.adminSetup.config.testEmail.body", userContext.getYukonUser().getUsername());
         String subject = accessor.getMessage("yukon.web.modules.adminSetup.config.testEmail.subject");
         Map<String, Object> json = new HashMap<>();
    
         emailTestValidator.validate(email, result);
-        if (result.hasErrors())
-        {
+        if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            model.addAttribute("email",email);
+            model.addAttribute("email", email);
             return "config/emailTest.jsp";
-        }
-        else
-        {
-        InternetAddress[] postTo = InternetAddress.parse(email.getTo());
-        
-        EmailMessage testEmailMessage = new EmailMessage(postTo, subject, genBody);
-        try
-        {
-            EmailService emailService = YukonSpringHook.getBean(EmailService.class);
-            emailService.sendMessage(testEmailMessage);
-        }
-        catch( Exception e )
-        {
-            CTILogger.error( e.getMessage(), e );
-        }
-        
-        String alertBody = accessor.getMessage("yukon.web.modules.adminSetup.config.testEmail.alert",email.getTo());
-        json.put("successMessage", alertBody);
-        resp.setContentType("application/json");
-        return JsonUtils.writeResponse(resp, json);
+        } else {
+            InternetAddress[] postTo = InternetAddress.parse(email.getTo());
+            EmailMessage testEmailMessage = new EmailMessage(postTo, subject, genBody);
+            try {
+                EmailService emailService = YukonSpringHook.getBean(EmailService.class);
+                emailService.sendMessage(testEmailMessage);
+            } catch (Exception e) {
+                CTILogger.error(e.getMessage(), e );
+            }
+            String alertBody = accessor.getMessage("yukon.web.modules.adminSetup.config.testEmail.alert", email.getTo());
+            json.put("successMessage", alertBody);
+            resp.setContentType("application/json");
+            return JsonUtils.writeResponse(resp, json);
         }
     }
 
