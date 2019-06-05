@@ -247,8 +247,8 @@ public class MapController {
                             + " for device:" + rfnDevice);
                         model.addAttribute("errorMsg", nmError);
                     } else {
-                        NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
-                        if (comm != null) {
+                        if(metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM)) {
+                            NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
                             RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(comm.getGatewayRfnIdentifier());
                             RfnGateway rfnGateway = rfnGatewayService.getGatewayByPaoId(gateway.getPaoIdentifier().getPaoId());
                             String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getNodeCommStatus());
@@ -259,9 +259,8 @@ public class MapController {
                             // ignore, status will be set to "UNKNOWN"
                             log.error("NM didn't return communication status for " + rfnDevice);
                         }
-                        
-                        NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
-                        if (nodeData != null) {
+                        if(metadata.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)) {
+                            NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
                             model.addAttribute("macAddress", nodeData.getMacAddress());
                             model.addAttribute("nodeSN", nodeData.getNodeSerialNumber());
                         } else {

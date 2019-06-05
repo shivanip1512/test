@@ -1,8 +1,9 @@
 package com.cannontech.web.tools.mapping.model;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.geojson.FeatureCollection;
 
@@ -10,7 +11,7 @@ import com.cannontech.web.tools.mapping.model.NetworkMapFilter.Legend;
 
 public class NetworkMap {
     
-    private List<Legend> legend = new ArrayList<>();
+    private Set<Legend> legend = new TreeSet<>(Comparator.comparing(Legend::getOrder));
     private HashMap<String, FeatureCollection> mappedDevices = new HashMap<>();
     
     public HashMap<String, FeatureCollection> getMappedDevices() {
@@ -19,10 +20,10 @@ public class NetworkMap {
     public void setMappedDevices(HashMap<String, FeatureCollection> mappedDevices) {
         this.mappedDevices = mappedDevices;
     }
-    public List<Legend> getLegend() {
+    public Set<Legend> getLegend() {
         return legend;
     }
-    public void setLegend(List<Legend> legend) {
+    public void setLegend(Set<Legend> legend) {
         this.legend = legend;
     }
     //used in JS

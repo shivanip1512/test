@@ -57,20 +57,26 @@ public class NetworkMapFilter {
     }
     
     public enum Color {
-        GREEN("#009933"),
-        BLUE("#4d90fe"),
-        ORANGE("#ec971f"),
-        GREY("#888"),
-        YELLOW("#f0cb2f");
+        GREEN("#009933", 1),
+        BLUE("#4d90fe", 2),
+        ORANGE("#ec971f", 3),
+        GREY("#888", 4),
+        YELLOW("#f0cb2f", 5);
         
-        private Color(String hexColor) {
+        private Color(String hexColor, int order) {
             this.hexColor = hexColor;
+            this.order = order;
         }
 
         private final String hexColor;
+        private final int order;
         
         public String getHexColor() {
             return hexColor;
+        }
+        
+        public int getOrder() {
+            return order;
         }
     }
     
@@ -103,18 +109,21 @@ public class NetworkMapFilter {
     }
     
     public static class Legend {
-        private String hexColor;
+        private Color color;
         private String text;
         
-        public Legend(String hexColor, String text) {
-            this.hexColor = hexColor;
+        public Legend(Color color, String text) {
+            this.color = color;
             this.text = text;
         }
         public String getHexColor() {
-            return hexColor;
+            return color.getHexColor();
         }
         public String getText() {
             return StringEscapeUtils.escapeHtml4(text);
+        }
+        public int getOrder() {
+            return color.getOrder();
         }
         
         @Override
@@ -122,7 +131,7 @@ public class NetworkMapFilter {
             StringBuilder builder = new StringBuilder();
             builder.append(text);
             builder.append(":");
-            builder.append(hexColor);
+            builder.append(getHexColor());
             return builder.toString();
         }
     }

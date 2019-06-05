@@ -566,7 +566,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(gatewayPao);
                 Set<RfnIdentifier> devices = Sets.newHashSet(gatewayNodes.getNodeComms().keySet());
                 devices.add(gatewayPao);
-                addDevicesToMap(map, color.getHexColor(), gateway.getName(), devices);
+                addDevicesToMap(map, color, gateway.getName(), devices);
             }
         });
 
@@ -611,7 +611,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                         .map(NeighborData::getNeighborRfnIdentifier)
                         .collect(Collectors.toSet());
                     //linkStrength needs i18n
-                    addDevicesToMap(map, linkStrength.getColor().getHexColor(), linkStrength.name(), ids);
+                    addDevicesToMap(map, linkStrength.getColor(), linkStrength.name(), ids);
                 }
             });
         } catch (NmCommunicationException e) {
@@ -619,7 +619,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         }
 
         //add gateways
-        addDevicesToMap(map, "#ffffff", null, metaData.keySet());
+        addDevicesToMap(map, "#ffffff", metaData.keySet());
         
         log.debug("MAP-"+map);
         return map;
@@ -643,12 +643,17 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     }
 
     /**
-     * Add legend and devices location to a map
+     * Add legend and device location to a map
      */
-    private void addDevicesToMap(NetworkMap map, String hexColor, String legend, Set<RfnIdentifier> devices) {
-        if(legend != null) {
-            map.getLegend().add(new Legend(hexColor, legend));
-        }
+    private void addDevicesToMap(NetworkMap map, Color color, String legend, Set<RfnIdentifier> devices) {
+        map.getLegend().add(new Legend(color, legend));
+        addDevicesToMap(map, color.getHexColor(), devices);
+    }
+    
+    /**
+     * Add device location to a map
+     */
+    private void addDevicesToMap(NetworkMap map,  String hexColor, Set<RfnIdentifier> devices) {
         Set<Integer> paoIds = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(devices);
         Set<PaoLocation> locations = paoLocationDao.getLocations(paoIds);
         FeatureCollection features = paoLocationService.getFeatureCollection(locations);
