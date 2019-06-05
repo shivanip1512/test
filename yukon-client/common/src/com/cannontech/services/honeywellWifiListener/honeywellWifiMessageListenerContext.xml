@@ -15,6 +15,7 @@
     <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.EquipmentStatusEventProcessor"/>
     <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.ConnectionStatusEventProcessor"/>
     <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.ApplicationAccessAddedEventProcessor"/>
+    <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.ApplicationAccessRemovedEventProcessor"/>
     
     <bean class="com.cannontech.dr.honeywellWifi.HoneywellWifiRuntimeCalcServiceImpl" />
     
