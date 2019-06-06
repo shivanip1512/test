@@ -374,9 +374,11 @@ begin
 	sDir = TARGETDIR ^ "\\Client\\bin";
 	DeleteFilesOfType(sDir, "jar");
 	
-	//Also delete old JRE installer. We only want the latest in this directory 
+	//Also delete old JRE installer. We only want the latest in this directory
 	sDir = TARGETDIR ^ "\\Server\\Static\\JRE";
-	DeleteFilesOfType(sDir, "exe");
+	if(ExistsDir (sDir) = EXISTS) then
+	    DeleteFilesOfType(sDir, "exe");
+	endif;
     
     //Delete Alarm Monitor icon in case of upgrade when installed version < "7.1.0".
     if(IsInstalledVersionLesser("7.1.0")) then
