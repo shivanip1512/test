@@ -55,6 +55,7 @@ int main(int argc, char* argv[])
    slogManager.setOutputPath    ( dbglogdir );
    slogManager.setOutputFile    ( "simulate" );
    slogManager.setToStdOut      ( gConfigParms.getValueAsInt("YUKON_SIMULATE_TOSTDOUT",0) );
+   slogManager.reloadSettings();
    slogManager.start(); // fire up the simulator thread
 
    CTILOG_INFO(slog, "Simulator Started");

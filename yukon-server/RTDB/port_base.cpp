@@ -432,7 +432,16 @@ void CtiPort::startLog()
 
         _portLogManager.setOutputPath(comlogdir);
         _portLogManager.setOutputFile(getName());
+        _portLogManager.reloadSettings();
         _portLogManager.start();
+    }
+}
+
+void CtiPort::reloadLogger()
+{
+    if(_portLogManager.isStarted())
+    {
+        _portLogManager.reloadSettings();
     }
 }
 

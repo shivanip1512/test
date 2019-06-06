@@ -33,6 +33,7 @@ public:
     typedef CtiSmartMap< CtiPort >::insert_pair insert_pair;
 
     void RefreshList();
+    void reloadPortLoggers();
 
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
 

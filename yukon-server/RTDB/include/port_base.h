@@ -114,6 +114,7 @@ public:
     //  Each port must start their log manager in their port thread (PortThread, PortDialbackThread, etc).
     //  The unsolicited ports are started by UnsolicitedHandler::startLog, and do not use this method.
     void startLog();
+    void reloadLogger();
 
     std::string getSharedPortType() const;
     INT getSharedSocketNumber() const;
@@ -194,9 +195,6 @@ public:
     void setLastOMRead(CtiTime &atime = CtiTime());
     CtiTime getLastOMComplete() const;
     void setLastOMComplete(CtiTime &atime = CtiTime());
-
-    void setPortShareBlock(CtiTime &atime);
-    bool isPortShareBlocked(void) const;
 
     ULONG getQueueSlot() const;
     CtiPort& setQueueSlot(const ULONG slot = 0);

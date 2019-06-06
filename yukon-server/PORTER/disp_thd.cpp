@@ -113,6 +113,8 @@ void DispatchMsgHandlerThread()
                             GlobalSettings::reload();
 
                             doutManager.reloadSettings();
+                            slogManager.reloadSettings();
+                            PortManager.reloadPortLoggers();
                         }
 
                         break;

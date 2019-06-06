@@ -970,6 +970,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         }
 
         dout->poke();  //  called 4x/second (see sleep at bottom of loop)
+        slog->poke();
 
         if( nextWorkReportTime < Now )
         {

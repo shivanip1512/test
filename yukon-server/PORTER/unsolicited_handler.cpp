@@ -75,6 +75,7 @@ void UnsolicitedHandler::startLog()
 
         _portLogManager.setOutputPath    ( comlogdir );
         _portLogManager.setOutputFile    ( describePort() );
+        _portLogManager.reloadSettings();
         _portLogManager.start();
     }
 }

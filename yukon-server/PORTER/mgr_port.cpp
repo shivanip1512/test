@@ -107,6 +107,14 @@ void CtiPortManager::RefreshList()
     }
 }
 
+void CtiPortManager::reloadPortLoggers()
+{
+    for(auto port : getPorts())
+    {
+        port->CtiPort::reloadLogger();
+    }
+}
+
 bool CtiPortManager::RefreshType(const std::string name, const std::string sql, void (CtiPortManager::*refreshMethod)(bool &, Cti::RowReader &))
 {
     if(DebugLevel & 0x00080000)
