@@ -168,9 +168,9 @@
     <entry key="yukon.web.components.cronPicker.ofMonth">of month</entry>
     <entry key="yukon.web.components.cronPicker.onLastDayOfMonth">On last day of month</entry>
     <entry key="yukon.web.components.cronPicker.cronExpression">Cron Expression</entry>
-    <entry key="yukon.web.components.cronPicker.cronHelpStart">So you've decided to use a custom Cron Expression, </entry>
-    <entry key="yukon.web.components.cronPicker.cronHelpLink">now what</entry>
-    <entry key="yukon.web.components.cronPicker.cronHelpEnd">?</entry>
+    <entry key="yukon.web.components.cronPicker.cronHelp"><![CDATA[So you've decided to use a custom Cron Expression, 
+        <a href="http://www.quartz-scheduler.org/documentation/quartz-2.2.2/tutorials/tutorial-lesson-06.html" target="_blank">now what</a>?</br>
+]]></entry>
     <entry key="yukon.web.components.cronPicker.cronHelpTitle">Custom Cron Expression</entry>
 
     <entry key="yukon.web.components.sortLink.ascending">Sorted Ascending</entry>
