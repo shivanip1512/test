@@ -44,7 +44,7 @@ public class ItronMessageListener {
                 boolean rampOut = msg.readByte() == 1 ? true : false;
                 int dutyCycleType = msg.readByte();
                 int dutyCyclePercent = msg.readByte();
-                int dutyCyclePeriod = msg.readInt();
+                int dutyCyclePeriod = msg.readInt() / 60; //Convert seconds to minutes
                 int criticality = msg.readInt();
                 
                 log.debug("Parsed message - Group Id: " + groupId + ", startTime: " + startTime + ", endTime: " + endTime + 
