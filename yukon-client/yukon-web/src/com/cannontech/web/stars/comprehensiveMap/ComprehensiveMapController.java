@@ -63,6 +63,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy;
+import com.cannontech.web.tools.mapping.model.NetworkMapFilter.LinkStrength;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.util.WebFileUtils;
@@ -104,6 +105,7 @@ public class ComprehensiveMapController {
         model.addAttribute("gateways", gateways);
         
         model.addAttribute("colorCodeByOptions", ColorCodeBy.values());
+        model.addAttribute("linkStrengthOptions", LinkStrength.values());
         
         return "comprehensiveMap/map.jsp";
     }
@@ -114,11 +116,12 @@ public class ComprehensiveMapController {
         Map<String, Object> json = new HashMap<>();
         NetworkMap map = null;
         try {
-            map = nmNetworkService.getNetworkMap(filter);
+            map = nmNetworkService.getNetworkMap(filter, accessor);
             //create collection action group
             StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
             for(FeatureCollection feature : map.getMappedDevices().values()) {
-                List<YukonPao> devices = feature.getFeatures().stream().map(d -> new SimpleDevice(d.getProperty("paoIdentifier"))).collect(Collectors.toList());
+                List<YukonPao> devices = feature.getFeatures().stream()
+                        .map(d -> new SimpleDevice(d.getProperty("paoIdentifier"))).collect(Collectors.toList());
                 deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
             }
             json.put("collectionActionRedirect", CollectionActionUrl.COLLECTION_ACTIONS.getUrl() + "?collectionType=group&group.name=" + tempGroup.getFullName());
@@ -182,7 +185,7 @@ public class ComprehensiveMapController {
         headerRow[7] = accessor.getMessage(baseKey + "status");
         headerRow[8] = accessor.getMessage(baseKey + "macAddress");
         headerRow[9] = accessor.getMessage(baseKey + "nodeSN");
-        headerRow[10] = accessor.getMessage(baseKey + "linkCost");
+        headerRow[10] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.LINK_STRENGTH");
         
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
         DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);
@@ -221,7 +224,7 @@ public class ComprehensiveMapController {
                     NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
                     RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(comm.getGatewayRfnIdentifier());
                     dataRow[6] = gateway.getName();
-                    dataRow[7] = comm.getNodeCommStatus().toString();
+                    dataRow[7] = accessor.getMessage(baseKey + "status." + comm.getNodeCommStatus());
                 }
                 if (metadata.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)) {
                     NodeData data = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
@@ -230,7 +233,9 @@ public class ComprehensiveMapController {
                 }
                 if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA)) {
                     NeighborData neighbor = (NeighborData) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA);
-                    dataRow[10] = neighbor.getNeighborLinkCost().toString();
+                    LinkStrength linkStrength = LinkStrength.getLinkStrength(neighbor);
+                    String linkStrengthFormatted = accessor.getMessage(linkStrength.getFormatKey());
+                    dataRow[10] = linkStrengthFormatted;
                 }
             }
             dataRows.add(dataRow);

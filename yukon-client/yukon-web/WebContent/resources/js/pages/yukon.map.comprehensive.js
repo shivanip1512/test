@@ -318,11 +318,12 @@ yukon.map.comprehensive = (function () {
             
             if (_initialized) return;
             
-            $(".js-chosen").chosen({width: "400px", max_selected_options: 5});
-            $(".js-chosen").bind("chosen:maxselected", function () {
+            $(".js-selected-gateways").chosen({width: "400px", max_selected_options: 5});
+            $(".js-selected-gateways").bind("chosen:maxselected", function () {
                 var gatewayError = $('#tooManyGatewaysError').val();
                 yukon.ui.alertError(gatewayError);
             }); 
+            $(".js-selected-link-strengths").chosen({width: "200px"});
             
             /** Setup the openlayers map. */
             _map = new ol.Map({
@@ -364,8 +365,8 @@ yukon.map.comprehensive = (function () {
                 $('#' + _map.getTarget()).css('cursor', hit ? 'pointer' : 'default');
             });
             
-            $('.js-chosen').on('change', function(evt, params) {
-                var values = $(".js-chosen").chosen().val();
+            $('.js-selected-gateways').on('change', function(evt, params) {
+                var values = $(".js-selected-gateways").chosen().val();
                 $('.js-filter-map').prop('disabled', values.length == 0);
             });
             

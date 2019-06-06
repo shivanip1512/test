@@ -537,12 +537,11 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     }
     
     @Override
-    public NetworkMap getNetworkMap(NetworkMapFilter filter) throws NmNetworkException, NmCommunicationException {         
+    public NetworkMap getNetworkMap(NetworkMapFilter filter, MessageSourceAccessor accessor) throws NmNetworkException, NmCommunicationException {         
         if (filter.getColorCodeBy() == ColorCodeBy.GATEWAY) {
             return getNetworkMapByGateway(filter);
         } else if (filter.getColorCodeBy() == ColorCodeBy.LINK_STRENGTH) {
-            filter.setLinkStrength(Lists.newArrayList(LinkStrength.values()));
-            return getNetworkMapByLinkStrength(filter);
+            return getNetworkMapByLinkStrength(filter, accessor);
         }
         throw new UnsupportedOperationException("Filter " +filter.getColorCodeBy() + " is not supported");
     }
@@ -577,7 +576,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     /**
      * Returns network map by link strength
      */
-    private NetworkMap getNetworkMapByLinkStrength(NetworkMapFilter filter) throws NmNetworkException, NmCommunicationException {
+    private NetworkMap getNetworkMapByLinkStrength(NetworkMapFilter filter, MessageSourceAccessor accessor) throws NmNetworkException, NmCommunicationException {
         log.debug("Getting network map by link stength filter: {}" , filter);
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = getGatewayNodes(filter);
         NetworkMap map = new NetworkMap();
@@ -610,8 +609,8 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     Set<RfnIdentifier> ids = neighbors.stream()
                         .map(NeighborData::getNeighborRfnIdentifier)
                         .collect(Collectors.toSet());
-                    //linkStrength needs i18n
-                    addDevicesToMap(map, linkStrength.getColor(), linkStrength.name(), ids);
+                    String linkStrengthFormatted = accessor.getMessage(linkStrength.getFormatKey());
+                    addDevicesToMap(map, linkStrength.getColor(), linkStrengthFormatted, ids);
                 }
             });
         } catch (NmCommunicationException e) {

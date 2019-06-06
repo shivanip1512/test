@@ -80,7 +80,7 @@ public class NetworkMapFilter {
         }
     }
     
-    public enum LinkStrength {
+    public enum LinkStrength implements DisplayableEnum {
         GOOD(Color.GREEN, Lists.newArrayList(1f,2f)),
         OK(Color.BLUE, Lists.newArrayList(3f)),
         WEAK(Color.ORANGE, Lists.newArrayList(4f,5f)),
@@ -105,6 +105,11 @@ public class NetworkMapFilter {
                     .stream().filter(ls -> ls.linkCost.contains(neighborData.getNeighborLinkCost()))
                     .findFirst()
                     .orElseThrow(() -> new UnsupportedOperationException("Undefined link cost " + neighborData.getNeighborLinkCost()));
+        }
+        
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.operator.comprehensiveMap.linkStrength." + this;
         }
     }
     

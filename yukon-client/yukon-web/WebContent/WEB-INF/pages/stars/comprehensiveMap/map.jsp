@@ -26,7 +26,10 @@
     
                 <cti:msg2 var="gatewayPlaceholder" key=".selectGateways"/>
                 <tags:selectWithItems items="${gateways}" path="selectedGatewayIds" itemLabel="name" itemValue="id"
-                    inputClass="js-chosen" dataPlaceholder="${gatewayPlaceholder}"/>
+                    inputClass="js-selected-gateways" dataPlaceholder="${gatewayPlaceholder}"/>&nbsp;&nbsp;
+                    
+                <cti:msg2 var="linkStrengthPlaceholder" key=".selectLinkStrength"/>
+                <tags:selectWithItems items="${linkStrengthOptions}" path="linkStrength" inputClass="js-selected-link-strengths" dataPlaceholder="${linkStrengthPlaceholder}"/>
                 
                 <div style="padding-top:5px">
                     <i:inline key=".colorCodeBy"/>&nbsp;
