@@ -11,17 +11,17 @@
     $(function() {selectedFieldsChanged();});
 </script>
 
-<ct:simplePopup id="roundingHelper" title="Rounding Mode Help" onClose="toggleHelperPopup('roundingHelper');">
+<div id="rounding-help" title="<cti:msg2 key=".roundingHelp"/>" class="dn" data-width="700">
     <jsp:include page="/WEB-INF/pages/amr/dynamicBilling/roundingHelper.jsp"/>
-</ct:simplePopup>
+</div>
 
-<ct:simplePopup id="valueHelper" title="Format Help" onClose="toggleHelperPopup('valueHelper');">
+<div id="value-help" title="<cti:msg2 key=".formatHelp"/>" class="dn" data-width="700">
     <jsp:include page="/WEB-INF/pages/amr/dynamicBilling/valueHelper.jsp"/>
-</ct:simplePopup>
+</div>
 
-<ct:simplePopup id="timestampHelper" title="Format Help" onClose="toggleHelperPopup('timestampHelper');">
+<div id="timestamp-help" title="<cti:msg2 key=".formatHelp"/>" class="dn" data-width="700">
     <jsp:include page="/WEB-INF/pages/amr/dynamicBilling/timestampHelper.jsp"/>
-</ct:simplePopup>
+</div>
 
 <script>
 BILLING_ERRORS = {
@@ -86,7 +86,7 @@ BILLING_ERRORS = {
         <br>
         
         <!--  start Field pair columns -->
-        <div class="column-12-12">
+        <div class="column-10-14">
                 <div class="column one">
             <%--  FIELD SETUP --%>
                     <ct:sectionContainer2 nameKey=".fieldSetup" id="dbgFieldSetup">
@@ -160,7 +160,7 @@ BILLING_ERRORS = {
                                             <option value="${roundingModeValue}">${roundingModeValue}</option>
                                         </c:forEach>
                                     </select>
-                                    <a href="javascript:void(0);" onclick="toggleHelperPopup('roundingHelper');"><cti:msg2 key=".roundingHelp"/></a>
+                                    <cti:icon icon="icon-help" data-popup="#rounding-help" classes="cp fn"/>
                                 </ct:nameValue2>
                                 <ct:nameValue2 nameKey=".readingPattern">
                                     <select id="readingFormatSelect" onchange="updateFormat('reading', 'formatWithSelect');">
@@ -170,9 +170,7 @@ BILLING_ERRORS = {
                                         <option value="####.##"><cti:msg2 key=".twoPlaces"/></option>
                                     </select>  
                                     <input type="text" id="readingFormat" maxlength="30" value="" onkeyup="updateFormat('reading', 'formatWithSelectText');" />
-                                    
-                                    <a href="javascript:void(0);" onclick="toggleHelperPopup('valueHelper');"><cti:msg2 key=".formatHelp"/></a>
-                                    
+                                    <cti:icon icon="icon-help" data-popup="#value-help" classes="cp fn"/>
                                 </ct:nameValue2>
                                 <ct:nameValue2 nameKey=".fieldSize">
                                     <input type="text" id="readingMaxLength" size="5" maxlength="5" value="" onkeyup="updateFormat('reading', 'maxLength');" /> <cti:msg2 key=".fieldSizeHelp"/>
@@ -221,9 +219,7 @@ BILLING_ERRORS = {
                                         <option value="HH:mm:ss"><cti:msg2 key=".24hour"/></option>
                                     </select>
                                     <input type="text" id="timestampFormat" maxlength="30" value="" onkeyup="updateFormat('timestamp', 'formatWithSelectText');"/>
-                                    
-                                    <a href="javascript:void(0);" onclick="toggleHelperPopup('timestampHelper');"><cti:msg2 key=".formatHelp"/></a>
-                                    
+                                    <cti:icon icon="icon-help" data-popup="#timestamp-help" classes="cp fn"/>
                                 </ct:nameValue2>
                                 <ct:nameValue2 nameKey=".fieldSize">
                                     <input type="text" id="timestampMaxLength" size="5" maxlength="5" value="" onkeyup="updateFormat('timestamp', 'maxLength');" /> <cti:msg2 key=".fieldSizeHelp"/>
