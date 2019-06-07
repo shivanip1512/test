@@ -33,7 +33,7 @@
                 <div class="bordered-div" style="height: 700px;">
                     <div id="unassigned">
                         <tags:pickerDialog id="displayPointPicker" type="pointPicker"
-                            container="unassigned" multiSelectMode="${true}" />
+                            container="unassigned" multiSelectMode="${true}" disabledIds="${selectedIds}"/>
                     </div>
                     <div>
                         <cti:button nameKey="add" classes="fr js-add-points" icon="icon-add"/>

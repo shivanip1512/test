@@ -333,6 +333,7 @@ yukon.tools.tdc = (function () {
                     templateRow.text(point.deviceName + " - " + point.pointName).append(children);
                     templateRow.removeClass('dn template-row');
                     templateRow.appendTo(selectedContainer);
+                    picker.disableItem(point.pointId);
                 });
                 selectedContainer.closest('.select-box')
                 .find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
@@ -341,9 +342,12 @@ yukon.tools.tdc = (function () {
             
             /** User clicked on Remove Point button */
             $(document).on('click', '.js-remove', function () {
+                var picker = yukon.pickers['displayPointPicker'],
+                    selectedId = $(this).parent().attr('data-id');
                 $(this).parent().remove();
                 $('#assigned').closest('.select-box')
                 .find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+                picker.enableItem(selectedId);
             });
             
             /** User double clicked to add a blank line */

@@ -181,6 +181,9 @@ public class TdcDisplayController {
         model.addAttribute("display", display);
         List<DisplayData> displayData = tdcService.getDisplayData(display);
         model.addAttribute("displayData", displayData);
+        
+        List<Integer> selectedIds = displayData.stream().map(item -> item.getPointId()).collect(Collectors.toList());
+        model.addAttribute("selectedIds", selectedIds);
 
         return "data-viewer/customDisplay.jsp";
     }
@@ -208,6 +211,7 @@ public class TdcDisplayController {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", pageEditMode);
             model.addAttribute("displayData", generateDisplayDataFromPoints(pointList));
+            model.addAttribute("selectedIds", pointIds);
             return "data-viewer/customDisplay.jsp";
         }
         String name = display.getName();
@@ -225,6 +229,7 @@ public class TdcDisplayController {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", pageEditMode);
             model.addAttribute("displayData", generateDisplayDataFromPoints(pointList));
+            model.addAttribute("selectedIds", pointIds);
             return "data-viewer/customDisplay.jsp";
         }
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "display.SAVE.success"));
