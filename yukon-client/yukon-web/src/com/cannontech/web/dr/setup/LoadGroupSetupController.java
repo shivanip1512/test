@@ -95,7 +95,8 @@ public class LoadGroupSetupController {
 
         String url = helper.getApiURL(request, request.getPathInfo());
         try {
-            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, loadGroup);
+            ResponseEntity<? extends Object> response =
+                apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, loadGroup);
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadGroup, "loadGroupBase");
                 helper.populateBindingError(result, error, response);
@@ -107,7 +108,7 @@ public class LoadGroupSetupController {
                 return "redirect:/dr/setup/loadGroup/" + groupId;
             }
         } catch (RestClientException ex) {
-            log.error("Error creating load group " + ex);
+            log.error("Error creating load group: " + ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error"));
             return "redirect:/dr/setup/list";
         }
@@ -120,12 +121,13 @@ public class LoadGroupSetupController {
     private LoadGroupBase retrieveGroup(YukonUserContext userContext, HttpServletRequest request, int id, String url) {
         LoadGroupBase loadGroup = null;
         try {
-            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, LoadGroupBase.class);
+            ResponseEntity<? extends Object> response =
+                apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, LoadGroupBase.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 loadGroup = (LoadGroupBase) response.getBody();
             }
         } catch (RestClientException ex) {
-            log.error("Error retrieving load group " + ex);
+            log.error("Error retrieving load group: " + ex.getMessage());
         }
         return loadGroup;
     }
