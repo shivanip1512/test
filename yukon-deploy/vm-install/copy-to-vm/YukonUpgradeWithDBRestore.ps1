@@ -30,7 +30,7 @@ Reset-DatabaseSnapshot
 Archive-YukonLog
 Expand-Installer
 Install-Yukon
-Update-YukonDatabase
+Update-YukonDatabase -DatabaseType $($DatabaseType)
 Start-YukonServices
 Start-EIM
 Start-Simulators

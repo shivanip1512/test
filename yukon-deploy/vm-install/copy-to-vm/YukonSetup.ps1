@@ -27,7 +27,7 @@ Import-Module $PSScriptRoot\YukonDeploy
 Uninstall-Yukon
 Expand-Installer
 Install-Yukon
-Update-YukonDatabase
+Update-YukonDatabase -DatabaseType $($DatabaseType)
 Start-YukonServices
 Start-EIM
 Start-Simulators
