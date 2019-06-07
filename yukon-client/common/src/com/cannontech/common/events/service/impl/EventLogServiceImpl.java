@@ -161,7 +161,7 @@ public class EventLogServiceImpl implements EventLogService {
         builder.add(ArgumentMapper.create(LocalDate.class, Types.TIMESTAMP, new ObjectMapper<LocalDate, Date>() {
             @Override
             public Date map(LocalDate date) throws ObjectMappingException {
-                return new LocalDate(date).toDate();
+                return date.toDate();
             }
         }));
         builder.add(ArgumentMapper.create(PaoIdentifier.class, Types.VARCHAR, new ObjectMapper<PaoIdentifier, String>() {

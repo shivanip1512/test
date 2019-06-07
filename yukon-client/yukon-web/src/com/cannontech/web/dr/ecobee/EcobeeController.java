@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
-import org.joda.time.Duration;
+import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -79,6 +79,7 @@ public class EcobeeController {
 
     private static final Logger log = YukonLogManager.getLogger(EcobeeController.class);
     private static DateTimeFormatter dateTimeFormatter;
+    private static final int runtimeReportMaxDateRange = 7;
     private static final String homeKey = "yukon.web.modules.dr.home.ecobee.configure.";
     private static final String fixIssueKey = "yukon.web.modules.dr.ecobee.details.issues.";
 
@@ -227,8 +228,8 @@ public class EcobeeController {
             return null;
         }
 
-        Duration specifiedDuration = new Duration(startDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
-        if (specifiedDuration.isLongerThan(Duration.standardDays(7)) || startDate.isAfter(endDate)) {
+        int durationIndays = Days.daysBetween(startDate, endDate).getDays();
+        if (runtimeReportMaxDateRange <= durationIndays || startDate.isAfter(endDate)) {
             errResponse.put("dateRangeError", "true");
             isValidationError = true;
             response.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -257,8 +258,8 @@ public class EcobeeController {
         
         String resultKey = dataDownloadService.start(serialNumbers, Range.inclusive(startDate, endDate), userContext.getJodaTimeZone());
 
-        ecobeeEventLogService.dataDownloaded(userContext.getYukonUser(), startDate, endDate, Arrays.toString(loadGroupIds), 
-                                                    EventSource.OPERATOR);
+        ecobeeEventLogService.dataDownloaded(userContext.getYukonUser(), startDate, endDate.plusDays(1),
+            Arrays.toString(loadGroupIds), EventSource.OPERATOR);
         
         model.addAttribute("key", resultKey);
         EcobeeReadResult result = readResultsCache.getResult(resultKey);
