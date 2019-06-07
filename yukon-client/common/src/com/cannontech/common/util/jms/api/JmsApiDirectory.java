@@ -1068,7 +1068,7 @@ public final class JmsApiDirectory {
             JmsApi.builder(Serializable.class)
                   .name("RFN Device Creation Alert")
                   .description("Yukon Service Manager passes alerts from RFN Device Creation Service to Yukon "
-                          + "Webserver AlertService when meter can't be automatically created")
+                          + "Webserver AlertService when RFN device fails to be created")
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("com.eaton.eas.yukon.alert"))
                   .requestMessage(Serializable.class)

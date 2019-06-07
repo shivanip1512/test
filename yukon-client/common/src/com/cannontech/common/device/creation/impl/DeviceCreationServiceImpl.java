@@ -293,7 +293,8 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
                                               "invalidTemplate",
                                               newDevice.getPAOName(),
                                               templateName,
-                                              e);
+                                              e,
+                                              newDevice.getPaoType());
         }
 
     }
