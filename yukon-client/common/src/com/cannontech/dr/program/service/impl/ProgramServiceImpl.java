@@ -807,7 +807,7 @@ public class ProgramServiceImpl implements ProgramService {
                 int maxFutureProgramsCount = MAX_PROGRAM_TO_DISPLAY_ON_WIDGET - todaysProgramsCount;
                 futureProgramsToDisplay = limitData(futurePrograms, maxFutureProgramsCount);
                 String date = dateFormattingService.format(futureProgramsToDisplay.get(0).getStartDateTime(),
-                    DateFormatEnum.DATE_MMDDYYYY, userContext);
+                    DateFormatEnum.DATE, userContext);
                 programWidgetData.put(date, futureProgramsToDisplay);
             }
         }
