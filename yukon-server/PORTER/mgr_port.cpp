@@ -111,7 +111,7 @@ void CtiPortManager::reloadPortLoggers()
 {
     for(auto port : getPorts())
     {
-        port->CtiPort::reloadLogger();
+        port->reloadLogger();
     }
 }
 
