@@ -177,7 +177,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
+        log.info("Validation Error {" + uniqueKey + "}: ");
 
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         BindingResult bindingResult = ex
