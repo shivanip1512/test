@@ -169,7 +169,7 @@ BILLING_ERRORS = {
                                         <option value="###.###"><cti:msg2 key=".threePlaces"/></option>
                                         <option value="####.##"><cti:msg2 key=".twoPlaces"/></option>
                                     </select>  
-                                    <input type="text" id="readingFormat" size="16" maxlength="24" value="" onkeyup="updateFormat('reading', 'formatWithSelectText');" />
+                                    <input type="text" id="readingFormat" size="16" maxlength="30" value="" onkeyup="updateFormat('reading', 'formatWithSelectText');" />
                                     <cti:icon icon="icon-help" data-popup="#value-help" classes="cp fn"/>
                                 </ct:nameValue2>
                                 <ct:nameValue2 nameKey=".fieldSize">
@@ -218,7 +218,7 @@ BILLING_ERRORS = {
                                         <option value="hh:mm:ss a"><cti:msg2 key=".12hour"/></option>
                                         <option value="HH:mm:ss"><cti:msg2 key=".24hour"/></option>
                                     </select>
-                                    <input type="text" id="timestampFormat" size="16" maxlength="24" value="" onkeyup="updateFormat('timestamp', 'formatWithSelectText');"/>
+                                    <input type="text" id="timestampFormat" size="16" maxlength="30" value="" onkeyup="updateFormat('timestamp', 'formatWithSelectText');"/>
                                     <cti:icon icon="icon-help" data-popup="#timestamp-help" classes="cp fn"/>
                                 </ct:nameValue2>
                                 <ct:nameValue2 nameKey=".fieldSize">
