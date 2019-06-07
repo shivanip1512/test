@@ -67,6 +67,7 @@ yukon.protoPicker = function (okText,
         this.destinationFieldName = destinationFieldName;
         this.pickerId = pickerId;
         this.excludeIds = [];
+        this.disabledIds = [];
         this.multiSelectMode = false;
         this.immediateSelectMode = false;
         this.memoryGroup = false;
@@ -253,6 +254,8 @@ yukon.protoPicker = function (okText,
                 
                 if (pickerThis.excludeIds.indexOf(data[pickerThis.idFieldName]) !== -1) {
                     row.addClass('disabled');
+                } else if (pickerThis.disabledIds.indexOf(data[pickerThis.idFieldName]) !== -1) {
+                   row.addClass('disabled-look');
                 } else {
                     pickerThis.selectedItems.forEach(function (item, index, arr){
                         if (data[pickerThis.idFieldName] === item[pickerThis.idFieldName]) {
@@ -750,6 +753,21 @@ yukon.protoPicker = function (okText,
         }
     };
     
+    /** Used to disable an item in the selection list. */
+    yukon.protoPicker.prototype.disableItem = function (selectedId) {
+        var row = $('#' + this.pickerId + ' tr[data-id="' + selectedId + '"]');
+        row.addClass('disabled-look');
+        this.disabledIds.push(selectedId);
+    };
+    
+    /** Used to enable an item in the selection list. */
+    yukon.protoPicker.prototype.enableItem = function (selectedId) {
+        var row = $('#' + this.pickerId + ' tr[data-id="' + selectedId + '"]');
+        row.removeClass('disabled-look');
+        var index = this.disabledIds.indexOf(selectedId);
+        this.disabledIds.splice(index, 1);
+    };
+    
     /** Invoked from jsp */
     yukon.protoPicker.prototype.showAll = function () {
         if (this.memoryGroup) {
@@ -789,14 +807,16 @@ yukon.protoPicker = function (okText,
         this.allLinks.forEach(function (item, index, arr) {
             var row = item.link.closest('tr'),
                 alreadyThere = currentlySelected[item.hit[pickerThis.idFieldName]];
-            if (pickerThis.selectAllCheckBox.checked) {
-                row.addClass('highlighted');
-                if (!alreadyThere) {
-                    pickerThis.selectedItems.push(item.hit);
+            if (pickerThis.disabledIds.indexOf(item.hit[pickerThis.idFieldName]) === -1) {
+                if (pickerThis.selectAllCheckBox.checked) {
+                    row.addClass('highlighted');
+                    if (!alreadyThere) {
+                        pickerThis.selectedItems.push(item.hit);
+                    }
+                } else {
+                    row.removeClass('highlighted');
+                    removeFromSelectedItems.call(pickerThis, item.hit);
                 }
-            } else {
-                row.removeClass('highlighted');
-                removeFromSelectedItems.call(pickerThis, item.hit);
             }
         });
         
@@ -997,6 +1017,7 @@ yukon.protoPicker = function (okText,
     yukon.protoPicker.prototype.selectedMoreMsg = '';
     yukon.protoPicker.prototype.useInitialIdsIfEmpty = false;
     yukon.protoPicker.prototype.excludeIds = [];
+    yukon.protoPicker.prototype.disabledIds = [];
     
     /** 
      * If "memoryGroup" is set to something other than false, a picker will

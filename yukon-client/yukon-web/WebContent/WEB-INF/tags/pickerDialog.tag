@@ -11,6 +11,7 @@
 
 <%@ attribute name="destinationFieldId" description="Id of field to place selected items on picker close." %>
 <%@ attribute name="excludeIds" type="java.lang.Object" description="The ids that cannot be selected in the picker." %>
+<%@ attribute name="disabledIds" type="java.lang.Object" description="The ids that are displayed in the picker, but disabled." %>
 <%@ attribute name="destinationFieldName"  description="Name of field to place selected items on picker close." %>
 <%@ attribute name="multiSelectMode" type="java.lang.Boolean" description="If 'true', this picker allows selection of multiple items." %>
 <%@ attribute name="immediateSelectMode" type="java.lang.Boolean" description="If 'true' this picker will select and close when an item is clicked." %>
@@ -76,6 +77,7 @@
     <div class="dn js-picker-end-event">${pageScope.endEvent}</div>
     <div class="dn js-picker-exclude-ids"
     ><c:if test="${not empty pageScope.excludeIds}">${cti:jsonString(excludeIds)}</c:if></div>
+    <div class="dn js-picker-disabled-ids"><c:if test="${not empty pageScope.disabledIds}">${cti:jsonString(disabledIds)}</c:if></div>
     <c:if test="${!empty pageScope.initialIds}">
         <c:forEach var="initialId" items="${initialIds}">
             <input type="hidden" name="${destinationFieldName}" value="${initialId}">
@@ -202,6 +204,7 @@
         container = '#' + container;
     }
     var excluedIds = data.find('.js-picker-exclude-ids').text().trim();
+    var disabledIds = data.find('.js-picker-disabled-ids').text().trim();
     var endEvent = data.find('.js-picker-end-event').text().trim();
     
     try {
@@ -284,6 +287,9 @@
     
     if (excluedIds !== '') {
         picker.excludeIds = JSON.parse(excluedIds);
+    };
+    if (disabledIds !== '') {
+        picker.disabledIds = JSON.parse(disabledIds);
     };
     
 
