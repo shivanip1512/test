@@ -163,6 +163,7 @@
                 <value>classpath:com/cannontech/yukon/common/chart</value>
                 <value>classpath:com/cannontech/yukon/common/device/pointImport</value>
                 <value>classpath:com/cannontech/yukon/common/paoNote</value>
+                <value>classpath:com/cannontech/yukon/common/roleProperty</value>
                 <value>classpath:com/cannontech/yukon/web/apps</value>
                 <value>classpath:com/cannontech/yukon/web/operations</value>
                 <value>classpath:com/cannontech/yukon/web/menu</value>

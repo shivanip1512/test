@@ -15,6 +15,7 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.DescriptiveRoleProperty;
@@ -33,9 +34,11 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -67,6 +70,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
     @Autowired private RolePropertyDaoImpl rolePropertyDao;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private ImmutableMap<YukonRoleProperty, DescriptiveRoleProperty> descriptiveRoleProperties;
     private static boolean WRITE_NULL_FOR_DEFAULTS = false; // set to true when db editor support is no longer needed
@@ -78,15 +82,13 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         final ImmutableMap<YukonRoleProperty, Object> defaultValueLookup = rolePropertyDao.getDefaultValueLookup();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT rolePropertyId, keyName, description");
+        sql.append("SELECT rolePropertyId");
         sql.append("FROM YukonRoleProperty");
         
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 int rolePropertyId = rs.getInt("rolePropertyId");
-                String keyName = rs.getString("keyName");
-                String description = rs.getString("description");
 
                 YukonRoleProperty roleProperty;
                 try {
@@ -95,14 +97,17 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
                     // Database contains an unknown role property, this is logged elsewhere
                     return;
                 }
-
+                
+                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+                String keyName = accessor.getMessage("yukon.common.roleProperty." + roleProperty.name());
+                String description = accessor.getMessage("yukon.common.roleProperty." + roleProperty.name() + ".description");
                 MessageSourceResolvable keyNameMsr = 
-                    YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty.property."
-                            + roleProperty.name() + ".name", keyName);
+                    YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty."
+                            + roleProperty.name(), keyName);
                 MessageSourceResolvable descriptionMsr = 
-                    YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty.property."
-                            + roleProperty.name() + ".description",description);
-
+                    YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty."
+                            + roleProperty.name() + ".description", description);
+                
                 DescriptiveRoleProperty descriptiveRoleProperty = new DescriptiveRoleProperty(roleProperty,
                     defaultValueLookup.get(roleProperty), keyNameMsr, descriptionMsr);
                 descriptiveRolePropertyLookup.put(roleProperty, descriptiveRoleProperty);

@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<!-- Dynamic Billing RoleProperties -->
+<entry key="yukon.common.roleProperty.DYNAMIC_BILLING_FILE_SETUP">Dynamic Billing File Setup</entry>
+<entry key="yukon.common.roleProperty.DYNAMIC_BILLING_FILE_SETUP.description">Controls access to create, edit, and delete dynamic billing files.</entry>
+
+<!-- Commander RoleProperties-->
+<entry key="yukon.common.roleProperty.VERSACOM_SERIAL_MODEL">Versacom Serial</entry>
+<entry key="yukon.common.roleProperty.VERSACOM_SERIAL_MODEL.description">Show a Versacom Serial Number SortBy display.</entry>
+<entry key="yukon.common.roleProperty.EXPRESSCOM_SERIAL_MODEL">Expresscom Serial</entry>
+<entry key="yukon.common.roleProperty.EXPRESSCOM_SERIAL_MODEL.description">Show an Expresscom Serial Number SortBy display.</entry>
+<entry key="yukon.common.roleProperty.DCU_SA205_SERIAL_MODEL">DCU SA205 Serial</entry>
+<entry key="yukon.common.roleProperty.DCU_SA205_SERIAL_MODEL.description">Show a DCU SA205 Serial Number SortBy display.</entry>
+<entry key="yukon.common.roleProperty.DCU_SA305_SERIAL_MODEL">DCU SA305 Serial</entry>
+<entry key="yukon.common.roleProperty.DCU_SA305_SERIAL_MODEL.description">Show a DCU SA305 Serial Number SortBy display.</entry>
+<entry key="yukon.common.roleProperty.COMMANDS_GROUP">Commands Group Name</entry>
+<entry key="yukon.common.roleProperty.COMMANDS_GROUP.description">The commands group name for the displayed commands.</entry>
+<entry key="yukon.common.roleProperty.READ_DEVICE">Read device</entry>
+<entry key="yukon.common.roleProperty.READ_DEVICE.description">Allow the ability to read values from a device.</entry>
+<entry key="yukon.common.roleProperty.WRITE_TO_DEVICE">Write to device</entry>
+<entry key="yukon.common.roleProperty.WRITE_TO_DEVICE.description">Allow the ability to write values to a device.</entry>
+<entry key="yukon.common.roleProperty.CONTROL_DEVICE">Control disconnect</entry>
+<entry key="yukon.common.roleProperty.CONTROL_DEVICE.description">Allow the ability to control a disconnect to a device.</entry>
+<entry key="yukon.common.roleProperty.READ_LM_DEVICE">Read LM device</entry>
+<entry key="yukon.common.roleProperty.READ_LM_DEVICE.description">Allow the ability to read values from an LM device.</entry>
+<entry key="yukon.common.roleProperty.WRITE_TO_LM_DEVICE">Write to LM device</entry>
+<entry key="yukon.common.roleProperty.WRITE_TO_LM_DEVICE.description">Allow the ability to write values to an LM device.</entry>
+<entry key="yukon.common.roleProperty.CONTROL_LM_DEVICE">Control LM device</entry>
+<entry key="yukon.common.roleProperty.CONTROL_LM_DEVICE.description">Allow the ability to control an LM device.</entry>
+<entry key="yukon.common.roleProperty.READ_CAP_CONTROL_DEVICE">Read Cap Control device</entry>
+<entry key="yukon.common.roleProperty.READ_CAP_CONTROL_DEVICE.description">Allow the ability to read values from a Cap Control device.</entry>
+<entry key="yukon.common.roleProperty.WRITE_TO_CAP_CONTROL_DEVICE">Write to Cap Control device</entry>
+<entry key="yukon.common.roleProperty.WRITE_TO_CAP_CONTROL_DEVICE.description">Allow the ability to write values to a Cap Control device.</entry>
+<entry key="yukon.common.roleProperty.CONTROL_CAP_CONTROL_DEVICE">Control Cap Control device</entry>
+<entry key="yukon.common.roleProperty.CONTROL_CAP_CONTROL_DEVICE.description">Allow the ability to control a Cap Control device.</entry>
+<entry key="yukon.common.roleProperty.EXECUTE_UNKNOWN_COMMAND">Execute Unknown Command</entry>
+<entry key="yukon.common.roleProperty.EXECUTE_UNKNOWN_COMMAND.description">Allow the ability to execute commands which do not fall under another role property.</entry>
+<entry key="yukon.common.roleProperty.EXECUTE_MANUAL_COMMAND">Execute Manual Command</entry>
+<entry key="yukon.common.roleProperty.EXECUTE_MANUAL_COMMAND.description">Allow the ability to execute manual commands.</entry>
+<entry key="yukon.common.roleProperty.ENABLE_WEB_COMMANDER">Enable Web Commander</entry>
+<entry key="yukon.common.roleProperty.ENABLE_WEB_COMMANDER.description">Controls access to web commander applications.</entry>
+<entry key="yukon.common.roleProperty.ENABLE_CLIENT_COMMANDER">Enable Client Commander</entry>
+<entry key="yukon.common.roleProperty.ENABLE_CLIENT_COMMANDER.description">Controls access to client commander application.</entry>
+
+<!-- Database Editor RoleProperties -->
+<entry key="yukon.common.roleProperty.DBEDITOR_LM">Load Management View Enabled</entry>
+<entry key="yukon.common.roleProperty.DBEDITOR_LM.description">Controls whether the Loadmanagement menu item in the View menu is displayed.</entry>
+<entry key="yukon.common.roleProperty.DBEDITOR_SYSTEM">System View Enabled</entry>
+<entry key="yukon.common.roleProperty.DBEDITOR_SYSTEM.description">Controls whether the System menu item in the View menu is displayed.</entry>
+<entry key="yukon.common.roleProperty.UTILITY_ID_RANGE">Versacom Utility Range</entry>
+<entry key="yukon.common.roleProperty.UTILITY_ID_RANGE.description"></entry>
+<entry key="yukon.common.roleProperty.TRANS_EXCLUSION">Transmission Exclusion Enabled</entry>
+<entry key="yukon.common.roleProperty.TRANS_EXCLUSION.description">Allows the editor panel for the mutual exclusion of transmissions to be shown.</entry>
+<entry key="yukon.common.roleProperty.PERMIT_LOGIN_EDIT">Manage Users</entry>
+<entry key="yukon.common.roleProperty.PERMIT_LOGIN_EDIT.description">Closes off all access to logins and login groups for non-administrators in the dbeditor.</entry>
+<entry key="yukon.common.roleProperty.DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV">Optional Protocols</entry>
+<entry key="yukon.common.roleProperty.DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV.description">This feature is for development purposes only.</entry>
+<entry key="yukon.common.roleProperty.ALLOW_MEMBER_PROGRAMS">Program Member Management</entry>
+<entry key="yukon.common.roleProperty.ALLOW_MEMBER_PROGRAMS.description">Allows member management of LM Direct Programs through the DBEditor.</entry>
+
+<!-- Password Policy RoleProperties -->
+<entry key="yukon.common.roleProperty.LOCKOUT_DURATION">Lockout Duration</entry>
+<entry key="yukon.common.roleProperty.LOCKOUT_DURATION.description">The number of minutes a login is disabled when an account is locked out.</entry>
+<entry key="yukon.common.roleProperty.LOCKOUT_THRESHOLD">Lockout Threshold</entry>
+<entry key="yukon.common.roleProperty.LOCKOUT_THRESHOLD.description">The number of login attempts before an account is locked out.</entry>
+<entry key="yukon.common.roleProperty.MAXIMUM_PASSWORD_AGE">Maximum Password Age</entry>
+<entry key="yukon.common.roleProperty.MAXIMUM_PASSWORD_AGE.description">The number of days before a login is expired and needs to be changed.</entry>
+<entry key="yukon.common.roleProperty.MINIMUM_PASSWORD_AGE">Minimum Password Age</entry>
+<entry key="yukon.common.roleProperty.MINIMUM_PASSWORD_AGE.description">The number of hours a user has to wait before changing their password again.</entry>
+<entry key="yukon.common.roleProperty.MINIMUM_PASSWORD_LENGTH">Minimum Password Length</entry>
+<entry key="yukon.common.roleProperty.MINIMUM_PASSWORD_LENGTH.description">The minimum number of characters a password has to be before it passes.</entry>
+<entry key="yukon.common.roleProperty.PASSWORD_HISTORY">Password History</entry>
+<entry key="yukon.common.roleProperty.PASSWORD_HISTORY.description">The number of different passwords retained before a user can reuse a password.</entry>
+
+<entry key="yukon.common.roleProperty.POLICY_QUALITY_CHECK">Policy Quality Check</entry>
+<entry key="yukon.common.roleProperty.POLICY_QUALITY_CHECK.description">The number of policy rules that are required to be able to save a password.</entry>
+<entry key="yukon.common.roleProperty.POLICY_RULE_UPPERCASE_CHARACTERS">Policy Rule - Uppercase Characters</entry>
+<entry key="yukon.common.roleProperty.POLICY_RULE_UPPERCASE_CHARACTERS.description">Uppercase characters count toward the required policy quality check.  (A, B, C, ... Z)</entry>
+<entry key="yukon.common.roleProperty.POLICY_RULE_LOWERCASE_CHARACTERS">Policy Rule - Lowercase Characters</entry>
+<entry key="yukon.common.roleProperty.POLICY_RULE_LOWERCASE_CHARACTERS.description">Lowercase characters count toward the required policy quality check.  (a, b, c, ... z)</entry>
+<entry key="yukon.common.roleProperty.POLICY_RULE_BASE_10_DIGITS">Policy Rule - Base 10 Digits</entry>
+<entry key="yukon.common.roleProperty.POLICY_RULE_BASE_10_DIGITS.description">Base 10 digits count toward the required policy quality check.  (0, 1, 2, ... 9)</entry>
+<entry key="yukon.common.roleProperty.POLICY_RULE_NONALPHANUMERIC_CHARACTERS">Policy Rule - Nonalphanumeric Characters</entry>
+<entry key="yukon.common.roleProperty.POLICY_RULE_NONALPHANUMERIC_CHARACTERS.description">Nonalphanumic characters count toward the required password rules check.  (~, !, @, #, $, %, ^, &amp;, *, _, -, +, =, `, |, (, ), {, }, [, ], :, ", ', &lt;, &gt;, ,, ., ?, /)</entry>
+
+<!-- Reporting RoleProperties -->
+<entry key="yukon.common.roleProperty.ADMIN_REPORTS_GROUP">Admin Reports Group</entry>
+<entry key="yukon.common.roleProperty.ADMIN_REPORTS_GROUP.description">Access to administrative group reports.</entry>
+<entry key="yukon.common.roleProperty.AMR_REPORTS_GROUP">AMR Reports Group</entry>
+<entry key="yukon.common.roleProperty.AMR_REPORTS_GROUP.description">Access to AMR group reports.</entry>
+<entry key="yukon.common.roleProperty.STATISTICAL_REPORTS_GROUP">Statistical Reports Group</entry>
+<entry key="yukon.common.roleProperty.STATISTICAL_REPORTS_GROUP.description">Access to statistical group reports.</entry>
+<entry key="yukon.common.roleProperty.LOAD_MANAGEMENT_REPORTS_GROUP">Load Management Reports Group</entry>
+<entry key="yukon.common.roleProperty.LOAD_MANAGEMENT_REPORTS_GROUP.description">Access to Load Management group reports.</entry>
+<entry key="yukon.common.roleProperty.CAP_CONTROL_REPORTS_GROUP">Cap Control Reports Group</entry>
+<entry key="yukon.common.roleProperty.CAP_CONTROL_REPORTS_GROUP.description">Access to Cap Control group reports.</entry>
+<entry key="yukon.common.roleProperty.DATABASE_REPORTS_GROUP">Database Reports Group</entry>
+<entry key="yukon.common.roleProperty.DATABASE_REPORTS_GROUP.description">Access to Database group reports.</entry>
+<entry key="yukon.common.roleProperty.STARS_REPORTS_GROUP">Stars Reports Group</entry>
+<entry key="yukon.common.roleProperty.STARS_REPORTS_GROUP.description">Access to Stars group reports.</entry>
+<entry key="yukon.common.roleProperty.CI_CURTAILMENT_REPORTS_GROUP">C&amp;I Curtailment Reports Group</entry>
+<entry key="yukon.common.roleProperty.CI_CURTAILMENT_REPORTS_GROUP.description">Access to C&amp;I Curtailment group reports.</entry>
+
+<!-- Tabular Display Console RoleProperties -->
+<entry key="yukon.common.roleProperty.MACS_EDIT">macs_edit</entry>
+<entry key="yukon.common.roleProperty.MACS_EDIT.description">The following settings are valid: CREATE_SCHEDULE(0x0000000C), ENABLE_SCHEDULE(0x000000C0), ABLE_TO_START_SCHEDULE(0x00000C00)</entry>
+<entry key="yukon.common.roleProperty.TDC_MAX_ROWS">tdc_max_rows</entry>
+<entry key="yukon.common.roleProperty.TDC_MAX_ROWS.description">The number of rows shown before creating a new page of data.</entry>
+<entry key="yukon.common.roleProperty.TDC_RIGHTS">tdc_rights</entry>
+<entry key="yukon.common.roleProperty.TDC_RIGHTS.description">The following settings are valid: HIDE_MACS(0x00001000), HIDE_CAPCONTROL(0x00002000), HIDE_LOADCONTROL(0x00004000), HIDE_ALL_DISPLAYS(0x0000F000), HIDE_ALARM_COLORS(0x80000000)</entry>
+<entry key="yukon.common.roleProperty.TDC_ALARM_COUNT">tdc_alarm_count</entry>
+<entry key="yukon.common.roleProperty.TDC_ALARM_COUNT.description">Total number alarms that are displayed in the quick access list.</entry>
+<entry key="yukon.common.roleProperty.DECIMAL_PLACES">decimal_places</entry>
+<entry key="yukon.common.roleProperty.DECIMAL_PLACES.description">How many decimal places to show for real values.</entry>
+<entry key="yukon.common.roleProperty.LC_REDUCTION_COL">lc_reduction_col</entry>
+<entry key="yukon.common.roleProperty.LC_REDUCTION_COL.description">Tells TDC to show the LoadControl reduction column or not.</entry>
+
+<!-- Trending RoleProperties -->
+<entry key="yukon.common.roleProperty.GRAPH_EDIT_GRAPHDEFINITION">graph_edit_graphdefinition</entry>
+<entry key="yukon.common.roleProperty.GRAPH_EDIT_GRAPHDEFINITION.description"></entry>
+<entry key="yukon.common.roleProperty.TRENDING_DISCLAIMER">Trending Disclaimer</entry>
+<entry key="yukon.common.roleProperty.TRENDING_DISCLAIMER.description">The disclaimer that appears with trends.</entry>
+<entry key="yukon.common.roleProperty.SCAN_NOW_ENABLED">Scan Now Enabled</entry>
+<entry key="yukon.common.roleProperty.SCAN_NOW_ENABLED.description">Controls access to retrieve meter data on demand.</entry>
+<entry key="yukon.common.roleProperty.MINIMUM_SCAN_FREQUENCY">Minimum Scan Frequency</entry>
+<entry key="yukon.common.roleProperty.MINIMUM_SCAN_FREQUENCY.description">Minimum duration (in minutes) between get data now events.</entry>
+<entry key="yukon.common.roleProperty.MAXIMUM_DAILY_SCANS">Maximum Daily Scans</entry>
+<entry key="yukon.common.roleProperty.MAXIMUM_DAILY_SCANS.description">Maximum number of get data now scans available daily.</entry>
+
+<!-- Web Client RoleProperties -->
+<entry key="yukon.common.roleProperty.HOME_URL">home_url</entry>
+<entry key="yukon.common.roleProperty.HOME_URL.description">The url to take the user immediately after logging into the Yukon web application.</entry>
+<entry key="yukon.common.roleProperty.STYLE_SHEET">style_sheet</entry>
+<entry key="yukon.common.roleProperty.STYLE_SHEET.description">The web client cascading style sheet.</entry>
+<entry key="yukon.common.roleProperty.HEADER_LOGO">header_logo</entry>
+<entry key="yukon.common.roleProperty.HEADER_LOGO.description">The main header logo.</entry>
+<entry key="yukon.common.roleProperty.LOG_IN_URL">log_in_url</entry>
+<entry key="yukon.common.roleProperty.LOG_IN_URL.description">The url where the user login from. It is used as the url to send the users to when they log off.</entry>
+<entry key="yukon.common.roleProperty.JAVA_WEB_START_LAUNCHER_ENABLED">Java Web Start (Deprecated)</entry>
+<entry key="yukon.common.roleProperty.JAVA_WEB_START_LAUNCHER_ENABLED.description">Java Web Start to access client applications is no longer supported.</entry>
+<entry key="yukon.common.roleProperty.SUPPRESS_ERROR_PAGE_DETAILS">Suppress Error Page Details</entry>
+<entry key="yukon.common.roleProperty.SUPPRESS_ERROR_PAGE_DETAILS.description">Disable stack traces for this user.</entry>
+<entry key="yukon.common.roleProperty.DATA_UPDATER_DELAY_MS">Data Updater Delay (milliseconds)</entry>
+<entry key="yukon.common.roleProperty.DATA_UPDATER_DELAY_MS.description">The number of milliseconds between requests for the latest point values on pages that support the data updater.</entry>
+<entry key="yukon.common.roleProperty.STD_PAGE_STYLE_SHEET">Standard Page Style Sheet</entry>
+<entry key="yukon.common.roleProperty.STD_PAGE_STYLE_SHEET.description">A comma separated list of URLs for CSS files that will be included on every Standard Page.</entry>
+<entry key="yukon.common.roleProperty.THEME_NAME">Theme Name</entry>
+<entry key="yukon.common.roleProperty.THEME_NAME.description">The name of the theme to be applied to this group.</entry>
+<entry key="yukon.common.roleProperty.VIEW_ALARMS_AS_ALERTS">View Alarms Alerts</entry>
+<entry key="yukon.common.roleProperty.VIEW_ALARMS_AS_ALERTS.description">Ability to receive point alarms as alerts.</entry>
+<entry key="yukon.common.roleProperty.DEFAULT_TIMEZONE">Default TimeZone</entry>
+<entry key="yukon.common.roleProperty.DEFAULT_TIMEZONE.description">Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)</entry>
+<entry key="yukon.common.roleProperty.SESSION_TIMEOUT">Session Timeout (minutes)</entry>
+<entry key="yukon.common.roleProperty.SESSION_TIMEOUT.description">The amount of idle time (in minutes) before a user's session will expire.</entry>
+
+<!-- CBC Oneline RoleProperties -->
+<entry key="yukon.common.roleProperty.CAP_BANK_FIXED_TEXT">Capbank Fixed/Static Text</entry>
+<entry key="yukon.common.roleProperty.CAP_BANK_FIXED_TEXT.description">The text to display for fixed/static capbanks</entry>
+
+<!-- CBC  RoleProperties -->
+<entry key="yukon.common.roleProperty.CAP_CONTROL_ACCESS">Access</entry>
+<entry key="yukon.common.roleProperty.CAP_CONTROL_ACCESS.description">Sets accessibility to the CapControl module.</entry>
+<entry key="yukon.common.roleProperty.HIDE_REPORTS">Hide Reports</entry>
+<entry key="yukon.common.roleProperty.HIDE_REPORTS.description">Sets the visibility of reports.</entry>
+<entry key="yukon.common.roleProperty.HIDE_GRAPHS">Hide Graphs</entry>
+<entry key="yukon.common.roleProperty.HIDE_GRAPHS.description">Sets the visibility of graphs.</entry>
+<entry key="yukon.common.roleProperty.PFACTOR_DECIMAL_PLACES">pfactor_decimal_places</entry>
+<entry key="yukon.common.roleProperty.PFACTOR_DECIMAL_PLACES.description">How many decimal places to show for real values for PowerFactor.</entry>
+<entry key="yukon.common.roleProperty.CBC_ALLOW_OVUV">Allow OV/UV</entry>
+<entry key="yukon.common.roleProperty.CBC_ALLOW_OVUV.description">Allows users to toggle OV/UV usage for capbanks, substations, subs, and feeders.</entry>
+<entry key="yukon.common.roleProperty.CBC_DATABASE_EDIT">Database Editing</entry>
+<entry key="yukon.common.roleProperty.CBC_DATABASE_EDIT.description">Allows the user to view/modify the database set up for all CapControl items.</entry>
+<entry key="yukon.common.roleProperty.SHOW_FLIP_COMMAND">Show flip command</entry>
+<entry key="yukon.common.roleProperty.SHOW_FLIP_COMMAND.description">Show flip command for Cap Banks with 7010 type controller.</entry>
+<entry key="yukon.common.roleProperty.SHOW_CB_ADDINFO">Show Cap Bank Add Info</entry>
+<entry key="yukon.common.roleProperty.SHOW_CB_ADDINFO.description">Show Cap Bank Addititional Info tab</entry>
+<entry key="yukon.common.roleProperty.AVAILABLE_DEFINITION">Definition Available</entry>
+<entry key="yukon.common.roleProperty.AVAILABLE_DEFINITION.description">Capbank sized in these states will be added to the available sum.</entry>
+<entry key="yukon.common.roleProperty.UNAVAILABLE_DEFINITION">Definition Unavailable</entry>
+<entry key="yukon.common.roleProperty.UNAVAILABLE_DEFINITION.description">Capbank sized in these states will be added to the unavailable sum.</entry>
+<entry key="yukon.common.roleProperty.TRIPPED_DEFINITION">Definition Tripped</entry>
+<entry key="yukon.common.roleProperty.TRIPPED_DEFINITION.description">Capbank sized in these states will be added to the tripped sum.</entry>
+<entry key="yukon.common.roleProperty.CLOSED_DEFINITION">Definition Closed</entry>
+<entry key="yukon.common.roleProperty.CLOSED_DEFINITION.description">Capbank sized in these states will be added to the closed sum.</entry>
+<entry key="yukon.common.roleProperty.ADD_COMMENTS">Add Comments</entry>
+<entry key="yukon.common.roleProperty.ADD_COMMENTS.description">Allows the user to Add comments to Cap Bank objects.</entry>
+<entry key="yukon.common.roleProperty.MODIFY_COMMENTS">Modify Comments</entry>
+<entry key="yukon.common.roleProperty.MODIFY_COMMENTS.description">Allows the user to Modify comments on Cap Bank objects.</entry>
+<entry key="yukon.common.roleProperty.SYSTEM_WIDE_CONTROLS">System Wide Controls</entry>
+<entry key="yukon.common.roleProperty.SYSTEM_WIDE_CONTROLS.description">Allow system wide controls.</entry>
+<entry key="yukon.common.roleProperty.FORCE_COMMENTS">Force Default Comment</entry>
+<entry key="yukon.common.roleProperty.FORCE_COMMENTS.description">If the user does not provide a comment, a default comment will be stored.</entry>
+<entry key="yukon.common.roleProperty.AREA_COMMANDS_AND_ACTIONS">Area Commands and Actions</entry>
+<entry key="yukon.common.roleProperty.AREA_COMMANDS_AND_ACTIONS.description">Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl Areas.</entry>
+<entry key="yukon.common.roleProperty.SUBSTATION_COMMANDS_AND_ACTIONS">Substation Commands and Actions</entry>
+<entry key="yukon.common.roleProperty.SUBSTATION_COMMANDS_AND_ACTIONS.description">Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl Substations.</entry>
+<entry key="yukon.common.roleProperty.SUBBUS_COMMANDS_AND_ACTIONS">SubBus Commands and Actions</entry>
+<entry key="yukon.common.roleProperty.SUBBUS_COMMANDS_AND_ACTIONS.description">Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl SubBuses.</entry>
+<entry key="yukon.common.roleProperty.FEEDER_COMMANDS_AND_ACTIONS">Feeder Commands and Actions</entry>
+<entry key="yukon.common.roleProperty.FEEDER_COMMANDS_AND_ACTIONS.description">Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl Feeders.</entry>
+<entry key="yukon.common.roleProperty.CAPBANK_COMMANDS_AND_ACTIONS">Capbank/CBC Commands and Actions</entry>
+<entry key="yukon.common.roleProperty.CAPBANK_COMMANDS_AND_ACTIONS.description">Allows access to Field Operation Commands, Non-Operational Commands and Yukon Actions for CapControl CapBanks/CBCs.</entry>
+<entry key="yukon.common.roleProperty.CONTROL_CONFIRMATION_POPUPS">Control Confirmation pop-ups</entry>
+<entry key="yukon.common.roleProperty.CONTROL_CONFIRMATION_POPUPS.description">Controls whether to display confirmation pop-ups for all Cap Control commands, only Operational commands or for no commands.</entry>
+<entry key="yukon.common.roleProperty.CAP_CONTROL_IMPORTER">Enable Importer</entry>
+<entry key="yukon.common.roleProperty.CAP_CONTROL_IMPORTER.description">Allows access to the Cap Control importers</entry>
+
+<!-- Residential Customer RoleProperties -->
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL">Account General</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL.description">Controls whether to show the general account information.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY">Programs Control History</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY.description">Controls whether to show the program control history.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT">Programs Enrollment</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT.description">Controls whether to enable the program enrollment feature.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT">Programs Opt Out</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT.description">Controls whether to enable the program opt out/reenable feature.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT">Hardware Thermostat</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT.description">Controls whether to enable the thermostat programming feature.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL">Questions Utility</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL.description">Controls whether to show the contact information of the energy company.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ">Questions FAQ</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ.description">Controls whether to show customer FAQs</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME">Change Login Username</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME.description">Controls access for customers to change their own login username.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL">Thermostats All</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL.description">Controls whether to allow programming multiple thermostats at one time.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD">Change Login Password</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD.description">Controls access for customers to change their own login password.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_GROUPED_CONTROL_HISTORY_DISPLAY">Grouped Control History Display</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_GROUPED_CONTROL_HISTORY_DISPLAY.description">Controls whether to enable grouped control history display.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_OPT_OUT_PERIOD">Opt Out Period</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_OPT_OUT_PERIOD.description">The duration, in days, for the customer Opt Out period. (Use commas to separate multiple values: Ex. 1,3,4,5)</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_OPT_OUT_LIMITS">Opt Out Limits</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_OPT_OUT_LIMITS.description">Contains information on Opt Out limits.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_WEB_LINK_FAQ">Link FAQ</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_WEB_LINK_FAQ.description">The customized FAQ link.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONTACTS_ACCESS">Contacts Access</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONTACTS_ACCESS.description">Turns residential side contact access on or off.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_OPT_OUT_TODAY_ONLY">Opt Out Today Only</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_OPT_OUT_TODAY_ONLY.description">Prevents residential side opt outs from being available for scheduling beyond the current day.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_SIGN_OUT_ENABLED">Sign Out Enabled</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_SIGN_OUT_ENABLED.description">Allows end-users to see a sign-out link when accessing their account pages.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_OPT_OUT_ALL_DEVICES">Opt Out Force All Devices</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_OPT_OUT_ALL_DEVICES.description">Controls access to select individual devices or forces all device selection when opting out. When true, individual device selection is unavailable and all devices are forced to opt out.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY">Enroll Multiple Programs per Category</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY.description">Enables you to enroll in multiple programs within an appliance category.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE">Enrollment per Device</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE.description">Displays a second web page that allows for enrollment by individual device per program.</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_AUTO_THERMOSTAT_MODE_ENABLED">Auto Thermostat Mode Enabled</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_AUTO_THERMOSTAT_MODE_ENABLED.description">Enables auto mode functionality for the account.enrollment by individual device per program.</entry>
+
+<!-- Demand Response RoleProperties -->
+<entry key="yukon.common.roleProperty.ALLOW_CHECK_CONSTRAINTS">Constraint Check</entry>
+<entry key="yukon.common.roleProperty.ALLOW_CHECK_CONSTRAINTS.description">Allow load management program constraints to be CHECKED before starting.</entry>
+<entry key="yukon.common.roleProperty.ALLOW_OBSERVE_CONSTRAINTS">Constraint Observe</entry>
+<entry key="yukon.common.roleProperty.ALLOW_OBSERVE_CONSTRAINTS.description">Allow load management program constraints to be OBSERVED before starting.</entry>
+<entry key="yukon.common.roleProperty.ALLOW_OVERRIDE_CONSTRAINT">Constraint Override</entry>
+<entry key="yukon.common.roleProperty.ALLOW_OVERRIDE_CONSTRAINT.description">Allow load management program constraints to be OVERRIDDEN before starting.</entry>
+<entry key="yukon.common.roleProperty.DEFAULT_CONSTRAINT_SELECTION">Constraint Default</entry>
+<entry key="yukon.common.roleProperty.DEFAULT_CONSTRAINT_SELECTION.description">The default program constraint selection prior to starting a program.</entry>
+<entry key="yukon.common.roleProperty.ALLOW_STOP_GEAR_ACCESS">Allow Gear Change for Stop</entry>
+<entry key="yukon.common.roleProperty.ALLOW_STOP_GEAR_ACCESS.description">Activates the ability to change gears as part of manually stopping a load program.</entry>
+<entry key="yukon.common.roleProperty.USE_PAO_PERMISSIONS">Use Pao Permissions</entry>
+<entry key="yukon.common.roleProperty.USE_PAO_PERMISSIONS.description">Allow access to all load management objects. Set to true to force the use of per pao permissions.</entry>
+<entry key="yukon.common.roleProperty.SHOW_CONTROL_AREAS">Control Areas</entry>
+<entry key="yukon.common.roleProperty.SHOW_CONTROL_AREAS.description">Controls access to view Control Areas.</entry>
+<entry key="yukon.common.roleProperty.SHOW_SCENARIOS">Scenarios</entry>
+<entry key="yukon.common.roleProperty.SHOW_SCENARIOS.description">Controls access to view Scenarios.</entry>
+<entry key="yukon.common.roleProperty.START_NOW_CHECKED_BY_DEFAULT">Start Now Checked By Default</entry>
+<entry key="yukon.common.roleProperty.START_NOW_CHECKED_BY_DEFAULT.description">Controls whether the start now checkbox is checked by default in demand response.</entry>
+<entry key="yukon.common.roleProperty.CONTROL_DURATION_DEFAULT">Control Duration Default</entry>
+<entry key="yukon.common.roleProperty.CONTROL_DURATION_DEFAULT.description">Specifies the default duration for a control event in minutes for demand response.</entry>
+<entry key="yukon.common.roleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT">Schedule Stop Checked By Default</entry>
+<entry key="yukon.common.roleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT.description">Controls whether the schedule stop check box is checked by default in demand response.</entry>
+<entry key="yukon.common.roleProperty.START_TIME_DEFAULT">Start Time Default</entry>
+<entry key="yukon.common.roleProperty.START_TIME_DEFAULT.description">Specifies the default start time for a control event in the format (hh:mm). It will use the current time if no time has been supplied.</entry>
+<entry key="yukon.common.roleProperty.ALLOW_DR_CONTROL">Allow DR Control</entry>
+<entry key="yukon.common.roleProperty.ALLOW_DR_CONTROL.description">Allow control of demand response control areas, scenarios, programs and groups.</entry>
+<entry key="yukon.common.roleProperty.SHOW_ASSET_AVAILABILITY">Asset Availability</entry>
+<entry key="yukon.common.roleProperty.SHOW_ASSET_AVAILABILITY.description">Controls access to view Asset Availability for Scenarios, Control Areas, Programs, and Load Groups.</entry>
+<entry key="yukon.common.roleProperty.SHOW_ECOBEE">Enable ecobee</entry>
+<entry key="yukon.common.roleProperty.SHOW_ECOBEE.description">Controls access to actions and information related to ecobee devices.</entry>
+<entry key="yukon.common.roleProperty.ALLOW_CHANGE_GEARS">Allow Change Gears</entry>
+<entry key="yukon.common.roleProperty.ALLOW_CHANGE_GEARS.description">Controls access to change gears for scenarios, control areas, and load programs. Requires Allow DR Control.</entry>
+<entry key="yukon.common.roleProperty.ENABLE_DISABLE_PROGRAM">Allow DR Enable/Disable</entry>
+<entry key="yukon.common.roleProperty.ENABLE_DISABLE_PROGRAM.description">Controls access to enable or disable control areas, load programs and load groups. Requires Allow DR Control.</entry>
+
+<entry key="yukon.common.roleProperty.ALLOW_LOAD_GROUP_CONTROL">Allow Load Group Control</entry>
+<entry key="yukon.common.roleProperty.ALLOW_LOAD_GROUP_CONTROL.description">In addition to Allow DR Control, controls access to shed and restore at group level.</entry>
+<entry key="yukon.common.roleProperty.DR_VIEW_CONTROL_AREA_TRIGGER_INFO">Control Area Trigger Info</entry>
+<entry key="yukon.common.roleProperty.DR_VIEW_CONTROL_AREA_TRIGGER_INFO.description">Controls access to view Control Area Trigger related information.</entry>
+<entry key="yukon.common.roleProperty.DR_VIEW_PRIORITY">Priority</entry>
+<entry key="yukon.common.roleProperty.DR_VIEW_PRIORITY.description">Controls access to view Control Area, Program, and Group Priority.</entry>
+<entry key="yukon.common.roleProperty.DR_VIEW_REDUCTION">Reduction</entry>
+<entry key="yukon.common.roleProperty.DR_VIEW_REDUCTION.description">Controls access to view Program and Group Reduction.</entry>
+
+<!-- IVR RoleProperties -->
+<entry key="yukon.common.roleProperty.NUMBER_OF_CHANNELS">Number of Channels</entry>
+<entry key="yukon.common.roleProperty.NUMBER_OF_CHANNELS.description">The number of outgoing channels assigned to the specified voice application.</entry>
+<entry key="yukon.common.roleProperty.IVR_URL_DIALER_TEMPLATE">IVR URL Dialer Template</entry>
+<entry key="yukon.common.roleProperty.IVR_URL_DIALER_TEMPLATE.description">The URL used to initiate a call; see documentation for allowed variables.</entry>
+<entry key="yukon.common.roleProperty.IVR_URL_DIALER_SUCCESS_MATCHER">IVR URL Dialer Success Matcher</entry>
+<entry key="yukon.common.roleProperty.IVR_URL_DIALER_SUCCESS_MATCHER.description">A Java Regular Expression that will be matched against the output of the URL to determine if the call was successful.</entry>
+
+<!-- Notification Configuration RoleProperties -->
+<entry key="yukon.common.roleProperty.TEMPLATE_ROOT">Template Root</entry>
+<entry key="yukon.common.roleProperty.TEMPLATE_ROOT.description">Either a URL base where the notification templates will be stored (file: or http:) or a directory relative to YUKON_BASE.</entry>
+
+<!-- Operator Administrator RoleProperties -->
+<entry key="yukon.common.roleProperty.ADMIN_NM_ACCESS">Network Manager Access</entry>
+<entry key="yukon.common.roleProperty.ADMIN_NM_ACCESS.description">Controls access to Network Manager.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_SUPER_USER">Admin Super User</entry>
+<entry key="yukon.common.roleProperty.ADMIN_SUPER_USER.description">Allows full control of all energy companies and other administrator features.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_EDIT_ENERGY_COMPANY">Edit Energy Company</entry>
+<entry key="yukon.common.roleProperty.ADMIN_EDIT_ENERGY_COMPANY.description">Controls access to edit the user's energy company settings.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MANAGE_MEMBERS">Manage Members</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MANAGE_MEMBERS.description">Controls whether to allow managing the energy company's members.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_VIEW_BATCH_COMMANDS">View Batch Commands</entry>
+<entry key="yukon.common.roleProperty.ADMIN_VIEW_BATCH_COMMANDS.description">Controls whether to allow monitoring of all batched switch commands.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_VIEW_OPT_OUT_EVENTS">View Opt Out Event</entry>
+<entry key="yukon.common.roleProperty.ADMIN_VIEW_OPT_OUT_EVENTS.description">Controls whether to allow monitoring of all scheduled opt out events.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MEMBER_LOGIN_CNTRL">Member Login Cntrl</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MEMBER_LOGIN_CNTRL.description">Ignored if not a member company -- Controls whether operator logins are shown on the EC administration page.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MEMBER_ROUTE_SELECT">Member Route Select</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MEMBER_ROUTE_SELECT.description">Ignored if not a member company -- Controls whether routes are visible through the EC administration page.</entry>
+
+<entry key="yukon.common.roleProperty.ADMIN_MULTI_WAREHOUSE">Multiple Warehouses</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MULTI_WAREHOUSE.description">Allows for multiple user-created warehouses instead of a single generic warehouse.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MULTISPEAK_SETUP">MultiSpeak Setup</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MULTISPEAK_SETUP.description">Controls access to configure the MultiSpeak Interfaces.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_LM_USER_ASSIGN">LM User Assignment</entry>
+<entry key="yukon.common.roleProperty.ADMIN_LM_USER_ASSIGN.description">Controls visibility of LM objects for 3-tier and direct control, based off assignment of users.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_EDIT_CONFIG">Edit Device Config</entry>
+<entry key="yukon.common.roleProperty.ADMIN_EDIT_CONFIG.description">Controls the ability to edit and create device configurations.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_VIEW_CONFIG">View Device Config</entry>
+<entry key="yukon.common.roleProperty.ADMIN_VIEW_CONFIG.description">Controls the ability to view existing device configurations.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MANAGE_INDEXES">Manage Indexes</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MANAGE_INDEXES.description">Controls access to manually build Lucene indexes.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_VIEW_LOGS">View Logs</entry>
+<entry key="yukon.common.roleProperty.ADMIN_VIEW_LOGS.description">Controls access to view or download log files.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_DATABASE_MIGRATION">Database Migration</entry>
+<entry key="yukon.common.roleProperty.ADMIN_DATABASE_MIGRATION.description">Controls access to database migration tool.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_EVENT_LOGS">Event Logs</entry>
+<entry key="yukon.common.roleProperty.ADMIN_EVENT_LOGS.description">Controls access to event logs feature.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MANAGE_DASHBOARDS">Manage Dashboards</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MANAGE_DASHBOARDS.description">Controls access to manage all user defined dashboards.</entry>
+
+<!-- CI Curtailment RoleProperties -->
+<entry key="yukon.common.roleProperty.CURTAILMENT_IS_OPERATOR">C&amp;I Curtailment Operator</entry>
+<entry key="yukon.common.roleProperty.CURTAILMENT_IS_OPERATOR.description">Controls access to the C&amp;I Curtailment operator functionality. When false, only the C&amp;I Curtailment user pages are available.</entry>
+
+<!-- Consumer Info RoleProperties -->
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE">Account Residence</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE.description">Controls whether to show the customer residence information.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING">Account Call Tracking</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING.description">Controls whether to enable the call tracking feature.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA">Metering Interval Data</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA.description">Controls whether to show the metering interval data.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY">Programs Control History</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY.description">Controls whether to show the program control history.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_ENROLLMENT">Programs Enrollment</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_ENROLLMENT.description">Controls whether to enable the program enrollment feature.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT">Programs Opt Out</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT.description">Controls whether to enable the program opt out/reenable feature.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_APPLIANCES">Appliances</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_APPLIANCES.description">Controls whether to show the appliance information.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_APPLIANCES_CREATE">Appliances Create</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_APPLIANCES_CREATE.description">Controls whether to enable the appliance creation feature.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_HARDWARES">Hardware</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_HARDWARES.description">Controls whether to show the hardware information.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">Hardware Create</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE.description">Controls whether to enable the hardware creation feature.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT">Hardware Thermostat</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT.description">Controls whether to enable the thermostat programming feature.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_WORK_ORDERS">Work Orders</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_WORK_ORDERS.description">Controls whether to enable the service request feature.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS">Web Service LM Data Access</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS.description">Controls access to web services that retrieve LM data.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS">Web Service LM Control Access</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS.description">Controls access to web services that perform LM control.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME">Admin Change Login Username</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME.description">Controls access to change a customer login username.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">Admin Change Login Password</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD.description">Controls access to change a customer login password.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_ADMIN_FAQ">Admin FAQ</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_ADMIN_FAQ.description">Controls whether to show customer FAQs.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_THERMOSTATS_ALL">Thermostats All</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_THERMOSTATS_ALL.description">Controls whether to allow programming multiple thermostats at one time.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_METERING_CREATE">Create Trend</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_CONSUMER_INFO_METERING_CREATE.description">Controls whether to allow new trends to assigned to the customer.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_NEW_ACCOUNT_WIZARD">New Account Wizard</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_NEW_ACCOUNT_WIZARD.description">Controls whether to enable the new account wizard.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT">Import Customer Account</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT.description">Controls whether to enable the customer account importing feature.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_PERIOD">Opt Out Period</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_PERIOD.description">The duration, in days, for the customer Opt Out period. (Use commas to separate multiple values: Ex. 1,3,4,5)</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_DISABLE_SWITCH_SENDING">Disable Switch Sending</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_DISABLE_SWITCH_SENDING.description">Disables the ability to send configs and connects/disconnects to switches.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING">Allow Account Editing</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING.description">Can be used to disable the ability to edit and delete customer account information.</entry>
+
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_TODAY_ONLY">Opt Out Today Only</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_TODAY_ONLY.description">Prevents operator side opt outs from being available for scheduling beyond the current day.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS">Opt Out Admin Status</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS.description">Determines whether an operator can see current opt out status on the Opt Out Admin page.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE">Opt Out Admin Change Enabled</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE.description">Determines whether an operator can enable or disable Opt Outs for the rest of the day.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT">Opt Out Admin Cancel Current</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT.description">Determines whether an operator can cancel (reenable) ALL currently Opted Out devices.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS">Opt Out Admin Change Counts</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS.description">Determines whether an operator can change from Opt Outs count against limits today to Opt Outs do not count.</entry>
+
+<entry key="yukon.common.roleProperty.OPERATOR_ACCOUNT_SEARCH">Account Search</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_ACCOUNT_SEARCH.description">Enables you to use account searching.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_SURVEY_EDIT">Survey Edit</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_SURVEY_EDIT.description">Enables editing of surveys.</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_SURVEY_EDIT">Opt Out Survey Edit</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_SURVEY_EDIT.description">Enables editing of opt out surveys.</entry>
+
+<!-- Device Actions RoleProperties -->
+<entry key="yukon.common.roleProperty.BULK_IMPORT_OPERATION">Bulk Import Operation</entry>
+<entry key="yukon.common.roleProperty.BULK_IMPORT_OPERATION.description">Controls access to bulk import operations.</entry>
+<entry key="yukon.common.roleProperty.BULK_UPDATE_OPERATION">Bulk Update Operation</entry>
+<entry key="yukon.common.roleProperty.BULK_UPDATE_OPERATION.description">Controls access to bulk update operations.</entry>
+<entry key="yukon.common.roleProperty.DEVICE_GROUP_EDIT">Device Group Edit</entry>
+<entry key="yukon.common.roleProperty.DEVICE_GROUP_EDIT.description">Controls editing of Device Groups (Add/Remove Group, update name, etc.)</entry>
+<entry key="yukon.common.roleProperty.DEVICE_GROUP_MODIFY">Device Group Modify</entry>
+<entry key="yukon.common.roleProperty.DEVICE_GROUP_MODIFY.description">Controls modifying contents of a Device Group (Add to/Remove from group, etc.)</entry>
+<entry key="yukon.common.roleProperty.GROUP_COMMANDER">Group Commander</entry>
+<entry key="yukon.common.roleProperty.GROUP_COMMANDER.description">Controls access to group command actions.</entry>
+<entry key="yukon.common.roleProperty.MASS_CHANGE">Mass Change</entry>
+<entry key="yukon.common.roleProperty.MASS_CHANGE.description">Controls access to mass change collection actions. Includes all Mass Change actions.</entry>
+<entry key="yukon.common.roleProperty.LOCATE_ROUTE">Locate Route</entry>
+<entry key="yukon.common.roleProperty.LOCATE_ROUTE.description">Controls access to locate route action.</entry>
+<entry key="yukon.common.roleProperty.MASS_DELETE">Mass Delete</entry>
+<entry key="yukon.common.roleProperty.MASS_DELETE.description">Controls access to mass delete devices action.</entry>
+<entry key="yukon.common.roleProperty.ADD_REMOVE_POINTS">Add/Update/Remove Points</entry>
+<entry key="yukon.common.roleProperty.ADD_REMOVE_POINTS.description">Controls access to Add, Update and Remove Points collection actions.</entry>
+<entry key="yukon.common.roleProperty.ASSIGN_CONFIG">Assign Configs</entry>
+<entry key="yukon.common.roleProperty.ASSIGN_CONFIG.description">Controls access to Assign Config collection action.</entry>
+<entry key="yukon.common.roleProperty.SEND_READ_CONFIG">Send/Read Configs</entry>
+<entry key="yukon.common.roleProperty.SEND_READ_CONFIG.description">Controls access to Send Config and Read Config collection actions.</entry>
+<entry key="yukon.common.roleProperty.ARCHIVED_DATA_ANALYSIS">Archived Data Analysis</entry>
+<entry key="yukon.common.roleProperty.ARCHIVED_DATA_ANALYSIS.description">Controls access to Archived Data Analysis collection action.</entry>
+<entry key="yukon.common.roleProperty.FDR_TRANSLATION_MANAGER">Manage FDR Translations</entry>
+<entry key="yukon.common.roleProperty.FDR_TRANSLATION_MANAGER.description">Controls access to FDR Translation Manager bulk operation.</entry>
+<entry key="yukon.common.roleProperty.ARCHIVED_DATA_EXPORT">Archived Data Export</entry>
+<entry key="yukon.common.roleProperty.ARCHIVED_DATA_EXPORT.description">Controls access to Archived Data Export.</entry>
+<entry key="yukon.common.roleProperty.GROUP_DISCONNECT_CONTROL">Connect/Disconnect</entry>
+<entry key="yukon.common.roleProperty.GROUP_DISCONNECT_CONTROL.description">Controls access to Connect/Disconnect collection action.</entry>
+<entry key="yukon.common.roleProperty.GROUP_DEMAND_RESET">Demand Reset</entry>
+<entry key="yukon.common.roleProperty.GROUP_DEMAND_RESET.description">Controls access to Demand Reset collection action.</entry>
+<entry key="yukon.common.roleProperty.RF_DATA_STREAMING">RF Data Streaming</entry>
+<entry key="yukon.common.roleProperty.RF_DATA_STREAMING.description">Controls access to RF data streaming configuration actions.</entry>
+<entry key="yukon.common.roleProperty.SN_ADD_RANGE">Add SN Range</entry>
+<entry key="yukon.common.roleProperty.SN_ADD_RANGE.description">Controls whether to allow adding hardware by serial number range.</entry>
+<entry key="yukon.common.roleProperty.SN_UPDATE_RANGE">Update SN Range</entry>
+<entry key="yukon.common.roleProperty.SN_UPDATE_RANGE.description">Controls whether to allow updating hardware by serial number range.</entry>
+<entry key="yukon.common.roleProperty.SN_DELETE_RANGE">Delete SN Range</entry>
+<entry key="yukon.common.roleProperty.SN_DELETE_RANGE.description">Controls whether to allow deleting hardware by serial number range.</entry>
+
+<!-- Inventory RoleProperties -->
+<entry key="yukon.common.roleProperty.INVENTORY_CREATE_HARDWARE">Create Hardware</entry>
+<entry key="yukon.common.roleProperty.INVENTORY_CREATE_HARDWARE.description">Controls whether to allow creating new hardware.</entry>
+<entry key="yukon.common.roleProperty.EXPRESSCOM_TOOS_RESTORE_FIRST">Expresscom Restore First</entry>
+<entry key="yukon.common.roleProperty.EXPRESSCOM_TOOS_RESTORE_FIRST.description">Controls whether an opt out command should also contain a restore.</entry>
+<entry key="yukon.common.roleProperty.PURCHASING_ACCESS">Purchasing Access</entry>
+<entry key="yukon.common.roleProperty.PURCHASING_ACCESS.description">Activates the purchasing section of the inventory module.</entry>
+<entry key="yukon.common.roleProperty.DEVICE_RECONFIG">Inventory Configuration</entry>
+<entry key="yukon.common.roleProperty.DEVICE_RECONFIG.description">Controls access to Inventory Configuration Tool.</entry>
+<entry key="yukon.common.roleProperty.INVENTORY_SEARCH">Inventory Search</entry>
+<entry key="yukon.common.roleProperty.INVENTORY_SEARCH.description">Enables you to use inventory searching.</entry>
+
+<!-- Metering RoleProperties -->
+<entry key="yukon.common.roleProperty.IMPORTER_ENABLED">Enable Bulk Importer</entry>
+<entry key="yukon.common.roleProperty.IMPORTER_ENABLED.description">Allows access to the Bulk Importer.</entry>
+<entry key="yukon.common.roleProperty.PROFILE_COLLECTION">Profile Collection</entry>
+<entry key="yukon.common.roleProperty.PROFILE_COLLECTION.description">Controls access to submit a (past) profile collection request.</entry>
+<entry key="yukon.common.roleProperty.MOVE_IN_MOVE_OUT_AUTO_ARCHIVING">Move In/Move Out Auto Archiving</entry>
+<entry key="yukon.common.roleProperty.MOVE_IN_MOVE_OUT_AUTO_ARCHIVING.description">Enables automatic archiving of move in/move out transactions.</entry>
+<entry key="yukon.common.roleProperty.MOVE_IN_MOVE_OUT">Move In/Move Out</entry>
+<entry key="yukon.common.roleProperty.MOVE_IN_MOVE_OUT.description">Controls access to process a move in/move out.</entry>
+<entry key="yukon.common.roleProperty.PROFILE_COLLECTION_SCANNING">Profile Collection Scanning</entry>
+<entry key="yukon.common.roleProperty.PROFILE_COLLECTION_SCANNING.description">Controls access to start/stop scanning of profile data.</entry>
+<entry key="yukon.common.roleProperty.HIGH_BILL_COMPLAINT">High Bill Complaint</entry>
+<entry key="yukon.common.roleProperty.HIGH_BILL_COMPLAINT.description">Controls access to process a high bill complaint.</entry>
+<entry key="yukon.common.roleProperty.OUTAGE_PROCESSING">Outage Processing</entry>
+<entry key="yukon.common.roleProperty.OUTAGE_PROCESSING.description">Controls access to Outage Processing.</entry>
+<entry key="yukon.common.roleProperty.TAMPER_FLAG_PROCESSING">Tamper Flag Processing</entry>
+<entry key="yukon.common.roleProperty.TAMPER_FLAG_PROCESSING.description">Controls access to Tamper Flag Processing.</entry>
+<entry key="yukon.common.roleProperty.PHASE_DETECT">Phase Detection</entry>
+<entry key="yukon.common.roleProperty.PHASE_DETECT.description">Controls access to Phase Detection.</entry>
+<entry key="yukon.common.roleProperty.VALIDATION_ENGINE">Validation Engine</entry>
+<entry key="yukon.common.roleProperty.VALIDATION_ENGINE.description">Controls access to Validation Processing.</entry>
+<entry key="yukon.common.roleProperty.STATUS_POINT_MONITORING">Status Point Monitor</entry>
+<entry key="yukon.common.roleProperty.STATUS_POINT_MONITORING.description">Controls access to the Status Point Monitor.</entry>
+<entry key="yukon.common.roleProperty.PORTER_RESPONSE_MONITORING">Porter Response Monitor</entry>
+<entry key="yukon.common.roleProperty.PORTER_RESPONSE_MONITORING.description">Controls access to the Porter Response Monitor.</entry>
+<entry key="yukon.common.roleProperty.METER_EVENTS">Meter Events</entry>
+<entry key="yukon.common.roleProperty.METER_EVENTS.description">Controls access to Meter Events.</entry>
+<entry key="yukon.common.roleProperty.ALLOW_DISCONNECT_CONTROL">Allow Disconnect Control</entry>
+<entry key="yukon.common.roleProperty.ALLOW_DISCONNECT_CONTROL.description">Controls access to Disconnect, Connect, and Arm operations.</entry>
+<entry key="yukon.common.roleProperty.DEVICE_DATA_MONITORING">Device Data Monitor</entry>
+<entry key="yukon.common.roleProperty.DEVICE_DATA_MONITORING.description">Controls access to the Device Data Monitor.</entry>
+<entry key="yukon.common.roleProperty.WATER_LEAK_REPORT">Water Leak Report</entry>
+<entry key="yukon.common.roleProperty.WATER_LEAK_REPORT.description">Controls access to the Water Leak Report.</entry>
+<entry key="yukon.common.roleProperty.USAGE_THRESHOLD_REPORT">Usage Threshold Report</entry>
+<entry key="yukon.common.roleProperty.USAGE_THRESHOLD_REPORT.description">Controls access to the Usage Threshold Report.</entry>
+
+<!-- Odds For Control RoleProperties -->
+<entry key="yukon.common.roleProperty.ODDS_FOR_CONTROL_ROLE_EXISTS">Odds For Control Exists</entry>
+<entry key="yukon.common.roleProperty.ODDS_FOR_CONTROL_ROLE_EXISTS.description">The operator specific name for odds for control.</entry>
+
+<!-- Scheduler RoleProperties -->
+<entry key="yukon.common.roleProperty.MACS_SCRIPTS">MACS Scripts</entry>
+<entry key="yukon.common.roleProperty.MACS_SCRIPTS.description">Controls the ability to view, start/stop, enable/disable, edit, create, delete for MACS Script.</entry>
+<entry key="yukon.common.roleProperty.MANAGE_SCHEDULES">Manage Schedules</entry>
+<entry key="yukon.common.roleProperty.MANAGE_SCHEDULES.description">Controls access to create, delete, or update scheduled reads. If false, access is view only.</entry>
+
+<!-- Work Order RoleProperties -->
+<entry key="yukon.common.roleProperty.WORK_ORDER_SHOW_ALL">Show All Work Orders</entry>
+<entry key="yukon.common.roleProperty.WORK_ORDER_SHOW_ALL.description">Controls whether to allow showing all work orders.</entry>
+<entry key="yukon.common.roleProperty.WORK_ORDER_CREATE_NEW">Create Work Order</entry>
+<entry key="yukon.common.roleProperty.WORK_ORDER_CREATE_NEW.description">Controls whether to allow creating new work orders.</entry>
+<entry key="yukon.common.roleProperty.WORK_ORDER_REPORT">Work Order Report</entry>
+<entry key="yukon.common.roleProperty.WORK_ORDER_REPORT.description">Controls whether to allow reporting on work orders.</entry>
+<entry key="yukon.common.roleProperty.ADDTL_ORDER_NUMBER_LABEL">Addtl Order Number Label</entry>
+<entry key="yukon.common.roleProperty.ADDTL_ORDER_NUMBER_LABEL.description">Customizable label for the additional order number field.</entry>
+
+<!-- Device Management RoleProperties -->
+<entry key="yukon.common.roleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE">Infrastructure Create/Edit</entry>
+<entry key="yukon.common.roleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE.description">Controls the ability to create and edit infrastructure devices. i.e. RF Gateways.</entry>
+<entry key="yukon.common.roleProperty.INFRASTRUCTURE_DELETE">Infrastructure Delete</entry>
+<entry key="yukon.common.roleProperty.INFRASTRUCTURE_DELETE.description">Controls the ability to delete infrastructure devices. i.e. RF Gateways.</entry>
+<entry key="yukon.common.roleProperty.INFRASTRUCTURE_ADMIN">Infrastructure Administration</entry>
+<entry key="yukon.common.roleProperty.INFRASTRUCTURE_ADMIN.description">Controls the ability to send configuration commands to infrastructure devices. i.e. RF Gateways.</entry>
+<entry key="yukon.common.roleProperty.INFRASTRUCTURE_VIEW">Infrastructure View</entry>
+<entry key="yukon.common.roleProperty.INFRASTRUCTURE_VIEW.description">Controls the ability to view infrastructure devices. i.e. RF Gateways.</entry>
+<entry key="yukon.common.roleProperty.ENDPOINT_PERMISSION">Endpoint Permission</entry>
+<entry key="yukon.common.roleProperty.ENDPOINT_PERMISSION.description">Controls the ability to create, edit, or delete endpoint devices. i.e Meters. Metering Role controls view access.</entry>
+<entry key="yukon.common.roleProperty.MANAGE_POINT_DATA">Manage Point Data</entry>
+<entry key="yukon.common.roleProperty.MANAGE_POINT_DATA.description">Controls the ability to edit, delete, or manually add point data values.</entry>
+<entry key="yukon.common.roleProperty.MANAGE_POINTS">Manage Points</entry>
+<entry key="yukon.common.roleProperty.MANAGE_POINTS.description">Controls the ability to view, create, edit, or delete points.</entry>
+<entry key="yukon.common.roleProperty.MANAGE_NOTES">Manage Notes</entry>
+<entry key="yukon.common.roleProperty.MANAGE_NOTES.description">Controls the ability to view, create, edit, or delete notes.</entry>
+
+</properties>
