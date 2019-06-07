@@ -17,6 +17,11 @@ public class RfnMetadataMultiResponse implements Serializable {
     
     private final String requestID; // to correlate response to request
     
+    // the following two fields support response truncation
+    private final int totalSegments;
+    
+    private final int segmentNumber;
+    
     // If responseType is not OK, suggest to ignore the whole response.
     private RfnMetadataMultiResponseType responseType;
 
@@ -30,13 +35,11 @@ public class RfnMetadataMultiResponse implements Serializable {
     // Note: some result may be an error type.
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> queryResults;
 
-    public RfnMetadataMultiResponse(String requestID) {
+    public RfnMetadataMultiResponse(String requestID, int totalSegments, int segmentNumber) {
         super();
         this.requestID = requestID;
-    }
-
-    public String getRequestID() {
-        return requestID;
+        this.totalSegments = totalSegments;
+        this.segmentNumber = segmentNumber;
     }
 
     public RfnMetadataMultiResponseType getResponseType() {
@@ -63,6 +66,18 @@ public class RfnMetadataMultiResponse implements Serializable {
         this.queryResults = queryResults;
     }
 
+    public String getRequestID() {
+        return requestID;
+    }
+
+    public int getTotalSegments() {
+        return totalSegments;
+    }
+
+    public int getSegmentNumber() {
+        return segmentNumber;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -71,6 +86,8 @@ public class RfnMetadataMultiResponse implements Serializable {
         result = prime * result + ((requestID == null) ? 0 : requestID.hashCode());
         result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
         result = prime * result + ((responseType == null) ? 0 : responseType.hashCode());
+        result = prime * result + segmentNumber;
+        result = prime * result + totalSegments;
         return result;
     }
 
@@ -100,14 +117,20 @@ public class RfnMetadataMultiResponse implements Serializable {
             return false;
         if (responseType != other.responseType)
             return false;
+        if (segmentNumber != other.segmentNumber)
+            return false;
+        if (totalSegments != other.totalSegments)
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
         return String
-            .format("RfnMetadataMultiResponse [requestID=%s, responseType=%s, responseMessage=%s, queryResults=%s]",
+            .format("RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, queryResults=%s]",
                     requestID,
+                    totalSegments,
+                    segmentNumber,
                     responseType,
                     responseMessage,
                     queryResults);

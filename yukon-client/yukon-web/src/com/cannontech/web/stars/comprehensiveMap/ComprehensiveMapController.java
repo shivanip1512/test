@@ -189,13 +189,13 @@ public class ComprehensiveMapController {
         
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
         DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);
-        Set<RfnIdentifier> devices = collection.getDeviceList().stream()
+        Set<RfnIdentifier> rfnIdentifiers = collection.getDeviceList().stream()
                 .map(device -> rfnDeviceDao.getDeviceForId(device.getDeviceId()).getRfnIdentifier())
                 .collect(Collectors.toSet());
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
 
         try {
-            metaData = metadataMultiService.getMetadata(EntityType.NODE, devices, Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, 
+            metaData = metadataMultiService.getMetadata(rfnIdentifiers, Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, 
                                                                                          RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
                                                                                          RfnMetadataMulti.NODE_DATA));
         } catch (NmCommunicationException e1) {

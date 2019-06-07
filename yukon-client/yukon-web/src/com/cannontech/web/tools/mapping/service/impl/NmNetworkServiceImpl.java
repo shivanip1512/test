@@ -1,5 +1,10 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_GATEWAY_NODES;
+import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.GATEWAY;
+import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.LINK_STRENGTH;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,7 +33,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.metadatamulti.EntityType;
 import com.cannontech.common.rfn.message.metadatamulti.GatewayNodes;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
@@ -65,7 +69,6 @@ import com.cannontech.web.tools.mapping.model.Neighbor;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.Color;
-import com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.Legend;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.LinkStrength;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
@@ -391,7 +394,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 .collect(Collectors.toSet());
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = null;
         try {
-            metaData = metadataMultiService.getMetadata(EntityType.NODE, devicesOtherThenGatways,
+            metaData = metadataMultiService.getMetadata(devicesOtherThenGatways,
                 Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA));
         } catch (NmCommunicationException e) {
             throw new NmNetworkException(commsError, e, "commsError");
@@ -538,109 +541,125 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     
     @Override
     public NetworkMap getNetworkMap(NetworkMapFilter filter, MessageSourceAccessor accessor) throws NmNetworkException, NmCommunicationException {         
-        if (filter.getColorCodeBy() == ColorCodeBy.GATEWAY) {
-            return getNetworkMapByGateway(filter);
-        } else if (filter.getColorCodeBy() == ColorCodeBy.LINK_STRENGTH) {
-            return getNetworkMapByLinkStrength(filter, accessor);
-        }
-        throw new UnsupportedOperationException("Filter " +filter.getColorCodeBy() + " is not supported");
-    }
-
-    /**
-     * Returns network map by gateway
-     */
-    private NetworkMap getNetworkMapByGateway(NetworkMapFilter filter) throws NmNetworkException, NmCommunicationException {
-        log.debug("Getting network map by gateway filter: {}" , filter);
-        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = getGatewayNodes(filter);
+        log.debug("Getting network map by filter: {}", filter);
+        NetworkMap map = new NetworkMap();
         
-        NetworkMap map = new NetworkMap();
-        AtomicInteger i = new AtomicInteger(0);
-        log.debug("Loading locations");
-        metaData.forEach((gatewayPao, queryResult) -> {
-            if (queryResult.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODES)) {
-                GatewayNodes gatewayNodes =
-                    (GatewayNodes) queryResult.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODES);
-                Color color = Color.values()[i.getAndIncrement()];
+        Map<RfnIdentifier, RfnGateway> gateways =
+            rfnGatewayService.getGatewaysByPaoIds(filter.getSelectedGatewayIds()).stream().collect(
+                Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
 
-                RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(gatewayPao);
-                Set<RfnIdentifier> devices = Sets.newHashSet(gatewayNodes.getNodeComms().keySet());
-                devices.add(gatewayPao);
-                addDevicesToMap(map, color, gateway.getName(), devices);
-            }
-        });
-
-        log.debug("MAP-"+map);
-        return map;
-    }
-
-    /**
-     * Returns network map by link strength
-     */
-    private NetworkMap getNetworkMapByLinkStrength(NetworkMapFilter filter, MessageSourceAccessor accessor) throws NmNetworkException, NmCommunicationException {
-        log.debug("Getting network map by link stength filter: {}" , filter);
-        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = getGatewayNodes(filter);
-        NetworkMap map = new NetworkMap();
         try {
-            
-            Set<RfnIdentifier> deviceIdentifiers  = metaData.values().stream()
-                .filter(result -> result.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODES))
-                .map(result -> { 
-                    GatewayNodes gatewayNodes = (GatewayNodes) result.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODES);
-                    return Lists.newArrayList(gatewayNodes.getNodeComms().keySet());
-                })
-                .flatMap(List::stream)
-                .collect(Collectors.toSet());
-            
-            Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData = metadataMultiService.getMetadata(
-                EntityType.NODE, deviceIdentifiers, Set.of(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA)); 
-            
-            log.debug("Recieved neighbor data for {} devices", neighborMetaData.size());
-            
-            log.debug("Loading locations");
-            Map<LinkStrength, List<NeighborData>> groupedNeighbors =
-                    neighborMetaData.values().stream()
-                    .filter(result -> result.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA))
-                    .map(result -> {
-                        return (NeighborData) result.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA);
-                    }).collect(Collectors.groupingBy(neighborData -> LinkStrength.getLinkStrength(neighborData), HashMap::new, Collectors.toList()));
+            if (filter.getColorCodeBy() == LINK_STRENGTH) {
+                Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData =
+                    metadataMultiService.getMetadataForGatewayRfnIdentifiers(gateways.keySet(),
+                        Set.of(PRIMARY_FORWARD_NEIGHBOR_DATA));
                 
-            groupedNeighbors.forEach((linkStrength, neighbors) -> {
-                if(filter.getLinkStrength().contains(linkStrength)) {
-                    Set<RfnIdentifier> ids = neighbors.stream()
-                        .map(NeighborData::getNeighborRfnIdentifier)
-                        .collect(Collectors.toSet());
-                    String linkStrengthFormatted = accessor.getMessage(linkStrength.getFormatKey());
-                    addDevicesToMap(map, linkStrength.getColor(), linkStrengthFormatted, ids);
+                //if user
+                if(filter.getLinkStrength().isEmpty()) {
+                    filter.setLinkStrength(Lists.newArrayList(LinkStrength.values()));
                 }
-            });
+                
+                log.debug("Recieved neighbor data from NM for {} devices", neighborMetaData.size());
+
+                loadMapColorCodedByLinkStrength(filter, accessor, map, neighborMetaData);
+
+                
+            } else if (filter.getColorCodeBy() == GATEWAY) {
+                
+                if(filter.getLinkStrength().isEmpty()) {
+                    Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
+                        metadataMultiService.getMetadata(gateways.keySet(), Set.of(PRIMARY_GATEWAY_NODES));
+                    
+                    log.debug("Recieved primary gateway nodes from NM for {} devices", metaData.size());
+                    
+                    loadMapColorCodedByGateway(map, metaData);
+                    
+                }else {
+                    AtomicInteger i = new AtomicInteger(0);
+                    log.debug("Getting data for {} gateways", gateways.size());
+                    for (Map.Entry<RfnIdentifier, RfnGateway> entry : gateways.entrySet()) {
+                        Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData =
+                            metadataMultiService.getMetadataForGatewayRfnIdentifiers(Sets.newHashSet(entry.getKey()),
+                                Set.of(PRIMARY_FORWARD_NEIGHBOR_DATA));
+                        log.debug("Recieved neighbor data for {} devices gateway {}", neighborMetaData.size(),
+                            entry.getValue().getName());
+    
+                        loadMapColorCodedByGatewayFilteredByLinkStrength(filter, map, i, entry.getValue().getName(), neighborMetaData);
+                    }
+                }
+            }
         } catch (NmCommunicationException e) {
             throw new NmNetworkException(commsError, e, "commsError");
         }
 
         //add gateways
-        addDevicesToMap(map, "#ffffff", metaData.keySet());
+        addDevicesToMap(map, "#ffffff", gateways.keySet());
         
         log.debug("MAP-"+map);
         return map;
     }
     
     /**
-     * Sends request to NM for primary gateway nodes, returns response
+     * Adding devices received from NM to map
      */
-    private Map<RfnIdentifier, RfnMetadataMultiQueryResult> getGatewayNodes(NetworkMapFilter filter)
-            throws NmCommunicationException, NmNetworkException {
-        try {
-            Map<RfnIdentifier, RfnGateway> gateways =
-                rfnGatewayService.getGatewaysByPaoIds(filter.getSelectedGatewayIds()).stream().collect(
-                    Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
-            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = metadataMultiService.getMetadata(
-                EntityType.GATEWAY, Sets.newHashSet(gateways.keySet()), Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODES));
-            return metaData;
-        } catch (NmCommunicationException e) {
-            throw new NmNetworkException(commsError, e, "commsError");
+    private void loadMapColorCodedByGatewayFilteredByLinkStrength(NetworkMapFilter filter, NetworkMap map,
+            AtomicInteger i, String gatewayName, Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData) {
+        Set<RfnIdentifier> ids = neighborMetaData.values().stream()
+                .filter(result -> result.isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA))
+                .map(result -> {
+                return (NeighborData) result.getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);
+            }).filter(
+                neighborData -> filter.getLinkStrength().contains(LinkStrength.getLinkStrength(neighborData))).map(
+                    NeighborData::getNeighborRfnIdentifier).collect(Collectors.toSet());
+        if (!ids.isEmpty()) {
+            Color color = Color.values()[i.getAndIncrement()];
+            addDevicesToMap(map, color, gatewayName, ids);
         }
     }
 
+    /**
+     * Adding devices received from NM to map
+     */
+    private void loadMapColorCodedByGateway(NetworkMap map, Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData) {
+        AtomicInteger i = new AtomicInteger(0);
+        log.debug("Loading map filtered by gateway");
+        metaData.forEach((gatewayPao, queryResult) -> {
+            if (queryResult.isValidResultForMulti(PRIMARY_GATEWAY_NODES)) {
+                GatewayNodes gatewayNodes =
+                    (GatewayNodes) queryResult.getMetadatas().get(PRIMARY_GATEWAY_NODES);
+                Color color = Color.values()[i.getAndIncrement()];
+                RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(gatewayPao);
+                Set<RfnIdentifier> devices = Sets.newHashSet(gatewayNodes.getNodeComms().keySet());
+                devices.add(gatewayPao);
+                addDevicesToMap(map, color, gateway.getName(), devices);
+            }
+        });
+    }
+
+    /**
+     * Adding devices received from NM to map
+     */
+    private void loadMapColorCodedByLinkStrength(NetworkMapFilter filter, MessageSourceAccessor accessor, NetworkMap map,
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData) {
+        log.debug("Loading map filtered by link strength");
+        Map<LinkStrength, List<NeighborData>> groupedNeighbors = neighborMetaData.values().stream()
+                .filter( result -> result.isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA))
+                .map(result -> {
+                    return (NeighborData) result.getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);})
+                .filter(neighborData -> filter.getLinkStrength().contains(LinkStrength.getLinkStrength(neighborData)))
+                .collect(Collectors.groupingBy(neighborData -> LinkStrength.getLinkStrength(neighborData),
+                            HashMap::new, Collectors.toList()));
+
+        groupedNeighbors.forEach((linkStrength, neighbors) -> {
+            Set<RfnIdentifier> ids = neighbors.stream()
+                    .map(NeighborData::getNeighborRfnIdentifier)
+                    .collect(Collectors.toSet());
+            String linkStrengthFormatted = accessor.getMessage(linkStrength.getFormatKey());
+            
+            addDevicesToMap(map, linkStrength.getColor(), linkStrengthFormatted, ids);
+        });
+    }
+    
     /**
      * Add legend and device location to a map
      */

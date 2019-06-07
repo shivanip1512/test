@@ -239,7 +239,7 @@ public class MapController {
                 String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.metadataError");
                 try {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
-                        metadataMultiService.getMetadata(EntityType.NODE, rfnDevice.getRfnIdentifier(),
+                        metadataMultiService.getMetadata(rfnDevice.getRfnIdentifier(),
                             Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA));
                     RfnMetadataMultiQueryResult metadata = metaData.get(rfnDevice.getRfnIdentifier());
                     if (metadata.getResultType() != RfnMetadataMultiQueryResultType.OK) {

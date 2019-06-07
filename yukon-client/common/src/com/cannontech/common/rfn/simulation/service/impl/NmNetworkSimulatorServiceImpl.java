@@ -362,7 +362,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
      * Returns generated metadata multi response
      */
     private RfnMetadataMultiResponse getMetadataMultiResponse(RfnMetadataMultiRequest request) {
-        RfnMetadataMultiResponse response = new RfnMetadataMultiResponse(request.getRequestID());
+        RfnMetadataMultiResponse response = new RfnMetadataMultiResponse(request.getRequestID(), 1, 1);
         response.setResponseType(settings.getMetadataResponseType());
         response.setQueryResults(new HashMap<>());
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = getResults(request);
@@ -372,6 +372,21 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> getResults(RfnMetadataMultiRequest request) {
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = new HashMap<>();
+        //by gateway identifier
+        for (RfnIdentifier device: request.getPrimaryNodesForGatewayRfnIdentifiers()) {
+            for(RfnMetadataMulti multi: request.getRfnMetadatas()) {
+                 if (multi == RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA) {
+                     RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(device);
+                     List<RfnIdentifier> devices = getDevicesForGateway(gateway);
+                     if(request.getRfnIdentifiers() == null) {
+                         request.setRfnIdentifiers(new HashSet<>());
+                     }
+                     //find nodes and add to the identifiers for lookup
+                     request.getRfnIdentifiers().addAll(devices);
+                }
+            }
+        }
+        //by node identifiers
         for (RfnIdentifier device: request.getRfnIdentifiers()) {
             for(RfnMetadataMulti multi: request.getRfnMetadatas()) {
                 if (multi == RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM) {

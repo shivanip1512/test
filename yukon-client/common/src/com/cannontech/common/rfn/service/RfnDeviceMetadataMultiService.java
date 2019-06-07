@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.metadatamulti.EntityType;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -21,7 +20,7 @@ public interface RfnDeviceMetadataMultiService {
      * 
      * @throws NmCommunicationException if there was communication error or if NM returned an error
      */
-    Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(EntityType entityType, RfnIdentifier identifier,
+    Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(Set<RfnIdentifier> identifiers,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException;
     /**
      * Attempts to send a request for meta-data for rf device.
@@ -29,6 +28,17 @@ public interface RfnDeviceMetadataMultiService {
      * 
      * @throws NmCommunicationException if there was communication error or if NM returned an error
      */
-    Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(EntityType entity, Set<RfnIdentifier> identifiers,
+
+    Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(RfnIdentifier identifier,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException;
+    
+    /**
+     * Attempts to send a request for meta-data for rf devices by gateways.
+     * Waits for response.
+     * 
+     * @throws NmCommunicationException if there was communication error or if NM returned an error
+     */
+    Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadataForGatewayRfnIdentifiers(Set<RfnIdentifier> identifiers,
+            Set<RfnMetadataMulti> requests) throws NmCommunicationException;
+
 }
