@@ -17,7 +17,7 @@ import com.cannontech.web.api.errorHandler.model.ApiError;
 
 /**
  * This custom error handler is to handle Exception from API calls.
- * Any exception thrown from API will be converted to ApiException here, to maintain body.
+ * Any exception thrown from API will have exception message added to RestClientException.
  * 
  * UNPROCESSABLE_ENTITY HttpStatus is special case (for binding errors),
  * so have to preserve the response body.
@@ -31,8 +31,6 @@ public class CustomDefaultResponseErrorHandler implements ResponseErrorHandler {
         HttpStatus httpStatus = response.getStatusCode();
         if (httpStatus == HttpStatus.UNPROCESSABLE_ENTITY) {
             return false;
-        } else if (httpStatus.is4xxClientError() || httpStatus.is5xxServerError()) {
-            return errorHandler.hasError(response);
         } else {
             return errorHandler.hasError(response);
         }
