@@ -23,7 +23,6 @@
 <entry key="yukon.web.alerts.types.DEMAND_RESET_COMPLETION">Demand Reset</entry>
 <entry key="yukon.web.alerts.types.LOCATE_ROUTE">Locate Route</entry>
 <entry key="yukon.web.alerts.types.DATA_STREAMING">Data Streaming</entry>
-<entry key="yukon.web.alerts.types.RFN_DEVICE_CREATION_FROM_TEMPLATE_FAILED">RFN device failed to be created from template</entry>
 <entry key="yukon.web.alerts.types.RFN_DEVICE_CREATION_FAILED">RFN device failed to be created</entry>
 
 </properties>
