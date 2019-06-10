@@ -554,7 +554,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     metadataMultiService.getMetadataForGatewayRfnIdentifiers(gateways.keySet(),
                         Set.of(PRIMARY_FORWARD_NEIGHBOR_DATA));
                 
-                //if user
+                //if user didn't specify link strength pre-fill with all values
                 if(filter.getLinkStrength().isEmpty()) {
                     filter.setLinkStrength(Lists.newArrayList(LinkStrength.values()));
                 }

@@ -340,12 +340,12 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         ObjectMessage requestMessage = (ObjectMessage) metaDataMultiMessage;
                         if (requestMessage.getObject() instanceof RfnMetadataMultiRequest) {
                             RfnMetadataMultiRequest request = (RfnMetadataMultiRequest) requestMessage.getObject();
-                            log.debug("RfnMetadataMultiRequest identifier {} metadatas {} rfn ids {}",
-                                request.getRequestID(), request.getRfnIdentifiers().size(), request.getRfnMetadatas());
+                            log.debug("RfnMetadataMultiRequest identifier {} metadatas {} gateway ids {} or rfn ids {}",
+                                request.getRequestID(), request.getPrimaryNodesForGatewayRfnIdentifiers().size(),
+                                request.getRfnIdentifiers().size(), request.getRfnMetadatas());
                             RfnMetadataMultiResponse reply = getMetadataMultiResponse(request);
-                            log.debug("RfnMetadataMultiRequest identifier {} metadatas {} rfn ids {} response: {}",
-                                request.getRequestID(), request.getRfnIdentifiers().size(), request.getRfnMetadatas(),
-                                reply.getResponseType());
+                            log.debug("RfnMetadataMultiRequest identifier {} response: {}",
+                                request.getRequestID(), reply.getResponseType());
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
                         }
                     }
@@ -386,12 +386,13 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                 }
             }
         }
+        List<RfnGateway> allGateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         //by node identifiers
         for (RfnIdentifier device: request.getRfnIdentifiers()) {
             for(RfnMetadataMulti multi: request.getRfnMetadatas()) {
                 if (multi == RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM) {
-                    List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-                    RfnGateway randomGateway = gateways.get(new Random().nextInt(gateways.size()));
+                    
+                    RfnGateway randomGateway = allGateways.get(new Random().nextInt(allGateways.size()));
                     RfnMetadataMultiQueryResult result = getResult(results, device, multi);
                     // we are returning a random gateway which will cause the gateway to device mapping to
                     // update

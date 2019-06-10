@@ -67,7 +67,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     }
 
     /**
-     * Returns meta data for a "chunk" of identifiers
+     * Returns meta data
      */
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetaData(RfnMetadataMultiRequest request)
             throws NmCommunicationException {
