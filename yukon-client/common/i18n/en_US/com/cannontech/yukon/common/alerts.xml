@@ -106,9 +106,6 @@ Demand Reset failed. Reason: {exceptionReason}</p>
 {notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.</a>
 ]]></entry>
 
-<entry key="yukon.common.alerts.RFN_DEVICE_CREATION_FROM_TEMPLATE_FAILED">Data collection for meter "{sensorSerialNumber}" ["{sensorManufacturer}", "{sensorModel}"] failed due to conflict with another meter. 
-This may be due to a configuration change resulting in a different model. Please review existing meter's configuration and change device type and model information as needed.
-Data for this meter will not be archived until this conflict is resolved and a re-sync of RF data is completed.</entry>
-
-<entry key="yukon.common.alerts.RFN_DEVICE_CREATION_FAILED">Device creation for device "{sensorSerialNumber}" ["{sensorManufacturer}", "{sensorModel}"] failed becasue "{message}"</entry>
+<entry key="yukon.common.alerts.RFN_DEVICE_CREATION_FAILED">Data collection for device {rfnIdentifier} failed due to: {errMessage}.
+Device may not be created and data for this device will not be archived until this configuration is resolved and a re-sync of RF data is completed.</entry>
 </properties>

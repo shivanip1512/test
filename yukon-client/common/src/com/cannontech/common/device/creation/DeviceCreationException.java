@@ -6,7 +6,6 @@ import com.cannontech.common.pao.PaoType;
 public class DeviceCreationException extends DisplayableRuntimeException {
 
     private static final String keyBase = "yukon.exception.deviceCreationException.";
-    private PaoType paoType = null;
 
     // This constructor is left for those DeviceCreationException where i18 is not required. 
     public DeviceCreationException(String message) {
@@ -43,15 +42,5 @@ public class DeviceCreationException extends DisplayableRuntimeException {
 
     public DeviceCreationException(String message, String key, String ecName, PaoType paoType) {
         super(message, keyBase + key, ecName, paoType);
-        this.paoType = paoType;
-    }
-    
-    public DeviceCreationException(String message, String key, String deviceName, String templateName, Throwable cause, PaoType paoType) {
-        super(message, cause, keyBase + key,  deviceName, templateName, paoType);
-        this.paoType = paoType;
-    }
-    
-    public PaoType getPaoType() {
-        return this.paoType;
     }
 }

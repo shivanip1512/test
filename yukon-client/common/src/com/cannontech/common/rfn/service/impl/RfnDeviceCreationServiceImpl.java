@@ -186,22 +186,11 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                         rfnDeviceEventLogService.unableToCreateDeviceFromTemplate(templateName, rfnIdentifier.getSensorManufacturer(), rfnIdentifier.getSensorModel(), rfnIdentifier.getSensorSerialNumber());
                         log.warn("Unable to create device for " + rfnIdentifier, e);
                         
-                        if (e.getPaoType().isMeter()) {
-                            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.RFN_DEVICE_CREATION_FROM_TEMPLATE_FAILED");
-                            resolvableTemplate.addData("sensorSerialNumber", rfnIdentifier.getSensorSerialNumber());
-                            resolvableTemplate.addData("sensorManufacturer", rfnIdentifier.getSensorManufacturer());
-                            resolvableTemplate.addData("sensorModel", rfnIdentifier.getSensorModel());
-                            SimpleAlert simpleAlert = new SimpleAlert(AlertType.RFN_DEVICE_CREATION_FROM_TEMPLATE_FAILED, new Date(), resolvableTemplate);
-                            jmsTemplate.convertAndSend(alertQueueName, simpleAlert);
-                        } else {
                             ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.RFN_DEVICE_CREATION_FAILED");
-                            resolvableTemplate.addData("sensorSerialNumber", rfnIdentifier.getSensorSerialNumber());
-                            resolvableTemplate.addData("sensorManufacturer", rfnIdentifier.getSensorManufacturer());
-                            resolvableTemplate.addData("sensorModel", rfnIdentifier.getSensorModel());
-                            resolvableTemplate.addData("message", e.getMessage());
+                            resolvableTemplate.addData("rfnIdentifier", rfnIdentifier.toString());
+                            resolvableTemplate.addData("errMessage", e.getMessage());
                             SimpleAlert simpleAlert = new SimpleAlert(AlertType.RFN_DEVICE_CREATION_FAILED, new Date(), resolvableTemplate);
                             jmsTemplate.convertAndSend(alertQueueName, simpleAlert);
-                        }
                     }
                     throw e;
                 } catch (EnergyCompanyNotFoundException e) {

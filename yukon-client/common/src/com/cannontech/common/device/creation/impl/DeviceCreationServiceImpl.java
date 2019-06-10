@@ -287,14 +287,13 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             addToTemplatesGroups(templateYukonDevice, newYukonDevice);
             return newYukonDevice;
         } catch (PersistenceException e) {
-            throw new DeviceCreationException(String.format("Could not create new device named '%s' from template '%s'",
+            throw new DeviceCreationException(String.format("Could not create new device named '%s' from template '%s', there is a database conflict with another device",
                                                             newDevice.getPAOName(),
                                                             templateName),
                                               "invalidTemplate",
                                               newDevice.getPAOName(),
                                               templateName,
-                                              e,
-                                              newDevice.getPaoType());
+                                              e);
         }
 
     }
