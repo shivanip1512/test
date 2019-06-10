@@ -57,6 +57,7 @@
 <entry key="yukon.web.modules.dr.paoType.LM_ECOBEE_PROGRAM">ecobee Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_HONEYWELL_PROGRAM">Honeywell Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_ITRON_PROGRAM">Itron Program</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_METER_DISCONNECT_PROGRAM">Meter Disconnect Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_NEST_PROGRAM">Nest Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_DIGI_SEP">Digi SEP Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_ECOBEE">ecobee Group</entry>

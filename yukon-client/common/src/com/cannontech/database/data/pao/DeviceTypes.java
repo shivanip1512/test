@@ -274,6 +274,8 @@ public interface DeviceTypes extends TypeBase
     
     public final static int RFG301 = DEVICE_OFFSET + 208;
     public final static int LM_GROUP_METER_DISCONNECT = DEVICE_OFFSET + 209;
+    public final static int LM_METER_DISCONNECT_PROGRAM = DEVICE_OFFSET + 210;
+
     //all the possible text representation of each device type.
     //If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
     public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};
@@ -379,6 +381,7 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_LM_ECOBEE_PROGRAM = {"LM ECOBEE PROGRAM"};
     public static final String[] STRING_LM_HONEYWELL_PROGRAM = {"LM HONEYWELL PROGRAM"};
     public static final String[] STRING_LM_ITRON_PROGRAM = {"LM ITRON PROGRAM"};
+    public static final String[] STRING_LM_METER_DISONNECT_PROGRAM = {"LM METER DISCONNECT PROGRAM"};
     public static final String[] STRING_LM_NEST_PROGRAM = {"LM NEST PROGRAM"};
     public static final String[] STRING_LM_CURTAIL_PROGRAM = {"LM CURTAIL PROGRAM"};
     public static final String[] STRING_LM_CONTROL_AREA = {"LM CONTROL AREA"};
