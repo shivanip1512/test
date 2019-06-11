@@ -23,7 +23,7 @@ import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
 public class LoadGroupSetupApiController {
 
     @Autowired LoadGroupSetupService loadGroupService;
-    @Autowired @Qualifier("loadGroupExpresscomSetupValidator") LoadGroupSetupValidator<? extends LoadGroupBase> loadGroupValidator;
+    @Autowired @Qualifier("loadGroupSetupValidator") LoadGroupSetupValidator<? extends LoadGroupBase> loadGroupValidator;
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> retrieve(@PathVariable int id) {

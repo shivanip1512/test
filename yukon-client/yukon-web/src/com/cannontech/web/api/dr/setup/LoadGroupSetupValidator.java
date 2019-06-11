@@ -26,7 +26,7 @@ public class LoadGroupSetupValidator<T extends LoadGroupBase> extends SimpleVali
     }
 
     @Override
-    protected void doValidation(LoadGroupBase loadGroup, Errors errors) {
+    protected void doValidation(T loadGroup, Errors errors) {
         // Type 
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", key + "type.required");
 
