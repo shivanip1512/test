@@ -359,7 +359,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_ECOBEE_PROGRAM,
             LM_HONEYWELL_PROGRAM,
             LM_NEST_PROGRAM,
-            LM_ITRON_PROGRAM
+            LM_ITRON_PROGRAM,
+            LM_METER_DISCONNECT_PROGRAM
             );
         
         directProgramTypes = ImmutableSet.of(
@@ -368,7 +369,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_ECOBEE_PROGRAM,
             LM_HONEYWELL_PROGRAM,
             LM_NEST_PROGRAM,
-            LM_ITRON_PROGRAM
+            LM_ITRON_PROGRAM,
+            LM_METER_DISCONNECT_PROGRAM
             );
         
         cbcTypes = ImmutableSet.of(
