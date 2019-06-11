@@ -1,9 +1,10 @@
 package com.cannontech.web.api.dr.setup;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
@@ -18,13 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
 
+
 @RestController
 @RequestMapping("/dr/setup/loadGroup")
 public class LoadGroupSetupApiController {
 
     @Autowired LoadGroupSetupService loadGroupService;
-    @Autowired @Qualifier("loadGroupSetupValidator") LoadGroupSetupValidator<? extends LoadGroupBase> loadGroupValidator;
-
+    private List<LoadGroupSetupValidator<? extends LoadGroupBase>> validators;
+    
     @GetMapping("/{id}")
     public ResponseEntity<Object> retrieve(@PathVariable int id) {
         LoadGroupBase loadGroup = loadGroupService.retrieve(id);
@@ -39,6 +41,12 @@ public class LoadGroupSetupApiController {
 
     @InitBinder("loadGroupBase")
     public void setupBinder(WebDataBinder binder) {
-        binder.addValidators(loadGroupValidator);
+        validators.stream().forEach( e-> 
+        binder.addValidators(e));
+    }
+    
+    @Autowired
+    void setValidators(List<LoadGroupSetupValidator<? extends LoadGroupBase>> validators) {
+        this.validators = validators;
     }
 }
