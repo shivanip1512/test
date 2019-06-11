@@ -2,16 +2,15 @@ package com.cannontech.dr.loadgroup.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.dr.setup.LoadGroupBase;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
-import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMGroup;
-import com.cannontech.database.data.device.lm.LMGroupMeterDisconnect;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.db.device.Device;
 import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -22,14 +21,15 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     
     @Override
     public int save(LoadGroupBase loadGroup) {
-        LMGroup loadGroupPersistence = buildLMDbPersistent(loadGroup);
+        LMGroup lmGroup = getDBPersistent(loadGroup);
+        loadGroup.buildDBPersistent(lmGroup);
 
         if (loadGroup.getId() == null) {
-            dbPersistentDao.performDBChange(loadGroupPersistence, TransactionType.INSERT);
+            dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
         } else {
-            dbPersistentDao.performDBChange(loadGroupPersistence, TransactionType.UPDATE);
+            dbPersistentDao.performDBChange(lmGroup, TransactionType.UPDATE);
         }
-        return loadGroupPersistence.getPAObjectID();
+        return lmGroup.getPAObjectID();
     }
     
     @Override
@@ -39,34 +39,29 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
             throw new NotFoundException("Id not found");
         }
         LMGroup loadGroup = (LMGroup) dbPersistentDao.retrieveDBPersistent(pao);
-        LoadGroupBase loadGroupBase = LoadGroupBase.of(loadGroup);
+        LoadGroupBase loadGroupBase = getModel(loadGroup.getPaoType());
+        loadGroupBase.buildModel(loadGroup);
         return loadGroupBase;
     }
     
-    private LMGroup buildLMDbPersistent(LoadGroupBase loadGroup) {
-        LMGroup lmGroupMeterDisconnect = (LMGroup) LMFactory.createLoadManagement(loadGroup.getType());
+    /**
+     * Returns DB Persistent object 
+     */
+    private LMGroup getDBPersistent(LoadGroupBase loadGroup) {
+        LMGroup lmGroup = (LMGroup) LMFactory.createLoadManagement(loadGroup.getType());
         if (loadGroup.getId() != null) {
             LiteYukonPAObject pao = dbCache.getAllPaosMap().get(loadGroup.getId());
-            lmGroupMeterDisconnect = (LMGroupMeterDisconnect) dbPersistentDao.retrieveDBPersistent(pao);
+            lmGroup = (LMGroup) dbPersistentDao.retrieveDBPersistent(pao);
         }
-        
-        // PAO settings
-        lmGroupMeterDisconnect.setPAOName(loadGroup.getName());
-        lmGroupMeterDisconnect.setDisabled(loadGroup.isDisableGroup());
-
-        // Device settings
-        Device lmDevice = DeviceFactory.createDevice(loadGroup.getType()).getDevice();
-        char disableControl = loadGroup.isDisableControl() ? 'Y' : 'N';
-        lmDevice.setControlInhibit(disableControl);
-        lmDevice.setDeviceID(loadGroup.getId());
-        lmGroupMeterDisconnect.setDevice(lmDevice);
-        
-        // Load Group settings
-        com.cannontech.database.db.device.lm.LMGroup lmGroup = lmGroupMeterDisconnect.getLmGroup();
-        lmGroup.setKwCapacity(loadGroup.getkWCapacity());
-        lmGroupMeterDisconnect.setLmGroup(lmGroup);
-       
-        return lmGroupMeterDisconnect;
+        return lmGroup;
+    }
+    
+    /**
+     * Returns LM Model object 
+     */
+    private LoadGroupBase getModel(PaoType paoType) {
+        LoadGroupBase lmGroup = (LoadGroupBase) LMModelFactory.createLoadGroup(paoType);
+        return lmGroup;
     }
 
 }

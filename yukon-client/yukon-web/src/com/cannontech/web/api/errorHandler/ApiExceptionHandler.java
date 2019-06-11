@@ -48,6 +48,7 @@ import com.cannontech.web.api.errorHandler.model.ApiFieldError;
 import com.cannontech.web.api.errorHandler.model.ApiGlobalError;
 import com.cannontech.web.api.token.AuthenticationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cannontech.core.dao.PersistenceException;
 
 @ControllerAdvice(annotations = RestController.class)
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
@@ -89,6 +90,24 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({DataIntegrityViolationException.class, SQLException.class})
     protected ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex,
+            WebRequest request) {
+
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
+        logApiException(request, ex, uniqueKey);
+
+        log.error("Database error" + ex.getMessage());
+        if (ex.getCause() instanceof ConstraintViolationException) {
+
+            return new ResponseEntity<Object>(
+                new ApiError(HttpStatus.CONFLICT.value(), "Database error", uniqueKey), new HttpHeaders(),
+                HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<Object>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Database error", uniqueKey),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
+    @ExceptionHandler({PersistenceException.class})
+    protected ResponseEntity<Object> handlePersistenceException(PersistenceException ex,
             WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();

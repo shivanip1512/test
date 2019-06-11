@@ -3,6 +3,7 @@ package com.cannontech.web.api.dr.setup;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
@@ -22,7 +23,7 @@ import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
 public class LoadGroupSetupApiController {
 
     @Autowired LoadGroupSetupService loadGroupService;
-    @Autowired LoadGroupSetupValidator loadGroupValidator;
+    @Autowired @Qualifier("loadGroupExpresscomSetupValidator") LoadGroupSetupValidator<? extends LoadGroupBase> loadGroupValidator;
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> retrieve(@PathVariable int id) {

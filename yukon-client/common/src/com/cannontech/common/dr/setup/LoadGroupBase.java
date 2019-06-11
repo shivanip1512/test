@@ -1,10 +1,15 @@
 package com.cannontech.common.dr.setup;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.lm.LMGroup;
+import com.cannontech.database.db.device.Device;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-public class LoadGroupBase {
-
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
+@JsonSubTypes(@JsonSubTypes.Type(value = LoadGroupExpresscom.class, name = "loadgroupexpresscom"))
+public class LoadGroupBase implements LoadGroupSetupBase {
     private Integer id;
     private String name;
     private PaoType type;
@@ -59,17 +64,32 @@ public class LoadGroupBase {
     public void setId(Integer id) {
         this.id = id;
     }
-    
-    public static LoadGroupBase of(LMGroup loadGroup) {
-        LoadGroupBase group = new LoadGroupBase();
-        group.setName(loadGroup.getPAOName());
-        group.setId(loadGroup.getPAObjectID());
-        group.setType(loadGroup.getPaoType());
-        group.setkWCapacity(loadGroup.getLmGroup().getKwCapacity());
-        boolean disableControl = loadGroup.getDevice().getControlInhibit() == 'N' ? false : true;
-        group.setDisableControl(disableControl);
-        group.setDisableGroup(loadGroup.isDisabled());
 
-        return group;
+    public void buildModel(LMGroup loadGroup) {
+        setName(loadGroup.getPAOName());
+        setId(loadGroup.getPAObjectID());
+        setType(loadGroup.getPaoType());
+        setkWCapacity(loadGroup.getLmGroup().getKwCapacity());
+        boolean disableControl = loadGroup.getDevice().getControlInhibit() == 'N' ? false : true;
+        setDisableControl(disableControl);
+        setDisableGroup(loadGroup.isDisabled());
+    }
+
+    public void buildDBPersistent(LMGroup group) {
+        // PAO settings
+        group.setPAOName(getName());
+        group.setDisabled(isDisableGroup());
+
+        // Device settings
+        Device lmDevice = DeviceFactory.createDevice(getType()).getDevice();
+        char disableControl = isDisableControl() ? 'Y' : 'N';
+        lmDevice.setControlInhibit(disableControl);
+        lmDevice.setDeviceID(getId());
+        group.setDevice(lmDevice);
+
+        // Load Group settings
+        com.cannontech.database.db.device.lm.LMGroup lmGroup = group.getLmGroup();
+        lmGroup.setKwCapacity(getkWCapacity());
+        group.setLmGroup(lmGroup);
     }
 }

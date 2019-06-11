@@ -11,14 +11,18 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
-public class LoadGroupSetupValidator extends SimpleValidator<LoadGroupBase> {
+public class LoadGroupSetupValidator<T extends LoadGroupBase> extends SimpleValidator<T> {
 
     private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
 
     @Autowired private PaoDao paoDao;
 
     public LoadGroupSetupValidator() {
-        super(LoadGroupBase.class);
+        super((Class<T>) LoadGroupBase.class);
+    }
+    
+    public LoadGroupSetupValidator(Class<T> objectType) {
+        super(objectType);
     }
 
     @Override
