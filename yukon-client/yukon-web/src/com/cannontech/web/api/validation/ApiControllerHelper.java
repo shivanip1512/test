@@ -6,16 +6,22 @@ import java.util.LinkedHashMap;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 /**
  * Helper class for controller (MVC) that called Rest Api. 
  *
  */
 public class ApiControllerHelper {
-
+    @Autowired GlobalSettingDao globalSettingDao;
+    private static String webserverURL = "";
+    
     /**
      * Populate binding error from the error object received from rest call. 
      */
@@ -36,13 +42,34 @@ public class ApiControllerHelper {
     }
 
     /**
-     * Generate dynamic URL for API calls
+     * Fetch the webserver URL
      */
-    public String getApiURL(HttpServletRequest request, String pathURL) {
-        StringBuffer baseURL = request.getRequestURL();
-        String apiURL = baseURL.substring(0, baseURL.indexOf(request.getServletPath())) + "/api"
-            + request.getServletPath() + pathURL;
-        return apiURL;
+    public static String getWebserverURL(HttpServletRequest request) {
+        if (webserverURL.equals("")) {
+            String serverPort = Integer.toString(request.getLocalPort());
+            setWebserverURL("http://127.0.0.1:" + serverPort);
+        }
+        return webserverURL;
     }
 
+    /**
+     * Set the webserver URL
+     */
+    public static void setWebserverURL(String webserverURL) {
+        ApiControllerHelper.webserverURL = webserverURL;
+    }
+
+    /**
+     * Returns the Yukon Internal Url.
+     */
+    public String getYukonInternalUrl() {
+        return globalSettingDao.getString(GlobalSettingType.YUKON_INTERNAL_URL);
+    }
+
+    /**
+     * Generate dynamic URL for API calls
+     */
+    public String getApiURL(String prefixURL, String suffixURL) {
+        return prefixURL + "/api" + suffixURL;
+    }
 }

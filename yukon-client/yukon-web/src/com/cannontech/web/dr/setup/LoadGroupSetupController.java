@@ -40,7 +40,8 @@ import com.google.common.collect.Lists;
 public class LoadGroupSetupController {
     
     private static final String baseKey = "yukon.web.modules.dr.setup.loadGroup.";
-    private static final String drLoadGroupBaseUrl = "/setup/loadGroup/";
+    private static final String drLoadGroupSaveUrl = "/dr/setup/loadGroup/save";
+    private static final String drLoadGroupRetrieveUrl = "/dr/setup/loadGroup/";
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
     
     @Autowired private ApiControllerHelper helper;
@@ -62,8 +63,8 @@ public class LoadGroupSetupController {
     @GetMapping("/{id}")
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.VIEW);
-        String url = helper.getApiURL(request, request.getPathInfo());
-        LoadGroupBase loadGroup = retrieveGroup(userContext, request, id, url);
+        String webserverUrl = helper.getApiURL(ApiControllerHelper.getWebserverURL(request), drLoadGroupRetrieveUrl + id);
+        LoadGroupBase loadGroup = retrieveGroup(userContext, request, id, webserverUrl);
         if (loadGroup == null) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
             return "redirect:/dr/setup/list";
@@ -75,8 +76,8 @@ public class LoadGroupSetupController {
     @GetMapping("/{id}/edit")
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        String url = helper.getApiURL(request, drLoadGroupBaseUrl + id);
-        LoadGroupBase loadGroup = retrieveGroup(userContext, request, id, url);
+        String webserverUrl = helper.getApiURL(ApiControllerHelper.getWebserverURL(request), drLoadGroupRetrieveUrl + id);
+        LoadGroupBase loadGroup = retrieveGroup(userContext, request, id, webserverUrl);
         if (loadGroup == null) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
             return "redirect:/dr/setup/list";
@@ -88,25 +89,37 @@ public class LoadGroupSetupController {
         model.addAttribute("switchTypes", switchTypes);
         return "dr/setup/loadGroup/view.jsp";
     }
-    
+
     @PostMapping("/save")
     public String save(@ModelAttribute LoadGroupBase loadGroup, BindingResult result, YukonUserContext userContext,
             FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
-        String url = helper.getApiURL(request, request.getPathInfo());
+        String webserverUrl = helper.getApiURL(ApiControllerHelper.getWebserverURL(request), drLoadGroupSaveUrl);
         try {
-            ResponseEntity<? extends Object> response =
-                apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, loadGroup);
+            ResponseEntity<? extends Object> response = saveGroup(userContext, request, webserverUrl, loadGroup);
+
+            if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+                webserverUrl = helper.getApiURL(helper.getYukonInternalUrl(), drLoadGroupSaveUrl);
+                response = saveGroup(userContext, request, webserverUrl, loadGroup);
+                if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+                    return null;
+                } else {
+                    ApiControllerHelper.setWebserverURL(helper.getYukonInternalUrl());
+                }
+            }
+
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadGroup, "loadGroupBase");
                 helper.populateBindingError(result, error, response);
                 return bindAndForward(loadGroup, result, redirectAttributes);
             }
+
             if (response.getStatusCode() == HttpStatus.OK) {
                 int groupId = (int) response.getBody();
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.saved"));
                 return "redirect:/dr/setup/loadGroup/" + groupId;
             }
+
         } catch (RestClientException ex) {
             log.error("Error creating load group: " + ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error"));
@@ -114,18 +127,37 @@ public class LoadGroupSetupController {
         }
         return null;
     }
-    
+
+    private ResponseEntity<? extends Object> saveGroup(YukonUserContext userContext, HttpServletRequest request,
+            String webserverUrl, LoadGroupBase loadGroup) throws RestClientException {
+        ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request,
+            webserverUrl, HttpMethod.POST, Object.class, loadGroup);
+        return response;
+    }
+
     /**
      * Make a rest call for retrieving group 
      */
-    private LoadGroupBase retrieveGroup(YukonUserContext userContext, HttpServletRequest request, int id, String url) {
+    private LoadGroupBase retrieveGroup(YukonUserContext userContext, HttpServletRequest request, int id, String webserverUrl) {
         LoadGroupBase loadGroup = null;
         try {
-            ResponseEntity<? extends Object> response =
-                apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, LoadGroupBase.class);
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request,
+                webserverUrl, HttpMethod.GET, LoadGroupBase.class);
+            if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+                webserverUrl = helper.getApiURL(helper.getYukonInternalUrl(), drLoadGroupRetrieveUrl + id);
+                response = apiRequestHelper.callAPIForObject(userContext, request, webserverUrl, HttpMethod.GET,
+                    LoadGroupBase.class);
+                if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+                    return null;
+                } else {
+                    ApiControllerHelper.setWebserverURL(helper.getYukonInternalUrl());
+                }
+            }
+
             if (response.getStatusCode() == HttpStatus.OK) {
                 loadGroup = (LoadGroupBase) response.getBody();
             }
+
         } catch (RestClientException ex) {
             log.error("Error retrieving load group: " + ex.getMessage());
         }

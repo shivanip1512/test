@@ -30,24 +30,21 @@ public class ApiControllerHelperTest {
 
     @Test
     public void testgetValidApiURL() {
-        String pathURL = "/setup/loadGroup/save";
-        String url = helper.getApiURL(req, pathURL);
+        String pathURL = "/dr/setup/loadGroup/save";
+        String url = helper.getApiURL(req.getServerName(), pathURL);
         assertTrue("The url is valid", url.equals("http://localhost:8080/api/dr/setup/loadGroup/save"));
     }
 
     @Test
     public void testgetInvalidApiURL() {
-        String pathURL = "/setup/loadGroup/save";
-        String url = helper.getApiURL(req, pathURL);
+        String pathURL = "/dr/setup/loadGroup/save";
+        String url = helper.getApiURL(req.getServerName(), pathURL);
         assertFalse("The url is invalid", url.equals("http://localhost:8080/dr/setup/loadGroup/save"));
     }
 
     private HttpServletRequest createMockRequest() {
         MockHttpServletRequest request = new MockHttpServletRequest(new MockServletContext());
-        request.setPathInfo("/setup/loadGroup/save");
-        request.setServerName("localhost:8080/dr");
-        request.setRequestURI("/setup/loadGroup/save");
-        request.setServletPath("/dr");
+        request.setServerName("http://localhost:8080");
         return request;
     }
 }
