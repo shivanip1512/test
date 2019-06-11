@@ -184,7 +184,7 @@ public class LoadGroupExpresscom extends LoadGroupBase {
         if (address == null) {
             return com.cannontech.database.db.device.lm.LMGroupExpressComAddress.NONE_ADDRESS;
         }
-        LMGroupExpressComAddress expresscomAddress = new LMGroupExpressComAddress(address, type);
+        LMGroupExpressComAddress expresscomAddress = new LMGroupExpressComAddress(type);
         expresscomAddress.setAddress(address);
         return expresscomAddress;
     }
