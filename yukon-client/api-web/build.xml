@@ -90,6 +90,7 @@
         <include name="log4j-slf4j-impl-2.11.2.jar"/>
         <include name="spring-xml-3.0.7.RELEASE.jar"/>
         <include name="spring-ws-core-3.0.7.RELEASE.jar"/>
+        <include name="stax-ex-1.8.jar"/>
         <include name="stax2-api-3.1.4.jar"/>
         <include name="spring-*-5.1.5.RELEASE.jar"/>
         <include name="javax.jms-api-2.0.1.jar"/>
