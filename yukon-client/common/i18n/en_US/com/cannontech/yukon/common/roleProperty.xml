@@ -76,13 +76,13 @@
 <entry key="yukon.common.roleProperty.POLICY_QUALITY_CHECK">Policy Quality Check</entry>
 <entry key="yukon.common.roleProperty.POLICY_QUALITY_CHECK.description">The number of policy rules that are required to be able to save a password.</entry>
 <entry key="yukon.common.roleProperty.POLICY_RULE_UPPERCASE_CHARACTERS">Policy Rule - Uppercase Characters</entry>
-<entry key="yukon.common.roleProperty.POLICY_RULE_UPPERCASE_CHARACTERS.description">Uppercase characters count toward the required policy quality check.  (A, B, C, ... Z)</entry>
+<entry key="yukon.common.roleProperty.POLICY_RULE_UPPERCASE_CHARACTERS.description">Uppercase characters count toward the required policy quality check.  (A, B, C, ... Z).</entry>
 <entry key="yukon.common.roleProperty.POLICY_RULE_LOWERCASE_CHARACTERS">Policy Rule - Lowercase Characters</entry>
-<entry key="yukon.common.roleProperty.POLICY_RULE_LOWERCASE_CHARACTERS.description">Lowercase characters count toward the required policy quality check.  (a, b, c, ... z)</entry>
+<entry key="yukon.common.roleProperty.POLICY_RULE_LOWERCASE_CHARACTERS.description">Lowercase characters count toward the required policy quality check.  (a, b, c, ... z).</entry>
 <entry key="yukon.common.roleProperty.POLICY_RULE_BASE_10_DIGITS">Policy Rule - Base 10 Digits</entry>
-<entry key="yukon.common.roleProperty.POLICY_RULE_BASE_10_DIGITS.description">Base 10 digits count toward the required policy quality check.  (0, 1, 2, ... 9)</entry>
+<entry key="yukon.common.roleProperty.POLICY_RULE_BASE_10_DIGITS.description">Base 10 digits count toward the required policy quality check.  (0, 1, 2, ... 9).</entry>
 <entry key="yukon.common.roleProperty.POLICY_RULE_NONALPHANUMERIC_CHARACTERS">Policy Rule - Nonalphanumeric Characters</entry>
-<entry key="yukon.common.roleProperty.POLICY_RULE_NONALPHANUMERIC_CHARACTERS.description">Nonalphanumic characters count toward the required password rules check.  (~, !, @, #, $, %, ^, &amp;, *, _, -, +, =, `, |, (, ), {, }, [, ], :, ", ', &lt;, &gt;, ,, ., ?, /)</entry>
+<entry key="yukon.common.roleProperty.POLICY_RULE_NONALPHANUMERIC_CHARACTERS.description">Nonalphanumic characters count toward the required password rules check.  (~, !, @, #, $, %, ^, &amp;, *, _, -, +, =, `, |, (, ), {, }, [, ], :, ", ', &lt;, &gt;, ,, ., ?, /).</entry>
 
 <!-- Reporting RoleProperties -->
 <entry key="yukon.common.roleProperty.ADMIN_REPORTS_GROUP">Admin Reports Group</entry>
@@ -104,11 +104,11 @@
 
 <!-- Tabular Display Console RoleProperties -->
 <entry key="yukon.common.roleProperty.MACS_EDIT">macs_edit</entry>
-<entry key="yukon.common.roleProperty.MACS_EDIT.description">The following settings are valid: CREATE_SCHEDULE(0x0000000C), ENABLE_SCHEDULE(0x000000C0), ABLE_TO_START_SCHEDULE(0x00000C00)</entry>
+<entry key="yukon.common.roleProperty.MACS_EDIT.description">The following settings are valid: CREATE_SCHEDULE(0x0000000C), ENABLE_SCHEDULE(0x000000C0), ABLE_TO_START_SCHEDULE(0x00000C00).</entry>
 <entry key="yukon.common.roleProperty.TDC_MAX_ROWS">tdc_max_rows</entry>
 <entry key="yukon.common.roleProperty.TDC_MAX_ROWS.description">The number of rows shown before creating a new page of data.</entry>
 <entry key="yukon.common.roleProperty.TDC_RIGHTS">tdc_rights</entry>
-<entry key="yukon.common.roleProperty.TDC_RIGHTS.description">The following settings are valid: HIDE_MACS(0x00001000), HIDE_CAPCONTROL(0x00002000), HIDE_LOADCONTROL(0x00004000), HIDE_ALL_DISPLAYS(0x0000F000), HIDE_ALARM_COLORS(0x80000000)</entry>
+<entry key="yukon.common.roleProperty.TDC_RIGHTS.description">The following settings are valid: HIDE_MACS(0x00001000), HIDE_CAPCONTROL(0x00002000), HIDE_LOADCONTROL(0x00004000), HIDE_ALL_DISPLAYS(0x0000F000), HIDE_ALARM_COLORS(0x80000000).</entry>
 <entry key="yukon.common.roleProperty.TDC_ALARM_COUNT">tdc_alarm_count</entry>
 <entry key="yukon.common.roleProperty.TDC_ALARM_COUNT.description">Total number alarms that are displayed in the quick access list.</entry>
 <entry key="yukon.common.roleProperty.DECIMAL_PLACES">decimal_places</entry>
@@ -150,13 +150,13 @@
 <entry key="yukon.common.roleProperty.VIEW_ALARMS_AS_ALERTS">View Alarms Alerts</entry>
 <entry key="yukon.common.roleProperty.VIEW_ALARMS_AS_ALERTS.description">Ability to receive point alarms as alerts.</entry>
 <entry key="yukon.common.roleProperty.DEFAULT_TIMEZONE">Default TimeZone</entry>
-<entry key="yukon.common.roleProperty.DEFAULT_TIMEZONE.description">Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)</entry>
+<entry key="yukon.common.roleProperty.DEFAULT_TIMEZONE.description">Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York).</entry>
 <entry key="yukon.common.roleProperty.SESSION_TIMEOUT">Session Timeout (minutes)</entry>
 <entry key="yukon.common.roleProperty.SESSION_TIMEOUT.description">The amount of idle time (in minutes) before a user's session will expire.</entry>
 
 <!-- CBC Oneline RoleProperties -->
 <entry key="yukon.common.roleProperty.CAP_BANK_FIXED_TEXT">Capbank Fixed/Static Text</entry>
-<entry key="yukon.common.roleProperty.CAP_BANK_FIXED_TEXT.description">The text to display for fixed/static capbanks</entry>
+<entry key="yukon.common.roleProperty.CAP_BANK_FIXED_TEXT.description">The text to display for fixed/static capbanks.</entry>
 
 <!-- CBC  RoleProperties -->
 <entry key="yukon.common.roleProperty.CAP_CONTROL_ACCESS">Access</entry>
@@ -174,7 +174,7 @@
 <entry key="yukon.common.roleProperty.SHOW_FLIP_COMMAND">Show flip command</entry>
 <entry key="yukon.common.roleProperty.SHOW_FLIP_COMMAND.description">Show flip command for Cap Banks with 7010 type controller.</entry>
 <entry key="yukon.common.roleProperty.SHOW_CB_ADDINFO">Show Cap Bank Add Info</entry>
-<entry key="yukon.common.roleProperty.SHOW_CB_ADDINFO.description">Show Cap Bank Addititional Info tab</entry>
+<entry key="yukon.common.roleProperty.SHOW_CB_ADDINFO.description">Show Cap Bank Addititional Info tab.</entry>
 <entry key="yukon.common.roleProperty.AVAILABLE_DEFINITION">Definition Available</entry>
 <entry key="yukon.common.roleProperty.AVAILABLE_DEFINITION.description">Capbank sized in these states will be added to the available sum.</entry>
 <entry key="yukon.common.roleProperty.UNAVAILABLE_DEFINITION">Definition Unavailable</entry>
@@ -204,7 +204,7 @@
 <entry key="yukon.common.roleProperty.CONTROL_CONFIRMATION_POPUPS">Control Confirmation pop-ups</entry>
 <entry key="yukon.common.roleProperty.CONTROL_CONFIRMATION_POPUPS.description">Controls whether to display confirmation pop-ups for all Cap Control commands, only Operational commands or for no commands.</entry>
 <entry key="yukon.common.roleProperty.CAP_CONTROL_IMPORTER">Enable Importer</entry>
-<entry key="yukon.common.roleProperty.CAP_CONTROL_IMPORTER.description">Allows access to the Cap Control importers</entry>
+<entry key="yukon.common.roleProperty.CAP_CONTROL_IMPORTER.description">Allows access to the Cap Control importers.</entry>
 
 <!-- Residential Customer RoleProperties -->
 <entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL">Account General</entry>
@@ -220,7 +220,7 @@
 <entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL">Questions Utility</entry>
 <entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL.description">Controls whether to show the contact information of the energy company.</entry>
 <entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ">Questions FAQ</entry>
-<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ.description">Controls whether to show customer FAQs</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ.description">Controls whether to show customer FAQs.</entry>
 <entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME">Change Login Username</entry>
 <entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME.description">Controls access for customers to change their own login username.</entry>
 <entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL">Thermostats All</entry>
@@ -230,7 +230,7 @@
 <entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_GROUPED_CONTROL_HISTORY_DISPLAY">Grouped Control History Display</entry>
 <entry key="yukon.common.roleProperty.RESIDENTIAL_CONSUMER_INFO_GROUPED_CONTROL_HISTORY_DISPLAY.description">Controls whether to enable grouped control history display.</entry>
 <entry key="yukon.common.roleProperty.RESIDENTIAL_OPT_OUT_PERIOD">Opt Out Period</entry>
-<entry key="yukon.common.roleProperty.RESIDENTIAL_OPT_OUT_PERIOD.description">The duration, in days, for the customer Opt Out period. (Use commas to separate multiple values: Ex. 1,3,4,5)</entry>
+<entry key="yukon.common.roleProperty.RESIDENTIAL_OPT_OUT_PERIOD.description">The duration, in days, for the customer Opt Out period. (Use commas to separate multiple values: Ex. 1,3,4,5).</entry>
 <entry key="yukon.common.roleProperty.RESIDENTIAL_OPT_OUT_LIMITS">Opt Out Limits</entry>
 <entry key="yukon.common.roleProperty.RESIDENTIAL_OPT_OUT_LIMITS.description">Contains information on Opt Out limits.</entry>
 <entry key="yukon.common.roleProperty.RESIDENTIAL_WEB_LINK_FAQ">Link FAQ</entry>
@@ -394,7 +394,7 @@
 <entry key="yukon.common.roleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT">Import Customer Account</entry>
 <entry key="yukon.common.roleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT.description">Controls whether to enable the customer account importing feature.</entry>
 <entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_PERIOD">Opt Out Period</entry>
-<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_PERIOD.description">The duration, in days, for the customer Opt Out period. (Use commas to separate multiple values: Ex. 1,3,4,5)</entry>
+<entry key="yukon.common.roleProperty.OPERATOR_OPT_OUT_PERIOD.description">The duration, in days, for the customer Opt Out period. (Use commas to separate multiple values: Ex. 1,3,4,5).</entry>
 <entry key="yukon.common.roleProperty.OPERATOR_DISABLE_SWITCH_SENDING">Disable Switch Sending</entry>
 <entry key="yukon.common.roleProperty.OPERATOR_DISABLE_SWITCH_SENDING.description">Disables the ability to send configs and connects/disconnects to switches.</entry>
 <entry key="yukon.common.roleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING">Allow Account Editing</entry>
@@ -424,9 +424,9 @@
 <entry key="yukon.common.roleProperty.BULK_UPDATE_OPERATION">Bulk Update Operation</entry>
 <entry key="yukon.common.roleProperty.BULK_UPDATE_OPERATION.description">Controls access to bulk update operations.</entry>
 <entry key="yukon.common.roleProperty.DEVICE_GROUP_EDIT">Device Group Edit</entry>
-<entry key="yukon.common.roleProperty.DEVICE_GROUP_EDIT.description">Controls editing of Device Groups (Add/Remove Group, update name, etc.)</entry>
+<entry key="yukon.common.roleProperty.DEVICE_GROUP_EDIT.description">Controls editing of Device Groups (Add/Remove Group, update name, etc.).</entry>
 <entry key="yukon.common.roleProperty.DEVICE_GROUP_MODIFY">Device Group Modify</entry>
-<entry key="yukon.common.roleProperty.DEVICE_GROUP_MODIFY.description">Controls modifying contents of a Device Group (Add to/Remove from group, etc.)</entry>
+<entry key="yukon.common.roleProperty.DEVICE_GROUP_MODIFY.description">Controls modifying contents of a Device Group (Add to/Remove from group, etc.).</entry>
 <entry key="yukon.common.roleProperty.GROUP_COMMANDER">Group Commander</entry>
 <entry key="yukon.common.roleProperty.GROUP_COMMANDER.description">Controls access to group command actions.</entry>
 <entry key="yukon.common.roleProperty.MASS_CHANGE">Mass Change</entry>

@@ -81,38 +81,20 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
                 Maps.newHashMapWithExpectedSize(YukonRoleProperty.values().length);
         final ImmutableMap<YukonRoleProperty, Object> defaultValueLookup = rolePropertyDao.getDefaultValueLookup();
         
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT rolePropertyId");
-        sql.append("FROM YukonRoleProperty");
-        
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                int rolePropertyId = rs.getInt("rolePropertyId");
-
-                YukonRoleProperty roleProperty;
-                try {
-                    roleProperty = YukonRoleProperty.getForId(rolePropertyId);
-                } catch (IllegalArgumentException e) {
-                    // Database contains an unknown role property, this is logged elsewhere
-                    return;
-                }
-                
-                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
-                String keyName = accessor.getMessage("yukon.common.roleProperty." + roleProperty.name());
-                String description = accessor.getMessage("yukon.common.roleProperty." + roleProperty.name() + ".description");
-                MessageSourceResolvable keyNameMsr = 
-                    YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty."
-                            + roleProperty.name(), keyName);
-                MessageSourceResolvable descriptionMsr = 
-                    YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty."
-                            + roleProperty.name() + ".description", description);
-                
-                DescriptiveRoleProperty descriptiveRoleProperty = new DescriptiveRoleProperty(roleProperty,
-                    defaultValueLookup.get(roleProperty), keyNameMsr, descriptionMsr);
-                descriptiveRolePropertyLookup.put(roleProperty, descriptiveRoleProperty);
-            }
-        });
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        for (YukonRoleProperty roleProperty : YukonRoleProperty.values()) {
+            String keyName = accessor.getMessage("yukon.common.roleProperty." + roleProperty.name());
+            String description = accessor.getMessage("yukon.common.roleProperty." + roleProperty.name() + ".description");
+            MessageSourceResolvable keyNameMsr = 
+                YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty."
+                        + roleProperty.name(), keyName);
+            MessageSourceResolvable descriptionMsr = 
+                YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty."
+                        + roleProperty.name() + ".description", description);
+            DescriptiveRoleProperty descriptiveRoleProperty = new DescriptiveRoleProperty(roleProperty,
+                defaultValueLookup.get(roleProperty), keyNameMsr, descriptionMsr);
+            descriptiveRolePropertyLookup.put(roleProperty, descriptiveRoleProperty);
+        }
         
         // now build a new map in a stable order
         Builder<YukonRoleProperty, DescriptiveRoleProperty> builder = ImmutableMap.builder();
