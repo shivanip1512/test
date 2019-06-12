@@ -136,7 +136,6 @@
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_B">kVArh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_C">kVArh Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_D">kVArh Rate D</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.LM_GROUP_STATUS">LM Group Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_PROFILE">Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE">Maximum Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE_FROZEN">Maximum Voltage Frozen</entry>
@@ -509,31 +508,38 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_C">Net Received kVArh Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_D">Net Received kVArh Rate D</entry>
 
-    <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_VERSION">Firmware Version</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_VERSION_MAJOR">Firmware Major Version</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_VERSION_MINOR">Firmware Minor Version</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.IP_ADDRESS">IP Address</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.NEUTRAL_CURRENT_SENSOR">Neutral Current Sensor</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.SERIAL_NUMBER">Serial Number</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.UDP_PORT">UDP Port</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.LAST_CONTROL_REASON">Last Control Reason</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.IGNORED_CONTROL_REASON">Ignored Control Reason</entry>
-    
     <entry key="yukon.common.attribute.builtInAttribute.STREAMING_CAPABLE_DEVICE_COUNT">Streaming Capable Device Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.STREAMING_ACTIVE_DEVICE_COUNT">Streaming Active Device Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DATA_STREAMING_LOAD">Data Streaming Load</entry>
     <entry key="yukon.common.attribute.builtInAttribute.READY_NODES">Ready Nodes</entry>
+    
+    <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_VERSION">Firmware Version</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_VERSION_MAJOR">Firmware Major Version</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_VERSION_MINOR">Firmware Minor Version</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.IGNORED_CONTROL_REASON">Ignored Control Reason</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.IP_ADDRESS">IP Address</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LAST_CONTROL_REASON">Last Control Reason</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NEUTRAL_CURRENT_SENSOR">Neutral Current Sensor</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SERIAL_NUMBER">Serial Number</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.UDP_PORT">UDP Port</entry>
+    
+    <entry key="yukon.common.attribute.builtInAttribute.LM_GROUP_STATUS">LM Group Status</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_DAILY_HISTORY">Daily History</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_MONTH_HISTORY">Month History</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_SEASON_HISTORY">Season History</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_ANNUAL_HISTORY">Annual History</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_CONTROL_COUNTDOWN">Control Countdown</entry>
+
+    <entry key="yukon.common.attribute.builtInAttribute.CONNECTED_LOAD">Connected Load</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DIVERSIFIED_LOAD">Diversified Load</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.MAX_LOAD_REDUCTION">Max Load Reduction</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.AVAILABLE_LOAD_REDUCTION">Available Load Reduction</entry>
 
     <entry key="yukon.common.attribute.builtInAttribute.INDOOR_TEMPERATURE">Indoor Temperature</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OUTDOOR_TEMPERATURE">Outdoor Temperature</entry>
     <entry key="yukon.common.attribute.builtInAttribute.COOL_SET_TEMPERATURE">Cool Set Temperature</entry>
     <entry key="yukon.common.attribute.builtInAttribute.HEAT_SET_TEMPERATURE">Heat Set Temperature</entry>
 
-    <entry key="yukon.common.attribute.builtInAttribute.CONNECTED_LOAD">Connected Load</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.DIVERSIFIED_LOAD">Diversified Load</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.MAX_LOAD_REDUCTION">Max Load Reduction</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.AVAILABLE_LOAD_REDUCTION">Available Load Reduction</entry>
-    
     <entry key="yukon.common.attribute.builtInAttribute.PORTER_CPU_UTILIZATION">Porter CPU Utilization</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DISPATCH_CPU_UTILIZATION">Dispatch CPU Utilization</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SCANNER_CPU_UTILIZATION">Scanner CPU Utilization</entry>

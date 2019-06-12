@@ -86,7 +86,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     KVARH_RATE_B("kVArh Rate B", AttributeGroup.REACTIVE),
     KVARH_RATE_C("kVArh Rate C", AttributeGroup.REACTIVE),
     KVARH_RATE_D("kVArh Rate D", AttributeGroup.REACTIVE),
-    LM_GROUP_STATUS("LM Group Status", AttributeGroup.STATUS, false),
     LOAD_PROFILE("Load Profile", AttributeGroup.PROFILE, false),    //require extra input, not "attribute" based readable
     LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED("Load Side Voltage Detected", AttributeGroup.RFN_METERING_EVENT, false),   
     METER_BOX_COVER_REMOVAL_FLAG("Meter Box Cover Removal", AttributeGroup.STATUS, false),   //440 types only
@@ -534,6 +533,14 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     NEUTRAL_CURRENT_SENSOR("Neutral Current Sensor", AttributeGroup.OTHER),
     SERIAL_NUMBER("Serial Number", AttributeGroup.OTHER),
     UDP_PORT("UDP Port", AttributeGroup.OTHER),
+
+    // Demand Response
+    LM_GROUP_STATUS("LM Group Status", AttributeGroup.STATUS, false),
+    LM_DAILY_HISTORY("Daily History", AttributeGroup.DEMAND_RESPONSE, false),
+    LM_MONTH_HISTORY("Month History", AttributeGroup.DEMAND_RESPONSE, false),
+    LM_SEASON_HISTORY("Season History", AttributeGroup.DEMAND_RESPONSE, false),
+    LM_ANNUAL_HISTORY("Annual History", AttributeGroup.DEMAND_RESPONSE, false),
+    LM_CONTROL_COUNTDOWN("Control Countdown", AttributeGroup.DEMAND_RESPONSE, false),
     
     // Estimated load
     CONNECTED_LOAD("Connected Load", AttributeGroup.ESTIMATED_LOAD, false), //calculated dr
@@ -729,6 +736,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         groupedDataAttributesBuilder.put(AttributeGroup.BLINK_AND_OUTAGE, lookupByGroup.get(AttributeGroup.BLINK_AND_OUTAGE));
         groupedDataAttributesBuilder.put(AttributeGroup.CURRENT, lookupByGroup.get(AttributeGroup.CURRENT));
         groupedDataAttributesBuilder.put(AttributeGroup.DEMAND, lookupByGroup.get(AttributeGroup.DEMAND));
+        groupedDataAttributesBuilder.put(AttributeGroup.DEMAND_RESPONSE, lookupByGroup.get(AttributeGroup.DEMAND_RESPONSE));
         groupedDataAttributesBuilder.put(AttributeGroup.ESTIMATED_LOAD, lookupByGroup.get(AttributeGroup.ESTIMATED_LOAD));
         groupedDataAttributesBuilder.put(AttributeGroup.ITRON, lookupByGroup.get(AttributeGroup.ITRON));
         groupedDataAttributesBuilder.put(AttributeGroup.OTHER, lookupByGroup.get(AttributeGroup.OTHER));
@@ -887,8 +895,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         allGroupedBuilder.put(AttributeGroup.RELAY, lookupByGroup.get(AttributeGroup.RELAY));
         allGroupedBuilder.put(AttributeGroup.STATUS, lookupByGroup.get(AttributeGroup.STATUS));
         allGroupedBuilder.put(AttributeGroup.USAGE, lookupByGroup.get(AttributeGroup.USAGE));
-        allGroupedBuilder.put(AttributeGroup.ESTIMATED_LOAD, lookupByGroup.get(AttributeGroup.ESTIMATED_LOAD));
-        allGroupedBuilder.put(AttributeGroup.ITRON, lookupByGroup.get(AttributeGroup.ITRON));
 
         allGroupedBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, lookupByGroup.get(AttributeGroup.RFN_HARDWARE_EVENT));
         allGroupedBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT, lookupByGroup.get(AttributeGroup.RFN_SOFTWARE_EVENT));
@@ -896,6 +902,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         allGroupedBuilder.put(AttributeGroup.GATEWAY_STATISTICS, lookupByGroup.get(AttributeGroup.GATEWAY_STATISTICS));
 
         allGroupedBuilder.put(AttributeGroup.CAPCONTROL, lookupByGroup.get(AttributeGroup.CAPCONTROL));
+        
+        allGroupedBuilder.put(AttributeGroup.DEMAND_RESPONSE, lookupByGroup.get(AttributeGroup.DEMAND_RESPONSE));
+        allGroupedBuilder.put(AttributeGroup.ESTIMATED_LOAD, lookupByGroup.get(AttributeGroup.ESTIMATED_LOAD));
+        allGroupedBuilder.put(AttributeGroup.ITRON, lookupByGroup.get(AttributeGroup.ITRON));
 
         // The attribute group map that is created can be used in conjunction with
         // the selectNameValue tag and groupItems="true".

@@ -3,6 +3,7 @@
     <highestOffsets>
         <analog offset="4"/>
         <status offset="1"/>
+        <systemAnalog offset="2504"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Analog">
@@ -33,9 +34,50 @@
         <unitofmeasure value="KW"/>
         <decimalplaces value="1"/>
     </point>
+
+    <point offset="2500" type="Analog">
+        <name>Daily History</name>
+        <archive interval="ZERO" type="NONE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="3"/>
+        <analogstategroup value="DefaultAnalog"/>
+    </point>
+    <point offset="2501" type="Analog">
+        <name>Month History</name>
+        <archive interval="ZERO" type="NONE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="3"/>
+        <analogstategroup value="DefaultAnalog"/>
+    </point>
+        <point offset="2502" type="Analog">
+        <name>Season History</name>
+        <archive interval="ZERO" type="NONE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="3"/>
+        <analogstategroup value="DefaultAnalog"/>
+    </point>
+    <point offset="2503" type="Analog">
+        <name>Annual History</name>
+        <archive interval="ZERO" type="NONE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="3"/>
+        <analogstategroup value="DefaultAnalog"/>
+    </point>
+        <point offset="2505" type="Analog">
+        <name>Control Countdown</name>
+        <archive interval="ZERO" type="NONE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="3"/>
+        <analogstategroup value="DefaultAnalog"/>
+    </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="0" type="Status">
-        <name>CONTROL STATUS</name>
+        <name>Control Status</name>
         <controlType value="NORMAL"/>
         <controlOffset value="1"/>
         <stateZeroControl value="OPEN"/>

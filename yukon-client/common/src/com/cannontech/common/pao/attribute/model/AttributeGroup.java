@@ -16,7 +16,6 @@ public enum AttributeGroup implements DisplayableEnum {
     STATUS,
     USAGE,
     VOLTAGE,
-    ESTIMATED_LOAD,
     SYSTEM,
     
     //RFN event attribute groups
@@ -29,6 +28,11 @@ public enum AttributeGroup implements DisplayableEnum {
     RFN_VOLTAGE_EVENT,
     
     GATEWAY_STATISTICS,
+
+    // Demand Response
+    DEMAND_RESPONSE,
+    ESTIMATED_LOAD,
+
     ;
     
     private static final String groupPrefix = "yukon.common.attributeGroups.";

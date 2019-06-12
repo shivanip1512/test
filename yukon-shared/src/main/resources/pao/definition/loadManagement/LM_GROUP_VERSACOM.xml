@@ -7,6 +7,11 @@
         <tag name="LM_GROUP"/>
     </tags>
     <pointInfos>
-        <pointInfo name="CONTROL STATUS" init="true" attributes="LM_GROUP_STATUS"/>
+        <pointInfo name="Control Status" init="true" attributes="LM_GROUP_STATUS"/>
+        <pointInfo name="Daily History" init="true" attributes="LM_DAILY_HISTORY"/>
+        <pointInfo name="Month History" init="true" attributes="LM_MONTH_HISTORY"/>
+        <pointInfo name="Season History" init="true" attributes="LM_SEASON_HISTORY"/>
+        <pointInfo name="Annual History" init="true" attributes="LM_ANNUAL_HISTORY"/>
+        <pointInfo name="Control Countdown" init="true" attributes="LM_CONTROL_COUNTDOWN"/>
     </pointInfos>
 </pao>
