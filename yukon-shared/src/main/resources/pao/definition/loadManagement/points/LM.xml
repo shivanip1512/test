@@ -3,7 +3,7 @@
     <highestOffsets>
         <analog offset="4"/>
         <status offset="1"/>
-        <systemAnalog offset="2504"/>
+        <systemAnalog offset="2505"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Analog">
