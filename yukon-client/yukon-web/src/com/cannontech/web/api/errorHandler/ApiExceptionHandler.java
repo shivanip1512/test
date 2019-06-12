@@ -39,6 +39,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.HoneywellProcessingException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -86,6 +87,17 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), "Not Found", uniqueKey);
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    // 403
+    @ExceptionHandler({ HoneywellProcessingException.class })
+    public ResponseEntity<Object> handleForbiddenException(final Exception ex, final WebRequest request) {
+
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
+        logApiException(request, ex, uniqueKey);
+
+        final ApiError apiError = new ApiError(HttpStatus.FORBIDDEN.value(), ex.getMessage(), uniqueKey);
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler({DataIntegrityViolationException.class, SQLException.class})

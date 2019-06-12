@@ -55,7 +55,8 @@ public class LoadGroupSetupController {
             loadGroup = (LoadGroupBase) model.get("loadGroup");
         }
         model.addAttribute("loadGroup", loadGroup);
-        List<PaoType> switchTypes = Lists.newArrayList(PaoType.LM_GROUP_METER_DISCONNECT);
+        List<PaoType> switchTypes =
+            Lists.newArrayList(PaoType.LM_GROUP_METER_DISCONNECT, PaoType.LM_GROUP_HONEYWELL, PaoType.LM_GROUP_ECOBEE);
         model.addAttribute("switchTypes", switchTypes);
         return "dr/setup/loadGroup/view.jsp";
     }
@@ -85,7 +86,8 @@ public class LoadGroupSetupController {
             loadGroup = (LoadGroupBase) model.get("loadGroup");
         }
         model.addAttribute("loadGroup", loadGroup);
-        List<PaoType> switchTypes = Lists.newArrayList(PaoType.LM_GROUP_METER_DISCONNECT);
+        List<PaoType> switchTypes =
+            Lists.newArrayList(PaoType.LM_GROUP_METER_DISCONNECT, PaoType.LM_GROUP_HONEYWELL, PaoType.LM_GROUP_ECOBEE);
         model.addAttribute("switchTypes", switchTypes);
         return "dr/setup/loadGroup/view.jsp";
     }
@@ -122,7 +124,7 @@ public class LoadGroupSetupController {
 
         } catch (RestClientException ex) {
             log.error("Error creating load group: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error"));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", ex.getMessage()));
             return "redirect:/dr/setup/list";
         }
         return null;

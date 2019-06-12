@@ -22,7 +22,7 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.disableGroup">Disable Group</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.disableControl">Disable Control</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.info.saved">Load Group saved successfully.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.save.error">Load Group could not be saved.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.save.error">Load Group could not be saved - {0}</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.retrieve.error">Load Group could not be retrieved.</entry>
 
 <!-- Load Group Validation -->
