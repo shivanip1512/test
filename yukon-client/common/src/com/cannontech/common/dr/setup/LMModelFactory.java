@@ -15,8 +15,10 @@ public class LMModelFactory {
             loadGroup = new LoadGroupBase();
             break;
         case LM_GROUP_EXPRESSCOMM:
-            loadGroup = new LoadGroupExpresscom();
+        case LM_GROUP_RFN_EXPRESSCOMM: 
+             loadGroup = new LoadGroupExpresscom();
             break;
+
         case LM_GROUP_ITRON:
             loadGroup = new LoadGroupItron();
             break;

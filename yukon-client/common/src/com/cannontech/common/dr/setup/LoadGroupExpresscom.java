@@ -2,6 +2,7 @@ package com.cannontech.common.dr.setup;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
 import com.cannontech.database.db.device.lm.IlmDefines;
@@ -169,7 +170,11 @@ public class LoadGroupExpresscom extends LoadGroupBase {
         // Set Expresscom
         com.cannontech.database.db.device.lm.LMGroupExpressCom expresscom =
             ((LMGroupExpressCom) group).getLMGroupExpressComm();
-        expresscom.setRouteID(getRouteID());
+        if (group.getPaoType() == PaoType.LM_GROUP_RFN_EXPRESSCOMM) {
+            expresscom.setRouteID(0);
+        } else {
+            expresscom.setRouteID(getRouteID());
+        }
         expresscom.setSerialNumber(getSerialNumber());
         expresscom.setAddressUsage(getAddressUsage());
         expresscom.setRelayUsage(getRelayUsage());

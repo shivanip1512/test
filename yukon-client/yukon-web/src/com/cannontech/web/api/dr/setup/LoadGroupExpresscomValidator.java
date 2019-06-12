@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.YukonValidationUtils;
 
 @Service
@@ -23,6 +24,10 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
     @Override
     protected void doValidation(LoadGroupExpresscom loadGroup, Errors errors) {
 
+        // Route ID is mandatory for expresscom
+        if (loadGroup.getType() == PaoType.LM_GROUP_EXPRESSCOMM) {
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "routeID", key + "routeID.required");
+        }
         // SPID is mandatory
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "serviceProvider", key + "serviceProvider.required");
         if (!errors.hasFieldErrors("serviceProvider")) {
