@@ -121,7 +121,7 @@ public class RfnDeviceArchiveRequestListener {
                 log.info("Exception:" + e.getMessage());
                 sendAcknowledgement(entry.getKey(), processor);
             } else {
-                log.warn("Exception:" + e.getMessage());
+                log.warn("Failed creating device {}", entry, e);
             }
         }
     }
