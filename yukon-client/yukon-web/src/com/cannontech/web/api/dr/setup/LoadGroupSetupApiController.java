@@ -41,8 +41,11 @@ public class LoadGroupSetupApiController {
 
     @InitBinder("loadGroupBase")
     public void setupBinder(WebDataBinder binder) {
-        validators.stream().forEach( e-> 
-        binder.addValidators(e));
+        validators.stream().forEach(e -> {
+            if (e.supports(binder.getTarget().getClass())) {
+                binder.addValidators(e);
+            }
+        });
     }
     
     @Autowired
