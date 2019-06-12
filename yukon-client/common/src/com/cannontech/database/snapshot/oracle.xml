@@ -8534,18 +8534,18 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_EVNTBSE_SYSCATNTRY</i__foreignKeyName>
+            <i__foreignKeyName>FK_EVNTBSE_ACTNTRY</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>SYSTEMCATEGORYID</i__columnName>
+            <i__columnName>ACTIONID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_EVNTBSE_ACTNTRY</i__foreignKeyName>
+            <i__foreignKeyName>FK_EVNTBSE_SYSCATNTRY</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>ACTIONID</i__columnName>
+            <i__columnName>SYSTEMCATEGORYID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -29126,18 +29126,18 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DYNV_DEV2</i__foreignKeyName>
+            <i__foreignKeyName>FK_DYNV_DEV1</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>TRANSMITTERID</i__columnName>
+            <i__columnName>RECEIVERID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
             <i__foreignTableName>DEVICE</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DYNV_DEV1</i__foreignKeyName>
+            <i__foreignKeyName>FK_DYNV_DEV2</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>RECEIVERID</i__columnName>
+            <i__columnName>TRANSMITTERID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
             <i__foreignTableName>DEVICE</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -29216,21 +29216,21 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DEVICEPARENT_PARENT</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>PARENTID</i__columnName>
-            <i__foreignColumnName>DEVICEID</i__foreignColumnName>
-            <i__foreignTableName>DEVICE</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_DEVICEPARENT_DEVICE</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
             <i__foreignTableName>DEVICE</i__foreignTableName>
             <i__updateRule>0</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_DEVICEPARENT_PARENT</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>PARENTID</i__columnName>
+            <i__foreignColumnName>DEVICEID</i__foreignColumnName>
+            <i__foreignTableName>DEVICE</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -35081,18 +35081,18 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_POINT_LMCNTLARTRIG</i__foreignKeyName>
+            <i__foreignKeyName>FK_POINT_LMCTRLARTRIGPK</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>POINTID</i__columnName>
+            <i__columnName>PEAKPOINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_POINT_LMCTRLARTRIGPK</i__foreignKeyName>
+            <i__foreignKeyName>FK_POINT_LMCNTLARTRIG</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>PEAKPOINTID</i__columnName>
+            <i__columnName>POINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -38962,18 +38962,18 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_PAOEXCLU_REF_PAOEX_YUKONPAO</i__foreignKeyName>
+            <i__foreignKeyName>FK_PAOEX_YKPAO</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>EXCLUDEDPAOID</i__columnName>
+            <i__columnName>PAOID</i__columnName>
             <i__foreignColumnName>PAOBJECTID</i__foreignColumnName>
             <i__foreignTableName>YUKONPAOBJECT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_PAOEX_YKPAO</i__foreignKeyName>
+            <i__foreignKeyName>FK_PAOEXCLU_REF_PAOEX_YUKONPAO</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>PAOID</i__columnName>
+            <i__columnName>EXCLUDEDPAOID</i__columnName>
             <i__foreignColumnName>PAOBJECTID</i__foreignColumnName>
             <i__foreignTableName>YUKONPAOBJECT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -39061,18 +39061,18 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_YUKPAO_PAOOWN</i__foreignKeyName>
+            <i__foreignKeyName>FK_YUKPAO_PAOID</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>CHILDID</i__columnName>
+            <i__columnName>OWNERID</i__columnName>
             <i__foreignColumnName>PAOBJECTID</i__foreignColumnName>
             <i__foreignTableName>YUKONPAOBJECT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_YUKPAO_PAOID</i__foreignKeyName>
+            <i__foreignKeyName>FK_YUKPAO_PAOOWN</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>OWNERID</i__columnName>
+            <i__columnName>CHILDID</i__columnName>
             <i__foreignColumnName>PAOBJECTID</i__foreignColumnName>
             <i__foreignTableName>YUKONPAOBJECT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -47660,21 +47660,21 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DYNRFNDEVDATA_RFNADDR_DEVID</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>DEVICEID</i__columnName>
-            <i__foreignColumnName>DEVICEID</i__foreignColumnName>
-            <i__foreignTableName>RFNADDRESS</i__foreignTableName>
-            <i__updateRule>0</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_DYNRFNDEVDATA_RFNADDR_GATID</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>GATEWAYID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
             <i__foreignTableName>RFNADDRESS</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_DYNRFNDEVDATA_RFNADDR_DEVID</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>DEVICEID</i__columnName>
+            <i__foreignColumnName>DEVICEID</i__foreignColumnName>
+            <i__foreignTableName>RFNADDRESS</i__foreignTableName>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
         </i__foreignKeys>
