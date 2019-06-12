@@ -7,6 +7,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -40,6 +43,7 @@ public class EmailTestController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private EmailTestValidator emailTestValidator;
+    private static final Logger log = YukonLogManager.getLogger(EmailTestController.class); 
     
     @RequestMapping(value="/config/emailTestPopup", method=RequestMethod.GET)
     public String testEmailPage(ModelMap model, LiteYukonUser user) throws Exception {
@@ -67,14 +71,18 @@ public class EmailTestController {
         } else {
             InternetAddress[] postTo = InternetAddress.parse(email.getTo());
             EmailMessage testEmailMessage = new EmailMessage(postTo, subject, genBody);
+            String alertBody = accessor.getMessage("yukon.web.modules.adminSetup.config.testEmail.alert", email.getTo());
+            json.put("successMessage", alertBody);
             try {
                 EmailService emailService = YukonSpringHook.getBean(EmailService.class);
                 emailService.sendMessage(testEmailMessage);
             } catch (Exception e) {
-                CTILogger.error(e.getMessage(), e );
+                String alertMessageFailure = accessor.getMessage("yukon.web.modules.adminSetup.config.testEmail.failure", email.getTo(), globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
+                json.put("failureMessage", alertMessageFailure);
+                log.error(e.getMessage(), e);
+                return JsonUtils.writeResponse(resp, json);
             }
-            String alertBody = accessor.getMessage("yukon.web.modules.adminSetup.config.testEmail.alert", email.getTo());
-            json.put("successMessage", alertBody);
+            log.info(accessor.getMessage("yukon.web.modules.adminSetup.config.testEmail.logSuccess", email.getTo(), globalSettingDao.getString(GlobalSettingType.SMTP_HOST)));
             resp.setContentType("application/json");
             return JsonUtils.writeResponse(resp, json);
         }

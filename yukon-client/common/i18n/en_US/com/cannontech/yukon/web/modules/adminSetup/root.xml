@@ -24,6 +24,8 @@
     <entry key="yukon.web.modules.adminSetup.config.testEmail.send">Send</entry>
     <entry key="yukon.web.modules.adminSetup.config.testEmail.message">Enter email address and click Send. A test email notification will be sent to the email address specified from {0}.</entry>
     <entry key="yukon.web.modules.adminSetup.config.testEmail.body">Yukon Email Test: A test email notification was requested by user {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.config.testEmail.failure">Error: An email could not be sent to {0} via SMTP host {1}</entry>
+    <entry key="yukon.web.modules.adminSetup.config.testEmail.logSuccess">A test email was sent to {0} via SMTP host {1}</entry>
     <entry key="yukon.web.modules.adminSetup.config.testEmail.subject">[yukon] Yukon Test Email</entry>
     <entry key="yukon.web.modules.adminSetup.config.testEmail.alert">A test email has been sent to {0}</entry>
     
