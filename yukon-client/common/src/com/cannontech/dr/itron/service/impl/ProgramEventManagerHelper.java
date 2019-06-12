@@ -64,7 +64,7 @@ public class ProgramEventManagerHelper implements SoapFaultParser {
          */
         
         short dutyCycleCount =
-            new BigDecimal(duration.getStandardMinutes()).divide(new BigDecimal(dutyCyclePeriod), RoundingMode.HALF_UP).shortValue();
+            new BigDecimal(duration.getStandardMinutes()).divide(new BigDecimal(dutyCyclePeriod), RoundingMode.UP).shortValue();
         d2GParams.setDutyCycleCount(dutyCycleCount);
         d2GParams.setVirtualRelayAddress((short) relay);
         d2GParams.setEventControl(eventControlTypes.get(dutyCycleType));
