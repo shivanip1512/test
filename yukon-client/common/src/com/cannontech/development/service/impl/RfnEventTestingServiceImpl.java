@@ -5,6 +5,7 @@ import static com.cannontech.common.stream.StreamUtils.not;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,9 +18,9 @@ import java.util.stream.IntStream;
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
-import javax.jms.Destination;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -51,11 +52,12 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
-import com.cannontech.common.rfn.message.archive.RfRelayArchiveRequest;
+import com.cannontech.common.rfn.message.archive.RfnDeviceArchiveRequest;
 import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.ByteUtil;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.da.rfn.message.archive.RfDaArchiveRequest;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
@@ -78,10 +80,10 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ResourceLoader loader;
+    protected JmsTemplate jmsTemplate;
         
     private static final String meterReadingArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
     private static final String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
-    private static final String relayReadingArchiveRequestQueueName = "yukon.qr.obj.rfn.RfRelayArchiveRequest";
     private static final String rfDaArchiveRequestQueueName = "yukon.qr.obj.da.rfn.RfDaArchiveRequest";
     private static final String eventArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.EventArchiveRequest";
     private static final String alarmArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.AlarmArchiveRequest";
@@ -414,21 +416,18 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     @Override
     public void sendRelayArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model) {
 
+        Map<Long, RfnIdentifier> rfnIdentifiers = new HashMap<>();
         for (int i = serialFrom; i <= serialTo; i++) {
             // Create archive request & fake identifier
-            RfRelayArchiveRequest archiveRequest = new RfRelayArchiveRequest();
-            RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(i),
+            rfnIdentifiers.put(Long.valueOf(i), new RfnIdentifier(Integer.toString(i),
                                                             manufacturer,
-                                                            model);
+                                                            model));
 
-            // Set all data
-            archiveRequest.setRfnIdentifier(rfnIdentifier);
-            archiveRequest.setNodeId(1234);
-
-            // Put request on queue
-            sendArchiveRequest(relayReadingArchiveRequestQueueName, archiveRequest);
         }
-        
+        RfnDeviceArchiveRequest response = new RfnDeviceArchiveRequest();
+        response.setRfnIdentifiers(rfnIdentifiers);
+        // Put request on queue
+        jmsTemplate.convertAndSend(JmsApiDirectory.RFN_DEVICE_ARCHIVE.getQueue().getName(), response);
     }
     
     
@@ -650,5 +649,12 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         }
 
         return messagesSent;
+    }
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
     }
 }

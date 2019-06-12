@@ -38,8 +38,8 @@ import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.common.rfn.message.alarm.AlarmArchiveRequest;
 import com.cannontech.common.rfn.message.alarm.AlarmArchiveResponse;
-import com.cannontech.common.rfn.message.archive.RfRelayArchiveRequest;
-import com.cannontech.common.rfn.message.archive.RfRelayArchiveResponse;
+import com.cannontech.common.rfn.message.archive.RfnDeviceArchiveRequest;
+import com.cannontech.common.rfn.message.archive.RfnDeviceArchiveResponse;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequest;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
 import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfoRequest;
@@ -725,21 +725,6 @@ public final class JmsApiDirectory {
                   .build();
     
     //TODO: use this in RfnEventTestingServiceImpl
-    public static JmsApi<RfRelayArchiveRequest,?,RfRelayArchiveResponse> RF_RELAY_ARCHIVE =
-            JmsApi.builder(RfRelayArchiveRequest.class, RfRelayArchiveResponse.class)
-                  .name("RF Relay Archive")
-                  .description("A notification from Network Manager to Yukon for creation of a new RF relay.")
-                  .communicationPattern(REQUEST_RESPONSE)
-                  .queue(new JmsQueue("yukon.qr.obj.rfn.RfRelayArchiveRequest"))
-                  .responseQueue(new JmsQueue("yukon.qr.obj.rfn.RfRelayArchiveResponse"))
-                  .requestMessage(RfRelayArchiveRequest.class)
-                  .responseMessage(RfRelayArchiveResponse.class)
-                  .sender(NETWORK_MANAGER)
-                  .sender(YUKON_WEBSERVER_DEV_PAGES)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .build();
-    
-    //TODO: use this in RfnEventTestingServiceImpl
     public static JmsApi<RfDaArchiveRequest,?,RfDaArchiveResponse> RF_DA_ARCHIVE =
             JmsApi.builder(RfDaArchiveRequest.class, RfDaArchiveResponse.class)
                   .name("RF DA Archive")
@@ -1076,6 +1061,20 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_WEBSERVER)
                   .build();
     
+    public static JmsApi<RfnDeviceArchiveRequest,?,RfnDeviceArchiveResponse> RFN_DEVICE_ARCHIVE =
+            JmsApi.builder(RfnDeviceArchiveRequest.class, RfnDeviceArchiveResponse.class)
+                  .name("RFN Device Archive")
+                  .description("A notification from Network Manager to Yukon for creation of a new device.")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnDeviceArchiveRequest"))
+                  .responseQueue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnDeviceArchiveResponse"))
+                  .requestMessage(RfnDeviceArchiveRequest.class)
+                  .responseMessage(RfnDeviceArchiveResponse.class)
+                  .sender(NETWORK_MANAGER)
+                  .sender(YUKON_WEBSERVER_DEV_PAGES)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1153,7 +1152,7 @@ public final class JmsApiDirectory {
                 RF_ALARM_ARCHIVE,
                 RF_DA_ARCHIVE,
                 RF_EVENT_ARCHIVE,
-                RF_RELAY_ARCHIVE);
+                RFN_DEVICE_ARCHIVE);
         
         addApis(jmsApis, SMART_NOTIFICATION,
                 SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT,
