@@ -11,6 +11,9 @@ import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigHelper;
+import static com.cannontech.common.config.MasterConfigString.*;
 import com.cannontech.common.exception.StarsNotCreatedException;
 import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
@@ -88,7 +91,12 @@ public class DBUpdater extends MessageFrameAdaptor {
     private static final String LF = System.getProperty("line.separator");
 
     public final static String[] CMD_LINE_PARAM_NAMES = { IRunnableDBTool.PROP_VALUE, "verbose", "nightly" };
-
+    private static final String oracleDBPath = "/Client/DBScripts/oracle";
+    private static final String sqlServerDBPath = "/Client/DBScripts/sqlserver";
+    private static ConfigurationSource configSource = null;
+    private static final String oracleDB="oracle";
+    private static final String oracle12DB="oracle12";
+    
     public DBUpdater() {
         super();
     }
@@ -194,8 +202,8 @@ public class DBUpdater extends MessageFrameAdaptor {
         // get all the files in the log DIR
         FileVersion[] fileVers = updateDB.getDBUpdateFiles(CtiUtilities.getClientLogDir());
         
-		final boolean ignoreErrors  = (System.getProperty(CMD_LINE_PARAM_NAMES[2]) != null) ? Boolean
-				.parseBoolean(System.getProperty(CMD_LINE_PARAM_NAMES[2]).trim()) : false;
+        final boolean ignoreErrors  = (System.getProperty(CMD_LINE_PARAM_NAMES[2]) != null) ? Boolean
+                .parseBoolean(System.getProperty(CMD_LINE_PARAM_NAMES[2]).trim()) : false;
 
         Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
        
@@ -409,8 +417,22 @@ public class DBUpdater extends MessageFrameAdaptor {
 
     // Gets the update commands from the file system, and re-formats and writes to the Valids files if needed
     private void getUpdateCommands() {
-        final String srcPath = System.getProperty(CMD_LINE_PARAM_NAMES[0]);
+        String srcPath = System.getProperty(CMD_LINE_PARAM_NAMES[0]);
         // "d:/eclipse/head/yukon-database/DBUpdates/oracle" );
+        
+        if (configSource == null) {
+            configSource = MasterConfigHelper.getConfiguration();
+        }
+        
+        if (srcPath == null) {
+            String yukonBase = CtiUtilities.getYukonBase();
+            String dbTypeName = configSource.getString(DB_TYPE);
+            if (dbTypeName.equalsIgnoreCase(oracleDB) || dbTypeName.equalsIgnoreCase(oracle12DB)) {
+                srcPath = yukonBase + oracleDBPath;
+            } else {
+                srcPath = yukonBase + sqlServerDBPath;
+            }
+        }
 
         UpdateLine[] validLines = new UpdateLine[0];
 

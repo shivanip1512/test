@@ -92,23 +92,10 @@ Function StopAllServices () {
     Update-YukonDatabase -DatabaseType "sqlserver"
 #>
 Function Update-YukonDatabase () {
-    Param (
-        [string]$DatabaseType
-    )
-
     Write-Host "Database Update Beginning"
 
-    [string]$sourcePath
-    if ($databaseType -eq "oracle12" -or $databaseType -eq "oracle") {
-        $sourcePath = "C:/Yukon/YukonMisc/YukonDatabase/DatabaseUpdates/Oracle"
-    } else {
-        $sourcePath = "C:/Yukon/YukonMisc/YukonDatabase/DatabaseUpdates/SqlServer"
-    }
-    
-    Write-Host "Database Script Path: $($sourcePath)"
-
     Remove-Item -Path "C:\yukon\server\log\DBUpdater.log" -ErrorAction SilentlyContinue
-    $p = Start-Process C:\Yukon\Runtime\bin\java.exe -ArgumentList "-cp C:/Yukon/Client/bin/tools.jar com.cannontech.dbtools.updater.DBUpdater -Dsrc_path=$($sourcePath) -Dverbose=false -DignoreError=true" -Wait -PassThru -NoNewWindow
+    $p = Start-Process C:\Yukon\Runtime\bin\java.exe -ArgumentList "-cp C:/Yukon/Client/bin/tools.jar com.cannontech.dbtools.updater.DBUpdater -Dverbose=false -DignoreError=true" -Wait -PassThru -NoNewWindow
     Write-Host "Database Update Log"
     Get-Content c:\yukon\server\log\dbupdater.log | foreach {Write-Output $_}
 

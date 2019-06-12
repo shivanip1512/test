@@ -135,12 +135,14 @@
         
         <!-- Yukon Base Component (Client) -->
         <property name="client.dir" value="${install.bag}/Yukon Base/Client"/>
+        <property name="dbscripts.dir" value="${client.dir}/DBScripts"/>
         <property name="client.bin" value="${client.dir}/bin"/>
         <property name="yukon.exampleXml" value="${basedir}/yukon-client/lib/exampleXml"/>
-        <mkdir dir="${client.dir}"/>
-           <mkdir dir="${client.dir}/Export"/>
-           <mkdir dir="${client.dir}/Import"/>
-           <mkdir dir="${client.dir}/Log"/>
+            <mkdir dir="${client.dir}"/>
+            <mkdir dir="${client.dir}/Export"/>
+            <mkdir dir="${client.dir}/Import"/>
+            <mkdir dir="${client.dir}/Log"/>
+            <mkdir dir="${client.dir}/DBScripts"/>
         
         <copy todir="${client.bag}" preservelastmodified="yes">
             <fileset dir="${basedir}/yukon-client/build/lib" excludes="*.jar"/>
@@ -156,7 +158,14 @@
                 <exclude name="objenesis-1.2.jar"/>
               </fileset>
         </copy>
-        
+
+        <copy todir="${dbscripts.dir}/oracle">
+              <fileset dir="${basedir}/yukon-database/DBUpdates/oracle" />
+        </copy>
+        <copy todir="${dbscripts.dir}/sqlserver">
+              <fileset dir="${basedir}/yukon-database/DBUpdates/sqlserver" />
+        </copy>
+
         <copy todir="${client.bin}" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/resources/client_common_dlls" />
             <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**,easymock-3.0.jar,h2-1.4.178.jar,objenesis-1.2.jar"/>
