@@ -53,7 +53,7 @@ public class RfnDeviceArchiveRequestListener {
     }
     
     /**
-     * Handle message from NM, log the message and put in on a queue.
+     * Handles message from NM, logs the message and put in on a queue.
      */
     public void handleArchiveRequest(RfnDeviceArchiveRequest request) {
         if(rfnCommsLog.isEnabled(Level.INFO)) {
@@ -68,21 +68,26 @@ public class RfnDeviceArchiveRequestListener {
         });
     }
     
+    /**
+     * Attempts to lookup or create a device. Sends acknowledgment to NM.
+     */
     private void processRequest(Map.Entry<Long, RfnIdentifier> entry, String processor) {
-        RfnIdentifier rfnIdentifier = entry.getValue();
-        if (!rfnIdentifier.is_Empty_()) {
+        if (!entry.getValue().is_Empty_()) {
             try {
-                lookupAndAcknowledge(entry, processor, rfnIdentifier);
-            } catch (NotFoundException e) {
+                lookupAndAcknowledge(entry, processor);
+            } catch (Exception e) {
                 createAndAcknowedge(entry, processor);
             }
         } else {
-            acknowledgeEmptyIdentifier(entry, processor, rfnIdentifier);
+            acknowledgeEmptyIdentifier(entry, processor);
         }
     }
 
-    private void acknowledgeEmptyIdentifier(Map.Entry<Long, RfnIdentifier> entry, String processor,
-            RfnIdentifier rfnIdentifier) {
+    /**
+     * If RfnIdentifier is empty sends acknowledgement to NM
+     */
+    private void acknowledgeEmptyIdentifier(Map.Entry<Long, RfnIdentifier> entry, String processor) {
+        RfnIdentifier rfnIdentifier = entry.getValue();
         if (log.isInfoEnabled()) {
             log.info("Serial Number {}: Sensor Manufacturer:{} Sensor Model:{}",
                 rfnIdentifier.getSensorSerialNumber(), rfnIdentifier.getSensorManufacturer(),
@@ -91,36 +96,46 @@ public class RfnDeviceArchiveRequestListener {
         sendAcknowledgement(entry.getKey(), processor);
     }
 
-    private void lookupAndAcknowledge(Map.Entry<Long, RfnIdentifier> entry, String processor,
-            RfnIdentifier rfnIdentifier) {
+    /**
+     * If attempt to look up device by RfnIdentifier is successful, sends acknowledgement to NM
+     */
+    private void lookupAndAcknowledge(Map.Entry<Long, RfnIdentifier> entry, String processor) {
         rfnDeviceCreationService.incrementDeviceLookupAttempt();
-        rfnDeviceLookupService.getDevice(rfnIdentifier);
+        rfnDeviceLookupService.getDevice(entry.getValue());
         sendAcknowledgement(entry.getKey(), processor);
     }
 
+    /**
+     * Attempts to create device if successful sends acknowledgement to NM.
+     * If creation failed and the mode is dev or device is marked to always acknowledge sends acknowledgement to NM.
+     * Otherwise logs exception and acknowledgement is not sent to NM.
+     */
     private void createAndAcknowedge(Map.Entry<Long, RfnIdentifier> entry, String processor) {
         try {
             create(entry.getValue());
+            sendAcknowledgement(entry.getKey(), processor);
         } catch (RuntimeException e) {
             boolean isDev = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
             boolean isAcknowledgeable = e.getCause() instanceof Acknowledgeable;
             if (isDev || isAcknowledgeable) {
                 log.info("Exception:" + e.getMessage());
+                sendAcknowledgement(entry.getKey(), processor);
             } else {
-                throw e;
+                log.warn("Exception:" + e.getMessage());
             }
         }
-        sendAcknowledgement(entry.getKey(), processor);
     }
     
-    private RfnDevice create(RfnIdentifier identifier) {
+    /**
+     * Attempts to create device
+     */
+    private void create(RfnIdentifier identifier) {
         try {
             RfnDevice device = rfnDeviceCreationService.create(identifier);
             rfnDeviceCreationService.incrementNewDeviceCreated();
             if (log.isDebugEnabled()) {
                 log.debug("Created new device: " + device);
             }
-            return device;
         } catch (IgnoredTemplateException e) {
             throw new RuntimeException("Unable to create device for " + identifier + " because template is ignored", e);
         } catch (BadTemplateDeviceCreationException e) {
@@ -131,7 +146,7 @@ public class RfnDeviceArchiveRequestListener {
             log.warn("Creation failed for " + identifier + ", checking cache for any new entries.");
             //  Try another lookup in case someone else beat us to it
             try {
-                return rfnDeviceLookupService.getDevice(identifier);
+                rfnDeviceLookupService.getDevice(identifier);
             } catch (NotFoundException e1) {
                 throw new RuntimeException("Creation failed for " + identifier, e);
             }
@@ -146,13 +161,15 @@ public class RfnDeviceArchiveRequestListener {
         }
     }
 
-    protected void sendAcknowledgement(Long referenceId, String processor) {
+    /**
+     * Sends acknowledgement to NM
+     */
+    private void sendAcknowledgement(Long referenceId, String processor) {
         RfnDeviceArchiveResponse response = new RfnDeviceArchiveResponse();
         response.setReferenceIds(Sets.newHashSet(referenceId));
-        log.debug("Acknowledge {} by processor {}");
+        log.debug("Acknowledge {} by processor {}", referenceId, processor);
         jmsTemplate.convertAndSend(JmsApiDirectory.RFN_DEVICE_ARCHIVE.getResponseQueue().get().getName(), response);
     }
-    
     
     private class Processor extends Thread {
         private BlockingQueue<Map.Entry<Long, RfnIdentifier>> queue;
@@ -167,9 +184,9 @@ public class RfnDeviceArchiveRequestListener {
                 try {
                     Map.Entry<Long, RfnIdentifier> entry = queue.take();
                     log.debug("Processor {} processing entry {} remaining in queue {}", this.getName(), entry, queue.size());
-                   // processRequest(entry, this.getName());
-                } catch (InterruptedException e) {
-                    log.error("Processor {} is interrupted", this.getName(), e);
+                    processRequest(entry, this.getName());
+                } catch (Exception e) {
+                    log.error("Processor {}", this.getName(), e);
                 }
             }
         }
