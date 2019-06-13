@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 import com.cannontech.common.bulk.filter.UiFilter;
@@ -287,4 +288,9 @@ public interface ProgramService {
      * Build data for Program widget.
      */
     public Map<String, List<ProgramData>> buildProgramWidgetData(YukonUserContext userContext);
+
+    /**
+     * Gets Program history for program that ran in the specified time period.
+     */
+    public Map<String, List<ProgramData>> getProgramsHistoryDetail(DateTime from, DateTime to, YukonUserContext userContext);
 }

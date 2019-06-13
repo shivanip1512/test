@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +38,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.program.widget.model.GearData;
 import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
@@ -66,6 +68,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.ProgramUtils;
+import com.cannontech.loadcontrol.dao.LmProgramGearHistory;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -108,6 +111,10 @@ public class ProgramServiceImpl implements ProgramService {
 
     private static final long PROGRAM_CHANGE_TIMEOUT_MS = 5000;
     private static final int MAX_PROGRAM_TO_DISPLAY_ON_WIDGET = 10;
+    private static final String START_ACTION = "Start";
+    private static final String GEAR_CHANGE_ACTION = "Gear Change";
+    private static final String STOP_ACTION = "Stop";
+
     private final RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
 
@@ -906,4 +913,142 @@ public class ProgramServiceImpl implements ProgramService {
                                                                          .getTimeInMillis()))
                              .build();
     }
+
+    @Override
+    public Map<String, List<ProgramData>> getProgramsHistoryDetail(DateTime from, DateTime to,
+            YukonUserContext userContext) {
+
+        List<LmProgramGearHistory> programsHistoryDetail = loadControlProgramDao.getProgramsHistoryDetail(from, to);
+        List<ProgramData> previousDaysProgramData = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(programsHistoryDetail)) {
+            Map<Integer, List<LmProgramGearHistory>> programsByProgramHistoryId =
+                                                        groupProgramsByProgramHistoryId(programsHistoryDetail);
+
+            previousDaysProgramData = 
+                    programsByProgramHistoryId.entrySet()
+                                              .stream()
+                                              .map(entry -> buildProgramData(entry.getValue(), userContext))
+                                              .collect(Collectors.toList());
+
+        }
+        return groupProgramsByEventTime(previousDaysProgramData, userContext);
+    }
+
+    /**
+     * Group programs by programHistoryId, So that we have history of program with gears assigned
+     * or changed action, which can be on the same day or different day.This is needed as we can have gear
+     * assigned to a program on same and different dates, So using programHistoryId we will club them all.
+     */
+    private Map<Integer, List<LmProgramGearHistory>> groupProgramsByProgramHistoryId(List<LmProgramGearHistory> programsHistoryDetail) {
+        Map<Integer, List<LmProgramGearHistory>> programsByProgramHistoryId = 
+                         programsHistoryDetail.stream()
+                                              .collect(Collectors.groupingBy(
+                                                  program -> program.getProgramHistoryId(),
+                                                             LinkedHashMap::new, 
+                                                             Collectors.toCollection(ArrayList::new)));
+        return programsByProgramHistoryId;
+    }
+
+    /**
+     * This method is used to build program with gears. A Single program can have run with a single or 
+     * multiple gear.To Build ProgramData sort the list based on programGearHistoryId, this will give the 
+     * gear event happened with that program in proper order.After sorting compare the current iterating element
+     * with next element to build the gear data.
+     */
+    private ProgramData buildProgramData(List<LmProgramGearHistory> programsHistoryDetail, YukonUserContext userContext) {
+        programsHistoryDetail.sort(Comparator.comparingInt(LmProgramGearHistory::getProgramGearHistoryId));
+        List<GearData> gears = new ArrayList<>();
+
+        for (int i = 0; i < programsHistoryDetail.size(); i++) {
+            LmProgramGearHistory programHistory = programsHistoryDetail.get(i);
+            GearData gearData;
+            if (programsHistoryDetail.size() > 1) {
+                for (int j = i + 1; j < programsHistoryDetail.size(); j++) {
+                    LmProgramGearHistory nextProgramHistory = programsHistoryDetail.get(j);
+                    gearData = buildGearData(programHistory, nextProgramHistory);
+                    gears.add(gearData);
+                    break;
+                }
+            } else {
+                gearData = buildGearData(programHistory);
+                gears.add(gearData);
+            }
+        }
+
+        //As per need we have to club all the Program action event(start, gear change, stop) to a 
+        //single date on which the Program is started.The program at zero index will give that.
+        LmProgramGearHistory programHistory = programsHistoryDetail.get(0);
+
+        ProgramData programData = new ProgramData.ProgramDataBuilder(programHistory.getProgramId())
+                                                 .setEventTime(new DateTime(programHistory.getEventTime()))
+                                                 .setGears(gears)
+                                                 .setProgramName(programHistory.getProgramName())
+                                                 .build();
+        return programData;
+    }
+
+    /**
+     * In order to build gear data for multiple gear event(start,stop,change gear), we will compare the
+     * current iterated program with its next subsequent program.As the programsHistoryDetail is sorted
+     * based on programGearHistoryId,So we will get Program with action Start -> Change Gear(If gear is changed)
+     * -> Stop.Based on this we will be able to find out the gear start and stop time even if that
+     * occurred on same of different days.
+     */
+    private GearData buildGearData(LmProgramGearHistory programHistory, LmProgramGearHistory nextProgramHistory) {
+        DateTime gearStartTime = null;
+        DateTime gearStopTime = null;
+        GearData gearData = new GearData();
+        if (START_ACTION.equalsIgnoreCase(programHistory.getAction())
+            || GEAR_CHANGE_ACTION.equalsIgnoreCase(programHistory.getAction())) {
+            gearStartTime = new DateTime(programHistory.getEventTime());
+        }
+        if (STOP_ACTION.equalsIgnoreCase(nextProgramHistory.getAction())
+            || GEAR_CHANGE_ACTION.equalsIgnoreCase(nextProgramHistory.getAction())) {
+            gearStopTime = new DateTime(nextProgramHistory.getEventTime());
+        }
+        gearData.setGearName(programHistory.getGearName());
+        gearData.setStartDateTime(gearStartTime);
+        gearData.setStopDateTime(gearStopTime);
+        gearData.setEventTime(new DateTime(programHistory.getEventTime()));
+        return gearData;
+    }
+
+    
+    /**
+     * This is the overloaded method to build gear data in case we have only single gear event
+     * i.e either start or gear change or stop action.For handling scenario where the program is 
+     * started with gear but not stopped etc...
+     */
+    private GearData buildGearData(LmProgramGearHistory programHistory) {
+        DateTime gearStartTime = null;
+        DateTime gearStopTime = null;
+        GearData gearData = new GearData();
+        if (START_ACTION.equalsIgnoreCase(programHistory.getAction())
+            || GEAR_CHANGE_ACTION.equalsIgnoreCase(programHistory.getAction())) {
+            gearStartTime = new DateTime(programHistory.getEventTime());
+        } else if (STOP_ACTION.equalsIgnoreCase(programHistory.getAction())) {
+            gearStopTime = new DateTime(programHistory.getEventTime());
+        }
+        gearData.setGearName(programHistory.getGearName());
+        gearData.setStartDateTime(gearStartTime);
+        gearData.setStopDateTime(gearStopTime);
+        gearData.setEventTime(new DateTime(programHistory.getEventTime()));
+        return gearData;
+    }
+
+    /**
+     * Group ProgramData by EventTime to show program clubbed inside date.
+     */
+    private Map<String, List<ProgramData>> groupProgramsByEventTime(List<ProgramData> previousDaysProgram, YukonUserContext userContext) {
+        Map<String, List<ProgramData>> programDataByEventTime = 
+                      previousDaysProgram.stream()
+                                         .collect(Collectors.groupingBy(
+                                                  programData -> dateFormattingService.format(programData.getEventTime(), 
+                                                      DateFormattingService.DateFormatEnum.DATE, 
+                                                      userContext),
+                                                             LinkedHashMap::new, 
+                                                             Collectors.toCollection(ArrayList::new)));
+        return programDataByEventTime;
+    }
+
 }

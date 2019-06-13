@@ -1,6 +1,6 @@
 package com.cannontech.common.program.widget.model;
 
-import java.util.Date;
+import java.util.List;
 
 import org.joda.time.DateTime;
 
@@ -11,19 +11,17 @@ public class ProgramData {
     private String programName;
     private DateTime startDateTime;
     private DateTime stopDateTime;
-    private String gearName;
-    private String action;
-    private Date eventTime;
+    private DateTime eventTime;
+    private List<GearData> gears;
 
     private ProgramData(ProgramDataBuilder programDataBuilder) {
         this.programId = programDataBuilder.programId;
         this.programHistoryId = programDataBuilder.programHistoryId;
+        this.programName = programDataBuilder.programName;
+        this.eventTime = programDataBuilder.eventTime;
         this.startDateTime = programDataBuilder.startDateTime;
         this.stopDateTime = programDataBuilder.stopDateTime;
-        this.programName = programDataBuilder.programName;
-        this.gearName = programDataBuilder.gearName;
-        this.action = programDataBuilder.action;
-        this.eventTime = programDataBuilder.eventTime;
+        this.gears = programDataBuilder.gears;
     }
 
     public int getProgramId() {
@@ -46,27 +44,22 @@ public class ProgramData {
         return stopDateTime;
     }
 
-    public String getGearName() {
-        return gearName;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public Date getEventTime() {
+    public DateTime getEventTime() {
         return eventTime;
+    }
+
+    public List<GearData> getGears() {
+        return gears;
     }
 
     public static class ProgramDataBuilder {
         private int programId;
         private int programHistoryId;
         private String programName;
-        private String gearName;
-        private String action;
         private DateTime startDateTime;
         private DateTime stopDateTime;
-        private Date eventTime;
+        private DateTime eventTime;
+        private List<GearData> gears;
 
         public ProgramDataBuilder(int programId) {
             this.programId = programId;
@@ -86,16 +79,6 @@ public class ProgramData {
             return this;
         }
 
-        public ProgramDataBuilder setGearName(String gearName) {
-            this.gearName = gearName;
-            return this;
-        }
-
-        public ProgramDataBuilder setAction(String action) {
-            this.action = action;
-            return this;
-        }
-
         public ProgramDataBuilder setStartDateTime(DateTime startDateTime) {
             this.startDateTime = startDateTime;
             return this;
@@ -106,10 +89,16 @@ public class ProgramData {
             return this;
         }
 
-        public ProgramDataBuilder setEventTime(Date eventTime) {
+        public ProgramDataBuilder setEventTime(DateTime eventTime) {
             this.eventTime = eventTime;
             return this;
         }
+
+        public ProgramDataBuilder setGears(List<GearData> gears) {
+            this.gears = gears;
+            return this;
+        }
+
     }
 
 }
