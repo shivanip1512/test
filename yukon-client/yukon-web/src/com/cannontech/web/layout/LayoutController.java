@@ -87,7 +87,6 @@ public class LayoutController {
         
         b.add(JsLibrary.DEBUGGER.getPath(dev));
         b.add(JsLibrary.MODERNIZR.getPath(dev));
-        b.add(JsLibrary.JS_TIMEZONE_DETECT.getPath(dev));
         b.add(JsLibrary.MOMENT.getPath(dev));
         b.add(JsLibrary.MOMENT_TZ.getPath(dev));
         

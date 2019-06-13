@@ -67,6 +67,13 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
+  
+  <tag>
+    <name>getUsersTimezone</name>
+    <description>Retrieve the Users Timezone from Configuration Settings.</description>
+    <tag-class>com.cannontech.web.taglib.GetUsersTimezoneTag</tag-class>
+    <body-content>empty</body-content>
+  </tag>
 
   <!-- Start of user/role/roleproperty tags -->
   <tag>

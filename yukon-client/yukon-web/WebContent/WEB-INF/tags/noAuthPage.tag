@@ -44,7 +44,6 @@
 <cti:includeScript link="JQUERY_CHECK_ALL" force="true"/>
 <cti:includeScript link="JQUERY_FORM" force="true"/>
 <cti:includeScript link="JQUERY_PLACEHOLDER" force="true"/>
-<cti:includeScript link="JS_TIMEZONE_DETECT" force="true"/>
 
 <tags:jsGlobals/>
 

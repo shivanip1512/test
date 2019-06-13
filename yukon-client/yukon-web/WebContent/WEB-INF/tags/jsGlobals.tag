@@ -88,7 +88,7 @@ var yg = {
 
     },
     
-    timezone: jstz.determine().name(),
+    timezone: '<cti:getUsersTimezone/>',
     
     // Role properties
     rp: {
