@@ -61,7 +61,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy;
-import com.cannontech.web.tools.mapping.model.NetworkMapFilter.LinkStrength;
+import com.cannontech.web.tools.mapping.model.NetworkMapFilter.LinkQuality;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.util.WebFileUtils;
@@ -106,7 +106,7 @@ public class ComprehensiveMapController {
         model.addAttribute("gateways", gateways);
         
         model.addAttribute("colorCodeByOptions", ColorCodeBy.values());
-        model.addAttribute("linkStrengthOptions", LinkStrength.values());
+        model.addAttribute("linkQualityOptions", LinkQuality.values());
         
         return "comprehensiveMap/map.jsp";
     }
@@ -186,7 +186,7 @@ public class ComprehensiveMapController {
         headerRow[7] = accessor.getMessage(baseKey + "status");
         headerRow[8] = accessor.getMessage(baseKey + "macAddress");
         headerRow[9] = accessor.getMessage(baseKey + "nodeSN");
-        headerRow[10] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.LINK_STRENGTH");
+        headerRow[10] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.LINK_QUALITY");
         
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
         DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);
@@ -235,9 +235,9 @@ public class ComprehensiveMapController {
                 }
                 if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA)) {
                     NeighborData neighbor = (NeighborData) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA);
-                    LinkStrength linkStrength = LinkStrength.getLinkStrength(neighbor);
-                    String linkStrengthFormatted = accessor.getMessage(linkStrength.getFormatKey());
-                    dataRow[10] = linkStrengthFormatted;
+                    LinkQuality linkQuality = LinkQuality.getLinkQuality(neighbor);
+                    String linkQualityFormatted = accessor.getMessage(linkQuality.getFormatKey());
+                    dataRow[10] = linkQualityFormatted;
                 }
             }
             dataRows.add(dataRow);

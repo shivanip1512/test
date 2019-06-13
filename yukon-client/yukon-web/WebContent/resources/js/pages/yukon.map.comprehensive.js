@@ -323,7 +323,7 @@ yukon.map.comprehensive = (function () {
                 var gatewayError = $('#tooManyGatewaysError').val();
                 yukon.ui.alertError(gatewayError);
             }); 
-            $(".js-selected-link-strengths").chosen({width: "200px"});
+            $(".js-selected-link-qualities").chosen({width: "200px"});
             
             /** Setup the openlayers map. */
             _map = new ol.Map({

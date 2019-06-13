@@ -28,8 +28,8 @@
                 <tags:selectWithItems items="${gateways}" path="selectedGatewayIds" itemLabel="name" itemValue="id"
                     inputClass="js-selected-gateways" dataPlaceholder="${gatewayPlaceholder}"/>&nbsp;&nbsp;
                     
-                <cti:msg2 var="linkStrengthPlaceholder" key=".selectLinkStrength"/>
-                <tags:selectWithItems items="${linkStrengthOptions}" path="linkStrength" inputClass="js-selected-link-strengths" dataPlaceholder="${linkStrengthPlaceholder}"/>
+                <cti:msg2 var="linkQualityPlaceholder" key=".selectLinkQuality"/>
+                <tags:selectWithItems items="${linkQualityOptions}" path="linkQuality" inputClass="js-selected-link-qualities" dataPlaceholder="${linkQualityPlaceholder}"/>
                 
                 <div style="padding-top:5px">
                     <i:inline key=".colorCodeBy"/>&nbsp;

@@ -6,15 +6,15 @@
     <entry key="yukon.web.modules.operator.comprehensiveMap.pageDescription">Comprehensive Map</entry>
     
     <entry key="yukon.web.modules.operator.comprehensiveMap.selectGateways">Select Gateways</entry>
-    <entry key="yukon.web.modules.operator.comprehensiveMap.selectLinkStrength">Select Link Strength</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.selectLinkQuality">All Link Qualities</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.tooManyGateways">A maximum of 5 gateways may be selected.</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy">Color Code By:</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy.GATEWAY">Gateway</entry>
-    <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy.LINK_STRENGTH">Link Strength</entry>
-    <entry key="yukon.web.modules.operator.comprehensiveMap.linkStrength.GOOD">Good</entry>
-    <entry key="yukon.web.modules.operator.comprehensiveMap.linkStrength.OK">OK</entry>
-    <entry key="yukon.web.modules.operator.comprehensiveMap.linkStrength.WEAK">Weak</entry>
-    <entry key="yukon.web.modules.operator.comprehensiveMap.linkStrength.UNVERIFIED">Unverified</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy.LINK_QUALITY">Link Quality</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.linkQuality.EXCELLENT">Excellent</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.linkQuality.AVERAGE">Average</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.linkQuality.BELOW_AVERAGE">Below Average</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.linkQuality.EVALUATING">Evaluating</entry>
     
     <entry key="yukon.web.modules.operator.comprehensiveMap.findDevice">Find device:</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.meterNumberOrName">Meter Number or Name</entry>

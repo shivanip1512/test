@@ -14,7 +14,7 @@ public class NetworkMapFilter {
 
     private List<Integer> selectedGatewayIds;
     private ColorCodeBy colorCodeBy;
-    private List<LinkStrength> linkStrength;
+    private List<LinkQuality> linkQuality;
 
     public List<Integer> getSelectedGatewayIds() {
         return selectedGatewayIds;
@@ -32,12 +32,12 @@ public class NetworkMapFilter {
         this.colorCodeBy = colorCodeBy;
     }
 
-    public List<LinkStrength> getLinkStrength() {
-        return linkStrength;
+    public List<LinkQuality> getLinkQuality() {
+        return linkQuality;
     }
 
-    public void setLinkStrength(List<LinkStrength> linkStrength) {
-        this.linkStrength = linkStrength;
+    public void setLinkQuality(List<LinkQuality> linkQuality) {
+        this.linkQuality = linkQuality;
     }
     
     @Override
@@ -48,7 +48,7 @@ public class NetworkMapFilter {
     
     public enum ColorCodeBy implements DisplayableEnum {
         GATEWAY,
-        LINK_STRENGTH,;
+        LINK_QUALITY,;
 
         @Override
         public String getFormatKey() {
@@ -80,28 +80,28 @@ public class NetworkMapFilter {
         }
     }
     
-    public enum LinkStrength implements DisplayableEnum {
-        GOOD(Color.GREEN, Lists.newArrayList(1f,2f)),
-        OK(Color.BLUE, Lists.newArrayList(3f)),
-        WEAK(Color.ORANGE, Lists.newArrayList(4f,5f)),
-        UNVERIFIED(Color.GREY, Lists.newArrayList());
+    public enum LinkQuality implements DisplayableEnum {
+        EXCELLENT(Color.GREEN, Lists.newArrayList(1f,2f)),
+        AVERAGE(Color.BLUE, Lists.newArrayList(3f)),
+        BELOW_AVERAGE(Color.ORANGE, Lists.newArrayList(4f,5f)),
+        EVALUATING(Color.GREY, Lists.newArrayList());
         
-        private static int UNVERIFIED_LIMIT = 50;
+        private static int EVALUATING_LIMIT = 50;
         
         private Color color;
         private List<Float> linkCost;
-        LinkStrength(Color color, List<Float> linkCost) {
+        LinkQuality(Color color, List<Float> linkCost) {
             this.color = color;
             this.linkCost = linkCost;
         }
         public Color getColor() {
             return color;
         }
-        public static LinkStrength getLinkStrength(NeighborData neighborData) {
-            if(neighborData.getNumSamples() < UNVERIFIED_LIMIT) {
-                return LinkStrength.UNVERIFIED;
+        public static LinkQuality getLinkQuality(NeighborData neighborData) {
+            if(neighborData.getNumSamples() < EVALUATING_LIMIT) {
+                return LinkQuality.EVALUATING;
             }
-            return Lists.newArrayList(LinkStrength.values())
+            return Lists.newArrayList(LinkQuality.values())
                     .stream().filter(ls -> ls.linkCost.contains(neighborData.getNeighborLinkCost()))
                     .findFirst()
                     .orElseThrow(() -> new UnsupportedOperationException("Undefined link cost " + neighborData.getNeighborLinkCost()));
@@ -109,7 +109,7 @@ public class NetworkMapFilter {
         
         @Override
         public String getFormatKey() {
-            return "yukon.web.modules.operator.comprehensiveMap.linkStrength." + this;
+            return "yukon.web.modules.operator.comprehensiveMap.linkQuality." + this;
         }
     }
     

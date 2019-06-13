@@ -3,7 +3,7 @@ package com.cannontech.web.tools.mapping.service.impl;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_GATEWAY_NODES;
 import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.GATEWAY;
-import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.LINK_STRENGTH;
+import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.LINK_QUALITY;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,7 +70,7 @@ import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.Color;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.Legend;
-import com.cannontech.web.tools.mapping.model.NetworkMapFilter.LinkStrength;
+import com.cannontech.web.tools.mapping.model.NetworkMapFilter.LinkQuality;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.model.Parent;
 import com.cannontech.web.tools.mapping.model.RouteInfo;
@@ -549,14 +549,14 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
 
         try {
-            if (filter.getColorCodeBy() == LINK_STRENGTH) {
+            if (filter.getColorCodeBy() == LINK_QUALITY) {
                 Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData =
                     metadataMultiService.getMetadataForGatewayRfnIdentifiers(gateways.keySet(),
                         Set.of(PRIMARY_FORWARD_NEIGHBOR_DATA));
                 
                 //if user didn't specify link strength pre-fill with all values
-                if(filter.getLinkStrength().isEmpty()) {
-                    filter.setLinkStrength(Lists.newArrayList(LinkStrength.values()));
+                if(filter.getLinkQuality().isEmpty()) {
+                    filter.setLinkQuality(Lists.newArrayList(LinkQuality.values()));
                 }
                 
                 log.debug("Recieved neighbor data from NM for {} devices", neighborMetaData.size());
@@ -566,7 +566,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 
             } else if (filter.getColorCodeBy() == GATEWAY) {
                 
-                if(filter.getLinkStrength().isEmpty()) {
+                if(filter.getLinkQuality().isEmpty()) {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
                         metadataMultiService.getMetadata(gateways.keySet(), Set.of(PRIMARY_GATEWAY_NODES));
                     
@@ -609,7 +609,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 .map(result -> {
                 return (NeighborData) result.getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);
             }).filter(
-                neighborData -> filter.getLinkStrength().contains(LinkStrength.getLinkStrength(neighborData))).map(
+                neighborData -> filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData))).map(
                     NeighborData::getNeighborRfnIdentifier).collect(Collectors.toSet());
         if (!ids.isEmpty()) {
             Color color = Color.values()[i.getAndIncrement()];
@@ -642,12 +642,12 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private void loadMapColorCodedByLinkStrength(NetworkMapFilter filter, MessageSourceAccessor accessor, NetworkMap map,
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData) {
         log.debug("Loading map filtered by link strength");
-        Map<LinkStrength, List<NeighborData>> groupedNeighbors = neighborMetaData.values().stream()
+        Map<LinkQuality, List<NeighborData>> groupedNeighbors = neighborMetaData.values().stream()
                 .filter( result -> result.isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA))
                 .map(result -> {
                     return (NeighborData) result.getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);})
-                .filter(neighborData -> filter.getLinkStrength().contains(LinkStrength.getLinkStrength(neighborData)))
-                .collect(Collectors.groupingBy(neighborData -> LinkStrength.getLinkStrength(neighborData),
+                .filter(neighborData -> filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData)))
+                .collect(Collectors.groupingBy(neighborData -> LinkQuality.getLinkQuality(neighborData),
                             HashMap::new, Collectors.toList()));
 
         groupedNeighbors.forEach((linkStrength, neighbors) -> {
