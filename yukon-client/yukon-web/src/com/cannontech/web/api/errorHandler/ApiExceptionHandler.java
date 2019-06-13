@@ -100,8 +100,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler({DataIntegrityViolationException.class, SQLException.class})
-    protected ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex,
+    @ExceptionHandler({DataIntegrityViolationException.class, SQLException.class, PersistenceException.class})
+    protected ResponseEntity<Object> handleDataIntegrityViolation(Exception ex,
             WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();
@@ -118,24 +118,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatus.INTERNAL_SERVER_ERROR);
     }
     
-    @ExceptionHandler({PersistenceException.class})
-    protected ResponseEntity<Object> handlePersistenceException(PersistenceException ex,
-            WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-
-        log.error("Database error" + ex.getMessage());
-        if (ex.getCause() instanceof ConstraintViolationException) {
-
-            return new ResponseEntity<Object>(
-                new ApiError(HttpStatus.CONFLICT.value(), "Database error", uniqueKey), new HttpHeaders(),
-                HttpStatus.CONFLICT);
-        }
-        return new ResponseEntity<Object>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Database error", uniqueKey),
-            HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     protected ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex,
             WebRequest request) {

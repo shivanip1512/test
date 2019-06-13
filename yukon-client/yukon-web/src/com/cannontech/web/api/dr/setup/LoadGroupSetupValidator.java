@@ -28,10 +28,10 @@ public class LoadGroupSetupValidator<T extends LoadGroupBase> extends SimpleVali
     @Override
     protected void doValidation(T loadGroup, Errors errors) {
         // Type 
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", key + "type.required");
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", key + "required", new Object[] { "Type" } );
 
         // Group Name
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", key + "groupName.required");
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", key + "required", new Object[] { "Group Name" });
         if (!errors.hasFieldErrors("name")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", loadGroup.getName(), 60);
         }

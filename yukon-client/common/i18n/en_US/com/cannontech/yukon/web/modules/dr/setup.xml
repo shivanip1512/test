@@ -26,20 +26,6 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.retrieve.error">Load Group could not be retrieved.</entry>
 
 <!-- Load Group Validation -->
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.groupName.required">Group Name is required.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.groupName.unique">Group Name should be unique.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.type.required">Type is required.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.routeID.required">Route is required.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.serviceProvider.required">Service Provider is required.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.serial.required">Serial Number is required.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.geo.required">Geo is required.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.substation.required">Substation is required.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.feeder.required">Feeder is required.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.zip.required">Zip is required.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.user.required">User is required.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.program.required">Program is required.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.splinter.required">Splinter is required.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.relayUsage.required">Relay Usage is required.</entry>
-
-
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.required">{0} is required.</entry>
 </properties>
