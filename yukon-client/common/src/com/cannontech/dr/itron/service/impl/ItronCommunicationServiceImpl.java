@@ -27,6 +27,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,7 @@ import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
@@ -522,6 +524,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 log.error("Unable to download file: " + fileURL, e);
             }
         }
+        deleteOldItronFiles();
         return zipFiles(zipName, files);
     }
     
@@ -544,6 +547,36 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.error("Unable to zip files", e);
             throw new ItronCommunicationException("Unable to zip files", e);
         }
+    }
+    
+    private void deleteOldItronFiles() {
+        int daysToKeep = settingDao.getInteger(GlobalSettingType.HISTORY_CLEANUP_DAYS_TO_KEEP);
+        if (daysToKeep > 0) {
+            DateTime retentionDate = new DateTime().minusDays(daysToKeep);
+            log.info("Itron archive file cleanup started. Deleting files last used before " + retentionDate.toDate().toString() + ".");
+            File dir = new File(CtiUtilities.getItronDirPath());
+            File[] directoryListing = dir.listFiles();
+            int filesDeleted = 0;
+            try {
+                for (File itronZip : directoryListing) {
+                    if (itronZip.exists()) {
+                        DateTime lastUsedDate = new DateTime(itronZip.lastModified());
+                        if (lastUsedDate.compareTo(retentionDate)<0) {
+                            if (itronZip.delete()) {
+                                filesDeleted++;
+                                log.info("Deleted itron archive file: " + itronZip.getPath());
+                            }
+                        }
+                    }   
+                }
+            } catch (Exception e) {
+                log.error("Unable to delete old file archives", e);
+                throw new ItronCommunicationException("Unable to delete old file archives", e);
+            }
+            log.info("Itron archive file cleanup is complete. " + filesDeleted + " log files were deleted.");
+        } else {
+            log.info("Itron archive file cleanup is disabled. No files were deleted.");
+        }        
     }
     
     /**
