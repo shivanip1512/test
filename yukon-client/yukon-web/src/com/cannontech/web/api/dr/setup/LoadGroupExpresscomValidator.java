@@ -98,7 +98,7 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
         }
         if (loadGroup.getAddressUsage().contains("L")) {
             // validate Loads
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "relayUsage", key + "relayUsage.required",
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "relayUsage", key + "required",
                 new Object[] { "Relay Usage" });
         }
     }
