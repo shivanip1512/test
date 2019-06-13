@@ -43,7 +43,8 @@ public class LoadGroupSetupController {
     private static final String drLoadGroupSaveUrl = "/dr/setup/loadGroup/save";
     private static final String drLoadGroupRetrieveUrl = "/dr/setup/loadGroup/";
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
-    
+    private static final List<PaoType> switchTypes = PaoType.getAllLMGroupTypes().asList();
+
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
 
@@ -55,7 +56,6 @@ public class LoadGroupSetupController {
             loadGroup = (LoadGroupBase) model.get("loadGroup");
         }
         model.addAttribute("loadGroup", loadGroup);
-        List<PaoType> switchTypes = PaoType.getAllLMGroupTypes().asList();
         model.addAttribute("switchTypes", switchTypes);
         return "dr/setup/loadGroup/view.jsp";
     }
@@ -85,7 +85,6 @@ public class LoadGroupSetupController {
             loadGroup = (LoadGroupBase) model.get("loadGroup");
         }
         model.addAttribute("loadGroup", loadGroup);
-        List<PaoType> switchTypes = PaoType.getAllLMGroupTypes().asList();
         model.addAttribute("switchTypes", switchTypes);
         return "dr/setup/loadGroup/view.jsp";
     }
