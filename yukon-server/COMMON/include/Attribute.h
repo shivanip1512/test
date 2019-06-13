@@ -85,7 +85,6 @@ public:
     static const Attribute  kVArhRateB;
     static const Attribute  kVArhRateC;
     static const Attribute  kVArhRateD;
-    static const Attribute  LMGroupStatus;
     static const Attribute  LoadProfile;
     static const Attribute  LoadSideVoltageDetected;
     static const Attribute  MeterBoxCoverRemoval;
@@ -524,6 +523,14 @@ public:
     static const Attribute  NeutralCurrentSensor;
     static const Attribute  SerialNumber;
     static const Attribute  UdpPort;
+    
+    static const Attribute  LMGroupStatus;
+    static const Attribute  LMDailyHistory;
+    static const Attribute  LMMonthHistory;
+    static const Attribute  LMSeasonHistory;
+    static const Attribute  LMAnnualHistory;
+    static const Attribute  LMControlCountdown;
+    
     static const Attribute  ConnectedLoad;
     static const Attribute  DiversifiedLoad;
     static const Attribute  MaxLoadReduction;

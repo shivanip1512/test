@@ -94,7 +94,6 @@ INIT_ATTRIBUTE( kVArhRateA,                                         "KVARH_RATE_
 INIT_ATTRIBUTE( kVArhRateB,                                         "KVARH_RATE_B" );
 INIT_ATTRIBUTE( kVArhRateC,                                         "KVARH_RATE_C" );
 INIT_ATTRIBUTE( kVArhRateD,                                         "KVARH_RATE_D" );
-INIT_ATTRIBUTE( LMGroupStatus,                                      "LM_GROUP_STATUS" );
 INIT_ATTRIBUTE( LoadProfile,                                        "LOAD_PROFILE" );
 INIT_ATTRIBUTE( LoadSideVoltageDetected,                            "LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED" );
 INIT_ATTRIBUTE( MeterBoxCoverRemoval,                               "METER_BOX_COVER_REMOVAL_FLAG" );
@@ -533,6 +532,14 @@ INIT_ATTRIBUTE( LastControlReason,                                  "LAST_CONTRO
 INIT_ATTRIBUTE( NeutralCurrentSensor,                               "NEUTRAL_CURRENT_SENSOR" );
 INIT_ATTRIBUTE( SerialNumber,                                       "SERIAL_NUMBER" );
 INIT_ATTRIBUTE( UdpPort,                                            "UDP_PORT" );
+
+INIT_ATTRIBUTE( LMGroupStatus,                                      "LM_GROUP_STATUS" );
+INIT_ATTRIBUTE( LMDailyHistory,                                     "LM_DAILY_HISTORY" );
+INIT_ATTRIBUTE( LMMonthHistory,                                     "LM_MONTH_HISTORY" );
+INIT_ATTRIBUTE( LMSeasonHistory,                                    "LM_SEASON_HISTORY" );
+INIT_ATTRIBUTE( LMAnnualHistory,                                    "LM_ANNUAL_HISTORY" );
+INIT_ATTRIBUTE( LMControlCountdown,                                 "LM_CONTROL_COUNTDOWN" );
+
 INIT_ATTRIBUTE( ConnectedLoad,                                      "CONNECTED_LOAD" );
 INIT_ATTRIBUTE( DiversifiedLoad,                                    "DIVERSIFIED_LOAD" );
 INIT_ATTRIBUTE( MaxLoadReduction,                                   "MAX_LOAD_REDUCTION" );
