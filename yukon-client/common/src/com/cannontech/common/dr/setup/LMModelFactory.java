@@ -14,6 +14,7 @@ public class LMModelFactory {
         case LM_GROUP_METER_DISCONNECT:
         case LM_GROUP_HONEYWELL:
         case LM_GROUP_ECOBEE:
+        case LM_GROUP_NEST:
              loadGroup = new LoadGroupBase();
              break;
         case LM_GROUP_EXPRESSCOMM:
