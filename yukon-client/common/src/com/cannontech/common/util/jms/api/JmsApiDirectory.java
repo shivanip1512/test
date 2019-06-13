@@ -84,8 +84,6 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.core.dynamic.RichPointData;
-import com.cannontech.da.rfn.message.archive.RfDaArchiveRequest;
-import com.cannontech.da.rfn.message.archive.RfDaArchiveResponse;
 import com.cannontech.dr.dao.LmReportedAddress;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
@@ -723,23 +721,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER_DEV_PAGES)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
-    
-    //TODO: use this in RfnEventTestingServiceImpl
-    public static JmsApi<RfDaArchiveRequest,?,RfDaArchiveResponse> RF_DA_ARCHIVE =
-            JmsApi.builder(RfDaArchiveRequest.class, RfDaArchiveResponse.class)
-                  .name("RF DA Archive")
-                  .description("A notification from Network Manager to Yukon to provide distribution automation "
-                          + "device data.")
-                  .communicationPattern(REQUEST_RESPONSE)
-                  .queue(new JmsQueue("yukon.qr.obj.da.rfn.RfDaArchiveRequest"))
-                  .responseQueue(new JmsQueue("yukon.qr.obj.da.rfn.RfDaArchiveResponse"))
-                  .requestMessage(RfDaArchiveRequest.class)
-                  .responseMessage(RfDaArchiveResponse.class)
-                  .sender(NETWORK_MANAGER)
-                  .sender(YUKON_WEBSERVER_DEV_PAGES)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .build();
-    
+        
     //TODO: use this in RfnEventTestingServiceImpl
     public static JmsApi<RfnAlarmArchiveRequest,?,RfnAlarmArchiveResponse> RF_ALARM_ARCHIVE =
             JmsApi.builder(RfnAlarmArchiveRequest.class, RfnAlarmArchiveResponse.class)
@@ -1012,7 +994,7 @@ public final class JmsApiDirectory {
                   .name("Rfn Meta Data Multi")
                   .description("Sends metadata request to NM.")
                   .communicationPattern(REQUEST_RESPONSE)
-                  .queue(new JmsQueue("yukon.qr.obj.common.rfn.MetadataMultiRequest"))
+                  .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.metadatamulti.request"))
                   .responseQueue(JmsQueue.TEMP_QUEUE)
                   .requestMessage(RfnMetadataMultiRequest.class)
                   .responseMessage(RfnMetadataMultiResponse.class)
@@ -1150,7 +1132,6 @@ public final class JmsApiDirectory {
                 RFN_METADATA, 
                 RF_METADATA_MULTI,
                 RF_ALARM_ARCHIVE,
-                RF_DA_ARCHIVE,
                 RF_EVENT_ARCHIVE,
                 RFN_DEVICE_ARCHIVE);
         
