@@ -55,8 +55,7 @@ public class LoadGroupSetupController {
             loadGroup = (LoadGroupBase) model.get("loadGroup");
         }
         model.addAttribute("loadGroup", loadGroup);
-        List<PaoType> switchTypes =
-            Lists.newArrayList(PaoType.LM_GROUP_METER_DISCONNECT, PaoType.LM_GROUP_HONEYWELL, PaoType.LM_GROUP_ECOBEE);
+        List<PaoType> switchTypes = PaoType.getAllLMGroupTypes().asList();
         model.addAttribute("switchTypes", switchTypes);
         return "dr/setup/loadGroup/view.jsp";
     }
@@ -86,8 +85,7 @@ public class LoadGroupSetupController {
             loadGroup = (LoadGroupBase) model.get("loadGroup");
         }
         model.addAttribute("loadGroup", loadGroup);
-        List<PaoType> switchTypes =
-            Lists.newArrayList(PaoType.LM_GROUP_METER_DISCONNECT, PaoType.LM_GROUP_HONEYWELL, PaoType.LM_GROUP_ECOBEE);
+        List<PaoType> switchTypes = PaoType.getAllLMGroupTypes().asList();
         model.addAttribute("switchTypes", switchTypes);
         return "dr/setup/loadGroup/view.jsp";
     }

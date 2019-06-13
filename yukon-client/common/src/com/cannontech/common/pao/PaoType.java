@@ -331,6 +331,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> tlvReportingTypes;
     private final static ImmutableSet<PaoType> gasMeterTypes;
     private final static ImmutableSet<PaoType> nestTypes;
+    private final static ImmutableSet<PaoType> LMGroupTypes;
 
     public final static int INVALID = -1;
     
@@ -728,6 +729,27 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFG201,
             RFG301
             );
+
+        LMGroupTypes= ImmutableSet.of(
+            LM_GROUP_DIGI_SEP,
+            LM_GROUP_ECOBEE,
+            LM_GROUP_EMETCON,
+            LM_GROUP_EXPRESSCOMM,
+            LM_GROUP_HONEYWELL,
+            LM_GROUP_GOLAY,
+            LM_GROUP_ITRON,
+            LM_GROUP_MCT,
+            LM_GROUP_METER_DISCONNECT,
+            LM_GROUP_NEST,
+            LM_GROUP_POINT,
+            LM_GROUP_RFN_EXPRESSCOMM,
+            LM_GROUP_RIPPLE,
+            LM_GROUP_SA205,
+            LM_GROUP_SA305,
+            LM_GROUP_SADIGITAL,
+            LM_GROUP_VERSACOM
+            );
+
         rfElectricTypes = Sets.difference(rfMeterTypes, Sets.union(waterMeterTypes, gasMeterTypes)).immutableCopy();
     }
     
@@ -1091,7 +1113,13 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public static ImmutableSet<PaoType> getTlvReportingTypes() {
         return tlvReportingTypes;
     }
-    
+    /**
+     * @return set of all LM Group types
+     */
+    public static ImmutableSet<PaoType> getAllLMGroupTypes() {
+        return LMGroupTypes;
+    }
+
     /**
      * Maps PaoType String IDs to their corresponding integer device IDs.
      * @param typeString
