@@ -11,15 +11,14 @@ import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigHelper;
-import static com.cannontech.common.config.MasterConfigString.*;
 import com.cannontech.common.exception.StarsNotCreatedException;
 import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.version.CTIDatabase;
+import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.MetaDataDatabaseVendorResolver;
 import com.cannontech.dbtools.updater.dao.impl.DBupdatesDaoImpl;
 import com.cannontech.tools.gui.IRunnableDBTool;
 
@@ -93,9 +92,6 @@ public class DBUpdater extends MessageFrameAdaptor {
     public final static String[] CMD_LINE_PARAM_NAMES = { IRunnableDBTool.PROP_VALUE, "verbose", "nightly" };
     private static final String oracleDBPath = "/Client/DBScripts/oracle";
     private static final String sqlServerDBPath = "/Client/DBScripts/sqlserver";
-    private static ConfigurationSource configSource = null;
-    private static final String oracleDB="oracle";
-    private static final String oracle12DB="oracle12";
     
     public DBUpdater() {
         super();
@@ -419,15 +415,13 @@ public class DBUpdater extends MessageFrameAdaptor {
     private void getUpdateCommands() {
         String srcPath = System.getProperty(CMD_LINE_PARAM_NAMES[0]);
         // "d:/eclipse/head/yukon-database/DBUpdates/oracle" );
-        
-        if (configSource == null) {
-            configSource = MasterConfigHelper.getConfiguration();
-        }
-        
+
         if (srcPath == null) {
             String yukonBase = CtiUtilities.getYukonBase();
-            String dbTypeName = configSource.getString(DB_TYPE);
-            if (dbTypeName.equalsIgnoreCase(oracleDB) || dbTypeName.equalsIgnoreCase(oracle12DB)) {
+            MetaDataDatabaseVendorResolver resolver = new MetaDataDatabaseVendorResolver();
+            resolver.setDataSource(PoolManager.getYukonDataSource());
+            DatabaseVendor databaseVendor = resolver.getDatabaseVendor();
+            if (databaseVendor.isOracle()) {
                 srcPath = yukonBase + oracleDBPath;
             } else {
                 srcPath = yukonBase + sqlServerDBPath;
