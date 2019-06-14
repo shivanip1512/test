@@ -29,9 +29,11 @@ public class ApiTokenAuthentication {
     }
 
     private String generateToken() {
-        baseURI = ApiRequestHelper.getProperty("baseURI");
-        File file = ApiRequestHelper.getInputFile("login.json");
-        return given().accept("application/json").contentType("application/json").body(file).when().post(
+        baseURI = ApiCallHelper.getProperty("baseURI");
+        File file = ApiCallHelper.getInputFile("login.json");
+        String authTokenValue = given().accept("application/json").contentType("application/json").body(file).when().post(
             "/api/token").then().extract().path("token").toString();
+        tokenCache.put(authTokenKey, authTokenValue);
+        return authTokenValue;
     }
 }

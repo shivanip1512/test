@@ -8,7 +8,7 @@ import java.util.HashMap;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import com.cannontech.rest.api.common.ApiRequestHelper;
+import com.cannontech.rest.api.common.ApiCallHelper;
 
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
@@ -17,13 +17,13 @@ public class LoadGroupSetupApiControllerTest {
 
     @BeforeTest
     public void setup() {
-        baseURI = ApiRequestHelper.getProperty("baseURI");
+        baseURI = ApiCallHelper.getProperty("baseURI");
 
     }
 
     @Test
     public void Test_LmGroupMeterDisconnect_Create() {
-        ExtractableResponse<?> response = ApiRequestHelper.post("saveloadgroup", "loadgroup\\lmGroupMeterDisconnectCreate.json");
+        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", "loadgroup\\lmGroupMeterDisconnectCreate.json");
         String paoId = ("paoId").toString();
         assertTrue("PAO ID should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
@@ -33,12 +33,12 @@ public class LoadGroupSetupApiControllerTest {
     public void Test_LmGroupMeterDisconnect_Get() {
 
         ExtractableResponse<?> createResponse =
-            ApiRequestHelper.post("saveloadgroup", "loadgroup\\lmGroupMeterDisconnectGet.json");
+            ApiCallHelper.post("saveloadgroup", "loadgroup\\lmGroupMeterDisconnectGet.json");
         String paoId = createResponse.path("paoId").toString();
         assertTrue("PAO ID should not be Null", paoId != null);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
 
-        ExtractableResponse<?> getResponse = ApiRequestHelper.get("getloadgroup", paoId);
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup", paoId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
         JsonPath jsonPath = getResponse.jsonPath();

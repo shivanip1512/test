@@ -9,7 +9,7 @@ import java.util.Properties;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.specification.RequestSpecification;
 
-public class ApiRequestHelper {
+public class ApiCallHelper {
     private static String userDirectory = System.getProperty("user.dir");
     private static String authToken = new ApiTokenAuthentication().getAuthToken();
 
