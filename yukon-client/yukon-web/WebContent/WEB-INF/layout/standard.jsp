@@ -59,11 +59,11 @@
     <script src="<c:url value="/resources/js/pages/yukon.smart.notifications.js"/>"></script>
 </c:if>
 
-<audio id="alert-audio">
-    <source src="<cti:url value="/WebConfig/yukon/audio/beep1-shortened.mp3"/>" type="audio/mpeg">
-</audio>
 </head>
 <body>
+    <audio id="alert-audio">
+        <source src="<cti:url value="/WebConfig/yukon/audio/beep1-shortened.mp3"/>" type="audio/mpeg">
+    </audio>
     <cti:msgScope paths="layout.standard">
     
     <cti:csrfToken var="csrfToken"/>
