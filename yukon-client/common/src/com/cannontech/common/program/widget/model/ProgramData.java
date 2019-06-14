@@ -12,6 +12,7 @@ public class ProgramData {
     private DateTime startDateTime;
     private DateTime stopDateTime;
     private DateTime eventTime;
+    private String status;
     private List<GearData> gears;
 
     private ProgramData(ProgramDataBuilder programDataBuilder) {
@@ -21,6 +22,7 @@ public class ProgramData {
         this.eventTime = programDataBuilder.eventTime;
         this.startDateTime = programDataBuilder.startDateTime;
         this.stopDateTime = programDataBuilder.stopDateTime;
+        this.status = programDataBuilder.status;
         this.gears = programDataBuilder.gears;
     }
 
@@ -48,6 +50,10 @@ public class ProgramData {
         return eventTime;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
     public List<GearData> getGears() {
         return gears;
     }
@@ -59,6 +65,7 @@ public class ProgramData {
         private DateTime startDateTime;
         private DateTime stopDateTime;
         private DateTime eventTime;
+        private String status;
         private List<GearData> gears;
 
         public ProgramDataBuilder(int programId) {
@@ -96,6 +103,11 @@ public class ProgramData {
 
         public ProgramDataBuilder setGears(List<GearData> gears) {
             this.gears = gears;
+            return this;
+        }
+
+        public ProgramDataBuilder setStatus(String status) {
+            this.status = status;
             return this;
         }
 

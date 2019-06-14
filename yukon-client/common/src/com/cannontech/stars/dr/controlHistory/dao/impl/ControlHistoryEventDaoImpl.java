@@ -13,6 +13,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.loadcontrol.dao.LmProgramGearHistory;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.dr.controlHistory.dao.ControlHistoryEventDao;
@@ -110,7 +111,8 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
         sql.append("where pwp.ProgramId").eq(programId);
         sql.append("and pgh.EventTime").gte(startDateTime);
         sql.append("and pgh.EventTime").lt(endDateTime);
-        sql.append("and (pgh.Action = 'Start' or pgh.Action = 'Gear Change')");
+        sql.append("and (pgh.Action").eq_k(LmProgramGearHistory.GearAction.START);
+        sql.append("or pgh.Action").eq_k(LmProgramGearHistory.GearAction.GEAR_CHANGE).append(")");
         
         name = yukonJdbcTemplate.query(sql, TypeRowMapper.STRING);
         

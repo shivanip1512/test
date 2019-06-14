@@ -253,7 +253,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         sql.append(      "WHERE gh.eventTime").lte(when);
         sql.append(          "AND gh.eventTime").gt(when.toInstant().minus(Duration.standardDays(30)));
         sql.append(          "AND ph.programId").eq(programId);
-        sql.append(          "AND gh.action").eq("Start");
+        sql.append(          "AND gh.action").eq_k(LmProgramGearHistory.GearAction.START);
         sql.append(      ") f");
         sql.append("WHERE rowNumber = 1");
         LmProgramGearHistory startHist;

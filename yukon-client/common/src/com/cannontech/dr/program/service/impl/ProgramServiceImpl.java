@@ -69,6 +69,7 @@ import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.ProgramUtils;
 import com.cannontech.loadcontrol.dao.LmProgramGearHistory;
+import com.cannontech.loadcontrol.dao.LmProgramGearHistory.GearAction;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -111,9 +112,6 @@ public class ProgramServiceImpl implements ProgramService {
 
     private static final long PROGRAM_CHANGE_TIMEOUT_MS = 5000;
     private static final int MAX_PROGRAM_TO_DISPLAY_ON_WIDGET = 10;
-    private static final String START_ACTION = "Start";
-    private static final String GEAR_CHANGE_ACTION = "Gear Change";
-    private static final String STOP_ACTION = "Stop";
 
     private final RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
@@ -982,6 +980,7 @@ public class ProgramServiceImpl implements ProgramService {
         ProgramData programData = new ProgramData.ProgramDataBuilder(programHistory.getProgramId())
                                                  .setEventTime(new DateTime(programHistory.getEventTime()))
                                                  .setGears(gears)
+                                                 .setStatus("Completed")
                                                  .setProgramName(programHistory.getProgramName())
                                                  .build();
         return programData;
@@ -998,18 +997,22 @@ public class ProgramServiceImpl implements ProgramService {
         DateTime gearStartTime = null;
         DateTime gearStopTime = null;
         GearData gearData = new GearData();
-        if (START_ACTION.equalsIgnoreCase(programHistory.getAction())
-            || GEAR_CHANGE_ACTION.equalsIgnoreCase(programHistory.getAction())) {
-            gearStartTime = new DateTime(programHistory.getEventTime());
+        try {
+            GearAction gearAction = GearAction.getForDbString(programHistory.getAction());
+            if (GearAction.START == gearAction || GearAction.GEAR_CHANGE == gearAction) {
+                gearStartTime = new DateTime(programHistory.getEventTime());
+            }
+            GearAction nextGearAction = GearAction.getForDbString(nextProgramHistory.getAction());
+            if (GearAction.STOP == nextGearAction || GearAction.GEAR_CHANGE == nextGearAction) {
+                gearStopTime = new DateTime(nextProgramHistory.getEventTime());
+            }
+            gearData.setGearName(programHistory.getGearName());
+            gearData.setStartDateTime(gearStartTime);
+            gearData.setStopDateTime(gearStopTime);
+            gearData.setEventTime(new DateTime(programHistory.getEventTime()));
+        } catch (IllegalArgumentException iae) {
+            log.info(iae.getMessage());
         }
-        if (STOP_ACTION.equalsIgnoreCase(nextProgramHistory.getAction())
-            || GEAR_CHANGE_ACTION.equalsIgnoreCase(nextProgramHistory.getAction())) {
-            gearStopTime = new DateTime(nextProgramHistory.getEventTime());
-        }
-        gearData.setGearName(programHistory.getGearName());
-        gearData.setStartDateTime(gearStartTime);
-        gearData.setStopDateTime(gearStopTime);
-        gearData.setEventTime(new DateTime(programHistory.getEventTime()));
         return gearData;
     }
 
@@ -1023,16 +1026,20 @@ public class ProgramServiceImpl implements ProgramService {
         DateTime gearStartTime = null;
         DateTime gearStopTime = null;
         GearData gearData = new GearData();
-        if (START_ACTION.equalsIgnoreCase(programHistory.getAction())
-            || GEAR_CHANGE_ACTION.equalsIgnoreCase(programHistory.getAction())) {
-            gearStartTime = new DateTime(programHistory.getEventTime());
-        } else if (STOP_ACTION.equalsIgnoreCase(programHistory.getAction())) {
-            gearStopTime = new DateTime(programHistory.getEventTime());
+        try {
+            GearAction gearAction = GearAction.getForDbString(programHistory.getAction());
+            if (GearAction.START == gearAction || GearAction.GEAR_CHANGE == gearAction) {
+                gearStartTime = new DateTime(programHistory.getEventTime());
+            } else if (GearAction.STOP == gearAction) {
+                gearStopTime = new DateTime(programHistory.getEventTime());
+            }
+            gearData.setGearName(programHistory.getGearName());
+            gearData.setStartDateTime(gearStartTime);
+            gearData.setStopDateTime(gearStopTime);
+            gearData.setEventTime(new DateTime(programHistory.getEventTime()));
+        } catch (IllegalArgumentException iae) {
+            log.info(iae.getMessage());
         }
-        gearData.setGearName(programHistory.getGearName());
-        gearData.setStartDateTime(gearStartTime);
-        gearData.setStopDateTime(gearStopTime);
-        gearData.setEventTime(new DateTime(programHistory.getEventTime()));
         return gearData;
     }
 

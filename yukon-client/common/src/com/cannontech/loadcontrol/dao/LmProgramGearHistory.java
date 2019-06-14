@@ -1,6 +1,11 @@
 package com.cannontech.loadcontrol.dao;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.Date;
+
+import com.cannontech.common.util.DatabaseRepresentationSource;
+import com.google.common.collect.ImmutableMap;
 
 
 public class LmProgramGearHistory {
@@ -16,7 +21,42 @@ public class LmProgramGearHistory {
     private String gearName;
     private int gearId;
     private String reason;
-    
+
+public enum GearAction implements DatabaseRepresentationSource {
+
+        START("Start"),
+        GEAR_CHANGE("Gear Change"),
+        STOP("Stop"),
+        UNKNOWN("Unknown");
+
+        String dbString;
+
+        private GearAction(String dbString) {
+            this.dbString = dbString;
+        }
+
+        private final static ImmutableMap<String, GearAction> lookupByDbString;
+
+        static {
+            ImmutableMap.Builder<String, GearAction> dbBuilder = ImmutableMap.builder();
+            for (GearAction gearAction : values()) {
+                dbBuilder.put(gearAction.dbString, gearAction);
+            }
+            lookupByDbString = dbBuilder.build();
+        }
+
+        public static GearAction getForDbString(String dbString) throws IllegalArgumentException {
+            GearAction gearAction = lookupByDbString.get(dbString);
+            checkArgument(gearAction != null, dbString);
+            return gearAction;
+        }
+
+        @Override
+        public Object getDatabaseRepresentation() {
+            return dbString;
+        }
+    }
+
     public int getProgramId() {
     	return programId;
     }
