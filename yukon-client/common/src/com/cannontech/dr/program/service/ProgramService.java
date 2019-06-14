@@ -298,5 +298,5 @@ public interface ProgramService {
      * Build Program Details data for today, next control day after today and
      * previous 7 days.
      */
-    public Map<String, List<ProgramData>> buildProgrmDetailsData(YukonUserContext userContext);
+    public Map<String, List<ProgramData>> buildProgramDetailsData(YukonUserContext userContext);
 }

@@ -214,7 +214,7 @@ public class ProgramServiceAdapter implements ProgramService {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
-    public Map<String, List<ProgramData>> buildProgrmDetailsData(YukonUserContext userContext) {
+    public Map<String, List<ProgramData>> buildProgramDetailsData(YukonUserContext userContext) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 }

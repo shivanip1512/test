@@ -830,7 +830,7 @@ public class ProgramServiceImpl implements ProgramService {
      * 
      */
     @Override
-    public Map<String, List<ProgramData>> buildProgrmDetailsData(YukonUserContext userContext) {
+    public Map<String, List<ProgramData>> buildProgramDetailsData(YukonUserContext userContext) {
 
         Map<String, List<ProgramData>> programDetailData = new HashMap<>();
         List<ProgramData> todaysPrograms = getAllTodaysPrograms();
