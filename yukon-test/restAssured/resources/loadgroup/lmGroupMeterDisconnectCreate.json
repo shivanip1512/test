@@ -1,0 +1,10 @@
+{
+    "LoadGroupBase": {
+        "id": null,
+        "name": "Meter_disconnect_Create",
+        "type": "LM_GROUP_METER_DISCONNECT",
+        "kWCapacity": 123,
+        "disableGroup": false,
+        "disableControl": false
+    }
+}

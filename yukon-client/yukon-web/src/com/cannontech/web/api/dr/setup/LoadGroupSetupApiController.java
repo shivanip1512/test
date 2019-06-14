@@ -1,5 +1,6 @@
 package com.cannontech.web.api.dr.setup;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -36,7 +37,9 @@ public class LoadGroupSetupApiController {
     @PostMapping("/save")
     public ResponseEntity<Object> save(@Valid @RequestBody LoadGroupBase loadGroup) {
         int paoId = loadGroupService.save(loadGroup);
-        return new ResponseEntity<>(paoId, HttpStatus.OK);
+        HashMap<String, Integer> paoIdMap = new HashMap<>();
+        paoIdMap.put("paoId", paoId);
+        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
     @InitBinder("loadGroupBase")
