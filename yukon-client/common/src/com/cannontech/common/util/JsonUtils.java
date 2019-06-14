@@ -13,6 +13,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 
 public class JsonUtils {
     
@@ -69,6 +72,11 @@ public class JsonUtils {
             return toJson(object);
         }
     }
+    
+    public static String beautifyJson(String jsonString) throws JsonProcessingException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson((new JsonParser()).parse(jsonString));
+        } 
     
     public static ObjectWriter getWriter() {
         return writer;

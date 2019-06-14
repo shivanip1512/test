@@ -160,6 +160,13 @@ public class YukonLogManager {
     public static Logger getRfnLogger() {
         return getLogger("rfnCommsLogger");
     }
+    
+    /**
+     * Returns apiLogger, used for logging Rest Api calls.
+     */
+    public static Logger getApiLogger() {
+        return getLogger("apiLogger");
+    }
 
     /**
      * Default Appender which will append messages to the console if configuration file is not found in

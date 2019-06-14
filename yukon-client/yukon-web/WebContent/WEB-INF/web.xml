@@ -38,7 +38,7 @@
 
     <filter>
         <filter-name>jwtFilter</filter-name>
-        <filter-class>com.cannontech.web.filter.TokenAuthenticationFilter</filter-class>
+        <filter-class>com.cannontech.web.filter.TokenAuthenticationAndLoggingFilter</filter-class>
     </filter>
 
     <filter>
