@@ -19,7 +19,6 @@
             <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
             <li class="divider"></li>
 
-            <!-- TODO: Copy functionality to be implemented -->
             <cm:dropdownOption key="yukon.web.components.button.copy.label" icon="icon-disk-multiple"
                                id="copy-option" data-popup="#copy-loadGroup-popup"/>
 
