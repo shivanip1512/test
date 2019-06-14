@@ -112,6 +112,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     private static final long PROGRAM_CHANGE_TIMEOUT_MS = 5000;
     private static final int MAX_PROGRAM_TO_DISPLAY_ON_WIDGET = 10;
+    private final static String todayKey = "yukon.web.widgets.programWidget.today";
 
     private final RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
@@ -801,7 +802,7 @@ public class ProgramServiceImpl implements ProgramService {
         List<ProgramData> todaysPrograms = getAllTodaysPrograms();
         if (CollectionUtils.isNotEmpty(todaysPrograms)) {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            programWidgetData.put(accessor.getMessage("yukon.web.widgets.programWidget.today"), todaysPrograms);
+            programWidgetData.put(accessor.getMessage(todayKey), todaysPrograms);
             todaysProgramsCount = todaysPrograms.size();
         }
         // List of Programs which are scheduled to execute for next control day after today
@@ -821,6 +822,36 @@ public class ProgramServiceImpl implements ProgramService {
         // Call for Past Program list and return List<ProgramData> object based on the size of programWidgetData
         // Max number of records can be equal to MAX_PROGRAM_TO_DISPLAY_ON_WIDGET.
         return programWidgetData; 
+    }
+
+    /**
+     * Returns list of all program which are scheduled to execute for today, next control day after today and
+     * previous 7 days.
+     * 
+     */
+    @Override
+    public Map<String, List<ProgramData>> buildProgrmDetailsData(YukonUserContext userContext) {
+
+        Map<String, List<ProgramData>> programDetailData = new HashMap<>();
+        List<ProgramData> todaysPrograms = getAllTodaysPrograms();
+        if (CollectionUtils.isNotEmpty(todaysPrograms)) {
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            programDetailData.put(accessor.getMessage(todayKey), todaysPrograms);
+        }
+        List<ProgramData> futurePrograms = getProgramsScheduledForNextControlDayAfterToday();
+        if (CollectionUtils.isNotEmpty(futurePrograms)) {
+            String date = dateFormattingService.format(futurePrograms.get(0).getStartDateTime(), DateFormatEnum.DATE,
+                userContext);
+            programDetailData.put(date, futurePrograms);
+        }
+        // Previous 7 days programs.
+        DateTime toDate = new DateTime().withTimeAtStartOfDay();
+        DateTime fromDate = toDate.minusDays(7);
+        Map<String, List<ProgramData>> programHistoryData = getProgramsHistoryDetail(fromDate, toDate, userContext);
+        if (!programHistoryData.isEmpty()) {
+            programDetailData.putAll(programHistoryData);
+        }
+        return programDetailData;
     }
 
     /**

@@ -293,4 +293,10 @@ public interface ProgramService {
      * Gets Program history for program that ran in the specified time period.
      */
     public Map<String, List<ProgramData>> getProgramsHistoryDetail(DateTime from, DateTime to, YukonUserContext userContext);
+
+    /**
+     * Build Program Details data for today, next control day after today and
+     * previous 7 days.
+     */
+    public Map<String, List<ProgramData>> buildProgrmDetailsData(YukonUserContext userContext);
 }

@@ -213,4 +213,8 @@ public class ProgramServiceAdapter implements ProgramService {
     public Map<String, List<ProgramData>> getProgramsHistoryDetail(DateTime from, DateTime to, YukonUserContext userContext) {
         throw new UnsupportedOperationException("Not Implemented");
     }
+
+    public Map<String, List<ProgramData>> buildProgrmDetailsData(YukonUserContext userContext) {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
 }
