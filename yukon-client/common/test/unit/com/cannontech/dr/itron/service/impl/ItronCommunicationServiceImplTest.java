@@ -8,14 +8,10 @@ import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.easymock.EasyMock;
 import org.joda.time.DateTime;
-import org.joda.time.Instant;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.user.YukonUserContext;
 
 public class ItronCommunicationServiceImplTest {
     private static ItronCommunicationServiceImpl itronCommunicationServiceImplTest;
@@ -30,11 +26,6 @@ public class ItronCommunicationServiceImplTest {
           EasyMock.expect(mockGlobalSettingDao.getInteger(GlobalSettingType.HISTORY_CLEANUP_DAYS_TO_KEEP)).andReturn(keepDays);
           EasyMock.expect(mockGlobalSettingDao.getString(GlobalSettingType.HTTP_PROXY)).andReturn("none");
           EasyMock.replay(mockGlobalSettingDao);
-          
-          DateFormattingService mockDateFormattingService = EasyMock.createNiceMock(DateFormattingService.class);
-          ReflectionTestUtils.setField(itronCommunicationServiceImplTest, "dateFormattingService", mockDateFormattingService);
-          EasyMock.expect(mockDateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system)).andReturn("mockTimeString");
-          EasyMock.replay(mockDateFormattingService);
     }
     
     @Test

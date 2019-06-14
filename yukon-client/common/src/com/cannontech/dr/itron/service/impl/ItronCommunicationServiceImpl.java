@@ -113,6 +113,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
     private static final String READ_GROUP = "ITRON_READ_GROUP";
     public static final String FILE_PATH = CtiUtilities.getItronDirPath();
+    private static DateTime lastItronFileDeletionDate = DateTime.now().minus(Duration.standardDays(1));
     
     private Cache<Integer, Enrollment> enrollmentCache =
             CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).build();
@@ -524,7 +525,9 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 log.error("Unable to download file: " + fileURL, e);
             }
         }
-        deleteOldItronFiles();
+        if (lastItronFileDeletionDate.isBefore(DateTime.now().withTimeAtStartOfDay())) {
+            deleteOldItronFiles();
+        }
         return zipFiles(zipName, files);
     }
     
@@ -561,7 +564,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 for (File itronZip : directoryListing) {
                     if (itronZip.exists()) {
                         DateTime lastUsedDate = new DateTime(itronZip.lastModified());
-                        if (lastUsedDate.compareTo(retentionDate)<0) {
+                        if (lastUsedDate.isBefore(retentionDate)) {
                             if (itronZip.delete()) {
                                 filesDeleted++;
                                 log.info("Deleted itron archive file: " + itronZip.getPath());
@@ -571,7 +574,6 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 }
             } catch (Exception e) {
                 log.error("Unable to delete old file archives", e);
-                throw new ItronCommunicationException("Unable to delete old file archives", e);
             }
             log.info("Itron archive file cleanup is complete. " + filesDeleted + " log files were deleted.");
         } else {
