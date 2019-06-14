@@ -13,4 +13,14 @@ public interface LoadGroupSetupService {
      * Retrieve load group for the loadGroupId.
      */
     LoadGroupBase retrieve(int loadGroupId);
+
+    /**
+     * Delete the load group.
+     */
+    int delete(int loadGroupId, String loadGroupName);
+
+    /**
+     * Copy the load group.
+     */
+    int copy(int loadGroupID, String loadGroupName);
 }

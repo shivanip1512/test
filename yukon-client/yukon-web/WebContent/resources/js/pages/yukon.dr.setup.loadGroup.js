@@ -24,6 +24,23 @@ yukon.dr.setup.loadGroup = (function() {
                 window.history.back();
             });
             
+            $(document).on("yukon:loadGroup:delete", function () {
+                yukon.ui.blockPage();
+                $('#delete-loadGroup-form').submit();
+            });
+            $(document).on("yukon:loadGroup:copy", function () {
+                yukon.ui.blockPage();
+                $('#loadGroup-copy-form').ajaxSubmit({
+                    success: function (data, status, xhr, $form) {
+                        window.location.href=yukon.url('/dr/setup/loadGroup/' + data.groupId);
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#copy-loadGroup-popup').html(xhr.responseText);
+                        yukon.ui.initContent('#copy-loadGroup-popup');
+                        yukon.ui.unblockPage();
+                    }
+                });
+            });
             _initialized = true;
         }
         

@@ -4,6 +4,8 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage module="dr" page="setup.loadGroup.${mode}">
     
@@ -17,14 +19,30 @@
             <cti:url var="editUrl" value="/dr/setup/loadGroup/${loadGroup.id}/edit"/>
             <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
             <li class="divider"></li>
+
             <!-- TODO: Copy functionality to be implemented -->
-            <cm:dropdownOption key="yukon.web.components.button.copy.label" icon="icon-disk-multiple" id="js-copy-option" href="#"/>
+            <cm:dropdownOption key="yukon.web.components.button.copy.label" icon="icon-disk-multiple"
+                               id="copy-option" data-popup="#copy-loadGroup-popup"/>
+
             <li class="divider"></li>
-            <!-- TODO: Delete functionality to be implemented -->
-            <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" id="js-delete-option" href="#"/>
+
+            <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="delete-option" data-ok-event="yukon:loadGroup:delete"/>
+            <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${loadGroup.name}" />
+            <cti:url var="deleteUrl" value="/dr/setup/loadGroup/${loadGroup.id}/delete"/>
+            <form:form id="delete-loadGroup-form" action="${deleteUrl}" method="delete" modelAttribute="loadGroup">
+                <tags:hidden path="id"/>
+                <tags:hidden path="name"/>
+                <cti:csrfToken/>
+            </form:form>
         </div>
+        
+        <!-- Copy loadGroup dialog -->
+        <cti:msg2 var="copyloadGroupPopUpTitle" key="yukon.web.modules.dr.setup.loadGroup.copy"/>
+            <cti:url var="renderCopyloadGroupUrl" value="/dr/setup/loadGroup/${loadGroup.id}/rendercopyloadGroup"/>
+            <cti:msg2 var="copyText" key="components.button.copy.label"/>
+            <div class="dn" id="copy-loadGroup-popup" data-title="${copyloadGroupPopUpTitle}" data-dialog data-ok-text="${copyText}" 
+                 data-event="yukon:loadGroup:copy" data-url="${renderCopyloadGroupUrl}"></div>
     </cti:displayForPageEditModes>
-    
     
     <cti:url var="action" value="/dr/setup/loadGroup/save" />
     <form:form modelAttribute="loadGroup" action="${action}" method="post">

@@ -2,12 +2,16 @@ package com.cannontech.stars.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.joda.time.Instant;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.HandlerMapping;
 
 import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.core.service.PhoneNumberFormattingService;
@@ -427,5 +431,18 @@ public class ServletUtils {
     @SuppressWarnings("ucd")
     public static String hideUnsetNumber(int num, int num_unset) {
         return (num == num_unset) ? "" : String.valueOf(num);
+    }
+
+    @SuppressWarnings("unchecked")
+    /* Get the path variable from request */
+    public static String getPathVariable(String name) {
+        HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        if (req != null) {
+            // getting variables map from current request
+            Map<String, String> variables =
+                (Map<String, String>) req.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+            return variables.get(name);
+        }
+        return null;
     }
 }

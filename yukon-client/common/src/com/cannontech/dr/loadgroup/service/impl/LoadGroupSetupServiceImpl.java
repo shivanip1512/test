@@ -43,7 +43,41 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         loadGroupBase.buildModel(loadGroup);
         return loadGroupBase;
     }
-    
+
+    @Override
+    public int delete(int loadGroupId, String loadGroupName) {
+        LoadGroupBase loadGroup = retrieve(loadGroupId);
+        if (!loadGroup.getName().equals(loadGroupName)) {
+            throw new NotFoundException("Id and Name combination not found");
+        }
+        LMGroup lmGroup = getDBPersistent(loadGroup);
+        dbPersistentDao.performDBChange(lmGroup, TransactionType.DELETE);
+        return lmGroup.getPAObjectID();
+    }
+
+    @Override
+    public int copy(int loadGroupID, String loadGroupName) {
+        LoadGroupBase loadGroup = retrieve(loadGroupID);
+
+        LoadGroupBase newLoadGroup = new LoadGroupBase();
+        newLoadGroup.setName(loadGroupName);
+        newLoadGroup.setType(loadGroup.getType());
+        newLoadGroup.setkWCapacity(loadGroup.getkWCapacity());
+        newLoadGroup.setDisableControl(loadGroup.isDisableControl());
+        newLoadGroup.setDisableGroup(loadGroup.isDisableGroup());
+
+        LMGroup lmGroup = getDBPersistent(newLoadGroup);
+        newLoadGroup.buildDBPersistent(lmGroup);
+
+        if (loadGroup.getId() == null) {
+            throw new NotFoundException("Id not found");
+        } else {
+            dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
+        }
+
+        return lmGroup.getPAObjectID();
+    }
+
     /**
      * Returns DB Persistent object 
      */

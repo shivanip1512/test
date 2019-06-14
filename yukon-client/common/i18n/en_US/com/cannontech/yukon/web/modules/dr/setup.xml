@@ -24,6 +24,14 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.info.saved">Load Group saved successfully.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.save.error">Load Group could not be saved - {0}</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.retrieve.error">Load Group could not be retrieved.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.info.deleted">Load Group deleted successfully.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.delete.error">Load Group could not be deleted.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.confirmDelete.title">Confirm Delete</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.confirmDelete.message">Are you sure you want to delete this load group?</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.confirmDelete.ok">Delete</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.copy">Copy Load Group</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.info.copied">Load Group copied successfully.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.copy.error">Load Group could not be copied.</entry>
 
 <!-- Load Group Validation -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.groupName.unique">Group Name should be unique.</entry>

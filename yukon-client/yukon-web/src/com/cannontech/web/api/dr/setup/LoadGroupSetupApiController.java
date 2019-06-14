@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
 
@@ -26,6 +28,7 @@ import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
 public class LoadGroupSetupApiController {
 
     @Autowired LoadGroupSetupService loadGroupService;
+    @Autowired LMDeleteValidator lmDeleteValidator;
     private List<LoadGroupSetupValidator<? extends LoadGroupBase>> validators;
     
     @GetMapping("/{id}")
@@ -42,6 +45,18 @@ public class LoadGroupSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
+    @PostMapping("/copy")
+    public ResponseEntity<Object> copy(@RequestBody LoadGroupBase loadGroup) {
+        int paoId = loadGroupService.copy(loadGroup.getId(), loadGroup.getName());
+        return new ResponseEntity<>(paoId, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<Object> delete(@Valid @RequestBody LMDelete lmDelete, @PathVariable int id) {
+        int paoId = loadGroupService.delete(id, lmDelete.getName());
+        return new ResponseEntity<>(paoId, HttpStatus.OK);
+    }
+
     @InitBinder("loadGroupBase")
     public void setupBinder(WebDataBinder binder) {
         validators.stream().forEach(e -> {
@@ -50,7 +65,12 @@ public class LoadGroupSetupApiController {
             }
         });
     }
-    
+
+    @InitBinder("LMDelete")
+    public void setupBinderDelete(WebDataBinder binder) {
+        binder.addValidators(lmDeleteValidator);
+    }
+
     @Autowired
     void setValidators(List<LoadGroupSetupValidator<? extends LoadGroupBase>> validators) {
         this.validators = validators;
