@@ -41,14 +41,27 @@ public class MasterConfigCryptoUtils extends ConfigCryptoUtils {
         File masterCfgCryptoFile = new File(BootstrapUtils.getKeysFolder().toFile(), "masterConfigKeyfile.dat");
         File masterCfgCryptoLockFile = new File(BootstrapUtils.getKeysFolder().toFile(), "masterConfigKeyfile.lck");
 
-        try (FileOutputStream fos = new FileOutputStream(masterCfgCryptoLockFile);
-    		 FileLock lock = fos.getChannel().lock()) {
-            if (masterCfgCryptoFile.exists()) {
-                passkey = CryptoUtils.getPasskeyFromCryptoFile(masterCfgCryptoFile);
-            } else {
-            	log.info(masterCfgCryptoFile.getName() + " doesn't exist. Creating a new CryptoFile for master.cfg");
-                CryptoUtils.createNewCryptoFile(masterCfgCryptoFile);
-                passkey = CryptoUtils.getPasskeyFromCryptoFile(masterCfgCryptoFile);
+        try (FileOutputStream fos = new FileOutputStream(masterCfgCryptoLockFile); FileLock lock = fos.getChannel().lock()) {
+            try {
+                if (masterCfgCryptoFile.exists()) {
+                    passkey = CryptoUtils.getPasskeyFromCryptoFile(masterCfgCryptoFile);
+                } else {
+                	log.info(masterCfgCryptoFile.getName() + " doesn't exist. Creating a new CryptoFile for master.cfg");
+                    CryptoUtils.createNewCryptoFile(masterCfgCryptoFile);
+                    passkey = CryptoUtils.getPasskeyFromCryptoFile(masterCfgCryptoFile);
+                }
+            } catch (Exception e) {
+                log.info(e);
+            }
+        } catch (Exception e) {
+            log.info("Failed to lock lock file");
+            try {
+                if (masterCfgCryptoFile.exists()) {
+                    passkey = CryptoUtils.getPasskeyFromCryptoFile(masterCfgCryptoFile);
+                    log.info("Successfully read in passkey after failing to lock lockfile");
+                }
+            } catch(Exception x) {
+                log.info(x);
             }
         }
 
