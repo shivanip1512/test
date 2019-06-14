@@ -126,7 +126,8 @@ public class LoadGroupSetupController {
             }
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                int groupId = (int) response.getBody();
+                HashMap<String,Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
+                int groupId = paoIdMap.get("paoId");
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.saved"));
                 return "redirect:/dr/setup/loadGroup/" + groupId;
             }
