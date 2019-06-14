@@ -69,11 +69,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         LMGroup lmGroup = getDBPersistent(newLoadGroup);
         newLoadGroup.buildDBPersistent(lmGroup);
 
-        if (loadGroup.getId() == null) {
-            throw new NotFoundException("Id not found");
-        } else {
-            dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
-        }
+        dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
 
         return lmGroup.getPAObjectID();
     }
