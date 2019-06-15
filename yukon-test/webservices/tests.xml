@@ -41,7 +41,7 @@
     	            <fileset dir="integration-tests" casesensitive="yes" includes="*.xml"/>
     	        </path>
         	    <sequential>
-        	        <exec executable="${testrunner.cmd}" failonerror="yes" failifexecutionfails="yes" >
+        	        <exec executable="${testrunner.cmd}" failonerror="true" failifexecutionfails="true" >
         	            <arg path="@{file}"/>
         	        </exec>
                 </sequential>
