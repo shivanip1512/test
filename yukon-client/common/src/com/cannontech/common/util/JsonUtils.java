@@ -76,7 +76,7 @@ public class JsonUtils {
     public static String beautifyJson(String jsonString) throws JsonProcessingException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return gson.toJson((new JsonParser()).parse(jsonString));
-        } 
+    }
     
     public static ObjectWriter getWriter() {
         return writer;
