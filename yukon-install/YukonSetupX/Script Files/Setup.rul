@@ -146,7 +146,12 @@ begin
         LaunchAppAndWait(sProg, sCMD, LAAW_OPTION_WAIT);
     endif;
     Enable(BACKBUTTON);
-
+    
+    //Update the start-up type of Yukon services.
+    UpdateYukonServices();
+    //Install windows task : Yukon Startup
+    InstallYukonStartupTask();
+    
     Dialog_DBToolsFrame:
     bOptYes = TRUE;
     nResult = AskOptions(EXCLUSIVE,
@@ -334,6 +339,9 @@ begin
 	//Try to stop all the services, just in case one's still running
 	StopYukonServices();
 	
+	// Remove Windows task "Yukon Startup" if present
+	RemoveYukonStartupTask();
+	
 	//replace the pre-5.0 DB cparms if they exist in master.cfg
 	sMasterConfig = TARGETDIR + "\\Server\\Config\\master.cfg";
 	ReplaceStringInFile(sMasterConfig, "DB_RWDBDLL", "DB_TYPE");
@@ -402,6 +410,9 @@ begin
 
 	//set installer to update all features that are currently installed
 	FeatureReinstall();
+	
+	//Install Windows task "Yukon Startup"
+	InstallYukonStartupTask();
 	
 	//prepare for file transfer
 	SetStatusWindow(0, "");
@@ -507,7 +518,10 @@ begin
         Delay (5);
         CopyFile(TOMCATBACKUPFILE, TARGETDIR + "\\Server\\web\\conf\\server.xml");
     endif;
-
+    
+    //Update the start type of windows services.
+    UpdateYukonServices();
+    
 	Dialog_StartServices:
 	
 	//only give the option to start services if services were installed
@@ -803,6 +817,8 @@ Dlg_ObjDialogs:
 			
 			// Ensure that all previously installed features are removed.
 			FeatureRemoveAllInMediaAndLog();
+			//Remove windows task "Yukon Startup"
+			RemoveYukonStartupTask();
             // Added in 11.0 - Set appropriate StatusEx static text.
             SetStatusExStaticText( SdLoadString( IDS_IFX_STATUSEX_STATICTEXT_MAINTUI_REMOVEALL ) );
         case REPAIR:	

@@ -33,6 +33,7 @@
 #define SIMULATOR_LOG_NAME        "SimulatorsService"
 #define SM_RF_COMMS_LOG_NAME      "ServiceManager_RfnComms"
 #define WS_RF_COMMS_LOG_NAME      "Webserver_RfnComms"
+#define YUKON_STARTUP__NAME       "Yukon Startup"
 #include "BackupSelectionDialog.rul"
 
 //global variable used to store service settings across the upgrade process
@@ -973,4 +974,47 @@ string szDir;
 begin
     szDir = FOLDER_PROGRAMS ^ "\\Yukon Client";
     DeleteDir(szDir, ALLCONTENTS);
+end;
+
+//--------------------------------------------------------
+//Update Yukon services startup type to "delayed-auto"
+//-------------------------------------------------------- 
+export prototype UpdateYukonServices();
+function UpdateYukonServices()
+string sServiceNameArray(13), sProg, sCMD;
+number i;
+begin
+	PopulateServiceNameList(sServiceNameArray);
+	sProg = "cmd.exe";
+    for i = 0 to (SizeOf(sServiceNameArray)-1)
+		if (ServiceExistsService(sServiceNameArray(i))) then
+    		sCMD = "/c " + "sc config "+ "\"" + sServiceNameArray(i) + "\"" +" start=delayed-auto";
+    		LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_WAIT);
+    	endif;
+    endfor;
+end;
+
+//---------------------------------------------------------------------------
+// Install window Startup task. This task will be used to address "YUK-18537". 
+// "Yukon Startup" task has been set to "ONSTART" which will execute the StartYukon.bat on windows startup.
+//---------------------------------------------------------------------------
+export prototype InstallYukonStartupTask();
+function InstallYukonStartupTask()
+string sProg, sCMD;
+begin
+	sProg = "cmd.exe";
+	sCMD = "/c " + "schtasks /Create /SC ONSTART /TN " + "\"" + YUKON_STARTUP__NAME + "\"" + " /TR " + "\""+ TARGETDIR +"\\Server\\bin\\StartYukon.bat" + "\"";
+    LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_WAIT);
+end;
+
+//---------------------------------------------------------------------------
+// Remove window Startup task
+//---------------------------------------------------------------------------
+export prototype RemoveYukonStartupTask();
+function RemoveYukonStartupTask()
+string sProg, sCMD;
+begin
+	sProg = "cmd.exe";
+	sCMD = "/c " + "schtasks /Delete "+ "\"" + YUKON_STARTUP__NAME + "\"";
+	LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_WAIT);
 end;
