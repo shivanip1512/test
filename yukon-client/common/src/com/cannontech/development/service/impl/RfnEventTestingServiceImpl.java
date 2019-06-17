@@ -58,7 +58,6 @@ import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.ByteUtil;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
-import com.cannontech.da.rfn.message.archive.RfDaArchiveRequest;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
 import com.cannontech.development.service.RfnEventTestingService;
@@ -84,7 +83,6 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         
     private static final String meterReadingArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
     private static final String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
-    private static final String rfDaArchiveRequestQueueName = "yukon.qr.obj.da.rfn.RfDaArchiveRequest";
     private static final String eventArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.EventArchiveRequest";
     private static final String alarmArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.AlarmArchiveRequest";
     private static final String locationResponseQueueName = "yukon.qr.obj.amr.rfn.LocationResponse";
@@ -449,16 +447,11 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     
     @Override
     public void sendRfDaArchiveRequest(int serial, String manufacturer, String model) {
-        // Create archive request & fake identifier
-        RfDaArchiveRequest archiveRequest = new RfDaArchiveRequest();
-        RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(serial), manufacturer, model);
-        
-        // Set all data
-        archiveRequest.setRfnIdentifier(rfnIdentifier);
-        archiveRequest.setSensorId(1234);
-        
-        // Put request on queue
-        sendArchiveRequest(rfDaArchiveRequestQueueName, archiveRequest);
+        RfnDeviceArchiveRequest response = new RfnDeviceArchiveRequest();
+        Map<Long, RfnIdentifier> rfnIdentifiers = new HashMap<>();
+        rfnIdentifiers.put(1L, new RfnIdentifier(Integer.toString(serial), manufacturer, model));
+        response.setRfnIdentifiers(rfnIdentifiers);
+        jmsTemplate.convertAndSend(JmsApiDirectory.RFN_DEVICE_ARCHIVE.getQueue().getName(), response);
     }
     
     private void buildAndSendEvent(RfnTestEvent event, int serialNum) {

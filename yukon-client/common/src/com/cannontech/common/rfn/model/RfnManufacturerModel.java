@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -112,6 +113,22 @@ public enum RfnManufacturerModel {
     // NETWORK_MANAGER(null, "Eaton", "NetworkManager"),
     ;
     
+    //https://jira-prod.tcc.etn.com/browse/YUK-17425
+    private static List<Pair<String, String>> manufacturerModel1200 = new ArrayList<>();
+    static {
+        manufacturerModel1200.add(Pair.of("CPS", "CBC-8000"));
+        manufacturerModel1200.add(Pair.of("CPS", "CBC-GEN"));
+        manufacturerModel1200.add(Pair.of("CPS", "VR-CL7"));
+        manufacturerModel1200.add(Pair.of("CPS", "VR-GEN"));
+        manufacturerModel1200.add(Pair.of("CPS", "RECL-F4D"));
+        manufacturerModel1200.add(Pair.of("CPS", "RECL-GEN"));
+        manufacturerModel1200.add(Pair.of("CPS", "GEN-DA"));
+        manufacturerModel1200.add(Pair.of("NON-CPS", "CBC-GEN"));
+        manufacturerModel1200.add(Pair.of("NON-CPS", "VR-GEN"));
+        manufacturerModel1200.add(Pair.of("NON-CPS", "RECL-GEN"));
+        manufacturerModel1200.add(Pair.of("NON-CPS", "GEN-DA"));
+    }
+    
     private PaoType type;
     private String manufacturer;
     private String model;
@@ -166,4 +183,14 @@ public enum RfnManufacturerModel {
         return model;
     }
     
+    /**
+     * Returns true if device is 1200
+     */
+    public static boolean is1200(RfnIdentifier identifier) {
+        return manufacturerModel1200.stream()
+            .anyMatch(pair -> {
+                Pair<String, String> newPair = Pair.of(identifier.getSensorManufacturer().toUpperCase(), identifier.getSensorModel().toUpperCase());
+                return pair.equals(newPair);
+            });
+    }
 }

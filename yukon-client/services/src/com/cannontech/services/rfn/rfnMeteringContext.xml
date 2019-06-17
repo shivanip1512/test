@@ -44,16 +44,6 @@
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest" ref="lcrReadingArchiveRequestListener" method="handleArchiveRequest"/>
     </jms:listener-container>
-
-    <bean id="rfDaArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.RfDaArchiveRequestListener"/>
-    <jms:listener-container 
-        connection-factory="connectionFactory" 
-        destination-type="queue"
-        concurrency="2" 
-        container-type="simple"
-        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
-        <jms:listener destination="yukon.qr.obj.da.rfn.RfDaArchiveRequest" ref="rfDaArchiveRequestListener" method="handleArchiveRequest"/>
-    </jms:listener-container>
     
     <bean id="gatewayArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.GatewayArchiveRequestListener"/>
     <jms:listener-container

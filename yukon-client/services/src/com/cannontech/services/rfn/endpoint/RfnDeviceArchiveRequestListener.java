@@ -27,6 +27,8 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.archive.RfnDeviceArchiveRequest;
 import com.cannontech.common.rfn.message.archive.RfnDeviceArchiveResponse;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.common.rfn.service.RfDaCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
@@ -39,6 +41,7 @@ public class RfnDeviceArchiveRequestListener {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired protected RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
+    @Autowired protected RfDaCreationService rfdaCreationService;
     protected JmsTemplate jmsTemplate;
     private BlockingQueue<Map.Entry<Long, RfnIdentifier>> queue = new LinkedBlockingQueue<>();
     private Logger rfnCommsLog;
@@ -118,7 +121,7 @@ public class RfnDeviceArchiveRequestListener {
             boolean isDev = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
             boolean isAcknowledgeable = e.getCause() instanceof Acknowledgeable;
             if (isDev || isAcknowledgeable) {
-                log.info("Exception:" + e.getMessage());
+                log.info("Exception:" + e.getMessage(), e);
                 sendAcknowledgement(entry.getKey(), processor);
             } else {
                 log.warn("Failed creating device {}", entry, e);
@@ -131,8 +134,14 @@ public class RfnDeviceArchiveRequestListener {
      */
     private void create(RfnIdentifier identifier) {
         try {
-            RfnDevice device = rfnDeviceCreationService.create(identifier);
-            rfnDeviceCreationService.incrementNewDeviceCreated();
+            RfnDevice device = null;
+            if (RfnManufacturerModel.is1200(identifier)) {
+                device = rfdaCreationService.create(identifier);
+                rfdaCreationService.incrementNewDeviceCreated(); 
+            } else {
+                device = rfnDeviceCreationService.create(identifier);
+                rfnDeviceCreationService.incrementNewDeviceCreated();
+            }
             if (log.isDebugEnabled()) {
                 log.debug("Created new device: " + device);
             }
@@ -183,7 +192,7 @@ public class RfnDeviceArchiveRequestListener {
             while(true) {
                 try {
                     Map.Entry<Long, RfnIdentifier> entry = queue.take();
-                    log.debug("Processor {} processing entry {} remaining in queue {}", this.getName(), entry, queue.size());
+                    log.debug("Processor {} (remaining {}) processing entry {}", this.getName(), queue.size(), entry);
                     processRequest(entry, this.getName());
                 } catch (Exception e) {
                     log.error("Processor {}", this.getName(), e);
