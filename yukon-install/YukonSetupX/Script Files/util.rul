@@ -1015,6 +1015,6 @@ function RemoveYukonStartupTask()
 string sProg, sCMD;
 begin
 	sProg = "cmd.exe";
-	sCMD = "/c " + "schtasks /Delete "+ "\"" + YUKON_STARTUP__NAME + "\"";
+	sCMD = "/c " + "schtasks /Delete /TN "+ "\"" + YUKON_STARTUP__NAME + "\"";
 	LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_WAIT);
 end;
