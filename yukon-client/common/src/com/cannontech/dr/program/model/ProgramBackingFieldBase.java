@@ -21,6 +21,8 @@ public abstract class ProgramBackingFieldBase implements DemandResponseBackingFi
     private final static String baseKey = "yukon.web.modules.dr.program.value";
     protected final static MessageSourceResolvable blankFieldResolvable = 
         new YukonMessageSourceResolvable("yukon.web.modules.dr.blankField");
+    protected final static MessageSourceResolvable blankValueResolvable = 
+        new YukonMessageSourceResolvable("yukon.common.dashesTwo");
     
     private ProgramService programService;
     

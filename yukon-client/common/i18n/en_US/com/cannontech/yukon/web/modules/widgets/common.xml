@@ -276,6 +276,8 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
 <entry key="yukon.web.widgets.trendsWidget.widgetIdentity">Trends - {0}</entry>
 
 <!-- Program Widget -->
+<entry key="yukon.web.widgets.programWidget">Programs</entry>
 <entry key="yukon.web.widgets.programWidget.today">Today</entry>
+<entry key="yukon.web.widgets.programWidget.noProgramFound">No Program is found to display.</entry>
 
 </properties>

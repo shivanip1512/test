@@ -207,6 +207,8 @@
 <entry key="yukon.web.modules.dr.program.value.STATE.TIMED_ACTIVE">Timed Active</entry>
 <entry key="yukon.web.modules.dr.program.value.START">{date|DATEHM}</entry>
 <entry key="yukon.web.modules.dr.program.value.STOP">{date|DATEHM}</entry>
+<entry key="yukon.web.modules.dr.program.value.START_TIME">{date|TIME24H}</entry>
+<entry key="yukon.web.modules.dr.program.value.STOP_TIME">{date|TIME24H}</entry>
 <entry key="yukon.web.modules.dr.program.value.CURRENT_GEAR">{0}</entry>
 <entry key="yukon.web.modules.dr.program.value.PRIORITY">{0}</entry>
 <entry key="yukon.web.modules.dr.program.value.REDUCTION">{0,number,0.0}</entry>

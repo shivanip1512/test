@@ -108,6 +108,8 @@
     <entry key="yukon.web.modules.dashboard.widgetType.PORTER_QUEUE_COUNTS.description">Displays an interactive trend data graph of the queue counts for each of the communication channels selected (not inclusive of RF Meters).</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.TRENDS.name">Trends</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.TRENDS.description">Displays a predefined Trend. Provides up to 1 month view of data for the selected Trend with quick access to Trends Tool.</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.PROGRAM.name">Programs</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.PROGRAM.description">Displays future scheduled, today's and past contolled DR programs.</entry>
 
     <!-- Widget Parameters -->
     <entry key="yukon.web.modules.dashboard.widgetParameter.controlAreaOrProgramOrScenarioId">Target Level</entry>

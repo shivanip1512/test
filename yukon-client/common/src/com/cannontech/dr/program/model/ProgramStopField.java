@@ -59,7 +59,7 @@ public class ProgramStopField extends ProgramBackingFieldBase {
             }};
     }        
 
-    private boolean hasBlankStopTime(LMProgramBase program) {
+    protected boolean hasBlankStopTime(LMProgramBase program) {
         return program == null || program.getDisableFlag()
             || program.getStopTime() == null
             || program.getStopTime().before(CtiUtilities.get1990GregCalendar())

@@ -796,26 +796,29 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public Map<String, List<ProgramData>> buildProgramWidgetData(YukonUserContext userContext) {
-        Map<String, List<ProgramData>> programWidgetData = new HashMap<>();
+        Map<String, List<ProgramData>> programWidgetData = new LinkedHashMap<>();
 
-        int todaysProgramsCount = 0; 
         List<ProgramData> todaysPrograms = getAllTodaysPrograms();
+        int todaysProgramsCount = todaysPrograms.size();
+        if (todaysProgramsCount >= MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
+            todaysPrograms = limitData(todaysPrograms, MAX_PROGRAM_TO_DISPLAY_ON_WIDGET);
+        } else {
+            // List of Programs which are scheduled to execute for next control day after today
+            List<ProgramData> futureProgramsToDisplay = new ArrayList<>();
+            if (todaysProgramsCount < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
+                List<ProgramData> futurePrograms = getProgramsScheduledForNextControlDayAfterToday();
+                if (CollectionUtils.isNotEmpty(futurePrograms)) {
+                    int maxFutureProgramsCount = MAX_PROGRAM_TO_DISPLAY_ON_WIDGET - todaysProgramsCount;
+                    futureProgramsToDisplay = limitData(futurePrograms, maxFutureProgramsCount);
+                    String date = dateFormattingService.format(futureProgramsToDisplay.get(0).getStartDateTime(),
+                        DateFormatEnum.DATE, userContext);
+                    programWidgetData.put(date, futureProgramsToDisplay);
+                }
+            }
+        }
         if (CollectionUtils.isNotEmpty(todaysPrograms)) {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             programWidgetData.put(accessor.getMessage(todayKey), todaysPrograms);
-            todaysProgramsCount = todaysPrograms.size();
-        }
-        // List of Programs which are scheduled to execute for next control day after today
-        List<ProgramData> futureProgramsToDisplay = new ArrayList<>();
-        if (todaysProgramsCount < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
-            List<ProgramData> futurePrograms = getProgramsScheduledForNextControlDayAfterToday();
-            if (CollectionUtils.isNotEmpty(futurePrograms)) {
-                int maxFutureProgramsCount = MAX_PROGRAM_TO_DISPLAY_ON_WIDGET - todaysProgramsCount;
-                futureProgramsToDisplay = limitData(futurePrograms, maxFutureProgramsCount);
-                String date = dateFormattingService.format(futureProgramsToDisplay.get(0).getStartDateTime(),
-                    DateFormatEnum.DATE, userContext);
-                programWidgetData.put(date, futureProgramsToDisplay);
-            }
         }
         //TODO After YUK-19014
         // If (todaysProgramsCount + futureProgramsToDisplay) < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET
@@ -927,7 +930,7 @@ public class ProgramServiceImpl implements ProgramService {
     private List<ProgramData> filterProgramsForInterval(Collection<LMProgramBase> programs, Interval interval) {
         return programs.stream()
                        .filter(p -> interval.contains(p.getStartTime().getTimeInMillis()))
-                       .sorted((p1, p2) -> p1.getStartTime().compareTo(p2.getStartTime()))
+                       .sorted((p1, p2) -> p2.getStartTime().compareTo(p1.getStartTime()))
                        .map(program -> buildProgramData(program))
                        .collect(Collectors.toList());
     }
