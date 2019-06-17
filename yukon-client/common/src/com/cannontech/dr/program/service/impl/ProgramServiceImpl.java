@@ -835,18 +835,21 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public Map<String, List<ProgramData>> buildProgramDetailsData(YukonUserContext userContext) {
 
-        Map<String, List<ProgramData>> programDetailData = new HashMap<>();
-        List<ProgramData> todaysPrograms = getAllTodaysPrograms();
-        if (CollectionUtils.isNotEmpty(todaysPrograms)) {
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            programDetailData.put(accessor.getMessage(todayKey), todaysPrograms);
-        }
+        Map<String, List<ProgramData>> programDetailData = new LinkedHashMap<>();
+
         List<ProgramData> futurePrograms = getProgramsScheduledForNextControlDayAfterToday();
         if (CollectionUtils.isNotEmpty(futurePrograms)) {
             String date = dateFormattingService.format(futurePrograms.get(0).getStartDateTime(), DateFormatEnum.DATE,
                 userContext);
             programDetailData.put(date, futurePrograms);
         }
+
+        List<ProgramData> todaysPrograms = getAllTodaysPrograms();
+        if (CollectionUtils.isNotEmpty(todaysPrograms)) {
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            programDetailData.put(accessor.getMessage(todayKey), todaysPrograms);
+        }
+
         // Previous 7 days programs.
         DateTime toDate = new DateTime().withTimeAtStartOfDay();
         DateTime fromDate = toDate.minusDays(7);
