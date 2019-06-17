@@ -16,8 +16,6 @@ public class ApiCallHelper {
     /**
      * Returns <code>File</code> object specified by file name.
      * 
-     * @param fileName
-     * @return
      */
     public static File getInputFile(String fileName) {
         return new File(userDirectory + File.separatorChar + "resources" + File.separatorChar + fileName);
@@ -44,9 +42,6 @@ public class ApiCallHelper {
      * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP GET method for specified URI
      * and request parameter.
      * 
-     * @param key
-     * @param getParam
-     * @return ExtractableResponse
      */
     public static ExtractableResponse<?> get(String key, String param) {
         String uri = getProperty(key);
@@ -58,9 +53,6 @@ public class ApiCallHelper {
      * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP POST method for specified URI
      * and input file
      * 
-     * @param key
-     * @param fileName
-     * @return ExtractableResponse
      */
     public static ExtractableResponse<?> post(String key, String fileName) {
         String uri = getProperty(key);
@@ -72,8 +64,6 @@ public class ApiCallHelper {
      * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP DELETE method for specified URI
      * and request parameter.
      * 
-     * @param key
-     * @return ExtractableResponse
      */
 
     public static ExtractableResponse<?> delete(String key, String param) {

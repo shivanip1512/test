@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="Yukon resrAssured Suite">
+<suite name="Yukon restAssured Suite">
     <suite-files>
         <suite-file path="src/com/cannontech/rest/api/dr/setup/drsetup.xml"></suite-file>
     </suite-files>
