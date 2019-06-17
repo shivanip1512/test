@@ -31,6 +31,10 @@
                 <cti:msg2 var="linkQualityPlaceholder" key=".selectLinkQuality"/>
                 <tags:selectWithItems items="${linkQualityOptions}" path="linkQuality" inputClass="js-selected-link-qualities" dataPlaceholder="${linkQualityPlaceholder}"/>
                 
+                <span class="fr cp"><cti:icon icon="icon-help" data-popup="#map-help"/></span>
+                <cti:msg2 var="helpTitle" key=".helpTitle"/>
+                <div id="map-help" class="dn" data-width="600" data-height="360" data-title="${helpTitle}"><cti:msg2 key=".helpText"/></div><br/>
+                
                 <div style="padding-top:5px">
                     <i:inline key=".colorCodeBy"/>&nbsp;
                     <tags:selectWithItems items="${colorCodeByOptions}" path="colorCodeBy"/>

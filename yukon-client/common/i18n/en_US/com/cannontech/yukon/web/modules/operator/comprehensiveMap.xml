@@ -5,6 +5,28 @@
     <entry key="yukon.web.modules.operator.comprehensiveMap.pageName">Comprehensive Map</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.pageDescription">Comprehensive Map</entry>
     
+    <entry key="yukon.web.modules.operator.comprehensiveMap.helpTitle">Comprehensive Map Help</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.helpText"><![CDATA[
+        You can apply the following filters to the map:
+        <ul>
+            <li><b>Gateway(s)</b> - Select one to five gateways to filter devices by.</li>
+            <li><b>Link Quality</b> - Link Quality is based on the Link Cost of the Primary Forward Neighbor. Categories are as follows:</li>
+            <ul>
+                <li><b>Excellent</b> - Link cost is between 1 and 2.</li>
+                <li><b>Average</b> - Link cost is 3.</li>
+                <li><b>Below Average</b> - Link cost is between 4 and 5.</li>
+                <li><b>Evaulating</b> - Number of samples is less than 50.</li>
+            </ul>
+            <li><b>Color Code By</b> - Select how to color code the pins by. A legend will be displayed below the map.</li>
+            <ul>
+            	<li><b>By Gateway</b> - Color code the pins by gateway so that each pin is color coded according to it's primary gateway.</li>
+            	<li><b>By Link Quality</b> - Color code the pins by Link Quality so that each pin is color coded according to the categories mentioned above.</li>
+        </ul>
+        Click on the Filter button to filter the results.<br/>
+        The resulting devices will display on the map with the total count of filtered devices.<br/>
+        Click on the Gear Icon next to the device count to view options you can do for the filtered device collection (Collection Actions, Download data).<br/>
+    ]]></entry>
+    
     <entry key="yukon.web.modules.operator.comprehensiveMap.selectGateways">Select Gateways</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.selectLinkQuality">All Link Qualities</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.tooManyGateways">A maximum of 5 gateways may be selected.</entry>
