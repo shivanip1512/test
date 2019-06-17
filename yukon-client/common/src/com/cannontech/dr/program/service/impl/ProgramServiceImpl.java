@@ -960,7 +960,7 @@ public class ProgramServiceImpl implements ProgramService {
                                               .collect(Collectors.toList());
 
         }
-        return groupProgramsByEventTime(previousDaysProgramData, userContext);
+        return groupProgramsByStartDate(previousDaysProgramData, userContext);
     }
 
     /**
@@ -1009,7 +1009,7 @@ public class ProgramServiceImpl implements ProgramService {
         LmProgramGearHistory programHistory = programsHistoryDetail.get(0);
 
         ProgramData programData = new ProgramData.ProgramDataBuilder(programHistory.getProgramId())
-                                                 .setEventTime(new DateTime(programHistory.getEventTime()))
+                                                 .setStartDateTime(new DateTime(programHistory.getEventTime()))
                                                  .setGears(gears)
                                                  .setStatus("Completed")
                                                  .setProgramName(programHistory.getProgramName())
@@ -1075,13 +1075,13 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     /**
-     * Group ProgramData by EventTime to show program clubbed inside date.
+     * Group ProgramData by StartDate to show program clubbed inside date.
      */
-    private Map<String, List<ProgramData>> groupProgramsByEventTime(List<ProgramData> previousDaysProgram, YukonUserContext userContext) {
+    private Map<String, List<ProgramData>> groupProgramsByStartDate(List<ProgramData> previousDaysProgram, YukonUserContext userContext) {
         Map<String, List<ProgramData>> programDataByEventTime = 
                       previousDaysProgram.stream()
                                          .collect(Collectors.groupingBy(
-                                                  programData -> dateFormattingService.format(programData.getEventTime(), 
+                                                  programData -> dateFormattingService.format(programData.getStartDateTime(), 
                                                       DateFormattingService.DateFormatEnum.DATE, 
                                                       userContext),
                                                              LinkedHashMap::new, 

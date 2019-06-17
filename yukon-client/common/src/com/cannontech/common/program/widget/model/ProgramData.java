@@ -7,21 +7,15 @@ import org.joda.time.DateTime;
 public class ProgramData {
 
     private int programId;
-    private int programHistoryId;
     private String programName;
     private DateTime startDateTime;
-    private DateTime stopDateTime;
-    private DateTime eventTime;
     private String status;
     private List<GearData> gears;
 
     private ProgramData(ProgramDataBuilder programDataBuilder) {
         this.programId = programDataBuilder.programId;
-        this.programHistoryId = programDataBuilder.programHistoryId;
         this.programName = programDataBuilder.programName;
-        this.eventTime = programDataBuilder.eventTime;
         this.startDateTime = programDataBuilder.startDateTime;
-        this.stopDateTime = programDataBuilder.stopDateTime;
         this.status = programDataBuilder.status;
         this.gears = programDataBuilder.gears;
     }
@@ -30,24 +24,12 @@ public class ProgramData {
         return programId;
     }
 
-    public int getProgramHistoryId() {
-        return programHistoryId;
-    }
-
     public String getProgramName() {
         return programName;
     }
 
     public DateTime getStartDateTime() {
         return startDateTime;
-    }
-
-    public DateTime getStopDateTime() {
-        return stopDateTime;
-    }
-
-    public DateTime getEventTime() {
-        return eventTime;
     }
 
     public String getStatus() {
@@ -60,11 +42,8 @@ public class ProgramData {
 
     public static class ProgramDataBuilder {
         private int programId;
-        private int programHistoryId;
         private String programName;
         private DateTime startDateTime;
-        private DateTime stopDateTime;
-        private DateTime eventTime;
         private String status;
         private List<GearData> gears;
 
@@ -76,11 +55,6 @@ public class ProgramData {
             return new ProgramData(this);
         }
 
-        public ProgramDataBuilder setProgramHistoryId(int programHistoryId) {
-            this.programHistoryId = programHistoryId;
-            return this;
-        }
-
         public ProgramDataBuilder setProgramName(String programName) {
             this.programName = programName;
             return this;
@@ -88,16 +62,6 @@ public class ProgramData {
 
         public ProgramDataBuilder setStartDateTime(DateTime startDateTime) {
             this.startDateTime = startDateTime;
-            return this;
-        }
-
-        public ProgramDataBuilder setStopDateTime(DateTime stopDateTime) {
-            this.stopDateTime = stopDateTime;
-            return this;
-        }
-
-        public ProgramDataBuilder setEventTime(DateTime eventTime) {
-            this.eventTime = eventTime;
             return this;
         }
 

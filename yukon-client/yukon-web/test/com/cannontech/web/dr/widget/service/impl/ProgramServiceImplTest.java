@@ -187,17 +187,17 @@ public class ProgramServiceImplTest {
     }
 
     @Test
-    public void test_groupProgramsByEventTime() {
+    public void test_groupProgramsByStartDate() {
         List<ProgramData> previousDaysProgram = new ArrayList<>();
         ProgramData pd = new ProgramData.ProgramDataBuilder(12)
-                .setEventTime(new DateTime())
+                .setStartDateTime(new DateTime())
                 .build();
         ProgramData pd2 = new ProgramData.ProgramDataBuilder(15)
-                .setEventTime(new DateTime())
+                .setStartDateTime(new DateTime())
                 .build();
         previousDaysProgram.add(pd);
         previousDaysProgram.add(pd2);
-        Map<String, List<ProgramData>> programDataByEventTime = ReflectionTestUtils.invokeMethod(programServiceImplTest, "groupProgramsByEventTime", previousDaysProgram, userContext);
+        Map<String, List<ProgramData>> programDataByEventTime = ReflectionTestUtils.invokeMethod(programServiceImplTest, "groupProgramsByStartDate", previousDaysProgram, userContext);
         assertTrue(programDataByEventTime.size() == 1);
     }
 }
