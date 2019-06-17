@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.system.GlobalSettingType;
@@ -28,7 +29,7 @@ import com.cannontech.web.dr.setup.LoadGroupSetupController;
 public class ApiControllerHelper {
     @Autowired GlobalSettingDao globalSettingDao;
     @Autowired private ApiRequestHelper apiRequestHelper;
-    private static String webserverURL = "";
+    private static String webserverURL = StringUtils.EMPTY;
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
     
     /**
@@ -67,47 +68,56 @@ public class ApiControllerHelper {
     /**
      * Returns the Yukon Internal Url.
      */
-    public String getYukonInternalUrl() {
+    private String getYukonInternalUrl() {
         return globalSettingDao.getString(GlobalSettingType.YUKON_INTERNAL_URL);
     }
 
     /**
-     * Checks for TestConnection
+     * Checks for TestConnection and cache the correct hostname:port for next api URLs.
      * @throws ApiCommunicationException 
      */
-    public void getTestConnection(HttpServletRequest request, YukonUserContext userContext) throws ApiCommunicationException {
-        if (ApiControllerHelper.getWebserverURL().isEmpty()) {
+    public void testConnection(HttpServletRequest request, YukonUserContext userContext) throws ApiCommunicationException {
+        if (getWebserverURL().isEmpty()) {
             String serverPort = Integer.toString(request.getLocalPort());
             String webUrl = "http://127.0.0.1:" + serverPort;
             if (!request.getContextPath().isEmpty()) {
                 webUrl = webUrl + request.getContextPath();
             }
+            HttpStatus responseCode = checkURL(userContext, request, webUrl);
+            if (responseCode != HttpStatus.OK) {
+                if (!getYukonInternalUrl().isEmpty()) {
+                    webUrl = getYukonInternalUrl();
+                    responseCode = checkURL(userContext, request, webUrl);
+                }
+            }
+            if (responseCode == HttpStatus.OK) {
+                setWebserverURL(webUrl);
+            } else {
+                throw new ApiCommunicationException(" Check Yukon Internal URL.");
+            }
+        }
+    }
+
+    /* Check the connection with given URL and return the status*/
+    private HttpStatus checkURL(YukonUserContext userContext, HttpServletRequest request, String webUrl) {
+        try {
             String testConnectionURL = webUrl + "/test";
             log.info("Checking the Api communication with URL: " + testConnectionURL);
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request,
                 testConnectionURL, HttpMethod.GET, String.class);
-            if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-                log.info("Communication with URL: " + testConnectionURL + " failed.");
-                if (!getYukonInternalUrl().isEmpty()) {
-                    webUrl = getYukonInternalUrl();
-                    testConnectionURL = webUrl + "/test";
-                    log.info("Checking the Api communication with URL: " + testConnectionURL);
-                    response = apiRequestHelper.callAPIForObject(userContext, request, testConnectionURL,
-                        HttpMethod.GET, String.class);
-                }
-            }
-            if (response.getStatusCode() == HttpStatus.OK) {
-                ApiControllerHelper.setWebserverURL(webUrl);
-            } else {
-                throw new ApiCommunicationException();
-            }
+            return response.getStatusCode();
+        } catch (RestClientException ex) {
+            log.error("Error creating load group: " + ex.getMessage());
         }
+        return HttpStatus.NOT_FOUND;
     }
 
     /**
      * Generate dynamic URL for API calls
      */
-    public String getApiURL(String prefixURL, String suffixURL) {
-        return prefixURL + "/api" + suffixURL;
+    public String getApiURL(HttpServletRequest request, YukonUserContext userContext, String suffixURL)
+            throws ApiCommunicationException {
+        testConnection(request, userContext);
+        return getWebserverURL() + "/api" + suffixURL;
     }
 }

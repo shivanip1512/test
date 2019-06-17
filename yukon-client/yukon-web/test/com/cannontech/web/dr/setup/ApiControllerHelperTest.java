@@ -3,6 +3,9 @@ package com.cannontech.web.dr.setup;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Locale;
+import java.util.TimeZone;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.After;
@@ -11,16 +14,21 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 
+import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 
 public class ApiControllerHelperTest {
     private HttpServletRequest req;
     private ApiControllerHelper helper;
+    private SimpleYukonUserContext userContext;
 
     @Before
     public void setUp() throws Exception {
         req = createMockRequest();
         helper = new ApiControllerHelper();
+        userContext = new SimpleYukonUserContext();
+        userContext.setLocale(Locale.getDefault());
+        userContext.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
     }
 
     @After
@@ -31,15 +39,17 @@ public class ApiControllerHelperTest {
     @Test
     public void testgetValidApiURL() {
         String pathURL = "/dr/setup/loadGroup/save";
-        String url = helper.getApiURL(req.getServerName(), pathURL);
+        ApiControllerHelper.setWebserverURL(req.getServerName());
+        String url = helper.getApiURL(req, userContext, pathURL);
         assertTrue("The url is valid", url.equals("http://localhost:8080/api/dr/setup/loadGroup/save"));
     }
 
     @Test
     public void testgetInvalidApiURL() {
         String pathURL = "/dr/setup/loadGroup/save";
-        String url = helper.getApiURL(req.getServerName(), pathURL);
-        assertFalse("The url is invalid", url.equals("http://localhost:8080/dr/setup/loadGroup/save"));
+        ApiControllerHelper.setWebserverURL(req.getServerName());
+        String url = helper.getApiURL(req, userContext, pathURL);
+        assertFalse("The url is invalid", url.equals("http://localhost:8080/yukon/dr/setup/loadGroup/save"));
     }
 
     private HttpServletRequest createMockRequest() {

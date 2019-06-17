@@ -57,11 +57,6 @@ public class LoadGroupSetupApiController {
         return new ResponseEntity<>(paoId, HttpStatus.OK);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<Object> testConnection() {
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
     @InitBinder("loadGroupBase")
     public void setupBinder(WebDataBinder binder) {
         validators.stream().forEach(e -> {
