@@ -14,7 +14,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
 
@@ -25,6 +24,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -501,7 +501,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         
         //  Create a stream that requests the non-cached IDs from Dispatch
         Stream<LitePointData> fromDispatch = 
-                StreamSupport.stream(missingIds.spliterator(), false)
+                StreamUtils.stream(missingIds)
                     .map(HashSet::new)
                     .map(getPointDataFromDispatch)
                     .flatMap(Set::stream);

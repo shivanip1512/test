@@ -1,7 +1,5 @@
 package com.cannontech.common.stream;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -10,6 +8,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -45,7 +44,7 @@ public final class StreamUtils {
     public static final <O,K,V> Collector<O,?,Multimap<K,V>> toMultimap(Function<O,K> keyMapper, 
                                                                         Function<O,V> valueMapper) {
         return Collector.of(
-            () -> HashMultimap.create(),
+            HashMultimap::create,
             (map, object) -> map.put(keyMapper.apply(object), valueMapper.apply(object)),
             (map1, map2) -> { map1.putAll(map2); return map1; }
         );
@@ -63,7 +62,7 @@ public final class StreamUtils {
                                                                         Function<O,Iterable<V>> valueMapper) {
         
         return Collector.of(
-            () -> HashMultimap.create(),
+            HashMultimap::create,
             (map, object) -> map.putAll(keyMapper.apply(object), valueMapper.apply(object)),
             (map1, map2) -> { map1.putAll(map2); return map1; }
         );
@@ -96,7 +95,7 @@ public final class StreamUtils {
      */
     public static final <O,K> Collector<O,?,HashMultimap<K,O>> groupingBy(Function<O,K> classifier) {
         return Collector.of(
-             () -> HashMultimap.create(), 
+             HashMultimap::create, 
              (map, object) -> map.put(classifier.apply(object), object), 
              (map1, map2) -> { map1.putAll(map2); return map1; }
         );
@@ -145,6 +144,15 @@ public final class StreamUtils {
         return IntStream.range(0, length).mapToObj(indexedGetterFunction); 
     }
     
+    /**
+     * Helper function to invoke the typical spliterator+StreamSupport calls to create a non-parallel stream of an Iterable. 
+     * @param iterable the Iterable<T> to stream
+     * @return the resulting Stream<T>
+     */
+    public static final <T> Stream<T> stream(Iterable<T> iterable) {
+        return StreamSupport.stream(iterable.spliterator(), false);
+    }
+
     /**
      * Returns a Predicate that is the logical negation of the supplied Predicate.  Provides cleaner method reference negation.
      * 

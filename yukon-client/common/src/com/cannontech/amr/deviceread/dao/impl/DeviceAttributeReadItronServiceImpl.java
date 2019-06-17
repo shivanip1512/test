@@ -3,7 +3,6 @@ package com.cannontech.amr.deviceread.dao.impl;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,7 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
+import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.itron.service.ItronCommunicationException;
@@ -63,7 +63,7 @@ public class DeviceAttributeReadItronServiceImpl implements DeviceAttributeReadS
             }
 
             List<Integer> deviceIds =
-                StreamSupport.stream(devices.spliterator(), false).map(device -> device.getPao().getPaoId()).collect(
+                StreamUtils.stream(devices).map(device -> device.getPao().getPaoId()).collect(
                     Collectors.toList());
             // All devices succeeded.
             Multimap<PaoIdentifier, PointValueHolder> devicesToPointValues =
@@ -81,7 +81,7 @@ public class DeviceAttributeReadItronServiceImpl implements DeviceAttributeReadS
             SpecificDeviceErrorDescription deviceErrorDescription =
                 new SpecificDeviceErrorDescription(error, deviceError.getDescriptionResolvable());
             
-            StreamSupport.stream(devices.spliterator(), false)
+            StreamUtils.stream(devices)
                 .filter( device -> !devicesToPointValues.keys().contains(device.getPao()))
                 .map(PaoMultiPointIdentifier::getPao).forEach(device -> {
                         commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution, device.getPaoId(),
