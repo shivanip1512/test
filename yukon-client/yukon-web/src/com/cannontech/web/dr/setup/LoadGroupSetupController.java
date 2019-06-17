@@ -54,7 +54,7 @@ public class LoadGroupSetupController {
     private static final String drLoadGroupRetrieveUrl = "/dr/setup/loadGroup/";
     private static final String drLoadGroupCopyUrl = "/dr/setup/loadGroup/copy";
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
-    private static final List<PaoType> switchTypes = PaoType.getAllLMGroupTypes().asList();
+    private static final List<PaoType> switchTypes = PaoType.getAllLMGroupTypes();
 
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
