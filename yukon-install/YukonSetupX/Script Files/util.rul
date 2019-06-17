@@ -1003,7 +1003,7 @@ function InstallYukonStartupTask()
 string sProg, sCMD;
 begin
 	sProg = "cmd.exe";
-	sCMD = "/c " + "schtasks /Create /SC ONSTART /TN " + "\"" + YUKON_STARTUP__NAME + "\"" + " /TR " + "\""+ TARGETDIR +"\\Server\\bin\\StartYukon.bat" + "\"";
+	sCMD = "/c " + "schtasks /Create /SC ONLOGON /TN " + "\"" + YUKON_STARTUP__NAME + "\"" + " /TR " + "\""+ TARGETDIR +"\\Server\\bin\\StartYukon.bat" + "\"";
     LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_WAIT);
 end;
 
