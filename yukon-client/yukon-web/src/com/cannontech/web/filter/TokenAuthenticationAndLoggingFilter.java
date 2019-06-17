@@ -47,12 +47,12 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        // Validate all api calls except login request
         boolean apiLoginRequest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/token"));
         long before = System.currentTimeMillis();
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
-        
+
+        // Validate all api calls except login request
         if (!apiLoginRequest) {
             try {
                 String authToken = TokenHelper.resolveToken(request);
@@ -85,7 +85,9 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
             responseWrapper.copyBodyToResponse();
         }
     }
-
+    /**
+     * Getting the request body using Wrapper.
+     */
     private String getBody(ContentCachingRequestWrapper request) {
         ContentCachingRequestWrapper wrapper = WebUtils.getNativeRequest(request, ContentCachingRequestWrapper.class);
         if (wrapper != null) {
@@ -113,12 +115,13 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
         long after = System.currentTimeMillis();
         apiLog.info("Request Uri: " + requestWrapper.getRequestURI() + " : " + (after - before)
             + "ms : HTTP Status " + responseWrapper.getStatus());
-        if (StringUtils.isNotEmpty(requestBody)) {
-            apiLog.debug("Request Body: \n" + requestBody);
+        if (apiLog.isDebugEnabled()) {
+            if (StringUtils.isNotEmpty(requestBody)) {
+                apiLog.debug("Request Body: \n" + requestBody);
+            }
+            String responseBody = IOUtils.toString(responseWrapper.getContentInputStream(), UTF_8);
+            apiLog.debug("Response Body: \n " + JsonUtils.beautifyJson(responseBody));
         }
-
-        String responseBody = IOUtils.toString(responseWrapper.getContentInputStream(), UTF_8);
-        apiLog.debug("Response Body: \n " + JsonUtils.beautifyJson(responseBody));
         responseWrapper.copyBodyToResponse();
     }
 
