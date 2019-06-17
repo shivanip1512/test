@@ -117,7 +117,7 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
             + "ms : HTTP Status " + responseWrapper.getStatus());
         if (apiLog.isDebugEnabled()) {
             if (StringUtils.isNotEmpty(requestBody)) {
-                apiLog.debug("Request Body: \n" + requestBody);
+                apiLog.debug("Request Body: \n" + JsonUtils.beautifyJson(requestBody));
             }
             String responseBody = IOUtils.toString(responseWrapper.getContentInputStream(), UTF_8);
             apiLog.debug("Response Body: \n " + JsonUtils.beautifyJson(responseBody));
