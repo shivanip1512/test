@@ -11,5 +11,6 @@
         <pointInfo name="Connected Load" attributes="CONNECTED_LOAD"/>
         <pointInfo name="Diversified Load" attributes="DIVERSIFIED_LOAD"/>
         <pointInfo name="Max Load Reduction" attributes="MAX_LOAD_REDUCTION"/>
+        <pointInfo name="Status" init="true" attributes="CONTROL_STATUS"/>
     </pointInfos>
 </pao>
