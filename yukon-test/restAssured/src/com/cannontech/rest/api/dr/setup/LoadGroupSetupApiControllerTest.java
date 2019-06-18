@@ -24,7 +24,7 @@ public class LoadGroupSetupApiControllerTest {
     @Test
     public void Test_LmGroupMeterDisconnect_Create() {
         ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", "loadgroup\\lmGroupMeterDisconnectCreate.json");
-        String paoId = ("paoId").toString();
+        String paoId = response.path("paoId").toString();
         assertTrue("PAO ID should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
