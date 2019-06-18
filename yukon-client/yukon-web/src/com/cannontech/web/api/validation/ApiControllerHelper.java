@@ -52,13 +52,6 @@ public class ApiControllerHelper {
     }
 
     /**
-     * Fetch the webserver URL
-     */
-    public static String getWebserverURL() {
-        return webserverURL;
-    }
-
-    /**
      * Set the webserver URL
      */
     public static void setWebserverURL(String webserverURL) {
@@ -73,11 +66,12 @@ public class ApiControllerHelper {
     }
 
     /**
-     * Checks for TestConnection and cache the correct hostname:port for next api URLs.
-     * @throws ApiCommunicationException 
+     * Checks for TestConnection and returns the correct hostname:port for next api URLs.
+     * @throws ApiCommunicationException
      */
-    public void testConnection(HttpServletRequest request, YukonUserContext userContext) throws ApiCommunicationException {
-        if (getWebserverURL().isEmpty()) {
+    private String getWebServerURL(HttpServletRequest request, YukonUserContext userContext)
+            throws ApiCommunicationException {
+        if (webserverURL.isEmpty()) {
             String serverPort = Integer.toString(request.getLocalPort());
             String webUrl = "http://127.0.0.1:" + serverPort;
             if (!request.getContextPath().isEmpty()) {
@@ -96,9 +90,10 @@ public class ApiControllerHelper {
                 throw new ApiCommunicationException(" Check Yukon Internal URL.");
             }
         }
+        return webserverURL;
     }
 
-    /* Check the connection with given URL and return the status*/
+    /* Check the connection with given URL and return the status */
     private HttpStatus checkURL(YukonUserContext userContext, HttpServletRequest request, String webUrl) {
         try {
             String testConnectionURL = webUrl + "/test";
@@ -107,7 +102,7 @@ public class ApiControllerHelper {
                 testConnectionURL, HttpMethod.GET, String.class);
             return response.getStatusCode();
         } catch (RestClientException ex) {
-            log.error("Error creating load group: " + ex.getMessage());
+            log.error("Error communicating with Api. " + ex.getMessage());
         }
         return HttpStatus.NOT_FOUND;
     }
@@ -115,9 +110,8 @@ public class ApiControllerHelper {
     /**
      * Generate dynamic URL for API calls
      */
-    public String getApiURL(HttpServletRequest request, YukonUserContext userContext, String suffixURL)
+    public String findwebServerURL(HttpServletRequest request, YukonUserContext userContext, String suffixURL)
             throws ApiCommunicationException {
-        testConnection(request, userContext);
-        return getWebserverURL() + "/api" + suffixURL;
+        return getWebServerURL(request, userContext) + "/api" + suffixURL;
     }
 }

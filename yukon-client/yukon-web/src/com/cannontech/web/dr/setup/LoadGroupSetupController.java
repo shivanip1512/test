@@ -79,7 +79,7 @@ public class LoadGroupSetupController {
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
 
         try {
-            String url = helper.getApiURL(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id);
+            String url = helper.findwebServerURL(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id);
             model.addAttribute("mode", PageEditMode.VIEW);
             LoadGroupBase loadGroup = retrieveGroup(userContext, request, id, url);
             if (loadGroup == null) {
@@ -101,7 +101,7 @@ public class LoadGroupSetupController {
             HttpServletRequest request) {
 
         try {
-            String url = helper.getApiURL(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id);
+            String url = helper.findwebServerURL(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id);
             model.addAttribute("mode", PageEditMode.EDIT);
             LoadGroupBase loadGroup = retrieveGroup(userContext, request, id, url);
             if (loadGroup == null) {
@@ -126,7 +126,7 @@ public class LoadGroupSetupController {
             FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
         try {
-            String url = helper.getApiURL(request, userContext, ApiURL.drLoadGroupSaveUrl);
+            String url = helper.findwebServerURL(request, userContext, ApiURL.drLoadGroupSaveUrl);
             ResponseEntity<? extends Object> response =
                 saveOrCopyGroup(userContext, request, url, loadGroup, HttpMethod.POST);
 
@@ -162,7 +162,7 @@ public class LoadGroupSetupController {
             FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
         try {
-            String url = helper.getApiURL(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id + "/delete");
+            String url = helper.findwebServerURL(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id + "/delete");
             ResponseEntity<? extends Object> response = deleteGroup(userContext, request, url, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
@@ -194,7 +194,7 @@ public class LoadGroupSetupController {
             HttpServletResponse servletResponse) throws JsonGenerationException, JsonMappingException, IOException {
 
         try {
-            String url = helper.getApiURL(request, userContext, ApiURL.drLoadGroupCopyUrl);
+            String url = helper.findwebServerURL(request, userContext, ApiURL.drLoadGroupCopyUrl);
             ResponseEntity<? extends Object> response =
                 saveOrCopyGroup(userContext, request, url, loadGroup, HttpMethod.POST);
 
@@ -238,7 +238,7 @@ public class LoadGroupSetupController {
             loadGroup = (LoadGroupBase) model.get("loadGroup");
         } else {
             try {
-                String url = helper.getApiURL(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id);
+                String url = helper.findwebServerURL(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id);
 
                 loadGroup = retrieveGroup(userContext, request, id, url);
                 MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
