@@ -54,7 +54,7 @@ public class ApiControllerHelper {
     /**
      * Set the webserver URL
      */
-    public static void setWebserverURL(String webserverURL) {
+    private static void setWebserverURL(String webserverURL) {
         ApiControllerHelper.webserverURL = webserverURL;
     }
 
