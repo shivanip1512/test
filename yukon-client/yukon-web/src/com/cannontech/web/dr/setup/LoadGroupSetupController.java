@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,7 +54,10 @@ public class LoadGroupSetupController {
     
     private static final String baseKey = "yukon.web.modules.dr.setup.loadGroup.";
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
-    private static final List<PaoType> switchTypes = PaoType.getAllLMGroupTypes();
+    private static final List<PaoType> switchTypes =
+            PaoType.getAllLMGroupTypes()
+            .stream().sorted((p1, p2) -> p1.getDbString().compareTo(p2.getDbString()))
+            .collect(Collectors.toList());
 
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;

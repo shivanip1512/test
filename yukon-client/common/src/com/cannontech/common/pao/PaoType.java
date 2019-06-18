@@ -1097,13 +1097,13 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     }
 
     /**
-     * @return Sorted list of all LM Group types
+     * @return List of all LM Group types
      */
     public static List<PaoType> getAllLMGroupTypes() {
         List<PaoType> paoTypes = Arrays.stream(PaoType.values())
                                        .filter(paoType -> paoType.isLoadGroup() && paoType != PaoType.MACRO_GROUP)
                                        .collect(Collectors.toList());
-        return paoTypes.stream().sorted((p1, p2)->p1.dbString.compareTo(p2.dbString)).collect(Collectors.toList());
+        return paoTypes;
     }
 
     /**
