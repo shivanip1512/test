@@ -451,6 +451,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RAM_ERROR("Ram Error", AttributeGroup.RFN_HARDWARE_EVENT, false),
     REGISTER_FULL_SCALE_EXCEEDED("Register Full-scale Exceeded", AttributeGroup.RFN_OTHER_EVENT, false),
     REVERSE_FLOW("Reverse Flow", AttributeGroup.RFN_OTHER_EVENT, false),
+    REMOTE_METER_CONFIGURATION_FAILURE("Remote Meter Configuration Failure", AttributeGroup.RFN_HARDWARE_EVENT, false),
     REVERSED_AGGREGATE("Reversed Aggregate", AttributeGroup.RFN_METERING_EVENT, false),
     REVERSED_PHASE_A("Reversed Phase A", AttributeGroup.RFN_METERING_EVENT, false),
     REVERSED_PHASE_C("Reversed Phase C", AttributeGroup.RFN_METERING_EVENT, false),

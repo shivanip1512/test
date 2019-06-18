@@ -454,6 +454,7 @@ INIT_ATTRIBUTE( PqmTestFailureWarning,                              "PQM_TEST_FA
 INIT_ATTRIBUTE( RamError,                                           "RAM_ERROR" );
 INIT_ATTRIBUTE( RegisterFullScaleExceeded,                          "REGISTER_FULL_SCALE_EXCEEDED" );
 INIT_ATTRIBUTE( ReverseFlow,                                        "REVERSE_FLOW" );
+INIT_ATTRIBUTE( RemoteMeterConfigurationFailure,                    "REMOTE_METER_CONFIGURATION_FAILURE" );
 INIT_ATTRIBUTE( ReversedAggregate,                                  "REVERSED_AGGREGATE" );
 INIT_ATTRIBUTE( ReversedPhaseA,                                     "REVERSED_PHASE_A" );
 INIT_ATTRIBUTE( ReversedPhaseC,                                     "REVERSED_PHASE_C" );

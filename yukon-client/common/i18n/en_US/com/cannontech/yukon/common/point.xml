@@ -350,6 +350,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.RAM_ERROR">Ram Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REGISTER_FULL_SCALE_EXCEEDED">Register Full-scale Exceeded</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_FLOW">Reverse Flow</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.REMOTE_METER_CONFIGURATION_FAILURE">Remote Meter Configuration Failure</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_ROTATION">Reverse Rotation</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSED_AGGREGATE">Reversed Aggregate</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSED_PHASE_A">Reversed Phase A</entry>
