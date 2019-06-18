@@ -7,7 +7,7 @@
 <cti:msgScope paths="widgets.programWidget">
     <c:choose>
         <c:when test="${not empty programsData}">
-            <div class = "js-program-widget">
+            <div class="js-program-widget">
                  <cti:toJson object="${widgetUpdateDate}" id="js-widget-json-data"/>
                  <c:forEach var="entry" varStatus="loop" items="${programsData}">
                      <table class="compact-results-table dashed">
@@ -27,10 +27,10 @@
                                         <td><a href="${programURL}">${fn:escapeXml(program.programName)}</a></td>
                                         <c:choose>
                                             <c:when test="${empty program.status}">
-                                                <td class= "tar"><dr:programState programId="${programId}"/></td>
+                                                <td class="tar"><dr:programState programId="${programId}"/></td>
                                             </c:when>
                                             <c:otherwise>
-                                                <td class= "tar">${fn:escapeXml(program.status)}</td>
+                                                <td class="tar">${fn:escapeXml(program.status)}</td>
                                             </c:otherwise>
                                          </c:choose>
                                     </tr>
@@ -39,7 +39,7 @@
                                             <tr class="dn"></tr>
                                             <tr>
                                                 <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/></td>
-                                                <td class= "tar"> <cti:dataUpdaterValue identifier="${programId}/START_TIME" type="DR_PROGRAM"/>
+                                                <td class="tar"> <cti:dataUpdaterValue identifier="${programId}/START_TIME" type="DR_PROGRAM"/>
                                                    - <cti:dataUpdaterValue identifier="${programId}/STOP_TIME" type="DR_PROGRAM"/>
                                                 </td>
                                             </tr>
@@ -49,7 +49,7 @@
                                             <tr class="dn"></tr>
                                             <tr>
                                                 <td>${fn:escapeXml(gearData.gearName)}</td>
-                                                <td class= "tar"><cti:formatDate type="TIME24H" value="${gearData.startDateTime}"/>
+                                                <td class="tar"><cti:formatDate type="TIME24H" value="${gearData.startDateTime}"/>
                                                   - <cti:formatDate type="TIME24H" value="${gearData.stopDateTime}"/>
                                                 </td> 
                                             </tr>
