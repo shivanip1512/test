@@ -559,7 +559,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     filter.setLinkQuality(Lists.newArrayList(LinkQuality.values()));
                 }
                 
-                log.debug("Recieved neighbor data from NM for {} devices", neighborMetaData.size());
+                log.debug("Received neighbor data from NM for {} devices", neighborMetaData.size());
 
                 loadMapColorCodedByLinkStrength(filter, accessor, map, neighborMetaData);
 
@@ -570,7 +570,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
                         metadataMultiService.getMetadata(gateways.keySet(), Set.of(PRIMARY_GATEWAY_NODES));
                     
-                    log.debug("Recieved primary gateway nodes from NM for {} devices", metaData.size());
+                    log.debug("Received primary gateway nodes from NM for {} devices", metaData.size());
                     
                     loadMapColorCodedByGateway(map, metaData);
                     
@@ -581,7 +581,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                         Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData =
                             metadataMultiService.getMetadataForGatewayRfnIdentifiers(Sets.newHashSet(entry.getKey()),
                                 Set.of(PRIMARY_FORWARD_NEIGHBOR_DATA));
-                        log.debug("Recieved neighbor data for {} devices gateway {}", neighborMetaData.size(),
+                        log.debug("Received neighbor data for {} devices gateway {}", neighborMetaData.size(),
                             entry.getValue().getName());
     
                         loadMapColorCodedByGatewayFilteredByLinkStrength(filter, map, i, entry.getValue().getName(), neighborMetaData);
