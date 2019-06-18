@@ -152,7 +152,7 @@ public class LoadGroupSetupController {
 
         catch (RestClientException ex) {
             log.error("Error creating load group: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error"));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error",ex.getMessage()));
             return "redirect:/dr/setup/list";
         }
         return null;
