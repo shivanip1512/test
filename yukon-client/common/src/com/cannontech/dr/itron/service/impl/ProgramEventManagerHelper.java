@@ -45,7 +45,7 @@ public class ProgramEventManagerHelper implements SoapFaultParser {
     }
     
     public static AddHANLoadControlProgramEventRequest buildDrEvent(int dutyCyclePercent, int dutyCycleType, int dutyCyclePeriod,
-            int criticality, int relay, int itronProgramId, String programName, boolean rampIn, boolean rampOut, Duration duration) {
+            int criticality, int relay, int itronGroupId, int itronProgramId, String programName, boolean rampIn, boolean rampOut, Duration duration) {
         AddHANLoadControlProgramEventRequest request = new AddHANLoadControlProgramEventRequest();
         AddHANLoadControlProgramEventType event = new AddHANLoadControlProgramEventType();
         event.setProgramID(itronProgramId);
@@ -53,7 +53,8 @@ public class ProgramEventManagerHelper implements SoapFaultParser {
         event.setDutyCyclePercentage((short) dutyCyclePercent);
         event.setRandomizeStartTime(rampIn);
         event.setRandomizeEndTime(rampOut);
-        //DatatypeFactory.newInstance().newXMLGregorianCalendar(startTime.toDateTime().toGregorianCalendar())
+        event.getDeviceGroupIDs().add((long)itronGroupId);
+        
         LoadControlProgramEventD2GParamsType d2GParams = new LoadControlProgramEventD2GParamsType();
         d2GParams.setCriticality((short) criticality);
         d2GParams.setDutyCyclePeriod((short) dutyCyclePeriod);

@@ -248,6 +248,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         List<ProgramLoadGroup> programsByLMGroupId = applianceAndProgramDao.getProgramsByLMGroupId(yukonGroupId);
         int programId = programsByLMGroupId.get(0).getPaobjectId();
         int itronProgramId = itronDao.getItronProgramId(programId);
+        int itronGroupId = itronDao.getItronGroupId(yukonGroupId);
         
         LiteYukonPAObject group = getGroup(yukonGroupId);
         LiteYukonPAObject program = getProgram(programId);
@@ -257,7 +258,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         try {
             itronEventLogService.sendDREventForGroup(yukonGroupId, dutyCyclePercent, dutyCyclePeriod, criticality);
             AddHANLoadControlProgramEventRequest request = ProgramEventManagerHelper.buildDrEvent(dutyCyclePercent, dutyCycleType,
-               dutyCyclePeriod, criticality, relay, itronProgramId, String.valueOf(programId), rampIn, rampOut, duration);
+               dutyCyclePeriod, criticality, relay, itronGroupId, itronProgramId, String.valueOf(programId), rampIn, rampOut, duration);
             log.debug(XmlUtils.getPrettyXml(request));
             log.debug("ITRON-sendDREventForGroup url:{} yukon group:{} yukon program:{}", url, group.getPaoName(), program.getPaoName());
             JAXBElement<AddProgramEventResponseType> response =
