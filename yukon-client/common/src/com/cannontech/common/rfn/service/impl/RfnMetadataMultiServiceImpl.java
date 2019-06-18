@@ -108,7 +108,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
             throw new NmCommunicationException(error);
         }
         if (response.getQueryResults() == null) {
-            String error = "No query results recieved reply type " + response.getResponseType() + " request identifier:"
+            String error = "No query results received reply type " + response.getResponseType() + " request identifier:"
                 + requestIdentifier;
             log.error(error);
             throw new NmCommunicationException(error);
