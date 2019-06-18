@@ -343,6 +343,10 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                             log.debug("RfnMetadataMultiRequest identifier {} metadatas {} gateway ids {} or rfn ids {}",
                                 request.getRequestID(), request.getPrimaryNodesForGatewayRfnIdentifiers().size(),
                                 request.getRfnIdentifiers().size(), request.getRfnMetadatas());
+                            
+                            List<RfnMetadataMultiResponse> responses = getPartitionedMetadataMultiResponse(request);
+                            
+                            
                             RfnMetadataMultiResponse reply = getMetadataMultiResponse(request);
                             log.debug("RfnMetadataMultiRequest identifier {} response: {}",
                                 request.getRequestID(), reply.getResponseType());
@@ -368,6 +372,25 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = getResults(request);
         response.getQueryResults().putAll(results);
         return response;
+    }
+    
+
+    private List<RfnMetadataMultiResponse> getPartitionedMetadataMultiResponse(RfnMetadataMultiRequest request) {
+        List<RfnMetadataMultiResponse> responses = new ArrayList<>();
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = getResults(request);
+        List<List<RfnIdentifier>> parts = Lists.partition(Lists.newArrayList(results.keySet()), 1000);
+        log.debug("--Split identifiers {} into {} parts", results.size(), parts.size());
+    
+        for (int i = 0; i < parts.size(); i++) {
+            RfnMetadataMultiResponse response = new RfnMetadataMultiResponse(request.getRequestID(), parts.size(), i + 1);
+            response.setResponseType(settings.getMetadataResponseType());
+            response.setQueryResults(new HashMap<>());
+            parts.get(i).forEach(identifier -> response.getQueryResults().put(identifier, results.get(identifier)));
+            responses.add(response);
+            log.debug("--Created response {} (of {}) query results {}", response.getSegmentNumber(),
+                response.getTotalSegments(), response.getQueryResults().size());
+        }
+        return responses;
     }
     
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> getResults(RfnMetadataMultiRequest request) {
