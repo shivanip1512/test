@@ -399,21 +399,15 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     
     @Override
     public void sendLcrArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model) {
-        // Create archive request & fake identifier
-        RfnLcrArchiveRequest archiveRequest = new RfnLcrArchiveRequest();
-        RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(serialFrom), manufacturer, model);
-        
-        // Set all data
-        archiveRequest.setRfnIdentifier(rfnIdentifier);
-        archiveRequest.setSensorId(1234);
-        
-        // Put request on queue
-        sendArchiveRequest(lcrReadingArchiveRequestQueueName, archiveRequest);
+        sendArchiveRequest(serialFrom, serialTo, manufacturer, model);
     }
     
     @Override
     public void sendRelayArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model) {
+        sendArchiveRequest(serialFrom, serialTo, manufacturer, model);
+    }
 
+    private void sendArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model) {
         Map<Long, RfnIdentifier> rfnIdentifiers = new HashMap<>();
         for (int i = serialFrom; i <= serialTo; i++) {
             // Create archive request & fake identifier
