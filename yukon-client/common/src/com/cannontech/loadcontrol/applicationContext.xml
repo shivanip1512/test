@@ -56,7 +56,9 @@
     <bean id="drProgramNameField" class="com.cannontech.dr.program.model.ProgramNameField"/>
     <bean id="drProgramStateField" class="com.cannontech.dr.program.model.ProgramStateField"/>
     <bean id="drProgramStartField" class="com.cannontech.dr.program.model.ProgramStartField"/>
+    <bean id="drProgramStartTimeField" class="com.cannontech.dr.program.model.ProgramStartTimeField"/>
     <bean id="drProgramStopField" class="com.cannontech.dr.program.model.ProgramStopField"/>
+    <bean id="drProgramStopTimeField" class="com.cannontech.dr.program.model.ProgramStopTimeField"/>
     <bean id="drProgramReductionField" class="com.cannontech.dr.program.model.ProgramReductionField"/>
     <bean id="drProgramCurrentGearField" class="com.cannontech.dr.program.model.ProgramCurrentGearField"/>
     <bean id="drProgramStateClassnameField" class="com.cannontech.dr.program.model.ProgramStateClassnameField"/>
