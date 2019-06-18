@@ -53,6 +53,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 public class LoadGroupSetupController {
     
     private static final String baseKey = "yukon.web.modules.dr.setup.loadGroup.";
+    private static final String communicationkey = "yukon.web.modules.dr.setup.communication.error";
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
     private static final List<PaoType> switchTypes =
             PaoType.getAllLMGroupTypes()
@@ -90,7 +91,7 @@ public class LoadGroupSetupController {
             return "dr/setup/loadGroup/view.jsp";
         } catch (ApiCommunicationException e) {
             log.error("Error communicating with Api." + e.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "communication.error"));
+            flash.setError(new YukonMessageSourceResolvable(communicationkey));
             return "redirect:/dr/setup/list";
         }
 
@@ -115,7 +116,7 @@ public class LoadGroupSetupController {
             return "dr/setup/loadGroup/view.jsp";
         } catch (ApiCommunicationException e) {
             log.error("Error communicating with Api." + e.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "communication.error"));
+            flash.setError(new YukonMessageSourceResolvable(communicationkey));
             return "redirect:/dr/setup/list";
         }
 
@@ -145,7 +146,7 @@ public class LoadGroupSetupController {
 
         } catch (ApiCommunicationException e) {
             log.error("Error communicating with Api." + e.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "communication.error"));
+            flash.setError(new YukonMessageSourceResolvable(communicationkey));
             return "redirect:/dr/setup/list";
         }
 
@@ -177,7 +178,7 @@ public class LoadGroupSetupController {
 
         } catch (ApiCommunicationException e) {
             log.error("Error communicating with Api." + e.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "communication.error"));
+            flash.setError(new YukonMessageSourceResolvable(communicationkey));
             return "redirect:/dr/setup/list";
         } catch (RestClientException ex) {
             log.error("Error deleting load group: " + ex.getMessage());
@@ -216,7 +217,7 @@ public class LoadGroupSetupController {
 
         } catch (ApiCommunicationException e) {
             log.error("Error communicating with Api." + e.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "communication.error"));
+            flash.setError(new YukonMessageSourceResolvable(communicationkey));
             return "redirect:/dr/setup/list";
         } catch (RestClientException ex) {
             log.error("Error creating load group: " + ex.getMessage());
@@ -247,7 +248,7 @@ public class LoadGroupSetupController {
 
             } catch (ApiCommunicationException e) {
                 log.error("Error communicating with Api." + e.getMessage());
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "communication.error"));
+                flash.setError(new YukonMessageSourceResolvable(communicationkey));
                 return "redirect:/dr/setup/list";
             }
 

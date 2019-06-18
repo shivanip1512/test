@@ -20,16 +20,15 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.ApiRequestHelper;
-import com.cannontech.web.dr.setup.LoadGroupSetupController;
 
 /**
  * Helper class for controller (MVC) that called Rest Api. 
  *
  */
 public class ApiControllerHelper {
-    @Autowired GlobalSettingDao globalSettingDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ApiRequestHelper apiRequestHelper;
-    private static String webserverURL = StringUtils.EMPTY;
+    private String webserverURL;
     private static final Logger log = YukonLogManager.getLogger(ApiControllerHelper.class);
     
     /**
@@ -54,8 +53,8 @@ public class ApiControllerHelper {
     /**
      * Set the webserver URL
      */
-    private static void setWebserverURL(String webserverURL) {
-        ApiControllerHelper.webserverURL = webserverURL;
+    private void setWebserverURL(String webserverURL) {
+        this.webserverURL = webserverURL;
     }
 
     /**
@@ -71,7 +70,7 @@ public class ApiControllerHelper {
      */
     private String getWebServerURL(HttpServletRequest request, YukonUserContext userContext)
             throws ApiCommunicationException {
-        if (webserverURL.isEmpty()) {
+        if (StringUtils.isEmpty(webserverURL)) {
             String serverPort = Integer.toString(request.getLocalPort());
             String webUrl = "http://127.0.0.1:" + serverPort;
             if (!request.getContextPath().isEmpty()) {
