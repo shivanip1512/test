@@ -30,7 +30,7 @@ public class ApiControllerHelper {
     @Autowired GlobalSettingDao globalSettingDao;
     @Autowired private ApiRequestHelper apiRequestHelper;
     private static String webserverURL = StringUtils.EMPTY;
-    private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
+    private static final Logger log = YukonLogManager.getLogger(ApiControllerHelper.class);
     
     /**
      * Populate binding error from the error object received from rest call. 
