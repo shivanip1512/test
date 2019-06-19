@@ -10,7 +10,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
 @JsonSubTypes({ 
     @JsonSubTypes.Type(value = LoadGroupExpresscom.class, name = "LM_GROUP_EXPRESSCOMM"),
-    @JsonSubTypes.Type(value = LoadGroupItron.class, name = "LM_GROUP_ITRON")
+    @JsonSubTypes.Type(value = LoadGroupItron.class, name = "LM_GROUP_ITRON"),
+    @JsonSubTypes.Type(value = LoadGroupDigiSep.class, name = "LM_GROUP_DIGI_SEP")
     })
 public class LoadGroupBase implements LoadGroupSetupBase {
     private Integer id;
