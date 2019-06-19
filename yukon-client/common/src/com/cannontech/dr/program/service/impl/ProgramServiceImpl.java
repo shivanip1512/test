@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -68,8 +68,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.ProgramUtils;
-import com.cannontech.loadcontrol.dao.LmProgramGearHistory;
-import com.cannontech.loadcontrol.dao.LmProgramGearHistory.GearAction;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -80,6 +78,7 @@ import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.messages.LMManualControlResponse;
 import com.cannontech.loadcontrol.service.LoadControlCommandService;
 import com.cannontech.loadcontrol.service.ProgramChangeBlocker;
+import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.BadServerResponseException;
@@ -850,9 +849,9 @@ public class ProgramServiceImpl implements ProgramService {
             programDetailData.put(accessor.getMessage(todayKey), todaysPrograms);
         }
 
-        // Previous 7 days programs.
-        DateTime toDate = new DateTime().withTimeAtStartOfDay();
-        DateTime fromDate = toDate.minusDays(7);
+        // Current Day And Previous 7 days programs history.
+        DateTime toDate = new DateTime().withTimeAtStartOfDay().plusDays(1);
+        DateTime fromDate = toDate.minusDays(8);
         Map<String, List<ProgramData>> programHistoryData = getProgramsHistoryDetail(fromDate, toDate, userContext);
         if (!programHistoryData.isEmpty()) {
             programDetailData.putAll(programHistoryData);
@@ -949,22 +948,30 @@ public class ProgramServiceImpl implements ProgramService {
                              .build();
     }
 
-    @Override
-    public Map<String, List<ProgramData>> getProgramsHistoryDetail(DateTime from, DateTime to,
+    /**
+     * Program History detail for current day and past 7 days, getAllProgramControlHistory method 
+     * is processing the history data, to show multiple gear action within program, group programs by
+     * program history Id and build GearData based on that.
+     * 
+     */
+    private Map<String, List<ProgramData>> getProgramsHistoryDetail(DateTime from, DateTime to,
             YukonUserContext userContext) {
-
-        List<LmProgramGearHistory> programsHistoryDetail = loadControlProgramDao.getProgramsHistoryDetail(from, to);
+        List<ProgramControlHistory> programsHistoryDetail = loadControlProgramDao.getAllProgramControlHistory(from.toDate(), to.toDate());
         List<ProgramData> previousDaysProgramData = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(programsHistoryDetail)) {
-            Map<Integer, List<LmProgramGearHistory>> programsByProgramHistoryId =
-                                                        groupProgramsByProgramHistoryId(programsHistoryDetail);
+            List<ProgramControlHistory> filterProgramWithStartTime = 
+                                            programsHistoryDetail.stream()
+                                                                 .filter(program -> program.getStartDateTime().compareTo(from.toDate()) >=0)
+                                                                 .collect(Collectors.toList());
+            Map<Integer, List<ProgramControlHistory>> programsByProgramHistoryId =
+                                                        groupProgramsByProgramHistoryId(filterProgramWithStartTime);
 
             previousDaysProgramData = 
                     programsByProgramHistoryId.entrySet()
                                               .stream()
                                               .map(entry -> buildProgramData(entry.getValue(), userContext))
                                               .collect(Collectors.toList());
-
+            previousDaysProgramData.sort((p1, p2) -> p2.getStartDateTime().compareTo(p1.getStartDateTime()));
         }
         return groupProgramsByStartDate(previousDaysProgramData, userContext);
     }
@@ -974,8 +981,8 @@ public class ProgramServiceImpl implements ProgramService {
      * or changed action, which can be on the same day or different day.This is needed as we can have gear
      * assigned to a program on same and different dates, So using programHistoryId we will club them all.
      */
-    private Map<Integer, List<LmProgramGearHistory>> groupProgramsByProgramHistoryId(List<LmProgramGearHistory> programsHistoryDetail) {
-        Map<Integer, List<LmProgramGearHistory>> programsByProgramHistoryId = 
+    private Map<Integer, List<ProgramControlHistory>> groupProgramsByProgramHistoryId(List<ProgramControlHistory> programsHistoryDetail) {
+        Map<Integer, List<ProgramControlHistory>> programsByProgramHistoryId = 
                          programsHistoryDetail.stream()
                                               .collect(Collectors.groupingBy(
                                                   program -> program.getProgramHistoryId(),
@@ -986,36 +993,20 @@ public class ProgramServiceImpl implements ProgramService {
 
     /**
      * This method is used to build program with gears. A Single program can have run with a single or 
-     * multiple gear.To Build ProgramData sort the list based on programGearHistoryId, this will give the 
-     * gear event happened with that program in proper order.After sorting compare the current iterating element
-     * with next element to build the gear data.
+     * multiple gear.So This method is to collect all those action inside a single program.
      */
-    private ProgramData buildProgramData(List<LmProgramGearHistory> programsHistoryDetail, YukonUserContext userContext) {
-        programsHistoryDetail.sort(Comparator.comparingInt(LmProgramGearHistory::getProgramGearHistoryId));
-        List<GearData> gears = new ArrayList<>();
+    private ProgramData buildProgramData(List<ProgramControlHistory> programsHistoryDetail, YukonUserContext userContext) {
 
-        for (int i = 0; i < programsHistoryDetail.size(); i++) {
-            LmProgramGearHistory programHistory = programsHistoryDetail.get(i);
-            GearData gearData;
-            if (programsHistoryDetail.size() > 1) {
-                for (int j = i + 1; j < programsHistoryDetail.size(); j++) {
-                    LmProgramGearHistory nextProgramHistory = programsHistoryDetail.get(j);
-                    gearData = buildGearData(programHistory, nextProgramHistory);
-                    gears.add(gearData);
-                    break;
-                }
-            } else {
-                gearData = buildGearData(programHistory);
-                gears.add(gearData);
-            }
-        }
+        List<GearData> gears = programsHistoryDetail.stream()
+                                                    .map(program -> buildGearData(program))
+                                                    .collect(Collectors.toList());
 
         //As per need we have to club all the Program action event(start, gear change, stop) to a 
         //single date on which the Program is started.The program at zero index will give that.
-        LmProgramGearHistory programHistory = programsHistoryDetail.get(0);
+        ProgramControlHistory programHistory = programsHistoryDetail.get(0);
 
         ProgramData programData = new ProgramData.ProgramDataBuilder(programHistory.getProgramId())
-                                                 .setStartDateTime(new DateTime(programHistory.getEventTime()))
+                                                 .setStartDateTime(new DateTime(programHistory.getStartDateTime()))
                                                  .setGears(gears)
                                                  .setStatus("Completed")
                                                  .setProgramName(programHistory.getProgramName())
@@ -1024,59 +1015,21 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     /**
-     * In order to build gear data for multiple gear event(start,stop,change gear), we will compare the
-     * current iterated program with its next subsequent program.As the programsHistoryDetail is sorted
-     * based on programGearHistoryId,So we will get Program with action Start -> Change Gear(If gear is changed)
-     * -> Stop.Based on this we will be able to find out the gear start and stop time even if that
-     * occurred on same of different days.
+     * Build GearData from ProgramControlHistory. As the Gear Start -> Gear Change ->
+     * Stop Action with start & stop time are already handled inside getAllProgramControlHistory
+     * method, So Use that to create GearData.
      */
-    private GearData buildGearData(LmProgramGearHistory programHistory, LmProgramGearHistory nextProgramHistory) {
-        DateTime gearStartTime = null;
-        DateTime gearStopTime = null;
+    private GearData buildGearData(ProgramControlHistory programHistory) {
         GearData gearData = new GearData();
-        try {
-            GearAction gearAction = GearAction.getForDbString(programHistory.getAction());
-            if (GearAction.START == gearAction || GearAction.GEAR_CHANGE == gearAction) {
-                gearStartTime = new DateTime(programHistory.getEventTime());
-            }
-            GearAction nextGearAction = GearAction.getForDbString(nextProgramHistory.getAction());
-            if (GearAction.STOP == nextGearAction || GearAction.GEAR_CHANGE == nextGearAction) {
-                gearStopTime = new DateTime(nextProgramHistory.getEventTime());
-            }
-            gearData.setGearName(programHistory.getGearName());
-            gearData.setStartDateTime(gearStartTime);
-            gearData.setStopDateTime(gearStopTime);
-            gearData.setEventTime(new DateTime(programHistory.getEventTime()));
-        } catch (IllegalArgumentException iae) {
-            log.info(iae.getMessage());
+        DateTime gearStartTime = new DateTime(programHistory.getStartDateTime());
+        DateTime gearStopTime = new DateTime(programHistory.getStopDateTime());
+        gearData.setGearName(programHistory.getGearName());
+        gearData.setStartDateTime(gearStartTime);
+        gearData.setStopDateTime(gearStopTime);
+        if (gearStartTime != null && gearStopTime != null) {
+            gearData.setStoppedOnSameDay(DateUtils.isSameDay(gearStartTime.toDate(), gearStopTime.toDate()));
         }
-        return gearData;
-    }
-
-    
-    /**
-     * This is the overloaded method to build gear data in case we have only single gear event
-     * i.e either start or gear change or stop action.For handling scenario where the program is 
-     * started with gear but not stopped etc...
-     */
-    private GearData buildGearData(LmProgramGearHistory programHistory) {
-        DateTime gearStartTime = null;
-        DateTime gearStopTime = null;
-        GearData gearData = new GearData();
-        try {
-            GearAction gearAction = GearAction.getForDbString(programHistory.getAction());
-            if (GearAction.START == gearAction || GearAction.GEAR_CHANGE == gearAction) {
-                gearStartTime = new DateTime(programHistory.getEventTime());
-            } else if (GearAction.STOP == gearAction) {
-                gearStopTime = new DateTime(programHistory.getEventTime());
-            }
-            gearData.setGearName(programHistory.getGearName());
-            gearData.setStartDateTime(gearStartTime);
-            gearData.setStopDateTime(gearStopTime);
-            gearData.setEventTime(new DateTime(programHistory.getEventTime()));
-        } catch (IllegalArgumentException iae) {
-            log.info(iae.getMessage());
-        }
+        gearData.setKnownGoodStopDateTime(programHistory.isKnownGoodStopDateTime());
         return gearData;
     }
 

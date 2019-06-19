@@ -10,7 +10,8 @@ public class GearData {
     private String gearName;
     private DateTime startDateTime;
     private DateTime stopDateTime;
-    private DateTime eventTime;
+    private boolean knownGoodStopDateTime;
+    private boolean isStoppedOnSameDay;
 
     public String getGearName() {
         return gearName;
@@ -36,11 +37,19 @@ public class GearData {
         this.stopDateTime = stopDateTime;
     }
 
-    public DateTime getEventTime() {
-        return eventTime;
+    public boolean isKnownGoodStopDateTime() {
+        return knownGoodStopDateTime;
     }
 
-    public void setEventTime(DateTime eventTime) {
-        this.eventTime = eventTime;
+    public void setKnownGoodStopDateTime(boolean knownGoodStopDateTime) {
+        this.knownGoodStopDateTime = knownGoodStopDateTime;
+    }
+
+    public boolean isStoppedOnSameDay() {
+        return isStoppedOnSameDay;
+    }
+
+    public void setStoppedOnSameDay(boolean isStoppedOnSameDay) {
+        this.isStoppedOnSameDay = isStoppedOnSameDay;
     }
 }

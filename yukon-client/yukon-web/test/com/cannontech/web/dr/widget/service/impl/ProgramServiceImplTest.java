@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
@@ -26,9 +27,9 @@ import com.cannontech.core.service.impl.DateFormattingServiceImpl;
 import com.cannontech.dr.program.service.impl.ProgramServiceImpl;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolverMock;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
-import com.cannontech.loadcontrol.dao.LmProgramGearHistory;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
+import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.user.SimpleYukonUserContext;
 public class ProgramServiceImplTest {
 
@@ -38,7 +39,7 @@ public class ProgramServiceImplTest {
     
     private Set<LMProgramBase> programs = new HashSet<>();
     private Set<LMProgramBase> emptyPrograms = new HashSet<>();
-    private List<LmProgramGearHistory> programGearHistory = new ArrayList<>();
+    private List<ProgramControlHistory> programControlHistory = new ArrayList<>();
     StaticMessageSource messageSource = new StaticMessageSource();
     {
         messageSource.addMessage("yukon.common.dateFormatting.DATE", Locale.US, "MM/dd/yyyy");
@@ -89,27 +90,19 @@ public class ProgramServiceImplTest {
         lm4.setYukonID(4);
         programs.add(lm4);
         
-        LmProgramGearHistory lpgh1 = new LmProgramGearHistory();
-        lpgh1.setProgramGearHistoryId(120);
-        lpgh1.setProgramHistoryId(90);
-        lpgh1.setGearName("Ecobee Program");
-        lpgh1.setAction("Gear Change");
-        lpgh1.setGearId(15);
-        LmProgramGearHistory lpgh2 = new LmProgramGearHistory();
-        lpgh2.setProgramGearHistoryId(46);
-        lpgh2.setAction("Start");
-        lpgh2.setProgramHistoryId(23);
-        lpgh2.setGearName("SEP Pragram");
-        lpgh2.setGearId(37);
-        LmProgramGearHistory lpgh3 = new LmProgramGearHistory();
-        lpgh3.setProgramGearHistoryId(153);
-        lpgh3.setAction("Stop");
-        lpgh3.setProgramHistoryId(90);
-        lpgh3.setGearName("SEP Pragram");
-        lpgh3.setGearId(37);
-        programGearHistory.add(lpgh1);
-        programGearHistory.add(lpgh2);
-        programGearHistory.add(lpgh3);
+        ProgramControlHistory pch1 = new ProgramControlHistory(90, 56);
+        pch1.setGearName("Ecobee Program");
+        pch1.setStartDateTime(new Date());
+        pch1.setStopDateTime(new Date());
+        pch1.setKnownGoodStopDateTime(true);
+        ProgramControlHistory pch3 = new ProgramControlHistory(90, 56);
+        pch3.setGearName("SEP Program");
+        pch3.setStartDateTime(new Date());
+        pch3.setStopDateTime(new Date());
+        pch3.setKnownGoodStopDateTime(true);
+        programControlHistory.add(pch1);
+        //programControlHistory.add(pch2);
+        programControlHistory.add(pch3);
     }
     
     @Test
@@ -154,33 +147,38 @@ public class ProgramServiceImplTest {
 
     @Test
     public void test_groupProgramsByProgramHistoryId_positive() {
-        Map<Integer, List<LmProgramGearHistory>> programs = ReflectionTestUtils.invokeMethod(programServiceImplTest, "groupProgramsByProgramHistoryId", programGearHistory);
+        Map<Integer, List<ProgramControlHistory>> programs = ReflectionTestUtils.invokeMethod(programServiceImplTest, "groupProgramsByProgramHistoryId", programControlHistory);
         assertTrue(programs.get(90).size() == 2);
     }
 
     @Test
     public void test_groupProgramsByProgramHistoryId_negative() {
-        Map<Integer, List<LmProgramGearHistory>> programs = ReflectionTestUtils.invokeMethod(programServiceImplTest, "groupProgramsByProgramHistoryId", programGearHistory);
+        ProgramControlHistory pch2 = new ProgramControlHistory(23, 56);
+        pch2.setGearName("SEP Program");
+        pch2.setStartDateTime(new Date());
+        pch2.setStopDateTime(new Date());
+        pch2.setKnownGoodStopDateTime(false);
+        programControlHistory.add(pch2);
+        Map<Integer, List<ProgramControlHistory>> programs = ReflectionTestUtils.invokeMethod(programServiceImplTest, "groupProgramsByProgramHistoryId", programControlHistory);
         assertFalse(programs.get(23).size() == 2);
     }
 
     @Test
     public void test_buildProgramData_with_multiple_gear() {
-        ProgramData program = ReflectionTestUtils.invokeMethod(programServiceImplTest, "buildProgramData", programGearHistory, userContext);
+        ProgramData program = ReflectionTestUtils.invokeMethod(programServiceImplTest, "buildProgramData", programControlHistory, userContext);
         assertNotNull(program);
         assertTrue(program.getGears().size() == 2);
     }
 
     @Test
     public void test_buildProgramData_single_gear() {
-        LmProgramGearHistory lpgh1 = new LmProgramGearHistory();
-        lpgh1.setProgramGearHistoryId(120);
-        lpgh1.setProgramHistoryId(90);
-        lpgh1.setGearName("Ecobee Program");
-        lpgh1.setAction("Gear Change");
-        lpgh1.setGearId(15);
-        List<LmProgramGearHistory> history = new ArrayList<>();
-        history.add(lpgh1);
+        ProgramControlHistory pch1 = new ProgramControlHistory(90, 56);
+        pch1.setGearName("Ecobee Program");
+        pch1.setStartDateTime(new Date());
+        pch1.setStopDateTime(new Date());
+        pch1.setKnownGoodStopDateTime(true);
+        List<ProgramControlHistory> history = new ArrayList<>();
+        history.add(pch1);
         ProgramData program = ReflectionTestUtils.invokeMethod(programServiceImplTest, "buildProgramData", history, userContext);
         assertNotNull(program);
         assertTrue(program.getGears().size() == 1);

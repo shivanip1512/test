@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 import com.cannontech.common.bulk.filter.UiFilter;
@@ -206,11 +205,6 @@ public class ProgramServiceAdapter implements ProgramService {
 
     @Override
     public Map<String, List<ProgramData>> buildProgramWidgetData(YukonUserContext userContext) {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-
-    @Override
-    public Map<String, List<ProgramData>> getProgramsHistoryDetail(DateTime from, DateTime to, YukonUserContext userContext) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
