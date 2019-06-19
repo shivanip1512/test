@@ -65,5 +65,25 @@ private:
     const std::string _fkTable;
 };
 
+template <size_t ColumnCount>
+class IM_EX_CTIBASE DatabaseBulkAccumulator : public DatabaseBulkWriter<ColumnCount>
+{
+public:
+    DatabaseBulkAccumulator(const DbClientType clientType, TempTableColumns schema, const unsigned primaryKeyCount, const std::string& tempTableName, const std::string& destTableName, const std::string& destIdColumn, const std::string& foreignKeyTableName);
+
+protected:
+    std::string getFinalizeSql() const override;
+    std::string getRejectedRowsSql() const;
+
+    std::set<long> getRejectedRows(DatabaseConnection& conn) const override;
+
+private:
+    const std::string _idColumn;
+    const boost::sub_range<const std::array<ColumnDefinition, ColumnCount>> _primaryKeyColumns;
+    const boost::sub_range<const std::array<ColumnDefinition, ColumnCount>> _valueColumns;
+    const std::string _fkTable;
+    const std::string _destIdColumn;
+};
+
 }
 }

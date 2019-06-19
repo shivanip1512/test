@@ -374,11 +374,114 @@ std::set<long> DatabaseBulkUpdater<ColumnCount>::getRejectedRows(DatabaseConnect
 }
 
 
+template <size_t ColumnCount>
+DatabaseBulkAccumulator<ColumnCount>::DatabaseBulkAccumulator(const DbClientType clientType, TempTableColumns schema, const unsigned primaryKeyCount, const std::string& tempTableName, const std::string& destTableName, const std::string& destIdColumn, const std::string& foreignKeyTableName) 
+    :   DatabaseBulkWriter{ clientType, schema, tempTableName, destTableName },
+        _idColumn{ _schema[0].name },
+        _primaryKeyColumns{ _schema.begin(), _schema.begin() + primaryKeyCount },
+        _valueColumns{ _schema.begin() + primaryKeyCount, _schema.end() },
+        _destIdColumn{ destIdColumn },
+        _fkTable{ foreignKeyTableName }
+{}
+
+
+template <size_t ColumnCount>
+std::string DatabaseBulkAccumulator<ColumnCount>::getFinalizeSql() const
+{
+    const auto columnNames = boost::join(_schema | columnName, ", ");
+
+    const auto matchCondition =
+        boost::adaptors::transformed(
+            [this](const ColumnDefinition &cd) {
+                return "d." + cd.name + " = t." + cd.name; });
+
+    const auto mergeUpdate =
+        boost::adaptors::transformed(
+            [this](const ColumnDefinition &cd) {
+                return cd.name + " = d." + cd.name + " + t." + cd.name; });
+
+    const auto mergeInsert =
+        boost::adaptors::transformed(
+            [this](const ColumnDefinition &cd) {
+                return "t." + cd.name; });
+
+    const auto mergeUpdates = boost::join(_valueColumns | mergeUpdate, ", ");
+    const auto mergeInserts = boost::join(_schema | mergeInsert, ", ");
+    const auto matchConditions = boost::join(_primaryKeyColumns | matchCondition, " AND ");
+
+    switch( _clientType )
+    {
+        case DbClientType::SqlServer:
+        {
+            return
+                "DECLARE @maxId NUMERIC;"
+                "SELECT @maxId = COALESCE(MAX(" + _destIdColumn + "), 0) FROM " + _destTable + ";"
+                "MERGE " + _destTable + " d"
+                " USING (SELECT @maxId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)) AS Temp_maxID, " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
+                " ON " + matchConditions +
+                " WHEN MATCHED THEN"
+                " UPDATE SET " + mergeUpdates +
+                " WHEN NOT MATCHED THEN"
+                " INSERT (" + _destIdColumn + ", " + columnNames + ")"
+                " VALUES (t.Temp_maxID, " + mergeInserts + ");";
+        }
+        case DbClientType::Oracle:
+        {
+            return 
+                "DECLARE maxId NUMBER;"
+                "BEGIN "
+                "SELECT COALESCE(MAX(" + _destIdColumn + "), 0) INTO maxId FROM " + _destTable + ";"
+                "MERGE INTO " + _destTable + " d"
+                " USING (SELECT maxId + (ROW_NUMBER() OVER (ORDER BY (SELECT 1 FROM DUAL))) AS Temp_maxID, " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
+                " ON (" + matchConditions + ")"
+                " WHEN MATCHED THEN"
+                " UPDATE SET " + mergeUpdates +
+                " WHEN NOT MATCHED THEN"
+                " INSERT (" + _destIdColumn + ", " + columnNames + ")"
+                " VALUES (t.Temp_maxID, " + mergeInserts + "); "
+                "END;";
+        }
+    }
+
+    throw DatabaseException{ "Invalid client type " + std::to_string(static_cast<unsigned>(_clientType)) };
+}
+
+
+template <size_t ColumnCount>
+std::string DatabaseBulkAccumulator<ColumnCount>::getRejectedRowsSql() const
+{
+    return
+        "SELECT " + _tempTable + "." + _idColumn +
+        " FROM " + _tempTable +
+        " WHERE NOT EXISTS ("
+        "SELECT " + _idColumn + 
+        " FROM " + _fkTable + 
+        " WHERE " + _fkTable + "." + _idColumn + " = " + _tempTable + "." + _idColumn + ")";
+}
+
+template <size_t ColumnCount>
+std::set<long> DatabaseBulkAccumulator<ColumnCount>::getRejectedRows(DatabaseConnection& conn) const
+{
+    DatabaseReader rejectedReader{ conn, getRejectedRowsSql() };
+
+    rejectedReader.execute();
+
+    std::set<long> rejectedRows;
+
+    while( rejectedReader() )
+    {
+        rejectedRows.insert(rejectedReader.as<long>());
+    }
+
+    return rejectedRows;
+}
+
+
 template DatabaseBulkInserter<5>;
 template DatabaseBulkUpdater<7>;
 template DatabaseBulkUpdater<5>;
 template DatabaseBulkUpdater<11>;
-
+template DatabaseBulkAccumulator<9>;
 
 }
 }

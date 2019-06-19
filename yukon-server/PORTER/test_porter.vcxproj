@@ -351,6 +351,7 @@
     </ClCompile>
     <ClCompile Include="plidlc.cpp">
     </ClCompile>
+    <ClCompile Include="tbl_dyn_paostatistics.cpp" />
     <ClCompile Include="test_gen_reply.cpp">
     </ClCompile>
     <ClCompile Include="test_LantronixEncryption.cpp">

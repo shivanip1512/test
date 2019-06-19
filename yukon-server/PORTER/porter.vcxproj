@@ -421,6 +421,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="systemmsgthread.cpp">
     </ClCompile>
+    <ClCompile Include="tbl_dyn_paostatistics.cpp" />
     <ClCompile Include="tcp_connection.cpp">
     </ClCompile>
     <ClCompile Include="tcp_connection_manager.cpp">
@@ -455,6 +456,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\StatisticsManager.h" />
     <ClInclude Include="include\StatisticsThread.h" />
     <ClInclude Include="include\systemmsgthread.h" />
+    <ClInclude Include="include\tbl_dyn_paostatistics.h" />
     <ClInclude Include="include\tcp_connection.h" />
     <ClInclude Include="include\tcp_connection_manager.h" />
     <ClInclude Include="include\unsolicited_handler.h" />

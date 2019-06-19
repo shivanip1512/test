@@ -132,6 +132,9 @@
     <ClCompile Include="dnpLookup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tbl_dyn_paostatistics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\c_port_interface.h">
@@ -219,6 +222,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\dnpLookup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tbl_dyn_paostatistics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -294,5 +294,96 @@ BOOST_AUTO_TEST_CASE(test_2_primary_key_bulk_updater_finalize_sql)
     }
 }
 
+struct test_DynamicPaoStatsAccumulator : Cti::Database::DatabaseBulkAccumulator<9>
+{
+    test_DynamicPaoStatsAccumulator(DbClientType clientType)
+        : DatabaseBulkAccumulator( clientType,
+        { 
+            Cti::Database::ColumnDefinition
+                { "PAObjectId",             "numeric",      "NUMBER"        },
+                { "StatisticType",          "varchar(16)",  "VARCHAR2(16)"  },
+                { "StartDateTime",          "datetime",     "DATE"          },
+                { "Requests",               "numeric",      "NUMBER"        },
+                { "Attempts",               "numeric",      "NUMBER"        },
+                { "Completions",            "numeric",      "NUMBER"        },
+                { "CommErrors",             "numeric",      "NUMBER"        },
+                { "ProtocolErrors",         "numeric",      "NUMBER"        },
+                { "SystemErrors",           "numeric",      "NUMBER"        }
+        },
+        3, "DynamicPAOStatistics", "DynamicPaoStatistics", "DynamicPAOStatisticsId", "YukonPAObject")
+    {}
+
+    using DatabaseBulkAccumulator::getFinalizeSql;
+};
+
+BOOST_AUTO_TEST_CASE(test_dymamicPaoStatistics_bulk_accumulator_finalize_sql)
+{
+    {
+        test_DynamicPaoStatsAccumulator dpsba { test_BulkUpdater::DbClientType::SqlServer };
+
+        BOOST_CHECK_EQUAL(
+            dpsba.getFinalizeSql(),
+            "DECLARE @maxId NUMERIC;"
+            "SELECT @maxId = COALESCE(MAX(DynamicPAOStatisticsId), 0) FROM DynamicPaoStatistics;"
+            "MERGE DynamicPaoStatistics d "
+            "USING ("
+                "SELECT @maxId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)) AS Temp_maxID, Temp_DynamicPAOStatistics.* "
+                "FROM Temp_DynamicPAOStatistics "
+                "JOIN YukonPAObject "
+                    "ON Temp_DynamicPAOStatistics.PAObjectId=YukonPAObject.PAObjectId) t "
+            "ON d.PAObjectId = t.PAObjectId "
+                "AND d.StatisticType = t.StatisticType "
+                "AND d.StartDateTime = t.StartDateTime "
+            "WHEN MATCHED THEN "
+                "UPDATE SET "
+                    "Requests = d.Requests + t.Requests, "
+                    "Attempts = d.Attempts + t.Attempts, "
+                    "Completions = d.Completions + t.Completions, "
+                    "CommErrors = d.CommErrors + t.CommErrors, "
+                    "ProtocolErrors = d.ProtocolErrors + t.ProtocolErrors, "
+                    "SystemErrors = d.SystemErrors + t.SystemErrors "
+            "WHEN NOT MATCHED THEN "
+                "INSERT "
+                    "(DynamicPAOStatisticsId, PAObjectId, StatisticType, StartDateTime, Requests, Attempts, Completions, CommErrors, ProtocolErrors, SystemErrors) "
+                "VALUES "
+                    "(t.Temp_maxID, t.PAObjectId, t.StatisticType, t.StartDateTime, t.Requests, t.Attempts, t.Completions, t.CommErrors, t.ProtocolErrors, t.SystemErrors);"
+        );
+    }
+
+    {
+        test_DynamicPaoStatsAccumulator dpsba { test_BulkUpdater::DbClientType::Oracle };
+
+        BOOST_CHECK_EQUAL(
+            dpsba.getFinalizeSql(),
+            "DECLARE maxId NUMBER;"
+            "BEGIN "
+            "SELECT COALESCE(MAX(DynamicPAOStatisticsId), 0) INTO maxId FROM DynamicPaoStatistics;"
+            "MERGE INTO DynamicPaoStatistics d "
+            "USING ("
+                "SELECT maxId + (ROW_NUMBER() OVER (ORDER BY (SELECT 1 FROM DUAL))) AS Temp_maxID, Temp_DynamicPAOStatistics.* "
+                "FROM Temp_DynamicPAOStatistics "
+                "JOIN YukonPAObject "
+                    "ON Temp_DynamicPAOStatistics.PAObjectId=YukonPAObject.PAObjectId) t "
+            "ON (d.PAObjectId = t.PAObjectId "
+                "AND d.StatisticType = t.StatisticType "
+                "AND d.StartDateTime = t.StartDateTime) "
+            "WHEN MATCHED THEN "
+                "UPDATE SET "
+                    "Requests = d.Requests + t.Requests, "
+                    "Attempts = d.Attempts + t.Attempts, "
+                    "Completions = d.Completions + t.Completions, "
+                    "CommErrors = d.CommErrors + t.CommErrors, "
+                    "ProtocolErrors = d.ProtocolErrors + t.ProtocolErrors, "
+                    "SystemErrors = d.SystemErrors + t.SystemErrors "
+            "WHEN NOT MATCHED THEN "
+                "INSERT "
+                    "(DynamicPAOStatisticsId, PAObjectId, StatisticType, StartDateTime, Requests, Attempts, Completions, CommErrors, ProtocolErrors, SystemErrors) "
+                "VALUES "
+                    "(t.Temp_maxID, t.PAObjectId, t.StatisticType, t.StartDateTime, t.Requests, t.Attempts, t.Completions, t.CommErrors, t.ProtocolErrors, t.SystemErrors); "
+            "END;"
+        );
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

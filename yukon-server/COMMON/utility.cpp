@@ -210,56 +210,6 @@ LONG VerificationSequenceGen(bool force, int force_value)
     return -1;
 }
 
-/**
- * Generates an ID value for a new DynamicPaoStatistics table
- * row.
- *
- * @return int
- * @throw runtime_error if the DB read fails.
- */
-int DynamicPaoStatisticsIdGen()
-{
-    static CtiCriticalSection mux;
-    CtiLockGuard<CtiCriticalSection> guard(mux);
-
-    static std::optional<int> id;
-
-    if( ! id )
-    {
-        if( bypassDatabase )
-        {
-            id = 0;
-        }
-        else
-        {
-            static const std::string sql = "SELECT MAX(DynamicPaoStatisticsId) FROM DynamicPaoStatistics";
-
-            DatabaseConnection conn;
-            DatabaseReader rdr(conn, sql);
-            rdr.execute();
-
-            if( rdr() )
-            {
-                id = rdr.as<int>();
-            }
-            else if( rdr.isValid() )
-            {
-                CTILOG_INFO(dout, "DB read returned no rows for SQL query: " << rdr.asString());
-
-                id = 0;
-            }
-            else
-            {
-                CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
-
-                throw std::runtime_error("invalid DB reader in DynamicPaoStatisticsIdGen()");
-            }
-        }
-    }
-
-    return ++(*id);
-}
-
 long long ChangeIdGen(bool force)
 {
     static CtiCriticalSection   mux;

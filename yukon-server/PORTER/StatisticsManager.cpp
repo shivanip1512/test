@@ -13,7 +13,11 @@
 #include "mgr_device.h"
 #include "mgr_port.h"
 
-using std::endl;
+#include "database_exceptions.h"
+#include "database_bulk_writer.h"
+#include "tbl_dyn_paostatistics.h"
+
+#include <boost/range/adaptor/transformed.hpp>
 
 #define STATISTICS_REPORT_ON_MSGFLAGS  0x00000001
 #define STATISTICS_COMPENSATED_RESULTS 0x00000010
@@ -30,12 +34,10 @@ StatisticsManager::StatisticsManager()
     _inactive_event_queue = &_event_queues[1];
 }
 
-
 StatisticsManager::~StatisticsManager()
 {
     delete_assoc_container(_pao_statistics);
 }
-
 
 void StatisticsManager::enqueueEvent(statistics_event_t::EventType action, YukonError_t result, long port_id, long device_id, long target_id)
 {
@@ -95,24 +97,10 @@ void StatisticsManager::newCompletion(long port_id, long device_id, long target_
     }
 }
 
-
 void StatisticsManager::deleteRecord(const long pao_id)
 {
     enqueueEvent(statistics_event_t::Deletion, ClientErrors::None, 0, 0, pao_id);
 }
-
-
-template<class Key, class Value>
-struct map_compare
-{
-    typedef std::pair<Key, Value> Pair;
-
-    bool operator()(const Key  &lhs, const Key  &rhs) const  {  return lhs < rhs;  };
-    bool operator()(const Key  &lhs, const Pair &rhs) const  {  return lhs < rhs.first;  };
-    bool operator()(const Pair &lhs, const Key  &rhs) const  {  return lhs.first < rhs;  };
-    bool operator()(const Pair &lhs, const Pair &rhs) const  {  return lhs.first < rhs.first;  };
-};
-
 
 void StatisticsManager::processEvents(ThreadStatusKeeper &threadKeeper)
 {
@@ -131,26 +119,6 @@ void StatisticsManager::processEvents(ThreadStatusKeeper &threadKeeper)
 
     if( ! _inactive_event_queue->empty() )
     {
-        std::set<long> event_ids, ids_to_load;
-
-        // Grab all of the pao IDs from the events in the queue
-        std::transform(
-            _inactive_event_queue->begin(),
-            _inactive_event_queue->end(),
-            inserter(event_ids, event_ids.begin()),
-            bind(&statistics_event_t::pao_id, _1));
-
-        //  find all of the paoIDs that aren't yet loaded
-        std::set_difference(
-            event_ids.begin(),
-            event_ids.end(),
-            _pao_statistics.begin(),
-            _pao_statistics.end(),
-            inserter(ids_to_load, ids_to_load.begin()),
-            map_compare<long, PaoStatistics *>());
-
-        loadPaoStatistics(ids_to_load);
-
         int processed = 0, total = _inactive_event_queue->size();
 
         for each( const statistics_event_t &evt in *_inactive_event_queue )
@@ -171,7 +139,6 @@ void StatisticsManager::processEvents(ThreadStatusKeeper &threadKeeper)
         }
     }
 }
-
 
 PaoStatistics *StatisticsManager::getPaoStatistics(const long pao_id)
 {
@@ -195,7 +162,6 @@ PaoStatistics *StatisticsManager::getPaoStatistics(const long pao_id)
     return 0;
 }
 
-
 void StatisticsManager::deletePaoStatistics(const long pao_id)
 {
     id_statistics_map::iterator itr = _pao_statistics.find(pao_id);
@@ -207,7 +173,6 @@ void StatisticsManager::deletePaoStatistics(const long pao_id)
         _pao_statistics.erase(itr);
     }
 }
-
 
 void StatisticsManager::processEvent(const statistics_event_t &evt)
 {
@@ -249,99 +214,94 @@ void StatisticsManager::processEvent(const statistics_event_t &evt)
     }
 }
 
-
 void StatisticsManager::writeRecords(ThreadStatusKeeper &threadKeeper)
 {
-    runWriterThreads(gConfigParms.getValueAsULong("PORTER_STATISTICS_WRITER_THREADS", 4), threadKeeper);
+    // Check in with the monitor first
+
+    threadKeeper.monitorCheck(CtiThreadMonitor::StandardMonitorTime);
+
+    // Connect to the database
 
     Database::DatabaseConnection conn;
+
+    if ( ! conn.isValid() )
+    {
+        CTILOG_ERROR(dout, "Invalid Connection to Database");
+        return;
+    }
+
+    // Write out the statistics
+
+    writeAllRecords(conn);
+
+    // Delete the expired records
 
     pruneDaily(conn);
 }
 
-
-void StatisticsManager::runWriterThreads(unsigned max_threads, ThreadStatusKeeper &threadKeeper)
+bool StatisticsManager::writeAllRecords( Database::DatabaseConnection & conn )
 {
-    boost::thread_group writers;
+    id_statistics_map   writeableStatistics;
 
-    id_statistics_map::const_iterator pos = _pao_statistics.begin();
+    writeableStatistics.swap( _pao_statistics );
 
-    const unsigned total_records = _pao_statistics.size();
+    // convert the PaoStatistics blobs into a collection of CtiTableDynamicPaoStatistics records
 
-    //  Must have 1000 or more stat records per thread
-    const unsigned num_threads = std::min(max_threads, total_records / 1000);
+    std::vector<std::unique_ptr<CtiTableDynamicPaoStatistics>>  tableRecords;
 
-    unsigned records_distributed_to_threads = 0;
-
-    boost::this_thread::disable_interruption di;
-
-    if( num_threads > 1 )
+    for ( auto & [ID, paoStatistic] : writeableStatistics )
     {
-        const unsigned chunk_size = total_records / num_threads;
-
-        for( unsigned thread_num = 2; thread_num <= num_threads; ++thread_num )
-        {
-            id_statistics_map::const_iterator start = pos;
-
-            std::advance(pos, chunk_size);
-
-            writers.create_thread(boost::bind(&StatisticsManager::writeRecordRange, thread_num, chunk_size, start, pos, (ThreadStatusKeeper *)0));
-
-            records_distributed_to_threads += chunk_size;
-        }
+        paoStatistic->collectRecords( tableRecords );
     }
 
-    writeRecordRange(1, total_records - records_distributed_to_threads, pos, _pao_statistics.end(), &threadKeeper);
+    Cti::Database::DatabaseBulkAccumulator<9>
+        ba(
+            conn.getClientType(),
+            CtiTableDynamicPaoStatistics::getTempTableSchema(),
+            3,
+            "DynamicPAOStatistics",
+            "DynamicPaoStatistics",
+            "DynamicPAOStatisticsId",
+            "YukonPAObject" );
 
-    writers.join_all();
-}
-
-void StatisticsManager::writeRecordRange(const unsigned thread_num, const unsigned chunk_size, const id_statistics_map::const_iterator begin, const id_statistics_map::const_iterator end, ThreadStatusKeeper *threadKeeper)
-{
-    if( begin != end )
-    {
-        Database::DatabaseConnection conn;
-
-        if ( ! conn.isValid() )
-        {
-            CTILOG_ERROR(dout, "Invalid Connection to Database");
-            return;
-        }
-
-        unsigned records_inspected = 0, dirty_records = 0, rows_written = 0;
-
-        id_statistics_map::const_iterator itr = begin;
-
-        while( itr != end )
-        {
-            PaoStatistics &p = *(itr++->second);
-
-            ++records_inspected;
-
-            if( p.isDirty() )
+    const auto asRowSource =
+        boost::adaptors::transformed(
+            []( const std::unique_ptr<CtiTableDynamicPaoStatistics> & p )
             {
-                Database::DatabaseWriter writer(conn);
+                return p.get();
+            } );
 
-                rows_written += p.writeRecords(writer);
+    auto rowSources = boost::copy_range<std::vector<const Cti::RowSource*>>( tableRecords | asRowSource );
 
-                if( !(++dirty_records % 1000) )
+    CTILOG_INFO( dout, "Inspecting " << tableRecords.size() << " statistics records for "
+                        << writeableStatistics.size() << " devices.");
+
+    try
+    {
+        auto rejectedRows = ba.writeRows( conn, std::move( rowSources ) );
+
+        if ( rejectedRows.size() > 0 )
+        {
+            CTILOG_WARN( dout, "Failed to MERGE statistics records for " << rejectedRows.size() << " devices.");
+
+            // dump the rejected tableRecords to the porter log
+
+            for ( const auto & record : tableRecords )
+            {
+                if ( rejectedRows.count( record->_pAObjectId ) > 0 )
                 {
-                    threadKeeper && threadKeeper->monitorCheck(CtiThreadMonitor::StandardMonitorTime);
-
-                    CTILOG_INFO(dout, "thread_num "<< thread_num <<" inspected "<< chunk_size <<" statistics records; "<<
-                            dirty_records <<" records wrote a total of "<< rows_written <<" rows.");
+                    CTILOG_WARN( dout, "Rejected record: " << *record );
                 }
             }
         }
-
-        if( dirty_records )
-        {
-            CTILOG_INFO(dout, "thread_num "<< thread_num <<" finished - inspected "<< chunk_size <<" statistics records; "<<
-                    dirty_records <<" records wrote a total of "<< rows_written <<" rows.");
-        }
     }
-}
+    catch ( const Cti::Database::DatabaseException & ex )
+    {
+        CTILOG_EXCEPTION_ERROR(dout, ex, "Unable to MERGE rows in DynamicPaoStatistics");
+    }
 
+    return true;
+}
 
 unsigned StatisticsManager::daysFromHours (const unsigned hours)
 {
@@ -386,61 +346,6 @@ bool StatisticsManager::pruneDaily(Database::DatabaseConnection &conn)
     }
 
     return deleter.execute();
-}
-
-
-void StatisticsManager::loadPaoStatistics(const std::set<long> &pao_ids)
-{
-    //  Grab at least ten at once, even if they specify a negative number
-    const int max_ids_per_select = std::max(10, gConfigParms.getValueAsInt("MAX_IDS_PER_STATISTICS_SELECT", 950));
-
-    Timing::DebugTimer timer("StatisticsManager::loadPaoStatistics()");
-
-    unsigned pos = 0;
-    const unsigned total = pao_ids.size();
-
-    std::set<long>::const_iterator pao_id_itr = pao_ids.begin();
-
-    Cti::Database::DatabaseConnection connection;
-
-    const CtiTime reader_time;
-
-    while( pao_id_itr != pao_ids.end() )
-    {
-        const unsigned chunk_size = std::min<unsigned>(total - pos, max_ids_per_select);
-
-        std::set<long>::const_iterator chunk_begin = pao_id_itr;
-        std::set<long>::const_iterator chunk_end   = pao_id_itr;
-
-        std::advance(chunk_end, chunk_size);
-
-        Cti::Database::DatabaseReader rdr(connection);
-
-        PaoStatistics::buildDatabaseReader(rdr, reader_time, chunk_begin, chunk_end);
-
-        pao_id_itr = chunk_end;
-        pos       += chunk_size;
-
-        rdr.execute();
-
-        if( ! rdr.isValid() )
-        {
-            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
-        }
-        else if( DebugLevel & 0x00020000 )
-        {
-            CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
-        }
-
-        while( rdr() )
-        {
-            PaoStatistics *p = new PaoStatistics(reader_time, rdr);
-
-            _pao_statistics.insert(std::make_pair(p->getPaoId(), p));
-        }
-
-        CTILOG_INFO(dout, "Processed "<< pos <<" / "<< total <<" statistics records");
-    }
 }
 
 }

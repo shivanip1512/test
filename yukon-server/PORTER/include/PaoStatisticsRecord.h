@@ -4,15 +4,12 @@
 
 #include "yukon.h"
 
+#include "tbl_dyn_paostatistics.h"
+
 #include <string>
 #include <vector>
 
 namespace Cti {
-
-namespace Database {
-    class DatabaseWriter;
-}
-
 namespace Porter {
 namespace Statistics {
 
@@ -28,19 +25,11 @@ public:
         Lifetime
     };
 
-    //  Needs to be able to construct PaoStatisticRecords
-    friend class PaoStatistics;
-
     PaoStatisticsRecord(long pao_id, StatisticTypes type, const CtiTime record_time);
-    PaoStatisticsRecord(long pao_id, StatisticTypes type, const CtiTime record_time,
-        long row_id,
-        unsigned requests, unsigned attempts, unsigned completions,
-        unsigned protocol_errors, unsigned comm_errors, unsigned system_errors);
 
-    bool writeRecord(Database::DatabaseWriter &writer);
+    std::unique_ptr<CtiTableDynamicPaoStatistics> makeTableEntry();
 
     bool isStale(CtiTime timeNow) const;
-    bool isDirty() const;
 
     void incrementRequests();
     void incrementAttempts(const YukonError_t status);
@@ -61,13 +50,6 @@ private:
 
     static const std::string &getStatisticTypeString(const StatisticTypes type);
 
-    bool Insert(Database::DatabaseWriter &writer);
-    bool TryInsert(Database::DatabaseWriter &writer);
-    bool Update(Database::DatabaseWriter &writer);
-    bool UpdateSum(Database::DatabaseWriter &writer);
-    bool TryUpdateSum(Database::DatabaseWriter &writer);
-
-    long _row_id;
     long _pao_id;
 
     const StatisticTypes _type;
@@ -80,8 +62,6 @@ private:
     int _system_errors;
     int _protocol_errors;
     int _comm_errors;
-
-    bool _dirty;
 };
 
 }

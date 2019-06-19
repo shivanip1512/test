@@ -1,15 +1,8 @@
 #include "precompiled.h"
 
 #include "PaoStatisticsRecord.h"
-
-#include "database_writer.h"
-#include "database_util.h"
-#include "database_exceptions.h"
 #include "ctidate.h"
-
 #include "error.h"
-
-using std::endl;
 
 namespace Cti {
 namespace Porter {
@@ -21,36 +14,14 @@ PaoStatisticsRecord::PaoStatisticsRecord(long pao_id, StatisticTypes type, const
     _pao_id(pao_id),
     _type(type),
     _interval_start(calcIntervalStart(type, record_time)),
-    _row_id(0),
     _requests(0),
     _attempts(0),
     _completions(0),
     _comm_errors(0),
     _protocol_errors(0),
-    _system_errors(0),
-    _dirty(false)
+    _system_errors(0)
 {
 }
-
-
-PaoStatisticsRecord::PaoStatisticsRecord(long pao_id, StatisticTypes type, const CtiTime record_time,
-    long row_id,
-    unsigned requests, unsigned attempts, unsigned completions,
-    unsigned protocol_errors, unsigned comm_errors, unsigned system_errors) :
-    _pao_id(pao_id),
-    _type(type),
-    _interval_start(calcIntervalStart(type, record_time)),
-    _row_id(row_id),
-    _requests(requests),
-    _attempts(attempts),
-    _completions(completions),
-    _comm_errors(comm_errors),
-    _protocol_errors(protocol_errors),
-    _system_errors(system_errors),
-    _dirty(false)
-{
-}
-
 
 CtiTime PaoStatisticsRecord::calcIntervalStart(StatisticTypes type, const CtiTime interval_time)
 {
@@ -108,13 +79,6 @@ bool PaoStatisticsRecord::isStale(const CtiTime timeNow) const
     }
 }
 
-
-bool PaoStatisticsRecord::isDirty() const
-{
-    return _dirty;
-}
-
-
 unsigned PaoStatisticsRecord::getCompletions() const
 {
     return _completions;
@@ -125,12 +89,9 @@ unsigned PaoStatisticsRecord::getRequests() const
     return _requests;
 }
 
-
 void PaoStatisticsRecord::incrementRequests()
 {
     ++_requests;
-
-    _dirty = true;
 }
 
 void PaoStatisticsRecord::incrementAttempts(const YukonError_t attempt_status)
@@ -161,183 +122,27 @@ void PaoStatisticsRecord::incrementAttempts(const YukonError_t attempt_status)
             }
         }
     }
-
-    _dirty = true;
 }
 
 void PaoStatisticsRecord::incrementCompletions()
 {
     ++_completions;
-
-    _dirty = true;
 }
 
-
-bool PaoStatisticsRecord::writeRecord(Database::DatabaseWriter &writer)
+std::unique_ptr<CtiTableDynamicPaoStatistics> PaoStatisticsRecord::makeTableEntry()
 {
-    if( _dirty )
-    {
-        if( _row_id )
-        {
-            _dirty = ! Update(writer);
-        }
-        else if( _type == Lifetime )
-        {
-            _dirty = ! (TryUpdateSum(writer) || Insert(writer));
-        }
-        else
-        {
-            _dirty = ! (TryInsert(writer) || UpdateSum(writer));
-        }
-    }
-
-    return ! _dirty;
+    return
+        std::make_unique<CtiTableDynamicPaoStatistics>(
+            _pao_id,
+            getStatisticTypeString( _type ),
+            _interval_start,
+            _requests,
+            _attempts,
+            _completions,
+            _comm_errors,
+            _protocol_errors,
+            _system_errors );
 }
-
-
-bool PaoStatisticsRecord::TryInsert(Database::DatabaseWriter &writer)
-{
-    static const std::string sql =
-        "insert into DynamicPaoStatistics "
-        "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    writer.setCommandText(sql);
-
-    long tmp_row_id;
-
-    try
-    {
-        tmp_row_id = DynamicPaoStatisticsIdGen();
-
-        writer
-            << tmp_row_id
-            << _pao_id
-            << getStatisticTypeString(_type)
-            << _interval_start
-            << _requests
-            << _attempts
-            << _completions
-            << _comm_errors
-            << _protocol_errors
-            << _system_errors;
-    }
-    catch( std::runtime_error &e )
-    {
-        CTILOG_EXCEPTION_ERROR(dout, e);
-
-        return false;
-    }
-
-    try
-    {
-        writer.executeWithDatabaseException();
-    }
-    catch ( Database::DatabaseException & )
-    {
-        // Swallow the database exception without logging
-        return false;
-    }
-
-    _row_id = tmp_row_id;
-
-    return true;
-}
-
-bool PaoStatisticsRecord::Insert(Database::DatabaseWriter &writer)
-{
-    const bool success = TryInsert(writer);
-
-    if( ! success )
-    {
-        CTILOG_ERROR(dout, "Statistics DB Insert Error for SQL query: "<< writer.asString())
-    }
-
-    return success;
-}
-
-
-bool PaoStatisticsRecord::Update(Database::DatabaseWriter &writer)
-{
-    static const std::string sql =
-        "update DynamicPaoStatistics "
-        "set "
-            "requests = ?, "
-            "attempts = ?, "
-            "completions = ?, "
-            "commerrors = ?, "
-            "protocolerrors = ?, "
-            "systemerrors = ? "
-        "where "
-            "DynamicPaoStatisticsId = ?";
-
-    writer.setCommandText(sql);
-
-    // set
-    writer
-        << _requests
-        << _attempts
-        << _completions
-        << _comm_errors
-        << _protocol_errors
-        << _system_errors;
-
-    // where
-    writer
-        << _row_id;
-
-    return Cti::Database::executeUpdater( writer, CALLSITE );
-}
-
-bool PaoStatisticsRecord::TryUpdateSum(Database::DatabaseWriter &writer)
-{
-    static const std::string sql =
-        "update DynamicPaoStatistics "
-        "set "
-            "requests = requests + ?, "
-            "attempts = attempts + ?, "
-            "completions = completions + ?, "
-            "commerrors = commerrors + ?, "
-            "protocolerrors = protocolerrors + ?, "
-            "systemerrors = systemerrors + ? "
-        "where "
-            "PAObjectId = ? and "
-            "StatisticType = ? and "
-            "StartDateTime = ?";
-
-    writer.setCommandText(sql);
-
-    // set
-    writer
-        << _requests
-        << _attempts
-        << _completions
-        << _comm_errors
-        << _protocol_errors
-        << _system_errors;
-
-    // where
-    writer
-        << _pao_id
-        << getStatisticTypeString(_type)
-        << _interval_start;
-
-    return Database::executeUpdater( writer, CALLSITE, Database::LogDebug::Disable, Database::LogNoRowsAffected::Disable );
-}
-
-bool PaoStatisticsRecord::UpdateSum(Database::DatabaseWriter &writer)
-{
-    const bool success = TryUpdateSum(writer);
-
-    if( ! success )
-    {
-        std::string error_sql = writer.asString();
-
-        CTILOG_ERROR(dout, "Statistics DB Update Sum Error for SQL query: "<< writer.asString())
-    }
-
-    return success;
-}
-
 
 const std::string &PaoStatisticsRecord::getStatisticTypeString(const StatisticTypes type)
 {
@@ -355,7 +160,6 @@ const std::string &PaoStatisticsRecord::getStatisticTypeString(const StatisticTy
         default:        throw std::runtime_error("StatisticType not found");
     }
 }
-
 
 }
 }

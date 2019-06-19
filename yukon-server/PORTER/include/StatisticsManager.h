@@ -35,10 +35,10 @@ class StatisticsManager
 
     id_statistics_map _pao_statistics;
 
-    void loadPaoStatistics(const std::set<long> &pao_ids);
     Statistics::PaoStatistics *getPaoStatistics(const long pao_id);
     void deletePaoStatistics(long pao_id);
 
+    bool writeAllRecords(Database::DatabaseConnection &conn);
     bool pruneDaily(Database::DatabaseConnection &conn);
 
     static unsigned daysFromHours (const unsigned hours);
@@ -55,9 +55,6 @@ class StatisticsManager
 
     void enqueueEvent(statistics_event_t::EventType action, YukonError_t result, long port_id, long device_id, long target_id);
     void processEvent(const statistics_event_t &evt);
-
-    void runWriterThreads(unsigned num_threads, ThreadStatusKeeper &threadKeeper);
-    static void writeRecordRange(const unsigned thread_num, const unsigned chunk_size, const id_statistics_map::const_iterator begin, const id_statistics_map::const_iterator end, ThreadStatusKeeper *threadKeeper);
 
 public:
 
