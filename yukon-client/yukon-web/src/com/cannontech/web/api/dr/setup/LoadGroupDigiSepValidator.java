@@ -22,11 +22,10 @@ public class LoadGroupDigiSepValidator extends LoadGroupSetupValidator<LoadGroup
 
     @Override
     protected void doValidation(LoadGroupDigiSep loadGroup, Errors errors) {
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "deviceClassSet", key + "deviceClassSet.required");
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "deviceClassSet", key + "required", new Object[] { "Device Class set" });
 
         // Utility Enrollment Group
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "utilityEnrollmentGroup",
-            key + "utilityEnrollmentGroup.required");
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "utilityEnrollmentGroup", key + "required", new Object[] { "Utility Enrollment Group" });
         YukonValidationUtils.checkIsPositiveInt(errors, "utilityEnrollmentGroup", loadGroup.getUtilityEnrollmentGroup());
 
         if (loadGroup.getId() != null && loadGroup.getUtilityEnrollmentGroup() == 0) {
@@ -38,10 +37,10 @@ public class LoadGroupDigiSepValidator extends LoadGroupSetupValidator<LoadGroup
         }
 
         // Ramp In Time
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "rampInMinutes", key + "rampInMinutes.required");
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "rampInMinutes", key + "required", new Object[] { "Ramp In Minutes" });
         YukonValidationUtils.checkRange(errors, "rampInMinutes", loadGroup.getRampInMinutes(), -99999, 99999, true);
         // Ramp Out Time
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "utilityEnrollmentGroup", key + "rampOutMinutes.required");
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "rampOutMinutes", key + "required", new Object[] { "Ramp Out Minutes." });
         YukonValidationUtils.checkRange(errors, "rampOutMinutes", loadGroup.getRampOutMinutes(), -99999, 99999, true);
 
     }
