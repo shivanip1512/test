@@ -4,7 +4,6 @@
 
 <entry key="yukon.web.modules.dr.setup.pageName">Setup</entry>
 <entry key="yukon.web.modules.dr.setup.createObject.title">Create Demand Response Object</entry>
-<entry key="yukon.web.modules.dr.setup.communication.error">Error while communicating with Api.</entry>
 
 <!-- Load Group -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.CREATE.pageName">Create Load Group</entry>

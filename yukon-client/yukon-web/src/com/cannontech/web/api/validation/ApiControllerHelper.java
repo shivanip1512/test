@@ -86,16 +86,18 @@ public class ApiControllerHelper {
             if (responseCode == HttpStatus.OK) {
                 setWebserverURL(webUrl);
             } else {
-                throw new ApiCommunicationException(" Check Yukon Internal URL.");
+                throw new ApiCommunicationException("Error while communicating with Api.");
             }
         }
         return webserverURL;
     }
 
-    /* Check the connection with given URL and return the status */
+    /**
+     * Check the connection with given URL and return the status
+     */
     private HttpStatus checkURL(YukonUserContext userContext, HttpServletRequest request, String webUrl) {
         try {
-            String testConnectionURL = webUrl + "/test";
+            String testConnectionURL = webUrl + "/api/test";
             log.info("Checking the Api communication with URL: " + testConnectionURL);
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request,
                 testConnectionURL, HttpMethod.GET, String.class);
@@ -109,7 +111,7 @@ public class ApiControllerHelper {
     /**
      * Generate dynamic URL for API calls
      */
-    public String findwebServerURL(HttpServletRequest request, YukonUserContext userContext, String suffixURL)
+    public String findWebServerURL(HttpServletRequest request, YukonUserContext userContext, String suffixURL)
             throws ApiCommunicationException {
         return getWebServerURL(request, userContext) + "/api" + suffixURL;
     }

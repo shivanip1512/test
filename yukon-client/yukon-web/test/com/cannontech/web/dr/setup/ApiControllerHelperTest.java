@@ -41,7 +41,7 @@ public class ApiControllerHelperTest {
     public void testgetValidApiURL() {
         String pathURL = "/dr/setup/loadGroup/save";
         ReflectionTestUtils.invokeMethod(helper, "setWebserverURL", req.getServerName());
-        String url = helper.findwebServerURL(req, userContext, pathURL);
+        String url = helper.findWebServerURL(req, userContext, pathURL);
         assertTrue("The url is valid", url.equals("http://localhost:8080/api/dr/setup/loadGroup/save"));
     }
 
@@ -49,7 +49,7 @@ public class ApiControllerHelperTest {
     public void testgetInvalidApiURL() {
         String pathURL = "/dr/setup/loadGroup/save";
         ReflectionTestUtils.invokeMethod(helper, "setWebserverURL", req.getServerName());
-        String url = helper.findwebServerURL(req, userContext, pathURL);
+        String url = helper.findWebServerURL(req, userContext, pathURL);
         assertFalse("The url is invalid", url.equals("http://localhost:8080/yukon/dr/setup/loadGroup/save"));
     }
 

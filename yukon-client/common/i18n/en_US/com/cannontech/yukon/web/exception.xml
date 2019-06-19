@@ -102,4 +102,5 @@
 <entry key="yukon.exception.objectMappingException.invalidName">Device with name {0} not found.</entry>
 <entry key="yukon.exception.objectMappingException.invalidValue">Contains invalid value {0}</entry>
 
+<entry key="yukon.exception.apiCommunicationException.communicationError">Error while communicating with Api.</entry>
 </properties>
