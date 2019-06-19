@@ -27,6 +27,10 @@ public class LMModelFactory {
         case LM_GROUP_ITRON:
             loadGroup = new LoadGroupItron();
             break;
+        case LM_GROUP_EMETCON:
+            loadGroup = new LoadGroupEmetcon();
+            break;
+
         }
         return loadGroup;
     }
