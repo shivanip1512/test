@@ -3,10 +3,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ attribute name="path" type="java.lang.String" description="Spring binding path." %>
 <%@ attribute name="id" type="java.lang.String" description="Id of the field in the supplied object." %>
@@ -18,7 +16,6 @@
 <%@ attribute name="stepHour" type="java.lang.Integer" description="Steps when incrementing/decrementing hours." %>
 <%@ attribute name="stepMinute" type="java.lang.Integer" description="Steps when incrementing/decrementing minutes." %>
 <%@ attribute name="wrapClass" type="java.lang.String" description="Class added to the wrapper of the widget." %>
-<%@ attribute name="viewOnlyMode" type="java.lang.Boolean" description="Displays the time value but not the time component.  Default value is false."%>
 
 <cti:msg2 var="timeOffsetChooseText" key="yukon.common.timeOffsetChoose"/>
 <cti:msg2 var="timeOffsetText" key="yukon.common.timeOffset"/>
