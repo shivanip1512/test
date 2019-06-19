@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
+import com.cannontech.database.db.device.RfnAddress;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
@@ -162,8 +163,14 @@ public enum RfnManufacturerModel {
      * Will return the RFN-420 versions of the reused LGYR Focus manufacturer+model strings.
      */
     public static RfnManufacturerModel of(RfnIdentifier rfnIdentifier) {
-        String manufacturer = rfnIdentifier.getSensorManufacturer();
-        String model = rfnIdentifier.getSensorModel();
+        return of(rfnIdentifier.getSensorManufacturer(), rfnIdentifier.getSensorModel());
+    }
+    
+    public static RfnManufacturerModel of(RfnAddress rfnAddress) {
+        return of(rfnAddress.getManufacturer(), rfnAddress.getModel());
+    }
+
+    private static RfnManufacturerModel of(String manufacturer, String model) {
         if (StringUtils.isBlank(manufacturer) || 
             StringUtils.isBlank(model)) {
             return null;

@@ -61,8 +61,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Autowired private IDatabaseCache cache;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
-    private RfnIdentifierCache rfnIdentifierCache;
-    
+    private RfnAddressCache rfnIdentifierCache;
     
     private final Map<String, Integer> rfnCache = new HashMap<>();
     @Autowired private ScheduledExecutor executor;
@@ -84,23 +83,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
     @PostConstruct
     private void init() {
-        rfnIdentifierCache = new RfnIdentifierCache(jdbcTemplate, dynamicDataSource);
-        executor.execute(() -> {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("select SerialNumber, Manufacturer, Model, DeviceId");
-            sql.append("from RfnAddress");
-            jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-                @Override
-                public void processRow(YukonResultSet rs) throws SQLException {
-                    RfnIdentifier rfnIdentifier =
-                            new RfnIdentifier(rs.getStringSafe("SerialNumber"), 
-                                                   rs.getStringSafe("Manufacturer"), 
-                                                   rs.getStringSafe("Model"));
-                    int deviceId = rs.getInt("DeviceId");
-                    rfnCache.put(rfnIdentifier.getCombinedIdentifier(), deviceId);
-                }
-            });
-        });
+        rfnIdentifierCache = new RfnAddressCache(jdbcTemplate, dynamicDataSource);
     }
     
     @Override
@@ -141,28 +124,10 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             throw new NotFoundException("Cannot look up blank RfnIdentifier");
         }
 
-        RfnManufacturerModel mm = RfnManufacturerModel.of(rfnIdentifier);
-        if (mm != null) {
-            return Optional.ofNullable(rfnIdentifierCache.getPaoIdFor(mm, rfnIdentifier.getSensorSerialNumber()))
-                    .map(paoId -> cache.getAllPaosMap().get(paoId))
-                    .map(litePao -> new RfnDevice(litePao.getPaoName(), litePao, rfnIdentifier))
-                    .orElseThrow(() -> new NotFoundException("No cache results for " + rfnIdentifier));
-        }
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
-        sql.append("from YukonPaObject ypo");
-        sql.append("join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
-        sql.append("where rfn.SerialNumber").eq(rfnIdentifier.getSensorSerialNumber());
-        sql.append("and rfn.Manufacturer").eq(rfnIdentifier.getSensorManufacturer());
-        sql.append("and rfn.Model").eq(rfnIdentifier.getSensorModel());
-
-        try {
-            return jdbcTemplate.queryForObject(sql, rfnDeviceRowMapper);
-        } catch (EmptyResultDataAccessException e) {
-            log.debug("Empty result set for query " + sql + sql.getArgumentList());
-            throw new NotFoundException("Unknown rfn identifier " + rfnIdentifier);
-        }
+        return Optional.ofNullable(rfnIdentifierCache.getPaoIdFor(rfnIdentifier))
+                .map(paoId -> cache.getAllPaosMap().get(paoId))
+                .map(litePao -> new RfnDevice(litePao.getPaoName(), litePao, rfnIdentifier))
+                .orElseThrow(() -> new NotFoundException("No cache results for " + rfnIdentifier));
     }
 
     @Override
@@ -481,39 +446,6 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
     @Override
     public Set<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers) {
-      /*  SqlFragmentGenerator<RfnIdentifier> sql = new SqlFragmentGenerator<RfnIdentifier>() {
-            @Override
-            public SqlFragmentSource generate(List<RfnIdentifier> subList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT DeviceId from RfnAddress");
-                sql.append("WHERE ");
-                sql.append("SerialNumber ").in(subList.stream().map(d -> d.getSensorSerialNumber()).collect(Collectors.toList()));
-              
-                ssql.append("WHERE ");
-                for (int i = 0; i < subList.size(); i++) {
-                    RfnIdentifier ident = subList.get(i);
-                    sql.append("(");
-                    sql.append("SerialNumber").eq(ident.getSensorSerialNumber());
-                    sql.append(" AND Manufacturer").eq(ident.getSensorManufacturer());
-                    sql.append(" AND Model").eq(ident.getSensorModel());
-                    sql.append(")");
-                    if (i < subList.size() - 1) {
-                        sql.append("OR");
-                    }
-                }
-                return sql;
-            }
-        };
-        Set<Integer> deviceIds = new HashSet<>();
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-        template.setChunkSize(600);
-        template.query(sql, rfnIdentifiers, (YukonResultSet rs) -> deviceIds.add(rs.getInt("deviceId")));
-        return  deviceIds;*/
-        
-        return Lists.newArrayList(rfnIdentifiers).stream()
-                .filter(device -> rfnCache.containsKey(device.getCombinedIdentifier()))
-                .map(device -> rfnCache.get(device.getCombinedIdentifier()))
-                .collect(Collectors.toSet());
-           
+        return rfnIdentifierCache.getPaoIdsFor(rfnIdentifiers);
     }
 }
