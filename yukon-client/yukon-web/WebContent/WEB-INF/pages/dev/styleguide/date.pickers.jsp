@@ -234,8 +234,7 @@ as well as page edit modes (VIEW, EDIT, CREATE).
         <span class="label label-attr">ReadableInstant</span>, or <span class="label label-attr">Long</span>.
     </tags:nameValue>
     <tags:nameValue name="stepHour">
-        Step size when incrementing/decrementing hours. If <span class="label label-attr">stepHour</span> is greater 
-        than 1, <span class="label label-attr">stepMinute</span> will be ignored.
+        Step size when incrementing/decrementing hours.
     </tags:nameValue>
     <tags:nameValue name="stepMinute">
         Step size when incrementing/decrementing minutes.
@@ -277,6 +276,77 @@ as well as page edit modes (VIEW, EDIT, CREATE).
 &lt;dt:time name=&quot;time&quot; value=&quot;&#36;{now}&quot; stepHour=&quot;3&quot;/&gt;
 &lt;dt:time name=&quot;time&quot; value=&quot;&#36;{now}&quot; stepMinute=&quot;7&quot;/&gt;
 &lt;dt:time name=&quot;time&quot; value=&quot;&#36;{now}&quot; stepHour=&quot;3&quot; stepMinute=&quot;7&quot;/&gt;
+</pre>
+
+<br><br>
+
+<h1>Time Offset Tag</h1>
+<p class="description">
+    A picker that is used to select the hours/minutes to offset an event
+</p>
+<h2>Attributes</h2>
+<tags:nameValueContainer>
+    <tags:nameValue name="name">
+        The name of the input. <span class="label label-attr">name</span> should not be used if also using 
+        <span class="label label-attr">path</span>.
+    </tags:nameValue>
+    <tags:nameValue name="path">
+        The 'path' value passed to the <span class="label label-attr">&lt;form:input&gt;</span> tag which builds an input
+        with a special name.  <span class="label label-attr">path</span> should not be used if also using 
+        <span class="label label-attr">name</span>.
+    </tags:nameValue>
+    <tags:nameValue name="value">
+        Specifies an initial value for the picker in number of minutes.  Default value is 0.
+    </tags:nameValue>
+    <tags:nameValue name="id">The id attribute of the input.</tags:nameValue>
+    <tags:nameValue name="disable">
+        If <strong>true</strong> the picker component and the underlying input will be disabled.
+    </tags:nameValue>
+    <tags:nameValue name="cssClass">
+        CSS class names applied to the outer container of the picker component.
+    </tags:nameValue>
+    <tags:nameValue name="cssDialogClass">
+        CSS class names applied to the popup container.
+    </tags:nameValue>
+    <tags:nameValue name="stepHour">
+        Step size when incrementing/decrementing hours.
+    </tags:nameValue>
+    <tags:nameValue name="stepMinute">
+        Step size when incrementing/decrementing minutes.
+    </tags:nameValue>
+</tags:nameValueContainer>
+
+<h1 class="dib">Examples</h1>
+<h2 id="basic-timeoffset-example">Basic Time Offset Picker</h2>
+
+<p class="description">
+    A simple time offset picker.
+</p>
+<div class="column-4-20 clearfix picker-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <dt:timeOffset name="offset"/>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;dt:timeOffset name=&quot;offset&quot; /&gt;
+</pre>
+
+<h2 id="basic-timeoffset-example">Default Value and Step Minute</h2>
+
+<p class="description">
+    A time offset picker with a default value and Step Minute value.
+</p>
+<div class="column-4-20 clearfix picker-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <dt:timeOffset name="offset2" value="600" stepMinute="15"/>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;dt:timeOffset name=&quot;offset2&quot; value=&quot;600&quot; stepMinute=&quot;15&quot; /&gt;
 </pre>
 
 <br><br>

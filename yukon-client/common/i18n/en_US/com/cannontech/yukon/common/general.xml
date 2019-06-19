@@ -156,6 +156,7 @@
 <entry key="yukon.common.high">High</entry>
 <entry key="yukon.common.historyTooltip">Click to view history</entry>
 <entry key="yukon.common.hourAbbreviation">{0} hr</entry>
+<entry key="yukon.common.hours">Hours</entry>
 <entry key="yukon.common.html">HTML</entry>
 <entry key="yukon.common.instructions">Instructions</entry>
 <entry key="yukon.common.invalidCron">Invalid Cron Expression</entry>
@@ -189,6 +190,7 @@
 <entry key="yukon.common.meterGroups.ELECTRONIC">Electronic Meters</entry>
 <entry key="yukon.common.min">Min</entry>
 <entry key="yukon.common.minuteAbbreviation">{0} min</entry>
+<entry key="yukon.common.minutes">Minutes</entry>
 <entry key="yukon.common.month">Month</entry>
 <entry key="yukon.common.more">more</entry>
 <entry key="yukon.common.moreInfoSuffix">…</entry>
@@ -278,6 +280,8 @@
 <entry key="yukon.common.thermostat.mode.HEAT">Heat</entry>
 <entry key="yukon.common.thermostat.mode.OFF">Off</entry>
 <entry key="yukon.common.thousandSeparator">,</entry>
+<entry key="yukon.common.timeOffset">Time Offset</entry>
+<entry key="yukon.common.timeOffsetChoose">Choose Time Offset</entry>
 <entry key="yukon.common.time.range.HR_1">1 Hour</entry>
 <entry key="yukon.common.time.range.HR_6">6 Hours</entry>
 <entry key="yukon.common.time.range.HR_12">12 Hours</entry>

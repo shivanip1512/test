@@ -58,6 +58,17 @@ public class DateFormattingServiceImpl implements DateFormattingService {
             ReadableInstant instant = (ReadableInstant) object;
             Date date = instant.toInstant().toDate();
             return formatDate(date, type, userContext);
+        } else if (type == DateFormatEnum.TIME_OFFSET) {
+            int numMinutes = 0;
+            if (object instanceof Long) {
+                Long value = (Long) object;
+                numMinutes = value.intValue();
+            } else if (object instanceof Integer) {
+                numMinutes = (int) object;
+            }
+            int hours = (int) Math.floor(numMinutes / 60);
+            int minutes = numMinutes % 60;
+            return String.format("%02d:%02d", hours, minutes);
         } else if (object instanceof Long && object != null) {
         	DateTimeFormatter formatter = getDateTimeFormatter(type, userContext);
         	return formatter.print(((Long) object).longValue());

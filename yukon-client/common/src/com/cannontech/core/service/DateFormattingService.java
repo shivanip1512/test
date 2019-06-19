@@ -26,7 +26,8 @@ import com.cannontech.user.YukonUserContext;
 public interface DateFormattingService {
 
     static public enum DateFormatEnum {
-        TIME(MidnightMode.NORMAL), 
+        TIME(MidnightMode.NORMAL),
+        TIME_OFFSET(MidnightMode.NORMAL), 
         TIME24H(MidnightMode.NORMAL), 
         TIME_TZ(MidnightMode.NORMAL),
         TIMEZONE(MidnightMode.NORMAL),

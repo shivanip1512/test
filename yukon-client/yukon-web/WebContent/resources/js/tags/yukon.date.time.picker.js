@@ -234,6 +234,49 @@ yukon.ui.dateTimePickers = function () {
                 _insertTimezone(self);
             }).removeClass('js-timePickerUI');
             
+            // Time Offset
+            $(ancestor + 'input.js-timeOffsetPicker').each(function () {
+                var self = $(this);
+                self.datetimeEntry({
+                    datetimeFormat: self.data('dateTimeFormat'),
+                    timeSteps: _getTimeSteps(self),
+                    spinnerImage: ''
+                });
+            }).removeClass('js-timeOffsetPicker');
+            
+            $(ancestor + 'input.js-timeOffsetPickerUI').each(function () {
+                var self = $(this);
+                //copy the defaults
+                var defaultArgs = {};
+                $.extend(defaultArgs, datetimepickerArgs);
+                $.extend(defaultArgs, timepickerArgs);
+                var timeArgs = _getPickerArgs(self);
+                timeArgs.buttonImage = yukon.url('/WebConfig/yukon/Icons/pencil.png');
+                self.timepicker($.extend(defaultArgs, timeArgs));
+            }).removeClass('js-timeOffsetPickerUI');
+            
+            $('.timeOffsetWrap .ui-datepicker-trigger').click(function () {
+                var input = $('.timeOffsetPicker'),
+                    timeOffsetChooseText = input.data('timeoffsetchoose-text'),
+                    timeOffsetText = input.data('timeoffset-text'),
+                    hoursText = input.data('hours-text'),
+                    minutesText = input.data('minutes-text');
+                $('.ui-datepicker-title').html(timeOffsetChooseText);
+                $('.ui_tpicker_time_label').html(timeOffsetText);
+                $('.ui_tpicker_hour_label').html(hoursText);
+                $('.ui_tpicker_minute_label').html(minutesText);
+                $('.ui-datepicker-current').addClass('dn');
+            });
+            
+            $(document).on("change", ".timeOffsetPicker", function(event) {
+                var displayField = $(this),
+                    displayValue = displayField.val(),
+                    valueFieldName = displayField.data('value-field');
+                    timeFields = displayValue.split(':'),
+                    minutes = (+timeFields[0]) * 60 + (+timeFields[1]);
+                $('input[name=' + valueFieldName + ']').val(minutes);
+            });
+            
             _initialized = true;
         }
     };

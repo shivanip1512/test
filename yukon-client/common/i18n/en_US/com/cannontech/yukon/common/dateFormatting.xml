@@ -5,6 +5,7 @@
          java.text.SimpleDateFormat
 -->
 <entry key="yukon.common.dateFormatting.TIME">hh:mm a</entry>
+<entry key="yukon.common.dateFormatting.TIME_OFFSET">HH:mm</entry>
 <!--DO NOT change the value of TIME24H - 3Tier depends on 24 time -->
 <entry key="yukon.common.dateFormatting.TIME24H">HH:mm</entry>
 <entry key="yukon.common.dateFormatting.TIME_TZ">HH:mm z</entry>

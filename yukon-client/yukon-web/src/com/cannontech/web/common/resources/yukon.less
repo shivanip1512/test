@@ -1475,6 +1475,7 @@ hr.dashed,
     font-size: 14px !important; /* jquery ui is messing up the font-size */
 }
 .datetimeEntry_wrap img { margin: 5px; }
+.timeOffsetWrap img { margin-top: 4px; }
 .datetimeEntry_wrap .datetimeEntry_control { display: none !important; }
 
 .datetimeEntry_wrap input[disabled] { color: #999; }
@@ -1493,12 +1494,14 @@ hr.dashed,
     padding-right: 5px;
 }
 input.datePicker, 
-input.timePicker, 
+input.timePicker,
+input.timeOffsetPicker,
 input.dateTimePicker {
     border-radius: @border-radius 0 0 @border-radius;
 }
 input.datePicker { width: 114px ;}
 input.timePicker { width: 74px; }
+input.timeOffsetPicker { width: 60px; }
 input.dateTimePicker { width: 150px; }
 
 .ui-datepicker-trigger:hover { cursor: pointer; }
