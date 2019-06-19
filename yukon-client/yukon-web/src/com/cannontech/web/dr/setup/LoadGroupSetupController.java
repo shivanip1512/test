@@ -133,7 +133,7 @@ public class LoadGroupSetupController {
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadGroup, "loadGroupBase");
-                helper.populateBindingError(result, error, response);
+                result = helper.populateBindingError(result, error, response);
                 return bindAndForward(loadGroup, result, redirectAttributes);
             }
 
@@ -201,7 +201,7 @@ public class LoadGroupSetupController {
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadGroup, "loadGroupBase");
-                helper.populateBindingError(result, error, response);
+                result = helper.populateBindingError(result, error, response);
                 return bindAndForwardForCopy(loadGroup, result, model, servletResponse);
             }
 

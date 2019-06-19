@@ -2,6 +2,7 @@ package com.cannontech.web.api.validation;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -32,9 +35,10 @@ public class ApiControllerHelper {
     private static final Logger log = YukonLogManager.getLogger(ApiControllerHelper.class);
     
     /**
-     * Populate binding error from the error object received from rest call. 
+     * Populate and return binding error from the error object received from rest call. 
      */
-    public void populateBindingError(BindingResult result, BindException error, ResponseEntity<? extends Object> errorResponse) {
+    public BindingResult populateBindingError(BindingResult result, BindException error,
+            ResponseEntity<? extends Object> errorResponse) {
         LinkedHashMap<?, ?> errorObject = (LinkedHashMap<?, ?>) errorResponse.getBody();
         ArrayList<?> fieldError = (ArrayList<?>) errorObject.get("fieldErrors");
         ArrayList<?> globalError = (ArrayList<?>) errorObject.get("globalErrors");
@@ -47,7 +51,24 @@ public class ApiControllerHelper {
         globalError.stream().forEach(e -> {
             error.reject(((LinkedHashMap<?, ?>) e).get("code").toString());
         });
-        result.addAllErrors(error);
+
+        if (result.hasErrors()) {
+            List<ObjectError> mvcErrors = (List<ObjectError>) result.getAllErrors();
+            result = new BindException(error.getTarget(), error.getObjectName());
+            result.addAllErrors(error);
+            for (ObjectError objectError : mvcErrors) {
+                FieldError mvcError = (FieldError) objectError;
+                String fieldName = mvcError.getField();
+                if (result.getFieldError(fieldName) == null) {
+                    result.rejectValue(fieldName, mvcError.getCode());
+                } else if (!fieldName.equals(result.getFieldError(fieldName).getField())) {
+                    result.rejectValue(fieldName, mvcError.getCode());
+                }
+            }
+        } else {
+            result.addAllErrors(error);
+        }
+        return result;
     }
 
     /**
