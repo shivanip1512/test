@@ -149,6 +149,7 @@ public class ThirdPartyIconLibraryTest {
                     "marker-relay-grey.png", 
                     "marker-thermostat-grey.png", 
                     "marker-transmitter-grey.png", 
+                    "pencil.png",
                     "plus-minus.png", 
                     "relay.png", 
                     "spinner-white.gif", 
