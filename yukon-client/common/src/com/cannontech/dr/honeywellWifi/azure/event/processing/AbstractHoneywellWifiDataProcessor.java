@@ -86,7 +86,7 @@ public abstract class AbstractHoneywellWifiDataProcessor implements HoneywellWif
             dynamicLcrCommunicationsDao.insertData(assetAvailabilityPointDataTimes);
 
         } catch (NotFoundException e) {
-            log.info("Unable to update asset availability for unkown device with MAC ID " + data.getMacId());
+            log.info("Unable to update asset availability for unknown device with MAC ID " + data.getMacId());
         }
         
     }

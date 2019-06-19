@@ -144,7 +144,7 @@ void CtiFDRLiveData::processNewPoint(CtiFDRPointSPtr ctiPoint)
   }
   catch (std::exception& e)
   {
-      CTILOG_EXCEPTION_ERROR(dout, e, logNow() <<"Unkown point type "<< dataTypeStr <<" for address "<< address);
+      CTILOG_EXCEPTION_ERROR(dout, e, logNow() <<"Unknown point type "<< dataTypeStr <<" for address "<< address);
   }
 }
 
