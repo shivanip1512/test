@@ -396,7 +396,6 @@
     <entry key="yukon.web.modules.dev.nest.nestVersion.label">Set Nest Version</entry>
     <entry key="yukon.web.modules.dev.nest.nestVersion.version">Nest Version to use</entry>
     <entry key="yukon.web.modules.dev.nest.nestVersion.savedSuccessfully">Nest Version saved successfully</entry>
-
     
     <!--  File settings -->
     <entry key="yukon.web.modules.dev.nest.nestFileSettings.label">Nest File Settings</entry>
@@ -613,6 +612,19 @@
     <entry key="yukon.web.modules.dev.paoDefinitionTesting.pageName">Pao Definition Testing</entry>
     <entry key="yukon.web.modules.dev.paoDefinitionTesting.reloadSuccessful">Pao Definition Reload was successful</entry>
     <entry key="yukon.web.modules.dev.paoDefinitionTesting.reloadOverrideSuccessful">Pao Definition Reload was successful. Check Web Server log for the override result.</entry>
+
+    <!-- SFTP Test -->
+    <entry key="yukon.web.modules.dev.sftp.sftpTest.pageName">SFTP Test</entry>
+    <entry key="yukon.web.modules.dev.sftp.sftpTest.title">SFTP Test</entry>
+    <entry key="yukon.web.modules.dev.sftp.sftpTest.helpText"><![CDATA[This page is used for testing an sftp server. 
+    The example is populated with a public test server. 
+    Please visit https://www.wftpserver.com/onlinedemo.htm for further details]]></entry>
+    <entry key="yukon.web.modules.dev.domain">Domain</entry>
+    <entry key="yukon.web.modules.dev.port">Port</entry>
+    <entry key="yukon.web.modules.dev.sftpPath">Filepath</entry>
+    <entry key="yukon.web.modules.dev.username">Username</entry>
+    <entry key="yukon.web.modules.dev.password">Password</entry>
+    <entry key="yukon.web.modules.dev.filename">Save to</entry>
     
     
 </properties>

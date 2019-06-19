@@ -42,6 +42,7 @@
             <tags:sectionContainer title="Testing">
                 <ul class="simple-list">
                     <li><a href="<cti:url value="/dev/eimTest/main"/>">Web Service XML Test</a></li>
+                    <li><a href="<cti:url value="/dev/sftpTest/sftpTest"/>">SFTP Test</a></li>
                     <li><a href="<cti:url value="/debug/loadControlService/inputs/home"/>">Load Control Services Test</a></li>
                     <li><a href="<cti:url value="/debug/accountService/inputs/home"/>">Account Service Test</a></li>
                     <li><a href="<cti:url value="/dev/rfn/viewBase"/>">RFN Test</a></li>

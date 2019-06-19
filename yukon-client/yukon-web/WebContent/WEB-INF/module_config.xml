@@ -1654,6 +1654,7 @@
           <page name="ecobeePGPKeyPair" type="BASIC"/>
           <page name="systemMetricsSimulator" type="BASIC"/>
           <page name="ivvc.ivvcSimulator" type="BASIC"/>
+          <page name="sftp.sftpTest" type="BASIC"/>
           <page name="rfnTest" type="BASIC">
             <link>/dev/rfn/viewBase</link>
             <pages>
