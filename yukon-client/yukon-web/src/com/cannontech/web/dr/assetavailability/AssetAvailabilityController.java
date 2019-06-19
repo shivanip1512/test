@@ -49,6 +49,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
+import com.cannontech.dr.assetavailability.dao.AssetAvailabilityDao;
 import com.cannontech.dr.assetavailability.dao.AssetAvailabilityDao.SortBy;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -322,12 +323,13 @@ public class AssetAvailabilityController {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         // header row
-        String[] headerRow = new String[5];
+        String[] headerRow = new String[6];
         headerRow[0] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.SERIAL_NUM);
         headerRow[1] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.TYPE);
-        headerRow[2] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.LAST_COMM);
-        headerRow[3] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.LAST_RUN);
-        headerRow[4] = messageSourceAccessor.getMessage(baseKey + "AVAILABILITY");
+        headerRow[2] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.GATEWAY_ID);
+        headerRow[3] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.LAST_COMM);
+        headerRow[4] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.LAST_RUN);
+        headerRow[5] = messageSourceAccessor.getMessage(baseKey + "AVAILABILITY");
 
         return headerRow;
     }
@@ -343,13 +345,14 @@ public class AssetAvailabilityController {
         List<String[]> dataRows = Lists.newArrayList();
 
         results.getResultList().forEach(details -> {
-            String[] dataRow = new String[5];
+            String[] dataRow = new String[6];
 
             dataRow[0] = details.getSerialNumber();
             dataRow[1] = details.getType().toString();
-            dataRow[2] = (details.getLastComm() == null) ? "" : dateFormattingService.format(details.getLastComm(), DateFormatEnum.BOTH, userContext);
-            dataRow[3] = (details.getLastRun() == null) ? "" : dateFormattingService.format(details.getLastRun(), DateFormatEnum.BOTH, userContext);
-            dataRow[4] = messageSourceAccessor.getMessage(details.getAvailability());
+            dataRow[2] = details.getGatewayName();
+            dataRow[3] = (details.getLastComm() == null) ? "" : dateFormattingService.format(details.getLastComm(), DateFormatEnum.BOTH, userContext);
+            dataRow[4] = (details.getLastRun() == null) ? "" : dateFormattingService.format(details.getLastRun(), DateFormatEnum.BOTH, userContext);
+            dataRow[5] = messageSourceAccessor.getMessage(details.getAvailability());
             dataRows.add(dataRow);
         });
 
@@ -369,7 +372,8 @@ public class AssetAvailabilityController {
         SERIAL_NUM(SortBy.SERIALNUM),
         TYPE(SortBy.TYPE),
         LAST_COMM(SortBy.LASTCOMM),
-        LAST_RUN(SortBy.LASTRUN);
+        LAST_RUN(SortBy.LASTRUN),
+        GATEWAY_ID(SortBy.GATEWAYID);
 
         private final SortBy value;
 

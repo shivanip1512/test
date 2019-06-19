@@ -31,6 +31,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.NaturalOrderComparator;
 import com.cannontech.web.common.chart.service.AssetAvailabilityChartService;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.dr.assetavailability.AssetAvailabilityController.AssetAvailabilitySortBy;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
@@ -105,13 +106,14 @@ public abstract class DemandResponseControllerBase {
         MessageSourceAccessor msa = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         // header row
-        String[] headerRow = new String[6];
+        String[] headerRow = new String[7];
         headerRow[0] = msa.getMessage(AssetDetailsColumn.SERIAL_NUM);
         headerRow[1] = msa.getMessage(AssetDetailsColumn.TYPE);
-        headerRow[2] = msa.getMessage(AssetDetailsColumn.LAST_COMM);
-        headerRow[3] = msa.getMessage(AssetDetailsColumn.LAST_RUN);
-        headerRow[4] = msa.getMessage(AssetDetailsColumn.APPLIANCES);
-        headerRow[5] = msa.getMessage(AssetDetailsColumn.AVAILABILITY);
+        headerRow[2] = msa.getMessage(AssetAvailabilitySortBy.GATEWAY_ID);
+        headerRow[3] = msa.getMessage(AssetDetailsColumn.LAST_COMM);
+        headerRow[4] = msa.getMessage(AssetDetailsColumn.LAST_RUN);
+        headerRow[5] = msa.getMessage(AssetDetailsColumn.APPLIANCES);
+        headerRow[6] = msa.getMessage(AssetDetailsColumn.AVAILABILITY);
         
         return headerRow;
     }
@@ -135,16 +137,17 @@ public abstract class DemandResponseControllerBase {
         List<ApplianceAssetAvailabilityDetails> resultList = results.getResultList();
         List<String[]> dataRows = Lists.newArrayList();
         for (ApplianceAssetAvailabilityDetails details : resultList) {
-            String[] dataRow = new String[6];
+            String[] dataRow = new String[7];
 
             dataRow[0] = details.getSerialNumber();
             dataRow[1] = details.getType().toString();
-            dataRow[2] = (details.getLastComm() == null) ? "" : dateFormattingService.format(details.getLastComm(),
+            dataRow[2] = details.getGatewayName();
+            dataRow[3] = (details.getLastComm() == null) ? "" : dateFormattingService.format(details.getLastComm(),
                     DateFormatEnum.BOTH, userContext);
-            dataRow[3] = (details.getLastRun() == null) ? "" : dateFormattingService.format(details.getLastRun(),
+            dataRow[4] = (details.getLastRun() == null) ? "" : dateFormattingService.format(details.getLastRun(),
                     DateFormatEnum.BOTH, userContext);
-            dataRow[4] = details.getAppliances();
-            dataRow[5] = msa.getMessage(details.getAvailability());
+            dataRow[5] = details.getAppliances();
+            dataRow[6] = msa.getMessage(details.getAvailability());
             dataRows.add(dataRow);
         }
             
