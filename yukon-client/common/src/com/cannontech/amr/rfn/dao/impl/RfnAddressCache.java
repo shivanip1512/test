@@ -281,17 +281,18 @@ class RfnAddressCache implements DBChangeListener {
     }
 
     private void storeAddresses(List<RfnAddress> allAddresses) {
-        Map<RfnManufacturerModel, List<RfnAddress>> enumIdentifiers = 
+        Map<Optional<RfnManufacturerModel>, List<RfnAddress>> enumIdentifiers = 
             allAddresses.stream()
-                        .collect(Collectors.groupingBy(RfnManufacturerModel::of));
+                        .collect(Collectors.groupingBy(rfnAddress -> Optional.ofNullable(RfnManufacturerModel.of(rfnAddress))));
 
-        List<RfnAddress> stringIdentifiers = enumIdentifiers.remove(null);
+        List<RfnAddress> stringIdentifiers = enumIdentifiers.remove(Optional.empty());
 
         Map<RfnManufacturerModel, Map<String, Integer>> enumSerialIds = 
-                Maps.transformValues(enumIdentifiers, 
-                                     v -> v.stream()
-                                           .collect(Collectors.toMap(RfnAddress::getSerialNumber, 
-                                                                     RfnAddress::getDeviceID)));
+                enumIdentifiers.entrySet().stream()
+                    .collect(Collectors.toMap(e -> e.getKey().get(), 
+                                              e -> e.getValue().stream()
+                                                    .collect(Collectors.toMap(RfnAddress::getSerialNumber, 
+                                                                              RfnAddress::getDeviceID))));
         
         withWriteLock(() -> {
             stringCache.putAll(stringIdentifiers);
