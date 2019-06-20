@@ -12,6 +12,7 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadDataReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadRequest;
+import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.amr.rfn.model.RfnMeter;
@@ -83,7 +84,7 @@ public class RfnMeterReadService {
 
             @Override
             public boolean handleReply1(RfnMeterReadReply statusReply) {
-                log.info(rfnMeter + " - received reply(" + statusReply.getReplyType() + ") from NM ");
+                log.info(rfnMeter + " - received reply1(" + statusReply.getReplyType() + ") from NM ");
                 if (!statusReply.isSuccess()) {
                     /* Request failed */
                     callback.receivedStatusError(statusReply.getReplyType());
@@ -97,19 +98,23 @@ public class RfnMeterReadService {
 
             @Override
             public void handleReply2(RfnMeterReadDataReply dataReplyMessage) {
-                log.info(rfnMeter + " - received reply(" + dataReplyMessage.getReplyType() + ") from NM ");
+                log.info(rfnMeter + " - received reply2(" + dataReplyMessage.getReplyType() + ") from NM ");
+                
+                RfnMeterReadingData meterReadingData = dataReplyMessage.getData();
+
+                // meterReadingData may be null if NM experienced an error from the gateway (See TSSL-5086)
+                if (!dataReplyMessage.isSuccess() || meterReadingData == null || meterReadingData.getRfnIdentifier() == null) {
+                    /* Data response failed */
+                    callback.receivedDataError(dataReplyMessage.getReplyType());
+                    return;
+                }
                 
                 RfnIdentifier receivedIdentifier = dataReplyMessage.getData().getRfnIdentifier();
                 RfnIdentifier expectedIdentifier = rfnMeter.getRfnIdentifier();
 
-                if (!dataReplyMessage.isSuccess()) {
-                    /* Data response failed */
-                    callback.receivedDataError(dataReplyMessage.getReplyType());
-                } else if (!receivedIdentifier.equals(expectedIdentifier)) {
+                if (!receivedIdentifier.equals(expectedIdentifier)) {
                     log.error("RFN identifier mismatch, received " + receivedIdentifier + " instead of " + expectedIdentifier);
-                    callback.processingExceptionOccured(
-                            YukonMessageSourceResolvable.createSingleCodeWithArguments(
-                                    "yukon.common.device.attributeRead.rfn.identifierMismatch", receivedIdentifier, expectedIdentifier));
+                    callback.receivedDataError(RfnMeterReadingDataReplyType.TIMEOUT);   // using TIMEOUT as we dont' know if this is FAILURE or OK
                 } else {
                     /* Data response successful, process point data */
                     List<PointValueHolder> pointDatas = Lists.newArrayList();

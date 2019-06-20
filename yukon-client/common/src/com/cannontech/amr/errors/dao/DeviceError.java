@@ -13,6 +13,8 @@ import java.util.Map;
 
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
+import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.ImmutableMap;
@@ -254,5 +256,36 @@ public enum DeviceError {
     
     public static Map<Integer, DeviceError> getErrorsMap() {
         return errors;
+    }
+
+    // Eventually, RfnMeterReadingReplyType could be updated to include the errorCode (requires NM/Yukon changes)
+    public static DeviceError of(RfnMeterReadingReplyType type) {
+        switch (type) {
+        case OK:
+            return SUCCESSFUL_READ;
+        case NO_NODE:
+            return NO_NODE;
+        case NO_GATEWAY:
+            return NO_GATEWAY;
+        case TIMEOUT:
+            return NM_TIMEOUT;
+        case FAILURE:
+        default:
+            return FAILURE;
+        }
+    }
+    
+    // Eventually, RfnMeterReadingDataReplyType could be updated to include the errorCode (requires NM/Yukon changes)
+    public static DeviceError of(RfnMeterReadingDataReplyType type) {
+        switch (type) {
+        case OK:
+            return SUCCESSFUL_READ;
+        case NETWORK_TIMEOUT:
+        case TIMEOUT:
+            return NM_TIMEOUT;
+        case FAILURE:
+        default:
+            return FAILURE;
+        }
     }
 }
