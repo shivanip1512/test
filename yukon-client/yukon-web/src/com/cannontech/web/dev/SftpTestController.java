@@ -55,20 +55,6 @@ public class SftpTestController {
             } catch (Exception e) {
             System.out.println(e);    
         }
-//          try {
-//              
-//              StaticUserAuthenticator auth = new StaticUserAuthenticator("demo.wftpserver.com:2222", "demo-user", "demo-user");// domain/username/password
-//              FileSystemOptions opts = new FileSystemOptions();
-//              DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
-//              manager = VFS.getManager();
-//    
-//              FileObject remoteFile = manager.resolveFile("sftp://demo.wftpserver.com:2222/download/manual_en.pdf", opts);
-//              FileObject localFile = manager.resolveFile("C:\\Yukon\\thefile1.pdf");
-//              localFile.copyFrom(remoteFile, Selectors.SELECT_SELF);
-//              System.out.println("end");    
-//              } catch (Exception e) {
-//              System.out.println(e);    
-//          }
         return "sftpTest/sftpTest.jsp";
     }
 }
