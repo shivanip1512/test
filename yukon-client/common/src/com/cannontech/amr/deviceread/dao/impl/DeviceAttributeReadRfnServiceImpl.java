@@ -188,8 +188,8 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
     }
     
     //Use for RFN meters
-    private <T1, T2> RfnDeviceReadCompletionCallback<T1, T2> getCallback(final YukonDevice device, final DeviceAttributeReadCallback delegateCallback, final AtomicInteger pendingRequests) {
-        RfnDeviceReadCompletionCallback<T1, T2> callback = new RfnDeviceReadCompletionCallback<T1, T2>() {
+    private RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> getCallback(final YukonDevice device, final DeviceAttributeReadCallback delegateCallback, final AtomicInteger pendingRequests) {
+        RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> callback = new RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType>() {
 
             @Override
             public void receivedData(PointValueHolder value) {
@@ -197,21 +197,21 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
             }
             
             @Override
-            public void receivedDataError(T2 replyType) {
+            public void receivedDataError(RfnMeterReadingDataReplyType replyType) {
                 SpecificDeviceErrorDescription error =
-                    getError(DeviceError.NM_TIMEOUT, replyType, "yukon.common.device.attributeRead.rfn.dataError");
+                    getError(DeviceError.of(replyType), replyType, "yukon.common.device.attributeRead.rfn.dataError");
                 delegateCallback.receivedError(device.getPaoIdentifier(), error);
             }
 
             @Override
-            public void receivedStatusError(T1 replyType) {
+            public void receivedStatusError(RfnMeterReadingReplyType replyType) {
                 SpecificDeviceErrorDescription error =
-                    getError(DeviceError.FAILURE, replyType, "yukon.common.device.attributeRead.rfn.statusError");
+                    getError(DeviceError.of(replyType), replyType, "yukon.common.device.attributeRead.rfn.statusError");
                 delegateCallback.receivedError(device.getPaoIdentifier(), error);
             }
             
             @Override
-            public void receivedStatus(T1 status) {
+            public void receivedStatus(RfnMeterReadingReplyType status) {
             }
             
             @Override

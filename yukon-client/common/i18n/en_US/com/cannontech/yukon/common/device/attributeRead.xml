@@ -16,5 +16,4 @@
     <entry key="yukon.common.device.attributeRead.rfn.statusError">Read error (status): {0}</entry>
     <entry key="yukon.common.device.attributeRead.rfn.dataError">Read error (data): {0}</entry>
     <entry key="yukon.common.device.attributeRead.rfn.exception">Unknown error: {0}</entry>
-    <entry key="yukon.common.device.attributeRead.rfn.identifierMismatch">Received mismatched identifier {0} instead of {1}</entry>
 </properties>
