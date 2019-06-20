@@ -160,7 +160,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     ALERT_TIMEOUT_HOURS(GlobalSettingSubCategory.MISC, integerType(), 168),
     DATABASE_MIGRATION_FILE_LOCATION(GlobalSettingSubCategory.MISC, stringType(), "/Server/Export/"),
     TEMP_DEVICE_GROUP_DELETION_IN_DAYS(GlobalSettingSubCategory.MISC, integerType(), 7),
-    HTTP_PROXY(GlobalSettingSubCategory.MISC, stringType(), "none", GlobalSettingTypeValidators.urlValidator),
+    HTTP_PROXY(GlobalSettingSubCategory.MISC, stringType(), "none", GlobalSettingTypeValidators.urlWithPortValidator),
     CONTACT_EMAIL(GlobalSettingSubCategory.MISC, stringType(), "EAS-Support@Eaton.com", GlobalSettingTypeValidators.emailValidator),
     CONTACT_PHONE(GlobalSettingSubCategory.MISC, stringType(), "1-800-815-2258"),
     SCHEDULED_REQUEST_MAX_RUN_HOURS(GlobalSettingSubCategory.MISC, integerType(), 23),
