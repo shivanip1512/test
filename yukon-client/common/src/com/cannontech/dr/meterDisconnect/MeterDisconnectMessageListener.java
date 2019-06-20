@@ -1,6 +1,9 @@
 package com.cannontech.dr.meterDisconnect;
 
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.jms.JMSException;
@@ -14,60 +17,103 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
-import com.cannontech.amr.rfn.model.RfnMeter;
-import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
-import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
+import com.cannontech.amr.disconnect.model.DisconnectCommand;
+import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.cc.service.GroupService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.service.ControlHistoryService;
 import com.cannontech.dr.service.ControlType;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
 
 public class MeterDisconnectMessageListener {
     private static final Logger log = YukonLogManager.getLogger(MeterDisconnectMessageListener.class);
     
     @Autowired private ControlHistoryService controlHistoryService;
-    @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private GroupService groupService;
-    @Autowired private MeterDao meterDao;
+    @Autowired private DisconnectService disconnectService;
 
-    public class MeterDisconnectCallback implements RfnMeterDisconnectCallback {
-
+    public class MeterCollection implements DeviceCollection {
+        List<SimpleDevice> collection;
+        public MeterCollection(List<SimpleDevice> collection) {
+            this.collection = collection;
+        }
+        /**
+         * Only method needed to execute disconnect connect command using disconnectService.
+         */
         @Override
-        public void processingExceptionOccurred(MessageSourceResolvable message) {
-            log.debug("RFN exception (RfnMeterDisconnectCallback)");
+        public List<SimpleDevice> getDeviceList() {
+            return collection;
         }
 
         @Override
-        public void complete() {
-            log.debug("RFN (RfnMeterDisconnectCallback) completed");
+        public int getDeviceCount() {
+            return collection.size();
         }
 
         @Override
-        public void receivedSuccess(RfnMeterDisconnectState state,
-                                    PointValueQualityHolder pointData) {
-            log.debug("RFN receivedSuccess");
+        public Iterator<SimpleDevice> iterator() {
+            return collection.listIterator();
         }
 
         @Override
-        public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state,
-                                  RfnMeterDisconnectConfirmationReplyType replyType) {
-            log.debug("RFN receivedError");
-
+        public List<SimpleDevice> getDevices(int start, int size) {
+            int end = start + size;
+            return collection.subList(start, Math.min(end, collection.size()));
         }
 
+        @Override
+        public Map<String, String> getCollectionParameters() {
+            return null;
+        }
+
+        @Override
+        public MessageSourceResolvable getDescription() {
+            return null;
+        }
+
+        @Override
+        public DeviceCollectionType getCollectionType() {
+            return null;
+        }
+
+        @Override
+        public Set<String> getErrorDevices() {
+            return null;
+        }
+
+        @Override
+        public int getDeviceErrorCount() {
+            return 0;
+        }
+
+        @Override
+        public String getUploadFileName() {
+            return null;
+        }
+
+        @Override
+        public String getHeader() {
+            return null;
+        }
+        
+    }
+    
+    public class Callback implements SimpleCallback {
+
+        @Override
+        public void handle(Object item) throws Exception {
+        }
         
     }
     
@@ -91,18 +137,15 @@ public class MeterDisconnectMessageListener {
                 String groupName = groupService.getGroup(groupId).getName();
                 DeviceGroup deviceGroup = deviceGroupService.findGroupName(groupName);
                 if (deviceGroup != null) {
-                    Set<SimpleDevice> meters = deviceGroupService.getDevices(Collections.singleton(deviceGroup));
-                    Iterable<YukonMeter> yukonMeters = meterDao.getMetersForYukonPaos(meters);
-                    yukonMeters.forEach(meter -> {
-                        MeterDisconnectCallback callback = new MeterDisconnectCallback();
-                        
-                        rfnMeterDisconnectService.send((RfnMeter) meter, RfnMeterDisconnectStatusType.RESUME, callback);
-                    });
+                    Set<SimpleDevice> meters = deviceGroupService.getDevices(Collections.singleton(deviceGroup));                    
+                    MeterCollection collection = new MeterCollection(Lists.newArrayList(meters));
+                    Callback callback = new Callback(); //callback isn't really being used.
+                    disconnectService.execute(DisconnectCommand.CONNECT, collection, callback, YukonUserContext.system);
                 }
                 
 
                 controlHistoryService.sendControlHistoryShedMessage(groupId, startTimeUtc, ControlType.METER_DISCONNECT, null,
-                    controlDurationSeconds, -9780);
+                    controlDurationSeconds, 100);
             } catch (JMSException e) {
                 log.error("Error parsing Meter Disconnect control message from LM", e);
             }
@@ -129,13 +172,10 @@ public class MeterDisconnectMessageListener {
                 String groupName = groupService.getGroup(groupId).getName();
                 DeviceGroup deviceGroup = deviceGroupService.findGroupName(groupName);
                 if (deviceGroup != null) {
-                    Set<SimpleDevice> meters = deviceGroupService.getDevices(Collections.singleton(deviceGroup));
-                    Iterable<YukonMeter> yukonMeters = meterDao.getMetersForYukonPaos(meters);
-                    yukonMeters.forEach(meter -> {
-                        MeterDisconnectCallback callback = new MeterDisconnectCallback();
-                        
-                        rfnMeterDisconnectService.send((RfnMeter) meter, RfnMeterDisconnectStatusType.TERMINATE, callback);
-                    });
+                    Set<SimpleDevice> meters = deviceGroupService.getDevices(Collections.singleton(deviceGroup));                    
+                    MeterCollection collection = new MeterCollection(Lists.newArrayList(meters));
+                    Callback callback = new Callback();
+                    disconnectService.execute(DisconnectCommand.DISCONNECT, collection, callback, YukonUserContext.system);
                 }
                 controlHistoryService.sendControlHistoryRestoreMessage(groupId, Instant.now());
             } catch (JMSException e) {
