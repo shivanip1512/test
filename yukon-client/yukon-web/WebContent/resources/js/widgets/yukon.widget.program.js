@@ -20,10 +20,10 @@
             widgetContainer.html(data);
             var json = $.parseJSON($("#js-widget-json-data").text()),
                 refreshButton = widgetContainer.find('.js-update-program'),
-                lastRefershDateTime = moment(json.lastUpdateTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
+                lastRefreshDateTime = moment(json.lastUpdateTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
                 nextRefreshDateTime = moment(json.nextRun.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
             refreshButton.attr('title', yg.text.nextRefresh + nextRefreshDateTime);
-            widgetContainer.find('.js-last-updated').text(lastRefershDateTime);
+            widgetContainer.find('.js-last-updated').text(lastRefreshDateTime);
             setTimeout(function () {
                 refreshButton.attr('disabled', false);
                 refreshButton.attr('title', json.updateTooltip);
@@ -45,8 +45,8 @@
  
             $(".js-program-widget").each(function (index, widgetContainer) {
                 var json = $.parseJSON($(widgetContainer).find("#js-widget-json-data").text()),
-                    lastRefershDateTime = moment(json.lastUpdateTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
-                $(widgetContainer).find('.js-last-updated').text(lastRefershDateTime);
+                    lastRefreshDateTime = moment(json.lastUpdateTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
+                $(widgetContainer).find('.js-last-updated').text(lastRefreshDateTime);
                 _update($(widgetContainer));
             });
             

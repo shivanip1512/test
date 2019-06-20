@@ -109,7 +109,7 @@
     <entry key="yukon.web.modules.dashboard.widgetType.TRENDS.name">Trends</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.TRENDS.description">Displays a predefined Trend. Provides up to 1 month view of data for the selected Trend with quick access to Trends Tool.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.PROGRAM.name">Programs</entry>
-    <entry key="yukon.web.modules.dashboard.widgetType.PROGRAM.description">Displays future scheduled, today's and past contolled DR programs.</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.PROGRAM.description">Displays a table listing any programs that are currently running, scheduled to run within the next control day, and any recently run DR programs. (max 10 will be displayed).</entry>
 
     <!-- Widget Parameters -->
     <entry key="yukon.web.modules.dashboard.widgetParameter.controlAreaOrProgramOrScenarioId">Target Level</entry>
