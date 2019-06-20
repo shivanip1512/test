@@ -32,9 +32,9 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.copy">Copy Load Group</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.info.copied">Load Group copied successfully.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.copy.error">Load Group could not be copied.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.utilityEnrollmentGroup.rangeCheck">A value of 0 means all devices in the group...Utility Enrollment Group must be between 1 and 255.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.goldAddress.invalidValue">Gold address 0 value is not allowed if Address to Use is Gold.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.silverAddress.invalidValue">Silver address 0 value is not allowed if Address to Use is Silver.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.utilityEnrollmentGroup.rangeCheck">Utility Enrollment Group must be between 1 and 255; (A Value 0 specify all devices in the group).</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.goldAddress.invalidValue">Gold Address must be between 1 and 4 when Gold is selected for Address to Use.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.silverAddress.invalidValue">Silver address must be between 1 and 60 when Silver is selected for Address to Use.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.relayUsage.invalidValue">Invalid Relay Usage value.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.addressUsage.invalidValue">Invalid Address Usage value.</entry>
 
