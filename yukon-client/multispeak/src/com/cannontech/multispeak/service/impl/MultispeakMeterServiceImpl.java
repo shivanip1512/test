@@ -29,6 +29,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.dao.WaitableDeviceAttributeReadCallback;
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
@@ -214,9 +215,15 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
         ConfigurationSource configurationSource = MasterConfigHelper.getConfiguration();
         Builder<OutageEventType, Integer> builder = ImmutableMultimap.builder();
-        //TODO - add the RF error codes.
-        builder.putAll(OutageEventType.OUTAGE, 20, 57, 72);
-        builder.putAll(OutageEventType.RESTORATION, 1, 17, 74, 0);
+        
+        builder.putAll(OutageEventType.OUTAGE, DeviceError.WORD_1_NACK_PADDED.getCode(),
+                                               DeviceError.EWORD_RECEIVED.getCode(),
+                                               DeviceError.DLC_READ_TIMEOUT.getCode(),
+                                               DeviceError.FAILURE.getCode());
+        builder.putAll(OutageEventType.RESTORATION, DeviceError.ABNORMAL_RETURN.getCode(),
+                                                    DeviceError.WORD_1_NACK.getCode(),
+                                                    DeviceError.ROUTE_FAILED.getCode(),
+                                                    DeviceError.SUCCESSFUL_READ.getCode());
         ImmutableMultimap<OutageEventType, Integer> systemDefault = builder.build();
 
         supportedEventTypes = ImmutableSet.of(OutageEventType.OUTAGE,
@@ -567,7 +574,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 }
     
                 @Override
-                public void receivedLastValue(PaoIdentifier pao, String value) {    //success
+                public void receivedLastValue(PaoIdentifier pao, String value) {    //success - not guaranteed!!!!
                     log.debug("deviceAttributeReadCallback.receivedLastValue for odEvent");
                     
                     YukonMeter yukonMeter = meterDao.getForId(pao.getPaoId());  // can we get this from meters?
@@ -594,10 +601,14 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 @Override
                 public void receivedException(SpecificDeviceErrorDescription error) {
                     log.warn("deviceAttributeReadCallback.receivedException in odEvent callback: " + error);
+                    // there is still a potential bug here, because meters is left populated with the pao, even though an exception
+                    //   has occurred. This means we can still get receivedLastValue and process it as a "success" instead of "unknown" or failure.
                 }
     
             };
-            deviceAttributeReadService.initiateRead(meters, Sets.newHashSet(BuiltInAttribute.OUTAGE_STATUS), callback, DeviceRequestType.MULTISPEAK_OUTAGE_DETECTION_PING_COMMAND, UserUtils.getYukonUser());
+            if (CollectionUtils.isNotEmpty(meters)) {
+                deviceAttributeReadService.initiateRead(meters, Sets.newHashSet(BuiltInAttribute.OUTAGE_STATUS), callback, DeviceRequestType.MULTISPEAK_OUTAGE_DETECTION_PING_COMMAND, UserUtils.getYukonUser());
+            }
         } else {    //save network expense by just returning latest known value. 
 
             BiMap<LitePoint, PaoIdentifier> pointsToPaos = attributeService.getPoints(meters,  BuiltInAttribute.OUTAGE_STATUS).inverse();
