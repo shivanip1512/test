@@ -2,6 +2,7 @@ package com.cannontech.amr.rfn.message.status;
 
 import java.io.Serializable;
 
+import com.cannontech.amr.rfn.message.status.type.RfnStatus;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 
@@ -13,7 +14,7 @@ public class RfnStatusArchiveRequest implements RfnIdentifyingMessage, Serializa
     private static final long serialVersionUID = 1L;
 
     private long statusPointId;
-    private RfnStatus status;
+    private RfnStatus<?> status;
 
     public long getStatusPointId() {
         return statusPointId;
@@ -23,11 +24,11 @@ public class RfnStatusArchiveRequest implements RfnIdentifyingMessage, Serializa
         this.statusPointId = statusPointId;
     }
 
-    public RfnStatus getStatus() {
+    public RfnStatus<?> getStatus() {
         return status;
     }
 
-    public void setStatus(RfnStatus status) {
+    public void setStatus(RfnStatus<?> status) {
         this.status = status;
     }
 
