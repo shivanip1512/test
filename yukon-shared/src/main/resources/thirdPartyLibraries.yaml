@@ -3505,10 +3505,10 @@ C++ :
     project URL : "https://github.com/obgm/libcoap"
     license : BSD 2-clause
     license URLs : "https://github.com/obgm/libcoap/blob/develop/LICENSE"
-    md5 : f252c721ec6bd1dcf64aaa8c37116517
-    sha1 : 44459f16f5104987fa46ea6763ef14d165f9f6e1
-    fileCount : 26
-    totalSize : 1380110
+    md5 : e91ef08ee32bc54fbe603512b9c33013
+    sha1 : bb363e742da55cb1e562e30e6fc32663b05345ac
+    fileCount : 27
+    totalSize : 1273381
     updated : 2016-04-12  
     jira : YUK-14919
     notes : Modifications to allow operation as E2E
