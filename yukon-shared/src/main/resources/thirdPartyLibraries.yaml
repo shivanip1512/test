@@ -3501,14 +3501,14 @@ C++ :
     
   - project : libcoap - Constrained Application Protocol in C
     path : LIBCOAP
-    version : 4.0.1
+    version : 4.1.2
     project URL : "https://github.com/obgm/libcoap"
     license : BSD 2-clause
     license URLs : "https://github.com/obgm/libcoap/blob/develop/LICENSE"
-    md5 : a492ad83041f74579cca49ccb8392868
-    sha1 : 7a278ea0ba4cde1cdd70853aa6491020df58bf20
-    fileCount : 48
-    totalSize : 1204481
+    md5 : f252c721ec6bd1dcf64aaa8c37116517
+    sha1 : 44459f16f5104987fa46ea6763ef14d165f9f6e1
+    fileCount : 26
+    totalSize : 1380110
     updated : 2016-04-12  
     jira : YUK-14919
     notes : Modifications to allow operation as E2E

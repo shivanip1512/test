@@ -97,11 +97,11 @@ E2eDataTransferProtocol::EndpointMessage E2eDataTransferProtocol::handleIndicati
     //  Decode the token
     message.token = coap_decode_var_bytes(indication_pdu->hdr->token, indication_pdu->hdr->token_length);
     
-    if( indication_pdu->hdr->code == COAP_RESPONSE_205_CONTENT )
+    if( indication_pdu->hdr->code == COAP_RESPONSE_CODE(205)) // 205 - CONTENT
     {
         message.status = ClientErrors::None;
     }
-    else if( indication_pdu->hdr->code == COAP_RESPONSE_406_NOT_ACCEPTABLE )
+    else if( indication_pdu->hdr->code == COAP_RESPONSE_CODE(406)) // 406 - NOT ACCEPTABLE
     {
         CTILOG_ERROR(dout, "Endpoint indicated Request Not Acceptable for device " << endpointId);
 
@@ -109,10 +109,10 @@ E2eDataTransferProtocol::EndpointMessage E2eDataTransferProtocol::handleIndicati
     }
     else
     {
-        CTILOG_DEBUG(dout, "Unexpected response code " << COAP_CODE(indication_pdu->hdr->code) << " for rfnIdentifier " << endpointId);
+        CTILOG_DEBUG(dout, "Unexpected response code " << COAP_RESPONSE_CODE(indication_pdu->hdr->code) << " for rfnIdentifier " << endpointId);
 
         message.status =
-            indication_pdu->hdr->code >= COAP_RESPONSE_400_BAD_REQUEST
+            indication_pdu->hdr->code >= COAP_RESPONSE_400 // 400 - BAD REQUEST
                 ? ClientErrors::E2eBadRequest
                 : ClientErrors::None;
     }
@@ -220,7 +220,7 @@ std::vector<unsigned char> E2eDataTransferProtocol::sendBlockContinuation(const 
 
 std::vector<unsigned char> E2eDataTransferProtocol::sendAck(const unsigned short id)
 {
-    scoped_pdu_ptr ack_pdu(coap_pdu_init(COAP_MESSAGE_ACK, COAP_EMPTY_MESSAGE_CODE, id, COAP_MAX_PDU_SIZE));
+    scoped_pdu_ptr ack_pdu(coap_pdu_init(COAP_MESSAGE_ACK, COAP_RESPONSE_CODE(0), id, COAP_MAX_PDU_SIZE)); // 0 - EMPTY MESSAGE
 
     const unsigned char *raw_pdu = reinterpret_cast<const unsigned char *>(ack_pdu->hdr);
 

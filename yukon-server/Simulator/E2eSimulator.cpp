@@ -188,7 +188,7 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
                                 replyPacket.id = e2edtRequest->id;
                                 replyPacket.token = e2edtRequest->token;
                                 replyPacket.payload = buildRfnResponse(e2edtRequest->payload, requestMsg.applicationServiceId, requestMsg.rfnIdentifier);
-                                replyPacket.status = COAP_RESPONSE_205_CONTENT;
+                                replyPacket.status = COAP_RESPONSE_CODE(205); // 205 - CONTENT
 
                                 e2edtReply = buildE2eDtReplyPayload(replyPacket);
                             }
@@ -319,7 +319,7 @@ std::vector<unsigned char> E2eSimulator::buildE2eDtReplyPayload(const e2edt_pack
 
 std::vector<unsigned char> E2eSimulator::buildE2eRequestNotAcceptable(unsigned id, unsigned long token) const
 {
-    Protocols::scoped_pdu_ptr reply_pdu(coap_pdu_init(COAP_MESSAGE_ACK, COAP_RESPONSE_406_NOT_ACCEPTABLE, id, COAP_MAX_PDU_SIZE));
+    Protocols::scoped_pdu_ptr reply_pdu(coap_pdu_init(COAP_MESSAGE_ACK, COAP_RESPONSE_CODE(406), id, COAP_MAX_PDU_SIZE)); // 406 - NOT ACCEPTABLE
 
     //  add token to reply
     unsigned char reply_token_buf[4];
