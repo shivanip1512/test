@@ -99,10 +99,11 @@ void PointResponse::updateDelta(long nInAvg, double value, const std::string & i
 
         double new_nInAvg = nInAvg != 0 ? nInAvg:1;
         double fabsy = std::fabs(_preOpValue - value);
-        double delta = ((_delta*(new_nInAvg - 1.0 )) + fabsy) / new_nInAvg;
 
-        if ( delta <= maxDelta )
+        if ( fabsy <= maxDelta )
         {
+            double delta = ((_delta*(new_nInAvg - 1.0 )) + fabsy) / new_nInAvg;
+
             CTILOG_INFO( dout, identifier << " to Point ID: " << _pointId << " -- delta voltage updated from: "
                                 << _delta << " to " << delta << " with N: " << new_nInAvg );
 
@@ -110,7 +111,7 @@ void PointResponse::updateDelta(long nInAvg, double value, const std::string & i
         }
         else
         {
-            CTILOG_WARN( dout, identifier << " to Point ID: " << _pointId << " -- calculated delta voltage: " << delta
+            CTILOG_WARN( dout, identifier << " to Point ID: " << _pointId << " -- instantaneous delta voltage: " << fabsy
                                 <<  " exceeds maximum allowable: " << maxDelta << " -- Aborting Delta voltage update." );
         }
     }
