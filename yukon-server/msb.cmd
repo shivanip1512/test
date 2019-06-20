@@ -20,6 +20,7 @@ set conf=/p:Configuration=Release
 set plat=/p:Platform=Win32
 set mp=/m:8
 set verbose=/v:m
+set nonodereuse=/nodeReuse:false
 
 for %%x in (%*) do (
   if "%%x" == "clean" set clean=/t:clean
@@ -35,7 +36,7 @@ for %%x in (%*) do (
   if "%%x" == "diag" set verbose=/v:diag
 )
 
-msbuild yukon-server.sln %conf% %plat% %mp% %verbose% %clean% 
+msbuild yukon-server.sln %conf% %plat% %mp% %verbose% %clean% %nonodereuse%
 set rc=%ERRORLEVEL%
 
 if not "%clean%" == "" (
