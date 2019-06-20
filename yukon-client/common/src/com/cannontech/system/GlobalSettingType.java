@@ -10,11 +10,13 @@ import com.cannontech.clientutils.ClientApplicationRememberMe;
 import com.cannontech.common.config.SmtpEncryptionType;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
+import com.cannontech.system.GlobalSettingTypeValidators.TypeValidator;
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSetMultimap;
@@ -27,7 +29,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     DEFAULT_AUTH_TYPE(GlobalSettingSubCategory.AUTHENTICATION, InputTypeFactory.enumType(AuthenticationCategory.class), AuthenticationCategory.ENCRYPTED),  //Is this ENUM correct? Or should it be AuthType?
 
     // Authentication > Radius (only enabled when DEFAULT_AUTH_TYPE = RADIUS)
-    SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1"),
+    SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1", GlobalSettingTypeValidators.ipHostNameValidator),
     AUTH_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 1812),
     ACCT_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 1813),
     SECRET_KEY(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "cti"),
@@ -37,14 +39,14 @@ public enum GlobalSettingType implements DisplayableEnum {
     LDAP_DN(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "dc=example,dc=com"),
     LDAP_USER_SUFFIX(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "ou=users"),
     LDAP_USER_PREFIX(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "uid="),
-    LDAP_SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1"),
+    LDAP_SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1", GlobalSettingTypeValidators.ipHostNameValidator),
     LDAP_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 389),
     LDAP_SERVER_TIMEOUT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 30),
     LDAP_SSL_ENABLED(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),
 
     // Authentication > Active Directory (only enabled when DEFAULT_AUTH_TYPE = AD)
-    AD_SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1"),
-    AD_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "389"), // stringType because space separated listed of ints is allowed
+    AD_SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1", GlobalSettingTypeValidators.ipHostNameValidator),
+    AD_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "389", GlobalSettingTypeValidators.portValidator), // stringType because space separated listed of ints is allowed
     AD_SERVER_TIMEOUT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 30),
     AD_NTDOMAIN(GlobalSettingSubCategory.AUTHENTICATION, stringType(), null),
     AD_SSL_ENABLED(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),
@@ -86,16 +88,16 @@ public enum GlobalSettingType implements DisplayableEnum {
     OADR_OPEN_ENDED_CONTROL_DURATION(GlobalSettingSubCategory.OPEN_ADR, stringType(), null),
 
     // Yukon Services
-    JMS_BROKER_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "localhost"),
+    JMS_BROKER_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "localhost", GlobalSettingTypeValidators.ipHostNameValidator),
     JMS_BROKER_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), 61616),
-    SMTP_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),
+    SMTP_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null, GlobalSettingTypeValidators.ipHostNameValidator),
     SMTP_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), null),
     SMTP_USERNAME(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),
     SMTP_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),
     SMTP_ENCRYPTION_TYPE(GlobalSettingSubCategory.YUKON_SERVICES, InputTypeFactory.enumType(SmtpEncryptionType.class), SmtpEncryptionType.NONE),
-    MAIL_FROM_ADDRESS(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "yukon@eaton.com"),
-    NETWORK_MANAGER_ADDRESS(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "http://127.0.0.1:8081/nmclient/"),
-    RFN_FIRMWARE_UPDATE_SERVER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "https://127.0.0.1:8443/updateserver/latest/"),
+    MAIL_FROM_ADDRESS(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "yukon@eaton.com", GlobalSettingTypeValidators.emailValidator),
+    NETWORK_MANAGER_ADDRESS(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "http://127.0.0.1:8081/nmclient/", GlobalSettingTypeValidators.urlValidator),
+    RFN_FIRMWARE_UPDATE_SERVER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "https://127.0.0.1:8443/updateserver/latest/", GlobalSettingTypeValidators.urlValidator),
     RFN_FIRMWARE_UPDATE_SERVER_USER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "gateway"),
     RFN_FIRMWARE_UPDATE_SERVER_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "gwupdate"),
 
@@ -109,15 +111,15 @@ public enum GlobalSettingType implements DisplayableEnum {
     RF_BROADCAST_PERFORMANCE(GlobalSettingSubCategory.DR, InputTypeFactory.enumType(OnOff.class), OnOff.OFF),
     ECOBEE_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
     ECOBEE_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
-    ECOBEE_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://api.ecobee.com/1/"),
+    ECOBEE_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://api.ecobee.com/1/", GlobalSettingTypeValidators.urlValidator),
     ECOBEE_SEND_NOTIFICATIONS(GlobalSettingSubCategory.DR, booleanType(), false),
     HONEYWELL_WIFI_SERVICE_BUS_QUEUE(GlobalSettingSubCategory.DR, stringType(), null),
     HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING(GlobalSettingSubCategory.DR, stringType(), null),
-    HONEYWELL_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://qtccna.honeywell.com/TrueHomeStage/"),
+    HONEYWELL_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://qtccna.honeywell.com/TrueHomeStage/", GlobalSettingTypeValidators.urlValidator),
     HONEYWELL_APPLICATIONID(GlobalSettingSubCategory.DR, stringType(), null),
     HONEYWELL_CLIENTID(GlobalSettingSubCategory.DR, stringType(), null),
     HONEYWELL_SECRET(GlobalSettingSubCategory.DR, stringType(), null),
-    ITRON_HCM_API_URL(GlobalSettingSubCategory.DR, stringType(), null),
+    ITRON_HCM_API_URL(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.urlValidator),
     ITRON_HCM_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_HCM_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_HCM_DATA_COLLECTION_HOURS(GlobalSettingSubCategory.DR, integerType(), 4),
@@ -126,7 +128,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
     GOOGLE_ANALYTICS_TRACKING_IDS(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),
     YUKON_EXTERNAL_URL(GlobalSettingSubCategory.WEB_SERVER, stringType(), "http://127.0.0.1:8080"),
-    YUKON_INTERNAL_URL(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),
+    YUKON_INTERNAL_URL(GlobalSettingSubCategory.WEB_SERVER, stringType(), null, GlobalSettingTypeValidators.urlValidator),
     
     // Data Import/Export (previously Billing)
     WIZ_ACTIVATE(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, booleanType(), false),
@@ -150,16 +152,16 @@ public enum GlobalSettingType implements DisplayableEnum {
     // This may eventually be a "Device" setting, just just "AMR", This is to disable "route lookup" during the OLD bulk importer process; reduces comms
     BULK_IMPORTER_COMMUNICATIONS_ENABLED(GlobalSettingSubCategory.AMI, booleanType(), true),
     PRESERVE_ENDPOINT_LOCATION(GlobalSettingSubCategory.AMI, booleanType(), true),
-    RFN_INCOMING_DATA_TIMESTAMP_LIMIT(GlobalSettingSubCategory.AMI, integerType(), 6),
+    RFN_INCOMING_DATA_TIMESTAMP_LIMIT(GlobalSettingSubCategory.AMI, 6, Range.inclusive(0, 240)),
     STATUS_POINT_MONITOR_NOTIFICATION_LIMIT(GlobalSettingSubCategory.AMI, integerType(), 1),
 
     // Misc.
-    SYSTEM_TIMEZONE(GlobalSettingSubCategory.MISC, stringType(), null),
+    SYSTEM_TIMEZONE(GlobalSettingSubCategory.MISC, stringType(), null, GlobalSettingTypeValidators.timezoneValidator),
     ALERT_TIMEOUT_HOURS(GlobalSettingSubCategory.MISC, integerType(), 168),
     DATABASE_MIGRATION_FILE_LOCATION(GlobalSettingSubCategory.MISC, stringType(), "/Server/Export/"),
     TEMP_DEVICE_GROUP_DELETION_IN_DAYS(GlobalSettingSubCategory.MISC, integerType(), 7),
-    HTTP_PROXY(GlobalSettingSubCategory.MISC, stringType(), "none"),
-    CONTACT_EMAIL(GlobalSettingSubCategory.MISC, stringType(), "EAS-Support@Eaton.com"),
+    HTTP_PROXY(GlobalSettingSubCategory.MISC, stringType(), "none", GlobalSettingTypeValidators.urlValidator),
+    CONTACT_EMAIL(GlobalSettingSubCategory.MISC, stringType(), "EAS-Support@Eaton.com", GlobalSettingTypeValidators.emailValidator),
     CONTACT_PHONE(GlobalSettingSubCategory.MISC, stringType(), "1-800-815-2258"),
     SCHEDULED_REQUEST_MAX_RUN_HOURS(GlobalSettingSubCategory.MISC, integerType(), 23),
     PRODUCER_WINDOW_SIZE(GlobalSettingSubCategory.MISC, integerType(), 1024),
@@ -181,7 +183,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     CALL_PREFIX(GlobalSettingSubCategory.VOICE, stringType(), null),
     
     // Dashboard Widgets
-    DATA_AVAILABILITY_WINDOW_IN_DAYS(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 3),
+    DATA_AVAILABILITY_WINDOW_IN_DAYS(GlobalSettingSubCategory.DASHBOARD_WIDGET, 3, Range.inclusive(1, 7)),
     GATEWAY_CONNECTION_WARNING_MINUTES(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 60),
     GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 3500),
     GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 5000),
@@ -199,8 +201,10 @@ public enum GlobalSettingType implements DisplayableEnum {
 
     private static final ImmutableSetMultimap<GlobalSettingSubCategory, GlobalSettingType> categoryMapping;
     private final InputType<?> type;
-    private final  Object defaultValue;
-    private final  GlobalSettingSubCategory category;
+    private final Object defaultValue;
+    private final GlobalSettingSubCategory category;
+    private final Object validationValue;
+    private final TypeValidator validator; 
     private final static ImmutableList<GlobalSettingType> sensitiveSettings;
 
     static {
@@ -226,15 +230,44 @@ public enum GlobalSettingType implements DisplayableEnum {
             SMTP_PASSWORD,
             ITRON_HCM_USERNAME,
             ITRON_HCM_PASSWORD);
-
-    }
+        }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {
         this.type = type;
         this.category = category;
         this.defaultValue = defaultValue;
+        this.validator = null;
+        this.validationValue = null;
+    }
+    
+    private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue, TypeValidator validator) {
+        this.type = type;
+        this.category = category;
+        this.defaultValue = defaultValue;
+        this.validator = validator;
+        this.validationValue = null;
     }
 
+/*  TODO  
+    private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue, TypeValidator validator, Object validationValue) {
+        this.type = type;
+        this.category = category;
+        this.defaultValue = defaultValue;
+        this.validator = validator;
+        this.validationValue = validationValue;
+    }
+*/
+    /**
+     * Constructor for integerType
+     */
+    private GlobalSettingType(GlobalSettingSubCategory category, Integer defaultValue, Range<Integer> integerRange) {
+        this.type = integerType();
+        this.category = category;
+        this.defaultValue = defaultValue;
+        this.validator = GlobalSettingTypeValidators.integerRangeValidator;
+        this.validationValue = integerRange;
+    }
+    
     public InputType<?> getType() {
         return type;
     }
@@ -249,6 +282,14 @@ public enum GlobalSettingType implements DisplayableEnum {
 
     public GlobalSettingSubCategory getCategory() {
         return category;
+    }
+    
+    public TypeValidator getValidator() {
+        return validator;
+    }
+    
+    public Object getValidationValue() {
+        return validationValue;
     }
 
     @Override

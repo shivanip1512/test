@@ -26,6 +26,7 @@
     <entry key="yukon.web.error.isNotPositiveInt">Must be a positive whole number.</entry>
     <entry key="yukon.web.error.exceedsMaximumLength">Exceeds maximum length of {0}.</entry>
     <entry key="yukon.web.error.outOfRange">Must be between {0} and {1}.</entry>
+    <entry key="yukon.web.error.outOfRangeObject">Must be &gt;{0,choice,0#|1#=} {1} and &lt;{2,choice,0#|1#=} {3}.</entry>
     <entry key="yukon.web.error.fieldErrorExists">Error found, check fields.</entry>
     <entry key="yukon.web.error.fieldErrorsExist">Errors found, check fields.</entry>
     <entry key="yukon.web.error.i18nKeyMissing">An internationalized key is missing: {0}</entry>

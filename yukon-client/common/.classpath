@@ -544,6 +544,7 @@
 	<classpathentry kind="lib" path="/third-party/azure-svc-mgmt-websites-0.9.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/azure-tracing-util-0.9.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-lang-2.6.jar"/>
+	<classpathentry kind="lib" path="/third-party/commons-validator-1.4.0.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/gson-1.7.2.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>

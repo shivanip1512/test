@@ -11,6 +11,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.ValidationUtils;
 
+import com.cannontech.common.util.Range;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -155,6 +156,25 @@ public class YukonValidationUtils extends ValidationUtils {
         if (required && (fieldValue.compareTo(min) < 0 || fieldValue.compareTo(max) > 0)) {
             errors.rejectValue(field, "yukon.web.error.outOfRange", new Object[] { min, max }, "Must be between " + min
                 + " and " + max + ".");
+        }
+    }
+
+    /**
+     * Check to ensure that the given value is within the given range, checking inclusive/exclusive based off Range.
+     */
+    public static <T extends Comparable<T>> void checkRange(Errors errors, String field, T fieldValue, Range<T> range, boolean required) {
+        if (fieldValue == null) {
+            if (required) {
+                errors.rejectValue(field, "yukon.web.error.required", "Field is required");
+            }
+            return;
+        }
+
+        if (required && !range.intersects(fieldValue)) {
+            // using outOfRange for error message, could improve to something that better explains any inclusive/exclusive requirements as well
+            errors.rejectValue(field, "yukon.web.error.outOfRangeObject", new Object[] { range.isIncludesMinValue() ? 1 : 0, range.getMin(),
+                                                                                         range.isIncludesMaxValue() ? 1 : 0, range.getMax() },
+                                                                                         "Must be " + range.toString() + ".");
         }
     }
 
