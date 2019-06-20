@@ -3,7 +3,6 @@ package com.cannontech.loadcontrol.dao;
 import java.util.Date;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.joda.time.ReadableInstant;
 
 import com.cannontech.core.dao.NotFoundException;
@@ -93,5 +92,4 @@ public interface LoadControlProgramDao {
      */
     public int getGearNumberForGearName(int programId, String gearName) throws NotFoundException;
 
-    public List<LmProgramGearHistory> getProgramsHistoryDetail(DateTime from, DateTime to);
 }

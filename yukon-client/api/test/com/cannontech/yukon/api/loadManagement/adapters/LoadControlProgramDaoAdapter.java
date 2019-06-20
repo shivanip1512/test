@@ -3,11 +3,9 @@ package com.cannontech.yukon.api.loadManagement.adapters;
 import java.util.Date;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.joda.time.ReadableInstant;
 
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.loadcontrol.dao.LmProgramGearHistory;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
@@ -64,11 +62,6 @@ public class LoadControlProgramDaoAdapter implements LoadControlProgramDao {
 
     @Override
     public int getGearNumberForGearName(int programId, String gearName) throws NotFoundException {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-
-    @Override
-    public List<LmProgramGearHistory> getProgramsHistoryDetail(DateTime from, DateTime to) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 

@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
@@ -311,20 +310,4 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         }
     }
 
-    @Override
-    public List<LmProgramGearHistory> getProgramsHistoryDetail(DateTime from, DateTime to) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT");
-        sql.append("lmph.ProgramId,");
-        sql.append("lmph.ProgramName,");
-        sql.append("lmpgh.*");
-        sql.append("FROM LMProgramGearHistory lmpgh");
-        sql.append("JOIN LMProgramHistory lmph ON (lmpgh.LMProgramHistoryId = lmph.LMProgramHistoryId)");
-        sql.append("WHERE lmpgh.EventTime").gte(from);
-        sql.append("AND lmpgh.EventTime").lt(to);
-        sql.append("ORDER BY lmpgh.EventTime desc");
-
-        List<LmProgramGearHistory> programsHistoryDetails = jdbcTemplate.query(sql, new LmProgramGearHistoryMapper());
-        return programsHistoryDetails;
-    }
 }
