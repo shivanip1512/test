@@ -1,5 +1,7 @@
 package com.cannontech.amr.rfn.message.status.type;
 
+import java.util.Arrays;
+
 /**
  * The RF node records a status mark for demand reset. The status value may be one of the following:
  * <ul>
@@ -12,8 +14,33 @@ package com.cannontech.amr.rfn.message.status.type;
  * Demand reset code 0 ({@link #SCHEDULED}) is not applicable for demand resets initiated by Yukon.
  */
 public enum DemandResetStatusCode {
-    SUCCESS,
-    SCHEDULED,
-    FAILED,
-    NOT_SUPPORTED,
+    SUCCESS(0),
+    SCHEDULED(1),
+    FAILED(2),
+    NOT_SUPPORTED(3),
+    ;
+    private int demandResetStatusCodeID;
+
+    private DemandResetStatusCode(int demandResetStatusCodeID) {
+        this.demandResetStatusCodeID = demandResetStatusCodeID;
+    }
+
+    public int getDemandResetStatusCodeID() {
+        return demandResetStatusCodeID;
+    }
+
+    /**
+     * @param demandResetStatusCodeID
+     * @return The {@link DemandResetStatusCode} that corresponds with the given
+     *         demandResetStatusCodeID.
+     * 
+     * @throws IllegalArgumentException if no {@link DemandResetStatusCode}
+     *             can be found for the given demandResetStatusCodeID.
+     */
+    public static DemandResetStatusCode valueOf(int demandResetStatusCodeID) {
+        return Arrays.stream(DemandResetStatusCode.values())
+            .filter(d -> d.getDemandResetStatusCodeID() == demandResetStatusCodeID).findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("No enum constant defined for demandResetStatusCodeID "
+                + demandResetStatusCodeID));
+    }
 }
