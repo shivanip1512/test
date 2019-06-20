@@ -31,7 +31,7 @@ import com.cannontech.web.api.ApiRequestHelper;
 public class ApiControllerHelper {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ApiRequestHelper apiRequestHelper;
-    private String webserverURL;
+    private String webserverUrl;
     private static final Logger log = YukonLogManager.getLogger(ApiControllerHelper.class);
     
     /**
@@ -72,10 +72,10 @@ public class ApiControllerHelper {
     }
 
     /**
-     * Set the webserver URL
+     * Set the webserver Url
      */
-    private void setWebserverURL(String webserverURL) {
-        this.webserverURL = webserverURL;
+    private void setWebserverUrl(String webserverUrl) {
+        this.webserverUrl = webserverUrl;
     }
 
     /**
@@ -86,42 +86,42 @@ public class ApiControllerHelper {
     }
 
     /**
-     * Checks for TestConnection and returns the correct hostname:port for next api URLs.
+     * Checks for TestConnection and returns the correct hostname:port for next api Urls.
      * @throws ApiCommunicationException
      */
-    private String getWebServerURL(HttpServletRequest request, YukonUserContext userContext)
+    private String buildWebServerUrl(HttpServletRequest request, YukonUserContext userContext)
             throws ApiCommunicationException {
-        if (StringUtils.isEmpty(webserverURL)) {
+        if (StringUtils.isEmpty(webserverUrl)) {
             String serverPort = Integer.toString(request.getLocalPort());
             String webUrl = "http://127.0.0.1:" + serverPort;
             if (!request.getContextPath().isEmpty()) {
                 webUrl = webUrl + request.getContextPath();
             }
-            HttpStatus responseCode = checkURL(userContext, request, webUrl);
+            HttpStatus responseCode = checkUrl(userContext, request, webUrl);
             if (responseCode != HttpStatus.OK) {
                 if (!getYukonInternalUrl().isEmpty()) {
                     webUrl = getYukonInternalUrl();
-                    responseCode = checkURL(userContext, request, webUrl);
+                    responseCode = checkUrl(userContext, request, webUrl);
                 }
             }
             if (responseCode == HttpStatus.OK) {
-                setWebserverURL(webUrl);
+                setWebserverUrl(webUrl);
             } else {
                 throw new ApiCommunicationException("Error while communicating with Api.");
             }
         }
-        return webserverURL;
+        return webserverUrl;
     }
 
     /**
-     * Check the connection with given URL and return the status
+     * Check the connection with given Url and return the status
      */
-    private HttpStatus checkURL(YukonUserContext userContext, HttpServletRequest request, String webUrl) {
+    private HttpStatus checkUrl(YukonUserContext userContext, HttpServletRequest request, String webUrl) {
         try {
-            String testConnectionURL = webUrl + "/api/test";
-            log.info("Checking the Api communication with URL: " + testConnectionURL);
+            String testConnectionUrl = webUrl + "/api/test";
+            log.info("Checking the Api communication with URL: " + testConnectionUrl);
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request,
-                testConnectionURL, HttpMethod.GET, String.class);
+                testConnectionUrl, HttpMethod.GET, String.class);
             return response.getStatusCode();
         } catch (RestClientException ex) {
             log.error("Error communicating with Api. " + ex.getMessage());
@@ -130,10 +130,10 @@ public class ApiControllerHelper {
     }
 
     /**
-     * Generate dynamic URL for API calls
+     * Generate dynamic Url for API calls
      */
-    public String findWebServerURL(HttpServletRequest request, YukonUserContext userContext, String suffixURL)
+    public String findWebServerUrl(HttpServletRequest request, YukonUserContext userContext, String suffixUrl)
             throws ApiCommunicationException {
-        return getWebServerURL(request, userContext) + "/api" + suffixURL;
+        return buildWebServerUrl(request, userContext) + "/api" + suffixUrl;
     }
 }
