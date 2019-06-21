@@ -31,7 +31,7 @@ import com.cannontech.web.api.ApiRequestHelper;
 public class ApiControllerHelper {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ApiRequestHelper apiRequestHelper;
-    private String webserverUrl;
+    private String webServerUrl;
     private static final Logger log = YukonLogManager.getLogger(ApiControllerHelper.class);
     
     /**
@@ -72,10 +72,10 @@ public class ApiControllerHelper {
     }
 
     /**
-     * Set the webserver Url
+     * Set the WebServer Url
      */
-    private void setWebserverUrl(String webserverUrl) {
-        this.webserverUrl = webserverUrl;
+    private void setWebServerUrl(String webServerUrl) {
+        this.webServerUrl = webServerUrl;
     }
 
     /**
@@ -91,7 +91,7 @@ public class ApiControllerHelper {
      */
     private String buildWebServerUrl(HttpServletRequest request, YukonUserContext userContext)
             throws ApiCommunicationException {
-        if (StringUtils.isEmpty(webserverUrl)) {
+        if (StringUtils.isEmpty(webServerUrl)) {
             String serverPort = Integer.toString(request.getLocalPort());
             String webUrl = "http://127.0.0.1:" + serverPort;
             if (!request.getContextPath().isEmpty()) {
@@ -105,12 +105,12 @@ public class ApiControllerHelper {
                 }
             }
             if (responseCode == HttpStatus.OK) {
-                setWebserverUrl(webUrl);
+                setWebServerUrl(webUrl);
             } else {
                 throw new ApiCommunicationException("Error while communicating with Api.");
             }
         }
-        return webserverUrl;
+        return webServerUrl;
     }
 
     /**
