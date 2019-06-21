@@ -618,7 +618,7 @@
     <entry key="yukon.web.modules.dev.sftp.sftpTest.pageName">SFTP Test</entry>
     <entry key="yukon.web.modules.dev.sftp.sftpTest.title">SFTP Test</entry>
     <entry key="yukon.web.modules.dev.sftp.sftpTest.helpText"><![CDATA[This page is used for testing an sftp server. 
-    The example is populated with a public test server. 
+    The example is populated with a public test server. The file is downloaded into the local Yukon Folder. 
     Please visit https://www.wftpserver.com/onlinedemo.htm for further details]]></entry>
     <entry key="yukon.web.modules.dev.domain">Domain</entry>
     <entry key="yukon.web.modules.dev.port">Port</entry>
