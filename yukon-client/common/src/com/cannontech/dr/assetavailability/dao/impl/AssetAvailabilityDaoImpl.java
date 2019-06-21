@@ -85,13 +85,13 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlCommon.append("FROM ApplianceCategory");
         sqlCommon.append("WHERE ApplianceCategoryId=appbase.ApplianceCategoryID) AS appliances,");
         sqlCommon.append("inv.DeviceId AS deviceid,lmbase.InventoryID AS inventoryid, lmbase.ManufacturerSerialNumber "
-            + "AS serial_num, drdd.GatewayId AS gateway_id, ypo.PAOName AS gateway_name,");
+            + "AS serial_num, drdd.GatewayId AS gateway_id, gatewayPao.PAOName AS gateway_name,");
         sqlCommon.appendFragment(buildAssetAvailabilityDetailsCommonsql(communicatingWindowEnd, runtimeWindowEnd, currentTime));
         sqlCommon.append("FROM LMHardwareBase lmbase , ApplianceBase appbase,LMHardwareConfiguration hdconf,"
             + "InventoryBase inv");
         sqlCommon.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
         sqlCommon.append("LEFT OUTER JOIN DynamicRfnDeviceData drdd ON (inv.DeviceID=drdd.DeviceId)");
-        sqlCommon.append("LEFT JOIN YukonPAObject ypo ON drdd.GatewayId = ypo.PAObjectID");
+        sqlCommon.append("LEFT JOIN YukonPAObject gatewayPao ON drdd.GatewayId = gatewayPao.PAObjectID");
         sqlCommon.append("WHERE inv.InventoryID=lmbase.InventoryID AND lmbase.InventoryID=hdconf.InventoryID");
         sqlCommon.append("AND hdconf.ApplianceID=appbase.ApplianceID");
         sqlCommon.append("AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
@@ -336,13 +336,13 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlCommon.append("FROM ");
         sqlCommon.append("(SELECT DISTINCT ");
         sqlCommon.append("inv.DeviceId AS deviceid, lmbase.InventoryID AS inventoryid, lmbase.ManufacturerSerialNumber "
-            + "AS serial_num, drdd.GatewayId AS gateway_id, ypo.PAOName AS gateway_name,");
+            + "AS serial_num, drdd.GatewayId AS gateway_id, gatewayPao.PAOName AS gateway_name,");
         sqlCommon.appendFragment(buildAssetAvailabilityDetailsCommonsql(communicatingWindowEnd, runtimeWindowEnd, currentTime));
         sqlCommon.append("FROM LMHardwareBase lmbase, LMHardwareConfiguration hdconf,"
             + "InventoryBase inv");
         sqlCommon.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
         sqlCommon.append("LEFT OUTER JOIN DynamicRfnDeviceData drdd ON (inv.DeviceID=drdd.DeviceId)");
-        sqlCommon.append("LEFT JOIN YukonPAObject ypo ON drdd.GatewayId = ypo.PAObjectID");
+        sqlCommon.append("LEFT JOIN YukonPAObject gatewayPao ON drdd.GatewayId = gatewayPao.PAObjectID");
         sqlCommon.append("WHERE inv.InventoryID=lmbase.InventoryID AND lmbase.InventoryID=hdconf.InventoryID");
         sqlCommon.append("AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
         sqlCommon.append("WHERE AddressingGroupID").in(loadGroupIds);
