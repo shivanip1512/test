@@ -85,5 +85,52 @@ public class StringUtilsTest {
         assertEquals("123456789", result);
         assertTrue(result.length() <= maxSize);
     }
+
+    @Test
+    public void isValidString_with_no_repeat() {
+        String testValue = "ADBC";
+        String pattern = "ABCD";
+        boolean result = StringUtils.isStringMatchesWithPattern(testValue, pattern, false);
+        assertTrue(result);
+    }
+
+    @Test
+    public void isValidString_with_no_repeat_2() {
+        String testValue = "ABBC";
+        String pattern = "ABCD";
+        boolean result = StringUtils.isStringMatchesWithPattern(testValue, pattern, false);
+        assertTrue(result == false);
+    }
+
+    @Test
+    public void isValidString_with_no_repeat_invalid() {
+        String testValue = "ABX";
+        String pattern = "ABCD";
+        boolean result = StringUtils.isStringMatchesWithPattern(testValue, pattern, false);
+        assertTrue(result == false);
+    }
+
+    @Test
+    public void isValidString_with_repeat() {
+        String testValue = "ABBC";
+        String pattern = "ABCD";
+        boolean result = StringUtils.isStringMatchesWithPattern(testValue, pattern, true);
+        assertTrue(result);
+    }
     
+    @Test
+    public void isformatString_valid_string() {
+        String testValue = "DAC";
+        String pattern = "ABCD";
+        String result = StringUtils.formatStringWithPattern(testValue, pattern);
+        assertTrue(result.equals("ACD"));
+    }
+
+    @Test
+    public void isformatString_Valid_number() {
+        String testValue = "513";
+        String pattern = "12345";
+        String result = StringUtils.formatStringWithPattern(testValue, pattern);
+        assertTrue(result.equals("135"));
+    }
 }

@@ -224,4 +224,47 @@ public final class StringUtils {
         
     }
     
+    /**
+     * Return true if value contain elements only from pattern else false.
+     * @param isRepetationAllowed : Set true if str can contain elements more than one (element frequency > 1) else false.
+     */
+    public static boolean isStringMatchesWithPattern(String str, String pattern, boolean isRepetationAllowed) {
+        String newString = org.apache.commons.lang3.StringUtils.EMPTY;
+        if (str.equals(pattern)) {
+            return true;
+        } else if (str.length() > pattern.length() && !isRepetationAllowed) {
+            // Invalid Value.
+            return false;
+        } else {
+            for (int i = 0; i < str.length(); i++) {
+                if (pattern.contains(Character.toString(str.charAt(i)))) {
+                    if (!isRepetationAllowed) {
+                        if (newString.contains(Character.toString(str.charAt(i)))) {
+                            return false;
+                        }
+                        newString += Character.toString(str.charAt(i));
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+        // If you are here, that mean you have crossed all the levels hence return true.
+        return true;
+    }
+    
+    /**
+     * Arrange the elements of str as per the elements order in pat.
+     * Example : If str = "ADC" and pat = "ABCD". Return ACD (Elements order as per the pat)
+     */
+    public static String formatStringWithPattern(String str, String pat) {
+        String formatedString = org.apache.commons.lang3.StringUtils.EMPTY;
+        for (int i = 0; i < pat.length(); i++) {
+            if (str.contains(Character.toString(pat.charAt(i)))) {
+                formatedString += Character.toString(pat.charAt(i));
+            }
+        }
+        return formatedString;
+    }
+    
 }

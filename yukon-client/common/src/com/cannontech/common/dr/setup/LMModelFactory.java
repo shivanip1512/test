@@ -21,6 +21,9 @@ public class LMModelFactory {
         case LM_GROUP_RFN_EXPRESSCOMM:
             loadGroup = new LoadGroupExpresscom();
             break;
+        case LM_GROUP_VERSACOM:
+            loadGroup = new LoadGroupVersacom();
+            break;
         case LM_GROUP_DIGI_SEP:
             loadGroup = new LoadGroupDigiSep();
             break;
