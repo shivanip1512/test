@@ -3,6 +3,7 @@ package com.cannontech.web.dev;
 import java.beans.PropertyEditor;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -60,6 +61,7 @@ import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnParentReplyType;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedDataStreamingSettings;
@@ -70,6 +72,7 @@ import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.development.model.DeviceArchiveRequestParameters;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
 import com.cannontech.development.service.RfnEventTestingService;
@@ -486,6 +489,21 @@ public class NmIntegrationController {
     public String viewLcrReadArchiveRequest(ModelMap model) {
         model.addAttribute("drReports", DRReport.values());
         return "rfn/viewLcrReadArchive.jsp";
+    }
+    
+    @RequestMapping("viewDeviceArchiveRequest")
+    public String viewDeviceArchiveRequest(ModelMap model) {
+        model.addAttribute("deviceArchiveParameters", new DeviceArchiveRequestParameters());
+        model.addAttribute("meterModels", rfnEventTestingService.getGroupedRfnTypes());
+        model.addAttribute("rfnLcrModels", RfnManufacturerModel.getRfnLcrModels());
+        model.addAttribute("rfDaModels", new ArrayList<String>(Arrays.asList("CBC-8000", "RECL-F4D", "VR-CL7")));
+        return "rfn/deviceArchive.jsp";
+    }
+    
+    @RequestMapping("sendDeviceArchiveRequest")
+    public String sendDeviceArchiveRequest(@ModelAttribute DeviceArchiveRequestParameters deviceArchiveParameters) {
+        //TODO: add service layer code
+        return "redirect:viewDeviceArchiveRequest";
     }
 
     @RequestMapping("viewLcrArchiveRequest")

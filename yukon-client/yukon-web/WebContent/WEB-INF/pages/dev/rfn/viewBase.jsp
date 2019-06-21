@@ -75,6 +75,7 @@ $(function () { yukon.dev.rfn.init(); });
         <ul class="simple-list stacked">
             <li><a href="viewMeterReadArchiveRequest"><i:inline key=".meterReadArchiveRequest.label"/></a></li>
             <li><a href="viewEventArchiveRequest"><i:inline key=".eventArchiveRequest.label"/></a></li>
+            <li><a href="viewDeviceArchiveRequest"><i:inline key=".deviceArchiveRequest.label"/></a></li>
             <li><a href="viewLcrArchiveRequest"><i:inline key=".lcrArchiveRequest.label"/></a></li>
             <li><a href="viewLcrReadArchiveRequest"><i:inline key=".lcrReadArchiveRequest.label"/></a></li>
             <li><a href="viewLcrDataSimulator"><i:inline key=".lcrDataSimulator.label"/></a></li>

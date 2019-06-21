@@ -15,6 +15,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.database.db.device.RfnAddress;
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 
@@ -116,6 +117,8 @@ public enum RfnManufacturerModel {
     
     //https://jira-prod.tcc.etn.com/browse/YUK-17425
     private static List<Pair<String, String>> manufacturerModel1200 = new ArrayList<>();
+    private final static ImmutableSet<RfnManufacturerModel> rfnLcrModels;
+
     static {
         manufacturerModel1200.add(Pair.of("CPS", "CBC-8000"));
         manufacturerModel1200.add(Pair.of("CPS", "CBC-GEN"));
@@ -128,6 +131,8 @@ public enum RfnManufacturerModel {
         manufacturerModel1200.add(Pair.of("NON-CPS", "VR-GEN"));
         manufacturerModel1200.add(Pair.of("NON-CPS", "RECL-GEN"));
         manufacturerModel1200.add(Pair.of("NON-CPS", "GEN-DA"));
+        
+        rfnLcrModels = ImmutableSet.of(RFN_LCR_6200, RFN_LCR_6600, RFN_LCR_6700);
     }
     
     private PaoType type;
@@ -199,5 +204,9 @@ public enum RfnManufacturerModel {
                 Pair<String, String> newPair = Pair.of(identifier.getSensorManufacturer().toUpperCase(), identifier.getSensorModel().toUpperCase());
                 return pair.equals(newPair);
             });
+    }
+
+    public static ImmutableSet<RfnManufacturerModel> getRfnLcrModels() {
+        return rfnLcrModels;
     }
 }

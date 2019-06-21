@@ -235,6 +235,7 @@
     <entry key="yukon.web.modules.dev.rfnTest.broadcast.label">Send Verification Command</entry>
     <entry key="yukon.web.modules.dev.rfnTest.meterReadArchiveRequest.label">Meter Read Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrReadArchiveRequest.label">LCR Read Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.deviceArchiveRequest.label">Device Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrArchiveRequest.label">LCR Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.label">LCR Data Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.relayArchiveRequest.label">Relay Archive Request</entry>
