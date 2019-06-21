@@ -375,7 +375,13 @@ std::set<long> DatabaseBulkUpdater<ColumnCount>::getRejectedRows(DatabaseConnect
 
 
 template <size_t ColumnCount>
-DatabaseBulkAccumulator<ColumnCount>::DatabaseBulkAccumulator(const DbClientType clientType, TempTableColumns schema, const unsigned primaryKeyCount, const std::string& tempTableName, const std::string& destTableName, const std::string& destIdColumn, const std::string& foreignKeyTableName) 
+DatabaseBulkAccumulator<ColumnCount>::DatabaseBulkAccumulator(const DbClientType  clientType, 
+                                                              TempTableColumns    schema, 
+                                                              const unsigned      primaryKeyCount, 
+                                                              const std::string & tempTableName, 
+                                                              const std::string & destTableName, 
+                                                              const std::string & destIdColumn, 
+                                                              const std::string & foreignKeyTableName) 
     :   DatabaseBulkWriter{ clientType, schema, tempTableName, destTableName },
         _idColumn{ _schema[0].name },
         _primaryKeyColumns{ _schema.begin(), _schema.begin() + primaryKeyCount },

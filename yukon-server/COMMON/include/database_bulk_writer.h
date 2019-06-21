@@ -69,7 +69,13 @@ template <size_t ColumnCount>
 class IM_EX_CTIBASE DatabaseBulkAccumulator : public DatabaseBulkWriter<ColumnCount>
 {
 public:
-    DatabaseBulkAccumulator(const DbClientType clientType, TempTableColumns schema, const unsigned primaryKeyCount, const std::string& tempTableName, const std::string& destTableName, const std::string& destIdColumn, const std::string& foreignKeyTableName);
+    DatabaseBulkAccumulator(const DbClientType  clientType,
+                            TempTableColumns    schema,
+                            const unsigned      primaryKeyCount,
+                            const std::string & tempTableName,
+                            const std::string & destTableName,
+                            const std::string & destIdColumn,
+                            const std::string & foreignKeyTableName);
 
 protected:
     std::string getFinalizeSql() const override;

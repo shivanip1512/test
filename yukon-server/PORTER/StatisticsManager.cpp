@@ -280,7 +280,7 @@ bool StatisticsManager::writeAllRecords( Database::DatabaseConnection & conn )
     {
         auto rejectedRows = ba.writeRows( conn, std::move( rowSources ) );
 
-        if ( rejectedRows.size() > 0 )
+        if ( ! rejectedRows.empty() )
         {
             CTILOG_WARN( dout, "Failed to MERGE statistics records for " << rejectedRows.size() << " devices.");
 
@@ -288,7 +288,7 @@ bool StatisticsManager::writeAllRecords( Database::DatabaseConnection & conn )
 
             for ( const auto & record : tableRecords )
             {
-                if ( rejectedRows.count( record->_pAObjectId ) > 0 )
+                if ( rejectedRows.count( record->_pAObjectId ) )
                 {
                     CTILOG_WARN( dout, "Rejected record: " << *record );
                 }
