@@ -22,6 +22,7 @@ import com.google.common.collect.Maps;
 class SerialLookup {
     static final Logger log = YukonLogManager.getLogger(SerialLookup.class);
 
+    //  TODO - Eventually replace with Trove, http://trove4j.sourceforge.net/html/overview.html 
     private Map<Long, Integer> numericSerials = Maps.newHashMap();
     private PatriciaTrie<Integer> stringSerials = new PatriciaTrie<>();
     
@@ -51,19 +52,13 @@ class SerialLookup {
         }
         return stringSerials.get(serial);
     }
+
     public Stream<Integer> getAll(Iterable<String> serials) {
         return StreamUtils.stream(serials)
                 .map(this::get)
                 .filter(Objects::nonNull);
     }
     
-    /**
-     * Removes an invalidated paoId from the numeric and string caches.
-     */
-    public void remove(Integer invalidatedPaoId) {
-        numericSerials.values().remove(invalidatedPaoId);
-        stringSerials.values().remove(invalidatedPaoId);
-    }
     /**
      * Removes invalidated paoIds from the numeric and string caches.
      */
