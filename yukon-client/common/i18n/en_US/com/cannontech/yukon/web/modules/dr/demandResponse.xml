@@ -75,6 +75,7 @@
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_SA305">SA305 Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_SADIGITAL">SA Digital Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_VERSACOM">Versacom Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_METER_DISCONNECT">Meter Disconnect Group</entry>
 <entry key="yukon.web.modules.dr.paoType.MACRO_GROUP">Macro Group</entry>
 
 <!-- Asset Availability Details -->
