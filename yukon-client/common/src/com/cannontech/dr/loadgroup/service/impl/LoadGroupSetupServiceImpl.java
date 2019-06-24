@@ -2,6 +2,7 @@ package com.cannontech.dr.loadgroup.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.pao.PaoType;
@@ -18,7 +19,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
 
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private IDatabaseCache dbCache;
-    
+
     @Override
     public int save(LoadGroupBase loadGroup) {
         LMGroup lmGroup = getDBPersistent(loadGroup);
@@ -56,22 +57,12 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     }
 
     @Override
-    public int copy(int loadGroupID, String loadGroupName) {
-        LoadGroupBase loadGroup = retrieve(loadGroupID);
-
-        LoadGroupBase newLoadGroup = new LoadGroupBase();
-        newLoadGroup.setName(loadGroupName);
-        newLoadGroup.setType(loadGroup.getType());
-        newLoadGroup.setkWCapacity(loadGroup.getkWCapacity());
-        newLoadGroup.setDisableControl(loadGroup.isDisableControl());
-        newLoadGroup.setDisableGroup(loadGroup.isDisableGroup());
-
-        LMGroup lmGroup = getDBPersistent(newLoadGroup);
-        newLoadGroup.buildDBPersistent(lmGroup);
-
-        dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
-
-        return lmGroup.getPAObjectID();
+    public int copy(int loadGroupId, LMCopy lmCopy) {
+        LoadGroupBase loadGroup = retrieve(loadGroupId);
+        lmCopy.buildModel(loadGroup);
+        LoadGroupBase newLoadGroup = loadGroup;
+        newLoadGroup.setId(null);
+        return save(newLoadGroup);
     }
 
     /**
@@ -85,7 +76,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         }
         return lmGroup;
     }
-    
+
     /**
      * Returns LM Model object 
      */

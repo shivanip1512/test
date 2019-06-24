@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
@@ -29,6 +30,7 @@ public class LoadGroupSetupApiController {
 
     @Autowired LoadGroupSetupService loadGroupService;
     @Autowired LMDeleteValidator lmDeleteValidator;
+    @Autowired LMCopyValidator lmCopyValidator;
     private List<LoadGroupSetupValidator<? extends LoadGroupBase>> validators;
     
     @GetMapping("/{id}")
@@ -45,16 +47,20 @@ public class LoadGroupSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @PostMapping("/copy")
-    public ResponseEntity<Object> copy(@RequestBody LoadGroupBase loadGroup) {
-        int paoId = loadGroupService.copy(loadGroup.getId(), loadGroup.getName());
-        return new ResponseEntity<>(paoId, HttpStatus.OK);
+    @PostMapping("/{id}/copy")
+    public ResponseEntity<Object> copy(@Valid @RequestBody LMCopy lmCopy, @PathVariable int id) {
+        int paoId = loadGroupService.copy(id, lmCopy);
+        HashMap<String, Integer> paoIdMap = new HashMap<>();
+        paoIdMap.put("paoId", paoId);
+        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}/delete")
     public ResponseEntity<Object> delete(@Valid @RequestBody LMDelete lmDelete, @PathVariable int id) {
         int paoId = loadGroupService.delete(id, lmDelete.getName());
-        return new ResponseEntity<>(paoId, HttpStatus.OK);
+        HashMap<String, Integer> paoIdMap = new HashMap<>();
+        paoIdMap.put("paoId", paoId);
+        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
     @InitBinder("loadGroupBase")
@@ -69,6 +75,11 @@ public class LoadGroupSetupApiController {
     @InitBinder("LMDelete")
     public void setupBinderDelete(WebDataBinder binder) {
         binder.addValidators(lmDeleteValidator);
+    }
+
+    @InitBinder("LMCopy")
+    public void setupBinderCopy(WebDataBinder binder) {
+        binder.addValidators(lmCopyValidator);
     }
 
     @Autowired

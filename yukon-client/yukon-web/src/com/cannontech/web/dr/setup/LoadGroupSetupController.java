@@ -166,11 +166,6 @@ public class LoadGroupSetupController {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id + "/delete");
             ResponseEntity<? extends Object> response = deleteGroup(userContext, request, url, lmDelete);
 
-            if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error"));
-                return "redirect:/dr/setup/loadGroup/" + id;
-            }
-
             if (response.getStatusCode() == HttpStatus.OK) {
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.deleted"));
                 return "redirect:/dr/setup/list";
@@ -182,7 +177,7 @@ public class LoadGroupSetupController {
             return "redirect:/dr/setup/list";
         } catch (RestClientException ex) {
             log.error("Error deleting load group: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error"));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", ex.getMessage()));
             return "redirect:/dr/setup/list";
         }
 
@@ -191,8 +186,8 @@ public class LoadGroupSetupController {
 
     @PostMapping("/copy")
     public String copy(@ModelAttribute LoadGroupBase loadGroup, BindingResult result, YukonUserContext userContext,
-            FlashScope flash, RedirectAttributes redirectAttributes, ModelMap model, HttpServletRequest request,
-            HttpServletResponse servletResponse) throws JsonGenerationException, JsonMappingException, IOException {
+            FlashScope flash, ModelMap model, HttpServletRequest request, HttpServletResponse servletResponse)
+            throws IOException {
 
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupCopyUrl);
@@ -221,7 +216,7 @@ public class LoadGroupSetupController {
             return "redirect:/dr/setup/list";
         } catch (RestClientException ex) {
             log.error("Error creating load group: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error"));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", ex.getMessage()));
             return "redirect:/dr/setup/list";
         }
         return null;
@@ -287,7 +282,7 @@ public class LoadGroupSetupController {
     private ResponseEntity<? extends Object> deleteGroup(YukonUserContext userContext, HttpServletRequest request,
             String webserverUrl, LMDelete lmDelete) throws RestClientException {
         ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request,
-            webserverUrl, HttpMethod.DELETE, Integer.class, lmDelete);
+            webserverUrl, HttpMethod.DELETE, Object.class, lmDelete);
         return response;
     }
 

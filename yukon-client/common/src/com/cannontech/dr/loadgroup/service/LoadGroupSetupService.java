@@ -1,5 +1,6 @@
 package com.cannontech.dr.loadgroup.service;
 
+import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 
 public interface LoadGroupSetupService {
@@ -22,5 +23,5 @@ public interface LoadGroupSetupService {
     /**
      * Copy the load group.
      */
-    int copy(int loadGroupID, String loadGroupName);
+    int copy(int loadGroupId, LMCopy lmCopy);
 }

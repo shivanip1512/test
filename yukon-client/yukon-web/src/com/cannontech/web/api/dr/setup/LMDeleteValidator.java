@@ -6,7 +6,6 @@ import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.stars.util.ServletUtils;
 
 public class LMDeleteValidator extends SimpleValidator<LMDelete> {
 
@@ -30,7 +29,5 @@ public class LMDeleteValidator extends SimpleValidator<LMDelete> {
                 errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
             }
         }
-
-        YukonValidationUtils.checkIsBlank(errors, "id", ServletUtils.getPathVariable("id"), false);
     }
 }
