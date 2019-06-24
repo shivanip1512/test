@@ -282,6 +282,8 @@
 <entry key="yukon.common.thousandSeparator">,</entry>
 <entry key="yukon.common.timeOffset">Time Offset</entry>
 <entry key="yukon.common.timeOffsetChoose">Choose Time Offset</entry>
+<entry key="yukon.common.timeOffsetMinError">Time Offset must be greater than or equal to {0}</entry>
+<entry key="yukon.common.timeOffsetMaxError">Time Offset must be less than or equal to {0}</entry>
 <entry key="yukon.common.time.range.HR_1">1 Hour</entry>
 <entry key="yukon.common.time.range.HR_6">6 Hours</entry>
 <entry key="yukon.common.time.range.HR_12">12 Hours</entry>

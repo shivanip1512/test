@@ -252,6 +252,14 @@ yukon.ui.dateTimePickers = function () {
                 $.extend(defaultArgs, timepickerArgs);
                 var timeArgs = _getPickerArgs(self);
                 timeArgs.buttonImage = yukon.url('/WebConfig/yukon/Icons/pencil.png');
+                var minValue = self.data('minValue');
+                if (minValue) {
+                    timeArgs.minTime = minValue;
+                }
+                var maxValue = self.data('maxValue');
+                if (maxValue) {
+                    timeArgs.maxTime = maxValue;
+                }
                 self.timepicker($.extend(defaultArgs, timeArgs));
             }).removeClass('js-timeOffsetPickerUI');
             
@@ -271,9 +279,33 @@ yukon.ui.dateTimePickers = function () {
             $(document).on("change", ".timeOffsetPicker", function(event) {
                 var displayField = $(this),
                     displayValue = displayField.val(),
-                    valueFieldName = displayField.data('value-field');
+                    id = displayField.attr("id"),
+                    minTime = displayField.data('minValue'),
+                    maxTime = displayField.data('maxValue'),
+                    minErrorField = $('.js-' + id + '-min-value-error'),
+                    maxErrorField = $('.js-' + id + '-max-value-error'),
+                    valueFieldName = displayField.data('value-field'),
                     timeFields = displayValue.split(':'),
                     minutes = (+timeFields[0]) * 60 + (+timeFields[1]);
+                minErrorField.addClass('dn');
+                maxErrorField.addClass('dn');
+                if (minTime) {
+                    minTimeFields = minTime.split(':'),
+                    minMinutes = (+minTimeFields[0]) * 60 + (+minTimeFields[1]);
+                    if (minutes < minMinutes) {
+                        minutes = minMinutes;
+                        displayField.val(minTime);
+                        minErrorField.removeClass('dn');
+                    }
+                } if (maxTime) {
+                    maxTimeFields = maxTime.split(':'),
+                    maxMinutes = (+maxTimeFields[0]) * 60 + (+maxTimeFields[1]);
+                    if (minutes > maxMinutes) {
+                        minutes = maxMinutes;
+                        displayField.val(maxTime);
+                        maxErrorField.removeClass('dn');
+                    }
+                }
                 $('input[name=' + valueFieldName + ']').val(minutes);
             });
             

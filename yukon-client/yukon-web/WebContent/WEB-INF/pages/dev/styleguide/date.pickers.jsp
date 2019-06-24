@@ -333,7 +333,7 @@ as well as page edit modes (VIEW, EDIT, CREATE).
 &lt;dt:timeOffset name=&quot;offset&quot; /&gt;
 </pre>
 
-<h2 id="basic-timeoffset-example">Default Value and Step Minute</h2>
+<h2 id="default-value-timeoffset-example">Default Value and Step Minute</h2>
 
 <p class="description">
     A time offset picker with a default value and Step Minute value.
@@ -347,6 +347,22 @@ as well as page edit modes (VIEW, EDIT, CREATE).
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
 &lt;dt:timeOffset name=&quot;offset2&quot; value=&quot;600&quot; stepMinute=&quot;15&quot; /&gt;
+</pre>
+
+<h2 id="min-max-timeoffset-example">Min and Max Value</h2>
+
+<p class="description">
+    A time offset picker with a minimum and maximum value.
+</p>
+<div class="column-4-20 clearfix picker-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <dt:timeOffset name="offset3" minValue="100" maxValue="800"/>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;dt:timeOffset name=&quot;offset3&quot; minValue=&quot;100&quot; maxValue=&quot;800&quot; /&gt;
 </pre>
 
 <br><br>

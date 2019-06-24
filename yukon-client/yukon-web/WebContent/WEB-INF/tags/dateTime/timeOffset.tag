@@ -10,6 +10,8 @@
 <%@ attribute name="id" type="java.lang.String" description="Id of the field in the supplied object." %>
 <%@ attribute name="name" type="java.lang.String" description="Name of the field in the supplied object." %>
 <%@ attribute name="value" type="java.lang.Integer" description="Default: 0. The initial value to display in number of minutes." %>
+<%@ attribute name="minValue" type="java.lang.Integer" description="The minimum value to allow in number of minutes." %>
+<%@ attribute name="maxValue" type="java.lang.Integer" description="The maximum value to allow in number of minutes." %>
 <%@ attribute name="disabled" type="java.lang.Boolean" description="Default: false. Determines if the input is disabled." %>
 <%@ attribute name="cssClass" type="java.lang.String" description="Class added to the input of the widget." %>
 <%@ attribute name="cssDialogClass" type="java.lang.String" description="Class added to the outer dialog div." %>
@@ -44,10 +46,18 @@
         </spring:bind>
     </c:when>
     <c:otherwise>
-        <cti:default var="value" value="${0}"/>
+        <cti:default var="value" value="${!empty minValue ? minValue : 0}"/>
         <cti:formatDate var="displayValue" type="TIME_OFFSET" value="${value}"/>
     </c:otherwise>
 </c:choose>
+
+<c:if test="${!empty minValue}">
+    <cti:formatDate var="minFormattedValue" type="TIME_OFFSET" value="${minValue}"/>
+</c:if>
+<c:if test="${!empty maxValue}">
+    <cti:formatDate var="maxFormattedValue" type="TIME_OFFSET" value="${maxValue}"/>
+</c:if>
+
 
 <cti:msg var="jsDateTimeFormat" key="yukon.common.dateFormatting.TIME24H.js"/>
 
@@ -74,6 +84,8 @@
                         data-hours-text="${hoursText}"
                         data-minutes-text="${minutesText}"
                         data-value-field="${path}"
+                        data-max-value="${maxFormattedValue}"
+                        data-min-value="${minFormattedValue}"
                         autocomplete="off" />
                 </span>
             </cti:displayForPageEditModes>
@@ -104,8 +116,12 @@
                     data-hours-text="${hoursText}"
                     data-minutes-text="${minutesText}"
                     data-value-field="${pageScope.name}"
+                    data-max-value="${maxFormattedValue}"
+                    data-min-value="${minFormattedValue}"
                     autocomplete="off" />
             </span>
         </cti:displayForPageEditModes>
     </c:otherwise>
 </c:choose>
+<span class="error dn js-${id}-min-value-error"><cti:msg2 key="yukon.common.timeOffsetMinError" argument="${minFormattedValue}"/></span>
+<span class="error dn js-${id}-max-value-error"><cti:msg2 key="yukon.common.timeOffsetMaxError" argument="${maxFormattedValue}"/></span>
