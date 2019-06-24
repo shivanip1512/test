@@ -41,7 +41,7 @@
                 <tags:nameValue name="Model" nameClass="js-rfn-lcr dn" valueClass="js-rfn-lcr dn">
                     <select id="js-rfn-lcr-model">
                         <c:forEach var="lcrMm" items="${rfnLcrModels}">
-                            <option value="${lcrMm.model}">${lcrMm.type.paoTypeName}</option>
+                            <option value="${lcrMm.model}">${lcrMm.model}</option>
                         </c:forEach>
                     </select>
                 </tags:nameValue>
