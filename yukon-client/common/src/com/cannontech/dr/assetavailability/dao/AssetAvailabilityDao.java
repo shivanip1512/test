@@ -28,7 +28,7 @@ public interface AssetAvailabilityDao {
         TYPE("TYPE"), 
         LASTCOMM("LAST_COMM"), 
         LASTRUN("LAST_RUN"),
-        GATEWAYID("GATEWAY_ID");
+        GATEWAYNAME("GATEWAY_NAME");
 
         private final String dbString;
 

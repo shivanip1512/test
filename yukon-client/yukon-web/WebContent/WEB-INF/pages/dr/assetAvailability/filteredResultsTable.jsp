@@ -13,7 +13,7 @@
         <th class="row-icon"/>
         <tags:sort column="${SERIAL_NUM}"/>
         <tags:sort column="${TYPE}"/>
-        <tags:sort column="${GATEWAY_ID}"/>
+        <tags:sort column="${GATEWAY_NAME}"/>
         <tags:sort column="${LAST_COMM}"/>
         <tags:sort column="${LAST_RUN}"/>
         <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
@@ -53,9 +53,7 @@
                 </td>
                 <td><i:inline key="${assetAvailabilitySearchResult.type}"/></td>
                 <td>
-                    <cti:url var="gatewayViewUrl" value="/stars/gateways/${assetAvailabilitySearchResult.primaryGateway}">
-                    </cti:url>
-                <a href="${gatewayViewUrl}">${fn:escapeXml(assetAvailabilitySearchResult.gatewayName)}</a>
+                <cti:paoDetailUrl paoId="${assetAvailabilitySearchResult.gatewayId}" newTab="true">${fn:escapeXml(assetAvailabilitySearchResult.gatewayName)}</cti:paoDetailUrl>
                 </td>
                 <td>
                     <cti:formatDate type="BOTH" value="${assetAvailabilitySearchResult.lastComm}" 

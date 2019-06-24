@@ -5,7 +5,7 @@ import com.cannontech.common.inventory.HardwareType;
 
 public class ApplianceAssetAvailabilityDetails {
 
-    private String primaryGateway;
+    private Integer gatewayId;;
     private String gatewayName;
     private String serialNumber;
     private HardwareType type;
@@ -22,12 +22,12 @@ public class ApplianceAssetAvailabilityDetails {
         this.gatewayName = gatewayName;
     }
   
-    public String getPrimaryGateway() {
-        return primaryGateway;
+    public Integer getGatewayId() {
+        return gatewayId;
     }
     
-    public void setPrimaryGateway(String primaryGateway) {
-        this.primaryGateway = primaryGateway;
+    public void setGatewayId(Integer gatewayId) {
+        this.gatewayId = gatewayId;
     }
     
     public String getSerialNumber() {

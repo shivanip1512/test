@@ -30,10 +30,11 @@
     ]]></entry>
     <entry key="yukon.web.modules.dr.assetAvailability.deviceGroups">Device Groups</entry>
     <entry key="yukon.web.modules.dr.assetAvailability.range">Recent Reading</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.primaryGateway">Primary Gateway</entry>
     
     <entry key="yukon.web.modules.dr.assetAvailability.detail.SERIAL_NUM">Serial Number</entry>
     <entry key="yukon.web.modules.dr.assetAvailability.detail.TYPE">Device Type</entry>
-    <entry key="yukon.web.modules.dr.assetAvailability.detail.GATEWAY_ID">Primary Gateway</entry>
+    <entry key="yukon.web.modules.dr.assetAvailability.detail.GATEWAY_NAME">Primary Gateway</entry>
     <entry key="yukon.web.modules.dr.assetAvailability.detail.LAST_COMM">Last Communication</entry>
     <entry key="yukon.web.modules.dr.assetAvailability.detail.LAST_RUN">Last Runtime</entry>
     <entry key="yukon.web.modules.dr.assetAvailability.detail.AVAILABILITY">Availability</entry>

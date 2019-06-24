@@ -109,7 +109,7 @@ public abstract class DemandResponseControllerBase {
         String[] headerRow = new String[7];
         headerRow[0] = msa.getMessage(AssetDetailsColumn.SERIAL_NUM);
         headerRow[1] = msa.getMessage(AssetDetailsColumn.TYPE);
-        headerRow[2] = msa.getMessage(AssetAvailabilitySortBy.GATEWAY_ID);
+        headerRow[2] = msa.getMessage(AssetAvailabilitySortBy.GATEWAY_NAME);
         headerRow[3] = msa.getMessage(AssetDetailsColumn.LAST_COMM);
         headerRow[4] = msa.getMessage(AssetDetailsColumn.LAST_RUN);
         headerRow[5] = msa.getMessage(AssetDetailsColumn.APPLIANCES);

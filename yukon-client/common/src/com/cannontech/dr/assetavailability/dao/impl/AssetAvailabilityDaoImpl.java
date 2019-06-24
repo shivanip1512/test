@@ -125,7 +125,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
                     assetAvailability.setLastComm(rs.getInstant("last_comm"));
                     assetAvailability.setLastRun(rs.getInstant("last_run"));
                     assetAvailability.setAvailability(rs.getEnum("availability", AssetAvailabilityCombinedStatus.class));
-                    assetAvailability.setPrimaryGateway(rs.getString("gateway_id"));
+                    assetAvailability.setGatewayId(rs.getInt("gateway_id"));
                     assetAvailability.setGatewayName(rs.getString("gateway_name"));
                     resultList.add(assetAvailability);
                 }
@@ -380,7 +380,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
                     assetAvailability.setLastComm(rs.getInstant("last_comm"));
                     assetAvailability.setLastRun(rs.getInstant("last_run"));
                     assetAvailability.setAvailability(rs.getEnum("availability", AssetAvailabilityCombinedStatus.class));
-                    assetAvailability.setPrimaryGateway(rs.getString("gateway_id"));
+                    assetAvailability.setGatewayId(rs.getInt("gateway_id"));
                     assetAvailability.setGatewayName(rs.getString("gateway_name"));
                     resultList.add(assetAvailability);
                 }

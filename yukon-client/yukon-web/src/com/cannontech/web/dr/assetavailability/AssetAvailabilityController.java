@@ -247,7 +247,7 @@ public class AssetAvailabilityController {
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         SearchResults<AssetAvailabilityDetails> searchResults = assetAvailabilityService.getAssetAvailabilityDetails(
             subGroups, paoIdentifier, paging, statuses, sortByValue, sorting.getDirection(), userContext);
-
+        
         model.addAttribute("searchResults", searchResults);
         
         /* PAO Notes */
@@ -326,7 +326,7 @@ public class AssetAvailabilityController {
         String[] headerRow = new String[6];
         headerRow[0] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.SERIAL_NUM);
         headerRow[1] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.TYPE);
-        headerRow[2] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.GATEWAY_ID);
+        headerRow[2] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.GATEWAY_NAME);
         headerRow[3] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.LAST_COMM);
         headerRow[4] = messageSourceAccessor.getMessage(AssetAvailabilitySortBy.LAST_RUN);
         headerRow[5] = messageSourceAccessor.getMessage(baseKey + "AVAILABILITY");
@@ -373,7 +373,7 @@ public class AssetAvailabilityController {
         TYPE(SortBy.TYPE),
         LAST_COMM(SortBy.LASTCOMM),
         LAST_RUN(SortBy.LASTRUN),
-        GATEWAY_ID(SortBy.GATEWAYID);
+        GATEWAY_NAME(SortBy.GATEWAYNAME);
 
         private final SortBy value;
 

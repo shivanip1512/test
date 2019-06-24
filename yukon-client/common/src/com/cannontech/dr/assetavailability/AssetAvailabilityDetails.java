@@ -10,7 +10,7 @@ import com.cannontech.common.pao.PaoIdentifier;
  */
 public class AssetAvailabilityDetails {
     
-    private String primaryGateway;
+    private Integer gatewayId;
     private String gatewayName;
     private String serialNumber;
     private HardwareType type;
@@ -20,12 +20,12 @@ public class AssetAvailabilityDetails {
     private Integer inventoryId;
     private Integer deviceId;
     
-    public String getPrimaryGateway() {
-        return primaryGateway;
+    public Integer getGatewayId() {
+        return gatewayId;
     }
     
-    public void setPrimaryGateway(String primaryGateway) {
-        this.primaryGateway = primaryGateway;
+    public void setGatewayId(Integer gatewayId) {
+        this.gatewayId = gatewayId;
     }
     
     public String getGatewayName() {
