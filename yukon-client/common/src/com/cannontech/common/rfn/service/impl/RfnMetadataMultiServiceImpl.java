@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,6 +40,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     @Autowired private ConfigurationSource configSource;
     @Autowired private ScheduledExecutor executor;
     @Autowired private NextValueHelper nextValueHelper;
+    private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
     
     private static final Logger log = YukonLogManager.getLogger(RfnMetadataMultiServiceImpl.class);
 
@@ -80,6 +82,9 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
                 new BlockingJmsReplyHandler<>(RfnMetadataMultiResponse.class);
             qrTemplate.send(request, reply);
             RfnMetadataMultiResponse response = reply.waitForCompletion();
+            if(rfnCommsLog.isEnabled(Level.INFO)) {
+                rfnCommsLog.log(Level.INFO, "<<< " + response.toString());
+            }
             log.debug("RfnMetadataMultiResponse identifier {} [{} out of {}] response {}", requestIdentifier,
                 response.getSegmentNumber(), response.getTotalSegments(), response.getResponseType());
             validateResponse(response,requestIdentifier);
