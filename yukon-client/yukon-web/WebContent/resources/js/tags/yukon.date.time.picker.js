@@ -297,7 +297,8 @@ yukon.ui.dateTimePickers = function () {
                         displayField.val(minTime);
                         minErrorField.removeClass('dn');
                     }
-                } if (maxTime) {
+                } 
+                if (maxTime) {
                     maxTimeFields = maxTime.split(':'),
                     maxMinutes = (+maxTimeFields[0]) * 60 + (+maxTimeFields[1]);
                     if (minutes > maxMinutes) {
