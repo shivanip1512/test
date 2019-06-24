@@ -87,6 +87,7 @@ $(function () { yukon.dev.rfn.init(); });
             <li><a href="viewMappingSimulator"><i:inline key=".mappingSimulator.label"/></a>
             <li><a href="viewRelayArchiveRequest"><i:inline key=".relayArchiveRequest.label"/></a></li>
             <li><a href="viewConfigNotification"><i:inline key=".rfnConfigNotification.label"/></a></li>
+            <li><a href="viewStatusArchiveSimulator"><i:inline key=".statusArchiveSimulator.label"/></a></li>
         </ul>
         <div class="page-action-area stacked">
             <cti:button id="calc-stress-test" label="Calc Stress Test, DO NOT CLICK" classes="action red"/>

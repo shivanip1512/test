@@ -43,6 +43,7 @@ import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
+import com.cannontech.amr.rfn.message.status.type.DemandResetStatusCode;
 import com.cannontech.amr.rfn.service.NmSyncService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
@@ -1129,5 +1130,18 @@ public class NmIntegrationController {
             response = null;
             this.errorJson = errorJson;
         }
+    }
+    
+    @RequestMapping("viewStatusArchiveSimulator")
+    public String viewStatusArchiveSimulator() {
+        return "rfn/viewStatusArchiveSimulator.jsp";
+    }
+    
+    @RequestMapping("sendStatusArchiveRequest")
+    public String sendLcrArchive(String statusCode, int messageCount) {
+        DemandResetStatusCode demandResetStatusCode = DemandResetStatusCode.valueOf(Integer.parseInt(statusCode));
+        System.out.println("Status Code: " + statusCode + " was sent to " + messageCount + " devices.");
+        System.out.println("Code: " + demandResetStatusCode);
+        return "redirect:viewStatusArchiveSimulator";
     }
 }

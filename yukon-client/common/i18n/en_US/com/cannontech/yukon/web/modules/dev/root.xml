@@ -320,6 +320,7 @@
     <entry key="yukon.web.modules.dev.rfnTest.rfnConfigNotification.label">RFN Config Notification</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnConfigNotification.helpText"><![CDATA[The RFN Config Notification Test simulates RFN Config Notification messages 
     from RFN nodes to Porter. ]]></entry>
+    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveSimulator.label">Status Archive Simulator</entry>
     
     <!-- Smart Notifications -->
     <entry key="yukon.web.modules.dev.smartNotificationsSimulator.pageName">Smart Notifications Simulator</entry>
