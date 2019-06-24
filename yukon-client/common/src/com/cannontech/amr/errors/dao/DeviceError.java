@@ -267,8 +267,8 @@ public enum DeviceError {
             return NO_NODE;
         case NO_GATEWAY:
             return NO_GATEWAY;
-        case TIMEOUT:
-            return NM_TIMEOUT;
+        case TIMEOUT:   // Yukon specific timeout
+            return TIMEOUT;
         case FAILURE:
         default:
             return FAILURE;
@@ -281,8 +281,9 @@ public enum DeviceError {
         case OK:
             return SUCCESSFUL_READ;
         case NETWORK_TIMEOUT:
-        case TIMEOUT:
             return NM_TIMEOUT;
+        case TIMEOUT:   // Yukon specific timeout
+            return TIMEOUT;
         case FAILURE:
         default:
             return FAILURE;

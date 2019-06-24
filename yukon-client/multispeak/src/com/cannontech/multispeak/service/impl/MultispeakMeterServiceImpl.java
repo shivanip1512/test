@@ -216,10 +216,11 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         ConfigurationSource configurationSource = MasterConfigHelper.getConfiguration();
         Builder<OutageEventType, Integer> builder = ImmutableMultimap.builder();
         
+        // We are purposely not adding any RFN DeviceErros for OUTAGE, all should default to NO_RESPONSE
+        // NM_TIMEOUT (aka RfnMeterReadingDataReplyType.NETWORK_TIMEOUT) is the only one that could be, (with some higher confidence), a real outage.
         builder.putAll(OutageEventType.OUTAGE, DeviceError.WORD_1_NACK_PADDED.getCode(),
                                                DeviceError.EWORD_RECEIVED.getCode(),
-                                               DeviceError.DLC_READ_TIMEOUT.getCode(),
-                                               DeviceError.FAILURE.getCode());
+                                               DeviceError.DLC_READ_TIMEOUT.getCode());
         builder.putAll(OutageEventType.RESTORATION, DeviceError.ABNORMAL_RETURN.getCode(),
                                                     DeviceError.WORD_1_NACK.getCode(),
                                                     DeviceError.ROUTE_FAILED.getCode(),
@@ -571,6 +572,15 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 @Override
                 public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
                     log.debug("deviceAttributeReadCallback.receivedLastValue for odEvent");
+                    if (value != null) {
+                        YukonMeter yukonMeter = meterDao.getForId(pao.getPaoId());
+                        if (meters.contains(yukonMeter)) {
+                            meters.remove(yukonMeter);
+                            OutageEventType outageEventType = getForStatusCode(DeviceError.SUCCESSFUL_READ.getCode());  // assume if we got one value, then the meter must be talking successfully
+                            OutageDetectionEvent outageDetectionEvent = buildOutageDetectionEvent(yukonMeter, outageEventType, value.getPointDataTimeStamp(), "");
+                            sendODEventNotification(yukonMeter, mspVendor, transactionId, responseUrl, outageDetectionEvent);
+                        }
+                    }
                 }
     
                 @Override
@@ -578,9 +588,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     log.debug("deviceAttributeReadCallback.receivedLastValue for odEvent");
                     
                     YukonMeter yukonMeter = meterDao.getForId(pao.getPaoId());  // can we get this from meters?
-                    if (meters.contains(yukonMeter)) {  // meter may have already been handled and removed by receivedError
+                    if (meters.contains(yukonMeter)) {
+                        meters.remove(yukonMeter);
                         Date now = new Date();  // may need to get this from the callback, but for now "now" will do.
-                        OutageEventType outageEventType = getForStatusCode(0);
+                        OutageEventType outageEventType = getForStatusCode(DeviceError.TIMEOUT.getCode());  // unknown status if we didn't hit receivedValue at least once
                         OutageDetectionEvent outageDetectionEvent = buildOutageDetectionEvent(yukonMeter, outageEventType, now, "");
                         sendODEventNotification(yukonMeter, mspVendor, transactionId, responseUrl, outageDetectionEvent);
                     }
@@ -591,17 +602,19 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     log.warn("deviceAttributeReadCallback.receivedError for odEvent: " + pao + ": " + error);
                     
                     YukonMeter yukonMeter = meterDao.getForId(pao.getPaoId());  // can we get this from meters?
-                    meters.remove(yukonMeter);
-                    Date now = new Date();  // may need to get this from the callback, but for now "now" will do.
-                    OutageEventType outageEventType = getForStatusCode(error.getErrorCode());
-                    OutageDetectionEvent outageDetectionEvent = buildOutageDetectionEvent(yukonMeter, outageEventType, now, error.toString());
-                    sendODEventNotification(yukonMeter, mspVendor, transactionId, responseUrl, outageDetectionEvent);
+                    if (meters.contains(yukonMeter)) {
+                        meters.remove(yukonMeter);
+                        Date now = new Date();  // may need to get this from the callback, but for now "now" will do.
+                        OutageEventType outageEventType = getForStatusCode(error.getErrorCode());
+                        OutageDetectionEvent outageDetectionEvent = buildOutageDetectionEvent(yukonMeter, outageEventType, now, error.toString());
+                        sendODEventNotification(yukonMeter, mspVendor, transactionId, responseUrl, outageDetectionEvent);
+                    }
                 }
     
                 @Override
                 public void receivedException(SpecificDeviceErrorDescription error) {
                     log.warn("deviceAttributeReadCallback.receivedException in odEvent callback: " + error);
-                    // there is still a potential bug here, because meters is left populated with the pao, even though an exception
+                    // TODO there is still a potential bug here, because meters is left populated with the pao, even though an exception
                     //   has occurred. This means we can still get receivedLastValue and process it as a "success" instead of "unknown" or failure.
                 }
     
@@ -858,8 +871,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 log.warn("received exception in meterReadEvent callback: " + error);
             }
         };
-        deviceAttributeReadService.initiateRead(allPaosToRead, attributes, callback, DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
-
+        if (CollectionUtils.isNotEmpty(allPaosToRead)) {
+            deviceAttributeReadService.initiateRead(allPaosToRead, attributes, callback, DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
+        }
         return errorObjects;
     }
 
