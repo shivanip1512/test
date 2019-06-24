@@ -81,16 +81,16 @@ public class NetworkMapFilter {
     }
     
     public enum LinkQuality implements DisplayableEnum {
-        EXCELLENT(Color.GREEN, Lists.newArrayList(1f,2f)),
-        AVERAGE(Color.BLUE, Lists.newArrayList(3f)),
-        BELOW_AVERAGE(Color.ORANGE, Lists.newArrayList(4f,5f)),
+        EXCELLENT(Color.GREEN, Lists.newArrayList((short)1,(short)2)),
+        AVERAGE(Color.BLUE, Lists.newArrayList((short)3)),
+        BELOW_AVERAGE(Color.ORANGE, Lists.newArrayList((short)4, (short)5, (short)6)),
         EVALUATING(Color.GREY, Lists.newArrayList());
         
         private static int EVALUATING_LIMIT = 50;
         
         private Color color;
-        private List<Float> linkCost;
-        LinkQuality(Color color, List<Float> linkCost) {
+        private List<Short> linkCost;
+        LinkQuality(Color color, List<Short> linkCost) {
             this.color = color;
             this.linkCost = linkCost;
         }
@@ -102,9 +102,9 @@ public class NetworkMapFilter {
                 return LinkQuality.EVALUATING;
             }
             return Lists.newArrayList(LinkQuality.values())
-                    .stream().filter(ls -> ls.linkCost.contains(neighborData.getNeighborLinkCost()))
+                    .stream().filter(ls -> ls.linkCost.contains((short)neighborData.getEtxBand()))
                     .findFirst()
-                    .orElseThrow(() -> new UnsupportedOperationException("Undefined link cost " + neighborData.getNeighborLinkCost()));
+                    .orElseThrow(() -> new UnsupportedOperationException("Undefined link cost " + neighborData.getEtxBand()));
         }
         
         @Override

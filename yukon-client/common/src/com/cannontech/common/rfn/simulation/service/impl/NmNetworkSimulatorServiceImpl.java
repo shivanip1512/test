@@ -450,6 +450,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     List<Integer> linkCost = Arrays.asList(1, 2, 3, 4, 5);
                     int randomElement = linkCost.get(new Random().nextInt(linkCost.size()));
                     neighborData.setNeighborLinkCost((float) randomElement);
+                    //Generates random short between 1 and 6 for the ExtBand
+                    short randomEtxBand = (short)(Math.random() * (5) + 1);
+                    neighborData.setEtxBand(randomEtxBand);
                     List<Integer> numSamples = Arrays.asList(49, 50, 51);
                     randomElement = numSamples.get(new Random().nextInt(numSamples.size()));
                     neighborData.setNumSamples(randomElement);
