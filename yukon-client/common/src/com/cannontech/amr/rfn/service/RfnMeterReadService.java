@@ -114,7 +114,7 @@ public class RfnMeterReadService {
 
                 if (!receivedIdentifier.equals(expectedIdentifier)) {
                     log.error("RFN identifier mismatch, received " + receivedIdentifier + " instead of " + expectedIdentifier);
-                    callback.receivedDataError(RfnMeterReadingDataReplyType.TIMEOUT);   // using TIMEOUT as we dont' know if this is FAILURE or OK
+                    callback.receivedDataError(dataReplyMessage.getReplyType());
                 } else {
                     /* Data response successful, process point data */
                     List<PointValueHolder> pointDatas = Lists.newArrayList();

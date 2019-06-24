@@ -30,6 +30,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.dao.WaitableDeviceAttributeReadCallback;
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
@@ -203,10 +204,15 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
         ConfigurationSource configurationSource = MasterConfigHelper.getConfiguration();
         Builder<EndDeviceStateKind, Integer> builder = ImmutableMultimap.builder();
-        builder.putAll(EndDeviceStateKind.OUTAGED, 20, 57, 72);
-        builder.putAll(EndDeviceStateKind.STARTING_UP, 1, 17, 74, 0); // TODO Not sure for replacement of
-                                                                      // Restoration(in MSP 3) with
-                                                                      // STARTING_UP. Please confirm
+     // We are purposely not adding any RFN DeviceErros for OUTAGE, all should default to NO_RESPONSE
+     // NM_TIMEOUT (aka RfnMeterReadingDataReplyType.NETWORK_TIMEOUT) is the only one that could be, (with some higher confidence), a real outage.
+        builder.putAll(EndDeviceStateKind.OUTAGED, DeviceError.WORD_1_NACK_PADDED.getCode(),
+                                                   DeviceError.EWORD_RECEIVED.getCode(),
+                                                   DeviceError.DLC_READ_TIMEOUT.getCode());
+        builder.putAll(EndDeviceStateKind.IN_SERVICE, DeviceError.ABNORMAL_RETURN.getCode(),
+                                                      DeviceError.WORD_1_NACK.getCode(),
+                                                      DeviceError.ROUTE_FAILED.getCode(),
+                                                      DeviceError.SUCCESSFUL_READ.getCode());
         ImmutableMultimap<EndDeviceStateKind, Integer> systemDefault = builder.build();
 
         supportedEndDeviceStateTypes =
@@ -1439,22 +1445,29 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 @Override
                 public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
                     log.debug("deviceAttributeReadCallback.receivedLastValue for odEvent");
+                    if (value != null) {
+                        YukonMeter yukonMeter = meterDao.getForId(pao.getPaoId());
+                        if (meters.contains(yukonMeter)) {
+                            meters.remove(yukonMeter);
+                            EndDeviceStateType deviceStateType = new EndDeviceStateType();
+                            deviceStateType.setValue(getForStatusCode(DeviceError.SUCCESSFUL_READ.getCode()));  // assume if we got one value, then the meter must be talking successfully
+                            EndDeviceState endDeviceState = buildEndDeviceStates(yukonMeter, deviceStateType, value.getPointDataTimeStamp(), value.toString());
+                            sendEndDeviceStatesNotification(yukonMeter, mspVendor, transactionId, responseUrl, endDeviceState);
+                        }
+                    }
                 }
 
                 @Override
-                public void receivedLastValue(PaoIdentifier pao, String value) { // success
+                public void receivedLastValue(PaoIdentifier pao, String value) {    //success - not guaranteed!!!!
                     log.debug("deviceAttributeReadCallback.receivedLastValue for odEvent");
 
                     YukonMeter yukonMeter = meterDao.getForId(pao.getPaoId()); // can we get this from meters?
-                    if (meters.contains(yukonMeter)) { // meter may have already been handled and removed by
-                                                       // receivedError
-                        Date now = new Date(); // may need to get this from the callback, but for now "now"
-                                               // will do.
+                    if (meters.contains(yukonMeter)) { // meter may have already been handled and removed by receivedError
+                        Date now = new Date(); // may need to get this from the callback, but for now "now" will do.
                         EndDeviceStateType deviceStateType = new EndDeviceStateType();
-                        deviceStateType.setValue(getForStatusCode(0));
+                        deviceStateType.setValue(getForStatusCode(DeviceError.TIMEOUT.getCode()));
                         EndDeviceState endDeviceState = buildEndDeviceStates(yukonMeter, deviceStateType, now, value);
-                        sendEndDeviceStatesNotification(yukonMeter, mspVendor, transactionId, responseUrl,
-                            endDeviceState);
+                        sendEndDeviceStatesNotification(yukonMeter, mspVendor, transactionId, responseUrl, endDeviceState);
                     }
                 }
 
@@ -1464,12 +1477,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                     YukonMeter yukonMeter = meterDao.getForId(pao.getPaoId()); // can we get this from meters?
                     meters.remove(yukonMeter);
-                    Date now = new Date(); // may need to get this from the callback, but for now "now" will
-                                           // do.
+                    Date now = new Date(); // may need to get this from the callback, but for now "now" will do.
                     EndDeviceStateType deviceStateType = new EndDeviceStateType();
                     deviceStateType.setValue(getForStatusCode(error.getErrorCode()));
-                    EndDeviceState endDeviceState =
-                        buildEndDeviceStates(yukonMeter, deviceStateType, now, error.toString());
+                    EndDeviceState endDeviceState = buildEndDeviceStates(yukonMeter, deviceStateType, now, error.toString());
                     sendEndDeviceStatesNotification(yukonMeter, mspVendor, transactionId, responseUrl, endDeviceState);
                 }
 
@@ -1479,8 +1490,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 }
 
             };
-            deviceAttributeReadService.initiateRead(meters, Sets.newHashSet(BuiltInAttribute.OUTAGE_STATUS), callback,
-                DeviceRequestType.MULTISPEAK_OUTAGE_DETECTION_PING_COMMAND, UserUtils.getYukonUser());
+            if (CollectionUtils.isNotEmpty(meters)) {
+                deviceAttributeReadService.initiateRead(meters, Sets.newHashSet(BuiltInAttribute.OUTAGE_STATUS), callback,
+                                                        DeviceRequestType.MULTISPEAK_OUTAGE_DETECTION_PING_COMMAND, UserUtils.getYukonUser());
+            }
         } else { // save network expense by just returning latest known value.
 
             BiMap<LitePoint, PaoIdentifier> pointsToPaos =
@@ -1713,8 +1726,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             };
         multispeakEventLogService.initiateMeterRead(meter.getMeterNumber(), meter, "N/A", "GetCDDeviceStates",
             mspVendor.getCompanyName());
-        deviceAttributeReadService.initiateRead(allPaosToRead, attributes, waitableCallback,
-            DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
+        if (CollectionUtils.isNotEmpty(allPaosToRead)) {
+            deviceAttributeReadService.initiateRead(allPaosToRead, attributes, waitableCallback,
+                                                    DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
+        }
         try {
             waitableCallback.waitForCompletion();
         } catch (InterruptedException e) { /* Ignore */}
@@ -2174,8 +2189,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 log.warn("received exception in meterReadEvent callback: " + error);
             }
         };
-        deviceAttributeReadService.initiateRead(allPaosToRead, attributes, callback,
-            DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
+        if (CollectionUtils.isNotEmpty(allPaosToRead)) {
+            deviceAttributeReadService.initiateRead(allPaosToRead, attributes, callback,
+                                                    DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
+        }
 
         return errorObjects;
     }
