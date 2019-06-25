@@ -17,6 +17,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
@@ -112,6 +113,8 @@ public class ProgramServiceImpl implements ProgramService {
     private static final long PROGRAM_CHANGE_TIMEOUT_MS = 5000;
     private static final int MAX_PROGRAM_TO_DISPLAY_ON_WIDGET = 10;
     private final static String todayKey = "yukon.web.widgets.programWidget.today";
+    private List<ProgramData> programsDataCache = new ArrayList<>();
+    private long tomorrowStartInMillis = 0L;
 
     private final RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
@@ -799,11 +802,11 @@ public class ProgramServiceImpl implements ProgramService {
 
         List<ProgramData> todaysPrograms = getAllTodaysPrograms();
         int todaysProgramsCount = todaysPrograms.size();
+        // List of Programs which are scheduled to execute for next control day after today
+        List<ProgramData> futureProgramsToDisplay = new ArrayList<>();
         if (todaysProgramsCount >= MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
             todaysPrograms = limitData(todaysPrograms, MAX_PROGRAM_TO_DISPLAY_ON_WIDGET);
         } else {
-            // List of Programs which are scheduled to execute for next control day after today
-            List<ProgramData> futureProgramsToDisplay = new ArrayList<>();
             if (todaysProgramsCount < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
                 List<ProgramData> futurePrograms = getProgramsScheduledForNextControlDayAfterToday();
                 if (CollectionUtils.isNotEmpty(futurePrograms)) {
@@ -819,10 +822,16 @@ public class ProgramServiceImpl implements ProgramService {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             programWidgetData.put(accessor.getMessage(todayKey), todaysPrograms);
         }
-        //TODO After YUK-19014
-        // If (todaysProgramsCount + futureProgramsToDisplay) < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET
-        // Call for Past Program list and return List<ProgramData> object based on the size of programWidgetData
-        // Max number of records can be equal to MAX_PROGRAM_TO_DISPLAY_ON_WIDGET.
+
+        if (todaysProgramsCount + futureProgramsToDisplay.size() < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
+            int previousProgramsToDisplayCount =
+                MAX_PROGRAM_TO_DISPLAY_ON_WIDGET - (todaysProgramsCount + futureProgramsToDisplay.size());
+            buildProgramsDataCache();
+            List<ProgramData> limitProgramData = limitData(programsDataCache, previousProgramsToDisplayCount);
+            Map<String, List<ProgramData>> limitedProgramsToDisplay =
+                    groupProgramsByStartDate(limitProgramData, userContext);
+            programWidgetData.putAll(limitedProgramsToDisplay);
+        }
         return programWidgetData; 
     }
 
@@ -849,13 +858,10 @@ public class ProgramServiceImpl implements ProgramService {
             programDetailData.put(accessor.getMessage(todayKey), todaysPrograms);
         }
 
-        // Current Day And Previous 7 days programs history.
-        DateTime toDate = new DateTime().withTimeAtStartOfDay().plusDays(1);
-        DateTime fromDate = toDate.minusDays(8);
-        Map<String, List<ProgramData>> programHistoryData = getProgramsHistoryDetail(fromDate, toDate, userContext);
-        if (!programHistoryData.isEmpty()) {
-            programDetailData.putAll(programHistoryData);
-        }
+        //Previous 7 days programs history.
+        buildProgramsDataCache();
+        Map<String, List<ProgramData>> programsToDisplay = groupProgramsByStartDate(programsDataCache, userContext);
+        programDetailData.putAll(programsToDisplay);
         return programDetailData;
     }
 
@@ -954,8 +960,7 @@ public class ProgramServiceImpl implements ProgramService {
      * program history Id and build GearData based on that.
      * 
      */
-    private Map<String, List<ProgramData>> getProgramsHistoryDetail(DateTime from, DateTime to,
-            YukonUserContext userContext) {
+    private List<ProgramData> getProgramsHistoryDetail(DateTime from, DateTime to) {
         List<ProgramControlHistory> programsHistoryDetail = loadControlProgramDao.getAllProgramControlHistory(from.toDate(), to.toDate());
         List<ProgramData> previousDaysProgramData = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(programsHistoryDetail)) {
@@ -969,11 +974,11 @@ public class ProgramServiceImpl implements ProgramService {
             previousDaysProgramData = 
                     programsByProgramHistoryId.entrySet()
                                               .stream()
-                                              .map(entry -> buildProgramData(entry.getValue(), userContext))
+                                              .map(entry -> buildProgramData(entry.getValue()))
                                               .collect(Collectors.toList());
             previousDaysProgramData.sort((p1, p2) -> p2.getStartDateTime().compareTo(p1.getStartDateTime()));
         }
-        return groupProgramsByStartDate(previousDaysProgramData, userContext);
+        return previousDaysProgramData;
     }
 
     /**
@@ -995,7 +1000,7 @@ public class ProgramServiceImpl implements ProgramService {
      * This method is used to build program with gears. A Single program can have run with a single or 
      * multiple gear.So This method is to collect all those action inside a single program.
      */
-    private ProgramData buildProgramData(List<ProgramControlHistory> programsHistoryDetail, YukonUserContext userContext) {
+    private ProgramData buildProgramData(List<ProgramControlHistory> programsHistoryDetail) {
 
         List<GearData> gears = programsHistoryDetail.stream()
                                                     .map(program -> buildGearData(program))
@@ -1046,6 +1051,21 @@ public class ProgramServiceImpl implements ProgramService {
                                                              LinkedHashMap::new, 
                                                              Collectors.toCollection(ArrayList::new)));
         return programDataByEventTime;
+    }
+
+    /**
+     * This is to cache the Programs data so that we will not hit database every time.
+     * The cache will be updated each time next day with new request.
+     */
+    private synchronized void buildProgramsDataCache() {
+        long currentTime = DateTimeUtils.currentTimeMillis();
+        if (currentTime > tomorrowStartInMillis) {
+            DateTime toDate = new DateTime().withTimeAtStartOfDay();
+            DateTime fromDate = toDate.minusDays(7);
+            programsDataCache.clear();
+            programsDataCache = getProgramsHistoryDetail(fromDate, toDate);
+            tomorrowStartInMillis = toDate.plusDays(1).getMillis();
+        }
     }
 
 }
