@@ -165,7 +165,7 @@ public class ProgramServiceImplTest {
 
     @Test
     public void test_buildProgramData_with_multiple_gear() {
-        ProgramData program = ReflectionTestUtils.invokeMethod(programServiceImplTest, "buildProgramData", programControlHistory, userContext);
+        ProgramData program = ReflectionTestUtils.invokeMethod(programServiceImplTest, "buildProgramData", programControlHistory);
         assertNotNull(program);
         assertTrue(program.getGears().size() == 2);
     }
@@ -179,7 +179,7 @@ public class ProgramServiceImplTest {
         pch1.setKnownGoodStopDateTime(true);
         List<ProgramControlHistory> history = new ArrayList<>();
         history.add(pch1);
-        ProgramData program = ReflectionTestUtils.invokeMethod(programServiceImplTest, "buildProgramData", history, userContext);
+        ProgramData program = ReflectionTestUtils.invokeMethod(programServiceImplTest, "buildProgramData", history);
         assertNotNull(program);
         assertTrue(program.getGears().size() == 1);
     }
