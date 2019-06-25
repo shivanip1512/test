@@ -40,7 +40,7 @@ public class EcobeeSecurityServiceImplTest {
     public void test_getEcobeeKeyPairCreationTime_Present() {
         EncryptionKey encryptionKey = new EncryptionKey();
         Instant timestamp = Instant.now();
-        encryptionKey.setTimestamp(Instant.now());
+        encryptionKey.setTimestamp(timestamp);
         EasyMock.expect(mockEncryptedRouteDao.getEncryptionKey(EncryptionKeyType.Ecobee)).andReturn(Optional.ofNullable(encryptionKey));
         EasyMock.replay(mockEncryptedRouteDao);
         assertEquals(timestamp, mockEcobeeSecurityServiceImpl.getEcobeeKeyPairCreationTime());
