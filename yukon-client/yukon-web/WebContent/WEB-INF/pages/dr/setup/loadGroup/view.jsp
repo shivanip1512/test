@@ -6,8 +6,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
-<cti:standardPage module="dr" page="setup.loadGroup.${mode}">
-    
+<cti:msgScope paths="yukon.web.modules.dr.setup.loadGroup">
     <tags:setFormEditMode mode="${mode}" />
     
     <!-- Actions drop-down -->
@@ -46,32 +45,34 @@
     <form:form modelAttribute="loadGroup" action="${action}" method="post">
         <cti:csrfToken />
         <form:hidden path="id"/>
+        <input type="hidden" name="loadGroup" value="${selectedSwitchType}"> 
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".name">
-                    <tags:input path="name" size="25" maxlength="60" autofocus="autofocus"/>
+                    <tags:input id="name" path="name" size="25" maxlength="60" autofocus="autofocus"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".type">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl"/>
-                        <tags:selectWithItems items="${switchTypes}" path="type" defaultItemLabel="${selectLbl}" defaultItemValue=""/>
+                        <tags:selectWithItems items="${switchTypes}" id="type" path="type" defaultItemLabel="${selectLbl}" defaultItemValue=""/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
                         <i:inline key="${loadGroup.type}"/>
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".kWCapacity">
-                    <tags:input path="kWCapacity"/>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".disableGroup">
-                    <tags:switchButton path="disableGroup" offNameKey="yukon.common.no" onNameKey="yukon.common.yes" />
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".disableControl">
-                    <tags:switchButton path="disableControl" offNameKey="yukon.common.no" onNameKey="yukon.common.yes" />
-                </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
         
+        <!-- Include jsp for load group type -->
+        <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM'}">
+            <%@ include file="expresscom.jsp" %>
+            <%@ include file="loadGroupOptional.jsp" %>
+        </c:if>
+        <c:if test="${selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">
+            <%@ include file="expresscom.jsp" %>
+            <%@ include file="loadGroupOptional.jsp" %>
+        </c:if>
+
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="save" type="submit" classes="primary action" />
@@ -88,4 +89,4 @@
         </div>
     </form:form>
     <cti:includeScript link="/resources/js/pages/yukon.dr.setup.loadGroup.js" />
-</cti:standardPage>
+</cti:msgScope>

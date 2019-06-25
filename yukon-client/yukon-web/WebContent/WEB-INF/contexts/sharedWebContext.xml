@@ -90,7 +90,15 @@
         </mvc:resource-chain>
     </mvc:resources>
 
-    <mvc:annotation-driven>
+  <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+       <property name="converters">
+           <set>
+              <bean class="com.cannontech.web.dr.setup.LoadGroupBaseConverter"/>
+           </set>
+       </property>
+    </bean>
+    
+    <mvc:annotation-driven conversion-service="conversionService">
         <mvc:argument-resolvers>
             <ref bean="deviceArgumentResolver"/>
             <ref bean="inventoryArgumentResolver"/>

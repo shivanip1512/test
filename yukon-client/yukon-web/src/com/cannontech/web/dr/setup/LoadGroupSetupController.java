@@ -24,11 +24,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.LMDelete;
+import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
@@ -61,6 +63,7 @@ public class LoadGroupSetupController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private LoadGroupSetupControllerHelper controllerHelper;
 
     @GetMapping("/create")
     public String create(ModelMap model) {
@@ -69,8 +72,27 @@ public class LoadGroupSetupController {
         if (model.containsAttribute("loadGroup")) {
             loadGroup = (LoadGroupBase) model.get("loadGroup");
         }
+        model.addAttribute("selectedSwitchType", loadGroup.getType());
         model.addAttribute("loadGroup", loadGroup);
         model.addAttribute("switchTypes", switchTypes);
+        return "dr/setup/loadGroup/loadGroupView.jsp";
+    }
+    
+    @GetMapping("/create/{type}")
+    public String create(ModelMap model, @PathVariable String type, @RequestParam String name) {
+        model.addAttribute("mode", PageEditMode.CREATE);
+        LoadGroupBase loadGroup = LMModelFactory.createLoadGroup(PaoType.valueOf(type));
+        if (model.containsAttribute("loadGroup")) {
+            loadGroup = (LoadGroupBase) model.get("loadGroup");
+        } else {
+            loadGroup.setName(name);
+            loadGroup.setType(PaoType.valueOf(type));
+        }
+        controllerHelper.buildModelMap(PaoType.valueOf(type), model);
+        model.addAttribute("loadGroup", loadGroup);
+        List<PaoType> switchTypes = PaoType.getAllLMGroupTypes();
+        model.addAttribute("switchTypes", switchTypes);
+        model.addAttribute("selectedSwitchType", type);
         return "dr/setup/loadGroup/view.jsp";
     }
 
@@ -86,7 +108,7 @@ public class LoadGroupSetupController {
                 return "redirect:/dr/setup/list";
             }
             model.addAttribute("loadGroup", loadGroup);
-            return "dr/setup/loadGroup/view.jsp";
+            return "dr/setup/loadGroup/loadGroupView.jsp";
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
@@ -121,7 +143,7 @@ public class LoadGroupSetupController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute LoadGroupBase loadGroup, BindingResult result, YukonUserContext userContext,
+    public String save(@ModelAttribute("loadGroup") LoadGroupBase loadGroup, BindingResult result, YukonUserContext userContext,
             FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
         try {
@@ -130,7 +152,7 @@ public class LoadGroupSetupController {
                 saveOrCopyGroup(userContext, request, url, loadGroup, HttpMethod.POST);
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
-                BindException error = new BindException(loadGroup, "loadGroupBase");
+                BindException error = new BindException(loadGroup, "loadGroup");
                 result = helper.populateBindingError(result, error, response);
                 return bindAndForward(loadGroup, result, redirectAttributes);
             }
@@ -288,7 +310,7 @@ public class LoadGroupSetupController {
         attrs.addFlashAttribute("loadGroup", loadGroup);
         attrs.addFlashAttribute("org.springframework.validation.BindingResult.loadGroup", result);
         if (loadGroup.getId() == null) {
-            return "redirect:/dr/setup/loadGroup/create";
+            return "redirect:/dr/setup/loadGroup/create/";
         }
         return "redirect:/dr/setup/loadGroup/" + loadGroup.getId() + "/edit";
     }
