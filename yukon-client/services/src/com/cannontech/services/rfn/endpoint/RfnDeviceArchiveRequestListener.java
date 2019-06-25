@@ -1,13 +1,7 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.IntStream;
 
-import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Level;
@@ -33,26 +27,24 @@ import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.services.rfn.RfnArchiveCache;
+import com.cannontech.services.rfn.RfnArchiveProcessor;
 import com.google.common.collect.Sets;
 
 @ManagedResource
-public class RfnDeviceArchiveRequestListener {
+public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
     private static final Logger log = YukonLogManager.getLogger(RfnDeviceArchiveRequestListener.class);
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired protected RfnDeviceCreationService rfnDeviceCreationService;
+    @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
-    @Autowired protected RfDaCreationService rfdaCreationService;
-    protected JmsTemplate jmsTemplate;
-    private BlockingQueue<Map.Entry<Long, RfnIdentifier>> queue = new LinkedBlockingQueue<>();
-    private Logger rfnCommsLog;
-    
-    @PostConstruct
-    public void initialize() {
-        rfnCommsLog = YukonLogManager.getRfnLogger();
-        int threadCount = configurationSource.getInteger("RFN_METER_DATA_WORKER_COUNT", 5);
-        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
-        //create processors (default 5)
-        IntStream.range(0, threadCount).forEach(i -> executorService.submit(new Processor(queue, i)));
+    @Autowired private RfDaCreationService rfdaCreationService;
+    @Autowired private RfnArchiveCache rfnArchiveCache;
+    private JmsTemplate jmsTemplate;
+    private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
+
+    @Override
+    public void process(Object obj, String processor) {
+        processRequest((Map.Entry<Long, RfnIdentifier>)obj, processor); 
     }
     
     /**
@@ -60,15 +52,9 @@ public class RfnDeviceArchiveRequestListener {
      */
     public void handleArchiveRequest(RfnDeviceArchiveRequest request) {
         if(rfnCommsLog.isEnabled(Level.INFO)) {
-            rfnCommsLog.log(Level.INFO, ">>> " + request.toString());
+            rfnCommsLog.log(Level.INFO, "<<< " + request.toString());
         }
-        request.getRfnIdentifiers().entrySet().forEach(entry -> {
-            try {
-                queue.put(entry);
-            } catch (InterruptedException e) {
-               log.error("Failed to add entry {} to queue", entry, e);
-            }
-        });
+        request.getRfnIdentifiers().entrySet().forEach(entry -> rfnArchiveCache.add(this, entry));
     }
     
     /**
@@ -82,21 +68,8 @@ public class RfnDeviceArchiveRequestListener {
                 createAndAcknowedge(entry, processor);
             }
         } else {
-            acknowledgeEmptyIdentifier(entry, processor);
+            sendAcknowledgement(entry.getKey(), processor);
         }
-    }
-
-    /**
-     * If RfnIdentifier is empty sends acknowledgement to NM
-     */
-    private void acknowledgeEmptyIdentifier(Map.Entry<Long, RfnIdentifier> entry, String processor) {
-        RfnIdentifier rfnIdentifier = entry.getValue();
-        if (log.isInfoEnabled()) {
-            log.info("Serial Number {}: Sensor Manufacturer:{} Sensor Model:{}",
-                rfnIdentifier.getSensorSerialNumber(), rfnIdentifier.getSensorManufacturer(),
-                rfnIdentifier.getSensorModel());
-        }
-        sendAcknowledgement(entry.getKey(), processor);
     }
 
     /**
@@ -115,7 +88,7 @@ public class RfnDeviceArchiveRequestListener {
      */
     private void createAndAcknowedge(Map.Entry<Long, RfnIdentifier> entry, String processor) {
         try {
-            create(entry.getValue());
+            create(entry.getValue(), processor);
             sendAcknowledgement(entry.getKey(), processor);
         } catch (RuntimeException e) {
             boolean isDev = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
@@ -124,7 +97,8 @@ public class RfnDeviceArchiveRequestListener {
                 log.info("Exception:" + e.getMessage(), e);
                 sendAcknowledgement(entry.getKey(), processor);
             } else {
-                log.warn("Failed creating device {}", entry, e);
+                log.warn("{} {} device creation failed {} {}", processor, this.getClass().getSimpleName(),
+                    entry.getKey(), entry.getValue());
             }
         }
     }
@@ -132,7 +106,7 @@ public class RfnDeviceArchiveRequestListener {
     /**
      * Attempts to create device
      */
-    private void create(RfnIdentifier identifier) {
+    private void create(RfnIdentifier identifier, String processor) {
         try {
             RfnDevice device = null;
             if (RfnManufacturerModel.is1200(identifier)) {
@@ -143,7 +117,7 @@ public class RfnDeviceArchiveRequestListener {
                 rfnDeviceCreationService.incrementNewDeviceCreated();
             }
             if (log.isDebugEnabled()) {
-                log.debug("Created new device: " + device);
+                log.debug("{} created device {} ", processor, device);
             }
         } catch (IgnoredTemplateException e) {
             throw new RuntimeException("Unable to create device for " + identifier + " because template is ignored", e);
@@ -176,29 +150,8 @@ public class RfnDeviceArchiveRequestListener {
     private void sendAcknowledgement(Long referenceId, String processor) {
         RfnDeviceArchiveResponse response = new RfnDeviceArchiveResponse();
         response.setReferenceIds(Sets.newHashSet(referenceId));
-        log.debug("Acknowledge {} by processor {}", referenceId, processor);
+        log.debug("{} acknowledged referenceId={}", processor, referenceId);
         jmsTemplate.convertAndSend(JmsApiDirectory.RFN_DEVICE_ARCHIVE.getResponseQueue().get().getName(), response);
-    }
-    
-    private class Processor extends Thread {
-        private BlockingQueue<Map.Entry<Long, RfnIdentifier>> queue;
-        Processor(BlockingQueue<Map.Entry<Long, RfnIdentifier>> queue, int count) {
-            this.queue = queue;
-            this.setName(JmsApiDirectory.RFN_DEVICE_ARCHIVE + " #"+ (count + 1));
-        }
-
-        @Override
-        public void run() {
-            while(true) {
-                try {
-                    Map.Entry<Long, RfnIdentifier> entry = queue.take();
-                    log.debug("Processor {} (remaining {}) processing entry {}", this.getName(), queue.size(), entry);
-                    processRequest(entry, this.getName());
-                } catch (Exception e) {
-                    log.error("Processor {}", this.getName(), e);
-                }
-            }
-        }
     }
     
     @Autowired

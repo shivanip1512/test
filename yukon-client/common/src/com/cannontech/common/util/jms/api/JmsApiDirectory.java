@@ -30,6 +30,8 @@ import com.cannontech.amr.rfn.message.event.RfnEventArchiveResponse;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadDataReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadRequest;
+import com.cannontech.amr.rfn.message.status.RfnStatusArchiveRequest;
+import com.cannontech.amr.rfn.message.status.RfnStatusArchiveResponse;
 import com.cannontech.broker.message.request.BrokerSystemMetricsRequest;
 import com.cannontech.common.device.data.collection.message.CollectionRequest;
 import com.cannontech.common.device.data.collection.message.RecalculationRequest;
@@ -1052,6 +1054,20 @@ public final class JmsApiDirectory {
                   .responseQueue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnDeviceArchiveResponse"))
                   .requestMessage(RfnDeviceArchiveRequest.class)
                   .responseMessage(RfnDeviceArchiveResponse.class)
+                  .sender(NETWORK_MANAGER)
+                  .sender(YUKON_WEBSERVER_DEV_PAGES)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
+    public static JmsApi<RfnStatusArchiveRequest,?,RfnStatusArchiveResponse> RFN_STATUS_ARCHIVE =
+            JmsApi.builder(RfnStatusArchiveRequest.class, RfnStatusArchiveResponse.class)
+                  .name("RFN Status Archive")
+                  .description("A notification from Network Manager to Yukon for creation of a new device.")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnStatusArchiveRequest"))
+                  .responseQueue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnStatusArchiveResponse"))
+                  .requestMessage(RfnStatusArchiveRequest.class)
+                  .responseMessage(RfnStatusArchiveResponse.class)
                   .sender(NETWORK_MANAGER)
                   .sender(YUKON_WEBSERVER_DEV_PAGES)
                   .receiver(YUKON_SERVICE_MANAGER)

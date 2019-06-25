@@ -672,7 +672,13 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      * Add device location to a map
      */
     private void addDevicesToMap(NetworkMap map,  String hexColor, Set<RfnIdentifier> devices) {
+        if(devices == null || devices.isEmpty()) {
+            return;
+        }
         Set<Integer> paoIds = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(devices);
+        if(paoIds.isEmpty()) {
+            return;
+        }
         Set<PaoLocation> locations = paoLocationDao.getLocations(paoIds);
         FeatureCollection features = paoLocationService.getFeatureCollection(locations);
         map.getMappedDevices().put(hexColor, features);

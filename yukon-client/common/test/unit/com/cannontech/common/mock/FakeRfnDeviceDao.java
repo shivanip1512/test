@@ -113,4 +113,9 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     public List<RfnIdentifier> getRfnIdentifiersForGateway(int gatewayId, int rowLimit) {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public Integer getDeviceIdForRfnIdentifier(RfnIdentifier rfnIdentifier) {
+        throw new MethodNotImplementedException();
+    }
 }

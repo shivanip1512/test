@@ -503,7 +503,8 @@ public class NmIntegrationController {
     
     @RequestMapping("sendDeviceArchiveRequest")
     public String sendDeviceArchiveRequest(@ModelAttribute DeviceArchiveRequestParameters deviceArchiveParameters) {
-        //TODO: add service layer code
+        rfnEventTestingService.sendArchiveRequest(deviceArchiveParameters.getSerialFrom(),
+            deviceArchiveParameters.getSerialTo(), deviceArchiveParameters.getManufacturer(), deviceArchiveParameters.getModel());
         return "redirect:viewDeviceArchiveRequest";
     }
 
@@ -1140,8 +1141,7 @@ public class NmIntegrationController {
     @RequestMapping("sendStatusArchiveRequest")
     public String sendLcrArchive(String statusCode, int messageCount) {
         DemandResetStatusCode demandResetStatusCode = DemandResetStatusCode.valueOf(Integer.parseInt(statusCode));
-        System.out.println("Status Code: " + statusCode + " was sent to " + messageCount + " devices.");
-        System.out.println("Code: " + demandResetStatusCode);
+        rfnEventTestingService.sendStatusArchiveRequest(demandResetStatusCode, messageCount);
         return "redirect:viewStatusArchiveSimulator";
     }
 }

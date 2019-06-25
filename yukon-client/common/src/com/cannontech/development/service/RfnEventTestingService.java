@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.DecoderException;
 
-import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.amr.rfn.message.status.type.DemandResetStatusCode;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
@@ -41,4 +41,13 @@ public interface RfnEventTestingService {
      * Sends an RFN Config Notification message to Porter.  
      */
     int sendConfigNotification(RfnTestMeterReading reading);
+    
+    /**
+     * Sends Status Archive Request to NM
+     */
+    void sendStatusArchiveRequest(DemandResetStatusCode demandResetStatusCode, int messageCount);
+    /**
+     * Sends Device Archive Request to NM
+     */
+    void sendArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model);
 }

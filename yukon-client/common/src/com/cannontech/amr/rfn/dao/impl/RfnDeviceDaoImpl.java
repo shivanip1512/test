@@ -448,4 +448,9 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     public Set<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers) {
         return rfnIdentifierCache.getPaoIdsFor(rfnIdentifiers);
     }
+    
+    @Override
+    public Integer getDeviceIdForRfnIdentifier(RfnIdentifier rfnIdentifier) {
+        return rfnIdentifierCache.getPaoIdFor(rfnIdentifier);
+    }
 }

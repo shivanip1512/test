@@ -15,7 +15,7 @@
         <jms:listener destination="yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest" ref="meterReadingArchiveRequestListener" method="handleArchiveRequest"/>
     </jms:listener-container>
 
-    <bean id="eventArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.EventArchiveRequestListener"/>
+	<bean id="eventArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.EventArchiveRequestListener"/>
     <jms:listener-container 
         connection-factory="connectionFactory" 
         destination-type="queue"
@@ -158,6 +158,8 @@
     <bean id= "missingGatewayFirstDataTimes" class="java.util.concurrent.ConcurrentHashMap"/>
        
     <bean class="com.cannontech.services.calculated.CalculatedPointDataProducer"/>
+    
+    <bean class="com.cannontech.services.rfn.RfnArchiveCache"/>
 
     <bean id="rfnDeviceArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.RfnDeviceArchiveRequestListener"/>
     <jms:listener-container
@@ -168,7 +170,17 @@
             container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="com.eaton.eas.yukon.networkmanager.RfnDeviceArchiveRequest" ref="rfnDeviceArchiveRequestListener" method="handleArchiveRequest"/>
     </jms:listener-container>
-        
+    
+    <bean id="rfnStatusArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.RfnStatusArchiveRequestListener"/>
+       <jms:listener-container
+            connection-factory="connectionFactory"
+            destination-type="queue"
+            concurrency="2"
+            container-type="simple"
+            container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="com.eaton.eas.yukon.networkmanager.RfnStatusArchiveRequest" ref="rfnStatusArchiveRequestListener" method="handleArchiveRequest"/>
+    </jms:listener-container>
+ 
     <bean id="rfnDataStreamingUpdateListener" class="com.cannontech.services.rfn.endpoint.RfnDataStreamingUpdateListener" />
     <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
         <property name="destinationName" value="com.eaton.eas.yukon.rfnDataStreamingUpdate" />

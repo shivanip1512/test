@@ -112,9 +112,14 @@ public interface RfnDeviceDao {
     void clearDynamicRfnDeviceData();
 
     /**
-     * Returns list of device ids for rfn identifiers
+     * Returns list of device ids for rfn identifiers. Cache lookup.
      */
     Set<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers);
 
     Integer findDeviceBySensorSerialNumber(String sensorSerialNumber);
+
+    /**
+     * Returns device id for rfn identifier. Cache lookup.
+     */
+    Integer getDeviceIdForRfnIdentifier(RfnIdentifier rfnIdentifier);
 }
