@@ -61,6 +61,17 @@ public class ApiCallHelper {
     }
 
     /**
+     * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP POST method for specified URI,
+     * input file and path variable.
+     * 
+     */
+    public static ExtractableResponse<?> post(String key, String fileName, String param) {
+        String uri = getProperty(key);
+        File file = getInputFile(fileName);
+        return getHeader().body(file).when().post(uri + param).then().extract();
+    }
+
+    /**
      * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP DELETE method for specified URI
      * and request parameter.
      * 
@@ -69,6 +80,18 @@ public class ApiCallHelper {
     public static ExtractableResponse<?> delete(String key, String param) {
         String uri = getProperty(key);
         return getHeader().delete(uri + param).then().extract();
+    }
+
+    /**
+     * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP DELETE method for specified
+     * URI, input file and path variable.
+     * 
+     */
+
+    public static ExtractableResponse<?> delete(String key, String fileName, String param) {
+        String uri = getProperty(key);
+        File file = getInputFile(fileName);
+        return getHeader().body(file).delete(uri + param).then().extract();
     }
 
     private static RequestSpecification getHeader() {
