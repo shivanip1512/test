@@ -33,8 +33,7 @@ class RfnAddressIdLookup {
      * @return The combined key, as a String.
      */
     private static String combinedKey(RfnAddress rfnAddress) {
-        //  Sensor model first, since that is most likely to mismatch
-        return rfnAddress.getModel() + rfnAddress.getManufacturer();
+        return rfnAddress.getManufacturer() + " " + rfnAddress.getModel();
     }
 
     
