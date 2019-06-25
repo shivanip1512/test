@@ -1062,7 +1062,7 @@ public final class JmsApiDirectory {
     public static JmsApi<RfnStatusArchiveRequest,?,RfnStatusArchiveResponse> RFN_STATUS_ARCHIVE =
             JmsApi.builder(RfnStatusArchiveRequest.class, RfnStatusArchiveResponse.class)
                   .name("RFN Status Archive")
-                  .description("A notification from Network Manager to Yukon for creation of a new device.")
+                  .description("A notification from Network Manager to Yukon to archive status.")
                   .communicationPattern(REQUEST_RESPONSE)
                   .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnStatusArchiveRequest"))
                   .responseQueue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnStatusArchiveResponse"))
@@ -1149,7 +1149,8 @@ public final class JmsApiDirectory {
                 RF_METADATA_MULTI,
                 RF_ALARM_ARCHIVE,
                 RF_EVENT_ARCHIVE,
-                RFN_DEVICE_ARCHIVE);
+                RFN_DEVICE_ARCHIVE,
+                RFN_STATUS_ARCHIVE);
         
         addApis(jmsApis, SMART_NOTIFICATION,
                 SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT,
