@@ -170,7 +170,7 @@ public class YukonValidationUtils extends ValidationUtils {
             return;
         }
 
-        if (required && !range.intersects(fieldValue)) {
+        if (fieldValue != null && !range.intersects(fieldValue)) {
             // using outOfRange for error message, could improve to something that better explains any inclusive/exclusive requirements as well
             errors.rejectValue(field, "yukon.web.error.outOfRangeObject", new Object[] { range.isIncludesMinValue() ? 1 : 0, range.getMin(),
                                                                                          range.isIncludesMaxValue() ? 1 : 0, range.getMax() },
