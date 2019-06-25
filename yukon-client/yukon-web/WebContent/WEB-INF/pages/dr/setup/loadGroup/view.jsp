@@ -64,12 +64,15 @@
         </tags:sectionContainer2>
         
         <!-- Include jsp for load group type -->
-        <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM'}">
+        <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
+                      selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">
             <%@ include file="expresscom.jsp" %>
             <%@ include file="loadGroupOptional.jsp" %>
         </c:if>
-        <c:if test="${selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">
-            <%@ include file="expresscom.jsp" %>
+        <c:if test="${selectedSwitchType == 'LM_GROUP_METER_DISCONNECT' || 
+                      selectedSwitchType == 'LM_GROUP_NEST' ||
+                      selectedSwitchType == 'LM_GROUP_ECOBEE' ||
+                      selectedSwitchType == 'LM_GROUP_HONEYWELL'}">
             <%@ include file="loadGroupOptional.jsp" %>
         </c:if>
 

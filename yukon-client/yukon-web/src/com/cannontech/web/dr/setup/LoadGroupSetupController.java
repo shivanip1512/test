@@ -71,6 +71,7 @@ public class LoadGroupSetupController {
         LoadGroupBase loadGroup = new LoadGroupBase();
         if (model.containsAttribute("loadGroup")) {
             loadGroup = (LoadGroupBase) model.get("loadGroup");
+            controllerHelper.buildModelMap(loadGroup.getType(), model);
         }
         model.addAttribute("selectedSwitchType", loadGroup.getType());
         model.addAttribute("loadGroup", loadGroup);
@@ -107,6 +108,7 @@ public class LoadGroupSetupController {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
                 return "redirect:/dr/setup/list";
             }
+            model.addAttribute("selectedSwitchType", loadGroup.getType());
             model.addAttribute("loadGroup", loadGroup);
             return "dr/setup/loadGroup/loadGroupView.jsp";
         } catch (ApiCommunicationException e) {
@@ -131,9 +133,11 @@ public class LoadGroupSetupController {
             } else if (model.containsAttribute("loadGroup")) {
                 loadGroup = (LoadGroupBase) model.get("loadGroup");
             }
+            controllerHelper.buildModelMap(loadGroup.getType(), model);
             model.addAttribute("loadGroup", loadGroup);
+            model.addAttribute("selectedSwitchType", loadGroup.getType());
             model.addAttribute("switchTypes", switchTypes);
-            return "dr/setup/loadGroup/view.jsp";
+            return "dr/setup/loadGroup/loadGroupView.jsp";
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
