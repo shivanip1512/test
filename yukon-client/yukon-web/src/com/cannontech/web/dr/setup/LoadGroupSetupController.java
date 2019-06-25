@@ -187,7 +187,7 @@ public class LoadGroupSetupController {
             FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id + "/delete");
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupDeleteUrl + id);
             ResponseEntity<? extends Object> response = deleteGroup(userContext, request, url, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {

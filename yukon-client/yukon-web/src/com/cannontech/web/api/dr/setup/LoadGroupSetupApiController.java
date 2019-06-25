@@ -47,7 +47,7 @@ public class LoadGroupSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @PostMapping("/{id}/copy")
+    @PostMapping("/copy/{id}")
     public ResponseEntity<Object> copy(@Valid @RequestBody LMCopy lmCopy, @PathVariable int id) {
         int paoId = loadGroupService.copy(id, lmCopy);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
@@ -55,7 +55,7 @@ public class LoadGroupSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}/delete")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> delete(@Valid @RequestBody LMDelete lmDelete, @PathVariable int id) {
         int paoId = loadGroupService.delete(id, lmDelete.getName());
         HashMap<String, Integer> paoIdMap = new HashMap<>();

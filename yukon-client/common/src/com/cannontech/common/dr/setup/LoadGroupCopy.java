@@ -1,30 +1,30 @@
 package com.cannontech.common.dr.setup;
 
 public class LoadGroupCopy extends LMCopy {
-    private Integer routeID;
+    private Integer routeId;
 
-    public Integer getRouteID() {
-        return routeID;
+    public Integer getRouteId() {
+        return routeId;
     }
 
-    public void setRouteID(Integer routeID) {
-        this.routeID = routeID;
+    public void setRouteId(Integer routeId) {
+        this.routeId = routeId;
     }
 
     @Override
     public void buildModel(LoadGroupBase group) {
         // Set parent fields
         super.buildModel(group);
-        if (getRouteID() != null) {
+        if (getRouteId() != null) {
             switch (group.getType()) {
             case LM_GROUP_EXPRESSCOMM:
-                ((LoadGroupExpresscom) group).setRouteID(getRouteID());
+                ((LoadGroupExpresscom) group).setRouteID(getRouteId());
                 break;
             case LM_GROUP_EMETCON:
-                ((LoadGroupEmetcon) group).setRouteID(getRouteID());
+                ((LoadGroupEmetcon) group).setRouteID(getRouteId());
                 break;
             case LM_GROUP_VERSACOM:
-                ((LoadGroupVersacom) group).setRouteId(getRouteID());
+                ((LoadGroupVersacom) group).setRouteId(getRouteId());
                 break;
             case LM_GROUP_SADIGITAL:
                 // TODO Implement Copy for SADigital
