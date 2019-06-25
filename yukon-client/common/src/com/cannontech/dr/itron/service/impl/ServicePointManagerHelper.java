@@ -11,10 +11,10 @@ import org.springframework.ws.soap.SoapFaultDetailElement;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.cannontech.common.util.xml.XmlUtils;
-import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.ErrorFault;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AccountType;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServicePointRequest;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.AddServicePointType;
+import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.ErrorFault;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.LocationType;
 import com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3.LocationTypeEnumeration;
 import com.cannontech.stars.dr.account.model.AccountDto;
@@ -131,8 +131,7 @@ public class ServicePointManagerHelper implements SoapFaultParser {
    public void handleSoapFault(SoapFaultClientException e, Set<String> faultCodesToIgnore, Logger log) {
        SoapFaultDetail soapFaultDetail = e.getSoapFault().getFaultDetail();
        soapFaultDetail.getDetailEntries().forEachRemaining(detail -> {
-           SoapFaultDetailElement detailElementChild =
-               (SoapFaultDetailElement) soapFaultDetail.getDetailEntries().next();
+           SoapFaultDetailElement detailElementChild = soapFaultDetail.getDetailEntries().next();
            Source detailSource = detailElementChild.getSource();
            ErrorFault fault = (ErrorFault) ItronEndpointManager.SERVICE_POINT.getMarshaller().unmarshal(detailSource);
            log.debug(XmlUtils.getPrettyXml(fault));

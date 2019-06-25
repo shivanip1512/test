@@ -67,15 +67,26 @@ public class DeviceManagerHelper implements SoapFaultParser {
      * DeviceManager::editHANDevice request – assigning a Service Point to an existing device
      */
     public static EditHANDeviceRequest buildEditRequestWithServicePoint(String macAddress, AccountDto account) {
+        //Create outer EditHANDeviceRequest 
         EditHANDeviceRequest request = new EditHANDeviceRequest();
-        EditPrimaryHANDeviceType editType = new EditPrimaryHANDeviceType();
-        editType.setMacID(macAddress);
-        EditD2GAttributeType attribute = new EditD2GAttributeType();
-        NullableString nullableString = new NullableString();
-        nullableString.setNull(false);
-        nullableString.setValue(account.getAccountNumber());
-        attribute.setServicePointUtilID(nullableString);
-        request.setD2GAttributes(attribute);
+        
+        //Create inner D2GAttributes 
+        EditD2GAttributeType d2GAttributes = new EditD2GAttributeType();
+        
+        //Create PrimaryAttributes and add it to D2GAttributes
+        EditPrimaryHANDeviceType primaryAttributes = new EditPrimaryHANDeviceType();
+        primaryAttributes.setMacID(macAddress);
+        d2GAttributes.setPrimaryAttributes(primaryAttributes);
+        
+        //Create ServicePointUtilID and add it to D2GAttributes
+        NullableString servicePointUtilId = new NullableString();
+        servicePointUtilId.setNull(false);
+        servicePointUtilId.setValue(account.getAccountNumber());
+        d2GAttributes.setServicePointUtilID(servicePointUtilId);
+        
+        //Add D2GAttributes to request
+        request.setD2GAttributes(d2GAttributes);
+        
         return request;
     }
     
