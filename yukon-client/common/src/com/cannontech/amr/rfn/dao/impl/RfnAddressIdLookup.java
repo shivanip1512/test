@@ -24,7 +24,7 @@ class RfnAddressIdLookup {
      * @return The combined key, as a String.
      */
     private static String combinedKey(RfnIdentifier rfnIdentifier) {
-        return rfnIdentifier.getSensorManufacturer() + " " + rfnIdentifier.getSensorModel();
+        return rfnIdentifier.getSensorManufacturer() + "_" + rfnIdentifier.getSensorModel();
     }
 
     /**
@@ -33,7 +33,7 @@ class RfnAddressIdLookup {
      * @return The combined key, as a String.
      */
     private static String combinedKey(RfnAddress rfnAddress) {
-        return rfnAddress.getManufacturer() + " " + rfnAddress.getModel();
+        return rfnAddress.getManufacturer() + "_" + rfnAddress.getModel();
     }
 
     
@@ -49,7 +49,7 @@ class RfnAddressIdLookup {
     /**
      * Queries the cache for a list of RfnIdentifiers.
      */
-    Set<Integer> get(Iterable<RfnIdentifier> rfnIdentifiers) {
+    Set<Integer> getAll(Iterable<RfnIdentifier> rfnIdentifiers) {
         Map<String, List<String>> keyToIdentifiers = 
                 StreamUtils.stream(rfnIdentifiers)
                           .collect(Collectors.groupingBy(RfnAddressIdLookup::combinedKey,
@@ -65,15 +65,7 @@ class RfnAddressIdLookup {
     }
 
     /**
-     * Puts a single address mapping into the cache.
-     */
-    void put(RfnAddress address) {
-        cache.computeIfAbsent(combinedKey(address), unused -> new SerialLookup())
-             .put(address.getSerialNumber(), address.getDeviceID());
-    }
-
-    /**
-     * Puts multiple address mappings into the cache.
+     * Puts address mappings into the cache.
      */
     void putAll(List<RfnAddress> addresses) {
         addresses.stream()
@@ -86,9 +78,7 @@ class RfnAddressIdLookup {
     }
 
     /**
-     * Removes multiple paoIds from the cache.  Relatively expensive, since it has to iterate all serial mappings.
-     * @param paoIds
-     * @param rfnIdentifiers
+     * Removes paoIds from the cache.  Relatively expensive, since it has to iterate all serial mappings.
      */
     void remove(Set<Integer> paoIds) {
         cache.values().forEach(serialLookup -> serialLookup.removeAll(paoIds));

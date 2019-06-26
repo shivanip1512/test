@@ -26,7 +26,7 @@ class SerialLookup {
     private Map<Long, Integer> numericSerials = Maps.newHashMap();
     private PatriciaTrie<Integer> stringSerials = new PatriciaTrie<>();
     
-    public void put(String serial, Integer paoId) {
+    private void put(String serial, Integer paoId) {
         if (NumberUtils.isDigits(serial)) {
             try {
                 numericSerials.put(Long.parseUnsignedLong(serial), paoId);

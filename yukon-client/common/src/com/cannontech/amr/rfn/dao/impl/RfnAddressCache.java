@@ -1,10 +1,12 @@
 package com.cannontech.amr.rfn.dao.impl;
 
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.StampedLock;
-import java.util.function.Predicate;
 import org.apache.logging.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.clientutils.YukonLogManager;
@@ -18,11 +20,12 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.Sets;
 
 class RfnAddressCache implements DBChangeListener {
 
-    static final Logger log = YukonLogManager.getLogger(RfnAddressCache.class);
+    private static final Logger log = YukonLogManager.getLogger(RfnAddressCache.class);
 
     private static final YukonRowMapper<RfnAddress> rfnAddressRowMapper = rs -> {
         var rfnAddress = new RfnAddress();
@@ -48,7 +51,7 @@ class RfnAddressCache implements DBChangeListener {
      * A list of paoIds that have been modified and not reloaded yet.
      * Since this is a one-way mapping of rfnAddress to paoId, we don't know which rfnAddress was modified.
      */
-    private Set<Integer> invalidatedPaoIds = Sets.newHashSet();
+    private Map<DbChangeType, Set<Integer>> dbChanges = new EnumMap<>(DbChangeType.class);
 
     public RfnAddressCache(YukonJdbcTemplate jdbcTemplate, AsyncDynamicDataSource dynamicDataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -62,29 +65,17 @@ class RfnAddressCache implements DBChangeListener {
 
     @Override
     public void dbChangeReceived(DBChangeMsg dbChange) {
-        Predicate<DBChangeMsg> isDeviceChange = msg ->
-                msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB 
-                    && msg.getCategory().equalsIgnoreCase(PaoCategory.DEVICE.getDbString());
-
         switch (dbChange.getDbChangeType()) {
         case DELETE:
         case UPDATE:
-            if (isDeviceChange.test(dbChange)) {
-                //  Add the deleted/updated pao ID to the invalidated list to be reloaded when it is next accessed.
-                withWriteLock(() -> invalidatedPaoIds.add(dbChange.getId()));
-            }
-            break;
         case ADD:
-            if (isDeviceChange.test(dbChange)) {
-                RfnAddress address = loadRfnAddress(dbChange.getId());
-                if (address != null) {
-                    withWriteLock(() -> lookup.put(address));
-                } else {
-                    log.warn("Could not load RfnAddress for paoId " + dbChange.getId());
-                }
+            if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB &&
+                dbChange.getCategory().equalsIgnoreCase(PaoCategory.DEVICE.getDbString())) {
+                withWriteLock(() -> 
+                    dbChanges.computeIfAbsent(dbChange.getDbChangeType(), unused -> new HashSet<>())
+                             .add(dbChange.getId()));
             }
             break;
-        case NONE:
         default:
             break;
         }
@@ -138,9 +129,9 @@ class RfnAddressCache implements DBChangeListener {
         log.trace("Entering getPaoIdFor " + rfnIdentifier);
         long stamp = cacheLock.readLock();
         try {
-            if (!invalidatedPaoIds.isEmpty()) {
+            if (!dbChanges.isEmpty()) {
                 stamp = convertToWriteLock(cacheLock, stamp);
-                reloadInvalidatedPaoIds();
+                handleDbChanges();
             }
             Integer paoId = lookup.get(rfnIdentifier);
             log.trace("returning " + paoId + " for " + rfnIdentifier);
@@ -159,11 +150,11 @@ class RfnAddressCache implements DBChangeListener {
         long stamp = cacheLock.readLock();
         log.trace("Read lock acquired");
         try {
-            if (!invalidatedPaoIds.isEmpty()) {
+            if (!dbChanges.isEmpty()) {
                 stamp = convertToWriteLock(cacheLock, stamp);
-                reloadInvalidatedPaoIds();
+                handleDbChanges();
             }
-            Set<Integer> paoIds = lookup.get(rfnIdentifiers);
+            Set<Integer> paoIds = lookup.getAll(rfnIdentifiers);
             log.trace("returning " + paoIds.size() + " paoIds");
             return paoIds;
         } finally {
@@ -181,26 +172,6 @@ class RfnAddressCache implements DBChangeListener {
         sql.append("SELECT DeviceId, Manufacturer, Model, SerialNumber");
         sql.append("FROM RfnAddress rfn");
         return sql;
-    }
-
-    /**
-     * Loads the RfnIdentifier for a specific paoId.
-     * @return The RfnIdentifier-to-paoId mapping, or null if none.
-     */
-    private RfnAddress loadRfnAddress(Integer paoId) {
-
-        SqlStatementBuilder sql = getRfnAddressBaseSql();
-        sql.append("where DeviceId").eq(paoId);
-
-        try {
-            RfnAddress rfnAddress = jdbcTemplate.queryForObject(sql, rfnAddressRowMapper);
-            log.debug("Retrieved " + rfnAddress + " for query " + sql + sql.getArgumentList());
-            return rfnAddress;
-        } catch (@SuppressWarnings("unused")
-        EmptyResultDataAccessException e) {
-            log.warn("No results returned for pao ID " + paoId);
-            return null;
-        }
     }
 
     /**
@@ -241,22 +212,35 @@ class RfnAddressCache implements DBChangeListener {
     }
 
     /**
-     * Reloads paoIds that have been deleted or updated. Called lazily whenever
+     * Handles paoIds that have been deleted, updated, or added. Called lazily whenever
      * the next getPaoIdFor() or getPaoIdsFor() call is made.
      */
-    private void reloadInvalidatedPaoIds() {
-        log.trace("Entering reloadInvalidatedPaoIds");
+    private void handleDbChanges() {
+        log.trace("Entering handleDbChanges");
 
-        lookup.remove(invalidatedPaoIds);
+        if (dbChanges.isEmpty()) {
+            log.trace("dbChanges empty, returning early");
+            return;
+        }
+        
+        Set<Integer> deletes = dbChanges.getOrDefault(DbChangeType.DELETE, Collections.emptySet());
+        Set<Integer> updates = dbChanges.getOrDefault(DbChangeType.UPDATE, Collections.emptySet());
+        Set<Integer> inserts = dbChanges.getOrDefault(DbChangeType.ADD, Collections.emptySet());
+        
+        Set<Integer> removals = Sets.union(deletes, updates);
+        
+        lookup.remove(removals);
 
-        List<RfnAddress> addresses = loadRfnAddresses(invalidatedPaoIds);
+        Set<Integer> loads = Sets.union(updates, inserts);
+        
+        List<RfnAddress> addresses = loadRfnAddresses(loads);
 
         lookup.putAll(addresses);
 
-        log.trace("Loaded " + addresses.size() + " addresses out of " + invalidatedPaoIds.size() + " paoIds");
+        log.trace("Loaded " + addresses.size() + " addresses out of " + loads.size() + " paoIds");
 
-        invalidatedPaoIds.clear();
+        dbChanges.clear();
 
-        log.trace("ReloadInvalidatedPaoIds complete");
+        log.trace("handleDbChanges complete");
     }
 }
