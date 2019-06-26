@@ -2,7 +2,9 @@ package com.cannontech.dr.assetavailability.dao.impl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.Instant;
@@ -15,11 +17,13 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -39,6 +43,8 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private RfnGatewayService rfnGatewayService;
 
     @Override
     public SearchResults<ApplianceAssetAvailabilityDetails> getAssetAvailabilityDetailsWithAppliance(Iterable<Integer> loadGroupIds,
@@ -91,7 +97,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
             + "InventoryBase inv");
         sqlCommon.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
         sqlCommon.append("LEFT OUTER JOIN DynamicRfnDeviceData drdd ON (inv.DeviceID=drdd.DeviceId)");
-        sqlCommon.append("LEFT JOIN YukonPAObject gatewayPao ON drdd.GatewayId = gatewayPao.PAObjectID");
+        sqlCommon.append("LEFT OUTER JOIN YukonPAObject gatewayPao ON drdd.GatewayId = gatewayPao.PAObjectID");
         sqlCommon.append("WHERE inv.InventoryID=lmbase.InventoryID AND lmbase.InventoryID=hdconf.InventoryID");
         sqlCommon.append("AND hdconf.ApplianceID=appbase.ApplianceID");
         sqlCommon.append("AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
@@ -315,7 +321,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
     }
 
     public SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups, Iterable<Integer> loadGroupIds,
-            PagingParameters pagingParameters, AssetAvailabilityCombinedStatus[] filterCriteria,
+            PagingParameters pagingParameters, AssetAvailabilityCombinedStatus[] filterCriteria, Integer[] selectedGateways,
             SortBy sortBy, Direction direction, Instant communicatingWindowEnd, Instant runtimeWindowEnd,
             Instant currentTime, YukonUserContext userContext) {
         String sortingOrder = (sortBy == null) ? AssetAvailabilityDao.SortBy.SERIALNUM.getDbString() : sortBy.getDbString();
@@ -342,12 +348,16 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
             + "InventoryBase inv");
         sqlCommon.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
         sqlCommon.append("LEFT OUTER JOIN DynamicRfnDeviceData drdd ON (inv.DeviceID=drdd.DeviceId)");
-        sqlCommon.append("LEFT JOIN YukonPAObject gatewayPao ON drdd.GatewayId = gatewayPao.PAObjectID");
+        sqlCommon.append("LEFT OUTER JOIN YukonPAObject gatewayPao ON drdd.GatewayId = gatewayPao.PAObjectID");
         sqlCommon.append("WHERE inv.InventoryID=lmbase.InventoryID AND lmbase.InventoryID=hdconf.InventoryID");
         sqlCommon.append("AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
         sqlCommon.append("WHERE AddressingGroupID").in(loadGroupIds);
         if (!CollectionUtils.isEmpty(subGroups)) {
             sqlCommon.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(subGroups, "inv.DeviceId"));
+        }
+        if (selectedGateways!=null && selectedGateways.length!=0) {
+            List<Integer> gateways = Arrays.asList(selectedGateways);
+            sqlCommon.append("AND drdd.GatewayId").in(gateways);
         }
         sqlCommon.append(")) innertable ");
         
@@ -390,6 +400,15 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
             SearchResults.pageBasedForSublist(resultList, pagingParameters, totalHitCount);
         return result;
     }
+    
+    @Override
+    public List<RfnGateway> getRfnGatewayList(Iterable<Integer> loadGroupIds) {
+        SqlStatementBuilder allGatewaysSql = buildGatewaySelect(loadGroupIds);
+        return jdbcTemplate.query(allGatewaysSql, TypeRowMapper.INTEGER)
+                .stream()
+                .map(rfnGatewayService::getGatewayByPaoId)
+                .collect(Collectors.toList());
+    }
 
     private SqlStatementBuilder buildAssetAvailabilityDetailsCommonsql(Instant communicatingWindowEnd, Instant runtimeWindowEnd,
             Instant currentTime) {
@@ -422,5 +441,20 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         return sqlCommon;
 
     }
-
+    
+    private SqlStatementBuilder buildGatewaySelect(Iterable<Integer> loadGroupIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT drdd.GatewayId ");
+        sql.append("FROM LMHardwareBase lmbase, LMHardwareConfiguration hdconf, InventoryBase inv ");
+        sql.append("JOIN YukonPAObject ypo ON (inv.deviceID = ypo.PAObjectID) ");
+        sql.append("LEFT OUTER JOIN DynamicRfnDeviceData drdd ON (inv.DeviceID = drdd.DeviceId) ");
+        sql.append("WHERE inv.InventoryID = lmbase.InventoryID ");
+        sql.append("AND lmbase.InventoryID = hdconf.InventoryID AND lmbase.InventoryID IN ");
+        sql.append("(SELECT DISTINCT InventoryId ");
+        sql.append("FROM LMHardwareConfiguration) ");
+        sql.append("AND drdd.GatewayID IS NOT NULL ");
+        sql.append("AND AddressingGroupID").in(loadGroupIds);
+        sql.append("ORDER BY drdd.GatewayId ASC");
+        return sql;
+    }
 }

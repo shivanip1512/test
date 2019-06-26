@@ -16,7 +16,7 @@ yukon.dr.assetavailability.detail = (function () {
     _filterResults = function () {
         var filters = _getFilters();
         yukon.ui.blockPage();
-        var url = yukon.url('/dr/assetAvailability/filterResults?paobjectId=' + filters.paobjectId + '&deviceSubGroups=' + filters.deviceSubGroups + '&statuses=' + filters.statuses);
+        var url = yukon.url('/dr/assetAvailability/filterResults?paobjectId=' + filters.paobjectId + '&deviceSubGroups=' + filters.deviceSubGroups + '&statuses=' + filters.statuses + '&selectedGateways=' + filters.selectedGateways);
         $.get(url, function (data) {
             $("#js-filtered-results").html(data);
         }).always(function () {
@@ -27,10 +27,11 @@ yukon.dr.assetavailability.detail = (function () {
     
     _getFilters = function () {
         var statuses = [],
-            deviceSubGroups = [];
+            deviceSubGroups = [],
+            selectedGateways = [];
         
         $('input[name=statuses]').each(function (index, element) {
-            if($(element).prop('checked')){
+            if($(element).prop('checked')) {
                 statuses.push($(element).val());
             }
         });
@@ -43,11 +44,14 @@ yukon.dr.assetavailability.detail = (function () {
         $("input[name=deviceSubGroups]").each(function (index, element) {
             deviceSubGroups.push($(element).val());
         });
+       
+        selectedGateways =  $("#selectedGatewayIds").chosen().val();
         
         var filters = {
         		paobjectId : $("input[name=paobjectId]").val(),
                 deviceSubGroups : deviceSubGroups,
-                statuses : statuses 
+                statuses : statuses, 
+                selectedGateways : selectedGateways
         };
         
         return filters;
@@ -83,7 +87,7 @@ yukon.dr.assetavailability.detail = (function () {
 
             $(document).on('click', '.js-download-filter-result', function () {
                 var filters = _getFilters();
-                window.location.href = yukon.url('/dr/assetAvailability/downloadFilteredResults?paobjectId=' + filters.paobjectId + '&deviceSubGroups=' + filters.deviceSubGroups 
+                window.location.href = yukon.url('/dr/assetAvailability/downloadFilteredResults?paobjectId=' + filters.paobjectId + '&deviceSubGroups=' + filters.deviceSubGroups +"&selectedGatewayIds=" + filters.selectedGateways
                         + '&statuses=' + filters.statuses);
              });
             
@@ -98,6 +102,8 @@ yukon.dr.assetavailability.detail = (function () {
                     data = $('#js-asset-availability-filter-form').serialize();
                 window.open(yukon.url('/dr/assetAvailability/collectionAction?actionUrl=' + actionUrl + '&' + data));
             });
+            
+            $(".js-primary-gateway-select").chosen({width: "300px"});
 
             _filterResults();
 

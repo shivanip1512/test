@@ -11,6 +11,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
@@ -83,11 +84,18 @@ public interface AssetAvailabilityService {
     public Set<SimpleDevice> getUnavailableDevicesInDrGrouping(YukonPao yukonPao);
 
     /**
+     * Gets all primary gateways of assets for a program/load group/control area/scenario
+     * @param paoIdentifier - Identify a program, load group, control area or scenario
+     * @return A list of all gateways of assets
+     */
+    public List<RfnGateway> getRfnGatewayList(PaoIdentifier paoIdentifier);
+    
+    /**
      * Gets the details of assets for a program/load group/control area/scenario based on subGroups, filters and paging
      * provided.
      */
     SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups,
-            PaoIdentifier paoIdentifier, PagingParameters paging, AssetAvailabilityCombinedStatus[] filters,
+            PaoIdentifier paoIdentifier, PagingParameters paging, AssetAvailabilityCombinedStatus[] filters, Integer[] selectedGateways,
             SortBy sortBy, Direction direction, YukonUserContext userContext);
-
+    
 }

@@ -9,6 +9,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
@@ -91,6 +92,7 @@ public interface AssetAvailabilityDao {
      * @param loadGroupIds -- list of load group ids.
      * @param pagingParameters -- paging details.
      * @param filters -- filter details.
+     * @param selectedGateways -- list of selected primary gateways
      * @param sortBy -- Sorting details. Sorting order and direction are fetched from this.
      * @param direction -- Sorting direction details.
      * @param communicatingWindowEnd -- communicating window end time.
@@ -101,8 +103,14 @@ public interface AssetAvailabilityDao {
      */
     SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups,
             Iterable<Integer> loadGroupIds, PagingParameters pagingParameters,
-            AssetAvailabilityCombinedStatus[] filterCriteria, SortBy sortBy, Direction direction,
-            Instant communicatingWindowEnd, Instant runtimeWindowEnd, Instant currentTime,
+            AssetAvailabilityCombinedStatus[] filterCriteria, Integer[] selectedGateways, SortBy sortBy, Direction direction,
+            Instant communicatingWindowEnd, Instant runtimeWindowEnd, Instant currentTime, 
             YukonUserContext userContext);
+    
+    /**
+     * Creates RfnGatewayList which has all primary gateways of assets
+     * @param loadGroupIds -- list of load group ids
+     */
+     List<RfnGateway> getRfnGatewayList(Iterable<Integer> loadGroupIds);
 
 }

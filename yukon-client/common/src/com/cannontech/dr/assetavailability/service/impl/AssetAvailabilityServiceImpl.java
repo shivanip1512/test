@@ -20,6 +20,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilityDetails;
@@ -179,7 +180,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
 
     @Override
     public SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups,
-            PaoIdentifier paoIdentifier, PagingParameters paging, AssetAvailabilityCombinedStatus[] filters,
+            PaoIdentifier paoIdentifier, PagingParameters paging, AssetAvailabilityCombinedStatus[] filters, Integer[] selectedGateways,
             SortBy sortBy, Direction direction, YukonUserContext userContext) {
         log.debug("Calculating asset availability for " + paoIdentifier.getPaoType() + " " + paoIdentifier.getPaoId());
         Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(paoIdentifier);
@@ -189,12 +190,19 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         Instant runtimeWindowEnd = now.minus(getRuntimeWindowDuration());
 
         SearchResults<AssetAvailabilityDetails> assetAvailabilityDetails =
-            assetAvailabilityDao.getAssetAvailabilityDetails(subGroups, loadGroupIds, paging, filters, sortBy, direction,
+            assetAvailabilityDao.getAssetAvailabilityDetails(subGroups, loadGroupIds, paging, filters, selectedGateways, sortBy, direction,
                 communicatingWindowEnd, runtimeWindowEnd, now, userContext);
 
         return assetAvailabilityDetails;
     }
 
+    @Override 
+    public List<RfnGateway> getRfnGatewayList(PaoIdentifier paoIdentifier) {
+        Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(paoIdentifier);
+        List<RfnGateway> rfnGateways = assetAvailabilityDao.getRfnGatewayList(loadGroupIds);
+        return rfnGateways;
+    }
+    
     /**
      * From the supplied sets and maps, this method determines the asset availability of each inventory and returns a
      * map of inventoryId to SimpleAssetAvailability of that inventory.

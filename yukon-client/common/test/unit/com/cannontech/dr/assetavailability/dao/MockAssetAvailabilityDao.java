@@ -12,6 +12,11 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
+import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
@@ -23,6 +28,17 @@ import com.google.common.collect.Sets;
 
 public class MockAssetAvailabilityDao implements AssetAvailabilityDao {
 
+    private final String gatewayName = "Test Gateway";
+    private final PaoIdentifier gatewayPaoId = new PaoIdentifier(100, PaoType.RFN_GATEWAY);
+    private static final RfnIdentifier gatewayRfnId = new RfnIdentifier("10000", "CPS", "RFGateway");
+    private final static String gateway2Name = "Test Gateway 2";
+    
+    private static RfnGatewayData createEmptyRfnGatewayData(RfnIdentifier rfnIdentifier) {
+        GatewayDataResponse gatewayDataResponse = new GatewayDataResponse();
+        gatewayDataResponse.setRfnIdentifier(rfnIdentifier);
+        return new RfnGatewayData(gatewayDataResponse, gateway2Name);
+    }
+    
     @Override
     public SearchResults<ApplianceAssetAvailabilityDetails> getAssetAvailabilityDetailsWithAppliance(Iterable<Integer> loadGroupIds,
             PagingParameters pagingParameters, AssetAvailabilityCombinedStatus[] filterCriteria,
@@ -69,7 +85,7 @@ public class MockAssetAvailabilityDao implements AssetAvailabilityDao {
     @Override
     public SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(List<DeviceGroup> subGroups,
             Iterable<Integer> loadGroupIds, PagingParameters pagingParameters,
-            AssetAvailabilityCombinedStatus[] filterCriteria, SortBy sortBy, Direction direction,
+            AssetAvailabilityCombinedStatus[] filterCriteria, Integer[] selectedGateways, SortBy sortBy, Direction direction,
             Instant communicatingWindowEnd, Instant runtimeWindowEnd, Instant currentTime,
             YukonUserContext userContext) {
         List<AssetAvailabilityDetails> resultList = new ArrayList<AssetAvailabilityDetails>();
@@ -85,5 +101,12 @@ public class MockAssetAvailabilityDao implements AssetAvailabilityDao {
 
         return result;
     }
-
+    
+    @Override
+    public List<RfnGateway> getRfnGatewayList(Iterable<Integer> loadGroupIds) {
+        List<RfnGateway> resultList = new ArrayList<RfnGateway>();
+        RfnGateway rfnGateway = new RfnGateway(gatewayName, gatewayPaoId, gatewayRfnId, createEmptyRfnGatewayData(gatewayRfnId));
+        resultList.add(rfnGateway);
+        return resultList;
+    }
 }

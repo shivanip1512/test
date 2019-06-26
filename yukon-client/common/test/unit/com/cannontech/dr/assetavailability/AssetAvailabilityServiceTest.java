@@ -381,7 +381,7 @@ public class AssetAvailabilityServiceTest {
         PaoIdentifier paoIdentifier = new PaoIdentifier(107, PaoType.LM_CONTROL_AREA);
         
         SearchResults<AssetAvailabilityDetails> result = assetAvailabilityService.getAssetAvailabilityDetails(null,paoIdentifier, 
-            PagingParameters.EVERYTHING, filters, null, Direction.asc, null);
+            PagingParameters.EVERYTHING, filters, null, null, Direction.asc, null);
         List<AssetAvailabilityDetails> assetAvailabilityDetails = result.getResultList();
 
         testAssetAvailabilityDetails(assetAvailabilityDetails.get(0));

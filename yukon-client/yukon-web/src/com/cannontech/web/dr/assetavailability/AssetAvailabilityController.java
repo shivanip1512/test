@@ -40,6 +40,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.DeviceDao;
@@ -49,7 +50,6 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
-import com.cannontech.dr.assetavailability.dao.AssetAvailabilityDao;
 import com.cannontech.dr.assetavailability.dao.AssetAvailabilityDao.SortBy;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -115,13 +115,14 @@ public class AssetAvailabilityController {
     }
     
     @GetMapping(value = "detail")
-    public String detail(ModelMap model, Integer paobjectId, AssetAvailabilityCombinedStatus[] statuses,
+    public String detail(ModelMap model, Integer paobjectId, Integer[] selectedGatewayIds, AssetAvailabilityCombinedStatus[] statuses,
             YukonUserContext userContext,
             @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging) {
         Instant lastUpdateTime = new Instant();
         AssetAvailabilityWidgetSummary summary = assetAvailabilityWidgetService.getAssetAvailabilitySummary(
             paobjectId, lastUpdateTime);
+        model.addAttribute("selectedGateways", selectedGatewayIds);
         model.addAttribute("summary", summary);
         model.addAttribute("totalDevices", summary.getTotalDeviceCount());
         model.addAttribute("statusTypes", AssetAvailabilityCombinedStatus.values());
@@ -132,6 +133,10 @@ public class AssetAvailabilityController {
         } else {
             model.addAttribute("statuses", statuses);
         }
+        
+        PaoIdentifier paoIdentifier = cache.getAllPaosMap().get(paobjectId).getPaoIdentifier();
+        List<RfnGateway> gateways = assetAvailabilityService.getRfnGatewayList(paoIdentifier);
+        model.addAttribute("gateways", gateways);
         
         /* set Asset Availability filter help text. */
         long totalHours = globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS);
@@ -156,12 +161,12 @@ public class AssetAvailabilityController {
     }
     
     @GetMapping(value = "collectionAction")
-    public String collectionAction(String actionUrl, Integer paobjectId, String[] deviceSubGroups,
+    public String collectionAction(String actionUrl, Integer paobjectId, Integer[] selectedGatewayIds, String[] deviceSubGroups,
             AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext) {
         PaoIdentifier paoIdentifier = cache.getAllPaosMap().get(paobjectId).getPaoIdentifier();
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         SearchResults<AssetAvailabilityDetails> searchResults = assetAvailabilityService.getAssetAvailabilityDetails(
-            subGroups, paoIdentifier, PagingParameters.EVERYTHING, statuses,
+            subGroups, paoIdentifier, PagingParameters.EVERYTHING, statuses, selectedGatewayIds,
             AssetAvailabilitySortBy.SERIAL_NUM.getValue(), Direction.asc, userContext);
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         List<Integer> deviceIds = searchResults.getResultList().stream().filter(assetAvailabilityDetail -> assetAvailabilityDetail.getDeviceId() != 0)
@@ -205,26 +210,26 @@ public class AssetAvailabilityController {
 
     @GetMapping(value = "filterResults")
     public String filterResults(ModelMap model, Integer paobjectId, String[] deviceSubGroups,
-            AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext,
+            AssetAvailabilityCombinedStatus[] statuses, Integer[] selectedGateways, YukonUserContext userContext,
             @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging) {
-        getFilteredResults(model, sorting, paging, userContext, paobjectId, deviceSubGroups,
+        getFilteredResults(model, sorting, paging, userContext, paobjectId, selectedGateways, deviceSubGroups,
             statuses);
         return "dr/assetAvailability/filteredResults.jsp";
     }
     
     @GetMapping(value = "filterResultsTable")
-    public String filterResultsTable(ModelMap model, Integer paobjectId, String[] deviceSubGroups,
-            AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext,
+    public String filterResultsTable(ModelMap model, Integer paobjectId,  String[] deviceSubGroups,
+            AssetAvailabilityCombinedStatus[] statuses, Integer[] selectedGateways, YukonUserContext userContext,
             @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging) {
-        getFilteredResults(model, sorting, paging, userContext, paobjectId, deviceSubGroups,
+        getFilteredResults(model, sorting, paging, userContext, paobjectId, selectedGateways, deviceSubGroups,
             statuses);
         return "dr/assetAvailability/filteredResultsTable.jsp";
     }
     
     private void getFilteredResults(ModelMap model, SortingParameters sorting, PagingParameters paging,
-            YukonUserContext userContext, Integer paobjectId, String[] deviceSubGroups,
+            YukonUserContext userContext, Integer paobjectId, Integer[] selectedGatewayIds, String[] deviceSubGroups,
             AssetAvailabilityCombinedStatus[] statuses) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         if (statuses == null) {
@@ -246,8 +251,8 @@ public class AssetAvailabilityController {
         SortBy sortByValue = AssetAvailabilitySortBy.valueOf(sorting.getSort()).getValue();
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         SearchResults<AssetAvailabilityDetails> searchResults = assetAvailabilityService.getAssetAvailabilityDetails(
-            subGroups, paoIdentifier, paging, statuses, sortByValue, sorting.getDirection(), userContext);
-        
+            subGroups, paoIdentifier, paging, statuses, selectedGatewayIds, sortByValue, sorting.getDirection(), userContext);
+        model.addAttribute("selectedGateways", selectedGatewayIds);
         model.addAttribute("searchResults", searchResults);
         
         /* PAO Notes */
@@ -277,13 +282,13 @@ public class AssetAvailabilityController {
         // get the header row
         String[] headerRow = getDownloadHeaderRow(userContext);
         // get the data rows
-        List<String[]> dataRows = getDownloadDataRows(liteYukonPAObject, userContext, null, null);
+        List<String[]> dataRows = getDownloadDataRows(liteYukonPAObject, userContext, null, null, null);
 
         writeToCSV(headerRow, dataRows, liteYukonPAObject.getPaoName(), response, userContext);
     }
 
     @GetMapping("/downloadFilteredResults")
-    public void downloadFilteredAssetAvailability(Integer paobjectId, String[] deviceSubGroups,
+    public void downloadFilteredAssetAvailability(Integer paobjectId, String[] deviceSubGroups, Integer[] selectedGatewayIds,
             AssetAvailabilityCombinedStatus[] statuses, HttpServletResponse response, YukonUserContext userContext)
             throws IOException {
         LiteYukonPAObject liteYukonPAObject = cache.getAllPaosMap().get(paobjectId);
@@ -291,18 +296,18 @@ public class AssetAvailabilityController {
         String[] headerRow = getDownloadHeaderRow(userContext);
         // get the data rows
         List<String[]> dataRows =
-            getDownloadDataRows(liteYukonPAObject, userContext, retrieveSubGroups(deviceSubGroups), statuses);
+            getDownloadDataRows(liteYukonPAObject, userContext, retrieveSubGroups(deviceSubGroups), statuses, selectedGatewayIds);
 
         writeToCSV(headerRow, dataRows, liteYukonPAObject.getPaoName(), response, userContext);
     }
 
     @GetMapping("/inventoryAction")
-    public String inventoryAction(ModelMap model, Integer paobjectId, String[] deviceSubGroups,
+    public String inventoryAction(ModelMap model, Integer paobjectId, Integer[] selectedGatewayIds, String[] deviceSubGroups,
             AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext) {
         PaoIdentifier paoIdentifier = cache.getAllPaosMap().get(paobjectId).getPaoIdentifier();
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         SearchResults<AssetAvailabilityDetails> searchResults = assetAvailabilityService.getAssetAvailabilityDetails(
-            subGroups, paoIdentifier, PagingParameters.EVERYTHING, statuses,
+            subGroups, paoIdentifier, PagingParameters.EVERYTHING, statuses, selectedGatewayIds,
             AssetAvailabilitySortBy.SERIAL_NUM.getValue(), Direction.asc, userContext);
 
         List<InventoryIdentifier> inventoryIdentifieres = searchResults.getResultList().stream().map(
@@ -335,12 +340,12 @@ public class AssetAvailabilityController {
     }
 
     private List<String[]> getDownloadDataRows(LiteYukonPAObject liteYukonPAObject, YukonUserContext userContext,
-            List<DeviceGroup> subGroups, AssetAvailabilityCombinedStatus[] statuses) {
+            List<DeviceGroup> subGroups, AssetAvailabilityCombinedStatus[] statuses, Integer[] selectedGatewayIds) {
 
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         SearchResults<AssetAvailabilityDetails> results = assetAvailabilityService.getAssetAvailabilityDetails(
-            subGroups, liteYukonPAObject.getPaoIdentifier(), PagingParameters.EVERYTHING, statuses, null, Direction.asc, userContext);
+            subGroups, liteYukonPAObject.getPaoIdentifier(), PagingParameters.EVERYTHING, statuses, selectedGatewayIds, null, Direction.asc, userContext);
 
         List<String[]> dataRows = Lists.newArrayList();
 

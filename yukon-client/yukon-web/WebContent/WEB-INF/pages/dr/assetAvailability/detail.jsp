@@ -73,6 +73,20 @@
                             </c:forEach>
                         </div>
                     </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".primaryGateway">
+                        <cti:msg2 var="gatewayPlaceholder" key=".selectGateways"/>
+                        <select id="selectedGatewayIds" name="selectedGatewayIds" class="js-primary-gateway-select" multiple="multiple" data-placeholder="${gatewayPlaceholder}">
+                            <c:forEach var="gateway" items="${gateways}">
+                                <c:set var="checked" value="${false}"/>
+                                <c:forEach var="selectedGateway" items="${selectedGateways}">
+                                    <c:if test="${gateway.id == selectedGateway}">
+                                        <c:set var="checked" value="selected='selected'"/>
+                                    </c:if>
+                                </c:forEach>
+                                <option value="${gateway.id}" ${checked}>${fn:escapeXml(gateway.name)}</option>
+                            </c:forEach>
+                        </select>
+                    </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div class="action-area">
                     <cti:button classes="primary action js-filter-results" nameKey="filter" busy="true"/>

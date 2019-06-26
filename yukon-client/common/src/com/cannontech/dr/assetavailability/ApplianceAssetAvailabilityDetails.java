@@ -5,7 +5,7 @@ import com.cannontech.common.inventory.HardwareType;
 
 public class ApplianceAssetAvailabilityDetails {
 
-    private Integer gatewayId;;
+    private Integer gatewayId;
     private String gatewayName;
     private String serialNumber;
     private HardwareType type;
