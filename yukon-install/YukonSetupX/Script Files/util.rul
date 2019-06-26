@@ -991,6 +991,7 @@ begin
         if (ServiceExistsService(sServiceNameArray(i))) then
             sCMD = "/c " + "sc config "+ "\"" + sServiceNameArray(i) + "\"" +" start=delayed-auto";
             LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
+	    Delay (2);
         endif;
     endfor;
 end;
@@ -1004,7 +1005,7 @@ function InstallYukonStartupTask()
 string sProg, sCMD;
 begin
     sProg = "cmd.exe";
-    sCMD = "/c " + "schtasks /Create /RU SYSTEM /SC ONSTART /TN " + "\"" + YUKON_STARTUP_NAME + "\"" + " /TR " + TARGETDIR + "\\Server\\bin\\StartYukon.bat";
+    sCMD = "/c " + "schtasks /Create /RU SYSTEM /SC ONSTART /TN " + "\"" + YUKON_STARTUP_NAME + "\"" + " /TR " + TARGETDIR + "\\Server\\bin\\StartYukon.bat" + " /F";
     LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
 end;
 
