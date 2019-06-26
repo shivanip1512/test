@@ -1,10 +1,14 @@
 package com.cannontech.web.api.dr.setup;
 
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.yukon.IDatabaseCache;
 
 @Service
 public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroupEmetcon> {
@@ -12,6 +16,7 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
     private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
     private final static String validRelayUsageValues = "ABCS";
     private final static String validAddressUsageValues = "GS";
+    @Autowired private IDatabaseCache serverDatabaseCache;
 
     public LoadGroupEmetconValidator() {
         super(LoadGroupEmetcon.class);
@@ -25,8 +30,6 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
     @Override
     protected void doValidation(LoadGroupEmetcon loadGroup, Errors errors) {
 
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "routeID", key + "required", new Object[] { "Route Id" });
-
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "addressUsage", key + "required", new Object[] { "Address Usage" });
         
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "relayUsage", key + "required", new Object[] { "Relay Usage" });
@@ -35,6 +38,16 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
         
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "silverAddress", key + "required", new Object[] { "Silver Address" });
         
+       // Validate routeID
+        Integer routeId = loadGroup.getRouteID();
+        if (routeId == null) {
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "routeID", key + "required", new Object[] { "Route Id" });
+        } else {
+            Set<Integer> routeIds = serverDatabaseCache.getAllRoutesMap().keySet();
+            if (!routeIds.contains(routeId)) {
+                errors.rejectValue("routeID", key + "routeId.doesNotExist");
+            }
+        }
 
         if (!errors.hasFieldErrors("addressUsage")) {
             if (!validAddressUsageValues.contains(loadGroup.getAddressUsage().toString())) {
@@ -46,7 +59,9 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
             if (loadGroup.getAddressUsage().equals('G') && loadGroup.getGoldAddress() == 0) {
                 errors.rejectValue("goldAddress", key + "goldAddress.invalidValue");
             } else {
-                YukonValidationUtils.checkRange(errors, "goldAddress", loadGroup.getGoldAddress(), 0, 4, true);
+                if (!errors.hasFieldErrors("goldAddress")) {
+                    YukonValidationUtils.checkRange(errors, "goldAddress", loadGroup.getGoldAddress(), 0, 4, true);
+                }
             }
         }
 
@@ -55,7 +70,9 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
             if (loadGroup.getAddressUsage().equals('S') && loadGroup.getSilverAddress() == 0) {
                 errors.rejectValue("silverAddress", key + "silverAddress.invalidValue");
             } else {
-                YukonValidationUtils.checkRange(errors, "silverAddress", loadGroup.getSilverAddress(), 0, 60, true);
+                if (!errors.hasFieldErrors("silverAddress")) {
+                    YukonValidationUtils.checkRange(errors, "silverAddress", loadGroup.getSilverAddress(), 0, 60, true);
+                }
             }
         }
 
