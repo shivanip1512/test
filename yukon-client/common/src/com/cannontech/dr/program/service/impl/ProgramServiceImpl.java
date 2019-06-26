@@ -823,11 +823,11 @@ public class ProgramServiceImpl implements ProgramService {
             programWidgetData.put(accessor.getMessage(todayKey), todaysPrograms);
         }
 
-        if (todaysProgramsCount + futureProgramsToDisplay.size() < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
+        int futureAndTodayProgramsCount = futureProgramsToDisplay.size() + todaysProgramsCount;
+        if (futureAndTodayProgramsCount < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
             int previousProgramsToDisplayCount =
-                MAX_PROGRAM_TO_DISPLAY_ON_WIDGET - (todaysProgramsCount + futureProgramsToDisplay.size());
-            buildProgramsDataCache();
-            List<ProgramData> limitProgramData = limitData(programsDataCache, previousProgramsToDisplayCount);
+                MAX_PROGRAM_TO_DISPLAY_ON_WIDGET - futureAndTodayProgramsCount;
+            List<ProgramData> limitProgramData = limitData(getProgramsDataCache(), previousProgramsToDisplayCount);
             Map<String, List<ProgramData>> limitedProgramsToDisplay =
                     groupProgramsByStartDate(limitProgramData, userContext);
             programWidgetData.putAll(limitedProgramsToDisplay);
@@ -858,9 +858,7 @@ public class ProgramServiceImpl implements ProgramService {
             programDetailData.put(accessor.getMessage(todayKey), todaysPrograms);
         }
 
-        //Previous 7 days programs history.
-        buildProgramsDataCache();
-        Map<String, List<ProgramData>> programsToDisplay = groupProgramsByStartDate(programsDataCache, userContext);
+        Map<String, List<ProgramData>> programsToDisplay = groupProgramsByStartDate(getProgramsDataCache(), userContext);
         programDetailData.putAll(programsToDisplay);
         return programDetailData;
     }
@@ -1057,15 +1055,18 @@ public class ProgramServiceImpl implements ProgramService {
      * This is to cache the Programs data so that we will not hit database every time.
      * The cache will be updated each time next day with new request.
      */
-    private synchronized void buildProgramsDataCache() {
+    private synchronized List<ProgramData> getProgramsDataCache() {
         long currentTime = DateTimeUtils.currentTimeMillis();
         if (currentTime > tomorrowStartInMillis) {
             DateTime toDate = new DateTime().withTimeAtStartOfDay();
             DateTime fromDate = toDate.minusDays(7);
             programsDataCache.clear();
+            log.info("Expiring program cache and reloading cache for date range - From : " + fromDate.toString()
+                                            + " To: " + toDate.toString());
             programsDataCache = getProgramsHistoryDetail(fromDate, toDate);
             tomorrowStartInMillis = toDate.plusDays(1).getMillis();
         }
+        return programsDataCache;
     }
 
 }
