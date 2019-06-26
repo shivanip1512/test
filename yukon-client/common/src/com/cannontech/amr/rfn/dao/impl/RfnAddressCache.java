@@ -2,10 +2,9 @@ package com.cannontech.amr.rfn.dao.impl;
 
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.locks.StampedLock;
 import org.apache.logging.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -21,6 +20,8 @@ import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
 class RfnAddressCache implements DBChangeListener {
@@ -51,7 +52,7 @@ class RfnAddressCache implements DBChangeListener {
      * A list of paoIds that have been modified and not reloaded yet.
      * Since this is a one-way mapping of rfnAddress to paoId, we don't know which rfnAddress was modified.
      */
-    private Map<DbChangeType, Set<Integer>> dbChanges = new EnumMap<>(DbChangeType.class);
+    private SetMultimap<DbChangeType, Integer> dbChanges = Multimaps.newSetMultimap(new EnumMap<>(DbChangeType.class), TreeSet::new);
 
     public RfnAddressCache(YukonJdbcTemplate jdbcTemplate, AsyncDynamicDataSource dynamicDataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -72,8 +73,7 @@ class RfnAddressCache implements DBChangeListener {
             if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB &&
                 dbChange.getCategory().equalsIgnoreCase(PaoCategory.DEVICE.getDbString())) {
                 withWriteLock(() -> 
-                    dbChanges.computeIfAbsent(dbChange.getDbChangeType(), unused -> new HashSet<>())
-                             .add(dbChange.getId()));
+                    dbChanges.put(dbChange.getDbChangeType(), dbChange.getId()));
             }
             break;
         default:
@@ -223,9 +223,9 @@ class RfnAddressCache implements DBChangeListener {
             return;
         }
         
-        Set<Integer> deletes = dbChanges.getOrDefault(DbChangeType.DELETE, Collections.emptySet());
-        Set<Integer> updates = dbChanges.getOrDefault(DbChangeType.UPDATE, Collections.emptySet());
-        Set<Integer> inserts = dbChanges.getOrDefault(DbChangeType.ADD, Collections.emptySet());
+        Set<Integer> deletes = dbChanges.get(DbChangeType.DELETE);
+        Set<Integer> updates = dbChanges.get(DbChangeType.UPDATE);
+        Set<Integer> inserts = dbChanges.get(DbChangeType.ADD);
         
         Set<Integer> removals = Sets.union(deletes, updates);
         
