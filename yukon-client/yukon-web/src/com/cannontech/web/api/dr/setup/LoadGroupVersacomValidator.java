@@ -89,9 +89,9 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
         }
         
         // relayUsage (check all the chars are valid or not. Should not contain other than 1,2,3,4)
-        String relayUssage = loadGroup.getRelayUsage();
-        if (StringUtils.isStringMatchesWithPattern(relayUssage, "1234", false)) {
-            String formattedRelayUsage = StringUtils.formatStringWithPattern(relayUssage, "1234");
+        String relayUsage = loadGroup.getRelayUsage();
+        if (StringUtils.isStringMatchesWithPattern(relayUsage, "1234", false)) {
+            String formattedRelayUsage = StringUtils.formatStringWithPattern(relayUsage, "1234");
             loadGroup.setRelayUsage(formattedRelayUsage);
         } else {
             errors.rejectValue("relayUsage", key + "invalidValue");
