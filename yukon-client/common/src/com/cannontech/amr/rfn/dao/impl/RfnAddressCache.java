@@ -227,11 +227,13 @@ class RfnAddressCache implements DBChangeListener {
         Set<Integer> updates = dbChanges.get(DbChangeType.UPDATE);
         Set<Integer> inserts = dbChanges.get(DbChangeType.ADD);
         
-        Set<Integer> removals = Sets.union(deletes, updates);
+        //  Remove any devices from cache that have been deleted or updated, but not if they are also a new insert (wasn't in cache yet)
+        Set<Integer> removals = Sets.difference(Sets.union(deletes, updates), inserts);
         
         lookup.remove(removals);
 
-        Set<Integer> loads = Sets.union(updates, inserts);
+        //  Load any devices that have been updated or added, but not if they were deleted afterward (deletes are permanent, paoIds are not reused)
+        Set<Integer> loads = Sets.difference(Sets.union(updates, inserts), deletes);
         
         List<RfnAddress> addresses = loadRfnAddresses(loads);
 

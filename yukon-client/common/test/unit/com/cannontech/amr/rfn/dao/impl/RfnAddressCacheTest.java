@@ -142,6 +142,43 @@ public class RfnAddressCacheTest {
     }
     
     @Test
+    public void test_addThenUpdate() {
+        var template = new RfnAddressJdbcTemplate(List.of(makeRfnAddress(22, rfnId1),
+                                                          makeRfnAddress(23, rfnId2),
+                                                          makeRfnAddress(25, rfnId4)));
+        
+        var rfnAddressCache = new RfnAddressCache(template, new MockAsyncDynamicDataSourceImpl());
+
+        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId3));
+
+        template.setData(List.of(makeRfnAddress(24, rfnId3)));
+        
+        rfnAddressCache.dbChangeReceived(new DBChangeMsg(24, DBChangeMsg.CHANGE_PAO_DB, PaoCategory.DEVICE.getDbString(), DbChangeType.ADD));
+        rfnAddressCache.dbChangeReceived(new DBChangeMsg(24, DBChangeMsg.CHANGE_PAO_DB, PaoCategory.DEVICE.getDbString(), DbChangeType.UPDATE));
+
+        assertEquals("Numeric lookup", Integer.valueOf(24), rfnAddressCache.getPaoIdFor(rfnId3));
+    }
+    
+    @Test
+    public void test_addUpdateDelete() {
+        var template = new RfnAddressJdbcTemplate(List.of(makeRfnAddress(22, rfnId1),
+                                                          makeRfnAddress(23, rfnId2),
+                                                          makeRfnAddress(25, rfnId4)));
+        
+        var rfnAddressCache = new RfnAddressCache(template, new MockAsyncDynamicDataSourceImpl());
+
+        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId3));
+
+        template.setData(List.of(makeRfnAddress(24, rfnId3)));  //  Provide the data in case they try to load (which they shouldn't)
+        
+        rfnAddressCache.dbChangeReceived(new DBChangeMsg(24, DBChangeMsg.CHANGE_PAO_DB, PaoCategory.DEVICE.getDbString(), DbChangeType.ADD));
+        rfnAddressCache.dbChangeReceived(new DBChangeMsg(24, DBChangeMsg.CHANGE_PAO_DB, PaoCategory.DEVICE.getDbString(), DbChangeType.UPDATE));
+        rfnAddressCache.dbChangeReceived(new DBChangeMsg(24, DBChangeMsg.CHANGE_PAO_DB, PaoCategory.DEVICE.getDbString(), DbChangeType.DELETE));
+
+        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId3));
+    }
+    
+    @Test
     public void test_swapIdentifiers() {
         var template = new RfnAddressJdbcTemplate(List.of(makeRfnAddress(22, rfnId1),
                                                           makeRfnAddress(23, rfnId2),
