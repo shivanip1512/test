@@ -1662,7 +1662,6 @@
               <page name="rfnTest.viewEventArchive" type="DETAIL"/>
               <page name="rfnTest.viewAlarmArchive" type="DETAIL"/>
               <page name="rfnTest.viewDataSimulator" type="BASIC"/>
-              <page name="rfnTest.viewRfDaArchive" type="BASIC"/>
               <page name="rfnTest.viewGatewayDataSimulator" type="BASIC"/>
               <page name="rfnTest.viewDataStreamingSimulator" type="BASIC"/>
               <page name="rfnTest.viewMappingSimulator" type="BASIC"/>

@@ -76,10 +76,8 @@ $(function () { yukon.dev.rfn.init(); });
             <li><a href="viewMeterReadArchiveRequest"><i:inline key=".meterReadArchiveRequest.label"/></a></li>
             <li><a href="viewEventArchiveRequest"><i:inline key=".eventArchiveRequest.label"/></a></li>
             <li><a href="viewDeviceArchiveRequest"><i:inline key=".deviceArchiveRequest.label"/></a></li>
-            <li><a href="viewLcrArchiveRequest"><i:inline key=".lcrArchiveRequest.label"/></a></li>
             <li><a href="viewLcrReadArchiveRequest"><i:inline key=".lcrReadArchiveRequest.label"/></a></li>
             <li><a href="viewLcrDataSimulator"><i:inline key=".lcrDataSimulator.label"/></a></li>
-            <li><a href="viewRfDaArchiveRequest"><i:inline key=".rfDaArchiveRequest.label"/></a></li>
             <li><a href="viewLocationArchiveRequest"><i:inline key=".rfLocationArchiveRequest.label"/></a></li>
             <li><a href="gatewaySimulator"><i:inline key=".gatewaySimulator.label"/></a></li>
             <li><a href="viewRfnMeterSimulator"><i:inline key=".rfnMeterSimulator.label"/></a></li>

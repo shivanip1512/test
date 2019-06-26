@@ -508,19 +508,9 @@ public class NmIntegrationController {
         return "redirect:viewDeviceArchiveRequest";
     }
 
-    @RequestMapping("viewLcrArchiveRequest")
-    public String viewLcrArchiveRequest() {
-        return "rfn/viewLcrArchive.jsp";
-    }
-
     @RequestMapping("viewRelayArchiveRequest")
     public String viewRelayArchiveRequest() {
         return "rfn/viewRelayArchive.jsp";
-    }
-
-    @RequestMapping("viewRfDaArchiveRequest")
-    public String viewRfDaArchiveRequest() {
-        return "rfn/viewRfDaArchive.jsp";
     }
 
     @RequestMapping("viewGatewayDataSimulator")
@@ -830,12 +820,6 @@ public class NmIntegrationController {
         rfnEventTestingService.sendLcrReadArchive(serialFrom, serialTo, days, DRReport.valueOf(drReport));
         return "redirect:viewLcrReadArchiveRequest";
     }
-
-    @RequestMapping("sendLcrArchiveRequest")
-    public String sendLcrArchive(int serialFrom, int serialTo, String manufacturer, String model) {
-        rfnEventTestingService.sendLcrArchiveRequest(serialFrom, serialTo, manufacturer, model);
-        return "redirect:viewLcrArchiveRequest";
-    }
     
     @RequestMapping("sendRelayArchiveRequest")
     public String sendRelayArchive(int serialFrom, int serialTo, String manufacturer, String model) {
@@ -864,27 +848,6 @@ public class NmIntegrationController {
         }
         
         return setupEventAlarmAttributes(model, event);
-    }
-
-    @RequestMapping("sendRfDaArchiveRequest")
-    public String sendRfDaArchiveRequest(int serial, Integer serialEnd, String manufacturer, String model, FlashScope flashScope) {
-
-        IntConsumer sendRfDaArchive = s -> rfnEventTestingService.sendRfDaArchiveRequest(s, manufacturer, model);
-
-        MessageSourceResolvable createMessage;
-        
-        if (serialEnd != null) {
-            IntStream.rangeClosed(serial, serialEnd)
-                .forEachOrdered(sendRfDaArchive);
-            createMessage = new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.rfDaArchiveRequest.requestRangeSent", serial, serialEnd, manufacturer, model);
-        } else {
-            sendRfDaArchive.accept(serial);
-            createMessage = new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.rfDaArchiveRequest.requestSent", serial, manufacturer, model);
-        }
-
-        flashScope.setConfirm(createMessage);
-
-        return "redirect:viewRfDaArchiveRequest";
     }
 
     @RequestMapping("calc-stress-test")

@@ -123,7 +123,6 @@ dt, dd { font-size: 16px; }
                             &lt;page name=&quot;rfnTest.viewEventArchive&quot; type=&quot;DETAIL&quot;/&gt;
                             &lt;page name=&quot;rfnTest.viewAlarmArchive&quot; type=&quot;DETAIL&quot;/&gt;
                             &lt;page name=&quot;rfnTest.viewDataSimulator&quot; type=&quot;BASIC&quot;/&gt;
-                            &lt;page name=&quot;rfnTest.viewRfDaArchive&quot; type=&quot;BASIC&quot;/&gt;
                         &lt;/pages&gt;
                     &lt;/page&gt;
                     &lt;page name=&quot;ecobee.mockTest&quot; type=&quot;BASIC&quot;/&gt;
