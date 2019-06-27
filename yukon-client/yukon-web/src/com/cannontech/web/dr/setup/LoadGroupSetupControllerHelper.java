@@ -6,6 +6,7 @@ import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.mbean.ServerDatabaseCache;
+import com.google.common.collect.ImmutableList;
 
 @Service
 public class LoadGroupSetupControllerHelper {
@@ -23,6 +24,7 @@ public class LoadGroupSetupControllerHelper {
         case LM_GROUP_RFN_EXPRESSCOMM:
             break;
         case LM_GROUP_ITRON:
+            model.addAttribute("relayIds", ImmutableList.of(1, 2, 3, 4, 5, 6, 7, 8));
             break;
         }
     }

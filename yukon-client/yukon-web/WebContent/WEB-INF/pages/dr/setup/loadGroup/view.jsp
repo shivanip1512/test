@@ -60,6 +60,9 @@
                         <i:inline key="${loadGroup.type}"/>
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
+                <c:if test="${selectedSwitchType == 'LM_GROUP_ITRON'}">
+                    <%@ include file="itron.jsp" %>
+                </c:if>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
         
@@ -73,6 +76,9 @@
                       selectedSwitchType == 'LM_GROUP_NEST' ||
                       selectedSwitchType == 'LM_GROUP_ECOBEE' ||
                       selectedSwitchType == 'LM_GROUP_HONEYWELL'}">
+            <%@ include file="loadGroupOptional.jsp" %>
+        </c:if>
+        <c:if test="${selectedSwitchType == 'LM_GROUP_ITRON'}">
             <%@ include file="loadGroupOptional.jsp" %>
         </c:if>
 

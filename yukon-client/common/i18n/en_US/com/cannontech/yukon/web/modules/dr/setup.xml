@@ -15,12 +15,14 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.VIEW.crumbTitle">{0}</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.VIEW.pageTitle">Load Group: {0}</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.general.title">General</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.optional.title">Optional Attributes</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.title">Load Group</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.name">Name</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.type">Type</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.kWCapacity">kW Capacity</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.disableGroup">Disable Group</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.disableControl">Disable Control</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.virtualRelayId">Relay</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.info.saved">Load Group saved successfully.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.save.error">Load Group could not be saved - {0}</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.retrieve.error">Load Group could not be retrieved.</entry>
