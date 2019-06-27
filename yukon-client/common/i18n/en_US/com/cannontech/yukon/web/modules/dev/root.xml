@@ -320,7 +320,15 @@
     <entry key="yukon.web.modules.dev.rfnTest.rfnConfigNotification.label">RFN Config Notification</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnConfigNotification.helpText"><![CDATA[The RFN Config Notification Test simulates RFN Config Notification messages 
     from RFN nodes to Porter. ]]></entry>
-    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveSimulator.label">Status Archive Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.label">Status Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.helpTitle">Status Archive Request Help</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.helpText"><![CDATA[
+        You can set the following options for the request:
+        <ul>
+            <li>Demand Reset Status Code - this is the Status Code that Yukon will reply with</li>
+            <li>Number of Messages to send - Yukon will find this number of devices and send a message with the value entered above</li>
+        </ul>
+    ]]></entry>
     
     <!-- Smart Notifications -->
     <entry key="yukon.web.modules.dev.smartNotificationsSimulator.pageName">Smart Notifications Simulator</entry>

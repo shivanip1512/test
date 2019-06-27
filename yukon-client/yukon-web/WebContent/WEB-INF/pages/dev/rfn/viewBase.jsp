@@ -71,21 +71,24 @@ $(function () { yukon.dev.rfn.init(); });
             <li><a href="decipher/view"><i:inline key=".pointMappingDecipher.label"/></a></li>
             <li><a href="icd/view"><i:inline key=".pointMappingIcd.label"/></a></li>
         </ul>   
-        <h3>Pages</h3>
+        <h3>Requests</h3>
         <ul class="simple-list stacked">
-            <li><a href="viewMeterReadArchiveRequest"><i:inline key=".meterReadArchiveRequest.label"/></a></li>
-            <li><a href="viewEventArchiveRequest"><i:inline key=".eventArchiveRequest.label"/></a></li>
             <li><a href="viewDeviceArchiveRequest"><i:inline key=".deviceArchiveRequest.label"/></a></li>
+            <li><a href="viewEventArchiveRequest"><i:inline key=".eventArchiveRequest.label"/></a></li>
             <li><a href="viewLcrReadArchiveRequest"><i:inline key=".lcrReadArchiveRequest.label"/></a></li>
-            <li><a href="viewLcrDataSimulator"><i:inline key=".lcrDataSimulator.label"/></a></li>
+            <li><a href="viewMeterReadArchiveRequest"><i:inline key=".meterReadArchiveRequest.label"/></a></li>
+            <li><a href="viewRelayArchiveRequest"><i:inline key=".relayArchiveRequest.label"/></a></li>
             <li><a href="viewLocationArchiveRequest"><i:inline key=".rfLocationArchiveRequest.label"/></a></li>
+            <li><a href="viewConfigNotification"><i:inline key=".rfnConfigNotification.label"/></a></li>
+            <li><a href="viewStatusArchiveRequest"><i:inline key=".statusArchiveRequest.label"/></a></li>
+        </ul>
+        <h3>Simulators</h3>
+                <ul class="simple-list stacked">
+            <li><a href="viewDataStreamingSimulator"><i:inline key=".dataStreamingSimulator.label"/></a>
+            <li><a href="viewLcrDataSimulator"><i:inline key=".lcrDataSimulator.label"/></a></li>
+            <li><a href="viewMappingSimulator"><i:inline key=".mappingSimulator.label"/></a>
             <li><a href="gatewaySimulator"><i:inline key=".gatewaySimulator.label"/></a></li>
             <li><a href="viewRfnMeterSimulator"><i:inline key=".rfnMeterSimulator.label"/></a></li>
-            <li><a href="viewDataStreamingSimulator"><i:inline key=".dataStreamingSimulator.label"/></a>
-            <li><a href="viewMappingSimulator"><i:inline key=".mappingSimulator.label"/></a>
-            <li><a href="viewRelayArchiveRequest"><i:inline key=".relayArchiveRequest.label"/></a></li>
-            <li><a href="viewConfigNotification"><i:inline key=".rfnConfigNotification.label"/></a></li>
-            <li><a href="viewStatusArchiveSimulator"><i:inline key=".statusArchiveSimulator.label"/></a></li>
         </ul>
         <div class="page-action-area stacked">
             <cti:button id="calc-stress-test" label="Calc Stress Test, DO NOT CLICK" classes="action red"/>

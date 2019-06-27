@@ -1096,15 +1096,17 @@ public class NmIntegrationController {
         }
     }
     
-    @RequestMapping("viewStatusArchiveSimulator")
-    public String viewStatusArchiveSimulator() {
-        return "rfn/viewStatusArchiveSimulator.jsp";
+    @RequestMapping("viewStatusArchiveRequest")
+    public String viewStatusArchiveRequest(ModelMap model) {
+        model.addAttribute("dRStatusCodes", DemandResetStatusCode.values());
+        return "rfn/viewStatusArchiveRequest.jsp";
     }
     
     @RequestMapping("sendStatusArchiveRequest")
-    public String sendLcrArchive(String statusCode, int messageCount) {
+    public String sendStatusArchiveRequest(String statusCode, int messageCount) {
         DemandResetStatusCode demandResetStatusCode = DemandResetStatusCode.valueOf(Integer.parseInt(statusCode));
+        log.info("Demand Reset Status Code " + statusCode + " (" + demandResetStatusCode + ")" + " was sent to " + messageCount + " devices.");
         rfnEventTestingService.sendStatusArchiveRequest(demandResetStatusCode, messageCount);
-        return "redirect:viewStatusArchiveSimulator";
+        return "redirect:viewStatusArchiveRequest";
     }
 }
