@@ -140,7 +140,7 @@ public class MeterDisconnectMessageListener {
                     Set<SimpleDevice> meters = deviceGroupService.getDevices(Collections.singleton(deviceGroup));                    
                     MeterCollection collection = new MeterCollection(Lists.newArrayList(meters));
                     Callback callback = new Callback(); //callback isn't really being used.
-                    disconnectService.execute(DisconnectCommand.CONNECT, collection, callback, YukonUserContext.system);
+                    disconnectService.execute(DisconnectCommand.DISCONNECT, collection, callback, YukonUserContext.system);
                 }
                 
 
@@ -175,7 +175,7 @@ public class MeterDisconnectMessageListener {
                     Set<SimpleDevice> meters = deviceGroupService.getDevices(Collections.singleton(deviceGroup));                    
                     MeterCollection collection = new MeterCollection(Lists.newArrayList(meters));
                     Callback callback = new Callback();
-                    disconnectService.execute(DisconnectCommand.DISCONNECT, collection, callback, YukonUserContext.system);
+                    disconnectService.execute(DisconnectCommand.CONNECT, collection, callback, YukonUserContext.system);
                 }
                 controlHistoryService.sendControlHistoryRestoreMessage(groupId, Instant.now());
             } catch (JMSException e) {
