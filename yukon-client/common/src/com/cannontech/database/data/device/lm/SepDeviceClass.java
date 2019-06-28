@@ -1,8 +1,9 @@
 package com.cannontech.database.data.device.lm;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
-public enum SepDeviceClass implements DatabaseRepresentationSource {
+public enum SepDeviceClass implements DisplayableEnum, DatabaseRepresentationSource {
     HVAC_COMPRESSOR_FURNACE((short)0x0001),
     BASEBOARD_HEAT((short)0x0002),
     WATER_HEATER((short)0x0004),
@@ -30,5 +31,10 @@ public enum SepDeviceClass implements DatabaseRepresentationSource {
     
     public short getBitValue() {
         return bitValue;
+    }
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.web.modules.dr.setup.loadGroup.digisep." + name();
     }
 }

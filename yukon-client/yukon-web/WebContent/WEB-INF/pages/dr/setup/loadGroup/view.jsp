@@ -81,6 +81,10 @@
         <c:if test="${selectedSwitchType == 'LM_GROUP_ITRON'}">
             <%@ include file="loadGroupOptional.jsp" %>
         </c:if>
+         <c:if test="${selectedSwitchType == 'LM_GROUP_DIGI_SEP'}">
+            <%@ include file="digisep.jsp" %>
+            <%@ include file="loadGroupOptional.jsp" %>
+        </c:if>
 
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="EDIT,CREATE">

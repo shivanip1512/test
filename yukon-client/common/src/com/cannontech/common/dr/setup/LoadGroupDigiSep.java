@@ -1,6 +1,8 @@
 package com.cannontech.common.dr.setup;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupDigiSep;
@@ -9,7 +11,7 @@ import com.cannontech.database.data.device.lm.SepDeviceClass;
 public class LoadGroupDigiSep extends LoadGroupBase {
 
     private Integer utilityEnrollmentGroup;
-    private Set<SepDeviceClass> deviceClassSet;
+    private List<SepDeviceClass> deviceClassSet;
     private Integer rampInMinutes = 30;
     private Integer rampOutMinutes = 30;
 
@@ -21,11 +23,11 @@ public class LoadGroupDigiSep extends LoadGroupBase {
         this.utilityEnrollmentGroup = utilityEnrollmentGroup;
     }
 
-    public Set<SepDeviceClass> getDeviceClassSet() {
+    public List<SepDeviceClass> getDeviceClassSet() {
         return deviceClassSet;
     }
 
-    public void setDeviceClassSet(Set<SepDeviceClass> deviceClassSet) {
+    public void setDeviceClassSet(List<SepDeviceClass> deviceClassSet) {
         this.deviceClassSet = deviceClassSet;
     }
 
@@ -51,7 +53,7 @@ public class LoadGroupDigiSep extends LoadGroupBase {
         super.buildModel(loadGroup);
 
         setUtilityEnrollmentGroup(((LMGroupDigiSep) loadGroup).getLmGroupSep().getUtilityEnrollmentGroup());
-        setDeviceClassSet(((LMGroupDigiSep) loadGroup).getLmGroupSep().getDeviceClassSet());
+        setDeviceClassSet(new ArrayList<>(((LMGroupDigiSep) loadGroup).getLmGroupSep().getDeviceClassSet()));
         setRampInMinutes(((LMGroupDigiSep) loadGroup).getLmGroupSep().getRampInMinutes());
         setRampOutMinutes(((LMGroupDigiSep) loadGroup).getLmGroupSep().getRampOutMinutes());
 
@@ -64,7 +66,7 @@ public class LoadGroupDigiSep extends LoadGroupBase {
 
         com.cannontech.database.db.device.lm.LMGroupSep digiSep = ((LMGroupDigiSep) group).getLmGroupSep();
         digiSep.setUtilityEnrollmentGroup(getUtilityEnrollmentGroup());
-        digiSep.setDeviceClassSet(getDeviceClassSet());
+        digiSep.setDeviceClassSet(new HashSet<>(getDeviceClassSet()));
         digiSep.setRampInMinutes(getRampInMinutes());
         digiSep.setRampOutMinutes(getRampOutMinutes());
 

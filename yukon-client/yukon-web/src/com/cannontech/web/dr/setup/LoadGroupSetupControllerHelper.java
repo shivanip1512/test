@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.device.lm.SepDeviceClass;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
@@ -25,6 +26,9 @@ public class LoadGroupSetupControllerHelper {
             break;
         case LM_GROUP_ITRON:
             model.addAttribute("relayIds", ImmutableList.of(1, 2, 3, 4, 5, 6, 7, 8));
+            break;
+        case LM_GROUP_DIGI_SEP:
+            model.addAttribute("deviceClassList", SepDeviceClass.values());
             break;
         }
     }
