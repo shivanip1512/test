@@ -1,5 +1,13 @@
 package com.cannontech.common.dr.setup;
 
+import com.cannontech.database.data.device.lm.LMGroup;
+import com.cannontech.database.data.device.lm.LMGroupExpressCom;
+import com.cannontech.database.data.device.lm.LMGroupEmetcon;
+import com.cannontech.database.data.device.lm.LMGroupVersacom;
+
+/**
+ * Class for setting the additional fields for coping the load group
+ */
 public class LoadGroupCopy extends LMCopy {
     private Integer routeId;
 
@@ -12,19 +20,23 @@ public class LoadGroupCopy extends LMCopy {
     }
 
     @Override
-    public void buildModel(LoadGroupBase group) {
+    public void buildModel(LMGroup group) {
         // Set parent fields
         super.buildModel(group);
         if (getRouteId() != null) {
-            switch (group.getType()) {
+            switch (group.getPaoType()) {
             case LM_GROUP_EXPRESSCOMM:
-                ((LoadGroupExpresscom) group).setRouteID(getRouteId());
+                com.cannontech.database.db.device.lm.LMGroupExpressCom expresscom =
+                    ((LMGroupExpressCom) group).getLMGroupExpressComm();
+                expresscom.setRouteID(getRouteId());
                 break;
             case LM_GROUP_EMETCON:
-                ((LoadGroupEmetcon) group).setRouteID(getRouteId());
+                ((LMGroupEmetcon) group).setRouteID(getRouteId());
                 break;
             case LM_GROUP_VERSACOM:
-                ((LoadGroupVersacom) group).setRouteId(getRouteId());
+                com.cannontech.database.db.device.lm.LMGroupVersacom lmGroupVersacom =
+                    ((LMGroupVersacom) group).getLmGroupVersacom();
+                lmGroupVersacom.setRouteID(getRouteId());
                 break;
             case LM_GROUP_SADIGITAL:
                 // TODO Implement Copy for SADigital

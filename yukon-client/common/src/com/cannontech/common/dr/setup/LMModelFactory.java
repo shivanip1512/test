@@ -37,4 +37,22 @@ public class LMModelFactory {
         }
         return loadGroup;
     }
+
+    /**
+     * Sets the appropriate copy class based upon the PaoType
+     */
+    public final static LMCopy createLoadGroupCopy(PaoType paoType) {
+        LMCopy loadGroup = null;
+        switch (paoType) {
+        case LM_GROUP_EXPRESSCOMM:
+        case LM_GROUP_EMETCON:
+        case LM_GROUP_VERSACOM:
+            loadGroup = new LoadGroupCopy();
+            break;
+        default:
+            loadGroup = new LMCopy();
+            break;
+        }
+        return loadGroup;
+    }
 }

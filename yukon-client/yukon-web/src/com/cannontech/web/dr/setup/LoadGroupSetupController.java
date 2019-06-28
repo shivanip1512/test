@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.dr.setup.LoadGroupBase;
@@ -36,8 +38,10 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.api.ApiRequestHelper;
@@ -46,6 +50,7 @@ import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
 @CheckRole(YukonRole.DEMAND_RESPONSE)
@@ -64,6 +69,8 @@ public class LoadGroupSetupController {
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private LoadGroupSetupControllerHelper controllerHelper;
+    @Autowired private IDatabaseCache dbCache;
+    @Autowired private ServerDatabaseCache cache;
 
     @GetMapping("/create")
     public String create(ModelMap model) {
@@ -153,7 +160,7 @@ public class LoadGroupSetupController {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupSaveUrl);
             ResponseEntity<? extends Object> response =
-                saveOrCopyGroup(userContext, request, url, loadGroup, HttpMethod.POST);
+                    saveGroup(userContext, request, url, loadGroup, HttpMethod.POST);
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadGroup, "loadGroup");
@@ -208,26 +215,26 @@ public class LoadGroupSetupController {
         return "dr/setup/list.jsp";
     }
 
-    @PostMapping("/copy")
-    public String copy(@ModelAttribute LoadGroupBase loadGroup, BindingResult result, YukonUserContext userContext,
-            FlashScope flash, ModelMap model, HttpServletRequest request, HttpServletResponse servletResponse)
-            throws IOException {
+    @PostMapping("/{id}/copy")
+    public String copy(@ModelAttribute("lmCopy") LMCopy lmCopy, @PathVariable int id, BindingResult result,
+            YukonUserContext userContext, FlashScope flash, ModelMap model, HttpServletRequest request,
+            HttpServletResponse servletResponse, RedirectAttributes redirectAttributes) throws IOException {
 
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupCopyUrl);
-            ResponseEntity<? extends Object> response =
-                saveOrCopyGroup(userContext, request, url, loadGroup, HttpMethod.POST);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupCopyUrl + id);
+            ResponseEntity<? extends Object> response = copyGroup(userContext, request, url, lmCopy, HttpMethod.POST);
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
-                BindException error = new BindException(loadGroup, "loadGroupBase");
+                BindException error = new BindException(lmCopy, "lmCopy");
                 result = helper.populateBindingError(result, error, response);
-                return bindAndForwardForCopy(loadGroup, result, model, servletResponse);
+                return bindAndForwardForCopy(lmCopy, result, model, servletResponse, id);
             }
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                Integer groupId = (int) response.getBody();
+                HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
+                int groupId = paoIdMap.get("paoId");
                 Map<String, String> json = new HashMap<>();
-                json.put("groupId", groupId.toString());
+                json.put("groupId", Integer.toString(groupId));
                 servletResponse.setContentType("application/json");
                 JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.copied"));
@@ -239,7 +246,7 @@ public class LoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:/dr/setup/list";
         } catch (RestClientException ex) {
-            log.error("Error creating load group: " + ex.getMessage());
+            log.error("Error while copying load group: " + ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", ex.getMessage()));
             return "redirect:/dr/setup/list";
         }
@@ -251,26 +258,26 @@ public class LoadGroupSetupController {
      */
     @GetMapping("/{id}/rendercopyloadGroup")
     public String renderCopyloadGroup(@PathVariable int id, ModelMap model, YukonUserContext userContext,
-            HttpServletRequest request, FlashScope flash) {
-        LoadGroupBase loadGroup = null;
+            HttpServletRequest request, FlashScope flash, RedirectAttributes redirectAttributes) {
 
-        if (model.containsAttribute("loadGroup")) {
-            loadGroup = (LoadGroupBase) model.get("loadGroup");
-        } else {
-            try {
-                String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id);
+        try {
+            PaoType loadGroupType = getPaoTypeForPaoId(id);
+            LMCopy lmCopy = LMModelFactory.createLoadGroupCopy(loadGroupType);
 
-                loadGroup = retrieveGroup(userContext, request, id, url);
-                MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
-                loadGroup.setName(messageSourceAccessor.getMessage("yukon.common.copyof", loadGroup.getName()));
-                model.addAttribute("loadGroup", loadGroup);
-
-            } catch (ApiCommunicationException e) {
-                log.error(e.getMessage());
-                flash.setError(new YukonMessageSourceResolvable(communicationKey));
-                return "redirect:/dr/setup/list";
+            MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
+            lmCopy.setName(messageSourceAccessor.getMessage("yukon.common.copyof", getPaoNameForPaoId(id)));
+            model.addAttribute("lmCopy", lmCopy);
+            if ((loadGroupType == PaoType.LM_GROUP_EXPRESSCOMM) || (loadGroupType == PaoType.LM_GROUP_EMETCON)
+                || (loadGroupType == PaoType.LM_GROUP_VERSACOM)) {
+                model.addAttribute("routes", cache.getAllRoutes());
             }
+            model.addAttribute("loadGroupId", id);
+            model.addAttribute("selectedSwitchType", loadGroupType);
 
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return "redirect:/dr/setup/list";
         }
         return "dr/setup/copyLoadGroup.jsp";
     }
@@ -294,15 +301,29 @@ public class LoadGroupSetupController {
         return loadGroup;
     }
 
-    /* Get the response for save or copy */
-    private ResponseEntity<? extends Object> saveOrCopyGroup(YukonUserContext userContext, HttpServletRequest request,
+    /**
+     * Get the response for save
+     */
+    private ResponseEntity<? extends Object> saveGroup(YukonUserContext userContext, HttpServletRequest request,
             String webserverUrl, LoadGroupBase loadGroup, HttpMethod methodtype) throws RestClientException {
         ResponseEntity<? extends Object> response =
             apiRequestHelper.callAPIForObject(userContext, request, webserverUrl, methodtype, Object.class, loadGroup);
         return response;
     }
 
-    /* Get the response for delete */
+    /**
+     * Get the response for copy
+     */
+    private ResponseEntity<? extends Object> copyGroup(YukonUserContext userContext, HttpServletRequest request,
+            String webserverUrl, LMCopy lmCopy, HttpMethod methodtype) throws RestClientException {
+        ResponseEntity<? extends Object> response =
+            apiRequestHelper.callAPIForObject(userContext, request, webserverUrl, methodtype, Object.class, lmCopy);
+        return response;
+    }
+
+    /**
+     * Get the response for delete
+     */
     private ResponseEntity<? extends Object> deleteGroup(YukonUserContext userContext, HttpServletRequest request,
             String webserverUrl, LMDelete lmDelete) throws RestClientException {
         ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request,
@@ -314,19 +335,41 @@ public class LoadGroupSetupController {
         attrs.addFlashAttribute("loadGroup", loadGroup);
         attrs.addFlashAttribute("org.springframework.validation.BindingResult.loadGroup", result);
         if (loadGroup.getId() == null) {
-            return "redirect:/dr/setup/loadGroup/create/";
+            return "redirect:/dr/setup/loadGroup/create";
         }
         return "redirect:/dr/setup/loadGroup/" + loadGroup.getId() + "/edit";
     }
 
-    private String bindAndForwardForCopy(LoadGroupBase loadGroup, BindingResult result, ModelMap model,
-            HttpServletResponse response) {
-        if (loadGroup.getId() == null) {
-            return "redirect:/dr/setup/loadGroup/list";
+    private String bindAndForwardForCopy(LMCopy lmCopy, BindingResult result, ModelMap model,
+            HttpServletResponse response, int id) {
+        PaoType loadGroupType = getPaoTypeForPaoId(id);
+        if ((loadGroupType == PaoType.LM_GROUP_EXPRESSCOMM) || (loadGroupType == PaoType.LM_GROUP_EMETCON)
+            || (loadGroupType == PaoType.LM_GROUP_VERSACOM)) {
+            model.addAttribute("routes", cache.getAllRoutes());
         }
-        model.addAttribute("loadGroup", loadGroup);
+        model.addAttribute("lmCopy", lmCopy);
+        model.addAttribute("selectedSwitchType", loadGroupType);
         model.addAttribute("org.springframework.validation.BindingResult.loadGroup", result);
+        model.addAttribute("loadGroupId", id);
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         return "dr/setup/copyLoadGroup.jsp";
+    }
+
+    /**
+     * Returns the PaoType based upon the Load Group Id
+     */
+    private PaoType getPaoTypeForPaoId(int loadGroupId) {
+        Optional<LiteYukonPAObject> loadGroup =
+            dbCache.getAllLMGroups().stream().filter(group -> group.getLiteID() == loadGroupId).findFirst();
+        return loadGroup.get().getPaoType();
+    }
+
+    /**
+     * Returns the Load Group name based upon the Load Group Id
+     */
+    private String getPaoNameForPaoId(int loadGroupId) {
+        Optional<LiteYukonPAObject> loadGroup =
+            dbCache.getAllLMGroups().stream().filter(group -> group.getLiteID() == loadGroupId).findFirst();
+        return loadGroup.get().getPaoName();
     }
 }

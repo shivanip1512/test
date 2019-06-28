@@ -90,10 +90,11 @@
         </mvc:resource-chain>
     </mvc:resources>
 
-  <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
        <property name="converters">
            <set>
               <bean class="com.cannontech.web.dr.setup.LoadGroupBaseConverter"/>
+              <bean class="com.cannontech.web.dr.setup.LMCopyConverter"/>
            </set>
        </property>
     </bean>
