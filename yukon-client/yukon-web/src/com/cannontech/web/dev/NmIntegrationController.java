@@ -508,11 +508,6 @@ public class NmIntegrationController {
         return "redirect:viewDeviceArchiveRequest";
     }
 
-    @RequestMapping("viewRelayArchiveRequest")
-    public String viewRelayArchiveRequest() {
-        return "rfn/viewRelayArchive.jsp";
-    }
-
     @RequestMapping("viewGatewayDataSimulator")
     public String viewGatewayDataSimulator() {
         return "rfn/gatewayDataSimulator.jsp";
@@ -819,12 +814,6 @@ public class NmIntegrationController {
     public String sendLcrReadArchive(int serialFrom, int serialTo, int days, String drReport) throws IOException, DecoderException {
         rfnEventTestingService.sendLcrReadArchive(serialFrom, serialTo, days, DRReport.valueOf(drReport));
         return "redirect:viewLcrReadArchiveRequest";
-    }
-    
-    @RequestMapping("sendRelayArchiveRequest")
-    public String sendRelayArchive(int serialFrom, int serialTo, String manufacturer, String model) {
-        rfnEventTestingService.sendRelayArchiveRequest(serialFrom, serialTo, manufacturer, model);
-        return "redirect:viewRelayArchiveRequest";
     }
 
     @RequestMapping("sendLocationArchiveRequest")

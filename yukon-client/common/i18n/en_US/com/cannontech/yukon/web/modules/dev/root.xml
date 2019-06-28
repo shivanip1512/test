@@ -236,17 +236,12 @@
     <entry key="yukon.web.modules.dev.rfnTest.meterReadArchiveRequest.label">Meter Read Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrReadArchiveRequest.label">LCR Read Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.deviceArchiveRequest.label">Device Archive Request</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.lcrArchiveRequest.label">LCR Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.label">LCR Data Simulator</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.relayArchiveRequest.label">Relay Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.label">RFN Meter Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataStreamingSimulator.label">Data Streaming Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.label">Mapping Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.eventArchiveRequest.label">Event Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.alarmArchiveRequest.label">Alarm Archive Request</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.rfDaArchiveRequest.label">RF DA Archive Request</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.rfDaArchiveRequest.requestSent">Archive request sent for {0,number,#}_{1}_{2}</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.rfDaArchiveRequest.requestRangeSent">Archive requests sent for {0,number,#}–{1,number,#}_{2}_{3}</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfLocationArchiveRequest.label">RF Location Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.viewGatewayDataSimulator.crumbTitle">NM Gateway Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.viewGatewayDataSimulator.pageName">NM Gateway Simulator</entry>

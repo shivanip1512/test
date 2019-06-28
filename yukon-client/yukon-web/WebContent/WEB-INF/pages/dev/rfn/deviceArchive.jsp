@@ -17,10 +17,12 @@
                         <option value="js-rf-da">RF DA</option>
                         <option value="js-rfn-lcr">Rfn LCR</option>
                         <option value="js-meter">Meter</option>
+                        <option value="js-relay">Relay</option>
                     </select>
                 </tags:nameValue>
                 <input type="hidden" id="manufacturer" name="manufacturer"/>
                 <input type="hidden" id="model" name="model"/>
+                <!-- RF DA Manufacturer and Model -->
                 <tags:nameValue name="Manufacturer" nameClass="js-rf-da" valueClass="js-rf-da">
                     <select id="js-rf-da-manufacturer">
                         <option value="CPS">CPS</option>
@@ -33,6 +35,7 @@
                         </c:forEach>
                     </select>
                 </tags:nameValue>
+                <!-- RFN LCR Manufacturer and Model -->
                 <tags:nameValue name="Manufacturer" nameClass="js-rfn-lcr dn" valueClass="js-rfn-lcr dn">
                     <select id="js-rfn-lcr-manufacturer">
                         <option value="CPS">CPS</option>
@@ -45,6 +48,18 @@
                         </c:forEach>
                     </select>
                 </tags:nameValue>
+                <!-- Relay Manufacturer and Model -->
+                <tags:nameValue name="Manufacturer" nameClass="js-relay dn" valueClass="js-relay dn">
+                    <select id="js-relay-manufacturer">
+                        <option value="EATON">EATON</option>
+                    </select>
+                </tags:nameValue>
+                <tags:nameValue name="Model" nameClass="js-relay dn" valueClass="js-relay dn">
+                    <select id="js-relay-model">
+                        <option value="RFRelay">RFRelay</option>
+                    </select>
+                </tags:nameValue>
+                <!-- Meter Manufacturer and Model -->
                 <tags:nameValue name="Manufacturer and Model" nameClass="js-meter dn" valueClass="js-meter dn">
                     <select id="js-meter-manufacturer-model">
                         <c:forEach var="group" items="${meterModels}">

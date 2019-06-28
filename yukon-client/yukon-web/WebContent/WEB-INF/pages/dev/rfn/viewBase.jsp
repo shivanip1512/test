@@ -77,7 +77,6 @@ $(function () { yukon.dev.rfn.init(); });
             <li><a href="viewEventArchiveRequest"><i:inline key=".eventArchiveRequest.label"/></a></li>
             <li><a href="viewLcrReadArchiveRequest"><i:inline key=".lcrReadArchiveRequest.label"/></a></li>
             <li><a href="viewMeterReadArchiveRequest"><i:inline key=".meterReadArchiveRequest.label"/></a></li>
-            <li><a href="viewRelayArchiveRequest"><i:inline key=".relayArchiveRequest.label"/></a></li>
             <li><a href="viewLocationArchiveRequest"><i:inline key=".rfLocationArchiveRequest.label"/></a></li>
             <li><a href="viewConfigNotification"><i:inline key=".rfnConfigNotification.label"/></a></li>
             <li><a href="viewStatusArchiveRequest"><i:inline key=".statusArchiveRequest.label"/></a></li>
