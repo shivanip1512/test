@@ -28,17 +28,6 @@ import com.google.common.collect.Sets;
 
 public class MockAssetAvailabilityDao implements AssetAvailabilityDao {
 
-    private final String gatewayName = "Test Gateway";
-    private final PaoIdentifier gatewayPaoId = new PaoIdentifier(100, PaoType.RFN_GATEWAY);
-    private static final RfnIdentifier gatewayRfnId = new RfnIdentifier("10000", "CPS", "RFGateway");
-    private final static String gateway2Name = "Test Gateway 2";
-    
-    private static RfnGatewayData createEmptyRfnGatewayData(RfnIdentifier rfnIdentifier) {
-        GatewayDataResponse gatewayDataResponse = new GatewayDataResponse();
-        gatewayDataResponse.setRfnIdentifier(rfnIdentifier);
-        return new RfnGatewayData(gatewayDataResponse, gateway2Name);
-    }
-    
     @Override
     public SearchResults<ApplianceAssetAvailabilityDetails> getAssetAvailabilityDetailsWithAppliance(Iterable<Integer> loadGroupIds,
             PagingParameters pagingParameters, AssetAvailabilityCombinedStatus[] filterCriteria,
@@ -100,13 +89,5 @@ public class MockAssetAvailabilityDao implements AssetAvailabilityDao {
         SearchResults<AssetAvailabilityDetails> result = SearchResults.pageBasedForSublist(resultList, 1, 10, 20);
 
         return result;
-    }
-    
-    @Override
-    public List<RfnGateway> getRfnGatewayList(Iterable<Integer> loadGroupIds) {
-        List<RfnGateway> resultList = new ArrayList<RfnGateway>();
-        RfnGateway rfnGateway = new RfnGateway(gatewayName, gatewayPaoId, gatewayRfnId, createEmptyRfnGatewayData(gatewayRfnId));
-        resultList.add(rfnGateway);
-        return resultList;
     }
 }

@@ -199,7 +199,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     @Override 
     public List<RfnGateway> getRfnGatewayList(PaoIdentifier paoIdentifier) {
         Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(paoIdentifier);
-        List<RfnGateway> rfnGateways = assetAvailabilityDao.getRfnGatewayList(loadGroupIds);
+        List<RfnGateway> rfnGateways = drGroupDeviceMappingDao.getRfnGatewayList(loadGroupIds);
         return rfnGateways;
     }
     

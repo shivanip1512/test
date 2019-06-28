@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -15,6 +16,8 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -37,6 +40,8 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
     @Autowired private ControlAreaDao controlAreaDao;
     @Autowired private ProgramDao programDao;
     @Autowired private ScenarioDao scenarioDao;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private RfnGatewayService rfnGatewayService;
 
     @PostConstruct
     public void init() {
@@ -138,5 +143,30 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
         } else {
             throw new IllegalArgumentException("PAO with id " + paoIdentifier.getPaoId() + " is not a DR grouping.");
         }
+    }
+    
+    @Override
+    public List<RfnGateway> getRfnGatewayList(Iterable<Integer> loadGroupIds) {
+        SqlStatementBuilder allGatewaysSql = buildGatewaySelect(loadGroupIds);
+        return jdbcTemplate.query(allGatewaysSql, TypeRowMapper.INTEGER)
+                .stream()
+                .map(rfnGatewayService::getGatewayByPaoId)
+                .collect(Collectors.toList());
+    }
+
+    private SqlStatementBuilder buildGatewaySelect(Iterable<Integer> loadGroupIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT drdd.GatewayId ");
+        sql.append("FROM LMHardwareBase lmbase, LMHardwareConfiguration hdconf, InventoryBase inv ");
+        sql.append("JOIN YukonPAObject ypo ON (inv.deviceID = ypo.PAObjectID) ");
+        sql.append("LEFT OUTER JOIN DynamicRfnDeviceData drdd ON (inv.DeviceID = drdd.DeviceId) ");
+        sql.append("WHERE inv.InventoryID = lmbase.InventoryID ");
+        sql.append("AND lmbase.InventoryID = hdconf.InventoryID AND lmbase.InventoryID IN ");
+        sql.append("(SELECT DISTINCT InventoryId ");
+        sql.append("FROM LMHardwareConfiguration) ");
+        sql.append("AND drdd.GatewayID IS NOT NULL ");
+        sql.append("AND AddressingGroupID").in(loadGroupIds);
+        sql.append("ORDER BY drdd.GatewayId ASC");
+        return sql;
     }
 }

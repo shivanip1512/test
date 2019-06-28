@@ -7,6 +7,7 @@ import java.util.Set;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.rfn.model.RfnGateway;
 
 /**
  * Dao for determining hierarchy of dr control areas, scenarios, programs and load groups, and
@@ -36,4 +37,10 @@ public interface DRGroupDeviceMappingDao {
      * scenario or control area.
      */
     Map<Integer, SimpleDevice> getInventoryPaoMapForGrouping(YukonPao yukonPao);
+    
+    /**
+     * Creates RfnGatewayList which has all primary gateways of assets
+     * @param loadGroupIds -- list of load group ids
+     */
+     List<RfnGateway> getRfnGatewayList(Iterable<Integer> loadGroupIds);
 }

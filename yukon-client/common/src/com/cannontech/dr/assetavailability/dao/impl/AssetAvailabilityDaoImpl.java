@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.Instant;
@@ -17,13 +16,10 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.rfn.model.RfnGateway;
-import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -43,8 +39,6 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private DeviceGroupService deviceGroupService;
-    @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private RfnGatewayService rfnGatewayService;
 
     @Override
     public SearchResults<ApplianceAssetAvailabilityDetails> getAssetAvailabilityDetailsWithAppliance(Iterable<Integer> loadGroupIds,
@@ -401,15 +395,6 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         return result;
     }
     
-    @Override
-    public List<RfnGateway> getRfnGatewayList(Iterable<Integer> loadGroupIds) {
-        SqlStatementBuilder allGatewaysSql = buildGatewaySelect(loadGroupIds);
-        return jdbcTemplate.query(allGatewaysSql, TypeRowMapper.INTEGER)
-                .stream()
-                .map(rfnGatewayService::getGatewayByPaoId)
-                .collect(Collectors.toList());
-    }
-
     private SqlStatementBuilder buildAssetAvailabilityDetailsCommonsql(Instant communicatingWindowEnd, Instant runtimeWindowEnd,
             Instant currentTime) {
 
@@ -439,22 +424,6 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlCommon.append(")  AS availability");
         
         return sqlCommon;
-
     }
     
-    private SqlStatementBuilder buildGatewaySelect(Iterable<Integer> loadGroupIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT drdd.GatewayId ");
-        sql.append("FROM LMHardwareBase lmbase, LMHardwareConfiguration hdconf, InventoryBase inv ");
-        sql.append("JOIN YukonPAObject ypo ON (inv.deviceID = ypo.PAObjectID) ");
-        sql.append("LEFT OUTER JOIN DynamicRfnDeviceData drdd ON (inv.DeviceID = drdd.DeviceId) ");
-        sql.append("WHERE inv.InventoryID = lmbase.InventoryID ");
-        sql.append("AND lmbase.InventoryID = hdconf.InventoryID AND lmbase.InventoryID IN ");
-        sql.append("(SELECT DISTINCT InventoryId ");
-        sql.append("FROM LMHardwareConfiguration) ");
-        sql.append("AND drdd.GatewayID IS NOT NULL ");
-        sql.append("AND AddressingGroupID").in(loadGroupIds);
-        sql.append("ORDER BY drdd.GatewayId ASC");
-        return sql;
-    }
 }

@@ -107,10 +107,4 @@ public interface AssetAvailabilityDao {
             Instant communicatingWindowEnd, Instant runtimeWindowEnd, Instant currentTime, 
             YukonUserContext userContext);
     
-    /**
-     * Creates RfnGatewayList which has all primary gateways of assets
-     * @param loadGroupIds -- list of load group ids
-     */
-     List<RfnGateway> getRfnGatewayList(Iterable<Integer> loadGroupIds);
-
 }
