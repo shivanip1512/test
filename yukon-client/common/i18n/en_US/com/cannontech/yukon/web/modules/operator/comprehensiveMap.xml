@@ -7,24 +7,20 @@
     
     <entry key="yukon.web.modules.operator.comprehensiveMap.helpTitle">Comprehensive Map Help</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.helpText"><![CDATA[
-        You can apply the following filters to the map:
+        The comprehensive map allows the user to review the connectivity metrics associated with their network on a gateway by gateway basis.  
+        The map may also be color coded by either the gateway or the chosen metric. 
+        To start, choose the gateways and the metrics and then click the filter button to review the results.
         <ul>
-            <li><b>Gateway(s)</b> - Select one to five gateways to filter devices by.</li>
-            <li><b>Link Quality</b> - Link Quality is based on the Link Cost of the Primary Forward Neighbor. Categories are as follows:</li>
+            <li><b>Gateway(s)</b> - Select up to five individual gateways to review on a single map.</li>
+            <li><b>Link Quality</b> - Choose the link quality category or categories you would like to see on the map. Note that the link quality metric is measuring the communication success rate to the primary forward neighbor. 
+            This metric is also known as ETX Band or link cost. </li>
             <ul>
-                <li><b>Excellent</b> - Link cost is between 1 and 2.</li>
-                <li><b>Average</b> - Link cost is 3.</li>
-                <li><b>Below Average</b> - Link cost is between 4 and 5.</li>
-                <li><b>Evaulating</b> - Number of samples is less than 50.</li>
+                <li><b>Excellent</b> - Indicates a high success rate of communications between the node and its primary forward neighbor (Link cost of 1 or 2).</li>
+                <li><b>Average</b> - Indicates a normal success rate of communications between the node and its primary forward neighbor (Link cost = 3).</li>
+                <li><b>Below Average</b> - Indicates a less than average rate of communications between the node and its primary forward neighbor (Link cost > 4).</li>
+                <li><b>Evaulating</b> - Indicates a valid link quality cannot be calculated due to the limited number of attempts by the node to communicate with its primary forward neighbor.  Once a minimum of 50 attempts have been completed, a link quality will be calculated.</li>
             </ul>
-            <li><b>Color Code By</b> - Select how to color code the pins by. A legend will be displayed below the map.</li>
-            <ul>
-            	<li><b>By Gateway</b> - Color code the pins by gateway so that each pin is color coded according to it's primary gateway.</li>
-            	<li><b>By Link Quality</b> - Color code the pins by Link Quality so that each pin is color coded according to the categories mentioned above.</li>
-        </ul>
-        Click on the Filter button to filter the results.<br/>
-        The resulting devices will display on the map with the total count of filtered devices.<br/>
-        Click on the Gear Icon next to the device count to view options you can do for the filtered device collection (Collection Actions, Download data).<br/>
+            <li><b>Color Code By</b> - Select whether to color code the pins by primary gateway or by link quality category.</li>
     ]]></entry>
     
     <entry key="yukon.web.modules.operator.comprehensiveMap.selectGateways">Select Gateways</entry>
