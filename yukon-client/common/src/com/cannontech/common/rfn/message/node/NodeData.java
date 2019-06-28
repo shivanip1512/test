@@ -21,6 +21,8 @@ public class NodeData implements Serializable {
     private String firmwareVersion; // Software Version
     
     private String productNumber;
+    
+    private String meterConfigID;
 
     public String getNodeSerialNumber() {
         return nodeSerialNumber;
@@ -86,6 +88,14 @@ public class NodeData implements Serializable {
         this.productNumber = productNumber;
     }
 
+    public String getMeterConfigID() {
+        return meterConfigID;
+    }
+
+    public void setMeterConfigID(String meterConfigID) {
+        this.meterConfigID = meterConfigID;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -94,6 +104,7 @@ public class NodeData implements Serializable {
         result = prime * result + ((hardwareVersion == null) ? 0 : hardwareVersion.hashCode());
         result = prime * result + (int) (inNetworkTimestamp ^ (inNetworkTimestamp >>> 32));
         result = prime * result + ((macAddress == null) ? 0 : macAddress.hashCode());
+        result = prime * result + ((meterConfigID == null) ? 0 : meterConfigID.hashCode());
         result = prime * result + ((networkAddress == null) ? 0 : networkAddress.hashCode());
         result = prime * result + ((nodeSerialNumber == null) ? 0 : nodeSerialNumber.hashCode());
         result = prime * result + ((nodeType == null) ? 0 : nodeType.hashCode());
@@ -127,6 +138,11 @@ public class NodeData implements Serializable {
                 return false;
         } else if (!macAddress.equals(other.macAddress))
             return false;
+        if (meterConfigID == null) {
+            if (other.meterConfigID != null)
+                return false;
+        } else if (!meterConfigID.equals(other.meterConfigID))
+            return false;
         if (networkAddress == null) {
             if (other.networkAddress != null)
                 return false;
@@ -150,7 +166,7 @@ public class NodeData implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("NodeData [nodeSerialNumber=%s, nodeType=%s, inNetworkTimestamp=%s, macAddress=%s, networkAddress=%s, hardwareVersion=%s, firmwareVersion=%s, productNumber=%s]",
+            .format("NodeData [nodeSerialNumber=%s, nodeType=%s, inNetworkTimestamp=%s, macAddress=%s, networkAddress=%s, hardwareVersion=%s, firmwareVersion=%s, productNumber=%s, meterConfigID=%s]",
                     nodeSerialNumber,
                     nodeType,
                     inNetworkTimestamp,
@@ -158,7 +174,8 @@ public class NodeData implements Serializable {
                     networkAddress,
                     hardwareVersion,
                     firmwareVersion,
-                    productNumber);
+                    productNumber,
+                    meterConfigID);
     }
 
 }
