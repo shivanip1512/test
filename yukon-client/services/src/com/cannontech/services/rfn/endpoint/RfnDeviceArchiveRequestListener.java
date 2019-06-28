@@ -27,8 +27,8 @@ import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.services.rfn.RfnArchiveCache;
 import com.cannontech.services.rfn.RfnArchiveProcessor;
+import com.cannontech.services.rfn.RfnArchiveQueueHandler;
 import com.google.common.collect.Sets;
 
 @ManagedResource
@@ -38,7 +38,7 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private RfDaCreationService rfdaCreationService;
-    @Autowired private RfnArchiveCache rfnArchiveCache;
+    @Autowired private RfnArchiveQueueHandler queueHandler;
     private JmsTemplate jmsTemplate;
     private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
 
@@ -54,7 +54,7 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
         if(rfnCommsLog.isEnabled(Level.INFO)) {
             rfnCommsLog.log(Level.INFO, "<<< " + request.toString());
         }
-        request.getRfnIdentifiers().entrySet().forEach(entry -> rfnArchiveCache.add(this, entry));
+        request.getRfnIdentifiers().entrySet().forEach(entry -> queueHandler.add(this, entry));
     }
     
     /**
@@ -68,7 +68,7 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
                 createAndAcknowedge(entry, processor);
             }
         } else {
-            sendAcknowledgement(entry.getKey(), processor);
+            sendAcknowledgement(entry, processor);
         }
     }
 
@@ -78,7 +78,7 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
     private void lookupAndAcknowledge(Map.Entry<Long, RfnIdentifier> entry, String processor) {
         rfnDeviceCreationService.incrementDeviceLookupAttempt();
         rfnDeviceLookupService.getDevice(entry.getValue());
-        sendAcknowledgement(entry.getKey(), processor);
+        sendAcknowledgement(entry, processor);
     }
 
     /**
@@ -89,13 +89,13 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
     private void createAndAcknowedge(Map.Entry<Long, RfnIdentifier> entry, String processor) {
         try {
             create(entry.getValue(), processor);
-            sendAcknowledgement(entry.getKey(), processor);
+            sendAcknowledgement(entry, processor);
         } catch (RuntimeException e) {
             boolean isDev = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
             boolean isAcknowledgeable = e.getCause() instanceof Acknowledgeable;
             if (isDev || isAcknowledgeable) {
                 log.info("Exception:" + e.getMessage(), e);
-                sendAcknowledgement(entry.getKey(), processor);
+                sendAcknowledgement(entry, processor);
             } else {
                 log.warn("{} {} device creation failed {} {}", processor, this.getClass().getSimpleName(),
                     entry.getKey(), entry.getValue());
@@ -147,10 +147,15 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
     /**
      * Sends acknowledgement to NM
      */
-    private void sendAcknowledgement(Long referenceId, String processor) {
+    private void sendAcknowledgement(Map.Entry<Long, RfnIdentifier> entry, String processor) {
         RfnDeviceArchiveResponse response = new RfnDeviceArchiveResponse();
-        response.setReferenceIds(Sets.newHashSet(referenceId));
-        log.debug("{} acknowledged referenceId={}", processor, referenceId);
+        response.setReferenceIds(Sets.newHashSet(entry.getKey()));
+        if (entry.getValue().is_Empty_()) {
+            log.info("{} acknowledged empty rfnIdentifier {} referenceId={}", processor, entry.getValue(),
+                entry.getKey());
+        } else {
+            log.debug("{} acknowledged referenceId={}", processor, entry.getKey());
+        }
         jmsTemplate.convertAndSend(JmsApiDirectory.RFN_DEVICE_ARCHIVE.getResponseQueue().get().getName(), response);
     }
     

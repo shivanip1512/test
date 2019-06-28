@@ -159,7 +159,7 @@
        
     <bean class="com.cannontech.services.calculated.CalculatedPointDataProducer"/>
     
-    <bean class="com.cannontech.services.rfn.RfnArchiveCache"/>
+    <bean class="com.cannontech.services.rfn.RfnArchiveQueueHandler"/>
 
     <bean id="rfnDeviceArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.RfnDeviceArchiveRequestListener"/>
     <jms:listener-container

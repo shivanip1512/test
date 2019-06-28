@@ -26,11 +26,9 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
-import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -63,9 +61,6 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     private RfnAddressCache rfnIdentifierCache;
     
-    private final Map<String, Integer> rfnCache = new HashMap<>();
-    @Autowired private ScheduledExecutor executor;
-
     private final static YukonRowMapper<RfnDevice> rfnDeviceRowMapper = new YukonRowMapper<RfnDevice>() {
         @Override
         public RfnDevice mapRow(YukonResultSet rs) throws SQLException {

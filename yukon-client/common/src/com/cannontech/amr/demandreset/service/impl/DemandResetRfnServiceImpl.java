@@ -49,6 +49,7 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -63,10 +64,6 @@ import com.google.common.collect.Sets;
 
 public class DemandResetRfnServiceImpl implements DemandResetStrategyService, PointDataListener {
     private static final Logger log = YukonLogManager.getLogger(DemandResetRfnServiceImpl.class);
-
-    private final static String configurationName = "RFN_METER_DEMAND_RESET";
-    private final static String queueName = "yukon.qr.obj.amr.rfn.MeterDemandResetRequest";
-
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
@@ -239,8 +236,9 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
 
     @PostConstruct
     public void initialize() {
+        String configurationName = "RFN_METER_DEMAND_RESET";
         qrTemplate = new RequestReplyTemplateImpl<>(
-                configurationName, configurationSource, connectionFactory, queueName, false);
+                configurationName, configurationSource, connectionFactory, JmsApiDirectory.RFN_METER_DEMAND_RESET.getQueue().getName(), false);
         verificationTimeout = configurationSource.getDuration(configurationName
             + "_VALIDATION_TIMEOUT", Duration.standardHours(26));
     }

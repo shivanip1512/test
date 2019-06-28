@@ -25,14 +25,14 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.services.rfn.RfnArchiveCache;
 import com.cannontech.services.rfn.RfnArchiveProcessor;
+import com.cannontech.services.rfn.RfnArchiveQueueHandler;
 import com.cannontech.yukon.IDatabaseCache;
 
 @ManagedResource
 public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
     private static final Logger log = YukonLogManager.getLogger(RfnStatusArchiveRequestListener.class);
-    @Autowired private RfnArchiveCache rfnArchiveCache;
+    @Autowired private RfnArchiveQueueHandler queueHandler;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
@@ -52,7 +52,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
         if(rfnCommsLog.isEnabled(Level.INFO)) {
             rfnCommsLog.log(Level.INFO, "<<< " + request.toString());
         }
-        rfnArchiveCache.add(this, request);
+        queueHandler.add(this, request);
     }
     
     /**
@@ -63,11 +63,12 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
             if(request.getStatus() instanceof DemandResetStatus) {
                 DemandResetStatus status = (DemandResetStatus) request.getStatus();
                 int value = status.getData().getDemandResetStatusCodeID();
-          //      publishPointData(value, BuiltInAttribute.RF_DEMAND_RESET_STATUS, request.getRfnIdentifier(), processor);
-                sendAcknowledgement(request.getStatusPointId(), processor); 
+                publishPointData(value, BuiltInAttribute.RF_DEMAND_RESET_STATUS, request.getRfnIdentifier(),
+                    status.getTimeStamp(), processor);
+                sendAcknowledgement(request, processor); 
             }
         } else {
-            sendAcknowledgement(request.getStatusPointId(), processor);
+            sendAcknowledgement(request, processor);
         }
     }
     
@@ -75,7 +76,8 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
      * Attempts to publish point data for the device. If unable to lookup device in cache the exception will be thrown and acknowledgement 
      * will not be sent to NM.
      */
-    private void publishPointData(int value, BuiltInAttribute attribute, RfnIdentifier rfnIdentifier, String processor) {
+    private void publishPointData(int value, BuiltInAttribute attribute, RfnIdentifier rfnIdentifier, long timeStamp,
+            String processor) {
         PointData pointData = null;
         try {
             Integer id = rfnDeviceDao.getDeviceIdForRfnIdentifier(rfnIdentifier);
@@ -85,7 +87,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
             pointData.setId(point.getLiteID());
             pointData.setPointQuality(PointQuality.Normal);
             pointData.setValue(value);
-            pointData.setTime(new Date());
+            pointData.setTime(new Date(timeStamp));
             pointData.setType(point.getPointType());
             pointData.setTagsPointMustArchive(true); 
 
@@ -100,10 +102,15 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
     /**
      * Sends acknowledgement to NM
      */
-    private void sendAcknowledgement(Long statusPointID, String processor) {
+    private void sendAcknowledgement(RfnStatusArchiveRequest request, String processor) {
         RfnStatusArchiveResponse response = new RfnStatusArchiveResponse();
         response.setStatusPointId(response.getStatusPointId());
-        log.debug("{} acknowledged statusPointId={}", processor,statusPointID);
+        if (request.getRfnIdentifier().is_Empty_()) {
+            log.info("{} acknowledged empty rfnIdentifier {} statusPointId={}", processor, request.getRfnIdentifier(),
+                request.getStatusPointId());
+        } else {
+            log.debug("{} acknowledged statusPointId={}", processor, request.getStatusPointId());
+        }
         jmsTemplate.convertAndSend(JmsApiDirectory.RFN_STATUS_ARCHIVE.getResponseQueue().get().getName(), response);
     }
     

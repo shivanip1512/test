@@ -1,5 +1,8 @@
 package com.cannontech.common.rfn.simulation.service;
 
+import java.util.Set;
+
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.simulators.AutoStartableSimulator;
 
@@ -26,4 +29,6 @@ public interface NmNetworkSimulatorService extends AutoStartableSimulator {
     SimulatedNmMappingSettings getSettings();
 
     boolean isRunning();
+
+    void sendDemandResetStatusArchiveRequest(Set<RfnIdentifier> identifiers, Integer limit);
 }

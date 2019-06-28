@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.geojson.FeatureCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -672,7 +673,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      * Add device location to a map
      */
     private void addDevicesToMap(NetworkMap map,  String hexColor, Set<RfnIdentifier> devices) {
-        if(devices == null || devices.isEmpty()) {
+        if(CollectionUtils.isEmpty(devices)) {
             return;
         }
         Set<Integer> paoIds = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(devices);

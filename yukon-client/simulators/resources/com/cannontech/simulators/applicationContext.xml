@@ -26,6 +26,8 @@
     <bean class="com.cannontech.simulators.handler.NmNetworkSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.SimulatorStartupSettingsMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.SmartNotificationSimulatorMessageHandler"/>
+    <bean class="com.cannontech.simulators.handler.StatusArchiveSimulatorMessageHandler"/>
+    <bean class="com.cannontech.simulators.handler.DeviceArchiveSimulatorMessageHandler"/>
     
     <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrDataSimulatorServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnMeterDataSimulatorServiceImpl"/>

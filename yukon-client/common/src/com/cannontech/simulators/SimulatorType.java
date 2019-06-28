@@ -18,6 +18,8 @@ public enum SimulatorType {
     IVVC,
     SIMULATOR_STARTUP,
     SMART_NOTIFICATION,
+    STATUS_ARCHIVE,
+    DEVICE_ARCHIVE,
     NEST
     ;
 }

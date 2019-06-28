@@ -23,8 +23,9 @@ public class SimulatorStartupSettingsServiceImpl implements SimulatorStartupSett
             YukonSimulatorSettingsKey key = YukonSimulatorSettingsKey.valueOf(simulatorType.name() + "_SIMULATOR_RUN_ON_STARTUP");
             return yukonSimulatorSettingsDao.getBooleanValue(key);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid SimulatorType passed to SimulatorStartupSettingsService, unable to get SimulatorStartupSettings for: " + simulatorType.name(), e); 
-        }
+            //this simulator is not going to run on start-up
+            return false;
+       }
     }
 
     @Override

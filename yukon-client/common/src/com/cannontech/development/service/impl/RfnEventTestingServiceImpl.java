@@ -5,8 +5,6 @@ import static com.cannontech.common.stream.StreamUtils.not;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +35,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.util.FileCopyUtils;
 
-import com.cannontech.amr.meter.model.SimpleMeter;
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarm;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveRequest;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
@@ -50,23 +46,15 @@ import com.cannontech.amr.rfn.message.read.ChannelData;
 import com.cannontech.amr.rfn.message.read.ChannelDataStatus;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
-import com.cannontech.amr.rfn.message.status.RfnStatusArchiveRequest;
-import com.cannontech.amr.rfn.message.status.type.DemandResetStatus;
-import com.cannontech.amr.rfn.message.status.type.DemandResetStatusCode;
 import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
-import com.cannontech.common.rfn.message.archive.RfnDeviceArchiveRequest;
 import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.message.location.Origin;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.ByteUtil;
-import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
 import com.cannontech.development.service.RfnEventTestingService;
@@ -77,7 +65,6 @@ import com.cannontech.messaging.serialization.thrift.SimpleThriftSerializer;
 import com.cannontech.messaging.serialization.thrift.generated.RfnE2eDataIndication;
 import com.cannontech.messaging.serialization.thrift.generated.RfnE2eMessagePriority;
 import com.cannontech.messaging.serialization.thrift.generated.RfnE2eProtocol;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -88,9 +75,6 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ResourceLoader loader;
-    @Autowired private AttributeService attributeService;
-    @Autowired private IDatabaseCache dbCache;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
     protected JmsTemplate jmsTemplate;
         
     private static final String meterReadingArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
@@ -408,34 +392,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         }
         return numRequests;
     }
-    
-    @Override
-    public void sendLcrArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model) {
-        sendArchiveRequest(serialFrom, serialTo, manufacturer, model);
-    }
-    
-    @Override
-    public void sendRelayArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model) {
-        sendArchiveRequest(serialFrom, serialTo, manufacturer, model);
-    }
-
-    @Override
-    public void sendArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model) {
-        Map<Long, RfnIdentifier> rfnIdentifiers = new HashMap<>();
-        for (int i = serialFrom; i <= serialTo; i++) {
-            // Create archive request & fake identifier
-            rfnIdentifiers.put(Long.valueOf(i), new RfnIdentifier(Integer.toString(i),
-                                                            manufacturer,
-                                                            model));
-
-        }
-        RfnDeviceArchiveRequest response = new RfnDeviceArchiveRequest();
-        response.setRfnIdentifiers(rfnIdentifiers);
-        // Put request on queue
-        jmsTemplate.convertAndSend(JmsApiDirectory.RFN_DEVICE_ARCHIVE.getQueue().getName(), response);
-    }
-    
-    
+        
     @Override
     public void sendLocationResponse(int serialFrom, int serialTo, String manufacturer, String model, double latitude, double longitude) {
      
@@ -450,15 +407,6 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             locationResponse.setLastChangedDate(new Instant().getMillis());
             sendArchiveRequest(locationResponseQueueName, locationResponse);
         }
-    }
-    
-    @Override
-    public void sendRfDaArchiveRequest(int serial, String manufacturer, String model) {
-        RfnDeviceArchiveRequest response = new RfnDeviceArchiveRequest();
-        Map<Long, RfnIdentifier> rfnIdentifiers = new HashMap<>();
-        rfnIdentifiers.put(1L, new RfnIdentifier(Integer.toString(serial), manufacturer, model));
-        response.setRfnIdentifiers(rfnIdentifiers);
-        jmsTemplate.convertAndSend(JmsApiDirectory.RFN_DEVICE_ARCHIVE.getQueue().getName(), response);
     }
     
     private void buildAndSendEvent(RfnTestEvent event, int serialNum) {
@@ -650,41 +598,5 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
 
         return messagesSent;
     }
-    
-    @Override
-    public void sendStatusArchiveRequest(DemandResetStatusCode demandResetStatusCode, int messageCount) {
-        //find all rf meters
-        List<SimpleMeter> rfnMeters = dbCache.getAllMeters().values().stream()
-                .filter(meter -> meter.getPaoIdentifier().getPaoType().isRfMeter())
-                .collect(Collectors.toList());
-        //limit to only meters that support RF_DEMAND_RESET_STATUS
-        List<Integer> meters = attributeService.getPoints(rfnMeters, BuiltInAttribute.RF_DEMAND_RESET_STATUS).keySet()
-                .stream()
-                .map(identifier -> identifier.getPaoId())
-                .collect(Collectors.toList());
-        
-        List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(meters)
-                .stream()
-                .limit(messageCount)
-                .collect(Collectors.toList());
-        
-        for (int i = 0; i < rfnDevices.size(); i++) {
-            RfnStatusArchiveRequest response = new RfnStatusArchiveRequest();
-            response.setStatusPointId(i);
-            DemandResetStatus status = new DemandResetStatus();
-            status.setData(demandResetStatusCode);
-            status.setRfnIdentifier(rfnDevices.get(i).getRfnIdentifier());
-            status.setTimeStamp(new Date().getTime());
-            response.setStatus(status);
-            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_STATUS_ARCHIVE.getQueue().getName(), response);
-        }
-    }
-    
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
+
 }

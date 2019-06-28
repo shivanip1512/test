@@ -1,7 +1,6 @@
 package com.cannontech.web.dev;
 
 import java.beans.PropertyEditor;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,14 +8,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.function.IntConsumer;
-import java.util.stream.IntStream;
 
 import javax.jms.ConnectionFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.DecoderException;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
@@ -85,7 +81,10 @@ import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.simulators.message.request.DataStreamingSimulatorStatusRequest;
+import com.cannontech.simulators.message.request.DeviceArchiveSimulatorRequest;
 import com.cannontech.simulators.message.request.GatewaySimulatorStatusRequest;
 import com.cannontech.simulators.message.request.ModifyDataStreamingSimulatorRequest;
 import com.cannontech.simulators.message.request.ModifyGatewaySimulatorRequest;
@@ -102,12 +101,14 @@ import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStatusRequ
 import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStopRequest;
 import com.cannontech.simulators.message.request.RfnMeterReadAndControlSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
+import com.cannontech.simulators.message.request.StatusArchiveSimulatorRequest;
 import com.cannontech.simulators.message.response.DataStreamingSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.GatewaySimulatorStatusResponse;
 import com.cannontech.simulators.message.response.NmNetworkSimulatorResponse;
 import com.cannontech.simulators.message.response.RfnLcrSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.RfnMeterDataSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.RfnMeterReadAndControlSimulatorStatusResponse;
+import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -131,6 +132,7 @@ public class NmIntegrationController {
     @Autowired private RfnGatewaySimulatorService gatewaySimService;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     @Autowired private NmSyncService nmSyncService;
+    @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
@@ -492,22 +494,6 @@ public class NmIntegrationController {
         return "rfn/viewLcrReadArchive.jsp";
     }
     
-    @RequestMapping("viewDeviceArchiveRequest")
-    public String viewDeviceArchiveRequest(ModelMap model) {
-        model.addAttribute("deviceArchiveParameters", new DeviceArchiveRequestParameters());
-        model.addAttribute("meterModels", rfnEventTestingService.getGroupedRfnTypes());
-        model.addAttribute("rfnLcrModels", RfnManufacturerModel.getRfnLcrModels());
-        model.addAttribute("rfDaModels", new ArrayList<String>(Arrays.asList("CBC-8000", "RECL-F4D", "VR-CL7")));
-        return "rfn/deviceArchive.jsp";
-    }
-    
-    @RequestMapping("sendDeviceArchiveRequest")
-    public String sendDeviceArchiveRequest(@ModelAttribute DeviceArchiveRequestParameters deviceArchiveParameters) {
-        rfnEventTestingService.sendArchiveRequest(deviceArchiveParameters.getSerialFrom(),
-            deviceArchiveParameters.getSerialTo(), deviceArchiveParameters.getManufacturer(), deviceArchiveParameters.getModel());
-        return "redirect:viewDeviceArchiveRequest";
-    }
-
     @RequestMapping("viewGatewayDataSimulator")
     public String viewGatewayDataSimulator() {
         return "rfn/gatewayDataSimulator.jsp";
@@ -810,12 +796,6 @@ public class NmIntegrationController {
         return "redirect:viewConfigNotification";
     }
 
-    @RequestMapping("sendLcrReadArchiveRequest")
-    public String sendLcrReadArchive(int serialFrom, int serialTo, int days, String drReport) throws IOException, DecoderException {
-        rfnEventTestingService.sendLcrReadArchive(serialFrom, serialTo, days, DRReport.valueOf(drReport));
-        return "redirect:viewLcrReadArchiveRequest";
-    }
-
     @RequestMapping("sendLocationArchiveRequest")
     public String sendLocationArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model, String latitude, String longitude) { 
         rfnEventTestingService.sendLocationResponse(serialFrom, serialTo, manufacturer, model, Double.parseDouble(latitude), Double.parseDouble(longitude));
@@ -1092,10 +1072,53 @@ public class NmIntegrationController {
     }
     
     @RequestMapping("sendStatusArchiveRequest")
-    public String sendStatusArchiveRequest(String statusCode, int messageCount) {
+    public String sendStatusArchiveRequest(String statusCode, int messageCount, FlashScope flashScope) {
         DemandResetStatusCode demandResetStatusCode = DemandResetStatusCode.valueOf(Integer.parseInt(statusCode));
-        log.info("Demand Reset Status Code " + statusCode + " (" + demandResetStatusCode + ")" + " was sent to " + messageCount + " devices.");
-        rfnEventTestingService.sendStatusArchiveRequest(demandResetStatusCode, messageCount);
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.DEMAND_RESET_STATUS_ARCHIVE, demandResetStatusCode.name());
+        StatusArchiveSimulatorRequest request = new StatusArchiveSimulatorRequest(messageCount);
+        String success = "Demand Reset Status Code " +  demandResetStatusCode.name() + " was sent to " + messageCount + " devices.";
+        String failure = "Can't send status archived request.";
+        sendMessageToSimulator(request, success, failure, flashScope);
         return "redirect:viewStatusArchiveRequest";
+    }
+        
+    @RequestMapping("viewDeviceArchiveRequest")
+    public String viewDeviceArchiveRequest(ModelMap model) {
+        model.addAttribute("deviceArchiveParameters", new DeviceArchiveRequestParameters());
+        model.addAttribute("meterModels", rfnEventTestingService.getGroupedRfnTypes());
+        model.addAttribute("rfnLcrModels", RfnManufacturerModel.getRfnLcrModels());
+        model.addAttribute("rfDaModels", new ArrayList<String>(Arrays.asList("CBC-8000", "RECL-F4D", "VR-CL7")));
+        return "rfn/deviceArchive.jsp";
+    }
+    
+    @RequestMapping("sendDeviceArchiveRequest")
+    public String sendDeviceArchiveRequest(@ModelAttribute DeviceArchiveRequestParameters deviceArchiveParameters,
+            FlashScope flashScope) {
+        String success = "Successfully created devices";
+        String failure = "Device creation failed.";
+        DeviceArchiveSimulatorRequest request = new DeviceArchiveSimulatorRequest();
+        request.setManufacturer(deviceArchiveParameters.getManufacturer());
+        request.setModel(deviceArchiveParameters.getModel());
+        request.setSerialFrom(deviceArchiveParameters.getSerialFrom());
+        request.setSerialTo(deviceArchiveParameters.getSerialTo());
+        sendMessageToSimulator(request, success, failure, flashScope);
+        return "redirect:viewDeviceArchiveRequest";
+    }
+    
+    private void sendMessageToSimulator(SimulatorRequest request, String successText, String failureText,
+            FlashScope flashScope) {
+        try {
+            SimulatorResponse response =
+                simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+            if (response.isSuccessful()) {
+                flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode(successText));
+            } else {
+                flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode(failureText));
+            }
+        } catch (Exception e) {
+            log.error(e);
+            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                "Unable to send message to Simulator Service: " + e.getMessage()));
+        }
     }
 }

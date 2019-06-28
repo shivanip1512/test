@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
@@ -29,11 +30,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReply;
+import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReplyType;
+import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetRequest;
+import com.cannontech.amr.rfn.message.status.RfnStatusArchiveRequest;
+import com.cannontech.amr.rfn.message.status.type.DemandResetStatus;
+import com.cannontech.amr.rfn.message.status.type.DemandResetStatusCode;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.DistanceUnit;
 import com.cannontech.common.pao.model.PaoDistance;
@@ -80,6 +89,7 @@ import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -137,8 +147,10 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
-    private JmsTemplate jmsTemplate;
+    @Autowired private AttributeService attributeService;
+    @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     
+    private JmsTemplate jmsTemplate;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private Executor executor = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> task;
@@ -335,26 +347,51 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         }
                     }
                     
-                    Object metaDataMultiMessage = jmsTemplate.receive(JmsApiDirectory.RF_METADATA_MULTI.getQueue().getName());
-                    if (metaDataMultiMessage != null) {
-                        ObjectMessage requestMessage = (ObjectMessage) metaDataMultiMessage;
-                        if (requestMessage.getObject() instanceof RfnMetadataMultiRequest) {
-                            RfnMetadataMultiRequest request = (RfnMetadataMultiRequest) requestMessage.getObject();
-                            log.debug("RfnMetadataMultiRequest identifier {} metadatas {} gateway ids {} or rfn ids {}",
-                                request.getRequestID(), request.getPrimaryNodesForGatewayRfnIdentifiers().size(),
-                                request.getRfnIdentifiers().size(), request.getRfnMetadatas());
-                            
-                            List<RfnMetadataMultiResponse> responses = getPartitionedMetadataMultiResponse(request);
-                            
-                            
-                            RfnMetadataMultiResponse reply = getMetadataMultiResponse(request);
-                            log.debug("RfnMetadataMultiRequest identifier {} response: {}",
-                                request.getRequestID(), reply.getResponseType());
-                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
-                        }
-                    }
+                    recieveMetaDataMultiMessage();
+                    recieveDemandResetMessage();
+                    
                 } catch (Exception e) {
                     log.error("Error occurred in NM Network Simulator.", e);
+                }
+            }
+
+            private void recieveDemandResetMessage() throws JMSException {
+                Object demandResetMessage = jmsTemplate.receive(JmsApiDirectory.RFN_METER_DEMAND_RESET.getQueue().getName());
+                if (demandResetMessage != null) {
+                    ObjectMessage requestMessage = (ObjectMessage) demandResetMessage;
+                    if (requestMessage.getObject() instanceof RfnMeterDemandResetRequest) {
+                        RfnMeterDemandResetRequest request = (RfnMeterDemandResetRequest) requestMessage.getObject();
+                        log.debug("RfnMeterDemandResetRequest meter identifiers {}", request.getRfnMeterIdentifiers().size());
+                      
+                        RfnMeterDemandResetReply reply = new RfnMeterDemandResetReply();
+                        Map<RfnIdentifier, RfnMeterDemandResetReplyType> replies = 
+                                request.getRfnMeterIdentifiers().stream()
+                                    .collect(Collectors.toMap(Function.identity(), identifier -> RfnMeterDemandResetReplyType.OK));
+                        reply.setReplyTypes(replies);
+                        jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
+
+                        sendDemandResetStatusArchiveRequest(request.getRfnMeterIdentifiers(), null);
+                    }
+                }
+            }
+
+            private void recieveMetaDataMultiMessage() throws JMSException {
+                Object metaDataMultiMessage = jmsTemplate.receive(JmsApiDirectory.RF_METADATA_MULTI.getQueue().getName());
+                if (metaDataMultiMessage != null) {
+                    ObjectMessage requestMessage = (ObjectMessage) metaDataMultiMessage;
+                    if (requestMessage.getObject() instanceof RfnMetadataMultiRequest) {
+                        RfnMetadataMultiRequest request = (RfnMetadataMultiRequest) requestMessage.getObject();
+                        log.debug("RfnMetadataMultiRequest identifier {} metadatas {} gateway ids {} or rfn ids {}",
+                            request.getRequestID(), request.getPrimaryNodesForGatewayRfnIdentifiers().size(),
+                            request.getRfnIdentifiers().size(), request.getRfnMetadatas());
+                        
+                       // List<RfnMetadataMultiResponse> responses = getPartitionedMetadataMultiResponse(request);
+
+                        RfnMetadataMultiResponse reply = getMetadataMultiResponse(request);
+                        log.debug("RfnMetadataMultiRequest identifier {} response: {}",
+                            request.getRequestID(), reply.getResponseType());
+                        jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
+                    }
                 }
             }
         }, 0, 1, TimeUnit.SECONDS);
@@ -837,6 +874,35 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         Collections.sort(nearby, LocationService.ON_DISTANCE);
         
         return nearby.stream().map(d-> devices.get(d.getPao().getLiteID())).collect(Collectors.toList());
+    }
+    
+    @Override
+    public void sendDemandResetStatusArchiveRequest(Set<RfnIdentifier> identifiers, Integer limit) {
+        List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoIds(
+            rfnDeviceDao.getDeviceIdsForRfnIdentifiers(identifiers));
+
+        Set<PaoIdentifier> devicesWithDemandResertStatusPoint =
+            attributeService.getPoints(devices, BuiltInAttribute.RF_DEMAND_RESET_STATUS).keySet();
+        // remove devices that do not support demand reset
+        devices.removeIf(device -> !devicesWithDemandResertStatusPoint.contains(device.getPaoIdentifier()));
+      
+        if(limit != null) {
+            devices = devices.stream()
+                    .limit(limit)
+                    .collect(Collectors.toList());
+        }
+          
+        String statusCode = yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.DEMAND_RESET_STATUS_ARCHIVE);
+        for (int i = 0; i < devices.size(); i++) {
+            RfnStatusArchiveRequest response = new RfnStatusArchiveRequest();
+            response.setStatusPointId(i);
+            DemandResetStatus status = new DemandResetStatus();
+            status.setData(DemandResetStatusCode.valueOf(statusCode));
+            status.setRfnIdentifier(devices.get(i).getRfnIdentifier());
+            status.setTimeStamp(new Date().getTime());
+            response.setStatus(status);
+            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_STATUS_ARCHIVE.getQueue().getName(), response);
+        }
     }
     
     private int getRandomNumberInRange(int min, int max) {

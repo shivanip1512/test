@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 
-public class RfnArchiveCache {
-    private static final Logger log = YukonLogManager.getLogger(RfnArchiveCache.class);
+public class RfnArchiveQueueHandler {
+    private static final Logger log = YukonLogManager.getLogger(RfnArchiveQueueHandler.class);
     /*
      * This queue contains the reference to the processor and the object to be processed.
      * When thread takes and object from the queue, it tells the processor to process it.
