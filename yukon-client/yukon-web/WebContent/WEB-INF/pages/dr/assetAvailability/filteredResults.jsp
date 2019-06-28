@@ -35,6 +35,9 @@
             <c:forEach var="status" items="${statuses}">
                 <cti:param name="statuses" value="${status}"/>
             </c:forEach>
+            <c:forEach var="gatewayId" items="${selectedGateways}">
+                <cti:param name="selectedGateways" value="${gatewayId}"/>
+            </c:forEach>
         </cti:url>
 
         <div data-url="${filterUrl}">
