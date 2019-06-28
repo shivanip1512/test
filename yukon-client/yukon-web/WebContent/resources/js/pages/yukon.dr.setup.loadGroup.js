@@ -33,7 +33,10 @@ yukon.dr.setup.loadGroup = (function() {
                 yukon.ui.blockPage();
                 $('#loadGroup-copy-form').ajaxSubmit({
                     success: function (data, status, xhr, $form) {
-                        window.location.href=yukon.url('/dr/setup/loadGroup/' + data.groupId);
+                        if (!$.isEmptyObject(data.redirectUrl))
+                            window.location.href=yukon.url(data.redirectUrl);
+                        else
+                            window.location.href=yukon.url('/dr/setup/loadGroup/' + data.groupId);
                     },
                     error: function (xhr, status, error, $form) {
                         $('#copy-loadGroup-popup').html(xhr.responseText);

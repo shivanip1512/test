@@ -191,7 +191,7 @@ public class LoadGroupSetupController {
 
     @DeleteMapping("/{id}/delete")
     public String delete(@PathVariable int id, @ModelAttribute LMDelete lmDelete, YukonUserContext userContext,
-            FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+            FlashScope flash, HttpServletRequest request) {
 
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupDeleteUrl + id);
@@ -218,8 +218,8 @@ public class LoadGroupSetupController {
     @PostMapping("/{id}/copy")
     public String copy(@ModelAttribute("lmCopy") LMCopy lmCopy, @PathVariable int id, BindingResult result,
             YukonUserContext userContext, FlashScope flash, ModelMap model, HttpServletRequest request,
-            HttpServletResponse servletResponse, RedirectAttributes redirectAttributes) throws IOException {
-
+            HttpServletResponse servletResponse) throws IOException {
+        Map<String, String> json = new HashMap<>();
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupCopyUrl + id);
             ResponseEntity<? extends Object> response = copyGroup(userContext, request, url, lmCopy, HttpMethod.POST);
@@ -233,7 +233,6 @@ public class LoadGroupSetupController {
             if (response.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
                 int groupId = paoIdMap.get("paoId");
-                Map<String, String> json = new HashMap<>();
                 json.put("groupId", Integer.toString(groupId));
                 servletResponse.setContentType("application/json");
                 JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
@@ -244,11 +243,17 @@ public class LoadGroupSetupController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            json.put("redirectUrl", "/dr/setup/list");
+            servletResponse.setContentType("application/json");
+            JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
+            return null;
         } catch (RestClientException ex) {
             log.error("Error while copying load group: " + ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", ex.getMessage()));
-            return "redirect:/dr/setup/list";
+            json.put("redirectUrl", "/dr/setup/list");
+            servletResponse.setContentType("application/json");
+            JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
+            return null;
         }
         return null;
     }
@@ -258,27 +263,20 @@ public class LoadGroupSetupController {
      */
     @GetMapping("/{id}/rendercopyloadGroup")
     public String renderCopyloadGroup(@PathVariable int id, ModelMap model, YukonUserContext userContext,
-            HttpServletRequest request, FlashScope flash, RedirectAttributes redirectAttributes) {
+            HttpServletRequest request) {
 
-        try {
-            PaoType loadGroupType = getPaoTypeForPaoId(id);
-            LMCopy lmCopy = LMModelFactory.createLoadGroupCopy(loadGroupType);
+        PaoType loadGroupType = getPaoTypeForPaoId(id);
+        LMCopy lmCopy = LMModelFactory.createLoadGroupCopy(loadGroupType);
 
-            MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
-            lmCopy.setName(messageSourceAccessor.getMessage("yukon.common.copyof", getPaoNameForPaoId(id)));
-            model.addAttribute("lmCopy", lmCopy);
-            if ((loadGroupType == PaoType.LM_GROUP_EXPRESSCOMM) || (loadGroupType == PaoType.LM_GROUP_EMETCON)
-                || (loadGroupType == PaoType.LM_GROUP_VERSACOM)) {
-                model.addAttribute("routes", cache.getAllRoutes());
-            }
-            model.addAttribute("loadGroupId", id);
-            model.addAttribute("selectedSwitchType", loadGroupType);
-
-        } catch (ApiCommunicationException e) {
-            log.error(e.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
+        lmCopy.setName(messageSourceAccessor.getMessage("yukon.common.copyof", getPaoNameForPaoId(id)));
+        model.addAttribute("lmCopy", lmCopy);
+        if ((loadGroupType == PaoType.LM_GROUP_EXPRESSCOMM) || (loadGroupType == PaoType.LM_GROUP_EMETCON)
+            || (loadGroupType == PaoType.LM_GROUP_VERSACOM)) {
+            model.addAttribute("routes", cache.getAllRoutes());
         }
+        model.addAttribute("loadGroupId", id);
+        model.addAttribute("selectedSwitchType", loadGroupType);
         return "dr/setup/copyLoadGroup.jsp";
     }
 
