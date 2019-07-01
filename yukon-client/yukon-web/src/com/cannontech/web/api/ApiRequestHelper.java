@@ -1,5 +1,6 @@
 package com.cannontech.web.api;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.token.TokenHelper;
 
@@ -23,6 +25,13 @@ public class ApiRequestHelper {
     private final static String authToken = "authToken";
     @Autowired private RestTemplate apiRestTemplate;
 
+    @SuppressWarnings("rawtypes")
+    public final static HashMap<Class, ParameterizedTypeReference> paramTypeRefMap = new HashMap<>();
+    static {
+        paramTypeRefMap.put(LiteYukonPAObject.class, new ParameterizedTypeReference<List<LiteYukonPAObject>>() {
+        });
+    }
+    
     /**
      * This method will send a API request to the passed url and return object.
      * 
@@ -55,12 +64,11 @@ public class ApiRequestHelper {
      * @throws RestClientException - Any exception from API call have to be handled by the caller.
      */
     public ResponseEntity<List<? extends Object>> callAPIForList(YukonUserContext userContext,
-            HttpServletRequest request, String url, HttpMethod method, Object... requestObject)
+            HttpServletRequest request, String url, Class<? extends Object> responseType, HttpMethod method, Object... requestObject)
             throws RestClientException {
         HttpEntity<?> requestEntity = getRequestEntity(userContext, request, requestObject);
-        ResponseEntity<List<? extends Object>> response = apiRestTemplate.exchange(url, method, requestEntity,
-            new ParameterizedTypeReference<List<? extends Object>>() {
-            });
+        ResponseEntity<List<? extends Object>> response = apiRestTemplate.exchange(url, method, requestEntity, paramTypeRefMap.get(responseType));
+            ;
         return response;
     }
 

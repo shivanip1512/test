@@ -6,4 +6,6 @@ public class ApiURL {
     public static final String drLoadGroupRetrieveUrl = "/dr/setup/loadGroup/";
     public static final String drLoadGroupDeleteUrl = "/dr/setup/loadGroup/delete/";
     public static final String drLoadGroupCopyUrl = "/dr/setup/loadGroup/copy/";
+    
+    public static final String retrieveAllRoutesUrl = "/core/setup/route/allRoutes";
 }
