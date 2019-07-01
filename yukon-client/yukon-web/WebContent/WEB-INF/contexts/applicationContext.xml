@@ -1390,5 +1390,8 @@
     <bean class="com.cannontech.web.api.token.TokenHelper"/>
     <bean class="com.cannontech.web.api.ApiRequestHelper"/>
     <bean class="com.cannontech.web.api.dr.setup.LoadGroupValidatorHelper"/>
+    <bean class="com.cannontech.dr.loadgroup.service.impl.ControlScenarioServiceImpl"/>
+    <bean id="controlScenarioSetupValidator" class="com.cannontech.web.api.dr.setup.ControlScenarioSetupValidator"/>
+    <bean class="com.cannontech.dr.loadgroup.service.impl.DrSetupHelper"/>
 
 </beans>
