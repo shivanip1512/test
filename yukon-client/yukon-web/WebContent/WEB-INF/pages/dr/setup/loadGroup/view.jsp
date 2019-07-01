@@ -70,19 +70,11 @@
         <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
                       selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">
             <%@ include file="expresscom.jsp" %>
-            <%@ include file="loadGroupOptional.jsp" %>
-        </c:if>
-        <c:if test="${selectedSwitchType == 'LM_GROUP_METER_DISCONNECT' || 
-                      selectedSwitchType == 'LM_GROUP_NEST' ||
-                      selectedSwitchType == 'LM_GROUP_ECOBEE' ||
-                      selectedSwitchType == 'LM_GROUP_HONEYWELL'}">
-            <%@ include file="loadGroupOptional.jsp" %>
-        </c:if>
-        <c:if test="${selectedSwitchType == 'LM_GROUP_ITRON'}">
-            <%@ include file="loadGroupOptional.jsp" %>
         </c:if>
          <c:if test="${selectedSwitchType == 'LM_GROUP_DIGI_SEP'}">
             <%@ include file="digisep.jsp" %>
+        </c:if>
+        <c:if test="${not empty selectedSwitchType}">
             <%@ include file="loadGroupOptional.jsp" %>
         </c:if>
 
