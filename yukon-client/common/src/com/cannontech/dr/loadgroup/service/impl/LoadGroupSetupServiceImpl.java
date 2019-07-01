@@ -1,5 +1,6 @@
 package com.cannontech.dr.loadgroup.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMModelFactory;
+import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
@@ -33,6 +35,28 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private PointDao pointDao;
     @Autowired private DbChangeManager dbChangeManager;
+
+    @Override
+    public List<LMPaoDto> retrieveAvailableLoadGroup() {
+        List<LiteYukonPAObject> list = dbCache.getAllLMGroups();
+
+        if (list.size() == 0) {
+            throw new NotFoundException("No available loadgroup present.");
+        }
+        List<LMPaoDto> availableLoadGroups = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            LiteYukonPAObject yukonPAObject = (LiteYukonPAObject) list.get(i);
+            if (yukonPAObject.getPaoType().supportsMacroGroup() && yukonPAObject.getPaoType() != PaoType.MACRO_GROUP) {
+                LMPaoDto lmPaoDto = new LMPaoDto();
+                lmPaoDto.setId(yukonPAObject.getYukonID());
+                lmPaoDto.setName(yukonPAObject.getPaoName());
+                lmPaoDto.setType(yukonPAObject.getPaoType());
+                availableLoadGroups.add(lmPaoDto);
+            }
+        }
+
+        return availableLoadGroups;
+    }
 
     @Override
     public int save(LoadGroupBase loadGroup) {
@@ -63,11 +87,8 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
 
     @Override
     public int delete(int loadGroupId, String loadGroupName) {
-        Optional<LiteYukonPAObject> liteLoadGroup = dbCache.getAllLMGroups()
-                                                           .stream()
-                                                           .filter(group -> group.getLiteID() == loadGroupId 
-                                                                    && group.getPaoName().equals(loadGroupName))
-                                                           .findFirst();
+        Optional<LiteYukonPAObject> liteLoadGroup = dbCache.getAllLMGroups().stream().filter(
+            group -> group.getLiteID() == loadGroupId && group.getPaoName().equals(loadGroupName)).findFirst();
         if (liteLoadGroup.isEmpty()) {
             throw new NotFoundException("Id and Name combination not found");
         }
@@ -79,10 +100,8 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
 
     @Override
     public int copy(int loadGroupId, LMCopy lmCopy) {
-        Optional<LiteYukonPAObject> liteLoadGroup = dbCache.getAllLMGroups()
-                                                           .stream()
-                                                           .filter(group -> group.getLiteID() == loadGroupId)
-                                                           .findFirst();
+        Optional<LiteYukonPAObject> liteLoadGroup =
+            dbCache.getAllLMGroups().stream().filter(group -> group.getLiteID() == loadGroupId).findFirst();
         if (liteLoadGroup.isEmpty()) {
             throw new NotFoundException("Id not found");
         }
@@ -103,7 +122,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     }
 
     /**
-     * Returns DB Persistent object 
+     * Returns DB Persistent object
      */
     private LMGroup getDBPersistent(LoadGroupBase loadGroup) {
         LMGroup lmGroup = (LMGroup) LMFactory.createLoadManagement(loadGroup.getType());
@@ -115,7 +134,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     }
 
     /**
-     * Returns LM Model object 
+     * Returns LM Model object
      */
     private LoadGroupBase getModel(PaoType paoType) {
         LoadGroupBase lmGroup = (LoadGroupBase) LMModelFactory.createLoadGroup(paoType);

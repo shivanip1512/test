@@ -1,7 +1,6 @@
 package com.cannontech.web.api.dr.setup;
 
 import java.util.HashMap;
-import java.util.List;
 
 import javax.validation.Valid;
 
@@ -20,28 +19,35 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
-import com.cannontech.common.dr.setup.LMPaoDto;
-import com.cannontech.common.dr.setup.LoadGroupBase;
-import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
+import com.cannontech.common.dr.setup.MacroLoadGroup;
+import com.cannontech.dr.loadgroup.service.MacroLoadGroupSetupService;
 
 @RestController
-@RequestMapping("/dr/setup/loadGroup")
-public class LoadGroupSetupApiController {
+@RequestMapping("/dr/setup/macroLoadGroup")
+public class MacroLoadGroupSetupApiController {
 
-    @Autowired LoadGroupSetupService loadGroupService;
+    @Autowired MacroLoadGroupSetupService macroLoadGroupService;
+    @Autowired MacroLoadGroupValidator macroLoadGroupValidator;
     @Autowired LMDeleteValidator lmDeleteValidator;
     @Autowired LMCopyValidator lmCopyValidator;
-    private List<LoadGroupSetupValidator<? extends LoadGroupBase>> validators;
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> retrieve(@PathVariable int id) {
-        LoadGroupBase loadGroup = loadGroupService.retrieve(id);
+        MacroLoadGroup loadGroup = macroLoadGroupService.retrieve(id);
         return new ResponseEntity<>(loadGroup, HttpStatus.OK);
     }
 
+    @PostMapping("/update/{id}")
+    public ResponseEntity<Object> update(@Valid @RequestBody MacroLoadGroup loadGroup, @PathVariable int id) {
+        int paoId = macroLoadGroupService.update(id, loadGroup);
+        HashMap<String, Integer> paoIdMap = new HashMap<>();
+        paoIdMap.put("paoId", paoId);
+        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+    }
+
     @PostMapping("/save")
-    public ResponseEntity<Object> save(@Valid @RequestBody LoadGroupBase loadGroup) {
-        int paoId = loadGroupService.save(loadGroup);
+    public ResponseEntity<Object> save(@Valid @RequestBody MacroLoadGroup loadGroup) {
+        int paoId = macroLoadGroupService.save(loadGroup);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("paoId", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
@@ -49,7 +55,7 @@ public class LoadGroupSetupApiController {
 
     @PostMapping("/copy/{id}")
     public ResponseEntity<Object> copy(@Valid @RequestBody LMCopy lmCopy, @PathVariable int id) {
-        int paoId = loadGroupService.copy(id, lmCopy);
+        int paoId = macroLoadGroupService.copy(id, lmCopy);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("paoId", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
@@ -57,30 +63,12 @@ public class LoadGroupSetupApiController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> delete(@Valid @RequestBody LMDelete lmDelete, @PathVariable int id) {
-        int paoId = loadGroupService.delete(id, lmDelete.getName());
+        int paoId = macroLoadGroupService.delete(id, lmDelete.getName());
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("paoId", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @GetMapping("/availableLoadGroup")
-    public ResponseEntity<Object> retrieveAvailableLoadGroup() {
-        List<LMPaoDto> availableLoadGroups = loadGroupService.retrieveAvailableLoadGroup();
-        HashMap<String, List<LMPaoDto>> paoIdMap = new HashMap<>();
-        paoIdMap.put("availableLoadGroups", availableLoadGroups);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
-    }
-
-    @InitBinder("loadGroupBase")
-    public void setupBinder(WebDataBinder binder) {
-        validators.stream().forEach(e -> {
-            if (e.supports(binder.getTarget().getClass())) {
-                binder.addValidators(e);
-            }
-        });
-    }
-
-    @InitBinder("LMDelete")
     public void setupBinderDelete(WebDataBinder binder) {
         binder.addValidators(lmDeleteValidator);
     }
@@ -90,8 +78,8 @@ public class LoadGroupSetupApiController {
         binder.addValidators(lmCopyValidator);
     }
 
-    @Autowired
-    void setValidators(List<LoadGroupSetupValidator<? extends LoadGroupBase>> validators) {
-        this.validators = validators;
+    @InitBinder("macroLoadGroup")
+    public void setupBinderMacroLoadGroup(WebDataBinder binder) {
+        binder.addValidators(macroLoadGroupValidator);
     }
 }

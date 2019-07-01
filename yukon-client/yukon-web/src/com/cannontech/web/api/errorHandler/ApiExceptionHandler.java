@@ -40,6 +40,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.HoneywellProcessingException;
+import com.cannontech.core.dao.MacroLoadGroupProcessingException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -85,7 +86,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         String uniqueKey = CtiUtilities.getYKUniqueKey();
         logApiException(request, ex, uniqueKey);
 
-        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), "Not Found", uniqueKey);
+        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
@@ -100,9 +101,19 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler({DataIntegrityViolationException.class, SQLException.class, PersistenceException.class})
-    protected ResponseEntity<Object> handleDataIntegrityViolation(Exception ex,
-            WebRequest request) {
+    // 403
+    @ExceptionHandler({ MacroLoadGroupProcessingException.class })
+    public ResponseEntity<Object> handleMacroLoadGroupException(final Exception ex, final WebRequest request) {
+
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
+        logApiException(request, ex, uniqueKey);
+
+        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ DataIntegrityViolationException.class, SQLException.class, PersistenceException.class })
+    protected ResponseEntity<Object> handleDataIntegrityViolation(Exception ex, WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();
         logApiException(request, ex, uniqueKey);

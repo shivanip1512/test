@@ -253,7 +253,7 @@ public final class PaoDaoImpl implements PaoDao {
             String name = jdbcTemplate.queryForObject(sql, TypeRowMapper.STRING);
             return name;
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("A PAObject with id " + paoId + "cannot be found.");
+            throw new NotFoundException("A PAObject with id " + paoId + " cannot be found.");
         }
     }
 
