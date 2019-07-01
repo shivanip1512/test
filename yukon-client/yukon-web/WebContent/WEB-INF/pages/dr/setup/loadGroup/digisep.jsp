@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ page trimDirectiveWhitespaces="true" %>
 
 <tags:sectionContainer2 nameKey="digisepDeviceClass">
     <tags:nameValueContainer2>
@@ -11,10 +12,9 @@
                 <tags:selectWithItems items="${deviceClassList}" path="deviceClassSet" dataPlaceholder="${deviceClass}" inputClass="js-chosen"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="VIEW">
-                <c:set var = "listSize"  value ="${fn:length(loadGroup.deviceClassSet)}"/>
                 <c:forEach items="${loadGroup.deviceClassSet}" var="deviceClass" varStatus="status">
                     <i:inline key="${deviceClass}"/>
-                    <c:if test="${not (status.count eq listSize)}">
+                    <c:if test="${not status.last}">
                         <i:inline key="yukon.common.comma"/>&nbsp
                     </c:if>
                 </c:forEach>
