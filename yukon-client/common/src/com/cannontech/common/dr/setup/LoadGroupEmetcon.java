@@ -9,6 +9,8 @@ public class LoadGroupEmetcon extends LoadGroupBase {
     private Character addressUsage;
     private Character relayUsage;
     private Integer routeID;
+    public static final Character addressUsageGold='G';
+    public static final Character addressUsageSilver='S';
 
     public Integer getGoldAddress() {
         return goldAddress;
