@@ -94,7 +94,10 @@ public final class LMFactory {
             break;
         case LM_GROUP_METER_DISCONNECT:
             retLm = new LMGroupMeterDisconnect();
-            break;    
+            break;
+        case LM_METER_DISCONNECT_PROGRAM:
+            retLm = new LmProgramMeterDisconnect();
+            break; 
         }
 
         if (retLm instanceof DeviceBase) {

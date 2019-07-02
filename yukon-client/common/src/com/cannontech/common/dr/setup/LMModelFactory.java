@@ -1,6 +1,25 @@
 package com.cannontech.common.dr.setup;
 
+import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
+import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.LatchingGearFields;
+import com.cannontech.common.dr.gear.setup.fields.MasterCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.NestCriticalCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.NestStandardCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.NoControlGearFields;
+import com.cannontech.common.dr.gear.setup.fields.ProgramGearFields;
+import com.cannontech.common.dr.gear.setup.fields.RotationGearFields;
+import com.cannontech.common.dr.gear.setup.fields.SepCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.SepTemperatureOffsetGearFields;
+import com.cannontech.common.dr.gear.setup.fields.SimpleThermostatRampingGearFields;
+import com.cannontech.common.dr.gear.setup.fields.SmartCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.TargetCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.ThermostatSetbackGearFields;
+import com.cannontech.common.dr.gear.setup.fields.TimeRefreshGearFields;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.db.device.lm.GearControlMethod;
 
 /**
  * Factory to return LM Model objects for a paoType
@@ -37,6 +56,68 @@ public class LMModelFactory {
         }
         return loadGroup;
     }
+    
+    public final static ProgramGearFields createProgramGearFields(GearControlMethod controlMethod) {
+
+        ProgramGearFields gearFields = null;
+
+        switch (controlMethod) {
+        case TrueCycle:
+        case MagnitudeCycle:
+        case SmartCycle: 
+            gearFields = new SmartCycleGearFields();
+            break;
+        case TargetCycle:
+            gearFields = new TargetCycleGearFields();
+            break;
+        case EcobeeCycle:
+            gearFields = new EcobeeCycleGearFields();
+            break;
+        case HoneywellCycle:
+            gearFields = new HoneywellCycleGearFields();
+            break;
+        case NestCriticalCycle:
+            gearFields = new NestCriticalCycleGearFields();
+            break;
+        case ItronCycle:
+            gearFields = new ItronCycleGearFields();
+            break;
+        case NestStandardCycle:
+            gearFields = new NestStandardCycleGearFields();
+            break;
+        case SepCycle:
+            gearFields = new SepCycleGearFields();
+            break;
+        case MasterCycle:
+            gearFields = new MasterCycleGearFields();
+            break;
+        case TimeRefresh:
+            gearFields = new TimeRefreshGearFields();
+            break;
+        case Rotation:
+            gearFields = new RotationGearFields();
+            break;
+        case Latching:
+            gearFields = new LatchingGearFields();
+            break;
+        case ThermostatRamping:
+            gearFields = new ThermostatSetbackGearFields();
+            break;
+        case SimpleThermostatRamping:
+            gearFields = new SimpleThermostatRampingGearFields();
+            break;
+        case SepTemperatureOffset:
+            gearFields = new SepTemperatureOffsetGearFields();
+            break;
+        case BeatThePeak:
+            gearFields = new BeatThePeakGearFields();
+            break;
+        case NoControl:
+            gearFields = new NoControlGearFields();
+            break;
+        }
+        return gearFields;
+    }
 
     /**
      * Sets the appropriate copy class based upon the PaoType
@@ -55,4 +136,5 @@ public class LMModelFactory {
         }
         return loadGroup;
     }
+
 }

@@ -14,6 +14,7 @@ import com.cannontech.database.data.device.lm.NestStandardCycleGear;
 import com.cannontech.database.data.device.lm.NoControlGear;
 import com.cannontech.database.data.device.lm.RotationGear;
 import com.cannontech.database.data.device.lm.SepCycleGear;
+import com.cannontech.database.data.device.lm.SimpleOnOffGear;
 import com.cannontech.database.data.device.lm.SepTemperatureOffsetGear;
 import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
 import com.cannontech.database.data.device.lm.SmartCycleGear;
@@ -41,6 +42,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
     ThermostatRamping(ThermostatSetbackGear.class, "Thermostat Ramping"),
     SimpleThermostatRamping(SimpleThermostatRampingGear.class, "Simple Thermostat Ramping"),
     BeatThePeak(BeatThePeakGear.class, "Beat The Peak"),
+    SimpleOnOff(SimpleOnOffGear.class, "Simple On/Off"),
     NoControl(NoControlGear.class, "No Control");
 
 	private Class<?> gearClass;

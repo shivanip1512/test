@@ -10,10 +10,17 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 
 public class JacksonHttpMessageConverter extends MappingJackson2HttpMessageConverter {
 
     private static final Logger log = YukonLogManager.getLogger(JacksonHttpMessageConverter.class);
+
+    public JacksonHttpMessageConverter() {
+        super();
+        objectMapper.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_MISSING_EXTERNAL_TYPE_ID_PROPERTY, false);
+    }
 
     @Override
     protected Object readInternal(Class<?> clazz, HttpInputMessage inputMessage)

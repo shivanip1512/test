@@ -1381,7 +1381,11 @@
      </bean>
     
     <bean class="com.cannontech.dr.loadgroup.service.impl.LoadGroupSetupServiceImpl"/>
+
+    <bean class="com.cannontech.dr.loadprogram.service.impl.LoadProgramSetupServiceImpl"/>
+
     <bean class="com.cannontech.dr.loadgroup.service.impl.MacroLoadGroupSetupServiceImpl"/>
+
     <bean id="loadGroupSetupValidator" class="com.cannontech.web.api.dr.setup.LoadGroupSetupValidator" />
     <bean id="macroLoadGroupValidator" class="com.cannontech.web.api.dr.setup.MacroLoadGroupValidator" />
     <bean id="lmDeleteValidator" class="com.cannontech.web.api.dr.setup.LMDeleteValidator" />

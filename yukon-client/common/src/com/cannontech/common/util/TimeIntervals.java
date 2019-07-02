@@ -1,4 +1,4 @@
-package com.cannontech.web.common;
+package com.cannontech.common.util;
 
 import java.util.Set;
 
@@ -287,12 +287,31 @@ public enum TimeIntervals {
         HOURS_12,
         DAYS_1);
     
+    private static final Set<TimeIntervals> rotationShedTime = ImmutableSet.of(
+        MINUTES_5,
+        MINUTES_7,
+        MINUTES_10,
+        MINUTES_15,
+        MINUTES_20,
+        MINUTES_30,
+        MINUTES_45,
+        HOURS_1,
+        HOURS_2,
+        HOURS_3,
+        HOURS_4,
+        HOURS_6,
+        HOURS_8);
+ 
     /**
      * Used for RTU Intervals for Class 0,1,2,3
      */
     
     public static Set<TimeIntervals> getScanIntervals() {
         return scanIntervals;
+    }
+
+    public static Set<TimeIntervals> getRotationshedtime() {
+        return rotationShedTime;
     }
 
 }

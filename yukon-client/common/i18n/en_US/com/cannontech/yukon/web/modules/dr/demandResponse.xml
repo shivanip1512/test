@@ -950,6 +950,7 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.gearControlMethod.TargetCycle">Target Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.ThermostatRamping">Thermostat Ramping</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.SimpleThermostatRamping">Simple Thermostat Ramping</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.SimpleOnOff">Simple On/Off</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.BeatThePeak">Beat The Peak</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.NoControl">No Control</entry>
 
