@@ -20,16 +20,21 @@ import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @RestController
+@CheckRole(YukonRole.DEMAND_RESPONSE)
 @RequestMapping("/dr/setup/loadProgram")
 public class LoadProgramSetupApiController {
     @Autowired private LoadProgramSetupService loadProgramService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> retrieve(@PathVariable int id) {
-        LoadProgram loadProgram = loadProgramService.retrieve(id);
+    @GetMapping("/{programId}")
+    public ResponseEntity<Object> retrieve(@PathVariable int programId) {
+        LoadProgram loadProgram = loadProgramService.retrieve(programId);
         return new ResponseEntity<>(loadProgram, HttpStatus.OK);
     }
 
@@ -71,6 +76,7 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(notificationGroups, HttpStatus.OK);
     }
 
+    @CheckRoleProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS)
     @GetMapping("/allAvailableDirectMemberControls")
     public ResponseEntity<Object> getAllAvailableDirectMemberControls() {
         List<ProgramDirectMemberControl> directMemberControls =
@@ -97,6 +103,7 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(notificationGroups, HttpStatus.OK);
     }
 
+    @CheckRoleProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS)
     @GetMapping("/availableDirectMemberControls/{programId}")
     public ResponseEntity<Object> getAvailableDirectMemberControls(@PathVariable int programId) {
         List<ProgramDirectMemberControl> directMemberControls =

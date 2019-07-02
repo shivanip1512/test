@@ -1,8 +1,16 @@
 package com.cannontech.common.dr.gear.setup;
 
-public enum Mode {
+import com.cannontech.common.i18n.DisplayableEnum;
+
+public enum Mode implements DisplayableEnum {
 
     Heat,
     Cool;
 
+    private String baseKey = "yukon.web.modules.dr.setup.gear.";
+
+    @Override
+    public String getFormatKey() {
+        return baseKey + name();
+    }
 }

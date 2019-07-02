@@ -22,9 +22,12 @@ import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
+import com.cannontech.web.security.annotation.CheckRole;
 
 @RestController
+@CheckRole(YukonRole.DEMAND_RESPONSE)
 @RequestMapping("/dr/setup/loadGroup")
 public class LoadGroupSetupApiController {
 
