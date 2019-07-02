@@ -227,7 +227,7 @@ namespace { // anonymous namespace
 /**
  * retrieve Time Zone registry key name
  */
-std::string getTimeZoneKeyName()
+int getTimeZoneOffset()
 {
     HKEY hKey = 0;
 
@@ -239,13 +239,23 @@ std::string getTimeZoneKeyName()
 
     if( RegQueryValueEx(hKey, "TimeZoneKeyName", NULL, &lpType, (LPBYTE)buffer, &bufferSize) != ERROR_SUCCESS )
     {
-        return std::string(); // return empty string
+        BOOST_FAIL("No time zone key");
     }
 
-    std::string result = std::string(buffer, bufferSize);
+    std::string result(buffer, bufferSize);
 
-    // the buffer size can actually exceed c string. so we resize the string
-    return result.substr(0, result.find_first_of('\0'));
+    result.erase(result.find_first_of('\0'));
+
+    if( result == "Central Standard Time" )
+        return -6;
+    if( result == "Eastern Standard Time" )
+        return -5;
+    if( result == "Pacific Standard Time" )
+        return -8;
+
+    BOOST_FAIL("Unknown time zone " << result);
+
+    return 0;
 }
 
 struct TimeParts
@@ -281,74 +291,35 @@ unsigned long mkLocalSeconds(const TimeParts &tp)
 
 BOOST_AUTO_TEST_CASE(test_ctitime_fromLocalSeconds)
 {
-    std::vector<TimeParts> time_parts;
+    const long standard_offset = getTimeZoneOffset() * 60;
+    const long daylight_offset = standard_offset + 60;
 
-    const std::string timeZoneKeyName = getTimeZoneKeyName();
-
-    if( timeZoneKeyName == "Central Standard Time" )
+    std::vector<TimeParts> time_parts
     {
-        const long standard_offset = -6*60,
-                   daylight_offset = -5*60;
+        { 2009,  1,  1,  0, 00, 00, standard_offset }, //  known ST date
 
-        time_parts =
-        {
-            { 2009,  1,  1,  0, 00, 00, standard_offset }, //  known ST date
+        { 2009,  3,  7,  0, 00, 00, standard_offset }, //  standard -> daylight-saving-time transition
+        { 2009,  3,  8,  1, 59, 59, standard_offset }, //
 
-            { 2009,  3,  7,  0, 00, 00, standard_offset }, //  standard -> daylight-saving-time transition
-            { 2009,  3,  8,  1, 59, 59, standard_offset }, //
+        { 2009,  3,  8,  2, 00, 00, standard_offset }, //  nonexistent hour;  this test is here to pin the behavior
+        { 2009,  3,  8,  2, 59, 59, standard_offset }, //
 
-            { 2009,  3,  8,  2, 00, 00, standard_offset }, //  nonexistent hour;  this test is here to pin the behavior
-            { 2009,  3,  8,  2, 59, 59, standard_offset }, //
+        { 2009,  3,  8,  3, 00, 00, daylight_offset }, //
+        { 2009,  3,  9,  0, 00, 00, daylight_offset }, //
 
-            { 2009,  3,  8,  3, 00, 00, daylight_offset }, //
-            { 2009,  3,  9,  0, 00, 00, daylight_offset }, //
+        { 2009,  7,  1,  0, 00, 00, daylight_offset }, //  known DST date
 
-            { 2009,  7,  1,  0, 00, 00, daylight_offset }, //  known DST date
+        { 2009, 10, 31,  0, 00, 00, daylight_offset }, //  daylight-saving-time -> standard transition
+        { 2009, 11,  1,  0, 59, 59, daylight_offset }, //
 
-            { 2009, 10, 31,  0, 00, 00, daylight_offset }, //  daylight-saving-time -> standard transition
-            { 2009, 11,  1,  0, 59, 59, daylight_offset }, //
+        { 2009, 11,  1,  1, 00, 00, standard_offset }, //  ambiguous hour;  this test is here to pin the behavior
+        { 2009, 11,  1,  1, 59, 59, standard_offset }, //
 
-            { 2009, 11,  1,  1, 00, 00, standard_offset }, //  ambiguous hour;  this test is here to pin the behavior
-            { 2009, 11,  1,  1, 59, 59, standard_offset }, //
+        { 2009, 11,  1,  2, 00, 00, standard_offset }, //
+        { 2009, 11,  2,  0, 00, 00, standard_offset }, //
 
-            { 2009, 11,  1,  2, 00, 00, standard_offset }, //
-            { 2009, 11,  2,  0, 00, 00, standard_offset }, //
-
-            { 2009, 12, 31,  0, 00, 00, standard_offset }  //  known ST date
-        };
-    }
-    else if( timeZoneKeyName == "Eastern Standard Time" )
-    {
-        const long standard_offset = -5*60,
-                   daylight_offset = -4*60;
-
-        time_parts = 
-        {
-            { 2009,  1,  1,  0, 00, 00, standard_offset }, //  known ST date
-                                                        
-            { 2009,  3,  7,  0, 00, 00, standard_offset }, //  standard -> daylight-saving-time transition
-            { 2009,  3,  8,  1, 59, 59, standard_offset }, //
-
-            { 2009,  3,  8,  2, 00, 00, standard_offset }, //  nonexistent hour;  this test is here to pin the behavior
-            { 2009,  3,  8,  2, 59, 59, standard_offset }, //
-
-            { 2009,  3,  8,  3, 00, 00, daylight_offset }, //
-            { 2009,  3,  9,  0, 00, 00, daylight_offset }, //
-
-            { 2009,  7,  1,  0, 00, 00, daylight_offset }, //  known DST date
-
-            { 2009, 10, 31,  0, 00, 00, daylight_offset }, //  daylight-saving-time -> standard transition
-            { 2009, 11,  1,  0, 59, 59, daylight_offset }, //
-
-            { 2009, 11,  1,  1, 00, 00, standard_offset }, //  ambiguous hour;  this test is here to pin the behavior
-            { 2009, 11,  1,  1, 59, 59, standard_offset }, //
-
-            { 2009, 11,  1,  2, 00, 00, standard_offset }, //
-            { 2009, 11,  2,  0, 00, 00, standard_offset }, //
-
-            { 2009, 12, 31,  0, 00, 00, standard_offset }  //  known ST date
-        };
-    }
+        { 2009, 12, 31,  0, 00, 00, standard_offset }  //  known ST date
+    };
 
     BOOST_REQUIRE( ! time_parts.empty() );
 

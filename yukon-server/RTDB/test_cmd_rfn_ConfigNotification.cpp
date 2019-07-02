@@ -516,6 +516,8 @@ BOOST_AUTO_TEST_CASE(test_temperature)
 
 BOOST_AUTO_TEST_CASE(test_all_tlvs)
 {
+    Cti::Test::set_to_central_timezone();
+
     const std::string expected = 
         "Device Configuration Request:"
         "\nTOU enable configuration:"
