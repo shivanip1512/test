@@ -350,6 +350,7 @@
     </ClCompile>
     <ClCompile Include="test_message.cpp">
     </ClCompile>
+    <ClCompile Include="test_msg_pdata.cpp" />
     <ClCompile Include="test_multi_msg.cpp">
     </ClCompile>
     <ClCompile Include="test_PointDataRequest.cpp">
