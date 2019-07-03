@@ -617,7 +617,7 @@ void CtiFDRSocketServer::processCommandFromDispatch(CtiCommandMsg* commandMsg)
 
 bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
 {
-    CtiPointDataMsg *localMsg = (CtiPointDataMsg *)aMessage;
+    CtiPointDataMsg *localMsg = static_cast<CtiPointDataMsg *>(aMessage);
 
     if (!forwardPointData(*localMsg))
     {
@@ -628,7 +628,7 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
     updatePointByIdInList (getReceiveFromList(), localMsg);
 
     // if this is a response to a registration, do nothing
-    if (localMsg->getTags() & TAG_POINT_MOA_REPORT)
+    if (localMsg->isRegistrationReport())
     {
         if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
         {
