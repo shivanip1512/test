@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.dr.setup.EmetconAddressUsage;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -66,7 +67,7 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
             }
         }
         if (!errors.hasFieldErrors("goldAddress") && loadGroup.getAddressUsage() != null) {
-            if (loadGroup.getAddressUsage().equals(LoadGroupEmetcon.addressUsageGold)
+            if (loadGroup.getAddressUsage().equals(EmetconAddressUsage.ADDRESS_USAGE_GOLD.getAddressUsage())
                 && loadGroup.getGoldAddress() == 0) {
                 errors.rejectValue("goldAddress", key + "goldAddress.invalidValue");
             }
@@ -79,7 +80,7 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
             }
         }
         if (!errors.hasFieldErrors("silverAddress") && loadGroup.getAddressUsage() != null) {
-            if (loadGroup.getAddressUsage().equals(LoadGroupEmetcon.addressUsageSilver)
+            if (loadGroup.getAddressUsage().equals(EmetconAddressUsage.ADDRESS_USAGE_SILVER.getAddressUsage())
                 && loadGroup.getSilverAddress() == 0) {
                 errors.rejectValue("silverAddress", key + "silverAddress.invalidValue");
             }
