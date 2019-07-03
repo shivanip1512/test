@@ -402,16 +402,12 @@ void CtiFDR_BEPC::cleanupTranslationPoint(CtiFDRPointSPtr &translationPoint, boo
     }
 }
 
-bool CtiFDR_BEPC::sendMessageToForeignSys ( CtiMessage *aMessage )
+void CtiFDR_BEPC::sendMessageToForeignSys ( CtiMessage *aMessage )
 {
-    bool retVal = true;
-    CtiPointDataMsg     *localMsg = (CtiPointDataMsg *)aMessage;
-    CtiFDRPoint point;
+    CtiPointDataMsg *localMsg = static_cast<CtiPointDataMsg *>(aMessage);
 
     // need to update this in my list always
     updatePointByIdInList (getSendToList(), localMsg);
-
-    return retVal;
 }
 
 /**************************************************************************

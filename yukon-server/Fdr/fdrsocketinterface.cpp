@@ -254,9 +254,9 @@ bool CtiFDRSocketInterface::alwaysSendRegistrationPoints()
     return false;
 }
 
-bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
+void CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
 {
-    CtiPointDataMsg     *localMsg = (CtiPointDataMsg *)aMessage;
+    CtiPointDataMsg *localMsg = static_cast<CtiPointDataMsg *>(aMessage);
     CtiFDRPoint point;
 
     if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
@@ -270,7 +270,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
         {
             CTILOG_DEBUG(dout, "PointId " << point.getPointID() << " was not sent to " << getInterfaceName() << " because it has an old timestamp");
         }
-        return false;
+        return;
     }
 
     // if requested, check the timestamp and value to see if we should forward this message
@@ -289,7 +289,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
                     CTILOG_DEBUG(dout, "Point not being forwarded to connection.");
                 }
 
-                return true;
+                return;
             }
         }
     }
@@ -307,7 +307,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
             CTILOG_DEBUG(dout, "Point registration response tag set, point "<< localMsg->getId() <<" will not be sent to "<< getInterfaceName());
         }
 
-        return false;
+        return;
     }
 
     // see if the point exists;
@@ -318,7 +318,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
             CTILOG_DEBUG(dout, "Translation for point "<< localMsg->getId() <<" to "<< getInterfaceName() <<" not found");
         }
 
-        return false;
+        return;
     }
 
     /*******************************
@@ -333,7 +333,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
         {
             CTILOG_DEBUG(dout, "PointId "<< point.getPointID() <<" was not sent to "<< getInterfaceName() <<" because it hasn't been initialized");
         }
-        return false;
+        return;
     }
 
     // if we haven't registered, don't bother
@@ -341,19 +341,17 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
     {
         CTILOG_ERROR(dout, "Not Registered");
 
-        return true;
+        return;
     }
 
     try
     {
-        return buildAndWriteToForeignSystem (point);
+        buildAndWriteToForeignSystem (point);
     }
     catch (...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to build message");
     }
-
-    return true;
 }
 
 /** Network to Host IEEE Float

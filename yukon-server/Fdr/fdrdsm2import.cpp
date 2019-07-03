@@ -102,10 +102,9 @@ BOOL CtiFDR_Dsm2Import::stop( void )
     return TRUE;
 }
 
-bool CtiFDR_Dsm2Import::sendMessageToForeignSys ( CtiMessage *aMessage )
+void CtiFDR_Dsm2Import::sendMessageToForeignSys ( CtiMessage *aMessage )
 {
     // message is deleted in fdrinterface thread
-    return TRUE;
 }
 
 INT CtiFDR_Dsm2Import::processMessageFromForeignSystem (CHAR *data)

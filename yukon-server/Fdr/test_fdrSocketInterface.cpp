@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE( test_sendMessageToForeignSys )
     {
         i.setIgnoreOldData(true);
 
-        BOOST_CHECK_EQUAL(i.sendMessageToForeignSys(&m), false);
+        i.sendMessageToForeignSys(&m);
 
         //  Make sure our point was not updated
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t);
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE( test_sendMessageToForeignSys )
     {
         i.setPointTimeVariation(900);
 
-        BOOST_CHECK_EQUAL(i.sendMessageToForeignSys(&m), true);
+        i.sendMessageToForeignSys(&m);
 
         //  Make sure our point was not updated
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t);
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE( test_sendMessageToForeignSys )
     {
         m.setTags(TAG_POINT_MOA_REPORT);
 
-        BOOST_CHECK_EQUAL(i.sendMessageToForeignSys(&m), false);
+        i.sendMessageToForeignSys(&m);
 
         //  Make sure our point was updated
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t + 500);
@@ -121,7 +121,8 @@ BOOST_AUTO_TEST_CASE( test_sendMessageToForeignSys )
     {
         m.setId(42);
 
-        BOOST_CHECK_EQUAL(i.sendMessageToForeignSys(&m), false);
+        i.sendMessageToForeignSys(&m);
+
         BOOST_CHECK_EQUAL(i.built, false);
 
         m.setId(43);
@@ -133,7 +134,8 @@ BOOST_AUTO_TEST_CASE( test_sendMessageToForeignSys )
 
         m.setTime(preEpoch);
 
-        BOOST_CHECK_EQUAL(i.sendMessageToForeignSys(&m), false);
+        i.sendMessageToForeignSys(&m);
+
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), preEpoch);
         BOOST_CHECK_EQUAL(i.built, false);
 
@@ -145,7 +147,8 @@ BOOST_AUTO_TEST_CASE( test_sendMessageToForeignSys )
     {
         i.setRegistered(false);
 
-        BOOST_CHECK_EQUAL(i.sendMessageToForeignSys(&m), true);
+        i.sendMessageToForeignSys(&m);
+
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t + 500);
         BOOST_CHECK_EQUAL(i.built, false);
 
@@ -155,7 +158,8 @@ BOOST_AUTO_TEST_CASE( test_sendMessageToForeignSys )
 
     //  Test successful build-and-write
     {
-        BOOST_CHECK_EQUAL(i.sendMessageToForeignSys(&m), true);
+        i.sendMessageToForeignSys(&m);
+
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t + 500);
         BOOST_CHECK_EQUAL(i.built, true);
     }

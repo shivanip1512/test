@@ -366,10 +366,9 @@ void CtiFDRCygnet::threadFunctionGetDataFromCygnet( void )
 *
 ***************************************************************************
 */
-bool CtiFDRCygnet::sendMessageToForeignSys ( CtiMessage *aMessage )
+void CtiFDRCygnet::sendMessageToForeignSys ( CtiMessage *aMessage )
 {
     // message is deleted in fdrinterface thread
-    return TRUE;
 }
 
 /**************************************************************************

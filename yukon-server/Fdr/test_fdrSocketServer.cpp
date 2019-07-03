@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(test_sendMessageToForeignSys)
     {
         ss.setIgnoreOldData(true);
 
-        BOOST_CHECK_EQUAL(ss.sendMessageToForeignSys(&m), false);
+        ss.sendMessageToForeignSys(&m);
 
         //  Make sure our point was not updated
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t);
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(test_sendMessageToForeignSys)
     {
         ss.setPointTimeVariation(900);
 
-        BOOST_CHECK_EQUAL(ss.sendMessageToForeignSys(&m), false);
+        ss.sendMessageToForeignSys(&m);
 
         //  Make sure our point was not updated
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t);
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(test_sendMessageToForeignSys)
     {
         m.setTags(TAG_POINT_MOA_REPORT);
 
-        BOOST_CHECK_EQUAL(ss.sendMessageToForeignSys(&m), false);
+        ss.sendMessageToForeignSys(&m);
 
         //  Make sure our point was updated
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t + 500);
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE(test_sendMessageToForeignSys)
     {
         m.setId(42);
 
-        BOOST_CHECK_EQUAL(ss.sendMessageToForeignSys(&m), false);
+        ss.sendMessageToForeignSys(&m);
 
         m.setId(43);
     }
@@ -118,7 +118,8 @@ BOOST_AUTO_TEST_CASE(test_sendMessageToForeignSys)
 
         m.setTime(preEpoch);
 
-        BOOST_CHECK_EQUAL(ss.sendMessageToForeignSys(&m), false);
+        ss.sendMessageToForeignSys(&m);
+
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), preEpoch);
 
         fdrPoint->setLastTimeStamp(t);

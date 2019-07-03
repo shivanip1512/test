@@ -20,7 +20,7 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
 
         virtual ~CtiFDRFtpInterface();
 
-        virtual bool sendMessageToForeignSys ( CtiMessage *aMessage )=0;
+        virtual void sendMessageToForeignSys ( CtiMessage *aMessage )=0;
         virtual int processMessageFromForeignSystem (CHAR *data)=0;
 
         virtual BOOL    init( void );

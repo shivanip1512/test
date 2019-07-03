@@ -16,7 +16,7 @@ public:
 
     virtual ~CtiFDRTextFileBase();
 
-    virtual bool sendMessageToForeignSys ( CtiMessage *aMessage );
+    void sendMessageToForeignSys ( CtiMessage *aMessage ) override;
     virtual int processMessageFromForeignSystem (CHAR *data);
 
     virtual BOOL    init( void );   

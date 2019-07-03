@@ -23,7 +23,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         virtual ~CtiFDRInterface( void );
 
         // pure virtual function implementent by interface
-        virtual bool        sendMessageToForeignSys    ( CtiMessage *aMessage ) = 0;
+        virtual void        sendMessageToForeignSys    ( CtiMessage *aMessage ) = 0;
         virtual bool        sendMessageToDispatch      ( CtiMessage *aMessage );
         virtual bool        queueMessageToDispatch     ( CtiMessage *aMessage );
         virtual void        processCommandFromDispatch ( CtiCommandMsg *cmd ){delete cmd;};

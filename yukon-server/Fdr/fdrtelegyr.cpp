@@ -1773,10 +1773,9 @@ bool CtiFDRTelegyr::isReloadTime( void )
 //we just have this in case anyone ever really wants to send a message, right now, it's not used....
 //=================================================================================================================================
 
-bool CtiFDRTelegyr::sendMessageToForeignSys( CtiMessage *aMessage )
+void CtiFDRTelegyr::sendMessageToForeignSys( CtiMessage *aMessage )
 {
    // message is deleted in fdrinterface thread
-   return TRUE;
 }
 
 //=================================================================================================================================
