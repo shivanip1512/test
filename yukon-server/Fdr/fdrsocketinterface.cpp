@@ -256,8 +256,6 @@ bool CtiFDRSocketInterface::alwaysSendRegistrationPoints()
 
 bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
 {
-    bool retVal = true;
-    bool forwardPointData=true;
     CtiPointDataMsg     *localMsg = (CtiPointDataMsg *)aMessage;
     CtiFDRPoint point;
 
@@ -282,79 +280,71 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
                     CTILOG_DEBUG(dout, "Point not being forwarded to connection.");
                 }
 
-                forwardPointData = false;
+                return true;
             }
         }
     }
 
-    if (forwardPointData)
+    // need to update this in my list always
+    updatePointByIdInList (getSendToList(), localMsg);
+
+    // if this is a response to a registration, do nothing
+    if (localMsg->isRegistrationReport() && !alwaysSendRegistrationPoints())
     {
-        // need to update this in my list always
-        updatePointByIdInList (getSendToList(), localMsg);
+        findPointIdInList (localMsg->getId(), getSendToList(), point);
 
-        // if this is a response to a registration, do nothing
-        if (localMsg->getTags() & TAG_POINT_MOA_REPORT && !alwaysSendRegistrationPoints())
+        if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
         {
-            findPointIdInList (localMsg->getId(), getSendToList(), point);
-
-            if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
-            {
-                CTILOG_DEBUG(dout, "Point registration response tag set, point "<< localMsg->getId() <<" will not be sent to "<< getInterfaceName());
-            }
-
-            retVal = false;
+            CTILOG_DEBUG(dout, "Point registration response tag set, point "<< localMsg->getId() <<" will not be sent to "<< getInterfaceName());
         }
-        else
-        {
-            // see if the point exists;
-            retVal = findPointIdInList (localMsg->getId(), getSendToList(), point);
 
-            if (retVal == false)
-            {
-                if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
-                {
-                    CTILOG_DEBUG(dout, "Translation for point "<< localMsg->getId() <<" to "<< getInterfaceName() <<" not found");
-                }
-            }
-            else
-            {
-                /*******************************
-                * if the timestamp is less than 01-01-2000 (completely arbitrary number)
-                * then dont' route the point because it is uninitialized
-                * note: uninitialized points come across as 11-10-1990
-                ********************************
-                */
-                if (point.getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
-                {
-                    if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                    {
-                        CTILOG_DEBUG(dout, "PointId "<< point.getPointID() <<" was not sent to "<< getInterfaceName() <<" because it hasn't been initialized");
-                    }
-                    retVal = false;
-                }
-                else
-                {
-                    // if we haven't registered, don't bother
-                    if (isRegistered())
-                    {
-                        try
-                        {
-                            retVal = buildAndWriteToForeignSystem (point);
-                        }
-                        catch (...)
-                        {
-                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to build message");
-                        }
-                    }
-                    else
-                    {
-                        CTILOG_ERROR(dout, "Not Registered");
-                    }
-                }
-            }
-        }
+        return false;
     }
-    return retVal;
+
+    // see if the point exists;
+    if ( ! findPointIdInList(localMsg->getId(), getSendToList(), point))
+    {
+        if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
+        {
+            CTILOG_DEBUG(dout, "Translation for point "<< localMsg->getId() <<" to "<< getInterfaceName() <<" not found");
+        }
+
+        return false;
+    }
+
+    /*******************************
+    * if the timestamp is less than 01-01-2000 (completely arbitrary number)
+    * then dont' route the point because it is uninitialized
+    * note: uninitialized points come across as 11-10-1990
+    ********************************
+    */
+    if (point.getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
+    {
+        if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+        {
+            CTILOG_DEBUG(dout, "PointId "<< point.getPointID() <<" was not sent to "<< getInterfaceName() <<" because it hasn't been initialized");
+        }
+        return false;
+    }
+
+    // if we haven't registered, don't bother
+    if ( ! isRegistered())
+    {
+        CTILOG_ERROR(dout, "Not Registered");
+
+        return true;
+    }
+
+    try
+    {
+        return buildAndWriteToForeignSystem (point);
+    }
+    catch (...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to build message");
+    }
+
+    return true;
 }
 
 /** Network to Host IEEE Float
