@@ -347,6 +347,8 @@
     </ClCompile>
     <ClCompile Include="test_fdrDnpSlave.cpp">
     </ClCompile>
+    <ClCompile Include="test_fdrSocketInterface.cpp" />
+    <ClCompile Include="test_fdrSocketServer.cpp" />
     <ClCompile Include="test_fdrTelegyr.cpp">
     </ClCompile>
     <ClCompile Include="test_fdrTextImport.cpp">
