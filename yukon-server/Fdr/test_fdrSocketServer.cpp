@@ -67,6 +67,18 @@ BOOST_AUTO_TEST_CASE(test_sendMessageToForeignSys)
     m.setTags(TAG_POINT_OLD_TIMESTAMP);
     m.setValue(31);
 
+    //  Test old timestamp filtering
+    {
+        ss.setIgnoreOldData(true);
+
+        BOOST_CHECK_EQUAL(ss.sendMessageToForeignSys(&m), false);
+
+        //  Make sure our point was not updated
+        BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t);
+
+        ss.setIgnoreOldData(false);
+    }
+
     //  Test point time variation
     {
         ss.setPointTimeVariation(900);

@@ -10,10 +10,10 @@ using namespace std::string_literals;
 BOOST_AUTO_TEST_SUITE( test_fdrSocketInterface )
 
 struct testSocketInterface : public CtiFDRSocketInterface {
-    using Inherited = CtiFDRSocketInterface;
+    using super = CtiFDRSocketInterface;
 
-    using Inherited::setPointTimeVariation;
-    using Inherited::setSendToList;
+    using super::setPointTimeVariation;
+    using super::setSendToList;
 
     bool built = false;
 
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE( test_sendMessageToForeignSys )
     CtiDate d { 14, 3, 2009 };
     CtiTime t { d, 12, 34, 56 };
 
-    testSocketInterface si;
+    testSocketInterface i;
 
     CtiFDRPointList sendToList;
 
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE( test_sendMessageToForeignSys )
 
     sendToList.setPointList(&fdrManager);
 
-    si.setSendToList(sendToList);
+    i.setSendToList(sendToList);
 
     //Initialize the interface to have a point in a group.
     CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
@@ -78,28 +78,41 @@ BOOST_AUTO_TEST_CASE( test_sendMessageToForeignSys )
     m.setTags(TAG_POINT_OLD_TIMESTAMP);
     m.setValue(31);
 
-    //  Test point time variation
+    //  Test old timestamp filtering
     {
-        si.setPointTimeVariation(900);
+        i.setIgnoreOldData(true);
 
-        BOOST_CHECK_EQUAL(si.sendMessageToForeignSys(&m), true);
+        BOOST_CHECK_EQUAL(i.sendMessageToForeignSys(&m), false);
 
         //  Make sure our point was not updated
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t);
-        BOOST_CHECK_EQUAL(si.built, false);
+        BOOST_CHECK_EQUAL(i.built, false);
 
-        si.setPointTimeVariation(0);
+        i.setIgnoreOldData(false);
+    }
+
+    //  Test point time variation
+    {
+        i.setPointTimeVariation(900);
+
+        BOOST_CHECK_EQUAL(i.sendMessageToForeignSys(&m), true);
+
+        //  Make sure our point was not updated
+        BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t);
+        BOOST_CHECK_EQUAL(i.built, false);
+
+        i.setPointTimeVariation(0);
     }
 
     //  Test registration filtering
     {
         m.setTags(TAG_POINT_MOA_REPORT);
 
-        BOOST_CHECK_EQUAL(si.sendMessageToForeignSys(&m), false);
+        BOOST_CHECK_EQUAL(i.sendMessageToForeignSys(&m), false);
 
         //  Make sure our point was updated
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t + 500);
-        BOOST_CHECK_EQUAL(si.built, false);
+        BOOST_CHECK_EQUAL(i.built, false);
 
         m.resetTags(TAG_POINT_MOA_REPORT);
     }
@@ -108,8 +121,8 @@ BOOST_AUTO_TEST_CASE( test_sendMessageToForeignSys )
     {
         m.setId(42);
 
-        BOOST_CHECK_EQUAL(si.sendMessageToForeignSys(&m), false);
-        BOOST_CHECK_EQUAL(si.built, false);
+        BOOST_CHECK_EQUAL(i.sendMessageToForeignSys(&m), false);
+        BOOST_CHECK_EQUAL(i.built, false);
 
         m.setId(43);
     }
@@ -120,9 +133,9 @@ BOOST_AUTO_TEST_CASE( test_sendMessageToForeignSys )
 
         m.setTime(preEpoch);
 
-        BOOST_CHECK_EQUAL(si.sendMessageToForeignSys(&m), false);
+        BOOST_CHECK_EQUAL(i.sendMessageToForeignSys(&m), false);
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), preEpoch);
-        BOOST_CHECK_EQUAL(si.built, false);
+        BOOST_CHECK_EQUAL(i.built, false);
 
         fdrPoint->setLastTimeStamp(t);
         m.setTime(t + 500);
@@ -130,26 +143,26 @@ BOOST_AUTO_TEST_CASE( test_sendMessageToForeignSys )
 
     //  Test registration filtering
     {
-        si.setRegistered(false);
+        i.setRegistered(false);
 
-        BOOST_CHECK_EQUAL(si.sendMessageToForeignSys(&m), true);
+        BOOST_CHECK_EQUAL(i.sendMessageToForeignSys(&m), true);
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t + 500);
-        BOOST_CHECK_EQUAL(si.built, false);
+        BOOST_CHECK_EQUAL(i.built, false);
 
         fdrPoint->setLastTimeStamp(t);
-        si.setRegistered(true);
+        i.setRegistered(true);
     }
 
     //  Test successful build-and-write
     {
-        BOOST_CHECK_EQUAL(si.sendMessageToForeignSys(&m), true);
+        BOOST_CHECK_EQUAL(i.sendMessageToForeignSys(&m), true);
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t + 500);
-        BOOST_CHECK_EQUAL(si.built, true);
+        BOOST_CHECK_EQUAL(i.built, true);
     }
 
     //  Reset point lists so the destructors don't try to delete the local variables
     sendToList.setPointList(nullptr);
-    si.setSendToList(sendToList);
+    i.setSendToList(sendToList);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -264,6 +264,15 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
         CTILOG_DEBUG(dout, "Message received from yukon for sending.");
     }
 
+    if( localMsg->isOldTimestamp() && shouldIgnoreOldData() )
+    {
+        if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
+        {
+            CTILOG_DEBUG(dout, "PointId " << point.getPointID() << " was not sent to " << getInterfaceName() << " because it has an old timestamp");
+        }
+        return false;
+    }
+
     // if requested, check the timestamp and value to see if we should forward this message
     if (getPointTimeVariation() > 0)
     {

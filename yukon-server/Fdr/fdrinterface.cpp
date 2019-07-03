@@ -28,10 +28,11 @@
 using std::string;
 using std::endl;
 
-/** local definitions **/
-const CHAR * CtiFDRInterface::KEY_DEBUG_LEVEL = "_DEBUGLEVEL";
-const CHAR * CtiFDRInterface::KEY_CPARM_RELOAD_RATE_SECONDS = "FDR_CPARM_RELOAD_RATE_SECONDS";
-
+namespace {
+    const char * KEY_DEBUG_LEVEL = "_DEBUGLEVEL";
+    const char * KEY_IGNORE_OLD_DATA = "_IGNORE_OLD_DATA";
+    const char * KEY_CPARM_RELOAD_RATE_SECONDS = "FDR_CPARM_RELOAD_RATE_SECONDS";
+}
 bool isPointIdEqual (CtiFDRManager::ptr_type &a, void* arg);
 bool isTranslationNameEqual (CtiFDRManager::ptr_type &a, void* arg);
 
@@ -408,6 +409,16 @@ CtiFDRInterface& CtiFDRInterface::setTimeSyncVariation (INT aVariation)
     return *this;
 }
 
+bool CtiFDRInterface::shouldIgnoreOldData() const
+{
+    return iIgnoreOldData;
+}
+
+void CtiFDRInterface::setIgnoreOldData(bool ignore)
+{
+    iIgnoreOldData = ignore;
+}
+
 bool CtiFDRInterface::shouldUpdatePCTime() const
 {
     return iUpdatePCTimeFlag;
@@ -685,6 +696,12 @@ bool CtiFDRInterface::readConfig()
         CTILOG_INFO(dout, "Loaded Debug Level "<< myKeyName <<" Value is: " << std::hex << iDebugLevel);
     }
 
+    // make name based on interface for ignoring old timestamps: FDR_xxxx_IGNORE_OLD_DATA
+    const string ignoreOldDataKeyName("FDR_" + iInterfaceName + KEY_IGNORE_OLD_DATA);
+    CTILOG_INFO(dout, "Loading Ignore Old Data: " << ignoreOldDataKeyName);
+
+    setIgnoreOldData(gConfigParms.isTrue(ignoreOldDataKeyName, false));
+
     iCparmReloadSeconds = gConfigParms.getValueAsInt(KEY_CPARM_RELOAD_RATE_SECONDS,300);
     CTILOG_INFO(dout, "CPARM Reload Rate is " << iCparmReloadSeconds << " seconds.");
 
@@ -896,12 +913,10 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                 {
                     CtiMultiMsg* multiMsg = static_cast<CtiMultiMsg*>(incomingMsg.get());
 
-                    //  seperate it out into distinct CtiMessages, so the translation
+                    //  separate it out into distinct CtiMessages, so the translation
                     //  function can be a simple switch block
-                    for( int x = 0; x < multiMsg->getData().size(); x++ )
+                    for( auto dataMsg : multiMsg->getData() )
                     {
-                        CtiMessage* dataMsg = multiMsg->getData()[x];
-
                         // for now, send on only the pointdata messages
                         if( dataMsg->isA() == MSG_POINTDATA )
                         {
