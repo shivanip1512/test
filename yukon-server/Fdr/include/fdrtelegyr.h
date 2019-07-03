@@ -61,7 +61,7 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       // constructors and destructors
       CtiFDRTelegyr();
       virtual ~CtiFDRTelegyr();
-      virtual bool sendMessageToForeignSys( CtiMessage *aMessage );
+      void sendMessageToForeignSys( CtiMessage *aMessage ) override;
       virtual int processMessageFromForeignSystem( CHAR *data );
       virtual BOOL init( void );
       virtual BOOL run( void );

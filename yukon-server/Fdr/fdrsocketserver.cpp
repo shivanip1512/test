@@ -615,26 +615,26 @@ void CtiFDRSocketServer::processCommandFromDispatch(CtiCommandMsg* commandMsg)
     sendAllPoints(portNumber);
 }
 
-bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
+void CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
 {
-    CtiPointDataMsg *localMsg = (CtiPointDataMsg *)aMessage;
+    CtiPointDataMsg *localMsg = static_cast<CtiPointDataMsg *>(aMessage);
 
     if (!forwardPointData(*localMsg))
     {
-        return false;
+        return;
     }
     // need to update this in my lists always
     updatePointByIdInList (getSendToList(), localMsg);
     updatePointByIdInList (getReceiveFromList(), localMsg);
 
     // if this is a response to a registration, do nothing
-    if (localMsg->getTags() & TAG_POINT_MOA_REPORT)
+    if (localMsg->isRegistrationReport())
     {
         if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
         {
             CTILOG_DEBUG(dout, logNow() <<"Point registration response tag set, point ID "<< localMsg->getId() <<" will not be sent");
         }
-        return false;
+        return;
     }
 
     CtiFDRPointSPtr point;
@@ -657,7 +657,7 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
         {
             CTILOG_ERROR(dout, logNow() << "Translation for point ID " << localMsg->getId() << " cannot be found");
         }
-        return false;
+        return;
     }
 
    /* If the timestamp is less than 01-01-2000 (completely arbitrary number),
@@ -670,21 +670,17 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
         {
             CTILOG_DEBUG(dout, logNow() <<"Data for "<< *point <<" was not sent because it hasn't been initialized");
         }
-        return false;
+        return;
     }
 
-    bool retVal = true;
     try
     {
-        retVal = sendPoint(point);
+        sendPoint(point);
     }
     catch (...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        retVal = false;
     }
-
-    return retVal;
 }
 
 /** Determine if point data should be forwarded.
@@ -693,7 +689,14 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
  */
 bool CtiFDRSocketServer::forwardPointData(const CtiPointDataMsg& localMsg)
 {
-    bool result = true;
+    if (localMsg.isOldTimestamp() && shouldIgnoreOldData())
+    {
+        if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
+        {
+            CTILOG_DEBUG(dout, "PointId " << localMsg.getId() << " was not sent to " << getInterfaceName() << " because it has an old timestamp");
+        }
+        return false;
+    }
 
     // if requested, check the timestamp and value to see if we should forward this message
     if (getPointTimeVariation() > 0)
@@ -707,11 +710,11 @@ bool CtiFDRSocketServer::forwardPointData(const CtiPointDataMsg& localMsg)
             // check timestamp
             if (point.getLastTimeStamp() + getPointTimeVariation() >= localMsg.getTime())
             {
-                result = false;
+                return false;
             }
         }
     }
-    return result;
+    return true;
 }
 
 CtiFDRClientServerConnectionSPtr CtiFDRSocketServer::findConnectionForDestination(const CtiFDRDestination destination) const

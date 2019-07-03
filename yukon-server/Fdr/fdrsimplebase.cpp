@@ -409,9 +409,8 @@ BOOL CtiFDRSimple::stop()
     return(TRUE);
 }
 
-bool CtiFDRSimple::sendMessageToForeignSys( CtiMessage *aMessage )
+void CtiFDRSimple::sendMessageToForeignSys( CtiMessage *aMessage )
 {
-  return true;
 }
 
 int CtiFDRSimple::processMessageFromForeignSystem( char *data )

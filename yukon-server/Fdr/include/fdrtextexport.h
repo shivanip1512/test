@@ -25,7 +25,7 @@ public:
     virtual BOOL    stop( void );
 
     bool readConfig() override;
-    bool sendMessageToForeignSys ( CtiMessage *aMessage );
+    void sendMessageToForeignSys ( CtiMessage *aMessage );
 
     std::string YukonToForeignTime (CtiTime aTime);
     CHAR YukonToForeignQuality (USHORT aQuality);

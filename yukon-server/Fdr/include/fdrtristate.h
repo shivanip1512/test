@@ -19,7 +19,7 @@ class IM_EX_FDRTRISTATE CtiFDR_Tristate : public CtiFDRFtpInterface
 
         virtual ~CtiFDR_Tristate();
 
-        virtual bool sendMessageToForeignSys ( CtiMessage *aMessage );
+        void sendMessageToForeignSys ( CtiMessage *aMessage ) override;
         virtual int processMessageFromForeignSystem (CHAR *data);
 
         virtual BOOL    init( void );   

@@ -108,10 +108,9 @@ BOOL CtiFDR_STEC::stop( void )
     return TRUE;
 }
 
-bool CtiFDR_STEC::sendMessageToForeignSys ( CtiMessage *aMessage )
+void CtiFDR_STEC::sendMessageToForeignSys ( CtiMessage *aMessage )
 {
     // message is deleted in fdrinterface thread
-    return TRUE;
 }
 
 

@@ -69,6 +69,8 @@ public:
    unsigned  getTags() const;
    CtiPointDataMsg& setTags( const unsigned a_tags );
    CtiPointDataMsg& resetTags( const unsigned tag_mask = 0xffffffff );
+   bool isRegistrationReport() const;
+   bool isOldTimestamp() const;
 
    const CtiTime& getTime() const;
    CtiTime& getTime();

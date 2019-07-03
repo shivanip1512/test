@@ -135,10 +135,9 @@ BOOL CtiFDRTextFileBase::stop( void )
     return TRUE;
 }
 
-bool CtiFDRTextFileBase::sendMessageToForeignSys ( CtiMessage *aMessage )
+void CtiFDRTextFileBase::sendMessageToForeignSys ( CtiMessage *aMessage )
 {
     // message is deleted in fdrinterface thread
-    return TRUE;
 }
 
 INT CtiFDRTextFileBase::processMessageFromForeignSystem (CHAR *data)

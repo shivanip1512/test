@@ -30,7 +30,7 @@ class __declspec(dllexport) FDRTriStateSub : public CtiFDRFtpInterface
 
         //overloads
         /* gets called from fdr anytime a point data msg comes in. */
-        bool sendMessageToForeignSys( CtiMessage *aMessage );
+        void sendMessageToForeignSys( CtiMessage *aMessage );
         int processMessageFromForeignSystem( char* );//should never be called.
 
         virtual int fail();

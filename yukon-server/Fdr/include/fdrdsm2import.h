@@ -17,7 +17,7 @@ class IM_EX_FDRDSM2IMPORT CtiFDR_Dsm2Import : public CtiFDRAsciiImportBase
 
         virtual ~CtiFDR_Dsm2Import();
 
-        virtual bool sendMessageToForeignSys ( CtiMessage *aMessage );
+        void sendMessageToForeignSys ( CtiMessage *aMessage ) override;
         virtual int processMessageFromForeignSystem (CHAR *data);
         virtual bool validateAndDecodeLine (std::string &aLine, CtiMessage **retMsg);
                                                                 

@@ -387,16 +387,12 @@ bool CtiFDR_TextExport::translateSinglePoint(CtiFDRPointSPtr & translationPoint,
     return successful;
 }
 
-bool CtiFDR_TextExport::sendMessageToForeignSys ( CtiMessage *aMessage )
+void CtiFDR_TextExport::sendMessageToForeignSys ( CtiMessage *aMessage )
 {
-    bool retVal = true;
-    CtiPointDataMsg     *localMsg = (CtiPointDataMsg *)aMessage;
-    CtiFDRPoint point;
+    CtiPointDataMsg *localMsg = static_cast<CtiPointDataMsg *>(aMessage);
 
     // need to update this in my list always
     updatePointByIdInList (getSendToList(), localMsg);
-
-    return retVal;
 }
 /**************************************************************************
 * Function Name: CtiFDRT_TextExport::threadFunctionWriteToFile (void )

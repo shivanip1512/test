@@ -24,7 +24,7 @@ class __declspec(dllexport) FDRWabash : public CtiFDRInterface
 
         //overloads
         /* gets called from fdr anytime a point data msg comes in. */
-        bool sendMessageToForeignSys( CtiMessage *aMessage );
+        void sendMessageToForeignSys( CtiMessage *aMessage );
         int processMessageFromForeignSystem( char* );//should never be called.
 
         //getter's and setter's

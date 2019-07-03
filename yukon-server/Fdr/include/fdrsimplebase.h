@@ -21,7 +21,7 @@ public:
   CtiFDRSimple(std::string interfaceName);
   virtual ~CtiFDRSimple();
 
-  virtual bool sendMessageToForeignSys( CtiMessage *aMessage );
+  void sendMessageToForeignSys( CtiMessage *aMessage ) override;
   virtual int processMessageFromForeignSystem( char *data );
 
   virtual BOOL run();

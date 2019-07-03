@@ -182,9 +182,8 @@ bool FDRTriStateSub::readConfig()
     return successful;
 }
 
-bool FDRTriStateSub::sendMessageToForeignSys( CtiMessage *msg )
+void FDRTriStateSub::sendMessageToForeignSys( CtiMessage *msg )
 {
-    return true;
 }
 
 int FDRTriStateSub::processMessageFromForeignSystem( char* )

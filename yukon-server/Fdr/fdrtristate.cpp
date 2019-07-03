@@ -106,10 +106,9 @@ BOOL CtiFDR_Tristate::stop( void )
     return TRUE;
 }
 
-bool CtiFDR_Tristate::sendMessageToForeignSys ( CtiMessage *aMessage )
+void CtiFDR_Tristate::sendMessageToForeignSys ( CtiMessage *aMessage )
 {
     // message is deleted in fdrinterface thread
-    return TRUE;
 }
 
 INT CtiFDR_Tristate::processMessageFromForeignSystem (CHAR *data)

@@ -756,7 +756,7 @@ void CtiCalcLogicService::handlePointDataMsg( const CtiPointDataMsg &ptDataMsg, 
     _lastDispatchMessageTime = CtiTime::now();
 
     //  Ignore all OLD_TIMESTAMP point data
-    if( ! (ptDataMsg.getTags() & TAG_POINT_OLD_TIMESTAMP) )
+    if( ! ptDataMsg.isOldTimestamp() )
     {
         thread.pointChange(ptDataMsg.getId(), ptDataMsg.getValue(), ptDataMsg.getTime(), ptDataMsg.getQuality(), ptDataMsg.getTags());
     }

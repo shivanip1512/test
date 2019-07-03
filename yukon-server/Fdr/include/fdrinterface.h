@@ -23,7 +23,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         virtual ~CtiFDRInterface( void );
 
         // pure virtual function implementent by interface
-        virtual bool        sendMessageToForeignSys    ( CtiMessage *aMessage ) = 0;
+        virtual void        sendMessageToForeignSys    ( CtiMessage *aMessage ) = 0;
         virtual bool        sendMessageToDispatch      ( CtiMessage *aMessage );
         virtual bool        queueMessageToDispatch     ( CtiMessage *aMessage );
         virtual void        processCommandFromDispatch ( CtiCommandMsg *cmd ){delete cmd;};
@@ -64,6 +64,8 @@ class IM_EX_FDRBASE CtiFDRInterface
         CtiFDRInterface&    setOutboundSendInterval (INT aInterval);
         int                 getTimeSyncVariation () const;
         CtiFDRInterface&    setTimeSyncVariation (INT aInterval);
+        bool                shouldIgnoreOldData() const;
+        void                setIgnoreOldData(bool ignore);
         bool                shouldUpdatePCTime() const;
         void                setUpdatePCTimeFlag(const bool aChangeFlag);
 
@@ -117,9 +119,6 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         void printLists(std::string title, int pid);
 
-        static const CHAR * KEY_DEBUG_LEVEL;
-        static const CHAR * KEY_CPARM_RELOAD_RATE_SECONDS;
-
         bool verifyDispatchConnection ();
 
         CtiConnection::Que_t iDispatchInQueue;
@@ -139,6 +138,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         int                 iOutboundSendRate;
         int                 iOutboundSendInterval;
         int                 iTimeSyncVariation;
+        bool                iIgnoreOldData;
         bool                iUpdatePCTimeFlag;
 
         /***********************

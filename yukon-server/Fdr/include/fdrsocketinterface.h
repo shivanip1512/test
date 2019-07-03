@@ -50,7 +50,7 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         virtual INT getMessageSize(CHAR *data)=0;
         virtual std::string decodeClientName(CHAR *data)=0;
         virtual int  sendAllPoints(void);
-        virtual bool sendMessageToForeignSys ( CtiMessage *aMessage );
+        void sendMessageToForeignSys ( CtiMessage *aMessage ) override;
         virtual bool buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )=0;
         virtual bool alwaysSendRegistrationPoints();
 

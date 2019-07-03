@@ -75,7 +75,7 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
         int getMessageSize(CHAR *data);
         std::string decodeClientName(CHAR *data);
         int processMessageFromForeignSystem (CHAR *data);
-        bool sendMessageToForeignSys ( CtiMessage *aMessage );
+        void sendMessageToForeignSys ( CtiMessage *aMessage );
         CHAR *buildForeignSystemHeartbeatMsg (void);
         ULONG getDebugLevel(void);
 

@@ -163,9 +163,8 @@ void FDRWabash::resetForInitialLoad()
     }
 }
 
-bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
+void FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
 {
-    bool               ok = true;
     bool               initialmsg = false;
     bool               equivalentValue = false;
     CtiFDRPointSPtr point;
@@ -197,7 +196,7 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
                     "expected a 0 or 1, got: "<< aMessage->getValue());
         }
 
-        return false;
+        return;
     }
 
     //get the time from pdata and format to match "11/08/06 14:00:19,AEP-AC-COOL-75%,STOP"
@@ -226,7 +225,7 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
                 CTILOG_DEBUG(dout, "Will not write data to the file. Point is not in the watch list.");
             }
 
-            return false;
+            return;
         }
         else
         {
@@ -282,9 +281,6 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
             }
         }
     }
-
-
-    return ok;
 }
 
 string FDRWabash::getFilename()

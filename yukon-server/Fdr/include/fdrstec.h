@@ -17,7 +17,7 @@ class IM_EX_FDRSTEC CtiFDR_STEC : public CtiFDRFtpInterface
 
         virtual ~CtiFDR_STEC();
 
-        virtual bool sendMessageToForeignSys ( CtiMessage *aMessage );
+        void sendMessageToForeignSys ( CtiMessage *aMessage ) override;
         virtual int processMessageFromForeignSystem (CHAR *data);
 
         virtual BOOL    init( void );

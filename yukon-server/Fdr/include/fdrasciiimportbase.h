@@ -16,7 +16,7 @@ class IM_EX_FDRBASE CtiFDRAsciiImportBase : public CtiFDRInterface
     
         virtual ~CtiFDRAsciiImportBase();
     
-        virtual bool sendMessageToForeignSys ( CtiMessage *aMessage )=0;
+        virtual void sendMessageToForeignSys ( CtiMessage *aMessage )=0;
         virtual int processMessageFromForeignSystem (CHAR *data)=0;
     
         virtual BOOL    init( void );   
