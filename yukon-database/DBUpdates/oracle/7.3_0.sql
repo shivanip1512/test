@@ -226,6 +226,14 @@ ALTER TABLE NestSyncValue RENAME CONSTRAINT FK_NSDetail_NSValue TO FK_NestSDetai
 INSERT INTO DBUpdates VALUES ('YUK-19489-1', '7.3.0', SYSDATE);
 /* @end YUK-19489-1 */
 
+/* @start YUK-20075 */
+/* @error ignore-start */
+ALTER TABLE NestSyncValue RENAME CONSTRAINT FK_NestSDetail_NestSValue TO FK_NSDetail_NSValue;
+/* @error ignore-end */
+
+INSERT INTO DBUpdates VALUES ('YUK-20075', '7.3.0', SYSDATE);
+/* @end YUK-20075 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

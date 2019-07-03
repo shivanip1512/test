@@ -245,6 +245,15 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-19489-1', '7.3.0', GETDATE());
 /* @end YUK-19489-1 */
 
+/* @start YUK-20075 */
+/* @error ignore-begin */
+EXEC sp_rename 'FK_NestSDetail_NestSValue', 'FK_NSDetail_NSValue';
+GO
+/* @error ignore-end */
+
+INSERT INTO DBUpdates VALUES ('YUK-20075', '7.3.0', GETDATE());
+/* @end YUK-20075 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
