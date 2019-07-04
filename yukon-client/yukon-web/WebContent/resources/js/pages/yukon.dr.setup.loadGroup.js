@@ -13,6 +13,19 @@ yukon.dr.setup.loadGroup = (function() {
     var
     _initialized = false,
 
+    _loadGroup = function() {
+        var type = $('#type').val();
+        var name = $('#name').val();
+        $.ajax({
+            url: yukon.url('/dr/setup/loadGroup/create/' + type),
+            type: 'get',
+            data: {name: name}
+        }).done(function(data) {
+             $('#loadGroup').html(data);
+        }).fail(function(data) {
+        });
+    }, 
+    
     mod = {
         
         /** Initialize this module. */
@@ -46,17 +59,8 @@ yukon.dr.setup.loadGroup = (function() {
                 });
             });
             
-            $('#type').change(function (event) {
-                var type = $('#type').val();
-                var name = $('#name').val();
-                $.ajax({
-                    url: yukon.url('/dr/setup/loadGroup/create/' + type),
-                    type: 'get',
-                    data: {name: name}
-                }).done(function(data) {
-                     $('#loadGroup').html(data);
-                }).fail(function(data) {
-                });
+            $(document).on('change', '#type', function (event) {
+                _loadGroup();
             });
             _initialized = true;
         }

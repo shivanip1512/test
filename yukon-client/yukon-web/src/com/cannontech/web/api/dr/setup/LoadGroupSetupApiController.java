@@ -35,7 +35,7 @@ public class LoadGroupSetupApiController {
     @Autowired LMDeleteValidator lmDeleteValidator;
     @Autowired LMCopyValidator lmCopyValidator;
     private List<LoadGroupSetupValidator<? extends LoadGroupBase>> validators;
-
+    
     @GetMapping("/{id}")
     public ResponseEntity<Object> retrieve(@PathVariable int id) {
         LoadGroupBase loadGroup = loadGroupService.retrieve(id);
@@ -46,7 +46,7 @@ public class LoadGroupSetupApiController {
     public ResponseEntity<Object> save(@Valid @RequestBody LoadGroupBase loadGroup) {
         int paoId = loadGroupService.save(loadGroup);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("paoId", paoId);
+        paoIdMap.put("groupId", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
@@ -54,7 +54,7 @@ public class LoadGroupSetupApiController {
     public ResponseEntity<Object> copy(@Valid @RequestBody LMCopy lmCopy, @PathVariable int id) {
         int paoId = loadGroupService.copy(id, lmCopy);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("paoId", paoId);
+        paoIdMap.put("groupId", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
@@ -62,7 +62,7 @@ public class LoadGroupSetupApiController {
     public ResponseEntity<Object> delete(@Valid @RequestBody LMDelete lmDelete, @PathVariable int id) {
         int paoId = loadGroupService.delete(id, lmDelete.getName());
         HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("paoId", paoId);
+        paoIdMap.put("groupId", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 

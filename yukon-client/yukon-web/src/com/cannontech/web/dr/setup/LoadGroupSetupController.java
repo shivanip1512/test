@@ -37,7 +37,6 @@ import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -53,7 +52,6 @@ import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
-@CheckRole(YukonRole.DEMAND_RESPONSE)
 @RequestMapping("/setup/loadGroup")
 public class LoadGroupSetupController {
     
@@ -73,12 +71,12 @@ public class LoadGroupSetupController {
     @Autowired private ServerDatabaseCache cache;
 
     @GetMapping("/create")
-    public String create(ModelMap model) {
+    public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
         LoadGroupBase loadGroup = new LoadGroupBase();
         if (model.containsAttribute("loadGroup")) {
             loadGroup = (LoadGroupBase) model.get("loadGroup");
-            controllerHelper.buildModelMap(loadGroup.getType(), model);
+            controllerHelper.buildModelMap(loadGroup.getType(), model, request, userContext);
         }
         model.addAttribute("selectedSwitchType", loadGroup.getType());
         model.addAttribute("loadGroup", loadGroup);
@@ -87,7 +85,8 @@ public class LoadGroupSetupController {
     }
     
     @GetMapping("/create/{type}")
-    public String create(ModelMap model, @PathVariable String type, @RequestParam String name) {
+    public String create(ModelMap model, @PathVariable String type, @RequestParam String name,
+            YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
         LoadGroupBase loadGroup = LMModelFactory.createLoadGroup(PaoType.valueOf(type));
         if (model.containsAttribute("loadGroup")) {
@@ -95,18 +94,18 @@ public class LoadGroupSetupController {
         } else {
             loadGroup.setName(name);
             loadGroup.setType(PaoType.valueOf(type));
+            
         }
-        controllerHelper.buildModelMap(PaoType.valueOf(type), model);
         model.addAttribute("loadGroup", loadGroup);
         List<PaoType> switchTypes = PaoType.getAllLMGroupTypes();
         model.addAttribute("switchTypes", switchTypes);
         model.addAttribute("selectedSwitchType", type);
+        controllerHelper.buildModelMap(PaoType.valueOf(type), model, request, userContext);
         return "dr/setup/loadGroup/view.jsp";
     }
 
     @GetMapping("/{id}")
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
-
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id);
             model.addAttribute("mode", PageEditMode.VIEW);
@@ -117,6 +116,7 @@ public class LoadGroupSetupController {
             }
             model.addAttribute("selectedSwitchType", loadGroup.getType());
             model.addAttribute("loadGroup", loadGroup);
+            controllerHelper.buildModelMap(loadGroup.getType(), model, request, userContext);
             return "dr/setup/loadGroup/loadGroupView.jsp";
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
@@ -129,7 +129,6 @@ public class LoadGroupSetupController {
     @GetMapping("/{id}/edit")
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
-
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id);
             model.addAttribute("mode", PageEditMode.EDIT);
@@ -140,10 +139,10 @@ public class LoadGroupSetupController {
             } else if (model.containsAttribute("loadGroup")) {
                 loadGroup = (LoadGroupBase) model.get("loadGroup");
             }
-            controllerHelper.buildModelMap(loadGroup.getType(), model);
             model.addAttribute("loadGroup", loadGroup);
             model.addAttribute("selectedSwitchType", loadGroup.getType());
             model.addAttribute("switchTypes", switchTypes);
+            controllerHelper.buildModelMap(loadGroup.getType(), model, request, userContext);
             return "dr/setup/loadGroup/loadGroupView.jsp";
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
@@ -155,13 +154,12 @@ public class LoadGroupSetupController {
 
     @PostMapping("/save")
     public String save(@ModelAttribute("loadGroup") LoadGroupBase loadGroup, BindingResult result, YukonUserContext userContext,
-            FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+            FlashScope flash, RedirectAttributes redirectAttributes, ModelMap model, HttpServletRequest request) {
 
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupSaveUrl);
             ResponseEntity<? extends Object> response =
                     saveGroup(userContext, request, url, loadGroup, HttpMethod.POST);
-
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadGroup, "loadGroup");
                 result = helper.populateBindingError(result, error, response);
@@ -169,8 +167,8 @@ public class LoadGroupSetupController {
             }
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
-                int groupId = paoIdMap.get("paoId");
+                HashMap<String, Integer> groupIdMap = (HashMap<String, Integer>) response.getBody();
+                int groupId = groupIdMap.get("groupId");
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.saved"));
                 return "redirect:/dr/setup/loadGroup/" + groupId;
             }
@@ -179,9 +177,7 @@ public class LoadGroupSetupController {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:/dr/setup/list";
-        }
-
-        catch (RestClientException ex) {
+        } catch (RestClientException ex) {
             log.error("Error creating load group: " + ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", ex.getMessage()));
             return "redirect:/dr/setup/list";
@@ -201,7 +197,6 @@ public class LoadGroupSetupController {
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.deleted"));
                 return "redirect:/dr/setup/list";
             }
-
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
@@ -211,7 +206,6 @@ public class LoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", ex.getMessage()));
             return "redirect:/dr/setup/list";
         }
-
         return "dr/setup/list.jsp";
     }
 
@@ -232,7 +226,7 @@ public class LoadGroupSetupController {
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
-                int groupId = paoIdMap.get("paoId");
+                int groupId = paoIdMap.get("groupId");
                 json.put("groupId", Integer.toString(groupId));
                 servletResponse.setContentType("application/json");
                 JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);

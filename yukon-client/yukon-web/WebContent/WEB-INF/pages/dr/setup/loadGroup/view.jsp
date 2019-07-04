@@ -63,6 +63,27 @@
                 <c:if test="${selectedSwitchType == 'LM_GROUP_ITRON'}">
                     <%@ include file="itron.jsp" %>
                 </c:if>
+                <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
+                      selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">
+                    <tags:nameValue2 nameKey=".controlPriority">
+                        <cti:displayForPageEditModes modes="CREATE,EDIT">
+                            <tags:selectWithItems items="${protocolPriority}" id="protocolPriority" path="protocolPriority"/>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <i:inline key="${loadGroup.protocolPriority}"/>
+                        </cti:displayForPageEditModes>
+                    </tags:nameValue2>
+                    <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM'}">
+                        <tags:nameValue2 nameKey=".route">
+                            <cti:displayForPageEditModes modes="CREATE,EDIT">
+                                <tags:selectWithItems items="${routes}" id="route" path="routeID" itemValue="liteID"/>
+                            </cti:displayForPageEditModes>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <cti:deviceName deviceId="${loadGroup.routeID}"/>
+                            </cti:displayForPageEditModes>
+                        </tags:nameValue2>
+                    </c:if>                
+                </c:if>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
         
@@ -71,7 +92,7 @@
                       selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">
             <%@ include file="expresscom.jsp" %>
         </c:if>
-         <c:if test="${selectedSwitchType == 'LM_GROUP_DIGI_SEP'}">
+        <c:if test="${selectedSwitchType == 'LM_GROUP_DIGI_SEP'}">
             <%@ include file="digisep.jsp" %>
         </c:if>
         <c:if test="${not empty selectedSwitchType}">
@@ -93,5 +114,6 @@
             </cti:displayForPageEditModes>
         </div>
     </form:form>
-    <cti:includeScript link="/resources/js/pages/yukon.dr.setup.loadGroup.js" />
+   <cti:includeScript link="/resources/js/pages/yukon.dr.setup.loadGroup.js" />
+   <cti:includeScript link="/resources/js/pages/yukon.dr.setup.loadGroupExpresscom.js" />
 </cti:msgScope>

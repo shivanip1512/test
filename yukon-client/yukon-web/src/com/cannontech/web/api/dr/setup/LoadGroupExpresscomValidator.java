@@ -3,6 +3,7 @@ package com.cannontech.web.api.dr.setup;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.dr.setup.AddressUsage;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -29,26 +30,35 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "routeID", key + "required",
                 new Object[] { "Route" });
         }
+        
+        //If address usage is empty
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "addressUsage", key + "required",
+            new Object[] { "Address Usage" });
+        
         // SPID is mandatory
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "serviceProvider", key + ".required",
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "serviceProvider", key + "required",
             new Object[] { "Service Provider" });
         if (!errors.hasFieldErrors("serviceProvider")) {
-            YukonValidationUtils.checkRange(errors, "serviceProvider", loadGroup.getServiceProvider(), 0, 165534, true);
+            YukonValidationUtils.checkRange(errors, "serviceProvider", loadGroup.getServiceProvider(), 1, 165534, true);
         }
-
-        if (loadGroup.getAddressUsage().contains("T")) {
+        
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "addressUsage", key + "required",
+            new Object[] { "Address Usage" });
+        
+        if(loadGroup.getAddressUsage() != null ) {
+        if (loadGroup.getAddressUsage().contains(AddressUsage.SERIAL)) {
             // Validate Serial
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "serialNumber", key + "required",
                 new Object[] { "Serial" });
         }
-        if (loadGroup.getAddressUsage().contains("G")) {
+        if (loadGroup.getAddressUsage().contains(AddressUsage.GEO)) {
             // Validate Geo
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "geo", key + "required", new Object[] { "Geo" });
             if (!errors.hasFieldErrors("geo")) {
-                YukonValidationUtils.checkRange(errors, "geo", loadGroup.getGeo(), 0, 165534, true);
+                YukonValidationUtils.checkRange(errors, "geo", loadGroup.getGeo(), 1, 165534, true);
             }
         }
-        if (loadGroup.getAddressUsage().contains("B")) {
+        if (loadGroup.getAddressUsage().contains(AddressUsage.SUBSTATION)) {
             // Validate substation
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "substation", key + "required",
                 new Object[] { "Substation" });
@@ -57,22 +67,22 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
             }
         }
 
-        if (loadGroup.getAddressUsage().contains("F")) {
+        if (loadGroup.getAddressUsage().contains(AddressUsage.FEEDER)) {
             // validate Feeder
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "feeder", key + "required",
                 new Object[] { "Feeder" });
             if (!errors.hasFieldErrors("feeder")) {
-                YukonValidationUtils.checkRange(errors, "feeder", loadGroup.getFeeder(), 0, 165534, true);
+                YukonValidationUtils.checkExceedsMaxLength(errors, "feeder", loadGroup.getFeeder(), 16);
             }
         }
-        if (loadGroup.getAddressUsage().contains("Z")) {
+        if (loadGroup.getAddressUsage().contains(AddressUsage.ZIP)) {
             // validate Zip
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "zip", key + "zip.required", new Object[] { "Zip" });
             if (!errors.hasFieldErrors("zip")) {
                 YukonValidationUtils.checkRange(errors, "zip", loadGroup.getZip(), 1, 116777214, true);
             }
         }
-        if (loadGroup.getAddressUsage().contains("U")) {
+        if (loadGroup.getAddressUsage().contains(AddressUsage.USER)) {
             // validate User
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "user", key + "user.required",
                 new Object[] { "User" });
@@ -80,7 +90,7 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 YukonValidationUtils.checkRange(errors, "user", loadGroup.getUser(), 0, 65534, true);
             }
         }
-        if (loadGroup.getAddressUsage().contains("P")) {
+        if (loadGroup.getAddressUsage().contains(AddressUsage.PROGRAM)) {
             // validate Program
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "program", key + "program.required",
                 new Object[] { "Program" });
@@ -88,7 +98,7 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 YukonValidationUtils.checkRange(errors, "program", loadGroup.getProgram(), 1, 99, true);
             }
         }
-        if (loadGroup.getAddressUsage().contains("R")) {
+        if (loadGroup.getAddressUsage().contains(AddressUsage.SPLINTER)) {
             // validate Splinter
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "splinter", key + "splinter.required",
                 new Object[] { "Splinter" });
@@ -96,10 +106,11 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 YukonValidationUtils.checkRange(errors, "splinter", loadGroup.getSplinter(), 1, 99, true);
             }
         }
-        if (loadGroup.getAddressUsage().contains("L")) {
+        if (loadGroup.getAddressUsage().contains(AddressUsage.LOAD)) {
             // validate Loads
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "relayUsage", key + "required",
                 new Object[] { "Relay Usage" });
+        }
         }
     }
 }

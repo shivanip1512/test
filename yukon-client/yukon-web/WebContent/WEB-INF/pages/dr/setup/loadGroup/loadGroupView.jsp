@@ -7,5 +7,5 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage module="dr" page="setup.loadGroup.${mode}">
-<%@ include file="view.jsp" %>
+    <%@ include file="view.jsp" %>
 </cti:standardPage>

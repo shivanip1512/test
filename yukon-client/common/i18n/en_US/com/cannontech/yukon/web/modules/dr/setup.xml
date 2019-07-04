@@ -16,6 +16,10 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.VIEW.pageTitle">Load Group: {0}</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.general.title">General</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.optional.title">Optional Attributes</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.geoAddress.title">Geographical Address</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.geoAddressing.title">Geographical Addressing</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.loadAddress.title">Load Address</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.loadAddressing.title">Load Addressing</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.title">Load Group</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.digisepDeviceClass.title">Device Class</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.digisepEnrollment.title">Enrollment</entry>
@@ -55,6 +59,46 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.relayUsage.invalidValue">Invalid Relay Usage value.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.addressUsage.invalidValue">Invalid Address Usage value.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.route">Communication Route</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.serviceProvider">SPID</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.geo">GEO</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.substation">Substation</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.feeder">Feeder</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.zip">ZIP</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.user">User</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.serial">Serial</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.loadAddressUsage">Usage</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.sendControlMessage">Send Loads in Control Message</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.program">Program</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.splinter">Splinter</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.addressUsage">Address Usage</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.loads">Loads</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.controlPriority">Control Priority</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.DEFAULT">Default</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.MEDIUM">Medium</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.HIGH">High</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.HIGHEST">Highest</entry>
+
+<entry key="yukon.web.modules.dr.setup.loadGroup.virtualRelayId">Relay</entry>
+
+<entry key="yukon.web.modules.dr.setup.loadGroup.GEO">GEO</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.SUBSTATION">Substation</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.FEEDER">Feeder</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.ZIP">ZIP</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.USER">User</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.SERIAL">Serial</entry>
+
+<entry key="yukon.web.modules.dr.setup.loadGroup.PROGRAM">Program</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.LOAD">Load</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.SPLINTER">Splinter</entry>
+
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_1">L 1</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_2">L 2</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_3">L 3</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_4">L 4</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_5">L 5</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_6">L 6</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_7">L 7</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_8">L 8</entry>
 
 <!-- Load Group Validation -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.groupName.unique">Group Name must be unique.</entry>
