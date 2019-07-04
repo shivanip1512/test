@@ -40,6 +40,17 @@ public class ProgramData {
         return gears;
     }
 
+    public boolean equals(ProgramData programData) {
+        if (programData == null) {
+            return false;
+        } else if (this.getProgramId() == programData.getProgramId()
+            && this.getStartDateTime().equals(programData.getStartDateTime())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public static class ProgramDataBuilder {
         private int programId;
         private String programName;

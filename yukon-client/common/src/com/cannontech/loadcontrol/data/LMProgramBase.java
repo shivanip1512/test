@@ -412,6 +412,14 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 			return false;
 		}
 	}
+    
+    public boolean isScheduled() {
+        if (programStatus == STATUS_SCHEDULED) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 	
 	@Override
 	public PaoIdentifier getPaoIdentifier() {

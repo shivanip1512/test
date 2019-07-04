@@ -6,21 +6,17 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.time.DateUtils;
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -31,7 +27,6 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterDao;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -39,8 +34,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.program.widget.model.GearData;
-import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatedObject;
@@ -55,7 +48,6 @@ import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.program.filter.ForLoadGroupFilter;
@@ -65,7 +57,6 @@ import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.ProgramUtils;
@@ -79,7 +70,6 @@ import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.messages.LMManualControlResponse;
 import com.cannontech.loadcontrol.service.LoadControlCommandService;
 import com.cannontech.loadcontrol.service.ProgramChangeBlocker;
-import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.BadServerResponseException;
@@ -108,13 +98,12 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired private ScenarioDao scenarioDao;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired @Qualifier("main") private Executor executor;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private static final long PROGRAM_CHANGE_TIMEOUT_MS = 5000;
-    private static final int MAX_PROGRAM_TO_DISPLAY_ON_WIDGET = 10;
-    private final static String todayKey = "yukon.web.widgets.programWidget.today";
-    private List<ProgramData> programsDataCache = new ArrayList<>();
-    private long tomorrowStartInMillis = 0L;
+
+    @PostConstruct
+    public void initialize() {
+    }
 
     private final RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
@@ -795,278 +784,4 @@ public class ProgramServiceImpl implements ProgramService {
         return program.createScheduledStartMsg(startDate, stopDate, gearNumber,
                                                null, additionalInfo, constraintId);
     }
-
-    @Override
-    public Map<String, List<ProgramData>> buildProgramWidgetData(YukonUserContext userContext) {
-        Map<String, List<ProgramData>> programWidgetData = new LinkedHashMap<>();
-
-        List<ProgramData> todaysPrograms = getAllTodaysPrograms();
-        int todaysProgramsCount = todaysPrograms.size();
-        // List of Programs which are scheduled to execute for next control day after today
-        List<ProgramData> futureProgramsToDisplay = new ArrayList<>();
-        if (todaysProgramsCount >= MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
-            todaysPrograms = limitData(todaysPrograms, MAX_PROGRAM_TO_DISPLAY_ON_WIDGET);
-        } else {
-            if (todaysProgramsCount < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
-                List<ProgramData> futurePrograms = getProgramsScheduledForNextControlDayAfterToday();
-                if (CollectionUtils.isNotEmpty(futurePrograms)) {
-                    int maxFutureProgramsCount = MAX_PROGRAM_TO_DISPLAY_ON_WIDGET - todaysProgramsCount;
-                    futureProgramsToDisplay = limitData(futurePrograms, maxFutureProgramsCount);
-                    String date = dateFormattingService.format(futureProgramsToDisplay.get(0).getStartDateTime(),
-                        DateFormatEnum.DATE, userContext);
-                    programWidgetData.put(date, futureProgramsToDisplay);
-                }
-            }
-        }
-        if (CollectionUtils.isNotEmpty(todaysPrograms)) {
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            programWidgetData.put(accessor.getMessage(todayKey), todaysPrograms);
-        }
-
-        int futureAndTodayProgramsCount = futureProgramsToDisplay.size() + todaysProgramsCount;
-        if (futureAndTodayProgramsCount < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
-            int previousProgramsToDisplayCount =
-                MAX_PROGRAM_TO_DISPLAY_ON_WIDGET - futureAndTodayProgramsCount;
-            List<ProgramData> limitProgramData = limitData(getProgramsDataCache(), previousProgramsToDisplayCount);
-            Map<String, List<ProgramData>> limitedProgramsToDisplay =
-                    groupProgramsByStartDate(limitProgramData, userContext);
-            programWidgetData.putAll(limitedProgramsToDisplay);
-        }
-        return programWidgetData; 
-    }
-
-    /**
-     * Returns list of all program which are scheduled to execute for today, next control day after today and
-     * previous 7 days.
-     * 
-     */
-    @Override
-    public Map<String, List<ProgramData>> buildProgramDetailsData(YukonUserContext userContext) {
-
-        Map<String, List<ProgramData>> programDetailData = new LinkedHashMap<>();
-
-        List<ProgramData> futurePrograms = getProgramsScheduledForNextControlDayAfterToday();
-        if (CollectionUtils.isNotEmpty(futurePrograms)) {
-            String date = dateFormattingService.format(futurePrograms.get(0).getStartDateTime(), DateFormatEnum.DATE,
-                userContext);
-            programDetailData.put(date, futurePrograms);
-        }
-
-        List<ProgramData> todaysPrograms = getAllTodaysPrograms();
-        if (CollectionUtils.isNotEmpty(todaysPrograms)) {
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            programDetailData.put(accessor.getMessage(todayKey), todaysPrograms);
-        }
-
-        Map<String, List<ProgramData>> programsToDisplay = groupProgramsByStartDate(getProgramsDataCache(), userContext);
-        programDetailData.putAll(programsToDisplay);
-        return programDetailData;
-    }
-
-    /**
-     * Returns list of all program which are executed today or scheduled to execute today 
-     * 
-     */
-
-    private List<ProgramData> getAllTodaysPrograms() {
-        List<ProgramData> todaysProgram = new ArrayList<>();
-        try {
-            Set<LMProgramBase> allLMProgramBase = loadControlClientConnection.getAllProgramsSet();
-            if (CollectionUtils.isNotEmpty(allLMProgramBase)) {
-                // Get list of todays programs (without keeping state in mind)
-                DateTime todayStartTime = DateTime.now().withTimeAtStartOfDay();
-                DateTime todayStopTime = todayStartTime.plusHours(24);
-                Interval interval = new Interval(todayStartTime, todayStopTime);
-                todaysProgram = filterProgramsForInterval(allLMProgramBase, interval);
-            }
-        } catch (ConnectionException e) {
-            log.warn(e.getMessage());
-        }
-        return todaysProgram;
-    }
-
-    /**
-     * Returns list of all program which are scheduled to execute for next control day after today
-     * 
-     */
-    private List<ProgramData> getProgramsScheduledForNextControlDayAfterToday() {
-        List<ProgramData> scheduledProgramsForNearestDay = new ArrayList<>();
-        try {
-            Set<LMProgramBase> allLMProgramBase = loadControlClientConnection.getAllProgramsSet();
-            if (CollectionUtils.isNotEmpty(allLMProgramBase)) {
-                DateTime now = DateTime.now();
-                long startOfTomorrow = now.withTimeAtStartOfDay().plusHours(24).getMillis();
-                // Get all the program which are scheduled to start in future (after today) and sort them based on startTime
-                List<LMProgramBase> scheduledProgramsAfterToday =
-                                        allLMProgramBase.stream()
-                                                        .filter(p -> p.getStartTime().getTimeInMillis() >= startOfTomorrow)
-                                                        .sorted((p1, p2) -> p1.getStartTime().compareTo(p2.getStartTime()))
-                                                        .collect(Collectors.toList());
-
-                // Get the list of scheduled programs for next control day (after today)
-                if (CollectionUtils.isNotEmpty(scheduledProgramsAfterToday)) {
-                    DateTime nextDayWithAProgramScheduled = new DateTime(scheduledProgramsAfterToday
-                                                                         .get(0)
-                                                                         .getStartTime()
-                                                                         .getTimeInMillis())
-                                                                         .withTimeAtStartOfDay();
-                   Interval nextDayWithProgramScheduledInterval = new Interval(nextDayWithAProgramScheduled,
-                                                                       nextDayWithAProgramScheduled.plusHours(24));
-                   scheduledProgramsForNearestDay = 
-                              filterProgramsForInterval(scheduledProgramsAfterToday, nextDayWithProgramScheduledInterval);
-                }
-            }
-        } catch (ConnectionException e) {
-            log.warn(e.getMessage());
-        }
-        return scheduledProgramsForNearestDay;
-    }
-
-    /**
-     * Return top Elements based on passed maxLimit.
-     */
-    private List<ProgramData> limitData(List<ProgramData> programs, int maxLimit) {
-        return programs.stream().limit(maxLimit).collect(Collectors.toList());
-    }
-
-    /**
-     *  Filter programs which started with-in the passed interval and returns
-     *  list of ProgramData objects from the filtered programs
-     */
-    private List<ProgramData> filterProgramsForInterval(Collection<LMProgramBase> programs, Interval interval) {
-        return programs.stream()
-                       .filter(p -> interval.contains(p.getStartTime().getTimeInMillis()))
-                       .sorted((p1, p2) -> p2.getStartTime().compareTo(p1.getStartTime()))
-                       .map(program -> buildProgramData(program))
-                       .collect(Collectors.toList());
-    }
-
-    /**
-     *  Build ProgramData object from passed LMProgramBase object
-     */
-    private ProgramData buildProgramData(LMProgramBase lmProgramBase) {
-       return new ProgramData.ProgramDataBuilder(lmProgramBase.getYukonID().intValue())
-                             .setProgramName(lmProgramBase.getYukonName())
-                             .setStartDateTime(new DateTime(lmProgramBase.getStartTime()
-                                                                         .getTimeInMillis()))
-                             .build();
-    }
-
-    /**
-     * Program History detail for current day and past 7 days, getAllProgramControlHistory method 
-     * is processing the history data, to show multiple gear action within program, group programs by
-     * program history Id and build GearData based on that.
-     * 
-     */
-    private List<ProgramData> getProgramsHistoryDetail(DateTime from, DateTime to) {
-        List<ProgramControlHistory> programsHistoryDetail = loadControlProgramDao.getAllProgramControlHistory(from.toDate(), to.toDate());
-        List<ProgramData> previousDaysProgramData = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(programsHistoryDetail)) {
-            List<ProgramControlHistory> filterProgramWithStartTime = 
-                                            programsHistoryDetail.stream()
-                                                                 .filter(program -> program.getStartDateTime().compareTo(from.toDate()) >=0)
-                                                                 .collect(Collectors.toList());
-            Map<Integer, List<ProgramControlHistory>> programsByProgramHistoryId =
-                                                        groupProgramsByProgramHistoryId(filterProgramWithStartTime);
-
-            previousDaysProgramData = 
-                    programsByProgramHistoryId.entrySet()
-                                              .stream()
-                                              .map(entry -> buildProgramData(entry.getValue()))
-                                              .collect(Collectors.toList());
-            previousDaysProgramData.sort((p1, p2) -> p2.getStartDateTime().compareTo(p1.getStartDateTime()));
-        }
-        return previousDaysProgramData;
-    }
-
-    /**
-     * Group programs by programHistoryId, So that we have history of program with gears assigned
-     * or changed action, which can be on the same day or different day.This is needed as we can have gear
-     * assigned to a program on same and different dates, So using programHistoryId we will club them all.
-     */
-    private Map<Integer, List<ProgramControlHistory>> groupProgramsByProgramHistoryId(List<ProgramControlHistory> programsHistoryDetail) {
-        Map<Integer, List<ProgramControlHistory>> programsByProgramHistoryId = 
-                         programsHistoryDetail.stream()
-                                              .collect(Collectors.groupingBy(
-                                                  program -> program.getProgramHistoryId(),
-                                                             LinkedHashMap::new, 
-                                                             Collectors.toCollection(ArrayList::new)));
-        return programsByProgramHistoryId;
-    }
-
-    /**
-     * This method is used to build program with gears. A Single program can have run with a single or 
-     * multiple gear.So This method is to collect all those action inside a single program.
-     */
-    private ProgramData buildProgramData(List<ProgramControlHistory> programsHistoryDetail) {
-
-        List<GearData> gears = programsHistoryDetail.stream()
-                                                    .map(program -> buildGearData(program))
-                                                    .collect(Collectors.toList());
-
-        //As per need we have to club all the Program action event(start, gear change, stop) to a 
-        //single date on which the Program is started.The program at zero index will give that.
-        ProgramControlHistory programHistory = programsHistoryDetail.get(0);
-
-        ProgramData programData = new ProgramData.ProgramDataBuilder(programHistory.getProgramId())
-                                                 .setStartDateTime(new DateTime(programHistory.getStartDateTime()))
-                                                 .setGears(gears)
-                                                 .setStatus("Completed")
-                                                 .setProgramName(programHistory.getProgramName())
-                                                 .build();
-        return programData;
-    }
-
-    /**
-     * Build GearData from ProgramControlHistory. As the Gear Start -> Gear Change ->
-     * Stop Action with start & stop time are already handled inside getAllProgramControlHistory
-     * method, So Use that to create GearData.
-     */
-    private GearData buildGearData(ProgramControlHistory programHistory) {
-        GearData gearData = new GearData();
-        DateTime gearStartTime = new DateTime(programHistory.getStartDateTime());
-        DateTime gearStopTime = new DateTime(programHistory.getStopDateTime());
-        gearData.setGearName(programHistory.getGearName());
-        gearData.setStartDateTime(gearStartTime);
-        gearData.setStopDateTime(gearStopTime);
-        if (gearStartTime != null && gearStopTime != null) {
-            gearData.setStoppedOnSameDay(DateUtils.isSameDay(gearStartTime.toDate(), gearStopTime.toDate()));
-        }
-        gearData.setKnownGoodStopDateTime(programHistory.isKnownGoodStopDateTime());
-        return gearData;
-    }
-
-    /**
-     * Group ProgramData by StartDate to show program clubbed inside date.
-     */
-    private Map<String, List<ProgramData>> groupProgramsByStartDate(List<ProgramData> previousDaysProgram, YukonUserContext userContext) {
-        Map<String, List<ProgramData>> programDataByEventTime = 
-                      previousDaysProgram.stream()
-                                         .collect(Collectors.groupingBy(
-                                                  programData -> dateFormattingService.format(programData.getStartDateTime(), 
-                                                      DateFormattingService.DateFormatEnum.DATE, 
-                                                      userContext),
-                                                             LinkedHashMap::new, 
-                                                             Collectors.toCollection(ArrayList::new)));
-        return programDataByEventTime;
-    }
-
-    /**
-     * This is to cache the Programs data so that we will not hit database every time.
-     * The cache will be updated each time next day with new request.
-     */
-    private synchronized List<ProgramData> getProgramsDataCache() {
-        long currentTime = DateTimeUtils.currentTimeMillis();
-        if (currentTime > tomorrowStartInMillis) {
-            DateTime toDate = new DateTime().withTimeAtStartOfDay();
-            DateTime fromDate = toDate.minusDays(7);
-            programsDataCache.clear();
-            log.info("Expiring program cache and reloading cache for date range - From : " + fromDate.toString()
-                                            + " To: " + toDate.toString());
-            programsDataCache = getProgramsHistoryDetail(fromDate, toDate);
-            tomorrowStartInMillis = toDate.plusDays(1).getMillis();
-        }
-        return programsDataCache;
-    }
-
 }

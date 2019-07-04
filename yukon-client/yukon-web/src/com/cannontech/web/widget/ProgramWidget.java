@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.dr.program.service.ProgramService;
+import com.cannontech.dr.program.service.ProgramWidgetService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
@@ -26,7 +26,7 @@ import com.google.common.collect.Maps;
 @CheckRole(YukonRole.DEMAND_RESPONSE)
 public class ProgramWidget extends AdvancedWidgetControllerBase {
     
-    @Autowired private ProgramService programService;
+    @Autowired private ProgramWidgetService programWidgetService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private final static String widgetKey = "yukon.web.widgets.";
@@ -34,7 +34,7 @@ public class ProgramWidget extends AdvancedWidgetControllerBase {
     @GetMapping("render")
     public String render(ModelMap model, YukonUserContext userContext) {
 
-        Map<String, List<ProgramData>> programsData = programService.buildProgramWidgetData(userContext);
+        Map<String, List<ProgramData>> programsData = programWidgetService.buildProgramWidgetData(userContext);
         model.addAttribute("programsData", programsData);
 
         Map<String, Object> json = Maps.newHashMap();

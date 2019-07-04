@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.joda.time.Duration;
 
@@ -12,7 +11,6 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.core.dao.NotFoundException;
@@ -200,15 +198,6 @@ public class ProgramServiceAdapter implements ProgramService {
                                                      boolean observeConstraintsAndExecute,
                                                      LiteYukonUser user) throws NotFoundException,
             TimeoutException, NotAuthorizedException, BadServerResponseException {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-
-    @Override
-    public Map<String, List<ProgramData>> buildProgramWidgetData(YukonUserContext userContext) {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-
-    public Map<String, List<ProgramData>> buildProgramDetailsData(YukonUserContext userContext) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 }

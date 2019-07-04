@@ -32,7 +32,7 @@
                                             <c:otherwise>
                                                 <td class="tar">${fn:escapeXml(program.status)}</td>
                                             </c:otherwise>
-                                         </c:choose>
+                                        </c:choose>
                                     </tr>
                                     <c:choose>
                                         <c:when test="${empty program.gears}">
@@ -44,19 +44,41 @@
                                                 </td>
                                             </tr>
                                         </c:when>
-                                    <c:otherwise>
-                                        <c:forEach var="gearData" varStatus="loop" items="${program.gears}">
-                                            <tr class="dn"></tr>
-                                            <tr>
-                                                <td>${fn:escapeXml(gearData.gearName)}</td>
-                                                <td class="tar"><cti:formatDate type="TIME24H" value="${gearData.startDateTime}"/>
-                                                  - <cti:formatDate type="TIME24H" value="${gearData.stopDateTime}"/>
-                                                </td> 
-                                            </tr>
-                                        </c:forEach>
-                                    </c:otherwise>
-                                </c:choose>
-                            </c:forEach> 
+                                        <c:otherwise>
+                                            <c:forEach var="gearData" varStatus="loop" items="${program.gears}">
+                                                <tr class="dn"></tr>
+                                                <tr>
+                                                    <td>${fn:escapeXml(gearData.gearName)}</td>
+                                                    <td class="tar"><cti:formatDate type="TIME24H" value="${gearData.startDateTime}"/>
+                                                      - 
+                                                    <c:choose>
+                                                        <c:when test="${empty gearData.stopDateTime}">
+                                                            <c:choose>
+                                                                <c:when test="${gearData.knownGoodStopDateTime == false}">
+                                                                    <span style="font-style: italic"><i:inline key="yukon.common.unknown"/></span>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <cti:dataUpdaterValue identifier="${program.programId}/STOP_TIME" type="DR_PROGRAM"/>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                        <c:choose>
+                                                            <c:when test="${gearData.knownGoodStopDateTime == false}">
+                                                                <span style="font-style: italic"><i:inline key="yukon.common.unknown"/></span>
+                                                            </c:when>
+                                                               <c:otherwise>
+                                                                   <cti:formatDate type="TIME24H" value="${gearData.stopDateTime}"/>
+                                                               </c:otherwise>
+                                                        </c:choose>
+                                                        </c:otherwise>
+                                                   </c:choose>
+                                                   </td> 
+                                               </tr>
+                                           </c:forEach>
+                                       </c:otherwise>
+                                   </c:choose>
+                           </c:forEach> 
                         </tbody>
                     </table>
                     <br>

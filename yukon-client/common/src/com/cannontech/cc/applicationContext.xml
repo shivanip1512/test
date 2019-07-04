@@ -7,6 +7,7 @@
        default-lazy-init="true">
 
   <bean id="programService" class="com.cannontech.cc.service.ProgramServiceImpl"/>
+  <bean class="com.cannontech.dr.program.service.impl.ProgramWidgetServiceImpl"/>
   <bean id="groupService" class="com.cannontech.cc.service.GroupServiceImpl"/>
   <bean id="eventService" class="com.cannontech.cc.service.EventService" scope="singleton">
     <property name="baseEventDao" ref="baseEventDao"/>
@@ -228,5 +229,4 @@
   <bean id="cbcHelperService" class="com.cannontech.capcontrol.service.impl.CbcHelperServiceImpl">
       <property name="rolePropertyDao" ref="rolePropertyDao" />
   </bean>
-  
 </beans>

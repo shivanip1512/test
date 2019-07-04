@@ -24,7 +24,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.impl.DateFormattingServiceImpl;
-import com.cannontech.dr.program.service.impl.ProgramServiceImpl;
+import com.cannontech.dr.program.service.impl.ProgramWidgetServiceImpl;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolverMock;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -34,7 +34,7 @@ import com.cannontech.user.SimpleYukonUserContext;
 public class ProgramServiceImplTest {
 
     private LoadControlClientConnection loadControlClientConnection ;
-    private ProgramServiceImpl programServiceImplTest;
+    private ProgramWidgetServiceImpl programWidgetServiceImpl;
     private SimpleYukonUserContext userContext;
     
     private Set<LMProgramBase> programs = new HashSet<>();
@@ -51,22 +51,23 @@ public class ProgramServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
-        programServiceImplTest = new ProgramServiceImpl();
+        programWidgetServiceImpl = new ProgramWidgetServiceImpl();
         loadControlClientConnection = EasyMock.createMock(LoadControlClientConnection.class);
-        ReflectionTestUtils.setField(programServiceImplTest, "loadControlClientConnection",
+        ReflectionTestUtils.setField(programWidgetServiceImpl, "loadControlClientConnection",
             loadControlClientConnection);
         userContext = new SimpleYukonUserContext();
         userContext.setLocale(Locale.getDefault());
         userContext.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
         DateFormattingService dateFormattingService = new DateFormattingServiceImpl();
         ReflectionTestUtils.setField(dateFormattingService, "messageSourceResolver", messageSourceResolver);
-        ReflectionTestUtils.setField(programServiceImplTest, "dateFormattingService", dateFormattingService, DateFormattingService.class);
+        ReflectionTestUtils.setField(programWidgetServiceImpl, "dateFormattingService", dateFormattingService, DateFormattingService.class);
         LMProgramDirect lm1 = new LMProgramDirect();
         DateTime now = DateTime.now();
         // Future scheduled program
         lm1.setDirectStartTime(buildGregorianCalendar(now.getYearOfEra() + 1));
         lm1.setYukonName("futureProgram1");
         lm1.setYukonID(1);
+        lm1.setProgramStatus(3); // Scheduled
         programs.add(lm1);
 
         // Program to execute for today.
@@ -74,6 +75,7 @@ public class ProgramServiceImplTest {
         lm2.setDirectStartTime(new GregorianCalendar());
         lm2.setYukonName("todaysProgram");
         lm2.setYukonID(2);
+        lm2.setProgramStatus(2); // Active
         programs.add(lm2);
 
         // Program executed in past.
@@ -88,6 +90,7 @@ public class ProgramServiceImplTest {
         lm4.setDirectStartTime(buildGregorianCalendar(now.getYearOfEra() + 2));
         lm4.setYukonName("futureProgram2");
         lm4.setYukonID(4);
+        lm4.setProgramStatus(3); // Scheduled
         programs.add(lm4);
         
         ProgramControlHistory pch1 = new ProgramControlHistory(90, 56);
@@ -109,7 +112,7 @@ public class ProgramServiceImplTest {
     public void test_getTodaysProgram() {
         EasyMock.expect(loadControlClientConnection.getAllProgramsSet()).andReturn(programs);
         EasyMock.replay(loadControlClientConnection);
-        List<ProgramData> todaysPrograms = ReflectionTestUtils.invokeMethod(programServiceImplTest, "getAllTodaysPrograms");
+        List<ProgramData> todaysPrograms = ReflectionTestUtils.invokeMethod(programWidgetServiceImpl, "getAllTodaysPrograms");
         // todaysPrograms should contain program which will execute today i.e todaysProgram
         assertTrue(todaysPrograms.size() == 1 && "todaysProgram".equals(todaysPrograms.get(0).getProgramName()));
     }
@@ -118,7 +121,7 @@ public class ProgramServiceImplTest {
     public void test_getTodaysProgram_withEmptyProgramSet() {
         EasyMock.expect(loadControlClientConnection.getAllProgramsSet()).andReturn(emptyPrograms);
         EasyMock.replay(loadControlClientConnection);
-        List<ProgramData> todaysPrograms = ReflectionTestUtils.invokeMethod(programServiceImplTest, "getAllTodaysPrograms");
+        List<ProgramData> todaysPrograms = ReflectionTestUtils.invokeMethod(programWidgetServiceImpl, "getAllTodaysPrograms");
         // todaysPrograms will be empty
         assertTrue(todaysPrograms.size() == 0);
     }
@@ -127,7 +130,7 @@ public class ProgramServiceImplTest {
     public void test_getSchedulePrograms() {
         EasyMock.expect(loadControlClientConnection.getAllProgramsSet()).andReturn(programs);
         EasyMock.replay(loadControlClientConnection);
-        List<ProgramData> futurePrograms = ReflectionTestUtils.invokeMethod(programServiceImplTest, "getProgramsScheduledForNextControlDayAfterToday");
+        List<ProgramData> futurePrograms = ReflectionTestUtils.invokeMethod(programWidgetServiceImpl, "getProgramsScheduledForNextControlDayAfterToday");
         // futurePrograms should contain program which will execute on 1st in future i.e futureProgram1
         assertTrue(futurePrograms.size() == 1 && "futureProgram1".equals(futurePrograms.get(0).getProgramName()));
     }
@@ -136,7 +139,7 @@ public class ProgramServiceImplTest {
     public void test_getSchedulePrograms_withEmptyProgramSet() {
         EasyMock.expect(loadControlClientConnection.getAllProgramsSet()).andReturn(emptyPrograms);
         EasyMock.replay(loadControlClientConnection);
-        List<ProgramData> futurePrograms = ReflectionTestUtils.invokeMethod(programServiceImplTest, "getProgramsScheduledForNextControlDayAfterToday");
+        List<ProgramData> futurePrograms = ReflectionTestUtils.invokeMethod(programWidgetServiceImpl, "getProgramsScheduledForNextControlDayAfterToday");
         // futurePrograms will be empty
         assertTrue(futurePrograms.size() == 0);
     }
@@ -147,7 +150,7 @@ public class ProgramServiceImplTest {
 
     @Test
     public void test_groupProgramsByProgramHistoryId_positive() {
-        Map<Integer, List<ProgramControlHistory>> programs = ReflectionTestUtils.invokeMethod(programServiceImplTest, "groupProgramsByProgramHistoryId", programControlHistory);
+        Map<Integer, List<ProgramControlHistory>> programs = ReflectionTestUtils.invokeMethod(programWidgetServiceImpl, "groupProgramsByProgramHistoryId", programControlHistory);
         assertTrue(programs.get(90).size() == 2);
     }
 
@@ -159,13 +162,13 @@ public class ProgramServiceImplTest {
         pch2.setStopDateTime(new Date());
         pch2.setKnownGoodStopDateTime(false);
         programControlHistory.add(pch2);
-        Map<Integer, List<ProgramControlHistory>> programs = ReflectionTestUtils.invokeMethod(programServiceImplTest, "groupProgramsByProgramHistoryId", programControlHistory);
+        Map<Integer, List<ProgramControlHistory>> programs = ReflectionTestUtils.invokeMethod(programWidgetServiceImpl, "groupProgramsByProgramHistoryId", programControlHistory);
         assertFalse(programs.get(23).size() == 2);
     }
 
     @Test
     public void test_buildProgramData_with_multiple_gear() {
-        ProgramData program = ReflectionTestUtils.invokeMethod(programServiceImplTest, "buildProgramData", programControlHistory);
+        ProgramData program = ReflectionTestUtils.invokeMethod(programWidgetServiceImpl, "buildProgramData", programControlHistory);
         assertNotNull(program);
         assertTrue(program.getGears().size() == 2);
     }
@@ -179,7 +182,7 @@ public class ProgramServiceImplTest {
         pch1.setKnownGoodStopDateTime(true);
         List<ProgramControlHistory> history = new ArrayList<>();
         history.add(pch1);
-        ProgramData program = ReflectionTestUtils.invokeMethod(programServiceImplTest, "buildProgramData", history);
+        ProgramData program = ReflectionTestUtils.invokeMethod(programWidgetServiceImpl, "buildProgramData", history);
         assertNotNull(program);
         assertTrue(program.getGears().size() == 1);
     }
@@ -195,7 +198,7 @@ public class ProgramServiceImplTest {
                 .build();
         previousDaysProgram.add(pd);
         previousDaysProgram.add(pd2);
-        Map<String, List<ProgramData>> programDataByEventTime = ReflectionTestUtils.invokeMethod(programServiceImplTest, "groupProgramsByStartDate", previousDaysProgram, userContext);
+        Map<String, List<ProgramData>> programDataByEventTime = ReflectionTestUtils.invokeMethod(programWidgetServiceImpl, "groupProgramsByStartDate", previousDaysProgram, userContext);
         assertTrue(programDataByEventTime.size() == 1);
     }
 }

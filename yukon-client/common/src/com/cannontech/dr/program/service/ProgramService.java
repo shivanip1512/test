@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.joda.time.Duration;
 
@@ -12,7 +11,6 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.core.dao.NotFoundException;
@@ -282,15 +280,4 @@ public interface ProgramService {
      * for the program with the specified id.
      */
     public void disableAndSupressRestoration(int programId);
-    
-    /**
-     * Build data for Program widget.
-     */
-    public Map<String, List<ProgramData>> buildProgramWidgetData(YukonUserContext userContext);
-
-    /**
-     * Build Program Details data for today, next control day after today and
-     * previous 7 days.
-     */
-    public Map<String, List<ProgramData>> buildProgramDetailsData(YukonUserContext userContext);
 }
