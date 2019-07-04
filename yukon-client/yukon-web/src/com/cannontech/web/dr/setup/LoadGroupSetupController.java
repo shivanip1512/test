@@ -48,7 +48,6 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
@@ -94,7 +93,7 @@ public class LoadGroupSetupController {
         } else {
             loadGroup.setName(name);
             loadGroup.setType(PaoType.valueOf(type));
-            
+            controllerHelper.setDefaultValues(loadGroup);
         }
         model.addAttribute("loadGroup", loadGroup);
         List<PaoType> switchTypes = PaoType.getAllLMGroupTypes();

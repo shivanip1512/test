@@ -16,6 +16,7 @@ import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.dr.setup.AddressUsage;
 import com.cannontech.common.dr.setup.ControlPriority;
+import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
 import com.cannontech.common.dr.setup.Loads;
 import com.cannontech.common.pao.PaoType;
@@ -45,11 +46,8 @@ public class LoadGroupSetupControllerHelper {
         case LM_GROUP_RFN_EXPRESSCOMM:
             PageEditMode mode = (PageEditMode) model.get("mode");
             if (mode == PageEditMode.VIEW) {
-                // Set display value from protocol Priority/
                 LoadGroupExpresscom loadGroup = (LoadGroupExpresscom) model.get("loadGroup");
-                /*                model.addAttribute("protocolPriorityValue",
-                    ControlPriority.getDisplayValue(loadGroup.getProtocolPriority()));
-*/
+
                 List<AddressUsage> addressUsage = loadGroup.getAddressUsage();
                 List<AddressUsage> loadAddressUsage =
                     addressUsage.stream().filter(e -> e.isLoadAddressUsage()).collect(Collectors.toList());
@@ -111,6 +109,19 @@ public class LoadGroupSetupControllerHelper {
         }
     }
 
+    /**
+     * Default values for object should be set here.
+     */
+    public void setDefaultValues(LoadGroupBase group) {
+        switch (group.getType()) {
+        case LM_GROUP_EXPRESSCOMM:
+        case LM_GROUP_RFN_EXPRESSCOMM:
+            ((LoadGroupExpresscom) group).setServiceProvider(0);
+            ((LoadGroupExpresscom) group).setProtocolPriority(ControlPriority.HIGH);
+            break;
+        }
+    }
+    
     public static List<Integer> getFeederList() {
         return ImmutableList.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
     }
