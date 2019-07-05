@@ -16,7 +16,7 @@
             <tags:radio path="relayUsage" value="A" classes="left yes M0" key=".relay.A"/>
             <tags:radio path="relayUsage" value="B" classes="middle yes M0" key=".relay.B"/>
             <tags:radio path="relayUsage" value="C" classes="middle yes M0" key=".relay.C"/>
-            <tags:radio path="relayUsage" value="S" classes="middle yes M0" key=".relay.All"/>
+            <tags:radio path="relayUsage" value="S" classes="right yes M0" key=".relay.All"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 </tags:sectionContainer2>
