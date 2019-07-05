@@ -1,8 +1,10 @@
 package com.cannontech.common.dr.setup;
 
-public enum EmetconAddressUsage {
-    ADDRESS_USAGE_GOLD('G'), 
-    ADDRESS_USAGE_SILVER('S');
+import com.cannontech.common.i18n.DisplayableEnum;
+
+public enum EmetconAddressUsage implements DisplayableEnum {
+    GOLD('G'), 
+    SILVER('S');
 
     private final Character addressUsage;
 
@@ -10,7 +12,22 @@ public enum EmetconAddressUsage {
         this.addressUsage = addressUsage;
     }
 
-    public Character getAddressUsage() {
+    public Character getAddressUsageValue() {
         return addressUsage;
     }
+
+    public static EmetconAddressUsage getDisplayValue(Character value) {
+        for (EmetconAddressUsage addressUsage : EmetconAddressUsage.values()) {
+            if (addressUsage.getAddressUsageValue().equals(value)) {
+                return addressUsage;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.web.modules.dr.setup.loadGroup." + name();
+    }
+
 }

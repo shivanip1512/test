@@ -6,7 +6,7 @@ import com.cannontech.database.data.device.lm.LMGroupEmetcon;
 public class LoadGroupEmetcon extends LoadGroupBase {
     private Integer goldAddress;
     private Integer silverAddress;
-    private Character addressUsage;
+    private EmetconAddressUsage addressUsage;
     private Character relayUsage;
     private Integer routeID;
 
@@ -26,11 +26,11 @@ public class LoadGroupEmetcon extends LoadGroupBase {
         this.silverAddress = silverAddress;
     }
 
-    public Character getAddressUsage() {
+    public EmetconAddressUsage getAddressUsage() {
         return addressUsage;
     }
 
-    public void setAddressUsage(Character addressUsage) {
+    public void setAddressUsage(EmetconAddressUsage addressUsage) {
         this.addressUsage = addressUsage;
     }
 
@@ -58,7 +58,7 @@ public class LoadGroupEmetcon extends LoadGroupBase {
         // Set addressing fields
         setGoldAddress(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getGoldAddress());
         setSilverAddress(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getSilverAddress());
-        setAddressUsage(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getAddressUsage());
+        setAddressUsage(EmetconAddressUsage.getDisplayValue(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getAddressUsage()));
         setRelayUsage(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getRelayUsage());
         setRouteID(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getRouteID());
 
@@ -74,7 +74,7 @@ public class LoadGroupEmetcon extends LoadGroupBase {
             ((LMGroupEmetcon) group).getLmGroupEmetcon();
         lmGroupEmetcon.setGoldAddress(getGoldAddress());
         lmGroupEmetcon.setSilverAddress(getSilverAddress());
-        lmGroupEmetcon.setAddressUsage(getAddressUsage());
+        lmGroupEmetcon.setAddressUsage(getAddressUsage().getAddressUsageValue());
         lmGroupEmetcon.setRelayUsage(getRelayUsage());
         lmGroupEmetcon.setRouteID(getRouteID());
 

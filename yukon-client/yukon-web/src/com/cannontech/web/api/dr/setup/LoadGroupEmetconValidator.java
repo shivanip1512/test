@@ -16,7 +16,6 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
 
     private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
     private final static String validRelayUsageValues = "ABCS";
-    private final static String validAddressUsageValues = "GS";
     @Autowired private IDatabaseCache serverDatabaseCache;
 
     public LoadGroupEmetconValidator() {
@@ -55,11 +54,6 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
             }
         }
 
-        if (!errors.hasFieldErrors("addressUsage")) {
-            if (!validAddressUsageValues.contains(loadGroup.getAddressUsage().toString())) {
-                errors.rejectValue("addressUsage", key + "addressUsage.invalidValue");
-            }
-        }
         if (!errors.hasFieldErrors("goldAddress")) {
             YukonValidationUtils.checkIsPositiveInt(errors, "goldAddress", loadGroup.getGoldAddress());
             if (!errors.hasFieldErrors("goldAddress")) {
@@ -67,8 +61,7 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
             }
         }
         if (!errors.hasFieldErrors("goldAddress") && loadGroup.getAddressUsage() != null) {
-            if (loadGroup.getAddressUsage().equals(EmetconAddressUsage.ADDRESS_USAGE_GOLD.getAddressUsage())
-                && loadGroup.getGoldAddress() == 0) {
+            if (loadGroup.getAddressUsage().equals(EmetconAddressUsage.GOLD) && loadGroup.getGoldAddress() == 0) {
                 errors.rejectValue("goldAddress", key + "goldAddress.invalidValue");
             }
         }
@@ -80,8 +73,7 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
             }
         }
         if (!errors.hasFieldErrors("silverAddress") && loadGroup.getAddressUsage() != null) {
-            if (loadGroup.getAddressUsage().equals(EmetconAddressUsage.ADDRESS_USAGE_SILVER.getAddressUsage())
-                && loadGroup.getSilverAddress() == 0) {
+            if (loadGroup.getAddressUsage().equals(EmetconAddressUsage.SILVER) && loadGroup.getSilverAddress() == 0) {
                 errors.rejectValue("silverAddress", key + "silverAddress.invalidValue");
             }
         }
