@@ -7,7 +7,7 @@ import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.validator.SimpleValidator;
 
 public class LMDeleteValidator extends SimpleValidator<LMDelete> {
-    @Autowired private LoadGroupValidatorHelper loadGroupValidatorHelper;
+    @Autowired private LMValidatorHelper lmValidatorHelper;
 
     public LMDeleteValidator() {
         super(LMDelete.class);
@@ -16,6 +16,6 @@ public class LMDeleteValidator extends SimpleValidator<LMDelete> {
     @Override
     protected void doValidation(LMDelete loadGroup, Errors errors) {
         // Group Name
-        loadGroupValidatorHelper.checkIfEmptyGroupName(loadGroup.getName(), errors);
+        lmValidatorHelper.checkIfEmptyPaoName(errors, "Group Name");
     }
 }

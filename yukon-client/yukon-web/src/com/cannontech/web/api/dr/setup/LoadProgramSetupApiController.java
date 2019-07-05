@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,10 +33,12 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @RequestMapping("/dr/setup/loadProgram")
 public class LoadProgramSetupApiController {
     @Autowired private LoadProgramSetupService loadProgramService;
+    @Autowired LMDeleteValidator lmDeleteValidator;
+    @Autowired LMCopyValidator lmCopyValidator;
 
-    @GetMapping("/{programId}")
-    public ResponseEntity<Object> retrieve(@PathVariable int programId) {
-        LoadProgram loadProgram = loadProgramService.retrieve(programId);
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> retrieve(@PathVariable int id) {
+        LoadProgram loadProgram = loadProgramService.retrieve(id);
         return new ResponseEntity<>(loadProgram, HttpStatus.OK);
     }
 
@@ -46,25 +50,25 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @PostMapping("/delete/{programId}")
-    public ResponseEntity<Object> delete(@RequestBody LMDelete lmDelete, @PathVariable int programId) {
-        int paoId = loadProgramService.delete(programId, lmDelete.getName());
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<Object> delete(@RequestBody LMDelete lmDelete, @PathVariable int id) {
+        int paoId = loadProgramService.delete(id, lmDelete.getName());
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("programId", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @PostMapping("/copy/{programId}")
-    public ResponseEntity<Object> copy(@RequestBody LoadProgramCopy loadProgramCopy, @PathVariable int programId) {
-        int paoId = loadProgramService.copy(programId, loadProgramCopy);
+    @PostMapping("/copy/{id}")
+    public ResponseEntity<Object> copy(@RequestBody LoadProgramCopy loadProgramCopy, @PathVariable int id) {
+        int paoId = loadProgramService.copy(id, loadProgramCopy);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("programId", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @PostMapping("/update/{programId}")
-    public ResponseEntity<Object> update(@RequestBody LoadProgram loadProgram, @PathVariable int programId) {
-        int paoId = loadProgramService.update(programId, loadProgram);
+    @PostMapping("/update/{id}")
+    public ResponseEntity<Object> update(@RequestBody LoadProgram loadProgram, @PathVariable int id) {
+        int paoId = loadProgramService.update(id, loadProgram);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("programId", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
@@ -90,25 +94,29 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(programGroups, HttpStatus.OK);
     }
 
-    @GetMapping("/availableLoadGroups/{programId}")
-    public ResponseEntity<Object> getAvailableProgramLoadGroups(@PathVariable int programId) {
-        List<ProgramGroup> programGroups = loadProgramService.getAvailableProgramLoadGroups(programId);
+    @GetMapping("/availableLoadGroups/{id}")
+    public ResponseEntity<Object> getAvailableProgramLoadGroups(@PathVariable int id) {
+        List<ProgramGroup> programGroups = loadProgramService.getAvailableProgramLoadGroups(id);
         return new ResponseEntity<>(programGroups, HttpStatus.OK);
     }
 
-    @GetMapping("/availableNotificationGroups/{programId}")
-    public ResponseEntity<Object> getAvailableProgramNotificationGroups(@PathVariable int programId) {
+    @GetMapping("/availableNotificationGroups/{id}")
+    public ResponseEntity<Object> getAvailableProgramNotificationGroups(@PathVariable int id) {
         List<NotificationGroup> notificationGroups =
-            loadProgramService.getAvailableProgramNotificationGroups(programId);
+            loadProgramService.getAvailableProgramNotificationGroups(id);
         return new ResponseEntity<>(notificationGroups, HttpStatus.OK);
     }
 
     @CheckRoleProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS)
-    @GetMapping("/availableDirectMemberControls/{programId}")
-    public ResponseEntity<Object> getAvailableDirectMemberControls(@PathVariable int programId) {
+    @GetMapping("/availableDirectMemberControls/{id}")
+    public ResponseEntity<Object> getAvailableDirectMemberControls(@PathVariable int id) {
         List<ProgramDirectMemberControl> directMemberControls =
-            loadProgramService.getAvailableDirectMemberControls(programId);
+            loadProgramService.getAvailableDirectMemberControls(id);
         return new ResponseEntity<>(directMemberControls, HttpStatus.OK);
     }
 
+    @InitBinder("LMDelete")
+    public void setupBinderDelete(WebDataBinder binder) {
+        binder.addValidators(lmDeleteValidator);
+    }
 }

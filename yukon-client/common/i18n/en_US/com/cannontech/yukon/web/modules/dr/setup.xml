@@ -53,11 +53,6 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.copy">Copy Load Group</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.info.copied">Load Group copied successfully.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.copy.error">Load Group could not be copied.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.utilityEnrollmentGroup.rangeCheck">Utility Enrollment Group must be between 1 and 255; (use 0 to specify all devices in the group).</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.goldAddress.invalidValue">Gold Address must be between 1 and 4 when Gold is selected for Address to Use.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.silverAddress.invalidValue">Silver address must be between 1 and 60 when Silver is selected for Address to Use.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.relayUsage.invalidValue">Invalid Relay Usage value.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.addressUsage.invalidValue">Invalid Address Usage value.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.route">Communication Route</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.serviceProvider">SPID</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.geo">GEO</entry>
@@ -86,20 +81,16 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.relay.B">B</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.relay.C">C</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.relay.All">All</entry>
-
 <entry key="yukon.web.modules.dr.setup.loadGroup.virtualRelayId">Relay</entry>
-
 <entry key="yukon.web.modules.dr.setup.loadGroup.GEO">GEO</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.SUBSTATION">Substation</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.FEEDER">Feeder</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.ZIP">ZIP</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.USER">User</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.SERIAL">Serial</entry>
-
 <entry key="yukon.web.modules.dr.setup.loadGroup.PROGRAM">Program</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.LOAD">Load</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.SPLINTER">Splinter</entry>
-
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_1">L 1</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_2">L 2</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_3">L 3</entry>
@@ -109,14 +100,19 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_7">L 7</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_8">L 8</entry>
 
-<!-- Load Group Validation -->
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.groupName.unique">Group Name must be unique.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.required">{0} is required.</entry>
+<!-- common Validation -->
+<entry key="yukon.web.modules.dr.setup.error.unique">{0} must be unique.</entry>
+<entry key="yukon.web.modules.dr.setup.error.required">{0} is required.</entry>
+
 <!-- Control Scenario Validation -->
-<entry key="yukon.web.modules.dr.setup.controlScenario.error.unique">Control scenario Name must be unique.</entry>
-<entry key="yukon.web.modules.dr.setup.controlScenario.error.required">{0} is required.</entry>
 <entry key="yukon.web.modules.dr.setup.controlScenario.error.oneGear">Only one valid gear is allowed.</entry>
 
+<!-- Load Group Validation -->
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.utilityEnrollmentGroup.rangeCheck">Utility Enrollment Group must be between 1 and 255; (use 0 to specify all devices in the group).</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.goldAddress.invalidValue">Gold Address must be between 1 and 4 when Gold is selected for Address to Use.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.silverAddress.invalidValue">Silver address must be between 1 and 60 when Silver is selected for Address to Use.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.relayUsage.invalidValue">Invalid Relay Usage value.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.addressUsage.invalidValue">Invalid Address Usage value.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.invalidValue">Invalid value.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.routeId.doesNotExist">Route Id does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.utilityAddress.doesNotExist">Address Usage must contain 'U' for Utility Address.</entry>
