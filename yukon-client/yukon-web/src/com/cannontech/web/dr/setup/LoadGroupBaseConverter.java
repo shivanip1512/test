@@ -4,6 +4,7 @@ import org.springframework.core.convert.converter.Converter;
 
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupDigiSep;
+import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
 import com.cannontech.common.dr.setup.LoadGroupItron;
 
@@ -28,9 +29,11 @@ public class LoadGroupBaseConverter implements Converter<String, LoadGroupBase> 
         case "LM_GROUP_DIGI_SEP":
             loadGroup = new LoadGroupDigiSep();
             break;
+        case "LM_GROUP_EMETCON":
+            loadGroup = new LoadGroupEmetcon();
+            break;
         default:
             loadGroup = new LoadGroupBase();
-
         }
         return loadGroup;
     }

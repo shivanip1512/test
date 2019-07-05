@@ -16,7 +16,9 @@ import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.dr.setup.AddressUsage;
 import com.cannontech.common.dr.setup.ControlPriority;
+import com.cannontech.common.dr.setup.EmetconAddressUsage;
 import com.cannontech.common.dr.setup.LoadGroupBase;
+import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
 import com.cannontech.common.dr.setup.Loads;
 import com.cannontech.common.pao.PaoType;
@@ -106,6 +108,18 @@ public class LoadGroupSetupControllerHelper {
         case LM_GROUP_DIGI_SEP:
             model.addAttribute("deviceClassList", SepDeviceClass.values());
             break;
+        case LM_GROUP_EMETCON:
+            // Give API call to get all routes
+            List<LiteYukonPAObject> routes = new ArrayList<>();
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl);
+            ResponseEntity<List<? extends Object>> response = apiRequestHelper.callAPIForList(userContext, request, url,
+                LiteYukonPAObject.class, HttpMethod.GET, LiteYukonPAObject.class);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                routes = (List<LiteYukonPAObject>) response.getBody();
+            }
+            model.addAttribute("routes", routes);
+            break;
         }
     }
 
@@ -118,6 +132,12 @@ public class LoadGroupSetupControllerHelper {
         case LM_GROUP_RFN_EXPRESSCOMM:
             ((LoadGroupExpresscom) group).setServiceProvider(0);
             ((LoadGroupExpresscom) group).setProtocolPriority(ControlPriority.HIGH);
+            break;
+        case LM_GROUP_EMETCON:
+            ((LoadGroupEmetcon) group).setGoldAddress(1);
+            ((LoadGroupEmetcon) group).setSilverAddress(1);
+            ((LoadGroupEmetcon) group).setAddressUsage(EmetconAddressUsage.GOLD);
+            ((LoadGroupEmetcon) group).setRelayUsage('A');
             break;
         }
     }

@@ -73,20 +73,21 @@
                             <i:inline key="${loadGroup.protocolPriority}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
-                    <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM'}">
-                        <tags:nameValue2 nameKey=".route">
-                            <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                <tags:selectWithItems items="${routes}" id="route" path="routeID" itemValue="liteID"/>
-                            </cti:displayForPageEditModes>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <cti:deviceName deviceId="${loadGroup.routeID}"/>
-                            </cti:displayForPageEditModes>
-                        </tags:nameValue2>
-                    </c:if>                
+                </c:if>
+                <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
+                      selectedSwitchType == 'LM_GROUP_EMETCON'}">
+                    <tags:nameValue2 nameKey=".route">
+                        <cti:displayForPageEditModes modes="CREATE,EDIT">
+                            <tags:selectWithItems items="${routes}" id="route" path="routeID" itemValue="liteID"/>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <cti:deviceName deviceId="${loadGroup.routeID}"/>
+                        </cti:displayForPageEditModes>
+                    </tags:nameValue2>
                 </c:if>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
-        
+
         <!-- Include jsp for load group type -->
         <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
                       selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">
@@ -94,6 +95,9 @@
         </c:if>
         <c:if test="${selectedSwitchType == 'LM_GROUP_DIGI_SEP'}">
             <%@ include file="digisep.jsp" %>
+        </c:if>
+        <c:if test="${selectedSwitchType == 'LM_GROUP_EMETCON'}">
+            <%@ include file="emetcon.jsp" %>
         </c:if>
         <c:if test="${not empty selectedSwitchType}">
             <%@ include file="loadGroupOptional.jsp" %>
