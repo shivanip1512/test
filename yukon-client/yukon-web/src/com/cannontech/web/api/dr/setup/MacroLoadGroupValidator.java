@@ -1,5 +1,6 @@
 package com.cannontech.web.api.dr.setup;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -15,6 +16,7 @@ public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
     private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
 
     @Autowired private LMValidatorHelper lmValidatorHelper;
+
     public MacroLoadGroupValidator() {
         super(MacroLoadGroup.class);
     }
@@ -23,14 +25,11 @@ public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
     protected void doValidation(MacroLoadGroup loadGroup, Errors errors) {
 
         lmValidatorHelper.checkIfEmptyPaoType(errors);
-        lmValidatorHelper.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Group Name");;
-
-
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "assignedLoadGroups", key + "required",
-            new Object[] { "Assigned LoadGroup" });
+        lmValidatorHelper.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Group Name");
+        ;
 
         if (!errors.hasFieldErrors("assignedLoadGroups")) {
-            if (loadGroup.getAssignedLoadGroups().isEmpty()) {
+            if (CollectionUtils.isEmpty(loadGroup.getAssignedLoadGroups())) {
                 errors.rejectValue("assignedLoadGroups", key + "assignedLoadGroup.required");
             }
         }

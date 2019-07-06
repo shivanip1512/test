@@ -45,9 +45,9 @@ public class MacroLoadGroupSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<Object> save(@Valid @RequestBody MacroLoadGroup loadGroup) {
-        int paoId = macroLoadGroupService.save(loadGroup);
+    @PostMapping("/create")
+    public ResponseEntity<Object> create(@Valid @RequestBody MacroLoadGroup loadGroup) {
+        int paoId = macroLoadGroupService.create(loadGroup);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("paoId", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);

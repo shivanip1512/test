@@ -11,9 +11,9 @@ public interface MacroLoadGroupSetupService {
     MacroLoadGroup retrieve(int loadGroupId);
 
     /**
-     * Saves the Macro load group.
+     * Create the Macro load group.
      */
-    int save(MacroLoadGroup loadGroup);
+    int create(MacroLoadGroup loadGroup);
 
     /**
      * Update the Macro load group.

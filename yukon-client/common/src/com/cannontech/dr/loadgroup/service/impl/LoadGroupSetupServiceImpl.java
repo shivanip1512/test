@@ -1,8 +1,8 @@
 package com.cannontech.dr.loadgroup.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -41,21 +41,18 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         List<LiteYukonPAObject> list = dbCache.getAllLMGroups();
 
         if (list.size() == 0) {
-            throw new NotFoundException("No available loadgroup present.");
+            throw new NotFoundException("No loadgroup available.");
         }
-        List<LMPaoDto> availableLoadGroups = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            LiteYukonPAObject yukonPAObject = (LiteYukonPAObject) list.get(i);
-            if (yukonPAObject.getPaoType().supportsMacroGroup() && yukonPAObject.getPaoType() != PaoType.MACRO_GROUP) {
-                LMPaoDto lmPaoDto = new LMPaoDto();
-                lmPaoDto.setId(yukonPAObject.getYukonID());
-                lmPaoDto.setName(yukonPAObject.getPaoName());
-                lmPaoDto.setType(yukonPAObject.getPaoType());
-                availableLoadGroups.add(lmPaoDto);
-            }
-        }
-
+        
+        List<LMPaoDto> availableLoadGroups = list.stream()
+                                                 .filter(yukonPAObject -> yukonPAObject.getPaoType().supportsMacroGroup() && yukonPAObject.getPaoType() != PaoType.MACRO_GROUP)
+                                                 .map(yukonPAObject -> createLMPaoDto(yukonPAObject))
+                                                 .collect(Collectors.toList());
         return availableLoadGroups;
+    }
+    
+    private LMPaoDto createLMPaoDto(LiteYukonPAObject yukonPAObject) {
+        return new LMPaoDto(yukonPAObject.getYukonID(), yukonPAObject.getPaoName(), yukonPAObject.getPaoType());
     }
 
     @Override
@@ -87,8 +84,10 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
 
     @Override
     public int delete(int loadGroupId, String loadGroupName) {
-        Optional<LiteYukonPAObject> liteLoadGroup = dbCache.getAllLMGroups().stream().filter(
-            group -> group.getLiteID() == loadGroupId && group.getPaoName().equals(loadGroupName)).findFirst();
+        Optional<LiteYukonPAObject> liteLoadGroup = dbCache.getAllLMGroups()
+                                                           .stream()
+                                                           .filter(group -> group.getLiteID() == loadGroupId && group.getPaoName().equals(loadGroupName))
+                                                           .findFirst();
         if (liteLoadGroup.isEmpty()) {
             throw new NotFoundException("Id and Name combination not found");
         }
@@ -100,8 +99,10 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
 
     @Override
     public int copy(int loadGroupId, LMCopy lmCopy) {
-        Optional<LiteYukonPAObject> liteLoadGroup =
-            dbCache.getAllLMGroups().stream().filter(group -> group.getLiteID() == loadGroupId).findFirst();
+        Optional<LiteYukonPAObject> liteLoadGroup =dbCache.getAllLMGroups()
+                                                          .stream()
+                                                          .filter(group -> group.getLiteID() == loadGroupId)
+                                                          .findFirst();
         if (liteLoadGroup.isEmpty()) {
             throw new NotFoundException("Id not found");
         }
