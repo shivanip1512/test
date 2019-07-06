@@ -43,9 +43,9 @@ public class LMValidatorHelper {
     public void validateNewPaoName(String paoName, PaoType type, Errors errors, String fieldName) {
         validateName(paoName, errors, fieldName);
         if (!errors.hasFieldErrors("name")) {
-            Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
+            String paoId = ServletUtils.getPathVariable("id");
             // Check if pao name already exists
-            if (type != null && (paoId == null || !(StringUtils.equals(paoDao.getYukonPAOName(paoId), paoName)))) {
+            if (type != null && (paoId == null || !(StringUtils.equals(paoDao.getYukonPAOName(Integer.valueOf(paoId)), paoName)))) {
                 validateUniquePaoName(paoName, type, errors);
             }
         }
