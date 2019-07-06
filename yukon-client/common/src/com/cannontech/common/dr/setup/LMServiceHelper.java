@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.core.dao.LMGearDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteGear;
+import com.cannontech.dr.constraint.service.ProgramConstraintService;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
 import com.google.common.collect.Lists;
 
@@ -16,6 +17,7 @@ public class LMServiceHelper {
 
     @Autowired private LMGearDao lmGearDao;
     @Autowired private LoadProgramSetupService loadProgramService;
+    @Autowired private ProgramConstraintService programConstraintService;
 
     public List<LMDto> getGearsforModel(Integer programId, List<LMDto> gears) {
         List<LiteGear> allGears = Lists.newArrayList();
@@ -50,5 +52,23 @@ public class LMServiceHelper {
                 }
             }
         });
+    }
+
+    /**
+     * Returns <code>Optional LMDto</code> object for Season Schedule for specified seasonScheduleId
+     */
+    public Optional<LMDto> getSeasonSchedule(Integer seasonScheduleId) {
+        return programConstraintService.getSeasonSchedules().stream()
+                .filter(lmdto -> lmdto.getId().compareTo(seasonScheduleId) == 0)
+                .findFirst();
+    }
+
+    /**
+     * Returns <code>Optional LMDto</code> object for Holiday Schedule for specified holidayScheduleId
+     */
+    public Optional<LMDto> getHolidaySchedule(Integer holidayScheduleId) {
+        return programConstraintService.getHoloidaySchedules().stream()
+                .filter(lmdto -> lmdto.getId().compareTo(holidayScheduleId) == 0)
+                .findFirst();
     }
 }

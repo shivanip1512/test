@@ -153,7 +153,7 @@ public class YukonValidationUtils extends ValidationUtils {
             return;
         }
 
-        if (required && (fieldValue.compareTo(min) < 0 || fieldValue.compareTo(max) > 0)) {
+        if ((fieldValue.compareTo(min) < 0 || fieldValue.compareTo(max) > 0)) {
             errors.rejectValue(field, "yukon.web.error.outOfRange", new Object[] { min, max }, "Must be between " + min
                 + " and " + max + ".");
         }
