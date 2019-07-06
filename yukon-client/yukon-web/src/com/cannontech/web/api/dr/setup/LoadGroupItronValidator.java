@@ -10,7 +10,6 @@ import com.cannontech.common.validator.YukonValidationUtils;
 @Service
 public class LoadGroupItronValidator extends LoadGroupSetupValidator<LoadGroupItron> {
 
-    private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
     @Autowired private LMValidatorHelper lmValidatorHelper;
     public LoadGroupItronValidator() {
         super(LoadGroupItron.class);
@@ -26,7 +25,7 @@ public class LoadGroupItronValidator extends LoadGroupSetupValidator<LoadGroupIt
 
         // Validation for virtual RelayId field.
 
-        lmValidatorHelper.checkIfEmptyOrWhitespaceName("virtualRelayId", errors, "Virtual RelayId ");
+        lmValidatorHelper.checkIfFieldRequired("virtualRelayId", errors, loadGroup.getVirtualRelayId(), "Virtual RelayId ");
         if (!errors.hasFieldErrors("virtualRelayId")) {
             YukonValidationUtils.checkIsPositiveInt(errors, "virtualRelayId", loadGroup.getVirtualRelayId());
         }

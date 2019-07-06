@@ -31,18 +31,18 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
     @Override
     protected void doValidation(LoadGroupEmetcon loadGroup, Errors errors) {
 
-        lmValidatorHelper.checkIfEmptyOrWhitespaceName("addressUsage", errors, "Address Usage");
+        lmValidatorHelper.checkIfFieldRequired("addressUsage", errors, loadGroup.getAddressUsage(), "Address Usage");
 
-        lmValidatorHelper.checkIfEmptyOrWhitespaceName("relayUsage", errors, "Relay Usage");
+        lmValidatorHelper.checkIfFieldRequired("relayUsage", errors, loadGroup.getRelayUsage(), "Relay Usage");
 
-        lmValidatorHelper.checkIfEmptyOrWhitespaceName("goldAddress", errors, "Gold Address");
+        lmValidatorHelper.checkIfFieldRequired("goldAddress", errors, loadGroup.getGoldAddress(), "Gold Address");
 
-        lmValidatorHelper.checkIfEmptyOrWhitespaceName("silverAddress", errors, "Silver Address" );
+        lmValidatorHelper.checkIfFieldRequired("silverAddress", errors, loadGroup.getSilverAddress(), "Silver Address" );
 
         // Validate routeID
         Integer routeId = loadGroup.getRouteID();
         if (routeId == null) {
-            lmValidatorHelper.checkIfEmptyOrWhitespaceName("routeID", errors, "Route Id");
+            lmValidatorHelper.checkIfFieldRequired("routeID", errors, loadGroup.getRouteID(), "Route Id");
         } else {
             Set<Integer> routeIds = serverDatabaseCache.getAllRoutesMap().keySet();
             if (!routeIds.contains(routeId)) {

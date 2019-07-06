@@ -18,11 +18,10 @@ public class LMValidatorHelper {
     private final static String key = "yukon.web.modules.dr.setup.error.";
     @Autowired private PaoDao paoDao;
 
-    /**
-     * Checks whether the Name is empty or not
-     */
-    public void checkIfEmptyOrWhitespaceName(String field, Errors errors, String fieldName) {
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, field, key + "required", new Object[] {fieldName});
+    public void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
+        if (fieldValue == null) {
+            errors.rejectValue(field, key + "required", new Object[] { fieldName }, "");
+        }
     }
 
     // Type
@@ -31,7 +30,7 @@ public class LMValidatorHelper {
     }
 
     public void validateName(String paoName, Errors errors, String fieldName) {
-        checkIfEmptyOrWhitespaceName("name", errors, fieldName);
+        checkIfFieldRequired("name", errors, paoName, fieldName);
         if (!errors.hasFieldErrors("name")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
             if (!PaoUtils.isValidPaoName(paoName)) {

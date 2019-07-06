@@ -28,35 +28,35 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
 
         // Route ID is mandatory for expresscom
         if (loadGroup.getType() == PaoType.LM_GROUP_EXPRESSCOMM) {
-            lmValidatorHelper.checkIfEmptyOrWhitespaceName("routeID", errors, "Route");
+            lmValidatorHelper.checkIfFieldRequired("routeID", errors, loadGroup.getRouteID(), "Route");
         }
         
         //If address usage is empty
-        lmValidatorHelper.checkIfEmptyOrWhitespaceName("addressUsage", errors, "Address Usage");
+        lmValidatorHelper.checkIfFieldRequired("addressUsage", errors, loadGroup.getAddressUsage(), "Address Usage");
         
         // SPID is mandatory
-        lmValidatorHelper.checkIfEmptyOrWhitespaceName("serviceProvider", errors, "Service Provider");
+        lmValidatorHelper.checkIfFieldRequired("serviceProvider", errors, loadGroup.getServiceProvider(), "Service Provider");
         if (!errors.hasFieldErrors("serviceProvider")) {
             YukonValidationUtils.checkRange(errors, "serviceProvider", loadGroup.getServiceProvider(), 1, 165534, true);
         }
 
-        lmValidatorHelper.checkIfEmptyOrWhitespaceName("addressUsage", errors, "Address Usage");
+        lmValidatorHelper.checkIfFieldRequired("addressUsage", errors, loadGroup.getAddressUsage(), "Address Usage");
         
         if(loadGroup.getAddressUsage() != null ) {
         if (loadGroup.getAddressUsage().contains(AddressUsage.SERIAL)) {
             // Validate Serial
-            lmValidatorHelper.checkIfEmptyOrWhitespaceName("serialNumber", errors, "Serial");
+            lmValidatorHelper.checkIfFieldRequired("serialNumber", errors, loadGroup.getSerialNumber(), "Serial");
         }
         if (loadGroup.getAddressUsage().contains(AddressUsage.GEO)) {
             // Validate Geo
-            lmValidatorHelper.checkIfEmptyOrWhitespaceName("geo", errors, "Geo");
+            lmValidatorHelper.checkIfFieldRequired("geo", errors, loadGroup.getGeo(), "Geo");
             if (!errors.hasFieldErrors("geo")) {
                 YukonValidationUtils.checkRange(errors, "geo", loadGroup.getGeo(), 1, 165534, true);
             }
         }
         if (loadGroup.getAddressUsage().contains(AddressUsage.SUBSTATION)) {
             // Validate substation
-            lmValidatorHelper.checkIfEmptyOrWhitespaceName("substation", errors, "Substation");
+            lmValidatorHelper.checkIfFieldRequired("substation", errors, loadGroup.getSubstation(), "Substation");
             if (!errors.hasFieldErrors("substation")) {
                 YukonValidationUtils.checkRange(errors, "substation", loadGroup.getSubstation(), 0, 165534, true);
             }
@@ -64,21 +64,21 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
 
         if (loadGroup.getAddressUsage().contains(AddressUsage.FEEDER)) {
             // validate Feeder
-            lmValidatorHelper.checkIfEmptyOrWhitespaceName("feeder", errors, "Feeder");
+            lmValidatorHelper.checkIfFieldRequired("feeder", errors, loadGroup.getFeeder(), "Feeder");
             if (!errors.hasFieldErrors("feeder")) {
                 YukonValidationUtils.checkExceedsMaxLength(errors, "feeder", loadGroup.getFeeder(), 16);
             }
         }
         if (loadGroup.getAddressUsage().contains(AddressUsage.ZIP)) {
             // validate Zip
-            lmValidatorHelper.checkIfEmptyOrWhitespaceName( "zip", errors, "Zip");
+            lmValidatorHelper.checkIfFieldRequired( "zip", errors, loadGroup.getZip(), "Zip");
             if (!errors.hasFieldErrors("zip")) {
                 YukonValidationUtils.checkRange(errors, "zip", loadGroup.getZip(), 1, 116777214, true);
             }
         }
         if (loadGroup.getAddressUsage().contains(AddressUsage.USER)) {
             // validate User
-            lmValidatorHelper.checkIfEmptyOrWhitespaceName("user", errors, "User");
+            lmValidatorHelper.checkIfFieldRequired("user", errors, loadGroup.getUser(), "User");
             if (!errors.hasFieldErrors("user")) {
                 YukonValidationUtils.checkRange(errors, "user", loadGroup.getUser(), 0, 65534, true);
             }
@@ -86,21 +86,21 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
         if (loadGroup.getAddressUsage().contains(AddressUsage.PROGRAM)) {
             // validate Program
 
-            lmValidatorHelper.checkIfEmptyOrWhitespaceName( "program", errors, "Program");
+            lmValidatorHelper.checkIfFieldRequired( "program", errors, loadGroup.getProgram(), "Program");
             if (!errors.hasFieldErrors("program")) {
                 YukonValidationUtils.checkRange(errors, "program", loadGroup.getProgram(), 1, 99, true);
             }
         }
         if (loadGroup.getAddressUsage().contains(AddressUsage.SPLINTER)) {
             // validate Splinter
-            lmValidatorHelper.checkIfEmptyOrWhitespaceName("splinter", errors, "Splinter");
+            lmValidatorHelper.checkIfFieldRequired("splinter", errors,  loadGroup.getSplinter(), "Splinter");
             if (!errors.hasFieldErrors("splinter")) {
                 YukonValidationUtils.checkRange(errors, "splinter", loadGroup.getSplinter(), 1, 99, true);
             }
         }
         if (loadGroup.getAddressUsage().contains(AddressUsage.LOAD)) {
             // validate Loads
-            lmValidatorHelper.checkIfEmptyOrWhitespaceName("relayUsage", errors, "Relay Usage" );
+            lmValidatorHelper.checkIfFieldRequired("relayUsage", errors, loadGroup.getRelayUsage(), "Relay Usage" );
         }
         }
     }
