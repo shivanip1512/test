@@ -15,6 +15,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGroupVersacom> {
     
     @Autowired private IDatabaseCache serverDatabaseCache;
+    @Autowired private LMValidatorHelper lmValidatorHelper;
 
     private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
 
@@ -33,8 +34,7 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
         // Validate routeId
         Integer routeId = loadGroup.getRouteId();
         if (routeId == null) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "routeId", key + "required",
-                new Object[] { "Route Id" });
+            lmValidatorHelper.checkIfEmptyOrWhitespaceName("routeId", errors, "Route Id");
         } else {
             Set<Integer> routeIds = serverDatabaseCache.getAllRoutesMap().keySet();
             if (!routeIds.contains(routeId)) {
@@ -44,8 +44,7 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
         
         // Validate addressUsage string contains other that U, S, C and D
         if (loadGroup.getAddressUsage().contains("U")) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "utilityAddress", key + "required",
-                new Object[] { "Utility Address" });
+            lmValidatorHelper.checkIfEmptyOrWhitespaceName("utilityAddress", errors, "Utility Address");
             if (!errors.hasFieldErrors("utilityAddress")) {
                 YukonValidationUtils.checkRange(errors, "utilityAddress", loadGroup.getUtilityAddress(), 1, 254, true);
             }
@@ -54,8 +53,7 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
         }
         
         if (loadGroup.getAddressUsage().contains("S")) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "sectionAddress", key + "required",
-                new Object[] { "Section Address" });
+            lmValidatorHelper.checkIfEmptyOrWhitespaceName("sectionAddress", errors, "Section Address");
             if (!errors.hasFieldErrors("sectionAddress")) {
                 YukonValidationUtils.checkRange(errors, "sectionAddress", loadGroup.getSectionAddress(), 0, 256, true);
             }
@@ -63,8 +61,7 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
         
         // classAddress (0 to 2^16 -1)
         if (loadGroup.getAddressUsage().contains("C")) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "classAddress", key + "required",
-                new Object[] { "Class Address" });
+            lmValidatorHelper.checkIfEmptyOrWhitespaceName("classAddress", errors, "Class Address" );
             if (!errors.hasFieldErrors("classAddress")) {
                 YukonValidationUtils.checkRange(errors, "classAddress", loadGroup.getClassAddress(), 0, 65535, true);
             }
@@ -72,8 +69,7 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
         
         // divisionAddress (0 to 2^16 -1)
         if (loadGroup.getAddressUsage().contains("D")) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "divisionAddress", key + "required",
-                new Object[] { "Division Address" });
+            lmValidatorHelper.checkIfEmptyOrWhitespaceName("divisionAddress", errors,  "Division Address");
             if (!errors.hasFieldErrors("divisionAddress")) {
                 YukonValidationUtils.checkRange(errors, "divisionAddress", loadGroup.getClassAddress(), 0, 65535, true);
             }

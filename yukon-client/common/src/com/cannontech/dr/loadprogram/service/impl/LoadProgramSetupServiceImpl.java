@@ -319,12 +319,17 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
             ProgramControlWindowFields controlWindowOne = loadProgram.getControlWindow().getControlWindowOne();
             ProgramControlWindowFields controlWindowTwo = loadProgram.getControlWindow().getControlWindowTwo();
-
-            LMProgramControlWindow lmControlWindowOne = buildLmProgramControlWindow(loadProgram.getProgramId(), controlWindowOne, 1);
-            lmProgram.getLmProgramControlWindowVector().add(lmControlWindowOne);
-
-            LMProgramControlWindow lmControlWindowTwo = buildLmProgramControlWindow(loadProgram.getProgramId(), controlWindowTwo, 2);
-            lmProgram.getLmProgramControlWindowVector().add(lmControlWindowTwo);
+            if (controlWindowOne != null && (loadProgram.getOperationalState() == OperationalState.Automatic
+                || loadProgram.getOperationalState() == OperationalState.ManualOnly)) {
+                LMProgramControlWindow lmControlWindowOne =
+                    buildLmProgramControlWindow(loadProgram.getProgramId(), controlWindowOne, 1);
+                lmProgram.getLmProgramControlWindowVector().add(lmControlWindowOne);
+            }
+            if (controlWindowTwo != null) {
+                LMProgramControlWindow lmControlWindowTwo =
+                    buildLmProgramControlWindow(loadProgram.getProgramId(), controlWindowTwo, 2);
+                lmProgram.getLmProgramControlWindowVector().add(lmControlWindowTwo);
+            }
         }
         
     }

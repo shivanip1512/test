@@ -8,7 +8,6 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.dr.setup.MacroLoadGroup;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonValidationUtils;
 
 @Service
 public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {

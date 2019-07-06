@@ -17,6 +17,7 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
     private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
     private final static String validRelayUsageValues = "ABCS";
     @Autowired private IDatabaseCache serverDatabaseCache;
+    @Autowired private LMValidatorHelper lmValidatorHelper;
 
     public LoadGroupEmetconValidator() {
         super(LoadGroupEmetcon.class);
@@ -30,23 +31,18 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
     @Override
     protected void doValidation(LoadGroupEmetcon loadGroup, Errors errors) {
 
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "addressUsage", key + "required",
-            new Object[] { "Address Usage" });
+        lmValidatorHelper.checkIfEmptyOrWhitespaceName("addressUsage", errors, "Address Usage");
 
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "relayUsage", key + "required",
-            new Object[] { "Relay Usage" });
+        lmValidatorHelper.checkIfEmptyOrWhitespaceName("relayUsage", errors, "Relay Usage");
 
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "goldAddress", key + "required",
-            new Object[] { "Gold Address" });
+        lmValidatorHelper.checkIfEmptyOrWhitespaceName("goldAddress", errors, "Gold Address");
 
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "silverAddress", key + "required",
-            new Object[] { "Silver Address" });
+        lmValidatorHelper.checkIfEmptyOrWhitespaceName("silverAddress", errors, "Silver Address" );
 
         // Validate routeID
         Integer routeId = loadGroup.getRouteID();
         if (routeId == null) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "routeID", key + "required",
-                new Object[] { "Route Id" });
+            lmValidatorHelper.checkIfEmptyOrWhitespaceName("routeID", errors, "Route Id");
         } else {
             Set<Integer> routeIds = serverDatabaseCache.getAllRoutesMap().keySet();
             if (!routeIds.contains(routeId)) {

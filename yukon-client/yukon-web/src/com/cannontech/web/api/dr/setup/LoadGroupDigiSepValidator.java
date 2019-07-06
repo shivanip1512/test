@@ -1,5 +1,6 @@
 package com.cannontech.web.api.dr.setup;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
@@ -10,6 +11,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 public class LoadGroupDigiSepValidator extends LoadGroupSetupValidator<LoadGroupDigiSep> {
 
     private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
+    @Autowired private LMValidatorHelper lmValidatorHelper;
 
     public LoadGroupDigiSepValidator() {
         super(LoadGroupDigiSep.class);
@@ -22,12 +24,11 @@ public class LoadGroupDigiSepValidator extends LoadGroupSetupValidator<LoadGroup
 
     @Override
     protected void doValidation(LoadGroupDigiSep loadGroup, Errors errors) {
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "deviceClassSet", key + "required",
-            new Object[] { "Device Class set" });
 
+        lmValidatorHelper.checkIfEmptyOrWhitespaceName("deviceClassSet", errors, "Device Class set");
         // Utility Enrollment Group
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "utilityEnrollmentGroup", key + "required",
-            new Object[] { "Utility Enrollment Group" });
+
+        lmValidatorHelper.checkIfEmptyOrWhitespaceName("utilityEnrollmentGroup", errors, "Utility Enrollment Group");
         if (!errors.hasFieldErrors("utilityEnrollmentGroup")) {
             YukonValidationUtils.checkIsPositiveInt(errors, "utilityEnrollmentGroup",
                 loadGroup.getUtilityEnrollmentGroup());
@@ -43,15 +44,13 @@ public class LoadGroupDigiSepValidator extends LoadGroupSetupValidator<LoadGroup
         }
 
         // Ramp In Time
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "rampInMinutes", key + "required",
-            new Object[] { "Ramp In Minutes" });
+        lmValidatorHelper.checkIfEmptyOrWhitespaceName("rampInMinutes", errors,  "Ramp In Minutes" );
         if (!errors.hasFieldErrors("rampInMinutes")) {
             YukonValidationUtils.checkRange(errors, "rampInMinutes", loadGroup.getRampInMinutes(), -99999, 99999, true);
         }
 
         // Ramp Out Time
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "rampOutMinutes", key + "required",
-            new Object[] { "Ramp Out Minutes" });
+        lmValidatorHelper.checkIfEmptyOrWhitespaceName("rampOutMinutes", errors, "Ramp Out Minutes" );
         if (!errors.hasFieldErrors("rampOutMinutes")) {
             YukonValidationUtils.checkRange(errors, "rampOutMinutes", loadGroup.getRampOutMinutes(), -99999, 99999,
                 true);

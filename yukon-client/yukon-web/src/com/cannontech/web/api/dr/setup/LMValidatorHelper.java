@@ -21,8 +21,8 @@ public class LMValidatorHelper {
     /**
      * Checks whether the Name is empty or not
      */
-    public void checkIfEmptyName(Errors errors, String fieldName) {
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", key + "required", new Object[] {fieldName});
+    public void checkIfEmptyOrWhitespaceName(String field, Errors errors, String fieldName) {
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, field, key + "required", new Object[] {fieldName});
     }
 
     // Type
@@ -31,7 +31,7 @@ public class LMValidatorHelper {
     }
 
     public void validateName(String paoName, Errors errors, String fieldName) {
-        checkIfEmptyName(errors, fieldName);
+        checkIfEmptyOrWhitespaceName("name", errors, fieldName);
         if (!errors.hasFieldErrors("name")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
             if (!PaoUtils.isValidPaoName(paoName)) {
