@@ -42,9 +42,17 @@ public class LoadGroupSetupApiController {
         return new ResponseEntity<>(loadGroup, HttpStatus.OK);
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<Object> save(@Valid @RequestBody LoadGroupBase loadGroup) {
-        int paoId = loadGroupService.save(loadGroup);
+    @PostMapping("/create")
+    public ResponseEntity<Object> create(@Valid @RequestBody LoadGroupBase loadGroup) {
+        int paoId = loadGroupService.create(loadGroup);
+        HashMap<String, Integer> paoIdMap = new HashMap<>();
+        paoIdMap.put("groupId", paoId);
+        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+    }
+    
+    @PostMapping("/update/{id}")
+    public ResponseEntity<Object> update(@RequestBody LoadGroupBase loadGroup, @PathVariable int id) {
+        int paoId = loadGroupService.update(id, loadGroup);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("groupId", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);

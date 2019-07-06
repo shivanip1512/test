@@ -27,6 +27,8 @@ import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.common.dr.setup.LoadGroupExpresscom;
+import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 
 public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
 
@@ -56,17 +58,29 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     }
 
     @Override
-    public int save(LoadGroupBase loadGroup) {
+    public int create(LoadGroupBase loadGroup) {
         LMGroup lmGroup = getDBPersistent(loadGroup);
         loadGroup.buildDBPersistent(lmGroup);
 
-        if (loadGroup.getId() == null) {
-            dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
-            SimpleDevice device = SimpleDevice.of(lmGroup.getPAObjectID(), lmGroup.getPaoType());
-            paoCreationHelper.addDefaultPointsToPao(device);
-        } else {
-            dbPersistentDao.performDBChange(lmGroup, TransactionType.UPDATE);
+        dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
+        SimpleDevice device = SimpleDevice.of(lmGroup.getPAObjectID(), lmGroup.getPaoType());
+        paoCreationHelper.addDefaultPointsToPao(device);
+
+        return lmGroup.getPAObjectID();
+    }
+
+    @Override
+    public int update(int loadGroupId, LoadGroupBase loadGroup) {
+        Optional<LiteYukonPAObject> liteLoadGroup =
+            dbCache.getAllLMGroups().stream().filter(group -> group.getLiteID() == loadGroupId).findFirst();
+
+        if (liteLoadGroup.isEmpty()) {
+            throw new NotFoundException("Id not found " + loadGroupId);
         }
+        loadGroup.setId(loadGroupId);
+        LMGroup lmGroup = getDBPersistent(loadGroup);
+        loadGroup.buildDBPersistent(lmGroup);
+        dbPersistentDao.performDBChange(lmGroup, TransactionType.UPDATE);
         return lmGroup.getPAObjectID();
     }
 
@@ -79,6 +93,9 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         LMGroup loadGroup = (LMGroup) dbPersistentDao.retrieveDBPersistent(pao);
         LoadGroupBase loadGroupBase = getModel(loadGroup.getPaoType());
         loadGroupBase.buildModel(loadGroup);
+        if (loadGroup.getPaoType().isLoadGroupSupportRoute()) {
+            setRouteName(loadGroupBase);
+        }
         return loadGroupBase;
     }
 
@@ -140,6 +157,24 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     private LoadGroupBase getModel(PaoType paoType) {
         LoadGroupBase lmGroup = (LoadGroupBase) LMModelFactory.createLoadGroup(paoType);
         return lmGroup;
+    }
+
+    /**
+     * Set the route name to send in response for the routeId 
+     */
+    private void setRouteName(LoadGroupBase loadGroup) {
+        PaoType type = loadGroup.getType();
+        Integer routeId;
+        switch (type) {
+        case LM_GROUP_EXPRESSCOMM:
+            routeId = ((LoadGroupExpresscom) loadGroup).getRouteId();
+            ((LoadGroupExpresscom) loadGroup).setRouteName(dbCache.getAllRoutesMap().get(routeId).getPaoName());
+            break;
+        case LM_GROUP_EMETCON:
+            routeId = ((LoadGroupEmetcon) loadGroup).getRouteId();
+            ((LoadGroupEmetcon) loadGroup).setRouteName(dbCache.getAllRoutesMap().get(routeId).getPaoName());
+            break;
+        }
     }
 
 }

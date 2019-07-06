@@ -78,10 +78,10 @@
                       selectedSwitchType == 'LM_GROUP_EMETCON'}">
                     <tags:nameValue2 nameKey=".route">
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
-                            <tags:selectWithItems items="${routes}" id="route" path="routeID" itemValue="liteID"/>
+                            <tags:selectWithItems items="${routes}" id="route" path="routeId" itemValue="liteID"/>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            <cti:deviceName deviceId="${loadGroup.routeID}"/>
+                            <cti:deviceName deviceId="${loadGroup.routeId}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                 </c:if>

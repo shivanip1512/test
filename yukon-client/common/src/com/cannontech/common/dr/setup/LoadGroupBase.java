@@ -4,6 +4,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.db.device.Device;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = LoadGroupEmetcon.class, name = "LM_GROUP_EMETCON"),
     @JsonSubTypes.Type(value = LoadGroupVersacom.class, name = "LM_GROUP_VERSACOM")
     })
+@JsonIgnoreProperties(value={"id"}, allowGetters= true, ignoreUnknown = true)
 public class LoadGroupBase implements LoadGroupSetupBase {
     private Integer id;
     private String name;

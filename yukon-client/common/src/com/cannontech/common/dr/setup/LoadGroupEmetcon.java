@@ -8,7 +8,8 @@ public class LoadGroupEmetcon extends LoadGroupBase {
     private Integer silverAddress;
     private EmetconAddressUsage addressUsage;
     private Character relayUsage;
-    private Integer routeID;
+    private Integer routeId;
+    private String routeName;
 
     public Integer getGoldAddress() {
         return goldAddress;
@@ -42,12 +43,20 @@ public class LoadGroupEmetcon extends LoadGroupBase {
         this.relayUsage = relayUsage;
     }
 
-    public Integer getRouteID() {
-        return routeID;
+    public Integer getRouteId() {
+        return routeId;
     }
 
-    public void setRouteID(Integer routeID) {
-        this.routeID = routeID;
+    public void setRouteID(Integer routeId) {
+        this.routeId = routeId;
+    }
+
+    public String getRouteName() {
+        return routeName;
+    }
+
+    public void setRouteName(String routeName) {
+        this.routeName = routeName;
     }
 
     @Override
@@ -76,7 +85,7 @@ public class LoadGroupEmetcon extends LoadGroupBase {
         lmGroupEmetcon.setSilverAddress(getSilverAddress());
         lmGroupEmetcon.setAddressUsage(getAddressUsage().getAddressUsageValue());
         lmGroupEmetcon.setRelayUsage(getRelayUsage());
-        lmGroupEmetcon.setRouteID(getRouteID());
+        lmGroupEmetcon.setRouteID(getRouteId());
 
         ((LMGroupEmetcon) group).setLmGroupEmetcon(lmGroupEmetcon);
     }

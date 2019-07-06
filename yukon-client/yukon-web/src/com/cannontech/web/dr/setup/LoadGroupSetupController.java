@@ -75,7 +75,9 @@ public class LoadGroupSetupController {
         LoadGroupBase loadGroup = new LoadGroupBase();
         if (model.containsAttribute("loadGroup")) {
             loadGroup = (LoadGroupBase) model.get("loadGroup");
-            controllerHelper.buildModelMap(loadGroup.getType(), model, request, userContext);
+            if (loadGroup.getType() != null) {
+                controllerHelper.buildModelMap(loadGroup.getType(), model, request, userContext);
+            }
         }
         model.addAttribute("selectedSwitchType", loadGroup.getType());
         model.addAttribute("loadGroup", loadGroup);
@@ -137,7 +139,9 @@ public class LoadGroupSetupController {
                 return "redirect:/dr/setup/list";
             } else if (model.containsAttribute("loadGroup")) {
                 loadGroup = (LoadGroupBase) model.get("loadGroup");
+                loadGroup.setId(id);
             }
+            
             model.addAttribute("loadGroup", loadGroup);
             model.addAttribute("selectedSwitchType", loadGroup.getType());
             model.addAttribute("switchTypes", switchTypes);
@@ -156,7 +160,12 @@ public class LoadGroupSetupController {
             FlashScope flash, RedirectAttributes redirectAttributes, ModelMap model, HttpServletRequest request) {
 
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupSaveUrl);
+            String url;
+            if (loadGroup.getId() == null) {
+                url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupSaveUrl);
+            } else {
+                url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUpdateUrl + loadGroup.getId());
+            }
             ResponseEntity<? extends Object> response =
                     saveGroup(userContext, request, url, loadGroup, HttpMethod.POST);
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
@@ -284,6 +293,7 @@ public class LoadGroupSetupController {
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 loadGroup = (LoadGroupBase) response.getBody();
+                loadGroup.setId(id);
             }
 
         } catch (RestClientException ex) {

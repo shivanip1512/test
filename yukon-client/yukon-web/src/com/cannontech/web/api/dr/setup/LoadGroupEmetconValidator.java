@@ -36,7 +36,7 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
         lmValidatorHelper.checkIfFieldRequired("silverAddress", errors, loadGroup.getSilverAddress(), "Silver Address" );
 
         // Validate routeID
-        lmValidatorHelper.validateRoute(errors, loadGroup.getRouteID());
+        lmValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
 
         if (!errors.hasFieldErrors("goldAddress")) {
             YukonValidationUtils.checkRange(errors, "goldAddress", loadGroup.getGoldAddress(), 0, 4, true);

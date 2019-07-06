@@ -8,9 +8,13 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
 import com.cannontech.database.db.device.lm.LMGroupExpressComAddress;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
 public class LoadGroupExpresscom extends LoadGroupBase {
-    private Integer routeID;
+    private Integer routeId;
+    private String routeName;
     private String serialNumber;
     private Integer serviceProvider;
     private Integer geo;
@@ -24,12 +28,21 @@ public class LoadGroupExpresscom extends LoadGroupBase {
     private List<Loads> relayUsage;
     private ControlPriority protocolPriority;
 
-    public Integer getRouteID() {
-        return routeID;
+
+    public Integer getRouteId() {
+        return routeId;
     }
 
-    public void setRouteID(Integer routeID) {
-        this.routeID = routeID;
+    public void setRouteId(Integer routeId) {
+        this.routeId = routeId;
+    }
+
+    public String getRouteName() {
+        return routeName;
+    }
+
+    public void setRouteName(String routeName) {
+        this.routeName = routeName;
     }
 
     public String getSerialNumber() {
@@ -138,18 +151,28 @@ public class LoadGroupExpresscom extends LoadGroupBase {
 
         // Set addressing fields
         setServiceProvider(((LMGroupExpressCom) loadGroup).getServiceProviderAddress().getAddress());
-        setGeo(((LMGroupExpressCom) loadGroup).getGeoAddress().getAddress());
-        setSubstation(((LMGroupExpressCom) loadGroup).getSubstationAddress().getAddress());
+        setGeo(((LMGroupExpressCom) loadGroup).getGeoAddress().getAddress() == 0 ? null
+            : ((LMGroupExpressCom) loadGroup).getGeoAddress().getAddress());
+        setSubstation(((LMGroupExpressCom) loadGroup).getSubstationAddress().getAddress() == 0 ? null
+            : ((LMGroupExpressCom) loadGroup).getSubstationAddress().getAddress());
         Integer feederAddress = ((LMGroupExpressCom) loadGroup).getFeederAddress().getAddress();
-        setFeeder(getFeederBinary(feederAddress));
-        setProgram(((LMGroupExpressCom) loadGroup).getProgramAddress().getAddress());
-        setZip(((LMGroupExpressCom) loadGroup).getZipCodeAddress().getAddress());
-        setUser(((LMGroupExpressCom) loadGroup).getUserAddress().getAddress());
-        setSplinter(((LMGroupExpressCom) loadGroup).getSplinterAddress().getAddress());
+        setFeeder(feederAddress == 0 ? null : getFeederBinary(feederAddress));
+        setProgram(((LMGroupExpressCom) loadGroup).getProgramAddress().getAddress() == 0 ? null
+            : ((LMGroupExpressCom) loadGroup).getProgramAddress().getAddress());
+        setZip(((LMGroupExpressCom) loadGroup).getZipCodeAddress().getAddress() == 0 ? null  
+            : ((LMGroupExpressCom) loadGroup).getZipCodeAddress().getAddress());
+        setUser(((LMGroupExpressCom) loadGroup).getUserAddress().getAddress() == 0 ? null
+            : ((LMGroupExpressCom) loadGroup).getUserAddress().getAddress());
+        setSplinter(((LMGroupExpressCom) loadGroup).getSplinterAddress().getAddress() == 0 ? null
+            : ((LMGroupExpressCom) loadGroup).getSplinterAddress().getAddress());
 
         // Set expresscom fields
-        setRouteID(((LMGroupExpressCom) loadGroup).getLMGroupExpressComm().getRouteID());
-        setSerialNumber(((LMGroupExpressCom) loadGroup).getLMGroupExpressComm().getSerialNumber());
+        setRouteId(((LMGroupExpressCom) loadGroup).getLMGroupExpressComm().getRouteID() == 0 ? null
+            : ((LMGroupExpressCom) loadGroup).getLMGroupExpressComm().getRouteID());
+        setSerialNumber(((LMGroupExpressCom) loadGroup).getLMGroupExpressComm().getSerialNumber().equals("0") ? null
+            : ((LMGroupExpressCom) loadGroup).getLMGroupExpressComm().getSerialNumber());
+        
+        // Address usage can not be blank, no need to handle default
         String addressUsageString = ((LMGroupExpressCom) loadGroup).getLMGroupExpressComm().getAddressUsage();
         List<AddressUsage> addressUsage = new ArrayList<>();
         for (int i = 0; i < addressUsageString.length(); i++) {
@@ -157,14 +180,15 @@ public class LoadGroupExpresscom extends LoadGroupBase {
         }
         setAddressUsage(addressUsage);
         String loadsString = ((LMGroupExpressCom) loadGroup).getLMGroupExpressComm().getRelayUsage();
-        if(loadsString!= null) {
+        if (loadsString != null) {
             loadsString = loadsString.trim();
+            List<Loads> loads = new ArrayList<>();
+            for (int i = 0; i < loadsString.length(); i++) {
+                loads.add(Loads.getDisplayValue(Character.getNumericValue(loadsString.charAt(i))));
+            }
+            setRelayUsage(loads);
         }
-        List<Loads> loads = new ArrayList<>();
-        for (int i = 0; i < loadsString.length(); i++) {
-            loads.add(Loads.getDisplayValue(Character.getNumericValue(loadsString.charAt(i))));
-        }
-        setRelayUsage(loads);
+        
         Integer controlPriorityValue = ((LMGroupExpressCom) loadGroup).getLMGroupExpressComm().getProtocolPriority();
         setProtocolPriority(ControlPriority.getDisplayValue(controlPriorityValue));
     }
@@ -179,8 +203,11 @@ public class LoadGroupExpresscom extends LoadGroupBase {
             createAddress(getServiceProvider(), AddressUsage.SERVICE));
         ((LMGroupExpressCom) group).setGeoAddress(createAddress(getGeo(), AddressUsage.GEO));
         ((LMGroupExpressCom) group).setSubstationAddress(createAddress(getSubstation(), AddressUsage.SUBSTATION));
-        Integer feeder = getFeederInteger(getFeeder()); 
-        ((LMGroupExpressCom) group).setFeederAddress(createAddress(feeder, AddressUsage.FEEDER));
+        if (getFeeder() != null) {
+            Integer feeder = getFeederInteger(getFeeder());
+            ((LMGroupExpressCom) group).setFeederAddress(createAddress(feeder, AddressUsage.FEEDER));
+        }
+        
         ((LMGroupExpressCom) group).setProgramAddress(createAddress(getProgram(), AddressUsage.PROGRAM));
         ((LMGroupExpressCom) group).setZipCodeAddress(createAddress(getZip(), AddressUsage.ZIP));
         ((LMGroupExpressCom) group).setUserAddress(createAddress(getUser(), AddressUsage.USER));
@@ -193,9 +220,9 @@ public class LoadGroupExpresscom extends LoadGroupBase {
         if (group.getPaoType() == PaoType.LM_GROUP_RFN_EXPRESSCOMM) {
             expresscom.setRouteID(0);
         } else {
-            expresscom.setRouteID(getRouteID());
+            expresscom.setRouteID(getRouteId());
         }
-        expresscom.setSerialNumber(getSerialNumber());
+        expresscom.setSerialNumber(getSerialNumber() == null ? "0" : getSerialNumber() );
         
         String addressUsageAbbreviation = getAddressUsage().stream().map(e -> e.getAbbreviation()).
                 map(String::valueOf).collect(Collectors.joining());

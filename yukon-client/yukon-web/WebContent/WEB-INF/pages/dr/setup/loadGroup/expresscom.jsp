@@ -31,21 +31,22 @@
 <tags:sectionContainer2 nameKey="geoAddress">
     <tags:nameValueContainer2>
         <tags:nameValue2 id='js-addressUsage' nameKey=".addressUsage">
-             <div class="button-group stacked">
-                 <c:forEach var="addressUsageValue" items="${addressUsageList}">
-                     <cti:displayForPageEditModes modes="CREATE,EDIT">
-                           <tags:check id="${addressUsageValue}_chk" path="addressUsage" value="${addressUsageValue}" key="${addressUsageValue}"/>
-                     </cti:displayForPageEditModes>
-                 </c:forEach>
-                 <cti:displayForPageEditModes modes="VIEW">
+             <cti:displayForPageEditModes modes="CREATE,EDIT">
+                <div class="button-group stacked">
+                    <c:forEach var="addressUsageValue" items="${addressUsageList}">
+                        <tags:check id="${addressUsageValue}_chk" path="addressUsage" value="${addressUsageValue}"
+                                    key="${addressUsageValue}"/>
+                    </c:forEach>
+                </div>
+             </cti:displayForPageEditModes>
+             <cti:displayForPageEditModes modes="VIEW">
                     <c:if test="${not empty geoAddressUsage}">
                          <c:forEach var="geoAddress" items="${geoAddressUsage}">
                            <i:inline key="${geoAddress}"/>
                            <i:inline key="yukon.common.comma"/>
                          </c:forEach>
                      </c:if>
-                 </cti:displayForPageEditModes>
-             </div>
+            </cti:displayForPageEditModes>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 </tags:sectionContainer2>
@@ -109,7 +110,7 @@
 <tags:sectionContainer2 nameKey="loadAddressing">
     <tags:nameValueContainer2>
         <tags:nameValue2 id="js-programRow" nameKey=".program" rowClass="${programRowClass}">
-            <tags:input id="js-program" path="program" size="25" maxlength="60" autofocus="autofocus"/>
+            <tags:input id="js-program" path="program" size="25" maxlength="60"/>
         </tags:nameValue2>
         <tags:nameValue2 id="js-splinterRow" nameKey=".splinter" rowClass="${splinterRowClass}">
             <tags:input id="js-splinter" path="splinter" size="25" maxlength="60" autofocus="autofocus"/>

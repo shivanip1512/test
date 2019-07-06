@@ -11,7 +11,12 @@ public interface LoadGroupSetupService {
     /**
      * Saves the load group.
      */
-    int save(LoadGroupBase loadGroup);
+    int create(LoadGroupBase loadGroup);
+    
+    /**
+     * Update the load group.
+     */
+    int update(int loadGroupId, LoadGroupBase loadGroup);
 
     /**
      * Retrieve load group for the loadGroupId.

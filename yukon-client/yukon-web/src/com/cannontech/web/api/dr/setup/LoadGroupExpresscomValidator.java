@@ -28,7 +28,7 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
 
         // Route ID is mandatory for expresscom
         if (loadGroup.getType() == PaoType.LM_GROUP_EXPRESSCOMM) {
-            lmValidatorHelper.checkIfFieldRequired("routeID", errors, loadGroup.getRouteID(), "Route");
+            lmValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
         }
         
         //If address usage is empty

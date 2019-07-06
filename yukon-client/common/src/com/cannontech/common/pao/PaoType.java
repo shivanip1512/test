@@ -334,6 +334,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> tlvReportingTypes;
     private final static ImmutableSet<PaoType> gasMeterTypes;
     private final static ImmutableSet<PaoType> nestTypes;
+    private final static ImmutableSet<PaoType> loadGroupSupportingRoute;
 
     public final static int INVALID = -1;
     
@@ -732,6 +733,15 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFG301
             );
 
+        loadGroupSupportingRoute = ImmutableSet.of(
+            LM_GROUP_EXPRESSCOMM,
+            LM_GROUP_EMETCON,
+            LM_GROUP_GOLAY,
+            LM_GROUP_MCT,
+            LM_GROUP_RIPPLE,
+            LM_GROUP_VERSACOM
+          );
+        
         rfElectricTypes = Sets.difference(rfMeterTypes, Sets.union(waterMeterTypes, gasMeterTypes)).immutableCopy();
     }
     
@@ -1147,5 +1157,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public boolean supportsMacroGroup() {
         return (isLoadGroup() && (this != PaoType.LM_GROUP_ECOBEE && this != PaoType.LM_GROUP_HONEYWELL
             && this != PaoType.LM_GROUP_NEST && this != PaoType.LM_GROUP_ITRON));
+    }
+    
+    public boolean isLoadGroupSupportRoute() {
+        return (isLoadGroup() && loadGroupSupportingRoute.contains(this));
     }
 }
