@@ -14,8 +14,8 @@ public class LMDeleteValidator extends SimpleValidator<LMDelete> {
     }
 
     @Override
-    protected void doValidation(LMDelete loadGroup, Errors errors) {
-        // Group Name
-        lmValidatorHelper.checkIfFieldRequired("name", errors, loadGroup.getName(), "Group Name");
+    protected void doValidation(LMDelete lmDelete, Errors errors) {
+        // Name
+        lmValidatorHelper.checkIfFieldRequired("name", errors, lmDelete.getName(), "Name");
     }
 }
