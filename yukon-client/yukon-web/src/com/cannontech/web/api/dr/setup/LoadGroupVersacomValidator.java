@@ -1,7 +1,5 @@
 package com.cannontech.web.api.dr.setup;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -9,12 +7,11 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.dr.setup.LoadGroupVersacom;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.yukon.IDatabaseCache;
 
 @Service
 public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGroupVersacom> {
     
-    @Autowired private IDatabaseCache serverDatabaseCache;
+
     @Autowired private LMValidatorHelper lmValidatorHelper;
 
     private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
@@ -30,17 +27,8 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
 
     @Override
     protected void doValidation(LoadGroupVersacom loadGroup, Errors errors) {
-        
-        // Validate routeId
-        Integer routeId = loadGroup.getRouteId();
 
-        lmValidatorHelper.checkIfFieldRequired("routeId", errors, loadGroup.getRouteId(), "Route Id");
-        if (!errors.hasFieldErrors("routeId")) {
-            Set<Integer> routeIds = serverDatabaseCache.getAllRoutesMap().keySet();
-            if (!routeIds.contains(routeId)) {
-                errors.rejectValue("routeId", key + "routeId.doesNotExist");
-            }
-        }
+        lmValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
 
         // Validate addressUsage string contains other that U, S, C and D
         if (loadGroup.getAddressUsage().contains("U")) {

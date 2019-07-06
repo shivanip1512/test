@@ -1,7 +1,5 @@
 package com.cannontech.web.api.dr.setup;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -9,14 +7,12 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.dr.setup.EmetconAddressUsage;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.yukon.IDatabaseCache;
 
 @Service
 public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroupEmetcon> {
 
     private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
     private final static String validRelayUsageValues = "ABCS";
-    @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private LMValidatorHelper lmValidatorHelper;
 
     public LoadGroupEmetconValidator() {
@@ -40,15 +36,7 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
         lmValidatorHelper.checkIfFieldRequired("silverAddress", errors, loadGroup.getSilverAddress(), "Silver Address" );
 
         // Validate routeID
-        Integer routeId = loadGroup.getRouteID();
-        if (routeId == null) {
-            lmValidatorHelper.checkIfFieldRequired("routeID", errors, loadGroup.getRouteID(), "Route Id");
-        } else {
-            Set<Integer> routeIds = serverDatabaseCache.getAllRoutesMap().keySet();
-            if (!routeIds.contains(routeId)) {
-                errors.rejectValue("routeID", key + "routeId.doesNotExist");
-            }
-        }
+        lmValidatorHelper.validateRoute(errors, loadGroup.getRouteID());
 
         if (!errors.hasFieldErrors("goldAddress")) {
             YukonValidationUtils.checkIsPositiveInt(errors, "goldAddress", loadGroup.getGoldAddress());

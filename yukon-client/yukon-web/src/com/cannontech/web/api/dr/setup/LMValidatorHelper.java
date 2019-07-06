@@ -1,5 +1,7 @@
 package com.cannontech.web.api.dr.setup;
 
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
@@ -10,6 +12,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Helper class for LM validation
@@ -17,6 +20,7 @@ import com.cannontech.stars.util.ServletUtils;
 public class LMValidatorHelper {
     private final static String key = "yukon.web.modules.dr.setup.error.";
     @Autowired private PaoDao paoDao;
+    @Autowired private IDatabaseCache serverDatabaseCache;
 
     public void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
         if (fieldValue == null) {
@@ -68,6 +72,17 @@ public class LMValidatorHelper {
         LiteYukonPAObject unique = paoDao.findUnique(paoName, type);
         if (unique != null) {
             errors.rejectValue("name", key + "unique", new Object[] {fieldName}, "");
+        }
+    }
+    
+    public void validateRoute(Errors errors, Integer routeId) {
+
+        checkIfFieldRequired("routeId", errors, routeId, "Route Id");
+        if (!errors.hasFieldErrors("routeId")) {
+            Set<Integer> routeIds = serverDatabaseCache.getAllRoutesMap().keySet();
+            if (!routeIds.contains(routeId)) {
+                errors.rejectValue("routeId", key + "routeId.doesNotExist");
+            }
         }
     }
 }
