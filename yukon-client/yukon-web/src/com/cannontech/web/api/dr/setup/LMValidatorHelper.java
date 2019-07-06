@@ -19,9 +19,9 @@ public class LMValidatorHelper {
     @Autowired private PaoDao paoDao;
 
     /**
-     * Checks whether the Pao name is empty or not
+     * Checks whether the Name is empty or not
      */
-    public void checkIfEmptyPaoName(Errors errors, String fieldName) {
+    public void checkIfEmptyName(Errors errors, String fieldName) {
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", key + "required", new Object[] {fieldName});
     }
 
@@ -30,8 +30,8 @@ public class LMValidatorHelper {
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", key + "required", new Object[] { "Type" });
     }
 
-    private void validatePaoName(String paoName, Errors errors, String fieldName) {
-        checkIfEmptyPaoName(errors, fieldName);
+    public void validateName(String paoName, Errors errors, String fieldName) {
+        checkIfEmptyName(errors, fieldName);
         if (!errors.hasFieldErrors("name")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
             if (!PaoUtils.isValidPaoName(paoName)) {
@@ -41,7 +41,7 @@ public class LMValidatorHelper {
     }
 
     public void validateNewPaoName(String paoName, PaoType type, Errors errors, String fieldName) {
-        validatePaoName(paoName, errors, fieldName);
+        validateName(paoName, errors, fieldName);
         if (!errors.hasFieldErrors("name")) {
             Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
             // Check if pao name already exists
@@ -52,7 +52,7 @@ public class LMValidatorHelper {
     }
 
     public void validateCopyPaoName(String paoName, Errors errors, String fieldName) {
-        validatePaoName(paoName, errors, fieldName);
+        validateName(paoName, errors, fieldName);
 
         if (!errors.hasFieldErrors("name")) {
             Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));

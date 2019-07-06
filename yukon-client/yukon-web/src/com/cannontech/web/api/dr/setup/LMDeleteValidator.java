@@ -16,6 +16,6 @@ public class LMDeleteValidator extends SimpleValidator<LMDelete> {
     @Override
     protected void doValidation(LMDelete loadGroup, Errors errors) {
         // Group Name
-        lmValidatorHelper.checkIfEmptyPaoName(errors, "Group Name");
+        lmValidatorHelper.checkIfEmptyName(errors, "Group Name");
     }
 }
