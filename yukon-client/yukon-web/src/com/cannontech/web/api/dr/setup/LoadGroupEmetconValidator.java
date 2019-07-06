@@ -39,28 +39,25 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
         lmValidatorHelper.validateRoute(errors, loadGroup.getRouteID());
 
         if (!errors.hasFieldErrors("goldAddress")) {
-            YukonValidationUtils.checkIsPositiveInt(errors, "goldAddress", loadGroup.getGoldAddress());
-            if (!errors.hasFieldErrors("goldAddress")) {
-                YukonValidationUtils.checkRange(errors, "goldAddress", loadGroup.getGoldAddress(), 0, 4, true);
-            }
+            YukonValidationUtils.checkRange(errors, "goldAddress", loadGroup.getGoldAddress(), 0, 4, true);
         }
+
         if (!errors.hasFieldErrors("goldAddress") && loadGroup.getAddressUsage() != null) {
-            if (loadGroup.getAddressUsage().equals(EmetconAddressUsage.GOLD) && loadGroup.getGoldAddress() == 0) {
+            if (loadGroup.getAddressUsage() == EmetconAddressUsage.GOLD && loadGroup.getGoldAddress() == 0) {
                 errors.rejectValue("goldAddress", key + "goldAddress.invalidValue");
             }
         }
-        if (!errors.hasFieldErrors("silverAddress")) {
-            YukonValidationUtils.checkIsPositiveInt(errors, "silverAddress", loadGroup.getSilverAddress());
-            if (!errors.hasFieldErrors("silverAddress")) {
-                YukonValidationUtils.checkRange(errors, "silverAddress", loadGroup.getSilverAddress(), 0, 60, true);
 
-            }
+        if (!errors.hasFieldErrors("silverAddress")) {
+            YukonValidationUtils.checkRange(errors, "silverAddress", loadGroup.getSilverAddress(), 0, 60, true);
         }
+
         if (!errors.hasFieldErrors("silverAddress") && loadGroup.getAddressUsage() != null) {
-            if (loadGroup.getAddressUsage().equals(EmetconAddressUsage.SILVER) && loadGroup.getSilverAddress() == 0) {
+            if (loadGroup.getAddressUsage() == EmetconAddressUsage.SILVER && loadGroup.getSilverAddress() == 0) {
                 errors.rejectValue("silverAddress", key + "silverAddress.invalidValue");
             }
         }
+
         if (loadGroup.getRelayUsage() != null) {
             if (!validRelayUsageValues.contains(loadGroup.getRelayUsage().toString())) {
                 errors.rejectValue("relayUsage", key + "relayUsage.invalidValue");

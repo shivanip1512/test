@@ -25,10 +25,9 @@ public class LoadGroupItronValidator extends LoadGroupSetupValidator<LoadGroupIt
 
         // Validation for virtual RelayId field.
 
-        lmValidatorHelper.checkIfFieldRequired("virtualRelayId", errors, loadGroup.getVirtualRelayId(), "Virtual RelayId ");
-        if (!errors.hasFieldErrors("virtualRelayId")) {
-            YukonValidationUtils.checkIsPositiveInt(errors, "virtualRelayId", loadGroup.getVirtualRelayId());
-        }
+        lmValidatorHelper.checkIfFieldRequired("virtualRelayId", errors, loadGroup.getVirtualRelayId(),
+            "Virtual RelayId ");
+
         if (!errors.hasFieldErrors("virtualRelayId")) {
             YukonValidationUtils.checkRange(errors, "virtualRelayId", loadGroup.getVirtualRelayId(), 1, 8, true);
         }

@@ -29,10 +29,6 @@ public class LoadGroupDigiSepValidator extends LoadGroupSetupValidator<LoadGroup
         // Utility Enrollment Group
 
         lmValidatorHelper.checkIfFieldRequired("utilityEnrollmentGroup", errors, loadGroup.getUtilityEnrollmentGroup(), "Utility Enrollment Group");
-        if (!errors.hasFieldErrors("utilityEnrollmentGroup")) {
-            YukonValidationUtils.checkIsPositiveInt(errors, "utilityEnrollmentGroup",
-                loadGroup.getUtilityEnrollmentGroup());
-        }
 
         if (loadGroup.getId() != null && loadGroup.getUtilityEnrollmentGroup() == 0) {
             errors.rejectValue("utilityEnrollmentGroup", key + "utilityEnrollmentGroup.rangeCheck");
