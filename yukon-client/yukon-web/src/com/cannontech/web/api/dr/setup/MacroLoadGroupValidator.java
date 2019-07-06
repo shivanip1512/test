@@ -25,13 +25,6 @@ public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
 
         lmValidatorHelper.checkIfEmptyPaoType(errors);
         lmValidatorHelper.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Group Name");
-        ;
-
-        if (!errors.hasFieldErrors("assignedLoadGroups")) {
-            if (CollectionUtils.isEmpty(loadGroup.getAssignedLoadGroups())) {
-                errors.rejectValue("assignedLoadGroups", key + "assignedLoadGroup.required");
-            }
-        }
 
         if (!errors.hasFieldErrors("type")) {
             if (loadGroup.getType() != PaoType.MACRO_GROUP) {
@@ -39,6 +32,11 @@ public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
             }
         }
 
+        if (!errors.hasFieldErrors("assignedLoadGroups")) {
+            if (CollectionUtils.isEmpty(loadGroup.getAssignedLoadGroups())) {
+                errors.rejectValue("assignedLoadGroups", key + "assignedLoadGroup.required");
+            }
+        }
     }
 
 }
