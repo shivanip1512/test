@@ -84,16 +84,7 @@ public class LoadGroupSetupControllerHelper {
                 }
             } else {
                 if (type == PaoType.LM_GROUP_EXPRESSCOMM) {
-                    // Give API call to get all routes
-                    List<LiteYukonPAObject> routes = new ArrayList<>();
-                    String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl);
-                    ResponseEntity<List<? extends Object>> response = apiRequestHelper.callAPIForList(userContext,
-                        request, url, LiteYukonPAObject.class, HttpMethod.GET, LiteYukonPAObject.class);
-
-                    if (response.getStatusCode() == HttpStatus.OK) {
-                        routes = (List<LiteYukonPAObject>) response.getBody();
-                    }
-                    model.addAttribute("routes", routes);
+                    setCommunicationRoute(model, request, userContext);
                 }
                 model.addAttribute("protocolPriority", ControlPriority.values());
                 model.addAttribute("addressUsageList", AddressUsage.getGeoAddressUsage());
@@ -109,18 +100,25 @@ public class LoadGroupSetupControllerHelper {
             model.addAttribute("deviceClassList", SepDeviceClass.values());
             break;
         case LM_GROUP_EMETCON:
-            // Give API call to get all routes
-            List<LiteYukonPAObject> routes = new ArrayList<>();
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl);
-            ResponseEntity<List<? extends Object>> response = apiRequestHelper.callAPIForList(userContext, request, url,
-                LiteYukonPAObject.class, HttpMethod.GET, LiteYukonPAObject.class);
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                routes = (List<LiteYukonPAObject>) response.getBody();
-            }
-            model.addAttribute("routes", routes);
+            setCommunicationRoute(model, request, userContext);
             break;
         }
+    }
+
+    /**
+     * Sets the communication route
+     */
+    private void setCommunicationRoute(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        // Give API call to get all routes
+        List<LiteYukonPAObject> routes = new ArrayList<>();
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl);
+        ResponseEntity<List<? extends Object>> response = apiRequestHelper.callAPIForList(userContext, request, url,
+            LiteYukonPAObject.class, HttpMethod.GET, LiteYukonPAObject.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            routes = (List<LiteYukonPAObject>) response.getBody();
+        }
+        model.addAttribute("routes", routes);
     }
 
     /**
