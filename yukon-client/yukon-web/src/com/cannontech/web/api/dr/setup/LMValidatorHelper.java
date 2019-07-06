@@ -46,7 +46,7 @@ public class LMValidatorHelper {
             String paoId = ServletUtils.getPathVariable("id");
             // Check if pao name already exists
             if (type != null && (paoId == null || !(StringUtils.equals(paoDao.getYukonPAOName(Integer.valueOf(paoId)), paoName)))) {
-                validateUniquePaoName(paoName, type, errors);
+                validateUniquePaoName(paoName, type, errors, fieldName);
             }
         }
     }
@@ -57,7 +57,7 @@ public class LMValidatorHelper {
         if (!errors.hasFieldErrors("name")) {
             Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
             if (paoId != null) {
-                validateUniquePaoName(paoName, paoDao.getLiteYukonPAO(paoId).getPaoType(), errors);
+                validateUniquePaoName(paoName, paoDao.getLiteYukonPAO(paoId).getPaoType(), errors, fieldName);
             }
         }
     }
@@ -65,10 +65,10 @@ public class LMValidatorHelper {
     /**
      * Checks whether the Pao name is unique or not
      */
-    private void validateUniquePaoName(String paoName, PaoType type, Errors errors) {
+    private void validateUniquePaoName(String paoName, PaoType type, Errors errors, String fieldName) {
         LiteYukonPAObject unique = paoDao.findUnique(paoName, type);
         if (unique != null) {
-            errors.rejectValue("name", key + "unique");
+            errors.rejectValue("name", key + "unique", new Object[] {fieldName}, "");
         }
     }
 }
