@@ -1,20 +1,21 @@
 package com.cannontech.common.dr.setup;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
-
 import javax.validation.Valid;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Lists;
 
-public class ControlScenarioBase {
+public class ControlScenario {
 
+    @JsonIgnoreProperties(value={"id"}, allowGetters= true)
     private Integer id;
     private String name;
-    @Valid private List<ControlScenarioProgram> allPrograms;
+    @Valid private List<ProgramDetails> allPrograms;
 
-    public ControlScenarioBase() {
+    public ControlScenario() {
     }
 
     public Integer getId() {
@@ -33,24 +34,29 @@ public class ControlScenarioBase {
         this.name = name;
     }
 
-    public List<ControlScenarioProgram> getAllPrograms() {
+    public List<ProgramDetails> getAllPrograms() {
         return allPrograms;
     }
 
-    public void setAllPrograms(List<ControlScenarioProgram> allPrograms) {
+    public void setAllPrograms(List<ProgramDetails> allPrograms) {
         this.allPrograms = allPrograms;
     }
 
     public void buildModel(LMScenario controlScenario) {
         setId(controlScenario.getPAObjectID());
         setName(controlScenario.getPAOName());
-        List<ControlScenarioProgram> allPrograms = Lists.newArrayList();
+        List<ProgramDetails> allPrograms = Lists.newArrayList();
         controlScenario.getAllThePrograms().forEach(program -> {
-            ControlScenarioProgram controlScenarioProgram = new ControlScenarioProgram();
-            controlScenarioProgram.setProgramId(program.getProgramID());
-            controlScenarioProgram.setStartOffset(program.getStartOffset() / 60);
-            controlScenarioProgram.setStopOffset(program.getStopOffset() / 60);
-            allPrograms.add(controlScenarioProgram);
+            ProgramDetails programDetails = new ProgramDetails();
+            programDetails.setProgramId(program.getProgramID());
+            programDetails.setStartOffset(program.getStartOffset() / 60);
+            programDetails.setStopOffset(program.getStopOffset() / 60);
+            LMDto gear = new LMDto();
+            List<LMDto> gears = new ArrayList<>(1);
+            gear.setId(program.getStartGear());
+            gears.add(gear);
+            programDetails.setGears(gears);
+            allPrograms.add(programDetails);
         });
         setAllPrograms(allPrograms);
     }
@@ -59,7 +65,6 @@ public class ControlScenarioBase {
         // Setting Control Scenario details
         controlScenario.setScenarioID(getId());
         controlScenario.setScenarioName(getName());
-        Vector<LMControlScenarioProgram> progList = new Vector<>();
 
         // Setting Programs list
         getAllPrograms().forEach(program -> {
@@ -69,11 +74,9 @@ public class ControlScenarioBase {
             lmControlScenarioProgram.setStartOffset(program.getStartOffset() * 60);
             lmControlScenarioProgram.setStopOffset(program.getStopOffset() * 60);
             lmControlScenarioProgram.setStartGear(program.getGears().get(0).getId());
-
-            progList.add(lmControlScenarioProgram);
+            controlScenario.getAllThePrograms().add(lmControlScenarioProgram);
         });
 
-        controlScenario.setAllThePrograms(progList);
 
     }
 }

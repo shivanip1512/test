@@ -21,6 +21,8 @@ import com.cannontech.common.dr.program.setup.model.ProgramControlWindow;
 import com.cannontech.common.dr.program.setup.model.ProgramControlWindowFields;
 import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
+import com.cannontech.common.dr.setup.LMServiceHelper;
+import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.exception.LoadProgramProcessingException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
@@ -42,6 +44,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
 import com.cannontech.database.db.device.lm.LMProgramControlWindow;
 import com.cannontech.database.db.device.lm.LMProgramDirect;
@@ -58,6 +61,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private LMServiceHelper lmServiceHelper;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private PointDao pointDao;
     @Autowired private DbChangeManager dbChangeManager;
@@ -788,6 +792,24 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
         }
         return isMasterProgram;
+    }
+
+    @Override
+    public List<ProgramDetails> getAvailablePrograms() {
+        List<Integer> programIdsInControlArea = LMControlAreaProgram.getAllProgramsInControlAreas();
+        return programIdsInControlArea.stream()
+                .map(programId -> dbCache.getAllPaosMap().get(programId))
+                .filter(program -> program.getPaoType().isDirectProgram())
+                .map(program -> buildProgramDetails(program))
+                .collect(Collectors.toList());
+    }
+
+    private ProgramDetails buildProgramDetails(LiteYukonPAObject program) {
+
+        ProgramDetails programDetails = new ProgramDetails();
+        programDetails.setProgramId(program.getLiteID());
+        programDetails.setGears(lmServiceHelper.getGearsforModel(program.getLiteID(), programDetails.getGears()));
+        return programDetails;
     }
 
 }

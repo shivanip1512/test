@@ -7,6 +7,7 @@ import com.cannontech.common.dr.program.setup.model.LoadProgramCopy;
 import com.cannontech.common.dr.program.setup.model.NotificationGroup;
 import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
+import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.pao.PaoType;
 
 public interface LoadProgramSetupService {
@@ -70,5 +71,11 @@ public interface LoadProgramSetupService {
      */
 
     List<ProgramGroup> getAllAvailableProgramLoadGroups(PaoType programType);
+
+    /**
+     * Return all the Programs which belong to Control Area.
+     */
+
+    List<ProgramDetails> getAvailablePrograms();
 
 }

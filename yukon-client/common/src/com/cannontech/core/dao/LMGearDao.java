@@ -79,4 +79,8 @@ public interface LMGearDao {
     public String getGearName(int gearId);
 
     List<LiteGear> getAllLiteGears();
+    /**
+     * Retrieves all the gears for the program with specified programId.
+     */
+    List<LiteGear> getAllLiteGears(Integer programID);
 }

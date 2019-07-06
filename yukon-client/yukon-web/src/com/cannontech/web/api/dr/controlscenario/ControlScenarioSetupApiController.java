@@ -1,8 +1,6 @@
-package com.cannontech.web.api.dr.setup;
+package com.cannontech.web.api.dr.controlscenario;
 
 import java.util.HashMap;
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cannontech.common.dr.setup.ControlScenarioBase;
-import com.cannontech.common.dr.setup.ControlScenarioProgram;
+import com.cannontech.common.dr.setup.ControlScenario;
+import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.common.dr.setup.LMDelete;
-import com.cannontech.dr.loadgroup.service.ControlScenarioService;
+import com.cannontech.dr.controlscenario.service.ControlScenarioService;
 
 @RestController
 @RequestMapping("/dr/setup/controlScenario")
@@ -29,27 +27,26 @@ public class ControlScenarioSetupApiController {
 
     @Autowired private ControlScenarioService controlScenarioService;
     @Autowired private ControlScenarioSetupValidator controlScenarioSetupValidator;
-    @Autowired LMDeleteValidator lmDeleteValidator;
+    @Autowired private LMDeleteValidator lmDeleteValidator;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ControlScenarioBase> retrieve(@PathVariable int id) {
-        ControlScenarioBase controlScenario = controlScenarioService.retrieve(id);
-        return new ResponseEntity<>(controlScenario, HttpStatus.OK);
+    public ResponseEntity<ControlScenario> retrieve(@PathVariable int id) {
+        return new ResponseEntity<>(controlScenarioService.retrieve(id), HttpStatus.OK);
     }
 
     @PostMapping("/create")
     public ResponseEntity<HashMap<String, Integer>> create(
-            @Valid @RequestBody ControlScenarioBase controlScenarioBase) {
-        int paoId = controlScenarioService.create(controlScenarioBase);
+            @Valid @RequestBody ControlScenario controlScenario) {
+        int paoId = controlScenarioService.create(controlScenario);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("paoId", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
     @PostMapping("/update/{id}")
-    public ResponseEntity<HashMap<String, Integer>> update(@Valid @RequestBody ControlScenarioBase controlScenarioBase,
+    public ResponseEntity<HashMap<String, Integer>> update(@Valid @RequestBody ControlScenario controlScenario,
             @PathVariable int id) {
-        int paoId = controlScenarioService.update(id, controlScenarioBase);
+        int paoId = controlScenarioService.update(id, controlScenario);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("paoId", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
@@ -64,13 +61,7 @@ public class ControlScenarioSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @GetMapping("/availablePrograms")
-    public ResponseEntity<List<ControlScenarioProgram>> getAvailablePrograms() {
-        List<ControlScenarioProgram> programs = controlScenarioService.getAvailablePrograms();
-        return new ResponseEntity<>(programs, HttpStatus.OK);
-    }
-
-    @InitBinder("controlScenarioBase")
+    @InitBinder("controlScenario")
     public void setupBinder(WebDataBinder binder) {
         binder.setValidator(controlScenarioSetupValidator);
     }

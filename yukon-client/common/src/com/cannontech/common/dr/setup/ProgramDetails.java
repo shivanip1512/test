@@ -3,7 +3,7 @@ package com.cannontech.common.dr.setup;
 import java.util.List;
 import javax.validation.Valid;
 
-public class ControlScenarioProgram {
+public class ProgramDetails {
 
     private Integer programId;
     private Integer startOffset;
@@ -11,7 +11,7 @@ public class ControlScenarioProgram {
     private String category;
     @Valid private List<LMDto> gears;
 
-    public ControlScenarioProgram() {
+    public ProgramDetails() {
     }
 
     public Integer getProgramId() {

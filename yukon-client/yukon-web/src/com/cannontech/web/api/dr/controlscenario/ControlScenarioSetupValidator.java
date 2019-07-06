@@ -1,30 +1,31 @@
-package com.cannontech.web.api.dr.setup;
+package com.cannontech.web.api.dr.controlscenario;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
-import com.cannontech.common.dr.setup.ControlScenarioBase;
-import com.cannontech.common.dr.setup.ControlScenarioProgram;
+import com.cannontech.common.dr.setup.ControlScenario;
+import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
-public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenarioBase> {
+public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenario> {
     private final static String key = "yukon.web.modules.dr.setup.controlScenario.error.";
     @Autowired private LMValidatorHelper lmValidatorHelper;
 
     public ControlScenarioSetupValidator() {
-        super(ControlScenarioBase.class);
+        super(ControlScenario.class);
     }
 
     @Override
-    protected void doValidation(ControlScenarioBase scenario, Errors errors) {
+    protected void doValidation(ControlScenario scenario, Errors errors) {
 
         lmValidatorHelper.validateNewPaoName(scenario.getName(), PaoType.LM_SCENARIO, errors, "Scenario Name");
 
         if (scenario.getAllPrograms() != null && scenario.getAllPrograms().size() > 0) {
             for (int i = 0; i < scenario.getAllPrograms().size(); i++) {
-                ControlScenarioProgram program = scenario.getAllPrograms().get(i);
+                ProgramDetails program = scenario.getAllPrograms().get(i);
                 if (!errors.hasFieldErrors("startOffset")) {
                     YukonValidationUtils.checkRange(errors, "allPrograms[" + i + "].startOffset",
                         program.getStartOffset(), 0, 1439, true);

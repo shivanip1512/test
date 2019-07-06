@@ -1,0 +1,54 @@
+package com.cannontech.common.dr.setup;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.core.dao.LMGearDao;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteGear;
+import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
+import com.google.common.collect.Lists;
+
+public class LMServiceHelper {
+
+    @Autowired private LMGearDao lmGearDao;
+    @Autowired private LoadProgramSetupService loadProgramService;
+
+    public List<LMDto> getGearsforModel(Integer programId, List<LMDto> gears) {
+        List<LiteGear> allGears = Lists.newArrayList();
+        allGears.addAll(lmGearDao.getAllLiteGears(programId));
+        
+        Integer gearId = (gears != null && gears.size() == 1) ? gears.get(0).getId() : null;
+        if(gearId != null) {
+            return allGears.stream().filter(liteGear -> liteGear.getGearID() == gearId.intValue()).map(liteGear -> buildGear(liteGear)).collect(Collectors.toList());
+        }
+        else {
+            return allGears.stream().map(liteGear -> buildGear(liteGear)).collect(Collectors.toList());
+        }
+    }
+
+    private LMDto buildGear(LiteGear liteGear) {
+        return new LMDto(liteGear.getGearID(), liteGear.getGearName());
+    }
+    
+    public void validateProgramsAndGear(ControlScenario controlScenario) {
+        List<ProgramDetails> validPrograms = loadProgramService.getAvailablePrograms();
+        controlScenario.getAllPrograms().stream().forEach(program -> {
+            Optional<ProgramDetails> programDetails = validPrograms.stream().filter(
+                prg -> prg.getProgramId().compareTo(program.getProgramId()) == 0).findFirst();
+            if (programDetails.isEmpty()) {
+                throw new NotFoundException("Program ID : " + program.getProgramId() + " invalid");
+            } else {
+                List<LMDto> validGears = programDetails.get().getGears();
+                Optional<LMDto> gear = validGears.stream().filter(
+                    gr -> gr.getId().compareTo(program.getGears().get(0).getId()) == 0).findFirst();
+                if (gear.isEmpty()) {
+                    throw new NotFoundException("Gear ID : " + program.getGears().get(0).getId() + " invalid");
+                }
+            }
+        });
+    }
+}

@@ -21,6 +21,7 @@ import com.cannontech.common.dr.program.setup.model.NotificationGroup;
 import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
 import com.cannontech.common.dr.setup.LMDelete;
+import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -115,6 +116,11 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(directMemberControls, HttpStatus.OK);
     }
 
+    @GetMapping("/availablePrograms")
+    public ResponseEntity<List<ProgramDetails>> getAvailablePrograms() {
+        return new ResponseEntity<>(loadProgramService.getAvailablePrograms(), HttpStatus.OK);
+    }
+    
     @InitBinder("LMDelete")
     public void setupBinderDelete(WebDataBinder binder) {
         binder.addValidators(lmDeleteValidator);

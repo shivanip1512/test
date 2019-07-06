@@ -240,4 +240,27 @@ public class LMGearDaoImpl implements LMGearDao {
             }
         });
     }
+    
+    @Override
+    public List<LiteGear> getAllLiteGears(Integer programId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select GearId, GearName, ControlMethod, DeviceId, GearNumber");
+        sql.append("from LmProgramDirectGear gear, YukonPAObject pao");
+        sql.append("where gear.DeviceID = pao.PAObjectID");
+        sql.append("and");
+        sql.append(" gear.DeviceId").eq(programId);
+
+        return jdbcTemplate.query(sql, new YukonRowMapper<LiteGear>() {
+            @Override
+            public LiteGear mapRow(YukonResultSet rs) throws SQLException {
+                LiteGear gear = new LiteGear(rs.getInt("GearId"));
+                gear.setGearName(rs.getString("GearName"));
+                gear.setGearType(rs.getString("ControlMethod"));
+                gear.setOwnerID(rs.getInt("DeviceId"));
+                gear.setGearNumber(rs.getInt("GearNumber"));
+                return gear;
+            }
+        });
+    }
 }
