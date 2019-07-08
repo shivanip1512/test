@@ -47,7 +47,7 @@ public class LoadGroupEmetcon extends LoadGroupBase {
         return routeId;
     }
 
-    public void setRouteID(Integer routeId) {
+    public void setRouteId(Integer routeId) {
         this.routeId = routeId;
     }
 
@@ -69,7 +69,7 @@ public class LoadGroupEmetcon extends LoadGroupBase {
         setSilverAddress(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getSilverAddress());
         setAddressUsage(EmetconAddressUsage.getDisplayValue(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getAddressUsage()));
         setRelayUsage(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getRelayUsage());
-        setRouteID(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getRouteID());
+        setRouteId(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getRouteID());
 
     }
 
