@@ -100,7 +100,7 @@ end;
 export prototype void LoadServiceSettings();
 function void LoadServiceSettings()
 number i, nResult;
-string sServiceNameArray(13), sRegKey, sTemp;
+string sServiceNameArray(13), sRegKey, sTemp, sStartUpTypeCode, sProg, sCMD;
 BOOL bEntryFound;
 begin
 	PopulateServiceNameList(sServiceNameArray);
@@ -109,7 +109,14 @@ begin
 	for i = 0 to (SizeOf(sServiceNameArray)-1)
 		if (ServiceExistsService(sServiceNameArray(i))) then
 			sRegKey = "SYSTEM\\CurrentControlSet\\Services\\" + sServiceNameArray(i);
-			nResult = RegDBSetKeyValueEx(sRegKey, "Start", REGDB_NUMBER, sServiceSettings(i), -1);
+			sStartUpTypeCode = sServiceSettings(i);
+			if (sStartUpTypeCode == "2") then
+				sProg = "cmd.exe";
+				sCMD = "/c sc config "+ "\"" + sServiceNameArray(i) + "\"" + " start=delayed-auto";
+				LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
+			else 
+				nResult = RegDBSetKeyValueEx(sRegKey, "Start", REGDB_NUMBER, sStartUpTypeCode, -1);
+			endif;
 			if(nResult < 0) then
 				MessageBox ("Unable to save service settings: " + sServiceNameArray(i) + ".", SEVERE);
 			endif;
@@ -974,26 +981,6 @@ string szDir;
 begin
     szDir = FOLDER_PROGRAMS ^ "\\Yukon Client";
     DeleteDir(szDir, ALLCONTENTS);
-end;
-
-//----------------------------------------------------------------
-//Update Yukon services startup type to "delayed-auto" so that
-//"Yukon Startup" task will start the services in proper sequence.
-//----------------------------------------------------------------
-export prototype UpdateYukonServices();
-function UpdateYukonServices()
-string sServiceNameArray(13), sProg, sCMD;
-number i;
-begin
-    PopulateServiceNameList(sServiceNameArray);
-    sProg = "cmd.exe";
-    for i = 0 to (SizeOf(sServiceNameArray)-1)
-        if (ServiceExistsService(sServiceNameArray(i))) then
-            sCMD = "/c " + "sc config "+ "\"" + sServiceNameArray(i) + "\"" +" start=delayed-auto";
-            LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
-	    Delay (2);
-        endif;
-    endfor;
 end;
 
 //---------------------------------------------------------------------------

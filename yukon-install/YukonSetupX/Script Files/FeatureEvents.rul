@@ -77,7 +77,7 @@ end;
 //---------------------------------------------------------------------------- 
 export prototype Tomcat_Installed();
 function Tomcat_Installed()
-string sName, sKey, sTomcatPath, sJavaPath, sCmdLine, sDate, sServPath, sTargetDir, sEnv;
+string sName, sKey, sTomcatPath, sJavaPath, sCmdLine, sDate, sServPath, sTargetDir, sEnv, sProg, sCMD;
 number nFoundVal;
 pointer pEnv;
 begin
@@ -106,6 +106,9 @@ begin
 	sKey = "\\SYSTEM\\CurrentControlSet\\Services\\YukonWebApplicationService"; 
 	RegDBSetKeyValueEx(sKey, "Group", REGDB_STRING, "YUKON GROUP", -1);
 	SendMessage(HWND_BROADCAST, WM_SETTINGCHANGE, 0, pEnv);
+	sProg = "cmd.exe";
+	sCMD = "/c sc config "+ "\"" + WEB_NAME + "\"" + " start=delayed-auto";
+	LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
 end;
 
 //----------------------------------------------------------------------------
@@ -205,11 +208,14 @@ end;
 //---------------------------------------------------------------------------
 export prototype PortControl_Installed();
 function PortControl_Installed()
-string sServicePathFile;
+string sServicePathFile, sProg, sCMD;
 begin
 	//Install Porter service
 	sServicePathFile = TARGETDIR + "\\Server\\bin\\porter.exe";
 	ServiceAddService(PORTER_NAME, PORTER_NAME, PORTER_DESC, sServicePathFile, FALSE, "");
+	sProg = "cmd.exe";
+	sCMD = "/c sc config "+ "\"" + PORTER_NAME + "\"" + " start=delayed-auto";
+	LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
 end;
 
 //---------------------------------------------------------------------------
@@ -228,10 +234,13 @@ end;
 //---------------------------------------------------------------------------
 export prototype Dispatch_Installed();
 function Dispatch_Installed()
-string sServicePathFile;
+string sServicePathFile, sProg, sCMD;
 begin
 	sServicePathFile = TARGETDIR + "\\Server\\bin\\dispatch.exe";
 	ServiceAddService(DISPATCH_NAME, DISPATCH_NAME, DISPATCH_DESC, sServicePathFile, FALSE, "");
+	sProg = "cmd.exe";
+	sCMD = "/c sc config "+ "\"" + DISPATCH_NAME + "\"" + " start=delayed-auto";
+	LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
 end;
 
 //---------------------------------------------------------------------------
@@ -250,10 +259,13 @@ end;
 //---------------------------------------------------------------------------
 export prototype RealTimeScanner_Installed();
 function RealTimeScanner_Installed()
-string sServicePathFile;
+string sServicePathFile, sProg, sCMD;
 begin
 	sServicePathFile = TARGETDIR + "\\Server\\bin\\scanner.exe";
 	ServiceAddService(SCANNER_NAME, SCANNER_NAME, SCANNER_DESC, sServicePathFile, FALSE, "");
+	sProg = "cmd.exe";
+	sCMD = "/c sc config "+ "\"" + SCANNER_NAME + "\"" + " start=delayed-auto";
+	LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
 end;
 
 //---------------------------------------------------------------------------
@@ -272,10 +284,13 @@ end;
 //---------------------------------------------------------------------------
 export prototype MACScheduler_Installed();
 function MACScheduler_Installed()
-string sServicePathFile;
+string sServicePathFile, sProg, sCMD;
 begin
 	sServicePathFile = TARGETDIR + "\\Server\\bin\\macs.exe";	
 	ServiceAddService(MACS_NAME, MACS_NAME, MACS_DESC, sServicePathFile, FALSE, "");
+	sProg = "cmd.exe";
+	sCMD = "/c sc config "+ "\"" + MACS_NAME + "\"" + " start=delayed-auto";
+	LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
 end;
 
 //---------------------------------------------------------------------------
@@ -294,10 +309,13 @@ end;
 //---------------------------------------------------------------------------
 export prototype CapacitorControl_Installed();
 function CapacitorControl_Installed()
-string sServicePathFile;
+string sServicePathFile, sProg, sCMD;
 begin
 	sServicePathFile = TARGETDIR + "\\Server\\bin\\capcontrol.exe";
 	ServiceAddService(CC_NAME, CC_NAME, CC_DESC, sServicePathFile, FALSE, "");
+	sProg = "cmd.exe";
+	sCMD = "/c sc config "+ "\"" + CC_NAME + "\"" + " start=delayed-auto";
+	LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
 end;
 
 //---------------------------------------------------------------------------
@@ -316,10 +334,13 @@ end;
 //---------------------------------------------------------------------------
 export prototype ForeignDataRouter_Installed();
 function ForeignDataRouter_Installed()
-string sServicePathFile;
+string sServicePathFile, sProg, sCMD;
 begin
 	sServicePathFile = TARGETDIR + "\\Server\\bin\\fdr.exe";
 	ServiceAddService(FDR_NAME, FDR_NAME, FDR_DESC, sServicePathFile, FALSE, "");
+	sProg = "cmd.exe";
+	sCMD = "/c sc config "+ "\"" + FDR_NAME + "\"" + " start=delayed-auto";
+	LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
 end;
 
 //---------------------------------------------------------------------------
@@ -338,10 +359,13 @@ end;
 //---------------------------------------------------------------------------
 export prototype CalcLogic_Installed();
 function CalcLogic_Installed()
-string sServicePathFile;
+string sServicePathFile, sProg, sCMD;
 begin
 	sServicePathFile = TARGETDIR + "\\Server\\bin\\calc_logic.exe";
 	ServiceAddService(CALC_NAME, CALC_NAME, CALC_DESC, sServicePathFile, FALSE, "");
+	sProg = "cmd.exe";
+	sCMD = "/c sc config "+ "\"" + CALC_NAME + "\"" + " start=delayed-auto";
+	LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
 end;
 
 //---------------------------------------------------------------------------
@@ -360,10 +384,13 @@ end;
 //---------------------------------------------------------------------------
 export prototype LoadManagement_Installed();
 function LoadManagement_Installed()
-string sServicePathFile;
+string sServicePathFile, sProg, sCMD;
 begin
 	sServicePathFile = TARGETDIR + "\\Server\\bin\\loadmanagement.exe";
 	ServiceAddService(LM_NAME, LM_NAME, LM_DESC, sServicePathFile, FALSE, "");
+	sProg = "cmd.exe";
+	sCMD = "/c sc config "+ "\"" + LM_NAME + "\"" + " start=delayed-auto";
+	LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
 end;
 
 //---------------------------------------------------------------------------

@@ -146,9 +146,7 @@ begin
         LaunchAppAndWait(sProg, sCMD, LAAW_OPTION_WAIT);
     endif;
     Enable(BACKBUTTON);
-    
-    //Update the start-up type of Yukon services.
-    UpdateYukonServices();
+
     //Install windows task : Yukon Startup
     InstallYukonStartupTask();
     
@@ -449,8 +447,6 @@ begin
 	RegDBSetItem(REGDB_UNINSTALL_MINOR_VERSION, sVTemp);
 	NumToStr(sVTemp, nNewVersion);
 	RegDBSetItem(REGDB_UNINSTALL_VERSION, sVTemp);
-	//reapply old settings to newly updated services
-	LoadServiceSettings();
 	
 	//adding MessageBroker service if it doesnot exist (while upgrading from 6.5.* to 6.6.*)
 	if (ServiceExistsService(SM_NAME) && !ServiceExistsService(BROKER_NAME)) then
@@ -516,10 +512,15 @@ begin
         CopyFile(TOMCATBACKUPFILE, TARGETDIR + "\\Server\\web\\conf\\server.xml");
     endif;
     
-    //Update the start type of windows services.
-    UpdateYukonServices();
     //Install Windows task "Yukon Startup"
     InstallYukonStartupTask();
+    
+    //YUK-18537 : In case of upgrade, message broker and watchdog are taking some time to upgrade(when executed from FeatureReinstall()).
+    //So when we are trying to reapply the settings, it does not apply the previous startup type for these 2 services.
+    //So added delay of 2 seconds and moved LoadServiceSettings() to this line.
+    Delay (2);
+    //reapply old settings to newly updated services
+    LoadServiceSettings();
     
 	Dialog_StartServices:
 	
