@@ -2,8 +2,9 @@ package com.cannontech.web.api.dr.setup;
 
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.pao.PaoType;
@@ -23,7 +24,7 @@ public class LMValidatorHelper {
     @Autowired private IDatabaseCache serverDatabaseCache;
 
     public void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
-        if (fieldValue == null) {
+        if (fieldValue == null || !StringUtils.hasText(fieldValue.toString())) {
             errors.rejectValue(field, key + "required", new Object[] { fieldName }, "");
         }
     }
@@ -48,7 +49,7 @@ public class LMValidatorHelper {
         if (!errors.hasFieldErrors("name")) {
             String paoId = ServletUtils.getPathVariable("id");
             // Check if pao name already exists
-            if (type != null && (paoId == null || !(StringUtils.equals(paoDao.getYukonPAOName(Integer.valueOf(paoId)), paoName)))) {
+            if (type != null && (paoId == null || !(paoDao.getYukonPAOName(Integer.valueOf(paoId)).equals(paoName)))) {
                 validateUniquePaoName(paoName, type, errors, fieldName);
             }
         }
