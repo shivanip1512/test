@@ -3310,6 +3310,18 @@ JavaScript :
     jira : YUK-17019
     updated : 2017-08-30
     notes : "Includes several subsequent Eaton changes; open issue to add project to NPM at https://github.com/HubSpot/sortable/issues/30"
+    
+  - project : scrollTableBody
+    version : 1.0.0
+    project URL : "https://github.com/nheldman/jquery.scrollTableBody/"
+    license : MIT
+    license URLs : "https://github.com/nheldman/jquery.scrollTableBody/blob/master/LICENSE"
+    npm URL : "n/a"
+    md5 : d5f8ab2117434f1d3d82129fe1aa67ad
+    sha1 : cd22d605b6c455743e708f2f4ba4428a6fe5d537
+    jira : YUK-20103
+    updated : 2019-05-37
+    notes : 
 
   - project : spectrum
     version : 1.2.0

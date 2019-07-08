@@ -151,4 +151,28 @@
 <entry key="yukon.web.modules.dr.setup.gear.Priority">Priority Change</entry>
 <entry key="yukon.web.modules.dr.setup.gear.TriggerOffset">Above Trigger</entry>
 
+<!-- Macro Load Group -->
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.title">Macro Load Group</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.general.title">General</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.CREATE.pageName">Create Macro Load Group</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.CREATE.pageDescription">Create Macro Load Group</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.EDIT.pageHeading">Edit Macro Load Group: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.EDIT.crumbTitle">Edit</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.EDIT.pageTitle">Macro Load Group: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.VIEW.pageHeading">Macro Load Group: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.VIEW.crumbTitle">{0}</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.VIEW.pageTitle">Macro Load Group: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.name">Name</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.type">Type</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.addOrRemoveLoadGroups.title">Add/Remove Load Groups</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.info.saved">Macro Load Group saved successfully.</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.info.deleted">Macro Load Group deleted successfully.</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.retrieve.error">Macro Load Group could not be retrieved.</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.delete.error">Macro Load Group could not be deleted.</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.assignedLoadGroups.title">Assigned Load Groups</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.copy.title">Copy Macro Load Group</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.info.copied">Macro Load Group copied successfully.</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.copy.error">Macro Load Group could not be copied.</entry>
+<entry key="yukon.web.modules.dr.setup.macroLoadGroup.save.error">{0} could not be saved.</entry>
+
 </properties>

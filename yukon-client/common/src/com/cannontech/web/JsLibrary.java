@@ -52,6 +52,7 @@ public enum JsLibrary {
     JQUERY_FLOTCHARTS_RESIZE("/resources/js/lib/flotcharts/jquery.flot.resize.min.js"), // http://www.flotcharts.org/
     JQUERY_FLOTCHARTS_TIME("/resources/js/lib/flotcharts/jquery.flot.time.min.js"), // http://www.flotcharts.org/
     JQUERY_EXCANVAS("/resources/js/lib/flotcharts/excanvas.min.js"), // http://www.flotcharts.org/
+    JQUERY_SCROLL_TABLE_BODY("/resources/js/lib/scrollTableBody/jquery.scrollTableBody.js"), // https://github.com/nheldman/jquery.scrollTableBody/
 
     HIGH_STOCK("/resources/js/lib/highstock/highstock.js",
                "/resources/js/lib/highstock/highstock.src.js"),

@@ -68,6 +68,11 @@
            <bean class="com.cannontech.web.search.lucene.criteria.LMProgramOrScenarioCriteria"/>
         </property>
     </bean>
+    <bean name="lmAvaliableGroupsForMacroGroupPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
+        <property name="criteria">
+           <bean class="com.cannontech.web.search.lucene.criteria.LmAvaliableGroupsForMacroGroupCriteria"/>
+        </property>
+    </bean>
     <bean name="controlAreaOrProgramOrScenarioPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
            <bean class="com.cannontech.web.search.lucene.criteria.ControlAreaOrLMProgramOrScenarioCriteria"/>

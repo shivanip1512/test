@@ -106,6 +106,7 @@ public class LayoutController {
         b.add(JsLibrary.JQUERY_FLOTCHARTS_AXIS_LABEL.getPath(dev));
         b.add(JsLibrary.JQUERY_FLOTCHARTS_RESIZE.getPath(dev));
         b.add(JsLibrary.JQUERY_FLOTCHARTS_TIME.getPath(dev));
+        b.add(JsLibrary.JQUERY_SCROLL_TABLE_BODY.getPath(dev));
         libraryScriptFiles = b.build();
         
         b = ImmutableList.builder();

@@ -11,8 +11,20 @@
         </div>
         
         <div id="js-create-dr-objects-popup" class="dn" data-title="<i:inline key=".createObject.title"/>" data-width="300">
-            <cti:url var="createLoadGroupUrl" value="/dr/setup/loadGroup/create"/>
-            <a href="${createLoadGroupUrl}"><i:inline key=".loadGroup.title"/></a>
+            <div class="column-12-12">
+                <div class="column one">
+                    <div class="stacked">
+                        <cti:url var="createLoadGroupUrl" value="/dr/setup/loadGroup/create"/>
+                        <a href="${createLoadGroupUrl}"><i:inline key=".loadGroup.title"/></a>
+                    </div>
+                </div>
+                <div class="column two nogutter">
+                    <div class="stacked">
+                        <cti:url var="createMacroLoadGroupUrl" value="/dr/setup/macroLoadGroup/create"/>
+                        <a href="${createMacroLoadGroupUrl}"><i:inline key=".macroLoadGroup.title"/></a>
+                    </div>
+                </div>
+            </div>
         </div>
     </cti:msgScope>
     

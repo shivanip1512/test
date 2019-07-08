@@ -540,6 +540,14 @@
                     <labelArgument>${loadGroup.name}</labelArgument>
                 </page>
                 <page name="setup.loadGroup.CREATE" type="BASIC"/>
+                <page name="setup.macroLoadGroup.CREATE" type="BASIC"/>
+                <page name="setup.macroLoadGroup.VIEW" type="DETAIL">
+                    <link>/dr/setup/macroLoadGroup/{id}</link>
+                    <labelArgument>${macroLoadGroup.name}</labelArgument>
+                </page>
+                <page name="setup.macroLoadGroup.EDIT" type="BASIC" hideFavorite="true">
+                    <labelArgument>${macroLoadGroup.name}</labelArgument>
+                </page>
             </pages>
           </page>
           <page name="assetAvailability.detail" type="BASIC"/>
