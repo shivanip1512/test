@@ -127,6 +127,9 @@ public class MacroLoadGroupSetupServiceImpl implements MacroLoadGroupSetupServic
         Set<Integer> paoSet = new LinkedHashSet<>();
         Set<Integer> macroGroup = new LinkedHashSet<>();
         for (LMPaoDto lmPaoDto : macroLoadGroup.getAssignedLoadGroups()) {
+            if(lmPaoDto.getId() ==  null) {
+                throw new MacroLoadGroupProcessingException("Assigned load group must contain valid Load gorup Id");
+            }
             Optional<LiteYukonPAObject> liteLoadGroup =dbCache.getAllLMGroups()
                                                               .stream()
                                                               .filter(group -> group.getLiteID() == lmPaoDto.getId())
