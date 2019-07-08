@@ -147,6 +147,11 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
         return metricId;
     }
     
+    //  Unit test access
+    BiMap<Integer, BuiltInAttribute> getAttributeLookup() {
+        return attributeLookup;
+    }
+    
     public void setInputFile(Resource inputFile) {
         this.inputFile = inputFile;
     }
