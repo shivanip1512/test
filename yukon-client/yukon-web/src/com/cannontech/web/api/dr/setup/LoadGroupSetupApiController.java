@@ -51,7 +51,7 @@ public class LoadGroupSetupApiController {
     }
     
     @PostMapping("/update/{id}")
-    public ResponseEntity<Object> update(@RequestBody LoadGroupBase loadGroup, @PathVariable int id) {
+    public ResponseEntity<Object> update(@Valid @RequestBody LoadGroupBase loadGroup, @PathVariable int id) {
         int paoId = loadGroupService.update(id, loadGroup);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("groupId", paoId);
