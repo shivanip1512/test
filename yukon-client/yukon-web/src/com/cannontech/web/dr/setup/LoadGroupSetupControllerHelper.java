@@ -18,6 +18,7 @@ import com.cannontech.common.dr.setup.AddressUsage;
 import com.cannontech.common.dr.setup.ControlPriority;
 import com.cannontech.common.dr.setup.EmetconAddressUsage;
 import com.cannontech.common.dr.setup.LoadGroupBase;
+import com.cannontech.common.dr.setup.LoadGroupDigiSep;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
 import com.cannontech.common.dr.setup.Loads;
@@ -137,6 +138,9 @@ public class LoadGroupSetupControllerHelper {
             ((LoadGroupEmetcon) group).setAddressUsage(EmetconAddressUsage.GOLD);
             ((LoadGroupEmetcon) group).setRelayUsage('A');
             break;
+        case LM_GROUP_DIGI_SEP:
+            ((LoadGroupDigiSep) group).setRampInMinutes(30);
+            ((LoadGroupDigiSep) group).setRampOutMinutes(30);
         }
     }
     

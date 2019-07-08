@@ -12,8 +12,8 @@ public class LoadGroupDigiSep extends LoadGroupBase {
 
     private Integer utilityEnrollmentGroup;
     private List<SepDeviceClass> deviceClassSet;
-    private Integer rampInMinutes = 30;
-    private Integer rampOutMinutes = 30;
+    private Integer rampInMinutes;
+    private Integer rampOutMinutes;
 
     public Integer getUtilityEnrollmentGroup() {
         return utilityEnrollmentGroup;
