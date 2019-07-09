@@ -1,8 +1,10 @@
 package com.cannontech.common.dr.setup;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.common.collect.ImmutableMap;
@@ -27,7 +29,7 @@ public enum DayOfWeek {
             .build();
 
     public static String buildDBPersistent(List<DayOfWeek> daySelections) {
-        if (daySelections != null && daySelections.size() > 0) {
+        if (CollectionUtils.isNotEmpty(daySelections)) {
             String selection = StringUtils.EMPTY;
             for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
                 selection = (daySelections.contains(dayOfWeek)) ? selection.concat("Y") : selection.concat("N");
@@ -38,13 +40,9 @@ public enum DayOfWeek {
     }
 
     public static List<DayOfWeek> buildModelRepresentation(String daySelection) {
-        List<DayOfWeek> dayList = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
-            char ch = daySelection.charAt(i);
-            if (ch == 'Y') {
-                dayList.add(dayOfWeeksMap.get(i));
-            }
-        }
-        return dayList;
+        return IntStream.range(0, 7)
+                        .filter(i -> daySelection.charAt(i) == 'Y')
+                        .mapToObj(i -> dayOfWeeksMap.get(i))
+                        .collect(Collectors.toList());
     }
 }

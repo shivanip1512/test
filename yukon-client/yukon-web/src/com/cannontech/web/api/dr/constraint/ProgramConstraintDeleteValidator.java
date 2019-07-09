@@ -3,9 +3,11 @@ package com.cannontech.web.api.dr.constraint;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
@@ -19,6 +21,7 @@ import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class ProgramConstraintDeleteValidator extends SimpleValidator<LMDelete>{
+    private static final Logger log = YukonLogManager.getLogger(ProgramConstraintDeleteValidator.class);
 
     @Autowired DBDeletionDao dbDeletionDao;
     @Autowired private IDatabaseCache dbCache;
@@ -37,7 +40,7 @@ public class ProgramConstraintDeleteValidator extends SimpleValidator<LMDelete>{
                 .filter(constraint -> constraint.getConstraintID() == Integer.parseInt(constraintId))
                 .findFirst();
         if (liteLMConstraint.isEmpty()) {
-            errors.reject("Constarint Id not found");
+            errors.reject("Constraint Id not found");
         }
         LMProgramConstraint constraint = (LMProgramConstraint) LiteFactory.createDBPersistent(liteLMConstraint.get());
         DBDeleteResult dbDeleteResult = dbDeletionDao.getDeleteInfo(constraint, lmDelete.getName());
@@ -49,6 +52,7 @@ public class ProgramConstraintDeleteValidator extends SimpleValidator<LMDelete>{
             }
         } catch (SQLException e) {
             errors.reject("Unable to delete Constraint");
+            log.error("Unable to delete Constraint with naame : " + lmDelete.getName() + e);
         }
 
         lmValidatorHelper.checkIfFieldRequired("name", errors, lmDelete.getName(), "Constraint Name");

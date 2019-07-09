@@ -10,10 +10,10 @@ public class ProgramConstraint {
     private Integer id;
     private String name;
     private LMDto seasonSchedule;
-    private Integer maxActivateTime;
-    private Integer maxDailyOps;
-    private Integer minActivateTime;
-    private Integer minRestartTime;
+    private Integer maxActivateSeconds;
+    private Integer maxDailyOpsSeconds;
+    private Integer minActivateSeconds;
+    private Integer minRestartSeconds;
     private List<DayOfWeek> daySelection;
     private LMDto holidaySchedule;
     private HolidayUsage holidayUsage;
@@ -46,36 +46,36 @@ public class ProgramConstraint {
         this.seasonSchedule = seasonSchedule;
     }
 
-    public Integer getMaxActivateTime() {
-        return maxActivateTime;
+    public Integer getMaxActivateSeconds() {
+        return maxActivateSeconds;
     }
 
-    public void setMaxActivateTime(Integer maxActivateTime) {
-        this.maxActivateTime = maxActivateTime;
+    public void setMaxActivateSeconds(Integer maxActivateSeconds) {
+        this.maxActivateSeconds = maxActivateSeconds;
     }
 
-    public Integer getMaxDailyOps() {
-        return maxDailyOps;
+    public Integer getMaxDailyOpsSeconds() {
+        return maxDailyOpsSeconds;
     }
 
-    public void setMaxDailyOps(Integer maxDailyOps) {
-        this.maxDailyOps = maxDailyOps;
+    public void setMaxDailyOpsSeconds(Integer maxDailyOpsSeconds) {
+        this.maxDailyOpsSeconds = maxDailyOpsSeconds;
     }
 
-    public Integer getMinActivateTime() {
-        return minActivateTime;
+    public Integer getMinActivateSeconds() {
+        return minActivateSeconds;
     }
 
-    public void setMinActivateTime(Integer minActivateTime) {
-        this.minActivateTime = minActivateTime;
+    public void setMinActivateSeconds(Integer minActivateSeconds) {
+        this.minActivateSeconds = minActivateSeconds;
     }
 
-    public Integer getMinRestartTime() {
-        return minRestartTime;
+    public Integer getMinRestartSeconds() {
+        return minRestartSeconds;
     }
 
-    public void setMinRestartTime(Integer minRestartTime) {
-        this.minRestartTime = minRestartTime;
+    public void setMinRestartSeconds(Integer minRestartSeconds) {
+        this.minRestartSeconds = minRestartSeconds;
     }
 
     public List<DayOfWeek> getDaySelection() {
@@ -142,10 +142,10 @@ public class ProgramConstraint {
         setMaxHoursMonthly(lMProgramConstraint.getMaxHoursMonthly());
         setMaxHoursSeasonal(lMProgramConstraint.getMaxHoursSeasonal());
         setMaxHoursAnnually(lMProgramConstraint.getMaxHoursAnnually());
-        setMinActivateTime(lMProgramConstraint.getMinActivateTime());
-        setMinRestartTime(lMProgramConstraint.getMinRestartTime());
-        setMaxDailyOps(lMProgramConstraint.getMaxDailyOps());
-        setMaxActivateTime(lMProgramConstraint.getMaxActivateTime());
+        setMinActivateSeconds(lMProgramConstraint.getMinActivateTime());
+        setMinRestartSeconds(lMProgramConstraint.getMinRestartTime());
+        setMaxDailyOpsSeconds(lMProgramConstraint.getMaxDailyOps());
+        setMaxActivateSeconds(lMProgramConstraint.getMaxActivateTime());
         Integer holidayScheduleId = lMProgramConstraint.getHolidayScheduleID();
         LMDto holidaySchedule = new LMDto();
         holidaySchedule.setId(holidayScheduleId);
@@ -156,9 +156,9 @@ public class ProgramConstraint {
         setSeasonSchedule(seasonSchedule);
         String holidayUsage = lMProgramConstraint.getAvailableWeekdays().substring(7, 8);
         if (holidayUsage.equals("E")) {
-            setHolidayUsage(HolidayUsage.Exclude);
+            setHolidayUsage(HolidayUsage.EXCLUDE);
         } else {
-            setHolidayUsage(HolidayUsage.Force);
+            setHolidayUsage(HolidayUsage.FORCE);
         }
     }
 
@@ -179,10 +179,10 @@ public class ProgramConstraint {
         lMProgramConstraint.setMaxHoursMonthly(getMaxHoursMonthly());
         lMProgramConstraint.setMaxHoursSeasonal(getMaxHoursSeasonal());
         lMProgramConstraint.setMaxHoursAnnually(getMaxHoursAnnually());
-        lMProgramConstraint.setMinActivateTime(getMinActivateTime());
-        lMProgramConstraint.setMinRestartTime(getMinRestartTime());
-        lMProgramConstraint.setMaxDailyOps(getMaxDailyOps());
-        lMProgramConstraint.setMaxActivateTime(getMaxActivateTime());
+        lMProgramConstraint.setMinActivateTime(getMinActivateSeconds());
+        lMProgramConstraint.setMinRestartTime(getMinRestartSeconds());
+        lMProgramConstraint.setMaxDailyOps(getMaxDailyOpsSeconds());
+        lMProgramConstraint.setMaxActivateTime(getMaxActivateSeconds());
         lMProgramConstraint.setHolidayScheduleID(getHolidaySchedule().getId());
         lMProgramConstraint.setSeasonScheduleID(getSeasonSchedule().getId());
     }

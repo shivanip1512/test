@@ -31,7 +31,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
                 .filter(liteLMConstraint -> liteLMConstraint.getConstraintID() == constraintId.intValue())
                 .findFirst();
         if (lmConstraint.isEmpty()) {
-            throw new NotFoundException("Constarint Id not found");
+            throw new NotFoundException("Constraint Id not found");
         }
 
         LMProgramConstraint constraint = (LMProgramConstraint) dbPersistentDao.retrieveDBPersistent(lmConstraint.get());
@@ -75,7 +75,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
                     && constraint.getConstraintName().equals(constraintName))
                 .findFirst();
         if (liteLMConstraint.isEmpty()) {
-            throw new NotFoundException("Constarint Id and Name combination not found");
+            throw new NotFoundException("Constraint Id and Name combination not found");
         }
         
         LMProgramConstraint constraint = (LMProgramConstraint) LiteFactory.createDBPersistent(liteLMConstraint.get());
@@ -90,7 +90,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
                 .filter(liteLMConstraint -> liteLMConstraint.getConstraintID() == constraintId.intValue())
                 .findFirst();
         if (lmConstraint.isEmpty()) {
-            throw new NotFoundException("Constarint Id not found");
+            throw new NotFoundException("Constraint Id not found");
         }
         Optional<LMDto> holidaySchedule = lmServiceHelper.getHolidaySchedule(programConstraint.getHolidaySchedule().getId());
         if (holidaySchedule.isEmpty()) {
@@ -116,7 +116,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     }
 
     @Override
-    public List<LMDto> getHoloidaySchedules() {
+    public List<LMDto> getHolidaySchedules() {
         return dbCache.getAllHolidaySchedules().stream()
                 .map(liteBase -> new LMDto(liteBase.getLiteID(), liteBase.toString()))
                 .collect(Collectors.toList());

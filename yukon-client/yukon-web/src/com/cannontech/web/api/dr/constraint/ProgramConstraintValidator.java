@@ -29,21 +29,21 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "holidayUsage", key,
                 new Object[] { "Holiday Usage" });
         }
-        lmValidatorHelper.checkIfFieldRequired("maxActivateTime", errors, programConstraint.getMaxActivateTime(), "Max Activate");
-        if (!errors.hasFieldErrors("maxActivateTime")) {
-            YukonValidationUtils.checkRange(errors, "maxActivateTime", programConstraint.getMaxActivateTime(), 0, 99999, false);
+        lmValidatorHelper.checkIfFieldRequired("maxActivateSeconds", errors, programConstraint.getMaxActivateSeconds(), "Max Activate");
+        if (!errors.hasFieldErrors("maxActivateSeconds")) {
+            YukonValidationUtils.checkRange(errors, "maxActivateSeconds", programConstraint.getMaxActivateSeconds(), 0, 99999, false);
         }
-        lmValidatorHelper.checkIfFieldRequired("maxDailyOps", errors, programConstraint.getMaxDailyOps(), "Max Daily Ops");
-        if (!errors.hasFieldErrors("maxDailyOps")) {
-            YukonValidationUtils.checkRange(errors, "maxDailyOps", programConstraint.getMaxDailyOps(), 0, 99999, false);
+        lmValidatorHelper.checkIfFieldRequired("maxDailyOpsSeconds", errors, programConstraint.getMaxDailyOpsSeconds(), "Max Daily Ops");
+        if (!errors.hasFieldErrors("maxDailyOpsSeconds")) {
+            YukonValidationUtils.checkRange(errors, "maxDailyOpsSeconds", programConstraint.getMaxDailyOpsSeconds(), 0, 99999, false);
         }
-        lmValidatorHelper.checkIfFieldRequired("minActivateTime", errors, programConstraint.getMinActivateTime(), "Min Activate");
-        if (!errors.hasFieldErrors("minActivateTime")) {
-            YukonValidationUtils.checkRange(errors, "minActivateTime", programConstraint.getMinActivateTime(), 0, 99999, false);
+        lmValidatorHelper.checkIfFieldRequired("minActivateSeconds", errors, programConstraint.getMinActivateSeconds(), "Min Activate");
+        if (!errors.hasFieldErrors("minActivateSeconds")) {
+            YukonValidationUtils.checkRange(errors, "minActivateSeconds", programConstraint.getMinActivateSeconds(), 0, 99999, false);
         }
-        lmValidatorHelper.checkIfFieldRequired("minRestartTime", errors, programConstraint.getMinRestartTime(), "Min Restart");
-        if (!errors.hasFieldErrors("minRestartTime")) {
-            YukonValidationUtils.checkRange(errors, "minRestartTime", programConstraint.getMinRestartTime(), 0, 99999, false);
+        lmValidatorHelper.checkIfFieldRequired("minRestartSeconds", errors, programConstraint.getMinRestartSeconds(), "Min Restart");
+        if (!errors.hasFieldErrors("minRestartSeconds")) {
+            YukonValidationUtils.checkRange(errors, "minRestartSeconds", programConstraint.getMinRestartSeconds(), 0, 99999, false);
         }
         lmValidatorHelper.checkIfFieldRequired("maxHoursDaily", errors, programConstraint.getMaxHoursDaily(), "Daily");
         if (!errors.hasFieldErrors("maxHoursDaily")) {

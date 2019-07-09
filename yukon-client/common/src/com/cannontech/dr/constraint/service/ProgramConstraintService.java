@@ -34,5 +34,5 @@ public interface ProgramConstraintService {
     /**
      * Retrieve available holiday schedules.
      */
-    List<LMDto> getHoloidaySchedules();
+    List<LMDto> getHolidaySchedules();
 }

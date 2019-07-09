@@ -67,7 +67,7 @@ public class LMServiceHelper {
      * Returns <code>Optional LMDto</code> object for Holiday Schedule for specified holidayScheduleId
      */
     public Optional<LMDto> getHolidaySchedule(Integer holidayScheduleId) {
-        return programConstraintService.getHoloidaySchedules().stream()
+        return programConstraintService.getHolidaySchedules().stream()
                 .filter(lmdto -> lmdto.getId().compareTo(holidayScheduleId) == 0)
                 .findFirst();
     }

@@ -1,8 +1,8 @@
 package com.cannontech.common.dr.setup;
 
 public enum HolidayUsage {
-    Exclude("E"), 
-    Force("F");
+    EXCLUDE("E"), 
+    FORCE("F");
 
     private final String holidayUsage;
 

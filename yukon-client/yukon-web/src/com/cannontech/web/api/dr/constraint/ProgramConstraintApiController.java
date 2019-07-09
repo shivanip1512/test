@@ -67,9 +67,9 @@ public class ProgramConstraintApiController {
         return new ResponseEntity<>(programConstraintService.getSeasonSchedules(), HttpStatus.OK);
     }
 
-    @GetMapping("/getHoloidaySchedules")
-    public ResponseEntity<List<LMDto>> getHoloidaySchedules() {
-        return new ResponseEntity<>(programConstraintService.getHoloidaySchedules(), HttpStatus.OK);
+    @GetMapping("/getHolidaySchedules")
+    public ResponseEntity<List<LMDto>> getHolidaySchedules() {
+        return new ResponseEntity<>(programConstraintService.getHolidaySchedules(), HttpStatus.OK);
     }
 
     @InitBinder("LMDelete")
