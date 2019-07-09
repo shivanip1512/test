@@ -15,7 +15,7 @@
     <entry key="yukon.web.modules.amr.usageThresholdReport.report.helpText"><![CDATA[
         <ul>
             <li><b>Devices</b> - select one to many devices to perform analysis on. Devices can be selectable by device group or individually.</li>
-            <li><b>Attribute</b> - select an attribute to use for analaysis.</li>
+            <li><b>Attribute</b> - select an attribute to use for analysis.</li>
             <li><b>Date Range</b> - select a date range. Start date is adjusted to beginning of day, end date is adjusted to end of day.</li>
             <li><b>Threshold (initial)</b> - select <= or >= and enter the threshold (delta) between the earliest and latest readings to include in results.  This value can be changed on the resulting page.</li>
         </ul>
