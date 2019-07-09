@@ -41,7 +41,6 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
         BOOL operator==( const CtiFDRSocketLayer &other ) const;
 
         USHORT getPortNumber () const;
-        CtiFDRSocketLayer& setPortNumber (INT aPortNumber);
 
         std::string getIpMask();
         void setIpMask(const std::string& ipMask);
@@ -75,12 +74,10 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
         int getMessageSize(CHAR *data);
         std::string decodeClientName(CHAR *data);
         int processMessageFromForeignSystem (CHAR *data);
-        void sendMessageToForeignSys ( CtiMessage *aMessage );
         CHAR *buildForeignSystemHeartbeatMsg (void);
         ULONG getDebugLevel(void);
 
         int initializeClientConnection (void);
-        int initializeServerConnection (void);
 
         int closeAndFailConnection (void);
         INT write (CHAR *aBuffer, int aPriority = (MAXPRIORITY-1));

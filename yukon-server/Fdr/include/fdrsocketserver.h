@@ -38,7 +38,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         virtual BOOL stop( void );
 
         // effective for all classes inheriting from here
-        void sendMessageToForeignSys(CtiMessage* aMessage);
+        void sendMessageToForeignSys(CtiMessage* aMessage) override;
         void processCommandFromDispatch(CtiCommandMsg* commandMsg);
 
         virtual bool isClientConnectionValid (void);
