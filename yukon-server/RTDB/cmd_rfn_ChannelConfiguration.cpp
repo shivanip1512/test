@@ -8,14 +8,9 @@
 #include <boost/assign/list_of.hpp>
 #include <boost/optional.hpp>
 
-namespace Cti      {
-namespace Devices  {
-namespace Commands {
+namespace Cti::Devices::Commands {
 
 namespace { // anonymous
-
-template <typename T,unsigned Size>
-unsigned arraySize(const T (&arr)[Size]) { return Size; }
 
 enum TouRatesOptions
 {
@@ -76,8 +71,9 @@ const MetricInfo metricInfos[] = {
         {  48,  TouRates,  "VA hour Q4"                            },
         {  49,  TouRates,  "VA delivered, current demand"          },
         {  50,  TouRates,  "VA received, current demand"           },
-        {  51,  TouRates,  "VA received, peak demand"              },
-        {  52,  TouRates,  "VA delivered, peak demand"             },
+        {  51,  TouRates,  "VA delivered, peak demand"             },
+        {  52,  TouRates,  "VA received, peak demand"              },
+        {  53,  TouRates,  "VA delivered, peak demand (Frozen)"    },
 
         {  61,  TouRates,  "Q hour delivered"                      },
         {  62,  TouRates,  "Q hour received"                       },
@@ -184,21 +180,17 @@ std::map<unsigned, MetricItem> initializeMetricIdResolver()
 {
     std::map<unsigned, MetricItem> m;
 
-    const unsigned totalMetricInfos  = arraySize(metricInfos);
     const unsigned touRatesOffset    = 1000;
-    const std::vector<char> touRates = boost::assign::list_of('A')('B')('C')('D');
 
-    for(int nbr = 0; nbr < totalMetricInfos; nbr++)
+    for( const auto & info : metricInfos )
     {
-        const MetricInfo &info = metricInfos[nbr];
-
         const MetricItem item = { &info, boost::none };
         m[info.id] = item;
 
         if( info.touRatesOption == TouRates )
         {
             unsigned id = info.id;
-            for each( char rate in touRates)
+            for( char rate : { 'A', 'B', 'C', 'D' } )
             {
                 const MetricItem itemTou = { &info, rate };
                 id += touRatesOffset;
@@ -841,8 +833,5 @@ auto GetActiveConfigurationCommand::getIntervalMetrics() const -> MetricIds
     return getMetricsReceived();
 }
 
-} // RfnChannelIntervalRecording
-
-} // Commands
-} // Devices
-} // Cti
+}
+}

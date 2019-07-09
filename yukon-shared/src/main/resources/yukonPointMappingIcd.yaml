@@ -1527,7 +1527,7 @@ Metric IDs:
     50:  { name: "VA received, current demand",          Unit: *VA,     Modifiers: [ *Q2, *Q3                              ] }
     51:  { name: "VA delivered, peak demand",            Unit: *VA,     Modifiers: [ *Q1, *Q4, *Max                        ] }
     52:  { name: "VA received, peak demand",             Unit: *VA,     Modifiers: [ *Q2, *Q3, *Max                        ] }
-    53:  { name: "VA delivered peak demand (Frozen)",    Unit: *VA,     Modifiers: [ *Q1, *Q4, *Max, *Prev                 ] }
+    53:  { name: "VA delivered, peak demand (Frozen)",   Unit: *VA,     Modifiers: [ *Q1, *Q4, *Max, *Prev                 ] }
     54:  { name: "VA received, peak demand (Frozen)",    Unit: *VA,     Modifiers: [ *Q2, *Q3, *Max, *Prev                 ] }
     55:  { name: "VA lagging peak",                      Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max                   ] }
     56:  { name: "VA lagging peak (Frozen)",             Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev            ] }
