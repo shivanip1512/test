@@ -140,6 +140,7 @@
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_5000_XCOM">LCR-5000 (ExpressCom)</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_METER">Meter</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_COMM_EXPRESSSTAT">Commercial ExpressStat</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_YUKON_METER">Yukon Meter</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_4700">LCR-4700</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_4600">LCR-4600</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_4000">LCR-4000</entry>

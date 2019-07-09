@@ -38,6 +38,17 @@ public interface DisconnectService {
     boolean supportsDisconnect(List<SimpleDevice> meters, boolean includeNotConfigured);
 
     /**
+     * Returns the list of devices that support disconnect.
+     * Supports disconnect means the device has integrated disconnect OR 
+     * device supports disconnect collar AND it IS configured. This is the equivalent of 
+     * {@link DisconnectService#supportsDisconnect(List)}
+     * 
+     * @param meters
+     * @return
+     */
+    List<SimpleDevice> filter(List<SimpleDevice> meters);
+    
+    /**
      * Executes connect, disconnect or arm commands and waits for the result.
      * Use {@link DisconnectService#supportsDisconnect()} to verify that device is supported prior to calling
      * this method.
@@ -49,4 +60,6 @@ public interface DisconnectService {
 
     CollectionActionResult execute(DisconnectCommand command, DeviceCollection deviceCollection,
             SimpleCallback<CollectionActionResult> callback, YukonUserContext context);
+
+    
 }

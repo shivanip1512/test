@@ -315,7 +315,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
 
     @Override
     public boolean supportsDisconnect(List<SimpleDevice> meters) {
-        return supportsDisconnect(meters, false);
+        return !filter(meters).isEmpty();
     }
 
     @Override
@@ -330,7 +330,15 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
             return false;
         });
     }
-
+    
+    @Override
+    public List<SimpleDevice> filter(List<SimpleDevice> meters) {
+        return strategies.stream()
+            .map(strategy -> strategy.filter(meters).getValid())
+            .flatMap(Set::stream)
+            .collect(Collectors.toList());
+    }
+    
     @Override
     public boolean isCancellable(CollectionAction action) {
         return action == CollectionAction.CONNECT || action == CollectionAction.ARM
