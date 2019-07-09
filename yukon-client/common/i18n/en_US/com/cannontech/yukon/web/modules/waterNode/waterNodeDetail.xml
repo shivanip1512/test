@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="yukon.web.modules.waterNode.NORMAL">Normal</entry>
+    <entry key="yukon.web.modules.waterNode.LOW">Low</entry>
+    <entry key="yukon.web.modules.waterNode.CRITICALLY_LOW">Critically Low</entry>
+    <entry key="yukon.web.modules.waterNode.UNREPORTED">Unreported</entry>
+</properties>
