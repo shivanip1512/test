@@ -26,7 +26,7 @@ public class LoadGroupSetupValidator<T extends LoadGroupBase> extends SimpleVali
         // Group Name
         lmValidatorHelper.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Group Name");
         // kWCapacity
-        YukonValidationUtils.checkIsPositiveDouble(errors, "kWCapacity", loadGroup.getkWCapacity());
+        lmValidatorHelper.checkIfFieldRequired("kWCapacity", errors, loadGroup.getkWCapacity(), "kW Capacity");
         if (!errors.hasFieldErrors("kWCapacity")) {
             YukonValidationUtils.checkRange(errors, "kWCapacity", loadGroup.getkWCapacity(), 0.0, 99999.999, true);
         }

@@ -1,5 +1,8 @@
 package com.cannontech.common.dr.setup;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.lm.LMGroup;
@@ -46,7 +49,11 @@ public class LoadGroupBase implements LoadGroupSetupBase {
     }
 
     public void setkWCapacity(Double kWCapacity) {
-        this.kWCapacity = kWCapacity;
+        if (kWCapacity != null) {
+            this.kWCapacity = new BigDecimal(kWCapacity).setScale(3, RoundingMode.HALF_DOWN).doubleValue();
+        } else {
+            this.kWCapacity = kWCapacity;
+        }
     }
 
     public boolean isDisableGroup() {
