@@ -122,4 +122,11 @@ public interface InventoryBaseDao {
 
     public int getDeviceStatus(int inventoryId);
 
+    /**
+     * Adds the entry for this inventory (meter) to LMHardwareBase. Meter's do not start out with this value
+     * and it needs to be added for meters that are used for enrollment.
+     */
+    public void addLmHardwareToMeterIfMissing(String manufacturerSerialNumber, int inventoryId, YukonEnergyCompany ec);
+
+
 }

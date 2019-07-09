@@ -47,7 +47,8 @@ public class InventoryUtils {
         {
             return selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC).getEntryID();
         }
-        else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER)
+        else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER ||
+                entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_YUKON_METER)
         {
             return selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).getEntryID();
         }

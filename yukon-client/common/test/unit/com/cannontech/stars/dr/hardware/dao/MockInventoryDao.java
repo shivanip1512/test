@@ -225,4 +225,9 @@ public class MockInventoryDao implements InventoryDao {
     public boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId, boolean accountPage) {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public List<HardwareSummary> getMeterHardwareSummaryForAccount(int accountId) {
+        throw new MethodNotImplementedException();
+    }
 }

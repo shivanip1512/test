@@ -52,4 +52,10 @@ public interface EnrollmentHelperService {
      * @throws AccountNotFoundException
      */
     public List<EnrolledDevicePrograms> getEnrolledDeviceProgramsByAccountNumber(String accountNumber, Date startDate, Date stopDate, LiteYukonUser user) throws AccountNotFoundException;
+
+    /**
+     * Find all meters on the account and prepare them for enrollment by adding the LMHardwareBase table
+     * if it does not already exist.
+     */
+    void makeDisconnectMetersOnAccountEnrollable(int accountId);
 }

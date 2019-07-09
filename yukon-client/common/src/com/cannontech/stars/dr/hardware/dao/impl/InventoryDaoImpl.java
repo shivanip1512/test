@@ -108,6 +108,7 @@ public class InventoryDaoImpl implements InventoryDao {
     
     private Set<HardwareType> THERMOSTAT_TYPES = HardwareType.getForClass(HardwareClass.THERMOSTAT);
     private HardwareSummaryRowMapper summaryRowMapper = new HardwareSummaryRowMapper();
+    private MeterHardwareSummaryRowMapper meterSummaryRowMapper = new MeterHardwareSummaryRowMapper();
     
     @PostConstruct
     public void init() {
@@ -221,7 +222,7 @@ public class InventoryDaoImpl implements InventoryDao {
         hardwareTypeSelection.append("WHERE YukonDefinitionID").in(types);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ib.inventoryId, ib.deviceLabel,");
+        sql.append("SELECT ib.inventoryId, ib.deviceLabel, ib.deviceid,");
         sql.append("lmhb.manufacturerSerialNumber,");
         sql.append("le.yukonDefinitionId hardwareDefinitionId");
         sql.append("FROM inventoryBase ib");
@@ -313,7 +314,7 @@ public class InventoryDaoImpl implements InventoryDao {
     public List<HardwareSummary> getAllHardwareSummaryForAccount(int accountId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ib.inventoryId, ib.deviceLabel,");
+        sql.append("SELECT ib.inventoryId, ib.deviceLabel, ib.deviceid,");
         sql.append("lmhb.manufacturerSerialNumber,");
         sql.append("le.yukonDefinitionId hardwareDefinitionId");
         sql.append("FROM inventoryBase ib");
@@ -327,10 +328,29 @@ public class InventoryDaoImpl implements InventoryDao {
     }
     
     @Override
+    public List<HardwareSummary> getMeterHardwareSummaryForAccount(int accountId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ib.inventoryId, ib.deviceLabel, ib.deviceid,");
+        sql.append("lmhb.manufacturerSerialNumber,");
+        sql.append("le.yukonDefinitionId hardwareDefinitionId");
+        sql.append("FROM inventoryBase ib");
+        sql.append("LEFT JOIN lmHardwareBase lmhb ON ib.inventoryId = lmhb.inventoryId");
+        sql.append("LEFT JOIN yukonListEntry le ON lmhb.lmHardwareTypeId = le.entryId");
+        sql.append("JOIN yukonListEntry le2 ON ib.categoryid = le2.entryId"); // Only used to filter
+        sql.append("WHERE ib.accountID").eq(accountId);
+        sql.append("AND le2.yukondefinitionid").eq_k(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
+        
+        List<HardwareSummary> hardwareList = jdbcTemplate.query(sql, meterSummaryRowMapper);
+        
+        return hardwareList;
+    }
+    
+    @Override
     public HardwareSummary findHardwareSummaryById(int inventoryId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ib.inventoryId, ib.deviceLabel,");
+        sql.append("SELECT ib.inventoryId, ib.deviceLabel, ib.deviceid,");
         sql.append("lmhb.manufacturerSerialNumber,");
         sql.append("le.yukonDefinitionId hardwareDefinitionId");
         sql.append("FROM inventoryBase ib");
@@ -354,7 +374,7 @@ public class InventoryDaoImpl implements InventoryDao {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT ib.inventoryId, ib.deviceLabel,");
+                sql.append("SELECT ib.inventoryId, ib.deviceLabel, ib.deviceid,");
                 sql.append("lmhb.manufacturerSerialNumber,");
                 sql.append("le.yukonDefinitionId hardwareDefinitionId");
                 sql.append("FROM inventoryBase ib");
@@ -385,7 +405,7 @@ public class InventoryDaoImpl implements InventoryDao {
     public List<HardwareSummary> getThermostatSummaryByAccount(CustomerAccount account) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ib.inventoryId, ib.deviceLabel,");
+        sql.append("SELECT ib.inventoryId, ib.deviceLabel, ib.deviceid,");
         sql.append("lmhb.manufacturerSerialNumber,");
         sql.append("le.yukonDefinitionId hardwareDefinitionId");
         sql.append("FROM inventoryBase ib");
@@ -450,10 +470,41 @@ public class InventoryDaoImpl implements InventoryDao {
             String deviceLabel = rs.getString("DeviceLabel");
             String sn = rs.getString("ManufacturerSerialNumber");
             int hwDefinitionId = rs.getInt("hardwareDefinitionId");
+            int deviceId = rs.getInt("DeviceId");
             HardwareType hardwareType = HardwareType.valueOf(hwDefinitionId);
             
             InventoryIdentifier identifier = new InventoryIdentifier(inventoryId, hardwareType);
-            HardwareSummary hardware = new HardwareSummary(identifier, deviceLabel, sn);
+            HardwareSummary hardware = new HardwareSummary(identifier, deviceLabel, sn, deviceId);
+            
+            return hardware;
+        }
+    }
+    
+    /** Mapper class to map a meters into HardwareSummary.
+     * This deals with null values from meters that may not have a LMHardwareBase entry.*/
+    private class MeterHardwareSummaryRowMapper implements YukonRowMapper<HardwareSummary> {
+        @Override
+        public HardwareSummary mapRow(YukonResultSet rs) throws SQLException {
+            
+            int inventoryId = rs.getInt("InventoryID");
+            String deviceLabel = rs.getString("DeviceLabel");
+            String sn = rs.getString("ManufacturerSerialNumber");
+            Integer hwDefinitionId = rs.getNullableInt("hardwareDefinitionId");
+            int deviceId = rs.getInt("DeviceId");
+            
+            // Meters without LMHardwareBase wouldn't have the serial number field yet.
+            if(sn == null) {
+                sn = deviceLabel;
+            }
+            
+            // Meters may not have a LMHardwareBase entry, fake it as 0.
+            if(hwDefinitionId == null) {
+                hwDefinitionId = 0;
+            }
+            HardwareType hardwareType = HardwareType.valueOf(hwDefinitionId);
+            
+            InventoryIdentifier identifier = new InventoryIdentifier(inventoryId, hardwareType);
+            HardwareSummary hardware = new HardwareSummary(identifier, deviceLabel, sn, deviceId);
             
             return hardware;
         }

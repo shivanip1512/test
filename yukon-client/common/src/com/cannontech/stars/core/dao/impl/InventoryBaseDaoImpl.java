@@ -15,10 +15,12 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.HardwareType;
@@ -31,9 +33,9 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.FieldMapper;
-import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -50,8 +52,7 @@ import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
-import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
-import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.base.Strings;
 
@@ -59,12 +60,10 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private ThermostatScheduleDao thermostatScheduleDao;
     @Autowired private LMHardwareEventDao hardwareEventDao;
-    @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private InventoryDao inventoryDao;
+    @Autowired private SelectionListService selectionListService;
     
     Logger log = YukonLogManager.getLogger(InventoryBaseDaoImpl.class);
     
@@ -446,6 +445,36 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     
     @Override
     @Transactional
+    public void addLmHardwareToMeterIfMissing(String manufacturerSerialNumber, int inventoryId, YukonEnergyCompany ec) {
+        
+        SqlStatementBuilder checkForLmHardwareSql = new SqlStatementBuilder();
+        checkForLmHardwareSql.append("SELECT InventoryID");
+        checkForLmHardwareSql.append("FROM LMHardwareBase");
+        checkForLmHardwareSql.append("WHERE InventoryID").eq(inventoryId);
+        
+        try {
+            // This will throw if it does not exist, which is a normal flow in this case
+            jdbcTemplate.queryForInt(checkForLmHardwareSql);
+        } catch(IncorrectResultSizeDataAccessException e) {
+            // It is missing, so add this device to LMHardwareBase.
+            
+            YukonListEntry typeEntry = selectionListService.getListEntry(ec, HardwareType.YUKON_METER.getDefinitionId());
+            int hardwareTypeId = typeEntry.getEntryID();
+            
+            Object[] lmHwParams = new Object[] {
+                manufacturerSerialNumber,
+                hardwareTypeId,
+                0,
+                0,
+                inventoryId
+            };
+            
+            jdbcTemplate.update(insertLmHardwareSql, lmHwParams);
+        }
+    } 
+    
+    @Override
+    @Transactional
     public LiteMeterHardwareBase saveMeterHardware(LiteMeterHardwareBase mhb, int ecId) {
         
         boolean insert = mhb.getInventoryID() <= 0;
@@ -470,6 +499,10 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         } else {
             // Update MeterHardwareBase
             jdbcTemplate.update(updateMeterHardwareSql, meterHwParams);
+            
+            // Note disconnect meters optionally have lmHardwareBase, but for now we are not updating it
+            // during normal save or update operations. It is only used as a link for enrollment. and is 
+            // managed as part of the enrollment workflow.
         }
         
         return mhb;

@@ -10,15 +10,21 @@ public class HardwareSummary {
     private InventoryIdentifier inventoryIdentifier;
     private String deviceLabel;
     private String serialNumber;
+    private int deviceId;
 
-    public HardwareSummary(InventoryIdentifier inventoryIdentifier, String deviceLabel, String serialNumber) {
+    public HardwareSummary(InventoryIdentifier inventoryIdentifier, String deviceLabel, String serialNumber, int deviceId) {
         this.setInventoryIdentifier(inventoryIdentifier);
         this.deviceLabel = deviceLabel;
         this.serialNumber = serialNumber;
+        this.setDeviceId(deviceId);
     }
 
     public String getDeviceLabel() {
         return deviceLabel;
+    }
+    
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getSerialNumber() {
@@ -52,6 +58,11 @@ public class HardwareSummary {
     public int getInventoryId() {
         return inventoryIdentifier.getInventoryId();
     }
+
+    public int getDeviceId() {
+        return deviceId;
+    }
+
     
     @Override
 	public int hashCode() {
@@ -99,5 +110,4 @@ public class HardwareSummary {
 	public String toString() {
 		return String.format("HardwareSummary [inventoryIdentifier=%s, deviceLabel=%s, serialNumber=%s]", inventoryIdentifier, deviceLabel, serialNumber);
 	}
-	
 }

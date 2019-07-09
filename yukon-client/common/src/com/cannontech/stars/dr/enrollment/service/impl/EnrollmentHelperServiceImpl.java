@@ -3,19 +3,24 @@ package com.cannontech.stars.dr.enrollment.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.AccountNotFoundException;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -49,6 +54,7 @@ import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperHolder;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
@@ -85,6 +91,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     @Autowired private AssignedProgramDao assignedProgramDao;
     @Autowired private PaoDao paoDao;
     @Autowired private ItronDao itronDao;
+    @Autowired private DisconnectService disconnectService;
+    @Autowired private DeviceDao deviceDao;
 
     @Override
     public void updateProgramEnrollments(List<ProgramEnrollment> programEnrollments, 
@@ -192,6 +200,38 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
             buildEnrollmentHelperHolder(enrollmentHelper, enrollmentEnum, user, customerAccount);
         doEnrollment(enrollmentHelperHolder, enrollmentEnum, user);
     }
+    
+    @Override
+    public void makeDisconnectMetersOnAccountEnrollable(int accountId) {
+        // Find meter hardware (inventory) for this account
+        List<HardwareSummary> allMeterHardwareSummary = inventoryDao.getMeterHardwareSummaryForAccount(accountId);
+        
+        if(allMeterHardwareSummary.size() > 0) {
+            // Get the PAOs for these meters, so we can do the disconnect checks on the paos
+            List<Integer> meterPaoIds = allMeterHardwareSummary.stream()
+                .map(hardware -> hardware.getDeviceId())
+                .collect(Collectors.toList());
+            
+            // Find disconnect meters
+            List<SimpleDevice> allMeters = deviceDao.getYukonDeviceObjectByIds(meterPaoIds);
+            List<Integer> disconnectMeters = disconnectService.filter(allMeters).stream()
+                .map(device -> device.getDeviceId())
+                .collect(Collectors.toList());
+            
+            // Now that we know which PAOS are disconnect paos, filter out the inventory that does not support disconnect
+            List<HardwareSummary> disconnectMeterHardware = allMeterHardwareSummary.stream()
+                .filter(hardware -> disconnectMeters.contains(hardware.getDeviceId()))
+                .collect(Collectors.toList());
+                      
+            EnergyCompany energyCompany = ecDao.getEnergyCompanyByAccountId(accountId);
+            
+            for (HardwareSummary hardwareSummary : disconnectMeterHardware) {
+                inventoryBaseDao.addLmHardwareToMeterIfMissing(hardwareSummary.getSerialNumber(), hardwareSummary.getInventoryId(), energyCompany);
+            }
+
+        }
+        
+    }
 
     @Override
     public void doEnrollment(EnrollmentHelperHolder enrollmentHelperHolder, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
@@ -199,6 +239,9 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         CustomerAccount customerAccount = enrollmentHelperHolder.getCustomerAccount();
         EnrollmentHelper enrollmentHelper = enrollmentHelperHolder.getEnrollmentHelper();
         LMHardwareBase lmHardwareBase = enrollmentHelperHolder.getLmHardwareBase();
+        
+        // Fix this account so disconnect meter enrollments are possible.
+        makeDisconnectMetersOnAccountEnrollable(customerAccount.getAccountId());
         
         // Get the current enrollments.  This list will be updated to reflect the desired enrollment
         // data then passed to applyEnrollments which will make it so.

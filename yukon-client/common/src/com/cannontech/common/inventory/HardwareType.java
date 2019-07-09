@@ -11,7 +11,6 @@ import java.util.Set;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -26,9 +25,9 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     
     /* Meters */
     
-    /* These are real MCTs that exist as yukon paos. Because they are paos ie. (MCT-470, MCT-410) they do not
-     * have a yukon definition, so it is defined as zero.*/
-    YUKON_METER(CtiUtilities.NONE_ZERO_ID, MCT, METER, null, false, false, false),
+    /* These are real MCTs that exist as yukon paos. These USED to have a type of 0, they now have their own def dev type.
+     * Non disconnect meters currently behave as if this was still 0 and never actually use YUK_DEF_ID_DEV_TYPE_YUKON_METER*/
+    YUKON_METER(YUK_DEF_ID_DEV_TYPE_YUKON_METER, MCT, METER, null, false, false, false),
     
     /* These are meters that only exist in stars in the MeterHardwareBase table. 
      * They do not represent MCT's or link to pao tables.*/
@@ -283,6 +282,10 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
      * @return Enum value
      */
     public static HardwareType valueOf(int definitionId) {
+        // Technically YUKON_METER supports both 0 and YUK_DEF_ID_DEV_TYPE_YUKON_METER. This one type
+        // does not require an entry in LMHardwareBase, and the definition ID is used in LMHardwareBase
+        if (definitionId == 0)
+            return YUKON_METER;
         
         HardwareType[] values = HardwareType.values();
         for (HardwareType type : values) {

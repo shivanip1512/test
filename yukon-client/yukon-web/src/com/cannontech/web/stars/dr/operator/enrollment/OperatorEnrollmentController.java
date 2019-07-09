@@ -165,6 +165,8 @@ public class OperatorEnrollmentController {
             boolean isAdd) {
 
         validateAccountEditing(user);
+        
+        enrollmentHelper.makeDisconnectMetersOnAccountEnrollable(account.getAccountId());
 
         DisplayableEnrollmentProgram displayable = 
             displayableEnrollmentDao.getProgram(account.getAccountId(), assignedProgramId);

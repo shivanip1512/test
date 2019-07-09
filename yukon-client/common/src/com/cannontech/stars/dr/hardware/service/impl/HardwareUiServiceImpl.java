@@ -603,7 +603,9 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             if (accountId > 0) {
                 hardware.setFieldInstallDate(new Date());
             }
-            hardware.setHardwareTypeEntryId(HardwareType.YUKON_METER.getDefinitionId());
+            // Newly added meters do not use the hardware type, the hardware type is managed by
+            // enrollment code when needed.
+            hardware.setHardwareTypeEntryId(0);
             return createHardware(hardware, user);
         }
         

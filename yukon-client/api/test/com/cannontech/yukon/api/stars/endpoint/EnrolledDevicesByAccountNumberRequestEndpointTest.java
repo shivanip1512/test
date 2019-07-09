@@ -121,6 +121,11 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
                 CustomerAccount ca) {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public void makeDisconnectMetersOnAccountEnrollable(int accountId) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Test

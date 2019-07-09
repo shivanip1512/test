@@ -47,6 +47,14 @@ public interface InventoryDao {
     
     List<HardwareSummary> getAllHardwareSummaryForAccount(int accountId);
     
+
+    /**
+     * Retrieve all Yukon meters on an account. Unlike getAllHardwareSummaryForAccount, this retrieves 
+     * meters that do not have an entry in LMHardwareBase. This does not retrieve STARS Inventory meters
+     * @return HardwareSummary for all Yukon meters on an account
+     */
+    List<HardwareSummary> getMeterHardwareSummaryForAccount(int accountId);
+    
     /**
      * Get a List of specific types of hardware for an account 
      * @param accountId
@@ -202,5 +210,5 @@ public interface InventoryDao {
      * Used by Account hardware list as filter to determine availability of meter picker
      * @return
      */
-    boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId, boolean includeMctsWithNoAccount);
+    boolean accountMeterWarehouseIsNotEmpty(Set<Integer> ecId, boolean includeMctsWithNoAccount);  
 }
