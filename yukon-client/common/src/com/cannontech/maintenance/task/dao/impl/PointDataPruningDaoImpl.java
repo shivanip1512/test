@@ -23,72 +23,83 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
 
     @Override
     public int deletePointData(Instant deleteUpto) {
-        SqlFragmentSource deleteSql = buildDeleteQuery(deleteUpto);
-        log.debug(deleteSql);
-        int rowDeleted = 0;
+        SqlFragmentSource deleteSql;
+        int rowsDeleted = 0;
         try {
-            rowDeleted = jdbcTemplate.queryForInt(deleteSql);
+            if (dbVendorResolver.getDatabaseVendor().isOracle()) {
+                deleteSql = buildDeleteOracleQuery(deleteUpto);
+                rowsDeleted = jdbcTemplate.update(deleteSql);
+            } else {
+                deleteSql = buildDeleteMSSQLQuery(deleteUpto);
+                rowsDeleted = jdbcTemplate.queryForInt(deleteSql);
+            }
+            log.debug(deleteSql);
         } catch (TransientDataAccessResourceException e) {
             log.error("Error when deleting RPH data " + e);
         }
-        return rowDeleted;
+        return rowsDeleted;
     }
-
-    private SqlFragmentSource buildDeleteQuery(Instant deleteUpto) {
+    
+    private SqlFragmentSource buildDeleteOracleQuery(Instant deleteUpto) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
-        if (dbVendorResolver.getDatabaseVendor().isOracle()) {
-            sql.append("DELETE FROM RawPointHistory");
-            sql.append("WHERE ChangeId IN");
-            sql.append("  (SELECT ChangeId FROM RawPointHistory");
-            sql.append("  WHERE Timestamp").lt(deleteUpto);
-            sql.append("  AND PointId IN (");
-            sql.append("    SELECT PointId FROM");
-            sql.append("    Point p JOIN yukonPaObject pao");
-            sql.append("    ON p.paObjectId = pao.paObjectId)");
-            sql.append("  AND ROWNUM").lt(BATCH_SIZE);
-            sql.append("  )");
-        } else {
-            sql.append("BEGIN");
-            sql.append(    "DECLARE @TotalDeleted int");
-            sql.append(    "SET @TotalDeleted = 0;");
-            sql.append(    "IF OBJECT_ID('#TempPruning', 'U') IS NOT NULL");
-            sql.append(    "DROP TABLE #TempPruning ");
-            sql.append(    "SELECT CHANGEID INTO #TempPruning");
-            sql.append(    "FROM (");
-            sql.append(    "SELECT TOP (");
-            sql.append(    BATCH_SIZE);
-            sql.append(    ") ChangeId");
-            sql.append(    "FROM RawPointHistory");
-            sql.append(    "WITH (NOLOCK)");
-            sql.append(    "WHERE Timestamp").lt(deleteUpto);
-            sql.append(    "AND PointId IN (");
-            sql.append(        "SELECT PointId FROM");
-            sql.append(        "Point p JOIN yukonPaObject pao");
-            sql.append(        "ON p.paObjectId = pao.paObjectId)");
-            sql.append(    ") a");
-            sql.append(    "DECLARE @Rowcount INT = 1");
-            sql.append(    "WHILE @Rowcount > 0 ");
-            sql.append(    "BEGIN");
-            sql.append(    "BEGIN TRANSACTION");
-            sql.append(        "DELETE FROM RAWPOINTHISTORY");
-            sql.append(        "WHERE CHANGEID IN (");
-            sql.append(            "SELECT TOP(10000) changeid");
-            sql.append(            "FROM #TempPruning");
-            sql.append(            "ORDER BY CHANGEID)");
-            sql.append(        "SET @TotalDeleted = (select @TotalDeleted) + (select @@ROWCOUNT)");
-            sql.append(        "DELETE FROM #TempPruning");
-            sql.append(        "WHERE CHANGEID IN (");
-            sql.append(            "SELECT TOP(10000) changeid");
-            sql.append(            "FROM #TempPruning");
-            sql.append(            "ORDER BY CHANGEID)");
-            sql.append(        "SET @Rowcount = @@ROWCOUNT");
-            sql.append(    "COMMIT TRANSACTION");
-            sql.append(    "END");
-            sql.append(        "DROP TABLE #TempPruning");
-            sql.append(        "SELECT @TotalDeleted AS totaldeleted");
-            sql.append(    "END");
-        }
+        sql.append("DELETE FROM RawPointHistory");
+        sql.append("WHERE ChangeId IN");
+        sql.append("  (SELECT ChangeId FROM RawPointHistory");
+        sql.append("  WHERE Timestamp").lt(deleteUpto);
+        sql.append("  AND PointId IN (");
+        sql.append("    SELECT PointId FROM");
+        sql.append("    Point p JOIN yukonPaObject pao");
+        sql.append("    ON p.paObjectId = pao.paObjectId)");
+        sql.append("  AND ROWNUM").lt(BATCH_SIZE);
+        sql.append("  )");
+        
+        return sql;
+    }
+
+    private SqlFragmentSource buildDeleteMSSQLQuery(Instant deleteUpto) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("BEGIN");
+        sql.append(    "DECLARE @TotalDeleted int");
+        sql.append(    "SET @TotalDeleted = 0;");
+        sql.append(    "IF OBJECT_ID('#TempPruning', 'U') IS NOT NULL");
+        sql.append(    "DROP TABLE #TempPruning ");
+        sql.append(    "SELECT CHANGEID INTO #TempPruning");
+        sql.append(    "FROM (");
+        sql.append(    "SELECT TOP (");
+        sql.append(    BATCH_SIZE);
+        sql.append(    ") ChangeId");
+        sql.append(    "FROM RawPointHistory");
+        sql.append(    "WITH (NOLOCK)");
+        sql.append(    "WHERE Timestamp").lt(deleteUpto);
+        sql.append(    "AND PointId IN (");
+        sql.append(        "SELECT PointId FROM");
+        sql.append(        "Point p JOIN yukonPaObject pao");
+        sql.append(        "ON p.paObjectId = pao.paObjectId)");
+        sql.append(    ") a");
+        sql.append(    "DECLARE @Rowcount INT = 1");
+        sql.append(    "WHILE @Rowcount > 0 ");
+        sql.append(    "BEGIN");
+        sql.append(    "BEGIN TRANSACTION");
+        sql.append(        "DELETE FROM RAWPOINTHISTORY");
+        sql.append(        "WHERE CHANGEID IN (");
+        sql.append(            "SELECT TOP(10000) changeid");
+        sql.append(            "FROM #TempPruning");
+        sql.append(            "ORDER BY CHANGEID)");
+        sql.append(        "SET @TotalDeleted = (select @TotalDeleted) + (select @@ROWCOUNT)");
+        sql.append(        "DELETE FROM #TempPruning");
+        sql.append(        "WHERE CHANGEID IN (");
+        sql.append(            "SELECT TOP(10000) changeid");
+        sql.append(            "FROM #TempPruning");
+        sql.append(            "ORDER BY CHANGEID)");
+        sql.append(        "SET @Rowcount = @@ROWCOUNT");
+        sql.append(    "COMMIT TRANSACTION");
+        sql.append(    "END");
+        sql.append(        "DROP TABLE #TempPruning");
+        sql.append(        "SELECT @TotalDeleted AS totaldeleted");
+        sql.append(    "END");
+        
         return sql;
     }
 
