@@ -3,6 +3,7 @@ package com.cannontech.dr.program.service.impl;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +28,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ProgramServiceImplTest {
+    static private TimeZone timeZone = TimeZone.getTimeZone("America/Chicago");
+    
     private SimpleYukonUserContext userContext;
 
     @Resource(name="drProgramService")
@@ -36,7 +39,7 @@ public class ProgramServiceImplTest {
     public void setup() {
         userContext = new SimpleYukonUserContext();
         userContext.setLocale(Locale.getDefault());
-        userContext.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
+        userContext.setTimeZone(timeZone);
         programService = new ProgramServiceImpl();
         DateFormattingService dateFormattingService = new DateFormattingServiceImpl();
         ReflectionTestUtils.setField(programService, "dateFormattingService", dateFormattingService, DateFormattingService.class);
@@ -236,7 +239,7 @@ public class ProgramServiceImplTest {
 
     private static Date makeDate(String dateStr) {
         DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm"); // ss.SSS
-
+        df.setCalendar(Calendar.getInstance(timeZone));
         try {
             return df.parse(dateStr);
         } catch (ParseException parseException) {
@@ -246,7 +249,7 @@ public class ProgramServiceImplTest {
 
     private static Date makeDateWithTZ(String dateStr) {
         DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mmZ"); // ss.SSS
-
+        df.setCalendar(Calendar.getInstance(timeZone));
         try {
             return df.parse(dateStr);
         } catch (ParseException parseException) {
