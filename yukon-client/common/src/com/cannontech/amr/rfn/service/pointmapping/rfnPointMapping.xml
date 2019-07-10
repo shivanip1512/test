@@ -268,6 +268,8 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
+        <paoType value="RFN420CLW"/>
+        <paoType value="RFN420CDW"/>
         <paoType value="RFN410FX"/>
         <paoType value="RFN410FD"/>
         <paoType value="RFN410FL"/>
@@ -396,6 +398,8 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
+        <paoType value="RFN420CLW"/>
+        <paoType value="RFN420CDW"/>
         <paoType value="RFN410FX"/>
         <paoType value="RFN410FD"/>
         <paoType value="RFN410FL"/>
@@ -571,6 +575,8 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
+        <paoType value="RFN420CLW"/>
+        <paoType value="RFN420CDW"/>
         <paoType value="RFN510FL"/>
         <paoType value="RFN520FAX"/>
         <paoType value="RFN520FRX"/>
@@ -2443,6 +2449,8 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
+        <paoType value="RFN420CLW"/>
+        <paoType value="RFN420CDW"/>
         <paoType value="RFN420FL"/>
         <paoType value="RFN420FX"/>
         <paoType value="RFN420FD"/>
@@ -2476,6 +2484,8 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
+        <paoType value="RFN420CLW"/>
+        <paoType value="RFN420CDW"/>
         <paoType value="RFN420FL"/>
         <paoType value="RFN420FX"/>
         <paoType value="RFN420FD"/>
@@ -3636,6 +3646,8 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
+        <paoType value="RFN420CLW"/>
+        <paoType value="RFN420CDW"/>
         <!-- FOCUS AX -->
         <paoType value="RFN410FX"/>
         <paoType value="RFN410FD"/>
@@ -3724,6 +3736,8 @@
         <!-- CENTRON -->
         <paoType value="RFN420CL" />
         <paoType value="RFN420CD" />
+        <paoType value="RFN420CLW"/>
+        <paoType value="RFN420CDW"/>
 
         <point name="Delivered kVAh">
             <uom>VAh</uom>

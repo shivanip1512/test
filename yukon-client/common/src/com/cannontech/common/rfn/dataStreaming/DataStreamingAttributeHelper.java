@@ -58,6 +58,20 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 ),
+        //C2SX-W
+        RFN_420CLW(PaoType.RFN420CLW, 
+                BuiltInAttribute.DELIVERED_KWH,   //metric 1
+                BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
+                BuiltInAttribute.VOLTAGE          //metric 115
+                ),
+        //C2SX-W
+        RFN_420CDW(PaoType.RFN420CDW, 
+                BuiltInAttribute.DELIVERED_KWH,   //metric 1
+                BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
+                BuiltInAttribute.VOLTAGE          //metric 115
+                ),
         //Focus AXD
         RFN_420FX(PaoType.RFN420FX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1

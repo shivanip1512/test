@@ -155,12 +155,7 @@ public class RfnPointMappingTest {
 
         Map<PaoType, Map<PointMapping, NameScale>> rfnPointMapping = getRfnPointMapping();
 
-        assertEquals(rfnPointMapping.get(PaoType.RFN420CL), 
-                     rfnPointMapping.get(PaoType.RFN420CD));
-        
         compareMeterClassModelPoints(icd, rfnPointMapping, icd.itronCentronWithAdvancedMetrology, MeterClass.ITRON_CENTRON);
-
-        rfnPointMapping.remove(PaoType.RFN420CD);  //  already tested via the 420CL
 
         compareMeterClassPoints(icd, rfnPointMapping, icd.lgyrFocusAxRfn420WithAdvancedMetrology, MeterClass.LGYR_FOCUS_AX);
 

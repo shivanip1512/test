@@ -2,6 +2,9 @@
     Itron Centron:
         - &c1sx ITRN C1SX
         - &c2sx ITRN C2SX
+        - &c2sx_w ITRN C2SX-W
+        - &c2sx_sd ITRN C2SX-SD
+        - &c2sx_sd_w ITRN C2SX-SD-W
     Itron Sentinel:
         - &sl0 SCH Sentinel-L0
         - &sl1 SCH Sentinel-L1
@@ -60,6 +63,8 @@
         #- &wtr2-encoder WTR2 Encoder-201
 
 Meter combinations:
+    - &c1sx_c2sx [ *c1sx, *c2sx, *c2sx_w, *c2sx_sd, *c2sx_sd_w ] 
+    - &_____c2sx [        *c2sx, *c2sx_w, *c2sx_sd, *c2sx_sd_w ] 
     - &DTKR [ *a3d, *a3t, *a3k, *a3r ]
     - &_TKR [ *a3t, *a3k, *a3r ]
     - &__KR [ *a3k, *a3r ]
@@ -176,60 +181,60 @@ Modifiers:
 
 # Table 1 – Centron C1SX and C2SX with Advanced Metrology
 Centron C1SX and C2SX with Advanced Metrology:
-    - Watt-hours Delivered:                         { Unit: *Wh,  Modifiers: [ *Q1, *Q4                         ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Received:                          { Unit: *Wh,  Modifiers: [ *Q2, *Q3                         ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Total:                             { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Net:                               { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: [ *c1sx, *c2sx ] }
-    - Volt-Ampere Hours Delivered:                  { Unit: *VAh, Modifiers: [ *Q1, *Q4                         ], Models: [        *c2sx ] }
-    - Volt-Ampere Hours Received:                   { Unit: *VAh, Modifiers: [ *Q2, *Q3                         ], Models: [        *c2sx ] }
-    - Volt-Ampere Hours Total:                      { Unit: *VAh, Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: [        *c2sx ], Mapped: false }
-    - Volt-Ampere Hours Net:                        { Unit: *VAh, Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: [        *c2sx ], Mapped: false }
-    - Interval Demand:                              { Unit: *W,   Modifiers: [ *Q1, *Q4                         ], Models: [ *c1sx, *c2sx ] }
-    - Peak Demand:                                  { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max                   ], Models: [ *c1sx, *c2sx ] }
-    - Coincident Time of Peak Demand:               { Unit: *s,   Modifiers: [                                  ], Models: [ *c1sx, *c2sx ] }
-    - Frozen Peak Demand:                           { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *Prev            ], Models: [ *c1sx, *c2sx ] }
-    - Coincident Time of Frozen Peak Demand:        { Unit: *s,   Modifiers: [                                  ], Models: [ *c1sx, *c2sx ] }
-    - Interval Demand:                              { Unit: *VA,  Modifiers: [ *Q1, *Q4                         ], Models: [        *c2sx ] }
-    - Peak Demand:                                  { Unit: *VA,  Modifiers: [ *Q1, *Q4, *Max                   ], Models: [        *c2sx ] }
-    - Coincident Time of Peak Demand:               { Unit: *s,   Modifiers: [                                  ], Models: [        *c2sx ] }
-    - Interval Voltage:                             { Unit: *V,   Modifiers: [ *milli                           ], Models: [ *c1sx, *c2sx ] }
-    - Peak Voltage:                                 { Unit: *V,   Modifiers: [ *Max, *milli                     ], Models: [ *c1sx, *c2sx ] }
-    - Coincident Time of Peak Voltage:              { Unit: *s,   Modifiers: [                                  ], Models: [ *c1sx, *c2sx ] }
-    - Minimum Voltage:                              { Unit: *V,   Modifiers: [ *Min, *milli                     ], Models: [ *c1sx, *c2sx ] }
-    - Coincident Time of Minimum Voltage:           { Unit: *s,   Modifiers: [                                  ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Delivered Rate A:                  { Unit: *Wh,  Modifiers: [ *Q1, *Q4, *RateA                 ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Received Rate A:                   { Unit: *Wh,  Modifiers: [ *Q2, *Q3, *RateA                 ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Total Rate A:                      { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Net Rate A:                        { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: [ *c1sx, *c2sx ] }
-    - Peak Demand Rate A:                           { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateA           ], Models: [ *c1sx, *c2sx ] }
-    - Coincident Time of Peak Demand Rate A:        { Unit: *s,   Modifiers: [ *RateA                           ], Models: [ *c1sx, *c2sx ] }
-    - Frozen Peak Demand Rate A:                    { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateA, *Prev    ], Models: [ *c1sx, *c2sx ] }
-    - Coincident Time of Frozen Peak Demand Rate A: { Unit: *s,   Modifiers: [ *RateA                           ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Delivered Rate B:                  { Unit: *Wh,  Modifiers: [ *Q1, *Q4, *RateB                 ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Received Rate B:                   { Unit: *Wh,  Modifiers: [ *Q2, *Q3, *RateB                 ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Total Rate B:                      { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Net Rate B:                        { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: [ *c1sx, *c2sx ] }
-    - Peak Demand Rate B:                           { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateB           ], Models: [ *c1sx, *c2sx ] }
-    - Coincident Time of Peak Demand Rate B:        { Unit: *s,   Modifiers: [ *RateB                           ], Models: [ *c1sx, *c2sx ] }
-    - Frozen Peak Demand Rate B:                    { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateB, *Prev    ], Models: [ *c1sx, *c2sx ] }
-    - Coincident Time of Frozen Peak Demand Rate B: { Unit: *s,   Modifiers: [ *RateB                           ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Delivered Rate C:                  { Unit: *Wh,  Modifiers: [ *Q1, *Q4, *RateC                 ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Received Rate C:                   { Unit: *Wh,  Modifiers: [ *Q2, *Q3, *RateC                 ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Total Rate C:                      { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Net Rate C:                        { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: [ *c1sx, *c2sx ] }
-    - Peak Demand Rate C:                           { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateC           ], Models: [ *c1sx, *c2sx ] }
-    - Coincident Time of Peak Demand Rate C:        { Unit: *s,   Modifiers: [ *RateC                           ], Models: [ *c1sx, *c2sx ] }
-    - Frozen Peak Demand Rate C:                    { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateC, *Prev    ], Models: [ *c1sx, *c2sx ] }
-    - Coincident Time of Frozen Peak Demand Rate C: { Unit: *s,   Modifiers: [ *RateC                           ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Delivered Rate D:                  { Unit: *Wh,  Modifiers: [ *Q1, *Q4, *RateD                 ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Received Rate D:                   { Unit: *Wh,  Modifiers: [ *Q2, *Q3, *RateD                 ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Total Rate D:                      { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: [ *c1sx, *c2sx ] }
-    - Watt-hours Net Rate D:                        { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: [ *c1sx, *c2sx ] }
-    - Peak Demand Rate D:                           { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateD           ], Models: [ *c1sx, *c2sx ] }
-    - Coincident Time of Peak Demand Rate D:        { Unit: *s,   Modifiers: [ *RateD                           ], Models: [ *c1sx, *c2sx ] }
-    - Frozen Peak Demand Rate D:                    { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateD, *Prev    ], Models: [ *c1sx, *c2sx ] }
-    - Coincident Time of Frozen Peak Demand Rate D: { Unit: *s,   Modifiers: [ *RateD                           ], Models: [ *c1sx, *c2sx ] }
-    - RFN Temperature:                              { Unit: *C,   Modifiers: [                                  ], Models: [ *c1sx, *c2sx ] }
+    - Watt-hours Delivered:                         { Unit: *Wh,  Modifiers: [ *Q1, *Q4                         ], Models: *c1sx_c2sx }
+    - Watt-hours Received:                          { Unit: *Wh,  Modifiers: [ *Q2, *Q3                         ], Models: *c1sx_c2sx }
+    - Watt-hours Total:                             { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *c1sx_c2sx }
+    - Watt-hours Net:                               { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *c1sx_c2sx }
+    - Volt-Ampere Hours Delivered:                  { Unit: *VAh, Modifiers: [ *Q1, *Q4                         ], Models: *_____c2sx }
+    - Volt-Ampere Hours Received:                   { Unit: *VAh, Modifiers: [ *Q2, *Q3                         ], Models: *_____c2sx }
+    - Volt-Ampere Hours Total:                      { Unit: *VAh, Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *_____c2sx, Mapped: false }
+    - Volt-Ampere Hours Net:                        { Unit: *VAh, Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *_____c2sx, Mapped: false }
+    - Interval Demand:                              { Unit: *W,   Modifiers: [ *Q1, *Q4                         ], Models: *c1sx_c2sx }
+    - Peak Demand:                                  { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max                   ], Models: *c1sx_c2sx }
+    - Coincident Time of Peak Demand:               { Unit: *s,   Modifiers: [                                  ], Models: *c1sx_c2sx }
+    - Frozen Peak Demand:                           { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *Prev            ], Models: *c1sx_c2sx }
+    - Coincident Time of Frozen Peak Demand:        { Unit: *s,   Modifiers: [                                  ], Models: *c1sx_c2sx }
+    - Interval Demand:                              { Unit: *VA,  Modifiers: [ *Q1, *Q4                         ], Models: *_____c2sx }
+    - Peak Demand:                                  { Unit: *VA,  Modifiers: [ *Q1, *Q4, *Max                   ], Models: *_____c2sx }
+    - Coincident Time of Peak Demand:               { Unit: *s,   Modifiers: [                                  ], Models: *_____c2sx }
+    - Interval Voltage:                             { Unit: *V,   Modifiers: [ *milli                           ], Models: *c1sx_c2sx }
+    - Peak Voltage:                                 { Unit: *V,   Modifiers: [ *Max, *milli                     ], Models: *c1sx_c2sx }
+    - Coincident Time of Peak Voltage:              { Unit: *s,   Modifiers: [                                  ], Models: *c1sx_c2sx }
+    - Minimum Voltage:                              { Unit: *V,   Modifiers: [ *Min, *milli                     ], Models: *c1sx_c2sx }
+    - Coincident Time of Minimum Voltage:           { Unit: *s,   Modifiers: [                                  ], Models: *c1sx_c2sx }
+    - Watt-hours Delivered Rate A:                  { Unit: *Wh,  Modifiers: [ *Q1, *Q4, *RateA                 ], Models: *c1sx_c2sx }
+    - Watt-hours Received Rate A:                   { Unit: *Wh,  Modifiers: [ *Q2, *Q3, *RateA                 ], Models: *c1sx_c2sx }
+    - Watt-hours Total Rate A:                      { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *c1sx_c2sx }
+    - Watt-hours Net Rate A:                        { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *c1sx_c2sx }
+    - Peak Demand Rate A:                           { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateA           ], Models: *c1sx_c2sx }
+    - Coincident Time of Peak Demand Rate A:        { Unit: *s,   Modifiers: [ *RateA                           ], Models: *c1sx_c2sx }
+    - Frozen Peak Demand Rate A:                    { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateA, *Prev    ], Models: *c1sx_c2sx }
+    - Coincident Time of Frozen Peak Demand Rate A: { Unit: *s,   Modifiers: [ *RateA                           ], Models: *c1sx_c2sx }
+    - Watt-hours Delivered Rate B:                  { Unit: *Wh,  Modifiers: [ *Q1, *Q4, *RateB                 ], Models: *c1sx_c2sx }
+    - Watt-hours Received Rate B:                   { Unit: *Wh,  Modifiers: [ *Q2, *Q3, *RateB                 ], Models: *c1sx_c2sx }
+    - Watt-hours Total Rate B:                      { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *c1sx_c2sx }
+    - Watt-hours Net Rate B:                        { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *c1sx_c2sx }
+    - Peak Demand Rate B:                           { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateB           ], Models: *c1sx_c2sx }
+    - Coincident Time of Peak Demand Rate B:        { Unit: *s,   Modifiers: [ *RateB                           ], Models: *c1sx_c2sx }
+    - Frozen Peak Demand Rate B:                    { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateB, *Prev    ], Models: *c1sx_c2sx }
+    - Coincident Time of Frozen Peak Demand Rate B: { Unit: *s,   Modifiers: [ *RateB                           ], Models: *c1sx_c2sx }
+    - Watt-hours Delivered Rate C:                  { Unit: *Wh,  Modifiers: [ *Q1, *Q4, *RateC                 ], Models: *c1sx_c2sx }
+    - Watt-hours Received Rate C:                   { Unit: *Wh,  Modifiers: [ *Q2, *Q3, *RateC                 ], Models: *c1sx_c2sx }
+    - Watt-hours Total Rate C:                      { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *c1sx_c2sx }
+    - Watt-hours Net Rate C:                        { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *c1sx_c2sx }
+    - Peak Demand Rate C:                           { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateC           ], Models: *c1sx_c2sx }
+    - Coincident Time of Peak Demand Rate C:        { Unit: *s,   Modifiers: [ *RateC                           ], Models: *c1sx_c2sx }
+    - Frozen Peak Demand Rate C:                    { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateC, *Prev    ], Models: *c1sx_c2sx }
+    - Coincident Time of Frozen Peak Demand Rate C: { Unit: *s,   Modifiers: [ *RateC                           ], Models: *c1sx_c2sx }
+    - Watt-hours Delivered Rate D:                  { Unit: *Wh,  Modifiers: [ *Q1, *Q4, *RateD                 ], Models: *c1sx_c2sx }
+    - Watt-hours Received Rate D:                   { Unit: *Wh,  Modifiers: [ *Q2, *Q3, *RateD                 ], Models: *c1sx_c2sx }
+    - Watt-hours Total Rate D:                      { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *c1sx_c2sx }
+    - Watt-hours Net Rate D:                        { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *c1sx_c2sx }
+    - Peak Demand Rate D:                           { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateD           ], Models: *c1sx_c2sx }
+    - Coincident Time of Peak Demand Rate D:        { Unit: *s,   Modifiers: [ *RateD                           ], Models: *c1sx_c2sx }
+    - Frozen Peak Demand Rate D:                    { Unit: *W,   Modifiers: [ *Q1, *Q4, *Max, *RateD, *Prev    ], Models: *c1sx_c2sx }
+    - Coincident Time of Frozen Peak Demand Rate D: { Unit: *s,   Modifiers: [ *RateD                           ], Models: *c1sx_c2sx }
+    - RFN Temperature:                              { Unit: *C,   Modifiers: [                                  ], Models: *c1sx_c2sx }
 
 # Table 2 – Centron C2SX Prior To Advanced Metrology
 Centron C2SX prior to Advanced Metrology:
