@@ -1,4 +1,4 @@
-package com.cannontech.dr.loadgroup.service;
+package com.cannontech.dr.macro.service;
 
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.MacroLoadGroup;

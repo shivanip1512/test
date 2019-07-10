@@ -1,4 +1,4 @@
-package com.cannontech.web.api.dr.setup;
+package com.cannontech.web.api.dr.macro;
 
 import java.util.HashMap;
 
@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.MacroLoadGroup;
-import com.cannontech.dr.loadgroup.service.MacroLoadGroupSetupService;
+import com.cannontech.dr.macro.service.MacroLoadGroupSetupService;
+import com.cannontech.web.api.dr.setup.LMCopyValidator;
+import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 
 @RestController
 @RequestMapping("/dr/setup/macroLoadGroup")

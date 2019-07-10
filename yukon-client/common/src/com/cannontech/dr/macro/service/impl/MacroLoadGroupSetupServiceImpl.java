@@ -1,4 +1,4 @@
-package com.cannontech.dr.loadgroup.service.impl;
+package com.cannontech.dr.macro.service.impl;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -24,7 +24,7 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.macro.GenericMacro;
-import com.cannontech.dr.loadgroup.service.MacroLoadGroupSetupService;
+import com.cannontech.dr.macro.service.MacroLoadGroupSetupService;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class MacroLoadGroupSetupServiceImpl implements MacroLoadGroupSetupService {

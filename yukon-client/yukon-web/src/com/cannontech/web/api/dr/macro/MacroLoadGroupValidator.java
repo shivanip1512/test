@@ -1,4 +1,4 @@
-package com.cannontech.web.api.dr.setup;
+package com.cannontech.web.api.dr.macro;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +8,7 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.dr.setup.MacroLoadGroup;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
 @Service
 public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
