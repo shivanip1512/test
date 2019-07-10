@@ -245,11 +245,9 @@ public class LMGearDaoImpl implements LMGearDao {
     public List<LiteGear> getAllLiteGears(Integer programId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select GearId, GearName, ControlMethod, DeviceId, GearNumber");
-        sql.append("from LmProgramDirectGear gear, YukonPAObject pao");
-        sql.append("where gear.DeviceID = pao.PAObjectID");
-        sql.append("and");
-        sql.append(" gear.DeviceId").eq(programId);
+        sql.append("SELECT GearId, GearName, ControlMethod, program.DeviceId, GearNumber");
+        sql.append("FROM LmProgramDirectGear gear JOIN LMProgramDirect program ON gear.DeviceID = program.DeviceId");
+        sql.append("WHERE program.DeviceId").eq(programId);
 
         return jdbcTemplate.query(sql, new YukonRowMapper<LiteGear>() {
             @Override
