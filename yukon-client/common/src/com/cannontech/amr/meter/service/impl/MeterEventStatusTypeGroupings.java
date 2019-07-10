@@ -90,6 +90,7 @@ public class MeterEventStatusTypeGroupings {
         builder.add(BuiltInAttribute.TAMPER_REVERSE_WH_DETECTED);
         builder.add(BuiltInAttribute.TAMPER_LARGE_INCREASE_AFTER_OUTAGE);
         builder.add(BuiltInAttribute.TAMPER_LARGE_DECREASE_AFTER_OUTAGE);
+        builder.add(BuiltInAttribute.VIBRATION_TILT_TAMPER_DETECTED);
         tamper = builder.build();
     }
     
@@ -115,7 +116,8 @@ public class MeterEventStatusTypeGroupings {
             if (meteringEvent == BuiltInAttribute.TAMPER_NO_USAGE_OVER_24_HOURS ||
                 meteringEvent == BuiltInAttribute.TAMPER_REVERSE_WH_DETECTED ||
                 meteringEvent == BuiltInAttribute.TAMPER_LARGE_INCREASE_AFTER_OUTAGE ||
-                meteringEvent == BuiltInAttribute.TAMPER_LARGE_DECREASE_AFTER_OUTAGE) {
+                meteringEvent == BuiltInAttribute.TAMPER_LARGE_DECREASE_AFTER_OUTAGE ||
+                meteringEvent == BuiltInAttribute.VIBRATION_TILT_TAMPER_DETECTED) {
                 //skip...these are added in buildTamperTypes()
             } else {
                 builder.add(meteringEvent);
