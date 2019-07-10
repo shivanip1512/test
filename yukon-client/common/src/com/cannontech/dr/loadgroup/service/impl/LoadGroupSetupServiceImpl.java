@@ -43,7 +43,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         List<LiteYukonPAObject> list = dbCache.getAllLMGroups();
 
         if (list.size() == 0) {
-            throw new NotFoundException("No loadgroup available.");
+            throw new NotFoundException("No load group available.");
         }
         
         List<LMPaoDto> availableLoadGroups = list.stream()
@@ -103,7 +103,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     public int delete(int loadGroupId, String loadGroupName) {
         Optional<LiteYukonPAObject> liteLoadGroup = dbCache.getAllLMGroups()
                                                            .stream()
-                                                           .filter(group -> group.getLiteID() == loadGroupId && group.getPaoName().equals(loadGroupName))
+                                                           .filter(group -> group.getLiteID() == loadGroupId && group.getPaoName().equalsIgnoreCase(loadGroupName))
                                                            .findFirst();
         if (liteLoadGroup.isEmpty()) {
             throw new NotFoundException("Id and Name combination not found");
