@@ -27,9 +27,9 @@ public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenar
             for (int i = 0; i < scenario.getAllPrograms().size(); i++) {
                 ProgramDetails program = scenario.getAllPrograms().get(i);
 
-                YukonValidationUtils.checkRange(errors, "allPrograms[" + i + "].startOffset", program.getStartOffset(), 0, 1439, true);
-                YukonValidationUtils.checkRange(errors, "allPrograms[" + i + "].stopOffset", program.getStopOffset(), 0, 1439, true);
-                
+                YukonValidationUtils.checkRange(errors, "allPrograms[" + i + "].startOffsetInMinutes", program.getStartOffsetInMinutes(), 0, 1439, true);
+                YukonValidationUtils.checkRange(errors, "allPrograms[" + i + "].stopOffsetInMinutes", program.getStopOffsetInMinutes(), 0, 1439, true);
+
                 if (program.getGears() == null || program.getGears().size() < 1) {
                     errors.rejectValue("allPrograms[" + i + "].gears", "yukon.web.error.isBlank", "Cannot be blank.");
                 } else if (program.getGears().size() > 1 || program.getGears().get(0).getId() == null) {

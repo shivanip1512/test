@@ -6,8 +6,8 @@ import javax.validation.Valid;
 public class ProgramDetails {
 
     private Integer programId;
-    private Integer startOffset;
-    private Integer stopOffset;
+    private Integer startOffsetInMinutes;
+    private Integer stopOffsetInMinutes;
     private String category;
     @Valid private List<LMDto> gears;
 
@@ -22,20 +22,20 @@ public class ProgramDetails {
         this.programId = programId;
     }
 
-    public Integer getStartOffset() {
-        return startOffset;
+    public Integer getStartOffsetInMinutes() {
+        return startOffsetInMinutes;
     }
 
-    public void setStartOffset(Integer startOffset) {
-        this.startOffset = startOffset;
+    public void setStartOffsetInMinutes(Integer startOffsetInMinutes) {
+        this.startOffsetInMinutes = startOffsetInMinutes;
     }
 
-    public Integer getStopOffset() {
-        return stopOffset;
+    public Integer getStopOffsetInMinutes() {
+        return stopOffsetInMinutes;
     }
 
-    public void setStopOffset(Integer stopOffset) {
-        this.stopOffset = stopOffset;
+    public void setStopOffsetInMinutes(Integer stopOffsetInMinutes) {
+        this.stopOffsetInMinutes = stopOffsetInMinutes;
     }
 
     public String getCategory() {

@@ -49,8 +49,8 @@ public class ControlScenario {
         controlScenario.getAllThePrograms().forEach(program -> {
             ProgramDetails programDetails = new ProgramDetails();
             programDetails.setProgramId(program.getProgramID());
-            programDetails.setStartOffset(program.getStartOffset() / 60);
-            programDetails.setStopOffset(program.getStopOffset() / 60);
+            programDetails.setStartOffsetInMinutes(program.getStartOffset() / 60);
+            programDetails.setStopOffsetInMinutes(program.getStopOffset() / 60);
             LMDto gear = new LMDto();
             List<LMDto> gears = new ArrayList<>(1);
             gear.setId(program.getStartGear());
@@ -71,8 +71,8 @@ public class ControlScenario {
             LMControlScenarioProgram lmControlScenarioProgram = new LMControlScenarioProgram();
             lmControlScenarioProgram.setScenarioID(getId());
             lmControlScenarioProgram.setProgramID(program.getProgramId());
-            lmControlScenarioProgram.setStartOffset(program.getStartOffset() * 60);
-            lmControlScenarioProgram.setStopOffset(program.getStopOffset() * 60);
+            lmControlScenarioProgram.setStartOffset(program.getStartOffsetInMinutes() * 60);
+            lmControlScenarioProgram.setStopOffset(program.getStopOffsetInMinutes() * 60);
             lmControlScenarioProgram.setStartGear(program.getGears().get(0).getId());
             controlScenario.getAllThePrograms().add(lmControlScenarioProgram);
         });
