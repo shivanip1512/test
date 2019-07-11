@@ -6,23 +6,22 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<%@ attribute name="toggleGroup" description="Used to setup a toggle group driven by a checkbox." %>
-<%@ attribute name="autocomplete" 
-        description="HTML input autocomplete attribute. Possible values: 'on|off'. Default: 'on'." %>
-<%@ attribute name="disabled" %>
-<%@ attribute name="id" %>
-<%@ attribute name="inputClass" %>
-<%@ attribute name="onkeyup" %>
-<%@ attribute name="onchange" %>
-<%@ attribute name="onblur" %>
-<%@ attribute name="maxlength" %>
-<%@ attribute name="path" required="true" %>
-<%@ attribute name="placeholder" %>
-<%@ attribute name="readonly" %>
-<%@ attribute name="size" %>
-<%@ attribute name="tabindex" %>
-<%@ attribute name="autofocus" %>
-<%@ attribute name="units" %>
+<%@ attribute name="toggleGroup" type="java.lang.String" description="Used to setup a toggle group driven by a checkbox." %>
+<%@ attribute name="autocomplete" type="java.lang.String" description="HTML input autocomplete attribute. Possible values: 'on|off'. Default: 'on'." %>
+<%@ attribute name="disabled" type="java.lang.Boolean" description="Set this value to true to disable the field."%>
+<%@ attribute name="id" type="java.lang.String" description="The id for the field. If not set, the id will be the same as path."%>
+<%@ attribute name="inputClass" type="java.lang.String" description="The classes to assign to the input."%>
+<%@ attribute name="onkeyup" type="java.lang.String" description="Function to call on key up."%>
+<%@ attribute name="onchange" type="java.lang.String" description="Function to call when the value changes."%>
+<%@ attribute name="onblur" type="java.lang.String" description="Function to call on blur."%>
+<%@ attribute name="maxlength" type="java.lang.Integer" description="The max number of characters to allow for the field." %>
+<%@ attribute name="path" required="true" type="java.lang.String" description="The spring binding path."%>
+<%@ attribute name="placeholder" type="java.lang.String" description="The placeholder text to use when the field is empty." %>
+<%@ attribute name="readonly" type="java.lang.Boolean" description="Whether to make the field readonly."%>
+<%@ attribute name="size" type="java.lang.Integer" description="The size to give the field."%>
+<%@ attribute name="tabindex" type="java.lang.Integer" description="The tab index for the field."%>
+<%@ attribute name="autofocus" type="java.lang.String" description="Gives initial focus to the field."%>
+<%@ attribute name="units" type="java.lang.String" description="The units to display to the right of the field (ex: Volts)." %>
 <%@ attribute name="password" type="java.lang.Boolean" description="If true, a password field is used. Default: false." %>
 <%@ attribute name="displayValidationToRight" type="java.lang.Boolean" description="If true, any validation will display to the right of the field. Default: false." %>
 
