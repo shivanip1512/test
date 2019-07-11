@@ -7,7 +7,7 @@ public class LoadGroupEmetcon extends LoadGroupBase {
     private Integer goldAddress;
     private Integer silverAddress;
     private EmetconAddressUsage addressUsage;
-    private Character relayUsage;
+    private EmetconRelayUsage relayUsage;
     private Integer routeId;
     private String routeName;
 
@@ -35,11 +35,11 @@ public class LoadGroupEmetcon extends LoadGroupBase {
         this.addressUsage = addressUsage;
     }
 
-    public Character getRelayUsage() {
+    public EmetconRelayUsage getRelayUsage() {
         return relayUsage;
     }
 
-    public void setRelayUsage(Character relayUsage) {
+    public void setRelayUsage(EmetconRelayUsage relayUsage) {
         this.relayUsage = relayUsage;
     }
 
@@ -68,7 +68,7 @@ public class LoadGroupEmetcon extends LoadGroupBase {
         setGoldAddress(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getGoldAddress());
         setSilverAddress(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getSilverAddress());
         setAddressUsage(EmetconAddressUsage.getDisplayValue(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getAddressUsage()));
-        setRelayUsage(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getRelayUsage());
+        setRelayUsage(EmetconRelayUsage.getDisplayValue(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getRelayUsage()));
         setRouteId(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getRouteID());
 
     }
@@ -83,8 +83,8 @@ public class LoadGroupEmetcon extends LoadGroupBase {
             ((LMGroupEmetcon) group).getLmGroupEmetcon();
         lmGroupEmetcon.setGoldAddress(getGoldAddress());
         lmGroupEmetcon.setSilverAddress(getSilverAddress());
-        lmGroupEmetcon.setAddressUsage(getAddressUsage().getAddressUsageValue());
-        lmGroupEmetcon.setRelayUsage(getRelayUsage());
+        lmGroupEmetcon.setAddressUsage((Character) getAddressUsage().getDatabaseRepresentation());
+        lmGroupEmetcon.setRelayUsage((Character) getRelayUsage().getDatabaseRepresentation());
         lmGroupEmetcon.setRouteID(getRouteId());
 
         ((LMGroupEmetcon) group).setLmGroupEmetcon(lmGroupEmetcon);
