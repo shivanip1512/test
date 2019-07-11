@@ -43,7 +43,7 @@ public class ProgramConstraintDeleteValidator extends SimpleValidator<LMDelete>{
             errors.reject("Constraint Id not found");
         }
         LMProgramConstraint constraint = (LMProgramConstraint) LiteFactory.createDBPersistent(liteLMConstraint.get());
-        DBDeleteResult dbDeleteResult = dbDeletionDao.getDeleteInfo(constraint, lmDelete.getName());
+        DBDeleteResult dbDeleteResult = dbDeletionDao.getDeleteInfo(constraint, constraint.getConstraintName());
         try {
             if (LMProgramConstraint.inUseByProgram(dbDeleteResult.getItemID(), CtiUtilities.getDatabaseAlias())) {
                 if (dbDeleteResult.isDeletable()) {
@@ -52,7 +52,7 @@ public class ProgramConstraintDeleteValidator extends SimpleValidator<LMDelete>{
             }
         } catch (SQLException e) {
             errors.reject("Unable to delete Constraint");
-            log.error("Unable to delete Constraint with naame : " + lmDelete.getName() + e);
+            log.error("Unable to delete Constraint with naame : " + constraint.getConstraintName() + e);
         }
 
         lmValidatorHelper.checkIfFieldRequired("name", errors, lmDelete.getName(), "Constraint Name");

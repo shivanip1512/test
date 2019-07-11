@@ -72,7 +72,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         Optional<LiteLMConstraint> liteLMConstraint = 
                 dbCache.getAllLMProgramConstraints().stream()
                 .filter(constraint -> constraint.getConstraintID() == constraintId.intValue()
-                    && constraint.getConstraintName().equals(constraintName))
+                    && constraint.getConstraintName().equalsIgnoreCase(constraintName))
                 .findFirst();
         if (liteLMConstraint.isEmpty()) {
             throw new NotFoundException("Constraint Id and Name combination not found");

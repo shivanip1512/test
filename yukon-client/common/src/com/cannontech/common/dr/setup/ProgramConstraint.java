@@ -2,8 +2,6 @@ package com.cannontech.common.dr.setup;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
 
 public class ProgramConstraint {
@@ -154,27 +152,19 @@ public class ProgramConstraint {
         LMDto seasonSchedule = new LMDto();
         seasonSchedule.setId(seasonScheduleId);
         setSeasonSchedule(seasonSchedule);
-        String holidayUsage = lMProgramConstraint.getAvailableWeekdays().substring(7, 8);
-        if (holidayUsage.equals("E")) {
-            setHolidayUsage(HolidayUsage.EXCLUDE);
-        } else {
-            setHolidayUsage(HolidayUsage.FORCE);
-        }
+        Character holidayUsage = lMProgramConstraint.getAvailableWeekdays().charAt(7);
+        setHolidayUsage(HolidayUsage.getForHoliday(holidayUsage));
     }
 
     public void buildDBPersistent(LMProgramConstraint lMProgramConstraint) {
         lMProgramConstraint.setConstraintID(getId());
         lMProgramConstraint.setConstraintName(getName());
-        String holidayUsage = StringUtils.EMPTY;
-        if (getHolidaySchedule() != null) {
-            //When No schedule is selected, ID will be 0
-            if (getHolidaySchedule().getId().compareTo(0) == 0) {
-                holidayUsage = "N";
-            } else {
-                holidayUsage = (String) getHolidayUsage().getHolidayUsage();
-            }
+        Character holidayUsage = HolidayUsage.NONE.getHolidayUsage();
+        // When No schedule is selected, ID will be 0 otherwise >0 
+        if (getHolidaySchedule() != null && getHolidaySchedule().getId() > 0) {
+            holidayUsage = getHolidayUsage().getHolidayUsage();
         }
-        lMProgramConstraint.setAvailableWeekdays(DayOfWeek.buildDBPersistent(getDaySelection()).concat(holidayUsage));
+        lMProgramConstraint.setAvailableWeekdays(DayOfWeek.buildDBPersistent(getDaySelection()) + holidayUsage);
         lMProgramConstraint.setMaxHoursDaily(getMaxHoursDaily());
         lMProgramConstraint.setMaxHoursMonthly(getMaxHoursMonthly());
         lMProgramConstraint.setMaxHoursSeasonal(getMaxHoursSeasonal());
