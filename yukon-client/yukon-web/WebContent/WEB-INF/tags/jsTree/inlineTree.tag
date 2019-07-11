@@ -64,6 +64,12 @@
                 var initially_select = null;
             </c:otherwise>
        </c:choose>
+       
+       var data = {};
+       
+       <c:if test="${not empty pageScope.dataJson}">
+           data = ${pageScope.dataJson};
+       </c:if>
     
         var args = {
             minExpandLevel: 2,    //prevent the top level elements (visually - dynatree has 1 hidden root by default) from expanding/collapsing
@@ -93,7 +99,7 @@
                 	},
                 </c:when>
                 <c:otherwise>
-                    children: ${pageScope.dataJson},
+                    children: data,
                 </c:otherwise>
         	</c:choose>
     
