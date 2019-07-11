@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -30,13 +31,15 @@
             <tags:nameValue2 nameKey=".meterNumber">
                 <tags:input path="meterNumber"/>
             </tags:nameValue2>
-
-            <tags:nameValue2 nameKey=".physicalAddress">
-                <tags:input path="address"/>
-            </tags:nameValue2>
-
-            <tags:selectNameValue nameKey=".route" path="routeId"  itemLabel="paoName" itemValue="yukonID" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
-
+            
+            <c:if test="${meter.paoType.isPlc()}">
+                <tags:nameValue2 nameKey=".physicalAddress">
+                    <tags:input path="address"/>
+                </tags:nameValue2>
+    
+                <tags:selectNameValue nameKey=".route" path="routeId"  itemLabel="paoName" itemValue="yukonID" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
+            </c:if>
+   
         </tags:nameValueContainer2>
         
 
