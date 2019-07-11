@@ -2,6 +2,7 @@ package com.cannontech.web.api.dr.setup;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.setup.LoadGroupDigiSep;
@@ -26,8 +27,14 @@ public class LoadGroupDigiSepValidator extends LoadGroupSetupValidator<LoadGroup
     protected void doValidation(LoadGroupDigiSep loadGroup, Errors errors) {
 
         lmValidatorHelper.checkIfFieldRequired("deviceClassSet", errors, loadGroup.getDeviceClassSet(), "Device Class set");
-        // Utility Enrollment Group
 
+        if (!errors.hasFieldErrors("deviceClassSet")) {
+            if (CollectionUtils.isEmpty(loadGroup.getDeviceClassSet())) {
+                errors.rejectValue("deviceClassSet", key + "deviceClassSet.required");
+            }
+        }
+
+        // Utility Enrollment Group
         lmValidatorHelper.checkIfFieldRequired("utilityEnrollmentGroup", errors, loadGroup.getUtilityEnrollmentGroup(), "Utility Enrollment Group");
 
         if (!errors.hasFieldErrors("utilityEnrollmentGroup")) {
