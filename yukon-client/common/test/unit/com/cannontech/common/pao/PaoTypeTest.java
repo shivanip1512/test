@@ -1860,15 +1860,13 @@ public class PaoTypeTest {
         SAXBuilder builder = new SAXBuilder();
         builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         try {
-            Element rootElement = 
-                    builder.build(paoDisplayResource.getInputStream())
-                           .getRootElement();
-            
             Map<String, String> paoNames =
-                    rootElement.getChildren("entry")
-                               .stream()
-                               .collect(Collectors.toMap(e -> e.getAttribute("key").getValue(), 
-                                                         Element::getText));
+                    builder.build(paoDisplayResource.getInputStream())
+                           .getRootElement()
+                           .getChildren("entry")
+                           .stream()
+                           .collect(Collectors.toMap(e -> e.getAttribute("key").getValue(), 
+                                                     Element::getText));
             
             Arrays.stream(PaoType.values())
                     .map(PaoType::getFormatKey)
