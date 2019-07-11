@@ -161,6 +161,16 @@
     
     <bean class="com.cannontech.services.rfn.RfnArchiveQueueHandler"/>
 
+    <bean id="rfnNodeCommArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.RfnNodeCommArchiveRequestListener"/>
+    <jms:listener-container
+            connection-factory="connectionFactory"
+            destination-type="queue"
+            concurrency="2"
+            container-type="simple"
+            container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="com.eaton.eas.yukon.networkmanager.RfnNodeCommArchiveRequest" ref="rfnNodeCommArchiveRequestListener" method="handleArchiveRequest"/>
+    </jms:listener-container>
+    
     <bean id="rfnDeviceArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.RfnDeviceArchiveRequestListener"/>
     <jms:listener-container
             connection-factory="connectionFactory"

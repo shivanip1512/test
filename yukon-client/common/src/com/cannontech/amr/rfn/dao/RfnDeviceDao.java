@@ -7,6 +7,7 @@ import java.util.Set;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.core.dao.NotFoundException;
@@ -94,8 +95,8 @@ public interface RfnDeviceDao {
     /**
      * Creates mappings for gateway to device
      */
-    void saveDynamicRfnDeviceData(int gatewayId, List<Integer> deviceIds);
-
+    void saveDynamicRfnDeviceData(List<NodeComm> nodes);
+    
     /**
      * Returns list of devices for gateway
      */

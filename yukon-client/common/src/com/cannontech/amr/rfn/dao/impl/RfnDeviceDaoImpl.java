@@ -1,6 +1,8 @@
 package com.cannontech.amr.rfn.dao.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
@@ -24,6 +27,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
@@ -41,6 +45,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.message.DbChangeManager;
@@ -55,10 +60,12 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     private final static Logger log = YukonLogManager.getLogger(RfnDeviceDaoImpl.class);
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private JdbcTemplate template;
     @Autowired private AsyncDynamicDataSource dynamicDataSource;
     @Autowired private IDatabaseCache cache;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    @Autowired private DatabaseVendorResolver dbVendorResolver;
     private RfnAddressCache rfnIdentifierCache;
     
     private final static YukonRowMapper<RfnDevice> rfnDeviceRowMapper = new YukonRowMapper<RfnDevice>() {
@@ -377,19 +384,60 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         return rfnDevices;
     }
     
-    @Transactional
-    @Override
-    public void saveDynamicRfnDeviceData(int gatewayId, List<Integer> deviceIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        List<List<Object>> values = deviceIds.stream().map(deviceId -> {
-            List<Object> row = Lists.newArrayList(deviceId, gatewayId, new Instant());
-            return row;
-        }).collect(Collectors.toList());
-
-        sql.batchInsertInto("DynamicRfnDeviceData").columns("DeviceId", "GatewayId", "LastTransferTime").values(values);
-        jdbcTemplate.yukonBatchUpdate(sql);
+    
+   private static class DynamicRfnDeviceData {
+        private int deviceId;
+        private int gatewayId;
+        private Instant transferTime;
     }
     
+    @Transactional
+    @Override
+    public void saveDynamicRfnDeviceData(List<NodeComm> nodes) {
+        List<DynamicRfnDeviceData> data = new ArrayList<>();
+        nodes.forEach(comm -> {
+            if (!comm.getDeviceRfnIdentifier().is_Empty_() && comm.getGatewayRfnIdentifier() != null
+                && !comm.getGatewayRfnIdentifier().is_Empty_()) {
+                Integer deviceId = rfnIdentifierCache.getPaoIdFor(comm.getDeviceRfnIdentifier());
+                Integer gatewayId = rfnIdentifierCache.getPaoIdFor(comm.getGatewayRfnIdentifier());
+                DynamicRfnDeviceData deviceData = new DynamicRfnDeviceData();
+                deviceData.deviceId = deviceId;
+                deviceData.gatewayId = gatewayId;
+                deviceData.transferTime = new Instant(comm.getNodeCommStatusTimestamp());
+                data.add(deviceData);
+            }
+        });
+        if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {    
+            List<List<DynamicRfnDeviceData>> subSets = Lists.partition(data, ChunkingSqlTemplate.DEFAULT_SIZE/3); 
+            log.debug("Inserting {} rows", data.size());
+            subSets.forEach(part -> {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("WITH NMD_CTE (DeviceId, GatewayId, LastTransferTime) AS (");
+                sql.append("SELECT * FROM (");
+                sql.append("    VALUES ");
+                String params = part.stream()
+                        .map(node -> " (?,?,?)")
+                        .collect(Collectors.joining(","));
+                sql.append(params);
+                sql.append("    ) AS inner_query (DeviceId, GatewayId, LastTransferTime)");
+                sql.append(")");
+                sql.append("MERGE INTO DynamicRfnDeviceData DRDD");
+                sql.append("    USING NMD_CTE CACHE");
+                sql.append("    ON DRDD.DeviceId = CACHE.DeviceId");
+                sql.append("WHEN MATCHED THEN");
+                sql.append("    UPDATE SET DRDD.GatewayId = CACHE.GatewayId, DRDD.LastTransferTime = CACHE.LastTransferTime");
+                sql.append("WHEN NOT MATCHED THEN");
+                sql.append("    INSERT VALUES (CACHE.DeviceId, CACHE.GatewayId, CACHE.LastTransferTime);");
+                Object[] values = part.stream()
+                        .map(value -> Lists.newArrayList(value.deviceId, value.gatewayId, value.transferTime.toString()))
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toList())
+                        .toArray();
+                template.update(sql.getSql(), values);
+            });
+        }
+    }
+
     @Override
     public List<RfnDevice> getDevicesForGateway(int gatewayId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -400,7 +448,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         sql.append("WHERE dd.GatewayId").eq(gatewayId);
         return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }
-    
+        
     @Override
     public List<RfnIdentifier> getRfnIdentifiersForGateway(int gatewayId, int rowLimit) {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();

@@ -1,6 +1,7 @@
 package com.cannontech.common.rfn.service.impl;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -13,6 +14,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -40,6 +42,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     @Autowired private ConfigurationSource configSource;
     @Autowired private ScheduledExecutor executor;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
     
     private static final Logger log = YukonLogManager.getLogger(RfnMetadataMultiServiceImpl.class);
@@ -122,14 +125,13 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
 
     private void updatePrimaryGatewayToDeviceMapping(RfnMetadataMultiResponse response) {
         executor.execute(() -> {
-            Set<NodeComm> comms = response.getQueryResults().values().stream()
+            List<NodeComm> deviceToGateway = response.getQueryResults().values().stream()
                     .filter(result -> result.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM))
-                    .map(result -> {
-                        return (NodeComm) result.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
-                }).collect(Collectors.toSet());
-            
-            if(!comms.isEmpty()) {
-                log.debug("Updating device to gateway mapping for {} nodes", comms.size());
+                    .map(result -> { return (NodeComm) result.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM); })                  
+                    .collect(Collectors.toList());
+            if(!deviceToGateway.isEmpty()) {
+                log.debug("Updating device to gateway mapping for {} nodes", deviceToGateway.size());
+                rfnDeviceDao.saveDynamicRfnDeviceData(deviceToGateway);
             }
         });
     }

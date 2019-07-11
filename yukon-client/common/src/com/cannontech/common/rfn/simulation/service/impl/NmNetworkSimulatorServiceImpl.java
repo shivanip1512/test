@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -81,6 +82,7 @@ import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.node.NodeType;
+import com.cannontech.common.rfn.message.node.RfnNodeCommArchiveRequest;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
@@ -213,6 +215,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             
             log.info("Partitioned devices into parts:" + rfnDevicesSplit.size());
             
+            RfnNodeCommArchiveRequest request = new RfnNodeCommArchiveRequest();
+            request.setNodeComms(new HashMap<Long, NodeComm>());
+            AtomicLong ackId = new AtomicLong(1);
             for(int i = 0; i < gateways.size(); i++) {
                 RfnGateway gateway = gateways.get(i);
                 CubFoods cub = gatewayLocations.get(i);                
@@ -232,9 +237,16 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                 //map gateway to device
                 List<Integer> devicesIds = devicesForGateway.stream()
                     .map(device -> device.getLiteID()).collect(Collectors.toList());
-                rfnDeviceDao.saveDynamicRfnDeviceData(gateway.getPaoIdentifier().getPaoId() ,devicesIds);
+                rfnDeviceDao.getDevicesByPaoIds(devicesIds).forEach(device ->{
+                    NodeComm nodeComm = new NodeComm();
+                    nodeComm.setDeviceRfnIdentifier(device.getRfnIdentifier());
+                    nodeComm.setGatewayRfnIdentifier(gateway.getRfnIdentifier());
+                    nodeComm.setNodeCommStatus(NodeCommStatus.READY);
+                    nodeComm.setNodeCommStatusTimestamp(System.currentTimeMillis());
+                    request.getNodeComms().put(ackId.getAndIncrement(), nodeComm);
+                });
             }
-            
+            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_NODE_COMM_ARCHIVE.getQueue().getName(), request);
             log.info("Inserting " + newLocations.size() + " locations.");
             paoLocationDao.save(newLocations);
             log.info("Inserting " + newLocations.size() + " locations is done.");
@@ -384,8 +396,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         log.debug("RfnMetadataMultiRequest identifier {} metadatas {} gateway ids {} or rfn ids {}",
                             request.getRequestID(), request.getPrimaryNodesForGatewayRfnIdentifiers().size(),
                             request.getRfnIdentifiers().size(), request.getRfnMetadatas());
-                        
-                       // List<RfnMetadataMultiResponse> responses = getPartitionedMetadataMultiResponse(request);
 
                         RfnMetadataMultiResponse reply = getMetadataMultiResponse(request);
                         log.debug("RfnMetadataMultiRequest identifier {} response: {}",
@@ -409,25 +419,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = getResults(request);
         response.getQueryResults().putAll(results);
         return response;
-    }
-    
-
-    private List<RfnMetadataMultiResponse> getPartitionedMetadataMultiResponse(RfnMetadataMultiRequest request) {
-        List<RfnMetadataMultiResponse> responses = new ArrayList<>();
-        Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = getResults(request);
-        List<List<RfnIdentifier>> parts = Lists.partition(Lists.newArrayList(results.keySet()), 1000);
-        log.debug("--Split identifiers {} into {} parts", results.size(), parts.size());
-    
-        for (int i = 0; i < parts.size(); i++) {
-            RfnMetadataMultiResponse response = new RfnMetadataMultiResponse(request.getRequestID(), parts.size(), i + 1);
-            response.setResponseType(settings.getMetadataResponseType());
-            response.setQueryResults(new HashMap<>());
-            parts.get(i).forEach(identifier -> response.getQueryResults().put(identifier, results.get(identifier)));
-            responses.add(response);
-            log.debug("--Created response {} (of {}) query results {}", response.getSegmentNumber(),
-                response.getTotalSegments(), response.getQueryResults().size());
-        }
-        return responses;
     }
     
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> getResults(RfnMetadataMultiRequest request) {
