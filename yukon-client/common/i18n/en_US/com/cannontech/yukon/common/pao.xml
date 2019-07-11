@@ -97,7 +97,9 @@
 
     <entry key="yukon.common.pao.RFN410CL">RFN-410cL</entry>
     <entry key="yukon.common.pao.RFN420CL">RFN-420cL</entry>
+    <entry key="yukon.common.pao.RFN420CLW">RFN-420cLW</entry>
     <entry key="yukon.common.pao.RFN420CD">RFN-420cD</entry>
+    <entry key="yukon.common.pao.RFN420CDW">RFN-420cDW</entry>
 
     <entry key="yukon.common.pao.RFN430A3D">RFN-430A3D</entry>
     <entry key="yukon.common.pao.RFN430A3T">RFN-430A3T</entry>
@@ -181,6 +183,7 @@
     <entry key="yukon.common.pao.LM_NEST_PROGRAM">LM Nest Program</entry>
     <entry key="yukon.common.pao.LM_SEP_PROGRAM">LM SEP Program</entry>
     <entry key="yukon.common.pao.LM_ECOBEE_PROGRAM">LM ecobee Program</entry>
+    <entry key="yukon.common.pao.LM_METER_DISCONNECT_PROGRAM">LM Meter Disconnect Program</entry>
     <entry key="yukon.common.pao.LM_CONTROL_AREA">LM Control Area</entry>
     <entry key="yukon.common.pao.LM_SCENARIO">LM Scenario</entry>
 

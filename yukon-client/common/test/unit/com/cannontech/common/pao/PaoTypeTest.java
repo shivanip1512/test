@@ -2,12 +2,24 @@ package com.cannontech.common.pao;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
+import com.cannontech.common.stream.StreamUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 /**
@@ -15,6 +27,9 @@ import com.google.common.collect.Sets;
  */
 public class PaoTypeTest {
 
+    private static final ApplicationContext ctx = new ClassPathXmlApplicationContext();
+    private static final Resource paoDisplayResource = ctx.getResource("classpath:com/cannontech/yukon/common/pao.xml");
+    
     private static final ImmutableSet<PaoType> allTypes =
             ImmutableSet.of(PaoType.CCU710A,
                             PaoType.CCU711,
@@ -1839,5 +1854,29 @@ public class PaoTypeTest {
                  " does not match PaoType Strings.");
         }
     }
-    
+ 
+    @Test
+    public void testInternationalization() {
+        SAXBuilder builder = new SAXBuilder();
+        builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        try {
+            Element rootElement = 
+                    builder.build(paoDisplayResource.getInputStream())
+                           .getRootElement();
+            
+            Map<String, String> paoNames =
+                    rootElement.getChildren("entry")
+                               .stream()
+                               .collect(Collectors.toMap(e -> e.getAttribute("key").getValue(), 
+                                                         Element::getText));
+            
+            Arrays.stream(PaoType.values())
+                    .map(PaoType::getFormatKey)
+                    .forEach(formatKey -> 
+                        assertNotNull("Missing i18n key for " + formatKey, paoNames.get(formatKey)));
+
+        } catch (JDOMException | IOException e) {
+            fail("Unexpected exception: " + e);
+        }
+    }
 }
