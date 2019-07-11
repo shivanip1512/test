@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(Include.NON_NULL)
-@JsonIgnoreProperties(value = { "Id" }, allowGetters = true, ignoreUnknown = true)
+@JsonIgnoreProperties(value = { "controlAreaId" }, allowGetters = true, ignoreUnknown = true)
 public class ControlArea {
 
     private Integer controlAreaId;
