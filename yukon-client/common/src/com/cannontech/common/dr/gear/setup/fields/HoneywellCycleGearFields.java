@@ -11,7 +11,7 @@ public class HoneywellCycleGearFields implements ProgramGearFields {
 
     private Boolean rampInOut;
     private Integer controlPercent;
-    private Integer cyclePeriod;
+    private Integer cyclePeriodInMinutes;
 
     private HowToStopControl howToStopControl;
     private Integer capacityReduction;
@@ -26,12 +26,12 @@ public class HoneywellCycleGearFields implements ProgramGearFields {
         this.controlPercent = controlPercent;
     }
 
-    public Integer getCyclePeriod() {
-        return cyclePeriod;
+    public Integer getCyclePeriodInMinutes() {
+        return cyclePeriodInMinutes;
     }
 
-    public void setCyclePeriod(Integer cyclePeriod) {
-        this.cyclePeriod = cyclePeriod;
+    public void setCyclePeriodInMinutes(Integer cyclePeriodInMinutes) {
+        this.cyclePeriodInMinutes = cyclePeriodInMinutes;
     }
 
     public Boolean getRampInOut() {
@@ -73,7 +73,7 @@ public class HoneywellCycleGearFields implements ProgramGearFields {
         setHowToStopControl(HowToStopControl.valueOf(honeywellCycleGear.getMethodStopType()));
         setControlPercent(honeywellCycleGear.getControlPercent());
         setCapacityReduction(honeywellCycleGear.getPercentReduction());
-        setCyclePeriod(honeywellCycleGear.getCyclePeriod());
+        setCyclePeriodInMinutes(honeywellCycleGear.getCyclePeriod());
         setRampInOut(honeywellCycleGear.isFrontRampEnabled());
 
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
@@ -89,7 +89,7 @@ public class HoneywellCycleGearFields implements ProgramGearFields {
         honeywellCycleGear.setPercentReduction(getCapacityReduction());
         honeywellCycleGear.setControlPercent(getControlPercent());
         honeywellCycleGear.setFrontRampEnabled(getRampInOut());
-        honeywellCycleGear.setCyclePeriod(getCyclePeriod());
+        honeywellCycleGear.setCyclePeriod(getCyclePeriodInMinutes());
 
         whenToChangeFields.buildDBPersistent(honeywellCycleGear);
 

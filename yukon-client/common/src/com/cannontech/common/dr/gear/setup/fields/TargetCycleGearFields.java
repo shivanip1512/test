@@ -15,6 +15,9 @@ public class TargetCycleGearFields extends TrueCycleGearFields {
     private Double kWReduction;
 
     public Double getkWReduction() {
+        if (kWReduction == null) {
+            kWReduction = 0.0;
+        }
         return kWReduction;
     }
 
@@ -26,22 +29,14 @@ public class TargetCycleGearFields extends TrueCycleGearFields {
     public void buildDBPersistent(LMProgramDirectGear lmProgramDirectGear) {
         super.buildDBPersistent(lmProgramDirectGear);
         TargetCycleGear targetCycleGear = (TargetCycleGear) lmProgramDirectGear;
-        if (getkWReduction() != null) {
-            targetCycleGear.setKWReduction(getkWReduction());
-        } else {
-            targetCycleGear.setKWReduction(0.0);
-        }
+        targetCycleGear.setKWReduction(getkWReduction());
     }
 
     @Override
     public void buildModel(LMProgramDirectGear lmProgramDirectGear) {
         super.buildModel(lmProgramDirectGear);
         TargetCycleGear targetCycleGear = (TargetCycleGear) lmProgramDirectGear;
-        if (targetCycleGear.getKWReduction() != null) {
-            setkWReduction(targetCycleGear.getKWReduction());
-        } else {
-            setkWReduction(0.0);
-        }
+        setkWReduction(targetCycleGear.getKWReduction());
     }
 
 }

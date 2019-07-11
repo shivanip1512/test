@@ -84,14 +84,8 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
     @Override
     public int update(int programId, LoadProgram loadProgram) {
-        
-        Optional<LiteYukonPAObject> lmProgram =
-            dbCache.getAllLMPrograms().stream()
-                                      .filter(program -> program.getLiteID() == programId)
-                                      .findFirst();
-        if (lmProgram.isEmpty()) {
-            throw new NotFoundException("Id not found");
-        }
+        // Validate programId
+        getProgramFromCache(programId);
 
         LMProgramBase lmProgramBase = getDBPersistent(loadProgram.getProgramId(), loadProgram.getType());
         buildLMProgramBaseDBPersistent(lmProgramBase, loadProgram);
@@ -105,29 +99,20 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
     @Override
     public LoadProgram retrieve(int programId) {
-        Optional<LiteYukonPAObject> liteLoadProgram = dbCache.getAllLMPrograms()
-                .stream()
-                .filter(program -> program.getLiteID() == programId)
-                .findFirst();
- 
-        if (liteLoadProgram.isEmpty()) {
-            throw new NotFoundException("Id not found");
-        }
-        LMProgramBase lmProgramBase = (LMProgramBase) dbPersistentDao.retrieveDBPersistent(liteLoadProgram.get());
+        LiteYukonPAObject lmProgram = getProgramFromCache(programId);
+        LMProgramBase lmProgramBase = (LMProgramBase) dbPersistentDao.retrieveDBPersistent(lmProgram);
         return buildLoadProgramModel(lmProgramBase);
     }
 
     @Override
     public int delete(int programId, String programName) {
-        Optional<LiteYukonPAObject> loadProgram = dbCache.getAllLMPrograms().stream()
-                                                                            .filter( program -> program.getLiteID() == programId 
-                                                                                     && program.getPaoName().equals(programName))
-                                                                            .findFirst();
-        if (loadProgram.isEmpty()) {
-            throw new NotFoundException("Id and Name combination not found");
-        }
+        LiteYukonPAObject loadProgram = dbCache.getAllLMPrograms().stream()
+                                                                  .filter( program -> program.getLiteID() == programId 
+                                                                                     && program.getPaoName().equalsIgnoreCase(programName))
+                                                                  .findFirst()
+                                                                  .orElseThrow(() -> new NotFoundException("Id and Name combination not found"));;
 
-        YukonPAObject lmProgram = (YukonPAObject) LiteFactory.createDBPersistent(loadProgram.get());
+        YukonPAObject lmProgram = (YukonPAObject) LiteFactory.createDBPersistent(loadProgram);
         dbPersistentDao.performDBChange(lmProgram, TransactionType.DELETE);
 
         return lmProgram.getPAObjectID();
@@ -136,16 +121,9 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     @Override
     public int copy(int programId, LoadProgramCopy loadProgramCopy) {
 
-        Optional<LiteYukonPAObject> liteLoadProgram = dbCache.getAllLMPrograms()
-                .stream()
-                .filter(program -> program.getLiteID() == programId)
-                .findFirst();
+        LiteYukonPAObject lmProgram = getProgramFromCache(programId);
  
-        if (liteLoadProgram.isEmpty()) {
-            throw new NotFoundException("Id not found");
-        }
-
-        LMProgramBase program = (LMProgramBase) dbPersistentDao.retrieveDBPersistent(liteLoadProgram.get());
+        LMProgramBase program = (LMProgramBase) dbPersistentDao.retrieveDBPersistent(lmProgram);
         // old programId is used to get points 
         int oldProgramId = program.getPAObjectID();
 
@@ -163,10 +141,6 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         directBase.getLmProgramDirectGearVector().forEach(gear -> {
             gear.setGearID(null);
         });
-
-        if (loadProgramCopy.isCopyLoadGroups() != null && !loadProgramCopy.isCopyLoadGroups()) {
-            program.getLmProgramStorageVector().removeAllElements();
-        }
 
         if (loadProgramCopy.isCopyMemberControl() != null && !loadProgramCopy.isCopyMemberControl()) {
             program.getPAOExclusionVector().removeAllElements();
@@ -259,29 +233,29 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
             });
 
-            if (loadProgram.getNotification().getNotifyActiveOffset() != null) {
+            if (loadProgram.getNotification().getProgramStartInMinutes() != null) {
                 // Send 0 value from UI if selected
-                Integer programStart = loadProgram.getNotification().getNotifyActiveOffset();
+                Integer programStart = loadProgram.getNotification().getProgramStartInMinutes();
                 prog.getDirectProgram().setNotifyActiveOffset(programStart * 60);
             } else {
                 prog.getDirectProgram().setNotifyActiveOffset(-1);
             }
 
-            if (loadProgram.getNotification().getNotifyInactiveOffset() != null) {
+            if (loadProgram.getNotification().getProgramStopInMinutes() != null) {
                 // Send 0 value from UI if selected
-                Integer programStop = loadProgram.getNotification().getNotifyInactiveOffset();
+                Integer programStop = loadProgram.getNotification().getProgramStopInMinutes();
                 prog.getDirectProgram().setNotifyInactiveOffset(programStop * 60);
             } else {
                 prog.getDirectProgram().setNotifyInactiveOffset(-1);
             }
 
-            if (loadProgram.getNotification().getNotifyAdjust()) {
+            if (loadProgram.getNotification().getNotifyOnAdjust()) {
                 prog.getDirectProgram().setNotifyAdjust(LMProgramDirect.NOTIFY_ADJUST_ENABLED);
             } else {
                 prog.getDirectProgram().setNotifyAdjust(LMProgramDirect.NOTIFY_ADJUST_DISABLED);
             }
 
-            if (loadProgram.getNotification().getEnableSchedule()) {
+            if (loadProgram.getNotification().getEnableOnSchedule()) {
                 prog.getDirectProgram().setEnableSchedule(LMProgramDirect.NOTIFY_SCHEDULE_ENABLED);
             } else {
                 prog.getDirectProgram().setEnableSchedule(LMProgramDirect.NOTIFY_SCHEDULE_DISABLED);
@@ -342,10 +316,10 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
             Integer windowNumber) {
         LMProgramControlWindow window = new LMProgramControlWindow();
 
-        if (controlWindowFields != null && controlWindowFields.getAvailableStartTime() != null && controlWindowFields.getAvailableStopTime() != null) {
+        if (controlWindowFields != null && controlWindowFields.getAvailableStartTimeInMinutes() != null && controlWindowFields.getAvailableStopTimeInMinutes() != null) {
 
-            int startTimeInSeconds = controlWindowFields.getAvailableStartTime() * 60;
-            int stopTimeInSeconds = controlWindowFields.getAvailableStopTime() * 60;
+            int startTimeInSeconds = controlWindowFields.getAvailableStartTimeInMinutes() * 60;
+            int stopTimeInSeconds = controlWindowFields.getAvailableStopTimeInMinutes() * 60;
             if (stopTimeInSeconds < startTimeInSeconds) {
                 // make sure server knows that this is the next day
                 stopTimeInSeconds = stopTimeInSeconds + 86400;
@@ -530,18 +504,18 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         Integer numStop = lmProgramDirectBase.getDirectProgram().getNotifyInactiveOffset();
 
         if (numStart.intValue() != -1) {
-            notification.setNotifyActiveOffset(lmProgramDirectBase.getDirectProgram().getNotifyActiveOffset() / 60);
+            notification.setProgramStartInMinutes(lmProgramDirectBase.getDirectProgram().getNotifyActiveOffset() / 60);
         }
         if (numStop.intValue() != -1) {
-            notification.setNotifyInactiveOffset(lmProgramDirectBase.getDirectProgram().getNotifyInactiveOffset() / 60);
+            notification.setProgramStopInMinutes(lmProgramDirectBase.getDirectProgram().getNotifyInactiveOffset() / 60);
         }
         boolean isNotifyAdjust = lmProgramDirectBase.getDirectProgram().getNotifyAdjust() == LMProgramDirect.NOTIFY_ADJUST_ENABLED.intValue();
         if (isNotifyAdjust) {
-            notification.setNotifyAdjust(true);
+            notification.setNotifyOnAdjust(true);
         }
         boolean isNotifyWhenScheduled = lmProgramDirectBase.getDirectProgram().shouldNotifyWhenScheduled() == LMProgramDirect.NOTIFY_SCHEDULE_ENABLED.intValue();
         if (isNotifyWhenScheduled) {
-            notification.setEnableSchedule(true);
+            notification.setEnableOnSchedule(true);
         }
 
         if (CollectionUtils.isNotEmpty(notificationGroupList) || numStart.intValue() != -1 || numStop.intValue() != -1
@@ -596,17 +570,11 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
     @Override
     public List<ProgramGroup> getAvailableProgramLoadGroups(int programId) {
-        Optional<LiteYukonPAObject> lmProgram =
-                dbCache.getAllLMPrograms().stream()
-                                          .filter(program -> program.getLiteID() == programId)
-                                          .findFirst();
-        if (lmProgram.isEmpty()) {
-            throw new NotFoundException("Id not found");
-        }
-        LiteYukonPAObject program = lmProgram.get();
-        LMProgramDirectBase dirProg = (LMProgramDirectBase) getDBPersistent(program.getLiteID(), program.getPaoType());
+        LiteYukonPAObject lmProgram = getProgramFromCache(programId);
 
-        List<ProgramGroup> programGroups = getAllProgramLoadGroups(program.getPaoType());
+        LMProgramDirectBase dirProg = (LMProgramDirectBase) getDBPersistent(lmProgram.getLiteID(), lmProgram.getPaoType());
+
+        List<ProgramGroup> programGroups = getAllProgramLoadGroups(lmProgram.getPaoType());
 
         List<ProgramGroup> availableProgramLoadGroups = programGroups.stream()
                                                 .filter(group -> dirProg.getLmProgramStorageVector().stream()
@@ -689,15 +657,10 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
     @Override
     public List<NotificationGroup> getAvailableProgramNotificationGroups(int programId) {
-        Optional<LiteYukonPAObject> lmProgram =
-                dbCache.getAllLMPrograms().stream()
-                                          .filter(program -> program.getLiteID() == programId)
-                                          .findFirst();
-        if (lmProgram.isEmpty()) {
-            throw new NotFoundException("Id not found");
-        }
 
-        LMProgramDirectBase dirProg = (LMProgramDirectBase) getDBPersistent(lmProgram.get().getLiteID(), lmProgram.get().getPaoType());
+        LiteYukonPAObject lmProgram = getProgramFromCache(programId);
+
+        LMProgramDirectBase dirProg = (LMProgramDirectBase) getDBPersistent(lmProgram.getLiteID(), lmProgram.getPaoType());
         List<NotificationGroup> notificationGroups = getAllProgramNotificationGroups();
 
         List<NotificationGroup> availableNotificationGroups =
@@ -736,27 +699,19 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     public List<ProgramDirectMemberControl> getAvailableDirectMemberControls(int programId) {
 
         List<LiteYukonPAObject> programs = dbCache.getAllLMPrograms();
-        
-        Optional<LiteYukonPAObject> lmProgram =
-                programs.stream()
-                             .filter(program -> program.getLiteID() == programId)
-                             .findFirst();
-        if (lmProgram.isEmpty()) {
-            throw new NotFoundException("Id not found");
-        }
 
-        LMProgramDirectBase dirProg = (LMProgramDirectBase) getDBPersistent(lmProgram.get().getLiteID(), lmProgram.get().getPaoType());
+        LiteYukonPAObject lmProgram = getProgramFromCache(programId);
 
+        LMProgramDirectBase dirProg = (LMProgramDirectBase) getDBPersistent(lmProgram.getLiteID(), lmProgram.getPaoType());
 
         List<LiteLMPAOExclusion> currentlyExcluded = dbCache.getAllLMPAOExclusions();
 
         // init storage that will contain exclusion (member control) information
         // make sure this program itself isn't showing up as an available subordinate
-        List<LiteYukonPAObject> lmSubordinates =
-                programs.stream()
-                         .filter(program -> (program.getPaoType().isDirectProgram()
-                                 && !(isMasterProgram(program.getLiteID(), currentlyExcluded)) && (program.getLiteID() != programId)))
-                         .collect(Collectors.toList());
+        List<LiteYukonPAObject> lmSubordinates = programs.stream()
+                                                         .filter(program -> (program.getPaoType().isDirectProgram()
+                                                                 && !(isMasterProgram(program.getLiteID(), currentlyExcluded)) && (program.getLiteID() != programId)))
+                                                         .collect(Collectors.toList());
 
         List<LiteYukonPAObject> availableLmSubordinates =
                 lmSubordinates.stream()
@@ -788,7 +743,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
             isMasterProgram =
                     liteLMPAOExclusions.stream()
-                       .anyMatch(paoExclusion -> programId == paoExclusion.getMasterPaoID());
+                                       .anyMatch(paoExclusion -> programId == paoExclusion.getMasterPaoID());
 
         }
         return isMasterProgram;
@@ -798,10 +753,10 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     public List<ProgramDetails> getAvailablePrograms() {
         List<Integer> programIdsInControlArea = LMControlAreaProgram.getAllProgramsInControlAreas();
         return programIdsInControlArea.stream()
-                .map(programId -> dbCache.getAllPaosMap().get(programId))
-                .filter(program -> program.getPaoType().isDirectProgram())
-                .map(program -> buildProgramDetails(program))
-                .collect(Collectors.toList());
+                                      .map(programId -> dbCache.getAllPaosMap().get(programId))
+                                      .filter(program -> program.getPaoType().isDirectProgram())
+                                      .map(program -> buildProgramDetails(program))
+                                      .collect(Collectors.toList());
     }
 
     private ProgramDetails buildProgramDetails(LiteYukonPAObject program) {
@@ -812,4 +767,11 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         return programDetails;
     }
 
+    LiteYukonPAObject getProgramFromCache(int programId) {
+        LiteYukonPAObject lmProgram = dbCache.getAllLMPrograms().stream()
+                                                                .filter(program -> program.getLiteID() == programId)
+                                                                .findFirst()
+                                                                .orElseThrow(() -> new NotFoundException("Id not found"));
+        return lmProgram;
+    }
 }

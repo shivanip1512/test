@@ -14,7 +14,7 @@ public class ItronCycleGearFields implements ProgramGearFields {
     private Boolean rampIn;
     private Boolean rampOut;
     private Integer dutyCyclePercent;
-    private Integer dutyCyclePeriod;
+    private Integer dutyCyclePeriodInMinutes;
     private Integer criticality;
     private Integer capacityReduction;
     private HowToStopControl howToStopControl;
@@ -36,12 +36,12 @@ public class ItronCycleGearFields implements ProgramGearFields {
         this.cycleType = cycleType;
     }
 
-    public Integer getDutyCyclePeriod() {
-        return dutyCyclePeriod;
+    public Integer getDutyCyclePeriodInMinutes() {
+        return dutyCyclePeriodInMinutes;
     }
 
-    public void setDutyCyclePeriod(Integer dutyCyclePeriod) {
-        this.dutyCyclePeriod = dutyCyclePeriod;
+    public void setDutyCyclePeriodInMinutes(Integer dutyCyclePeriodInMinutes) {
+        this.dutyCyclePeriodInMinutes = dutyCyclePeriodInMinutes;
     }
 
     public Integer getDutyCyclePercent() {
@@ -102,7 +102,7 @@ public class ItronCycleGearFields implements ProgramGearFields {
         setRampIn(itronCycleGear.isFrontRampEnabled());
         setRampOut(itronCycleGear.isBackRampEnabled());
         setCriticality(itronCycleGear.getCriticality());
-        setDutyCyclePeriod(itronCycleGear.getCyclePeriod());
+        setDutyCyclePeriodInMinutes(itronCycleGear.getCyclePeriod());
         setCycleType(ItronCycleType.of(itronCycleGear.getCycleType()));
 
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
@@ -120,7 +120,7 @@ public class ItronCycleGearFields implements ProgramGearFields {
         itronCycleGear.setFrontRampEnabled(getRampIn());
         itronCycleGear.setBackRampEnabled(getRampOut());
         itronCycleGear.setCriticality(getCriticality());
-        itronCycleGear.setCyclePeriod(getDutyCyclePeriod());
+        itronCycleGear.setCyclePeriod(getDutyCyclePeriodInMinutes());
         itronCycleGear.setCycleType(getCycleType().toString());
 
         whenToChangeFields.buildDBPersistent(programDirectGear);

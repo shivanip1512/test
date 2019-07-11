@@ -1,6 +1,6 @@
 package com.cannontech.common.dr.gear.setup.fields;
 
-import com.cannontech.common.dr.gear.setup.BTPLEDIndicator;
+import com.cannontech.common.dr.gear.setup.BtpLedIndicator;
 import com.cannontech.database.data.device.lm.BeatThePeakGear;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.loadcontrol.gear.model.BeatThePeakGearContainer;
@@ -10,33 +10,33 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class BeatThePeakGearFields implements ProgramGearFields {
 
-    private BTPLEDIndicator indicator;
-    private Integer timeout;
-    private Integer resend;
+    private BtpLedIndicator indicator;
+    private Integer timeoutInMinutes;
+    private Integer resendInMinutes;
 
     WhenToChangeFields whenToChangeFields;
 
-    public Integer getTimeout() {
-        return timeout;
+    public Integer getTimeoutInMinutes() {
+        return timeoutInMinutes;
     }
 
-    public void setTimeout(Integer timeout) {
-        this.timeout = timeout;
+    public void setTimeoutInMinutes(Integer timeoutInMinutes) {
+        this.timeoutInMinutes = timeoutInMinutes;
     }
 
-    public Integer getResend() {
-        return resend;
+    public Integer getResendInMinutes() {
+        return resendInMinutes;
     }
 
-    public void setResend(Integer resend) {
-        this.resend = resend;
+    public void setResendInMinutes(Integer resendInMinutes) {
+        this.resendInMinutes = resendInMinutes;
     }
 
-    public BTPLEDIndicator getIndicator() {
+    public BtpLedIndicator getIndicator() {
         return indicator;
     }
 
-    public void setIndicator(BTPLEDIndicator indicator) {
+    public void setIndicator(BtpLedIndicator indicator) {
         this.indicator = indicator;
     }
 
@@ -52,12 +52,12 @@ public class BeatThePeakGearFields implements ProgramGearFields {
     public void buildModel(LMProgramDirectGear directGear) {
         BeatThePeakGear beatThePeakGear = (BeatThePeakGear) directGear;
 
-        setTimeout(beatThePeakGear.getTimeout());
-        setResend(beatThePeakGear.getResend() / 60);
+        setTimeoutInMinutes(beatThePeakGear.getTimeout());
+        setResendInMinutes(beatThePeakGear.getResend() / 60);
 
         BeatThePeakGearContainer tgc = beatThePeakGear.getTierGearContainer();
         String alertLevel = tgc.getAlertLevel();
-        setIndicator(BTPLEDIndicator.valueOf(alertLevel));
+        setIndicator(BtpLedIndicator.valueOf(alertLevel));
 
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
         whenToChangeFields.buildModel(directGear);
@@ -68,8 +68,8 @@ public class BeatThePeakGearFields implements ProgramGearFields {
     public void buildDBPersistent(LMProgramDirectGear directGear) {
         BeatThePeakGear beatThePeakGear = (BeatThePeakGear) directGear;
 
-        beatThePeakGear.setTimeout(getTimeout());
-        beatThePeakGear.setResend(getResend() * 60);
+        beatThePeakGear.setTimeout(getTimeoutInMinutes());
+        beatThePeakGear.setResend(getResendInMinutes() * 60);
 
         BeatThePeakGearContainer btpContainer = new BeatThePeakGearContainer();
         btpContainer.setAlertLevel(getIndicator().name());

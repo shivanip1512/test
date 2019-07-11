@@ -24,7 +24,7 @@ public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
     @Override
     protected void doValidation(MacroLoadGroup loadGroup, Errors errors) {
 
-        lmValidatorHelper.checkIfEmptyPaoType(errors);
+        lmValidatorHelper.checkIfFieldRequired("type", errors, loadGroup.getType(), "Type");
         lmValidatorHelper.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Group Name");
 
         if (!errors.hasFieldErrors("type")) {

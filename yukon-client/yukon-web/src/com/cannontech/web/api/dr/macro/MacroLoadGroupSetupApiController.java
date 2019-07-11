@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.MacroLoadGroup;
-import com.cannontech.dr.macro.service.MacroLoadGroupSetupService;
+import com.cannontech.dr.macro.service.impl.MacroLoadGroupSetupServiceImpl;
 import com.cannontech.web.api.dr.setup.LMCopyValidator;
 import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 
@@ -28,7 +28,7 @@ import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 @RequestMapping("/dr/setup/macroLoadGroup")
 public class MacroLoadGroupSetupApiController {
 
-    @Autowired MacroLoadGroupSetupService macroLoadGroupService;
+    @Autowired MacroLoadGroupSetupServiceImpl macroLoadGroupService;
     @Autowired MacroLoadGroupValidator macroLoadGroupValidator;
     @Autowired LMDeleteValidator lmDeleteValidator;
     @Autowired LMCopyValidator lmCopyValidator;

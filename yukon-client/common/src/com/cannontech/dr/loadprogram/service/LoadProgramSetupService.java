@@ -9,36 +9,9 @@ import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
 import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.dr.setup.service.LMSetupService;
 
-public interface LoadProgramSetupService {
-
-    /**
-     * Create the load program.
-     */
-    int create(LoadProgram loadProgram);
-
-    /**
-     * Retrieve load Program for the programId.
-     */
-    LoadProgram retrieve(int programId);
-
-    /**
-     * Delete the load program.
-     */
-
-    int delete(int programId, String programName);
-
-    /**
-     * Copy the load program.
-     */
-
-    int copy(int programId, LoadProgramCopy loadProgramCopy);
-
-    /**
-     * Update the load program.
-     */
-
-    int update(int programId, LoadProgram loadProgram);
+public interface LoadProgramSetupService extends LMSetupService<LoadProgram, LoadProgramCopy> {
 
     /**
      * Get all program Notification Groups.
@@ -77,5 +50,4 @@ public interface LoadProgramSetupService {
      */
 
     List<ProgramDetails> getAvailablePrograms();
-
 }

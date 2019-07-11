@@ -2,10 +2,13 @@ package com.cannontech.common.dr.gear.setup;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum AbsoluteOrDelta implements DisplayableEnum {
+/**
+ * This enum represent database store values and a part of request.
+ */
+public enum BtpLedIndicator implements DisplayableEnum {
 
-    ABSOLUTE,
-    DELTA;
+    Yellow,
+    Red;
 
     private String baseKey = "yukon.web.modules.dr.setup.gear.";
 
@@ -15,3 +18,4 @@ public enum AbsoluteOrDelta implements DisplayableEnum {
     }
 
 }
+

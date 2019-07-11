@@ -120,9 +120,12 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.type.invalid">Invalid macro load group type</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.deviceClassSet.required">At least one device class set must be assigned</entry>
 
+<!-- Load Program Validation -->
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.constraintId.doesNotExist">Constraint Id does not exist.</entry>
+
 <!-- Gear setup -->
-<entry key="yukon.web.modules.dr.setup.gear.Absolute">Absolutes</entry>
-<entry key="yukon.web.modules.dr.setup.gear.Delta">Delta</entry>
+<entry key="yukon.web.modules.dr.setup.gear.ABSOLUTE">Absolutes</entry>
+<entry key="yukon.web.modules.dr.setup.gear.DELTA">Delta</entry>
 <entry key="yukon.web.modules.dr.setup.gear.Yellow">Yellow</entry>
 <entry key="yukon.web.modules.dr.setup.gear.Red">Red</entry>
 <entry key="yukon.web.modules.dr.setup.gear.FixedCount">Fixed Count</entry>
@@ -138,13 +141,13 @@
 <entry key="yukon.web.modules.dr.setup.gear.StopCycle">Stop Cycle</entry>
 <entry key="yukon.web.modules.dr.setup.gear.RampOutTimeIn">Ramp Out/Time In</entry>
 <entry key="yukon.web.modules.dr.setup.gear.RampOutRestore">Ramp Out/Restore</entry>
-<entry key="yukon.web.modules.dr.setup.gear.Heat">Heat Mode</entry>
-<entry key="yukon.web.modules.dr.setup.gear.Cool">Cool Mode</entry>
+<entry key="yukon.web.modules.dr.setup.gear.HEAT">Heat Mode</entry>
+<entry key="yukon.web.modules.dr.setup.gear.COOL">Cool Mode</entry>
 <entry key="yukon.web.modules.dr.setup.gear.Automatic">Automatic</entry>
 <entry key="yukon.web.modules.dr.setup.gear.ManualOnly">Manual Only</entry>
 <entry key="yukon.web.modules.dr.setup.gear.Timed">Timed</entry>
-<entry key="yukon.web.modules.dr.setup.gear.FirstInFirstOut">First In First Out</entry>
-<entry key="yukon.web.modules.dr.setup.gear.Random">Random</entry>
+<entry key="yukon.web.modules.dr.setup.gear.FIRSTINFIRSTOUT">First In First Out</entry>
+<entry key="yukon.web.modules.dr.setup.gear.RANDOM">Random</entry>
 <entry key="yukon.web.modules.dr.setup.gear.CELSIUS">Celsius</entry>
 <entry key="yukon.web.modules.dr.setup.gear.FAHRENHEIT">Fahrenheit</entry>
 <entry key="yukon.web.modules.dr.setup.gear.None">Manually Only</entry>

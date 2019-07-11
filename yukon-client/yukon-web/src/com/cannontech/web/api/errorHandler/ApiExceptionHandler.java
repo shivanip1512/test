@@ -90,31 +90,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
-
-    // 403
-    @ExceptionHandler({ HoneywellProcessingException.class })
-    public ResponseEntity<Object> handleForbiddenException(final Exception ex, final WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-
-        final ApiError apiError = new ApiError(HttpStatus.FORBIDDEN.value(), ex.getMessage(), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.FORBIDDEN);
-    }
     
-    @ExceptionHandler({ LoadProgramProcessingException.class })
-    public ResponseEntity<Object> loadProgramProcessingException(final Exception ex, final WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-
-        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-
-    // 403
-    @ExceptionHandler({ MacroLoadGroupProcessingException.class })
-    public ResponseEntity<Object> handleMacroLoadGroupException(final Exception ex, final WebRequest request) {
+    @ExceptionHandler({ LoadProgramProcessingException.class, MacroLoadGroupProcessingException.class,
+        HoneywellProcessingException.class })
+    public ResponseEntity<Object> hanldeProcessingException(final Exception ex, final WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();
         logApiException(request, ex, uniqueKey);

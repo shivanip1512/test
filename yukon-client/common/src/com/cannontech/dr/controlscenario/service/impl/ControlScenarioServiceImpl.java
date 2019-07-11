@@ -1,9 +1,11 @@
 package com.cannontech.dr.controlscenario.service.impl;
 
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.dr.setup.ControlScenario;
+import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -14,10 +16,10 @@ import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
-import com.cannontech.dr.controlscenario.service.ControlScenarioService;
+import com.cannontech.dr.setup.service.LMSetupService;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class ControlScenarioServiceImpl implements ControlScenarioService {
+public class ControlScenarioServiceImpl implements LMSetupService <ControlScenario, LMCopy> {
 
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private LMServiceHelper lmServiceHelper;
@@ -86,6 +88,11 @@ public class ControlScenarioServiceImpl implements ControlScenarioService {
             lmScenario = (LMScenario) dbPersistentDao.retrieveDBPersistent(pao);
         }
         return lmScenario;
+    }
+
+    @Override
+    public int copy(int id, LMCopy lmCopy) {
+        throw new UnsupportedOperationException("Not supported copy operation");
     }
 
 }

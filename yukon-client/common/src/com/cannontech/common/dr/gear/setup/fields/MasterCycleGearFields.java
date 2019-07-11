@@ -12,16 +12,16 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class MasterCycleGearFields implements ProgramGearFields {
 
     private Integer controlPercent;
-    private Integer cyclePeriod;
+    private Integer cyclePeriodInMinutes;
     private GroupSelectionMethod groupSelectionMethod;
 
     private Integer rampInPercent;
-    private Integer rampInInterval;
+    private Integer rampInIntervalInSeconds;
 
     private HowToStopControl howToStopControl;
     private StopOrder stopOrder;
     private Integer rampOutPercent;
-    private Integer rampOutInterval;
+    private Integer rampOutIntervalInSeconds;;
 
     private Integer capacityReduction;
 
@@ -35,12 +35,12 @@ public class MasterCycleGearFields implements ProgramGearFields {
         this.controlPercent = controlPercent;
     }
 
-    public Integer getCyclePeriod() {
-        return cyclePeriod;
+    public Integer getCyclePeriodInMinutes() {
+        return cyclePeriodInMinutes;
     }
 
-    public void setCyclePeriod(Integer cyclePeriod) {
-        this.cyclePeriod = cyclePeriod;
+    public void setCyclePeriodInMinutes(Integer cyclePeriodInMinutes) {
+        this.cyclePeriodInMinutes = cyclePeriodInMinutes;
     }
 
     public Integer getRampOutPercent() {
@@ -51,14 +51,6 @@ public class MasterCycleGearFields implements ProgramGearFields {
         this.rampOutPercent = rampOutPercent;
     }
 
-    public Integer getRampOutInterval() {
-        return rampOutInterval;
-    }
-
-    public void setRampOutInterval(Integer rampOutInterval) {
-        this.rampOutInterval = rampOutInterval;
-    }
-
     public Integer getRampInPercent() {
         return rampInPercent;
     }
@@ -67,12 +59,20 @@ public class MasterCycleGearFields implements ProgramGearFields {
         this.rampInPercent = rampInPercent;
     }
 
-    public Integer getRampInInterval() {
-        return rampInInterval;
+    public Integer getRampInIntervalInSeconds() {
+        return rampInIntervalInSeconds;
     }
 
-    public void setRampInInterval(Integer rampInInterval) {
-        this.rampInInterval = rampInInterval;
+    public void setRampInIntervalInSeconds(Integer rampInIntervalInSeconds) {
+        this.rampInIntervalInSeconds = rampInIntervalInSeconds;
+    }
+
+    public Integer getRampOutIntervalInSeconds() {
+        return rampOutIntervalInSeconds;
+    }
+
+    public void setRampOutIntervalInSeconds(Integer rampOutIntervalInSeconds) {
+        this.rampOutIntervalInSeconds = rampOutIntervalInSeconds;
     }
 
     public HowToStopControl getHowToStopControl() {
@@ -122,37 +122,37 @@ public class MasterCycleGearFields implements ProgramGearFields {
 
         if (masterCycleGear.getMethodStopType().compareTo(LMProgramDirectGear.STOP_RAMP_OUT_FIFO) == 0) {
             setHowToStopControl(HowToStopControl.RampOutTimeIn);
-            setStopOrder(StopOrder.FirstInFirstOut);
+            setStopOrder(StopOrder.FIRSTINFIRSTOUT);
             setRampOutPercent(masterCycleGear.getRampOutPercent());
-            setRampOutInterval(masterCycleGear.getRampOutInterval());
+            setRampOutIntervalInSeconds(masterCycleGear.getRampOutInterval());
         } else if (masterCycleGear.getMethodStopType().compareTo(LMProgramDirectGear.STOP_RAMP_OUT_RANDOM) == 0) {
             setHowToStopControl(HowToStopControl.RampOutTimeIn);
-            setStopOrder(StopOrder.Random);
+            setStopOrder(StopOrder.RANDOM);
             setRampOutPercent(masterCycleGear.getRampOutPercent());
-            setRampOutInterval(masterCycleGear.getRampOutInterval());
+            setRampOutIntervalInSeconds(masterCycleGear.getRampOutInterval());
         } else if (masterCycleGear.getMethodStopType().compareTo(LMProgramDirectGear.STOP_RAMP_OUT_FIFO_RESTORE) == 0) {
             setHowToStopControl(HowToStopControl.RampOutRestore);
-            setStopOrder(StopOrder.FirstInFirstOut);
+            setStopOrder(StopOrder.FIRSTINFIRSTOUT);
             setRampOutPercent(masterCycleGear.getRampOutPercent());
-            setRampOutInterval(masterCycleGear.getRampOutInterval());
+            setRampOutIntervalInSeconds(masterCycleGear.getRampOutInterval());
         } else if (lmProgramDirectGear.getMethodStopType().compareTo(
             LMProgramDirectGear.STOP_RAMP_OUT_RANDOM_RESTORE) == 0) {
             setHowToStopControl(HowToStopControl.RampOutRestore);
-            setStopOrder(StopOrder.Random);
+            setStopOrder(StopOrder.RANDOM);
             setRampOutPercent(masterCycleGear.getRampOutPercent());
-            setRampOutInterval(masterCycleGear.getRampOutInterval());
+            setRampOutIntervalInSeconds(masterCycleGear.getRampOutInterval());
         } else {
             setHowToStopControl(HowToStopControl.valueOf(masterCycleGear.getMethodStopType()));
         }
 
         if (masterCycleGear.getRampInPercent().intValue() != 0 && masterCycleGear.getRampInInterval().intValue() != 0) {
-            setRampInInterval(masterCycleGear.getRampInInterval());
+            setRampInIntervalInSeconds(masterCycleGear.getRampInInterval());
             setRampInPercent(masterCycleGear.getRampInPercent());
         }
 
         setCapacityReduction(masterCycleGear.getPercentReduction());
         setControlPercent(masterCycleGear.getControlPercent());
-        setCyclePeriod(masterCycleGear.getCyclePeriodLength() / 60);
+        setCyclePeriodInMinutes(masterCycleGear.getCyclePeriodLength() / 60);
         setGroupSelectionMethod(GroupSelectionMethod.valueOf(masterCycleGear.getGroupSelectionMethod()));
 
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
@@ -165,13 +165,13 @@ public class MasterCycleGearFields implements ProgramGearFields {
         MasterCycleGear masterCycleGear = (MasterCycleGear) programDirectGear;
 
         if (getHowToStopControl() == HowToStopControl.RampOutTimeIn) {
-            if (getStopOrder() == StopOrder.FirstInFirstOut) {
+            if (getStopOrder() == StopOrder.FIRSTINFIRSTOUT) {
                 masterCycleGear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_FIFO);
             } else {
                 masterCycleGear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_RANDOM);
             }
             masterCycleGear.setRampOutPercent(getRampOutPercent());
-            Integer interval = getRampOutInterval();
+            Integer interval = getRampOutIntervalInSeconds();
             if (interval != null) {
                 masterCycleGear.setRampOutInterval(interval);
 
@@ -179,13 +179,13 @@ public class MasterCycleGearFields implements ProgramGearFields {
                 masterCycleGear.setRampOutInterval(0);
             }
         } else if (getHowToStopControl() == HowToStopControl.RampOutRestore) {
-            if (getStopOrder() == StopOrder.FirstInFirstOut) {
+            if (getStopOrder() == StopOrder.FIRSTINFIRSTOUT) {
                 masterCycleGear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_FIFO_RESTORE);
             } else {
                 masterCycleGear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_RANDOM_RESTORE);
             }
             masterCycleGear.setRampOutPercent(getRampOutPercent());
-            Integer interval = getRampOutInterval();
+            Integer interval = getRampOutIntervalInSeconds();
             if (interval != null) {
                 masterCycleGear.setRampOutInterval(interval);
             } else {
@@ -195,14 +195,14 @@ public class MasterCycleGearFields implements ProgramGearFields {
             masterCycleGear.setMethodStopType(getHowToStopControl().name());
         }
 
-        if (getRampInPercent() != null && getRampInInterval() != null) {
+        if (getRampInPercent() != null && getRampInIntervalInSeconds() != null) {
             masterCycleGear.setRampInPercent(getRampInPercent());
-            masterCycleGear.setRampInInterval(getRampInInterval());
+            masterCycleGear.setRampInInterval(getRampInIntervalInSeconds());
         }
 
         masterCycleGear.setPercentReduction(getCapacityReduction());
         masterCycleGear.setControlPercent(getControlPercent());
-        masterCycleGear.setCyclePeriodLength(getControlPercent() * 60);
+        masterCycleGear.setCyclePeriodLength(getCyclePeriodInMinutes() * 60);
         masterCycleGear.setGroupSelectionMethod(getGroupSelectionMethod().name());
 
         whenToChangeFields.buildDBPersistent(programDirectGear);

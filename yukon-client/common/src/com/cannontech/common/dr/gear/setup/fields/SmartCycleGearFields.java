@@ -16,7 +16,7 @@ public class SmartCycleGearFields implements ProgramGearFields {
 
     private Boolean noRamp;
     private Integer controlPercent;
-    private Integer cyclePeriod;
+    private Integer cyclePeriodInMinutes;
     private CycleCountSendType cycleCountSendType;
     private String maxCycleCount;
     private Integer startingPeriodCount;
@@ -45,12 +45,12 @@ public class SmartCycleGearFields implements ProgramGearFields {
         this.controlPercent = controlPercent;
     }
 
-    public Integer getCyclePeriod() {
-        return cyclePeriod;
+    public Integer getCyclePeriodInMinutes() {
+        return cyclePeriodInMinutes;
     }
 
-    public void setCyclePeriod(Integer cyclePeriod) {
-        this.cyclePeriod = cyclePeriod;
+    public void setCyclePeriodInMinutes(Integer cyclePeriodInMinutes) {
+        this.cyclePeriodInMinutes = cyclePeriodInMinutes;
     }
 
     public CycleCountSendType getCycleCountSendType() {
@@ -125,7 +125,7 @@ public class SmartCycleGearFields implements ProgramGearFields {
         setHowToStopControl(HowToStopControl.valueOf(smartCycleGear.getMethodStopType()));
         setControlPercent(smartCycleGear.getControlPercent());
         setStopCommandRepeat(smartCycleGear.getStopCommandRepeat());
-        setCyclePeriod(smartCycleGear.getCyclePeriodLength() / 60);
+        setCyclePeriodInMinutes(smartCycleGear.getCyclePeriodLength() / 60);
         setStartingPeriodCount(smartCycleGear.getStartingPeriodCnt());
         setSendRate(TimeIntervals.fromSeconds(smartCycleGear.getResendRate()));
 
@@ -156,7 +156,7 @@ public class SmartCycleGearFields implements ProgramGearFields {
         smartCycleGear.setPercentReduction(getCapacityReduction());
         smartCycleGear.setStopCommandRepeat(getStopCommandRepeat());
         smartCycleGear.setControlPercent(getControlPercent());
-        smartCycleGear.setCyclePeriodLength(getCyclePeriod() * 60);
+        smartCycleGear.setCyclePeriodLength(getCyclePeriodInMinutes() * 60);
         smartCycleGear.setStartingPeriodCnt(getStartingPeriodCount());
 
         Integer sendRate = getSendRate().getSeconds();

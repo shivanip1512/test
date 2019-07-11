@@ -29,11 +29,6 @@ public class LMValidatorHelper {
         }
     }
 
-    // Type
-    public void checkIfEmptyPaoType(Errors errors) {
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", key + "required", new Object[] { "Type" });
-    }
-
     public void validateName(String paoName, Errors errors, String fieldName) {
         checkIfFieldRequired("name", errors, paoName, fieldName);
         if (!errors.hasFieldErrors("name")) {
@@ -49,7 +44,7 @@ public class LMValidatorHelper {
         if (!errors.hasFieldErrors("name")) {
             String paoId = ServletUtils.getPathVariable("id");
             // Check if pao name already exists
-            if (type != null && (paoId == null || !(paoDao.getYukonPAOName(Integer.valueOf(paoId)).equals(paoName)))) {
+            if (type != null && (paoId == null || !(paoDao.getYukonPAOName(Integer.valueOf(paoId)).equalsIgnoreCase(paoName)))) {
                 validateUniquePaoName(paoName, type, errors, fieldName);
             }
         }

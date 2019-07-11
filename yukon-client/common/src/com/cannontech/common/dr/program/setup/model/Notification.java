@@ -8,43 +8,43 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class Notification {
 
-    private Integer notifyActiveOffset;
-    private Integer notifyInactiveOffset;
-    private Boolean notifyAdjust;
-    private Boolean enableSchedule;
+    private Integer programStartInMinutes;
+    private Integer programStopInMinutes;
+    private Boolean notifyOnAdjust;
+    private Boolean enableOnSchedule;
     @JsonInclude(Include.NON_EMPTY)
     private List<NotificationGroup> assignedNotificationGroups;
 
-    public Integer getNotifyActiveOffset() {
-        return notifyActiveOffset;
+    public Integer getProgramStartInMinutes() {
+        return programStartInMinutes;
     }
 
-    public void setNotifyActiveOffset(Integer notifyActiveOffset) {
-        this.notifyActiveOffset = notifyActiveOffset;
+    public void setProgramStartInMinutes(Integer programStartInMinutes) {
+        this.programStartInMinutes = programStartInMinutes;
     }
 
-    public Integer getNotifyInactiveOffset() {
-        return notifyInactiveOffset;
+    public Integer getProgramStopInMinutes() {
+        return programStopInMinutes;
     }
 
-    public void setNotifyInactiveOffset(Integer notifyInactiveOffset) {
-        this.notifyInactiveOffset = notifyInactiveOffset;
+    public void setProgramStopInMinutes(Integer programStopInMinutes) {
+        this.programStopInMinutes = programStopInMinutes;
     }
 
-    public Boolean getNotifyAdjust() {
-        return notifyAdjust;
+    public Boolean getNotifyOnAdjust() {
+        return notifyOnAdjust;
     }
 
-    public void setNotifyAdjust(Boolean notifyAdjust) {
-        this.notifyAdjust = notifyAdjust;
+    public void setNotifyOnAdjust(Boolean notifyOnAdjust) {
+        this.notifyOnAdjust = notifyOnAdjust;
     }
 
-    public Boolean getEnableSchedule() {
-        return enableSchedule;
+    public Boolean getEnableOnSchedule() {
+        return enableOnSchedule;
     }
 
-    public void setEnableSchedule(Boolean enableSchedule) {
-        this.enableSchedule = enableSchedule;
+    public void setEnableOnSchedule(Boolean enableOnSchedule) {
+        this.enableOnSchedule = enableOnSchedule;
     }
 
     public List<NotificationGroup> getAssignedNotificationGroups() {

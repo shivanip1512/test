@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.dr.setup.ProgramConstraint;
@@ -25,10 +26,10 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     @Autowired private IDatabaseCache dbCache;
 
     @Override
-    public ProgramConstraint retrieve(Integer constraintId) {
+    public ProgramConstraint retrieve(int constraintId) {
         Optional<LiteLMConstraint> lmConstraint = 
                 dbCache.getAllLMProgramConstraints().stream()
-                .filter(liteLMConstraint -> liteLMConstraint.getConstraintID() == constraintId.intValue())
+                .filter(liteLMConstraint -> liteLMConstraint.getConstraintID() == constraintId)
                 .findFirst();
         if (lmConstraint.isEmpty()) {
             throw new NotFoundException("Constraint Id not found");
@@ -49,7 +50,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     }
 
     @Override
-    public Integer create(ProgramConstraint programConstraint) {
+    public int create(ProgramConstraint programConstraint) {
         Optional<LMDto> holidaySchedule = lmServiceHelper.getHolidaySchedule(programConstraint.getHolidaySchedule().getId());
         if (holidaySchedule.isEmpty()) {
             throw new NotFoundException("Invalid Holiday Schedule ID");
@@ -68,10 +69,10 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     }
 
     @Override
-    public Integer delete(Integer constraintId, String constraintName) {
+    public int delete(int constraintId, String constraintName) {
         Optional<LiteLMConstraint> liteLMConstraint = 
                 dbCache.getAllLMProgramConstraints().stream()
-                .filter(constraint -> constraint.getConstraintID() == constraintId.intValue()
+                .filter(constraint -> constraint.getConstraintID() == constraintId
                     && constraint.getConstraintName().equalsIgnoreCase(constraintName))
                 .findFirst();
         if (liteLMConstraint.isEmpty()) {
@@ -84,10 +85,10 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     }
 
     @Override
-    public Integer update(Integer constraintId, ProgramConstraint programConstraint) {
+    public int update(int constraintId, ProgramConstraint programConstraint) {
         Optional<LiteLMConstraint> lmConstraint = 
                 dbCache.getAllLMProgramConstraints().stream()
-                .filter(liteLMConstraint -> liteLMConstraint.getConstraintID() == constraintId.intValue())
+                .filter(liteLMConstraint -> liteLMConstraint.getConstraintID() == constraintId)
                 .findFirst();
         if (lmConstraint.isEmpty()) {
             throw new NotFoundException("Constraint Id not found");
@@ -120,5 +121,10 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         return dbCache.getAllHolidaySchedules().stream()
                 .map(liteBase -> new LMDto(liteBase.getLiteID(), liteBase.toString()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public int copy(int id, LMCopy lmCopy) {
+        throw new UnsupportedOperationException("Not supported copy operation");
     }
 }

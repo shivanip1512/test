@@ -1,6 +1,7 @@
 package com.cannontech.web.api.dr.controlscenario;
 
 import java.util.HashMap;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +18,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.dr.setup.ControlScenario;
-import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.common.dr.setup.LMDelete;
-import com.cannontech.dr.controlscenario.service.ControlScenarioService;
+import com.cannontech.dr.controlscenario.service.impl.ControlScenarioServiceImpl;
+import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 
 @RestController
 @RequestMapping("/dr/setup/controlScenario")
 public class ControlScenarioSetupApiController {
 
-    @Autowired private ControlScenarioService controlScenarioService;
+    @Autowired private ControlScenarioServiceImpl controlScenarioService;
     @Autowired private ControlScenarioSetupValidator controlScenarioSetupValidator;
     @Autowired private LMDeleteValidator lmDeleteValidator;
 

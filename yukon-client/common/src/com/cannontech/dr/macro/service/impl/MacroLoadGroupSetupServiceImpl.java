@@ -24,10 +24,10 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.macro.GenericMacro;
-import com.cannontech.dr.macro.service.MacroLoadGroupSetupService;
+import com.cannontech.dr.setup.service.LMSetupService;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class MacroLoadGroupSetupServiceImpl implements MacroLoadGroupSetupService {
+public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoadGroup, LMCopy>  {
 
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private IDatabaseCache dbCache;

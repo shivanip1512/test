@@ -21,13 +21,13 @@ public class TimeRefreshGearFields implements ProgramGearFields {
     private GroupSelectionMethod groupSelectionMethod;
 
     private Integer rampInPercent;
-    private Integer rampInInterval;
+    private Integer rampInIntervalInSeconds;
 
     private HowToStopControl howToStopControl;
     private StopOrder stopOrder;
 
     private Integer rampOutPercent;
-    private Integer rampOutInterval;
+    private Integer rampOutIntervalInSeconds;
 
     private Integer stopCommandRepeat;
     private Integer capacityReduction;
@@ -82,14 +82,6 @@ public class TimeRefreshGearFields implements ProgramGearFields {
         this.rampOutPercent = rampOutPercent;
     }
 
-    public Integer getRampOutInterval() {
-        return rampOutInterval;
-    }
-
-    public void setRampOutInterval(Integer rampOutInterval) {
-        this.rampOutInterval = rampOutInterval;
-    }
-
     public Integer getRampInPercent() {
         return rampInPercent;
     }
@@ -98,12 +90,20 @@ public class TimeRefreshGearFields implements ProgramGearFields {
         this.rampInPercent = rampInPercent;
     }
 
-    public Integer getRampInInterval() {
-        return rampInInterval;
+    public Integer getRampInIntervalInSeconds() {
+        return rampInIntervalInSeconds;
     }
 
-    public void setRampInInterval(Integer rampInInterval) {
-        this.rampInInterval = rampInInterval;
+    public void setRampInIntervalInSeconds(Integer rampInIntervalInSeconds) {
+        this.rampInIntervalInSeconds = rampInIntervalInSeconds;
+    }
+
+    public Integer getRampOutIntervalInSeconds() {
+        return rampOutIntervalInSeconds;
+    }
+
+    public void setRampOutIntervalInSeconds(Integer rampOutIntervalInSeconds) {
+        this.rampOutIntervalInSeconds = rampOutIntervalInSeconds;
     }
 
     public Integer getCapacityReduction() {
@@ -152,31 +152,31 @@ public class TimeRefreshGearFields implements ProgramGearFields {
 
         if (timeRefreshGear.getMethodStopType().compareTo(LMProgramDirectGear.STOP_RAMP_OUT_FIFO) == 0) {
             setHowToStopControl(HowToStopControl.RampOutTimeIn);
-            setStopOrder(StopOrder.FirstInFirstOut);
+            setStopOrder(StopOrder.FIRSTINFIRSTOUT);
             setRampOutPercent(timeRefreshGear.getRampOutPercent());
-            setRampOutInterval(timeRefreshGear.getRampOutInterval());
+            setRampOutIntervalInSeconds(timeRefreshGear.getRampOutInterval());
         } else if (timeRefreshGear.getMethodStopType().compareTo(LMProgramDirectGear.STOP_RAMP_OUT_RANDOM) == 0) {
             setHowToStopControl(HowToStopControl.RampOutTimeIn);
-            setStopOrder(StopOrder.Random);
+            setStopOrder(StopOrder.RANDOM);
             setRampOutPercent(timeRefreshGear.getRampOutPercent());
-            setRampOutInterval(timeRefreshGear.getRampOutInterval());
+            setRampOutIntervalInSeconds(timeRefreshGear.getRampOutInterval());
         } else if (timeRefreshGear.getMethodStopType().compareTo(LMProgramDirectGear.STOP_RAMP_OUT_FIFO_RESTORE) == 0) {
             setHowToStopControl(HowToStopControl.RampOutRestore);
-            setStopOrder(StopOrder.FirstInFirstOut);
+            setStopOrder(StopOrder.FIRSTINFIRSTOUT);
             setRampOutPercent(timeRefreshGear.getRampOutPercent());
-            setRampOutInterval(timeRefreshGear.getRampOutInterval());
+            setRampOutIntervalInSeconds(timeRefreshGear.getRampOutInterval());
         } else if (timeRefreshGear.getMethodStopType().compareTo(
             LMProgramDirectGear.STOP_RAMP_OUT_RANDOM_RESTORE) == 0) {
             setHowToStopControl(HowToStopControl.RampOutRestore);
-            setStopOrder(StopOrder.Random);
+            setStopOrder(StopOrder.RANDOM);
             setRampOutPercent(timeRefreshGear.getRampOutPercent());
-            setRampOutInterval(timeRefreshGear.getRampOutInterval());
+            setRampOutIntervalInSeconds(timeRefreshGear.getRampOutInterval());
         } else {
             setHowToStopControl(HowToStopControl.valueOf(timeRefreshGear.getMethodStopType()));
         }
 
         if (timeRefreshGear.getRampInPercent().intValue() != 0 && timeRefreshGear.getRampInInterval().intValue() != 0) {
-            setRampInInterval(timeRefreshGear.getRampInInterval());
+            setRampInIntervalInSeconds(timeRefreshGear.getRampInInterval());
             setRampInPercent(timeRefreshGear.getRampInPercent());
         }
 
@@ -203,13 +203,13 @@ public class TimeRefreshGearFields implements ProgramGearFields {
     public void buildDBPersistent(LMProgramDirectGear programDirectGear) {
         TimeRefreshGear timeRefreshGear = (TimeRefreshGear) programDirectGear;
         if (getHowToStopControl() == HowToStopControl.RampOutTimeIn) {
-            if (getStopOrder() == StopOrder.FirstInFirstOut) {
+            if (getStopOrder() == StopOrder.FIRSTINFIRSTOUT) {
                 timeRefreshGear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_FIFO);
             } else {
                 timeRefreshGear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_RANDOM);
             }
             timeRefreshGear.setRampOutPercent(getRampOutPercent());
-            Integer interval = getRampOutInterval();
+            Integer interval = getRampOutIntervalInSeconds();
             if (interval != null) {
                 timeRefreshGear.setRampOutInterval(interval);
 
@@ -217,13 +217,13 @@ public class TimeRefreshGearFields implements ProgramGearFields {
                 timeRefreshGear.setRampOutInterval(0);
             }
         } else if (getHowToStopControl() == HowToStopControl.RampOutRestore) {
-            if (getStopOrder() == StopOrder.FirstInFirstOut) {
+            if (getStopOrder() == StopOrder.FIRSTINFIRSTOUT) {
                 timeRefreshGear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_FIFO_RESTORE);
             } else {
                 timeRefreshGear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_RANDOM_RESTORE);
             }
             timeRefreshGear.setRampOutPercent(getRampOutPercent());
-            Integer interval = getRampOutInterval();
+            Integer interval = getRampOutIntervalInSeconds();
             if (interval != null) {
                 timeRefreshGear.setRampOutInterval(interval);
             } else {
@@ -233,8 +233,8 @@ public class TimeRefreshGearFields implements ProgramGearFields {
             timeRefreshGear.setMethodStopType(getHowToStopControl().name());
         }
 
-        if (getRampInPercent() != null && getRampInInterval() != null) {
-            timeRefreshGear.setRampInInterval(getRampInInterval());
+        if (getRampInPercent() != null && getRampInIntervalInSeconds() != null) {
+            timeRefreshGear.setRampInInterval(getRampInIntervalInSeconds());
             timeRefreshGear.setRampInPercent(getRampInPercent());
         }
 

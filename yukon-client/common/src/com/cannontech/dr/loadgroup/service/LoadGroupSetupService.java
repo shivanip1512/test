@@ -5,36 +5,12 @@ import java.util.List;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
+import com.cannontech.dr.setup.service.LMSetupService;
 
-public interface LoadGroupSetupService {
-
-    /**
-     * Saves the load group.
-     */
-    int create(LoadGroupBase loadGroup);
-    
-    /**
-     * Update the load group.
-     */
-    int update(int loadGroupId, LoadGroupBase loadGroup);
+public interface LoadGroupSetupService extends LMSetupService<LoadGroupBase, LMCopy> {
 
     /**
-     * Retrieve load group for the loadGroupId.
-     */
-    LoadGroupBase retrieve(int loadGroupId);
-
-    /**
-     * Retrieve available load groups except Ecobee,Honeywell,Itron and Nest.
+     * Retrieve available load groups except Ecobee, Honeywell, Itron and Nest.
      */
     List<LMPaoDto> retrieveAvailableLoadGroup();
-
-    /**
-     * Delete the load group.
-     */
-    int delete(int loadGroupId, String loadGroupName);
-
-    /**
-     * Copy the load group.
-     */
-    int copy(int loadGroupId, LMCopy lmCopy);
 }

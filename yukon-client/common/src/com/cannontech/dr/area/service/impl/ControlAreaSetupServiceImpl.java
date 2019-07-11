@@ -15,6 +15,7 @@ import com.cannontech.common.dr.setup.ControlAreaProjectionType;
 import com.cannontech.common.dr.setup.ControlAreaTrigger;
 import com.cannontech.common.dr.setup.ControlAreaTriggerType;
 import com.cannontech.common.dr.setup.DailyDefaultState;
+import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.TriggerActiveFlag;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
@@ -305,6 +306,11 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
         }
 
         return lmDtoList;
+    }
+
+    @Override
+    public int copy(int id, LMCopy lmCopy) {
+        throw new UnsupportedOperationException("Not supported copy operation");
     }
 
 }

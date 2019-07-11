@@ -2,24 +2,23 @@ package com.cannontech.common.dr.program.setup.model;
 
 public class ProgramControlWindowFields {
 
-    private Integer availableStartTime;
-    private Integer availableStopTime;
+    private Integer availableStartTimeInMinutes;
+    private Integer availableStopTimeInMinutes;
 
     ProgramControlWindowFields() {
-
     }
 
-    public ProgramControlWindowFields(Integer availableStartTime, Integer availableStopTime) {
-        this.availableStartTime = availableStartTime;
-        this.availableStopTime = availableStopTime;
+    public ProgramControlWindowFields(Integer availableStartTimeInMinutes, Integer availableStopTimeInMinutes) {
+        this.availableStartTimeInMinutes = availableStartTimeInMinutes;
+        this.availableStopTimeInMinutes = availableStopTimeInMinutes;
     }
 
-    public Integer getAvailableStartTime() {
-        return availableStartTime;
+    public Integer getAvailableStartTimeInMinutes() {
+        return availableStartTimeInMinutes;
     }
 
-    public Integer getAvailableStopTime() {
-        return availableStopTime;
+    public Integer getAvailableStopTimeInMinutes() {
+        return availableStopTimeInMinutes;
     }
 
 }

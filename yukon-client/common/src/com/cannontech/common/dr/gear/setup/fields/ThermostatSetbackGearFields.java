@@ -243,9 +243,9 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
         }
 
         if (thermostatSetbackGear.getSettings().charAt(0) == 'A') {
-            setAbsoluteOrDelta(AbsoluteOrDelta.Absolute);
+            setAbsoluteOrDelta(AbsoluteOrDelta.ABSOLUTE);
         } else {
-            setAbsoluteOrDelta(AbsoluteOrDelta.Delta);
+            setAbsoluteOrDelta(AbsoluteOrDelta.DELTA);
         }
 
         if (thermostatSetbackGear.getSettings().charAt(1) == 'C') {
@@ -312,7 +312,7 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
             thermostatSetbackGear.setValueTf(getValueTf());
         }
 
-        if (getAbsoluteOrDelta() == AbsoluteOrDelta.Absolute) {
+        if (getAbsoluteOrDelta() == AbsoluteOrDelta.ABSOLUTE) {
             thermostatSetbackGear.getSettings().setCharAt(0, 'A');
         } else {
             thermostatSetbackGear.getSettings().setCharAt(0, 'D');

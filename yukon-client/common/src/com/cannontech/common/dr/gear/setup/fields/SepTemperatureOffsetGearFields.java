@@ -107,13 +107,13 @@ public class SepTemperatureOffsetGearFields implements ProgramGearFields {
 
         if (heatingOffset != 0.0 && coolingOffset == 0.0) {
             setOffset(sepTemperatureOffsetGear.getHeatingOffset());
-            setMode(Mode.Heat);
+            setMode(Mode.HEAT);
         } else if (heatingOffset == 0.0 && coolingOffset != 0.0) {
             setOffset(sepTemperatureOffsetGear.getCoolingOffset());
-            setMode(Mode.Cool);
+            setMode(Mode.COOL);
         } else if (heatingOffset == 0.0 && coolingOffset == 0.0) {
             setOffset(0.0);
-            setMode(Mode.Heat);
+            setMode(Mode.HEAT);
         } else {
             throw new RuntimeException("Illegal database values: Heating and cooling offsets cannot both be nonzero");
         }
@@ -144,10 +144,10 @@ public class SepTemperatureOffsetGearFields implements ProgramGearFields {
         temperatureOffsetGear.setFrontRampEnabled(getRampIn());
         temperatureOffsetGear.setBackRampEnabled(getRampOut());
 
-        if (getMode() == Mode.Heat) {
+        if (getMode() == Mode.HEAT) {
             temperatureOffsetGear.setHeatingOffset(getOffset());
             temperatureOffsetGear.setCoolingOffset(0.0);
-        } else if (getMode() == Mode.Cool) {
+        } else if (getMode() == Mode.COOL) {
             temperatureOffsetGear.setHeatingOffset(0.0);
             temperatureOffsetGear.setCoolingOffset(getOffset());
         }

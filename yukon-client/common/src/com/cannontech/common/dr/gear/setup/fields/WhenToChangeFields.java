@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class WhenToChangeFields {
 
     private WhenToChange whenToChange;
-    private Integer changeDuration;
+    private Integer changeDurationInMinutes;
     private Integer changePriority;
     private Integer triggerNumber;
     private Double triggerOffset;
@@ -22,12 +22,12 @@ public class WhenToChangeFields {
         this.whenToChange = whenToChange;
     }
 
-    public Integer getChangeDuration() {
-        return changeDuration;
+    public Integer getChangeDurationInMinutes() {
+        return changeDurationInMinutes;
     }
 
-    public void setChangeDuration(Integer changeDuration) {
-        this.changeDuration = changeDuration;
+    public void setChangeDurationInMinutes(Integer changeDurationInMinutes) {
+        this.changeDurationInMinutes = changeDurationInMinutes;
     }
 
     public Integer getChangePriority() {
@@ -62,7 +62,7 @@ public class WhenToChangeFields {
             setChangePriority(directGear.getChangeDuration() / 60);
         }
         if (whenToChange == WhenToChange.Duration) {
-            setChangeDuration(directGear.getChangeDuration());
+            setChangeDurationInMinutes(directGear.getChangeDuration());
         }
         if (whenToChange == WhenToChange.TriggerOffset) {
             setTriggerNumber(directGear.getChangeTriggerNumber());
@@ -76,7 +76,7 @@ public class WhenToChangeFields {
         directGear.setChangeCondition(getWhenToChange().name());
 
         if (getWhenToChange() == WhenToChange.Duration) {
-            directGear.setChangeDuration(getChangeDuration() * 60);
+            directGear.setChangeDuration(getChangeDurationInMinutes() * 60);
         }
         if (getWhenToChange() == WhenToChange.Priority) {
             directGear.setChangePriority(getChangePriority());

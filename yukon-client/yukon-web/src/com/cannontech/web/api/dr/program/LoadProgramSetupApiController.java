@@ -1,7 +1,9 @@
-package com.cannontech.web.api.dr.setup;
+package com.cannontech.web.api.dr.program;
 
 import java.util.HashMap;
 import java.util.List;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
+import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -35,7 +38,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class LoadProgramSetupApiController {
     @Autowired private LoadProgramSetupService loadProgramService;
     @Autowired LMDeleteValidator lmDeleteValidator;
-    @Autowired LMCopyValidator lmCopyValidator;
+    @Autowired LMProgramCopyValidator lmProgramCopyValidator;
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> retrieve(@PathVariable int id) {
@@ -60,7 +63,7 @@ public class LoadProgramSetupApiController {
     }
 
     @PostMapping("/copy/{id}")
-    public ResponseEntity<Object> copy(@RequestBody LoadProgramCopy loadProgramCopy, @PathVariable int id) {
+    public ResponseEntity<Object> copy(@Valid @RequestBody LoadProgramCopy loadProgramCopy, @PathVariable int id) {
         int paoId = loadProgramService.copy(id, loadProgramCopy);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("programId", paoId);
@@ -124,5 +127,10 @@ public class LoadProgramSetupApiController {
     @InitBinder("LMDelete")
     public void setupBinderDelete(WebDataBinder binder) {
         binder.addValidators(lmDeleteValidator);
+    }
+    
+    @InitBinder("loadProgramCopy")
+    public void setupBinderCopy(WebDataBinder binder) {
+        binder.addValidators(lmProgramCopyValidator);
     }
 }
