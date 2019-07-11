@@ -74,4 +74,4 @@ bool CtiPointRegistrationMsg::isDecliningUpload()     const  {  return RegFlags 
 bool CtiPointRegistrationMsg::isRequestingAllPoints() const  {  return RegFlags & REG_ALL_POINTS;     }
 bool CtiPointRegistrationMsg::isAddingPoints()        const  {  return RegFlags & REG_ADD_POINTS;     }
 bool CtiPointRegistrationMsg::isRemovingPoints()      const  {  return RegFlags & REG_REMOVE_POINTS;  }
-bool CtiPointRegistrationMsg::isRequestingMoaTag()    const  {  return RegFlags & REG_TAG_MARKMOA;    }
+bool CtiPointRegistrationMsg::isRequestingUploadTag() const  {  return RegFlags & REG_TAG_UPLOAD;     }

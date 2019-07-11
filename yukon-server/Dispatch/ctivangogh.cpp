@@ -599,7 +599,7 @@ void CtiVanGogh::registration(CtiServer::ptr_type &pCM, const CtiPointRegistrati
 
         if( ! (aReg.isDecliningUpload() || aReg.isAddingPoints() || aReg.isRemovingPoints()) )
         {
-            postMOAUploadToConnection(VGCM, ptSet, aReg.isRequestingMoaTag());
+            postRegistrationUpload(VGCM, ptSet, aReg.isRequestingUploadTag());
         }
     }
     catch(...)
@@ -2341,7 +2341,7 @@ YukonError_t CtiVanGogh::processMessage(CtiMessage *pMsg)
     return ClientErrors::None;
 }
 
-void CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager& VGCM, std::set<long> &ptIds, const bool tag_as_moa)
+void CtiVanGogh::postRegistrationUpload(CtiVanGoghConnectionManager& VGCM, std::set<long> &ptIds, const bool tag_as_upload)
 {
     // Is this connection asking for everything?
     if( VGCM.isRegForAll() )
@@ -2370,9 +2370,9 @@ void CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager& VGCM, st
                                 string(),
                                 pDyn->getDispatch().getTags());
 
-                if( tag_as_moa )
+                if( tag_as_upload )
                 {
-                    pDat->setTags(TAG_POINT_MOA_REPORT);
+                    pDat->setTags(TAG_POINT_REG_UPLOAD);
                 }
 
                 // Make the time match the entered time
@@ -2383,13 +2383,13 @@ void CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager& VGCM, st
         }
 
         /*
-        *  Block the MOA into 1000 element multis.
+        *  Block the upload into 1000 element multis.
         */
         if( pMulti->getCount() >= gConfigParms.getValueAsULong("DISPATCH_MAX_MULTI_MOA", 1000) )
         {
             if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)
             {
-                CTILOG_DEBUG(dout, "MOA UPLOAD - Client Connection "<< VGCM.getClientName() <<" on "<< VGCM.getPeer()<<
+                CTILOG_DEBUG(dout, "Registration upload - Client Connection "<< VGCM.getClientName() <<" on "<< VGCM.getPeer()<<
                         *pMulti);
             }
 
@@ -2422,7 +2422,7 @@ void CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager& VGCM, st
     {
         if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)    // Temp debug
         {
-            CTILOG_DEBUG(dout, "MOA UPLOAD - Client Connection "<< VGCM.getClientName() <<" on "<< VGCM.getPeer() <<
+            CTILOG_DEBUG(dout, "Registration upload - Client Connection "<< VGCM.getClientName() <<" on "<< VGCM.getPeer() <<
                     *pMulti);
         }
 

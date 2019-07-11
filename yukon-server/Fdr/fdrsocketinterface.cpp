@@ -298,7 +298,7 @@ void CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
     updatePointByIdInList (getSendToList(), localMsg);
 
     // if this is a response to a registration, do nothing
-    if (localMsg->isRegistrationReport() && !alwaysSendRegistrationPoints())
+    if (localMsg->isRegistrationUpload() && !alwaysSendRegistrationPoints())
     {
         findPointIdInList (localMsg->getId(), getSendToList(), point);
 

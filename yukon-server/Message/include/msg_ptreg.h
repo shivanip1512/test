@@ -11,8 +11,8 @@
 #define REG_ADD_POINTS        0x00000100     // This registration is intended to add points to an existing registration.
 #define REG_REMOVE_POINTS     0x00000200     // This registration is intended to remove specified points from an existing registration.
 
-#define REG_NO_UPLOAD         0x00010000     // Dispatch will not do a MOA if set.
-#define REG_TAG_MARKMOA       0x00020000     // Dispatch will mark each pointin the MOA upload with TAG_POINT_MOA_REPORT
+#define REG_NO_UPLOAD         0x00010000     // Dispatch will not do an intial registration upload if set.
+#define REG_TAG_UPLOAD        0x00020000     // Dispatch will mark each point in the registration upload with TAG_POINT_REG_UPLOAD
 
 
 class IM_EX_MSG CtiPointRegistrationMsg final : public CtiMessage
@@ -46,7 +46,7 @@ public:
    bool isRequestingAllPoints() const;
    bool isAddingPoints()     const;
    bool isRemovingPoints()   const;
-   bool isRequestingMoaTag() const;
+   bool isRequestingUploadTag() const;
 
    const std::vector<LONG>& getPointList() const;
    void setPointList( const std::vector<LONG>& points );

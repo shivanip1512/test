@@ -2020,10 +2020,10 @@ string explainTags(const unsigned tags)
                     str += "TAG_POINT_DATA_UNSOLICITED";
                     break;
                 }
-            case TAG_POINT_MOA_REPORT:
+            case TAG_POINT_REG_UPLOAD:
                 {
                     if(!str.empty()) str += " | ";
-                    str += "TAG_POINT_MOA_REPORT";
+                    str += "TAG_POINT_REG_UPLOAD";
                     break;
                 }
             case TAG_POINT_DELAYED_UPDATE:

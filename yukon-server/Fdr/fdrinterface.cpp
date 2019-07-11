@@ -750,7 +750,7 @@ bool CtiFDRInterface::sendPointRegistration( void )
 std::unique_ptr<CtiPointRegistrationMsg> CtiFDRInterface::buildRegistrationPointList()
 {
     CtiFDRPointSPtr pFdrPoint;
-    auto ptRegMsg = std::make_unique<CtiPointRegistrationMsg>(REG_TAG_MARKMOA);
+    auto ptRegMsg = std::make_unique<CtiPointRegistrationMsg>(REG_TAG_UPLOAD);
 
     // get iterator on outbound list
     CtiFDRManager::readerLock guard(iOutBoundPoints->getLock());
