@@ -40,15 +40,12 @@ public class ProgramData {
         return gears;
     }
 
-    public boolean equals(ProgramData programData) {
-        if (programData == null) {
-            return false;
-        } else if (this.getProgramId() == programData.getProgramId()
-            && this.getStartDateTime().equals(programData.getStartDateTime())) {
-            return true;
-        } else {
-            return false;
-        }
+    /**
+     * It is not recommended to add setter in Builder design pattern.
+     * Adding it exceptionally.
+     */
+    public void setGears(List<GearData> gears) {
+        this.gears = gears;
     }
 
     public static class ProgramDataBuilder {

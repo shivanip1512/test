@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -100,10 +98,6 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired @Qualifier("main") private Executor executor;
 
     private static final long PROGRAM_CHANGE_TIMEOUT_MS = 5000;
-
-    @PostConstruct
-    public void initialize() {
-    }
 
     private final RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {

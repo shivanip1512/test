@@ -49,6 +49,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private static final int MAX_PROGRAM_TO_DISPLAY_ON_WIDGET = 10;
+    private static final int PROGRAM_EVENT_SAFEGAURD_WINDOW = 5000; // 5 Seconds
     private final static String todayKey = "yukon.web.widgets.programWidget.today";
     private List<ProgramData> programsDataCache = new ArrayList<>();
     private List<ProgramData> todaysProgramsDataCache = new ArrayList<>();
@@ -66,6 +67,55 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
         // If any LMProgram change event happens, reload the today's program data cache. 
         if (obj instanceof LMProgramChanged || obj instanceof LMGroupChanged) {
             loadTodaysProgramsDataCache();
+        }
+    }
+
+    /**
+     * Load today's ProgramData cache from LMServer cache and DB.
+     * Below method is building programData cache for today's programs from LMServer cache and DB.
+     * If any program events happens, this method reloads cache to add gear history inside program data.
+     * Case-1 : If any program is running and we have changed gear assigned to that program .
+     *          In that case we need to update the Program Data object inside cache to maintain the old gear
+     *          data (name and start/stop) along with newly assigned gear.
+     * Case-2 : If One program is started and stopped on the same day and If we again start that
+     *          program on the same day, we need to display old run programData record along with newly started.
+     *          In this case we need to build cache from DB (1st time run Program data) and from LM server cache 
+     *          (for latest running program).
+     * Above two cases are handled in below method where first we are getting all today's active programs from
+     * LM server cache and adding them to local cache.
+     * Then we are fetching ProgramData records from DB. They might be the old executed program or running
+     * ProgramData records. In case of old executed program we are adding them to todaysProgramsDataCacheand
+     * if data (gear history) is associated with current running program we are updating that in the
+     * programData records which are already there in todaysProgramsDataCache.
+     */
+    private synchronized void loadTodaysProgramsDataCache() {
+        todaysProgramsDataCache.clear();
+        DateTime from = new DateTime().withTimeAtStartOfDay();
+        DateTime to = from.plusHours(24);
+        List<ProgramData> todaysPrograms = getAllTodaysPrograms();
+        // Add ProgramData from LM cache
+        todaysProgramsDataCache.addAll(todaysPrograms);
+        List<ProgramData> todaysProgramsFromDB = getProgramsHistoryDetail(from, to);
+        for (ProgramData program : todaysProgramsFromDB) {
+            boolean addToCache = true;
+            List<GearData> gears = program.getGears();
+            for (GearData gear : gears) {
+                if (gear.getStopDateTime() == null) {
+                    addToCache = false;
+                }
+            }
+            if (addToCache && !isExistInProgramDataCache(program)) {
+                // Todays ProgramData from DB
+                todaysProgramsDataCache.add(program);
+            } else {
+                // Update cached program data with gear information.
+                for (ProgramData todaysProgram : todaysPrograms) {
+                    if (isSameProgramEvent(todaysProgram, program)) {
+                        List<GearData> gearHistory = program.getGears();
+                        updateGearInfo(todaysProgram, gearHistory);
+                    }
+                }
+            }
         }
     }
 
@@ -296,7 +346,10 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
     private GearData buildGearData(ProgramControlHistory programHistory) {
         GearData gearData = new GearData();
         DateTime gearStartTime = new DateTime(programHistory.getStartDateTime());
-        DateTime gearStopTime = new DateTime(programHistory.getStopDateTime());
+        DateTime gearStopTime = null;
+        if (programHistory.getStopDateTime() != null) {
+            gearStopTime = new DateTime(programHistory.getStopDateTime());
+        }
         gearData.setGearName(programHistory.getGearName());
         gearData.setStartDateTime(gearStartTime);
         gearData.setStopDateTime(gearStopTime);
@@ -322,39 +375,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
         return programDataByEventTime;
     }
 
-    /**
-     * Load today's ProgramData cache from LMServer cache and DB.
-     */
-    private void loadTodaysProgramsDataCache() {
-        todaysProgramsDataCache.clear();
-        DateTime from = new DateTime().withTimeAtStartOfDay();
-        DateTime to = from.plusHours(24);
-        List<ProgramData> todaysPrograms = getAllTodaysPrograms();
-        // Add ProgramData from LM cache
-        todaysProgramsDataCache.addAll(todaysPrograms);
-        List<ProgramData> todaysProgramsFromDB = getProgramsHistoryDetail(from, to);
-        for (ProgramData program : todaysProgramsFromDB) {
-            boolean addToCache = true;
-            List<GearData> gears = program.getGears();
-            for (GearData gear : gears) {
-                if (gear.getStopDateTime() == null) {
-                    addToCache = false;
-                }
-            }
-            if (addToCache && !isExistInProgramDataCache(program)) {
-                // Todays ProgramData from DB
-                todaysProgramsDataCache.add(program);
-            } else {
-                // Update cached program data with gear information.
-                for (ProgramData todaysProgram : todaysPrograms) {
-                    if (todaysProgram.equals(program)) {
-                        List<GearData> gearHistory = program.getGears();
-                        updateGearInfo(todaysProgram, gearHistory);
-                    }
-                }
-            }
-        }
-    }
+    
 
     /**
      * Returns true if ProgramData record present in todaysProgramsDataCache.
@@ -364,7 +385,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
             return false;
         }
         for (ProgramData pd : todaysProgramsDataCache) {
-            if (pd.equals(programData)) {
+            if (isSameProgramEvent(pd, programData)) {
                 return true;
             }
         }
@@ -377,12 +398,32 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
     private void updateGearInfo(ProgramData programData, List<GearData> gearHistory) {
         if (gearHistory.size() > 1) {
             gearHistory.forEach(g -> g.setKnownGoodStopDateTime(true));
-            programData = new ProgramData.ProgramDataBuilder(programData.getProgramId())
-                                          .setGears(gearHistory)
-                                          .setProgramName(programData.getProgramName())
-                                          .setStartDateTime(programData.getStartDateTime())
-                                          .setStatus(programData.getStatus())
-                                          .build();
+            programData.setGears(gearHistory);
+        }
+    }
+
+    /**
+     * Return true if both objects are from the same program event.
+     * If both objects belongs to same program (equal programId) and has started at the
+     * same time (with 5 seconds time window), consider them as a part of same program event.
+     * 5 second window is considered to handle the case where timeStamp in c++ message and DB record
+     * differ by few seconds (Ideally both should have same timeStamp)
+     */
+    private boolean isSameProgramEvent(ProgramData programData1, ProgramData programData2) {
+        if (programData1 == null || programData2 == null) {
+            return false;
+        } else if (programData1.getProgramId() == programData2.getProgramId()) {
+            long millis1 = programData1.getStartDateTime().getMillis();
+            long millis2 = programData2.getStartDateTime().getMillis();
+            long timeWindow = 0;
+            if (millis1 >= millis2) {
+                timeWindow = millis1 - millis2;
+            } else {
+                timeWindow = millis2 - millis1;
+            }
+            return timeWindow <= PROGRAM_EVENT_SAFEGAURD_WINDOW;
+        } else {
+            return false;
         }
     }
 
@@ -424,8 +465,6 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
             long startofTomorrow = new DateTime().withTimeAtStartOfDay().plusDays(1).getMillis();
             Duration duration = new Duration(startOfToday, startofTomorrow);
             if (duration.getStandardDays() > 1) {
-                // Reload cache for new day ProgramData.
-                todaysProgramsDataCache.clear();
                 loadTodaysProgramsDataCache();
             }
         }
