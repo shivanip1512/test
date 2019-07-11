@@ -177,8 +177,21 @@ public class StyleGuideController {
     }
     
     @RequestMapping("/styleguide/fun-with-inputs")
-    public String inputs() {
+    public String inputs(ModelMap model) {
+        model.addAttribute("numericInput", new NumericInput());
         return "styleguide/inputs.jsp";
+    }
+    
+    public class NumericInput {
+        private float temperature;
+
+        public float getTemperature() {
+            return temperature;
+        }
+
+        public void setTemperature(float temperature) {
+            this.temperature = temperature;
+        }
     }
     
     @RequestMapping("/styleguide/blocking")

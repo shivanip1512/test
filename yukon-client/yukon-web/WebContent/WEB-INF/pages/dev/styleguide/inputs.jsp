@@ -54,6 +54,26 @@
 &lt;input class=&quot;js-format-phone&quot; type=&quot;text&quot; name=&quot;phone&quot; value=&quot;15554443333&quot;&gt;
 </pre>
 
+<h2 id="numeric-example">Numeric</h2>
+
+<p class="description">
+    The numeric tag can be used for formatting numeric fields. You can specify min, max, and a step value for the field.
+    This tag uses the jQuery UI Spinner widget. The value is validated against the min/max values supplied when the field loses focus.
+</p>
+<div class="column-4-20 clearfix style-guide-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <form:form modelAttribute="numericInput">
+            <tags:numeric path="temperature" minValue="-10" maxValue="40" stepValue="5"/>
+        </form:form>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;tags:numeric path=&quot;temperature&quot; minValue=&quot;-10&quot; maxValue=&quot;40&quot; stepValue=&quot;5&quot;&gt;
+</pre>
+
+
 <h2 id="toggle-with-checkbox-example">Toggle Groups</h2>
 
 <p class="description">
