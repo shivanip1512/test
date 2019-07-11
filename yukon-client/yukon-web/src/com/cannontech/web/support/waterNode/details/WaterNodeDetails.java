@@ -2,12 +2,12 @@ package com.cannontech.web.support.waterNode.details;
 
 import java.util.ArrayList;
 
+import org.joda.time.Instant;
+
 import com.cannontech.web.support.waterNode.batteryLevel.WaterNodeBatteryLevel;
 
-import java.time.Instant;
-
 public class WaterNodeDetails {
-    private ArrayList<Integer> voltages;
+    private ArrayList<Double> voltages;
     private Integer meterNumber;
     private ArrayList<Instant> timestamps;
     private String serialNumber;
@@ -17,7 +17,7 @@ public class WaterNodeDetails {
     private WaterNodeBatteryLevel batteryLevel;
     
     public WaterNodeDetails() {
-        voltages = new ArrayList<Integer>();
+        voltages = new ArrayList<Double>();
         timestamps = new ArrayList<Instant>();
     }
     
@@ -45,11 +45,11 @@ public class WaterNodeDetails {
         timestamps.add(timestamp);
     }
     
-    public ArrayList<Integer> getVoltages() {
+    public ArrayList<Double> getVoltages() {
         return voltages;
     }
     
-    public void addVoltage(Integer voltage) {
+    public void addVoltage(Double voltage) {
         voltages.add(voltage);
     }
     
