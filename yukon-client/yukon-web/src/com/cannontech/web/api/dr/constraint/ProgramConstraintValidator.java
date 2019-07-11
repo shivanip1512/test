@@ -3,6 +3,7 @@ package com.cannontech.web.api.dr.constraint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.dr.setup.HolidayUsage;
 import com.cannontech.common.dr.setup.ProgramConstraint;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -28,6 +29,9 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
         if (holidayScheduleId != null && holidayScheduleId.compareTo(0) > 0) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "holidayUsage", key,
                 new Object[] { "Holiday Usage" });
+            if (programConstraint.getHolidayUsage() == HolidayUsage.NONE) {
+                errors.rejectValue("holidayUsage", key, new Object[] { "Holiday Usage" }, "");
+            }
         }
         lmValidatorHelper.checkIfFieldRequired("maxActivateSeconds", errors, programConstraint.getMaxActivateSeconds(), "Max Activate");
         if (!errors.hasFieldErrors("maxActivateSeconds")) {
