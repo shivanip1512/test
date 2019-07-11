@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.login.ldap.LDAPService;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -16,6 +17,8 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
 public class LDAPX500Login implements AuthenticationProvider {
+    
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired protected GlobalSettingDao globalSettingDao;
     private static Logger log = YukonLogManager.getLogger(LDAPX500Login.class);
     protected LDAPService ldapService;
@@ -42,6 +45,12 @@ public class LDAPX500Login implements AuthenticationProvider {
         String host = globalSettingDao.getString(GlobalSettingType.LDAP_SERVER_ADDRESS);
         String port = globalSettingDao.getString(GlobalSettingType.LDAP_SERVER_PORT);
         String url = "ldap://" + host + ":" + port;
+        
+        boolean useLdaps = configurationSource.getBoolean("LDAPS" , false);
+        if (useLdaps) {
+            url = "ldaps://" + host + ":" + port;
+        }
+        log.info("LDAP Connection URL: {}", url);
         return url;
     }
 
@@ -64,6 +73,7 @@ public class LDAPX500Login implements AuthenticationProvider {
             } else {
                 ctx = ldapService.getContext(url, username, password, timeout);
             }
+            logContext(ctx);
             return true;
         } catch (NamingException e) {
             log.error("LDAP Login Failed", e);
@@ -104,10 +114,22 @@ public class LDAPX500Login implements AuthenticationProvider {
         } else {
             user = ldapUserPrefix + username + "," + ldapUserSuffix + "," + ldapDn;
         }
+        log.info("LDAP User Connection String: {}", user);
         return user;
     }
 
     public void setLdapService(final LDAPService ldapService) {
         this.ldapService = ldapService;
     }
+    
+    public void logContext(Context ctx) {
+      try {
+          for (Object key : ctx.getEnvironment().keySet()) {
+              log.info("LDAP Context Key: {}   Value: {}", key, 
+                       key.equals(Context.SECURITY_CREDENTIALS) ? "*****" : ctx.getEnvironment().get(key));
+          }
+      } catch (NamingException e) {
+          log.warn("caught exception in log", e);
+      }
+  }
 }
