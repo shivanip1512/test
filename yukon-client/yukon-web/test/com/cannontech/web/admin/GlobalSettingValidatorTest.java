@@ -91,6 +91,8 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.HONEYWELL_SERVER_URL, "http://127.0.0.1");
 //        globalSettings.put(GlobalSettingType.NEST_SERVER_URL, "http://127.0.0.1");
         globalSettings.put(GlobalSettingType.ITRON_HCM_API_URL, "http://127.0.0.1");
+        globalSettings.put(GlobalSettingType.LAST_COMMUNICATION_HOURS, 60);
+        globalSettings.put(GlobalSettingType.LAST_RUNTIME_HOURS, 60);
         command.setValues(globalSettings);
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
