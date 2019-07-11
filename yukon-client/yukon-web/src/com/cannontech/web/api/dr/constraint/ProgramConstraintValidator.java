@@ -22,15 +22,23 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
     protected void doValidation(ProgramConstraint programConstraint, Errors errors) {
         // Mandatory, max length(60) and special character check for name.
         lmValidatorHelper.validateName(programConstraint.getName(), errors, "Constraint name");
-
+        
+        if(programConstraint.getSeasonSchedule() == null) {
+            errors.rejectValue("seasonSchedule", key, new Object[] { "Season Schedule" }, "");
+        }
+        if(programConstraint.getHolidaySchedule() == null) {
+            errors.rejectValue("holidaySchedule", key, new Object[] { "Holiday Schedule" }, "");
+        }
         // Holiday schedule and holiday usage check.Holiday usage is mandatory when holiday schedule is
         // selected. When none select is selected id will be sent as 0
-        Integer holidayScheduleId = programConstraint.getHolidaySchedule().getId();
-        if (holidayScheduleId != null && holidayScheduleId.compareTo(0) > 0) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "holidayUsage", key,
-                new Object[] { "Holiday Usage" });
-            if (programConstraint.getHolidayUsage() == HolidayUsage.NONE) {
-                errors.rejectValue("holidayUsage", key, new Object[] { "Holiday Usage" }, "");
+        if (!errors.hasFieldErrors("holidaySchedule")) {
+            Integer holidayScheduleId = programConstraint.getHolidaySchedule().getId();
+            if (holidayScheduleId != null && holidayScheduleId.compareTo(0) > 0) {
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "holidayUsage", key,
+                    new Object[] { "Holiday Usage" });
+                if (programConstraint.getHolidayUsage() == HolidayUsage.NONE) {
+                    errors.rejectValue("holidayUsage", key, new Object[] { "Holiday Usage" }, "");
+                }
             }
         }
         lmValidatorHelper.checkIfFieldRequired("maxActivateSeconds", errors, programConstraint.getMaxActivateSeconds(), "Max Activate");
