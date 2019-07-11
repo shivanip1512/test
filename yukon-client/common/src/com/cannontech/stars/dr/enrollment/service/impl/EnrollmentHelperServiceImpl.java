@@ -206,16 +206,16 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         // Find meter hardware (inventory) for this account
         List<HardwareSummary> allMeterHardwareSummary = inventoryDao.getMeterHardwareSummaryForAccount(accountId);
         
-        if(allMeterHardwareSummary.size() > 0) {
+        if(!allMeterHardwareSummary.isEmpty()) {
             // Get the PAOs for these meters, so we can do the disconnect checks on the paos
             List<Integer> meterPaoIds = allMeterHardwareSummary.stream()
-                .map(hardware -> hardware.getDeviceId())
+                .map(HardwareSummary::getDeviceId)
                 .collect(Collectors.toList());
             
             // Find disconnect meters
             List<SimpleDevice> allMeters = deviceDao.getYukonDeviceObjectByIds(meterPaoIds);
             List<Integer> disconnectMeters = disconnectService.filter(allMeters).stream()
-                .map(device -> device.getDeviceId())
+                .map(SimpleDevice::getDeviceId)
                 .collect(Collectors.toList());
             
             // Now that we know which PAOS are disconnect paos, filter out the inventory that does not support disconnect

@@ -493,12 +493,12 @@ public class InventoryDaoImpl implements InventoryDao {
             int deviceId = rs.getInt("DeviceId");
             
             // Meters without LMHardwareBase wouldn't have the serial number field yet.
-            if(sn == null) {
+            if (sn == null) {
                 sn = deviceLabel;
             }
             
             // Meters may not have a LMHardwareBase entry, fake it as 0.
-            if(hwDefinitionId == null) {
+            if (hwDefinitionId == null) {
                 hwDefinitionId = 0;
             }
             HardwareType hardwareType = HardwareType.valueOf(hwDefinitionId);
