@@ -12,7 +12,6 @@ import com.cannontech.common.validator.YukonValidationUtils;
 public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroupEmetcon> {
 
     private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
-    private final static String validRelayUsageValues = "ABCS";
     @Autowired private LMValidatorHelper lmValidatorHelper;
 
     public LoadGroupEmetconValidator() {
@@ -33,7 +32,7 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
 
         lmValidatorHelper.checkIfFieldRequired("goldAddress", errors, loadGroup.getGoldAddress(), "Gold Address");
 
-        lmValidatorHelper.checkIfFieldRequired("silverAddress", errors, loadGroup.getSilverAddress(), "Silver Address" );
+        lmValidatorHelper.checkIfFieldRequired("silverAddress", errors, loadGroup.getSilverAddress(), "Silver Address");
 
         // Validate routeID
         lmValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
@@ -55,12 +54,6 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
         if (!errors.hasFieldErrors("silverAddress") && loadGroup.getAddressUsage() != null) {
             if (loadGroup.getAddressUsage() == EmetconAddressUsage.SILVER && loadGroup.getSilverAddress() == 0) {
                 errors.rejectValue("silverAddress", key + "silverAddress.invalidValue");
-            }
-        }
-
-        if (loadGroup.getRelayUsage() != null) {
-            if (!validRelayUsageValues.contains(loadGroup.getRelayUsage().toString())) {
-                errors.rejectValue("relayUsage", key + "relayUsage.invalidValue");
             }
         }
     }

@@ -17,6 +17,7 @@ import org.springframework.ui.ModelMap;
 import com.cannontech.common.dr.setup.AddressUsage;
 import com.cannontech.common.dr.setup.ControlPriority;
 import com.cannontech.common.dr.setup.EmetconAddressUsage;
+import com.cannontech.common.dr.setup.EmetconRelayUsage;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupDigiSep;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
@@ -136,7 +137,7 @@ public class LoadGroupSetupControllerHelper {
             ((LoadGroupEmetcon) group).setGoldAddress(1);
             ((LoadGroupEmetcon) group).setSilverAddress(1);
             ((LoadGroupEmetcon) group).setAddressUsage(EmetconAddressUsage.GOLD);
-            ((LoadGroupEmetcon) group).setRelayUsage('A');
+            ((LoadGroupEmetcon) group).setRelayUsage(EmetconRelayUsage.RELAY_A);
             break;
         case LM_GROUP_DIGI_SEP:
             ((LoadGroupDigiSep) group).setRampInMinutes(30);
