@@ -93,14 +93,14 @@ BOOST_AUTO_TEST_CASE(test_sendMessageToForeignSys)
 
     //  Test registration filtering
     {
-        m.setTags(TAG_POINT_MOA_REPORT);
+        m.setTags(TAG_POINT_REG_UPLOAD);
 
         ss.sendMessageToForeignSys(&m);
 
         //  Make sure our point was updated
         BOOST_CHECK_EQUAL(fdrPoint->getLastTimeStamp(), t + 500);
 
-        m.resetTags(TAG_POINT_MOA_REPORT);
+        m.resetTags(TAG_POINT_REG_UPLOAD);
     }
 
     //  Test missing point ID

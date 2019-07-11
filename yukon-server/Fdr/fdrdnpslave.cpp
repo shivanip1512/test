@@ -88,7 +88,7 @@ void DnpSlave::startup()
 
 std::unique_ptr<CtiPointRegistrationMsg> DnpSlave::buildRegistrationPointList()
 {
-    auto ptRegMsg = std::make_unique<CtiPointRegistrationMsg>(REG_TAG_MARKMOA);
+    auto ptRegMsg = std::make_unique<CtiPointRegistrationMsg>(REG_TAG_UPLOAD);
 
     // do outbounds
     {

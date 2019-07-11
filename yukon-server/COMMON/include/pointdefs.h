@@ -60,7 +60,7 @@ const unsigned TAG_INVALID_LODESTAR_READING    = 0x00000080;  // Lodestar Readin
 
 const unsigned TAG_POINT_DATA_TIMESTAMP_VALID  = 0x00000100;  // This point data message's timestamp comes from the device! (SOE data)
 const unsigned TAG_POINT_DATA_UNSOLICITED      = 0x00000200;  // This point data message was an unsolicited report from a device
-const unsigned TAG_POINT_MOA_REPORT            = 0x00000400;  // This point data message is the result of a registration
+const unsigned TAG_POINT_REG_UPLOAD            = 0x00000400;  // This point data message is the result of a registration
 const unsigned TAG_POINT_DELAYED_UPDATE        = 0x00000800;  // Dispatch delay this point data until the time specified in the message!
 
 const unsigned TAG_POINT_FORCE_UPDATE          = 0x00001000;  // Dispatch will no matter what copy this into his RT memory

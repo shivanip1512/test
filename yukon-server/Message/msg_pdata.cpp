@@ -161,9 +161,9 @@ CtiPointDataMsg& CtiPointDataMsg::resetTags( const unsigned a_tags )
    _tags &= ~(a_tags);
    return *this;
 }
-bool CtiPointDataMsg::isRegistrationReport() const
+bool CtiPointDataMsg::isRegistrationUpload() const
 {
-    return _tags & TAG_POINT_MOA_REPORT;
+    return _tags & TAG_POINT_REG_UPLOAD;
 }
 bool CtiPointDataMsg::isOldTimestamp() const
 {
