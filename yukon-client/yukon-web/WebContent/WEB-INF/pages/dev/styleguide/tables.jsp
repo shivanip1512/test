@@ -548,6 +548,60 @@
 </pre>
 </div>
 
+<h2 id="scrolling-example">Adding scrollbar to table body</h2>
+<div class="table-example clearfix stacked">
+    <p class="description">
+        We can add scrollbar to the table body only instead of adding it to the entire table. This keeps the table header and footer fixed. 
+        <span class="label label-attr">jQuery.scrollTableBody.js</span> plugin is used for this. We need to call <span class="label label-attr">scrollTableBody</span>
+        function on the table DOM object. This function accepts optional parameter <span class="label label-attr">rowsToDisplay</span> that determines number of rows to be displayed
+        before adding a scrollbar. The default value of this parameter is <span class="label label-attr">10</span> 
+    </p>
+    <h4 class="subtle">Example:</h4>
+    <table class="js-example-table compact-results-table">
+        <thead>
+            <tr>
+                <th>City</th>
+                <th>Population</th>
+            </tr>
+        </thead>
+        <tfoot></tfoot>
+        <tbody>
+            <c:forEach var="pop" items="${allPops}">
+                <tr>
+                    <td>${pop.city}</td>
+                    <td>${pop.population}</td>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
+    <script>
+        $('.js-example-table').scrollTableBody({rowsToDisplay: 15});
+    </script>
+    
+    <h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;table class=&quot;js-example-table&nbsp;compact-results-table&quot;&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;City&lt;/th&gt;
+            &lt;th&gt;Population&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;c:forEach var=&quot;pop&quot; items=&quot;&#36;{allPops}&quot;&gt;
+            &lt;tr&gt;
+                &lt;td&gt;&#36;{pop.city}&lt;/td&gt;
+                &lt;td&gt;&#36;{pop.population}&lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/c:forEach&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;script&gt;
+    $(&#39;.js-example-table&#39;).scrollTableBody({rowsToDisplay: 15});
+&lt;/script&gt;
+</pre>
+</div>
+
 <h2>Sizing</h2>
 <div class="table-example clearfix stacked">
     <p class="description">

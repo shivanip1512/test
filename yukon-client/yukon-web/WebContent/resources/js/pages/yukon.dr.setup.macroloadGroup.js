@@ -22,6 +22,11 @@ yukon.dr.setup.macroloadGroup = (function() {
             
             if ($("#js-inline-picker-container").is(":visible")) {
                 yukon.pickers['js-avaliable-load-groups-picker'].show();
+                $('#js-assigned-load-groups').sortable({
+                    stop: function(event, ui) {
+                        ui.item.closest('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+                    }
+                });
             } else {
                 $("#js-assigned-load-groups-table").scrollTableBody({rowsToDisplay: 20});
             }
