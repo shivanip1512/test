@@ -35,7 +35,11 @@ public enum TimeIntervals {
     MINUTES_20(Duration.standardMinutes(20)),
     MINUTES_25(Duration.standardMinutes(25)),
     MINUTES_30(Duration.standardMinutes(30)),
+    MINUTES_35(Duration.standardMinutes(35)),
+    MINUTES_40(Duration.standardMinutes(40)),
     MINUTES_45(Duration.standardMinutes(45)),
+    MINUTES_50(Duration.standardMinutes(50)),
+    MINUTES_55(Duration.standardMinutes(55)),
     HOURS_1(Duration.standardHours(1)),
     HOURS_2(Duration.standardHours(2)),
     HOURS_3(Duration.standardHours(3)),
@@ -312,6 +316,41 @@ public enum TimeIntervals {
 
     public static Set<TimeIntervals> getRotationshedtime() {
         return rotationShedTime;
+    }
+    
+    private static final Set<TimeIntervals> controlAreaInterval = ImmutableSet.of(
+        NONE,
+        MINUTES_1,
+        MINUTES_2,
+        MINUTES_3,
+        MINUTES_4,
+        MINUTES_5,
+        MINUTES_10,
+        MINUTES_15,
+        MINUTES_30
+        );
+    
+    public static Set<TimeIntervals> getControlAreaInterval() {
+        return controlAreaInterval;
+    }
+    
+    private static final Set<TimeIntervals> projectionAheadDuration = ImmutableSet.of(
+        MINUTES_5,
+        MINUTES_10,
+        MINUTES_15,
+        MINUTES_20,
+        MINUTES_25,
+        MINUTES_30,
+        MINUTES_35,
+        MINUTES_40,
+        MINUTES_45,
+        MINUTES_50,
+        MINUTES_55,
+        HOURS_1
+        );
+    
+    public static Set<TimeIntervals> getProjectionAheadDuration() {
+        return projectionAheadDuration;
     }
 
 }
