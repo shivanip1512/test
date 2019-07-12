@@ -6,10 +6,11 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.cannontech.common.rfn.message.neighbor.NeighborData;
+import com.cannontech.common.rfn.message.neighbor.Neighbor;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
-import com.cannontech.common.rfn.message.neighbor.Neighbor;
-import com.cannontech.common.rfn.message.neighbor.NeighborData;
+import com.cannontech.common.rfn.message.route.Route;
 
 /**
  * Each constant can be used alone or combined.
@@ -28,8 +29,8 @@ import com.cannontech.common.rfn.message.neighbor.NeighborData;
  * If your request's entityType is Gateway, PRIMARY_GATEWAY_NODE_COMM will be ignored
  *     and all rfnIdentifiers will be treated as gateway.
  * Based on the above rule, you will find although NEIGHBOR can be queried
- *     for both node/device and gateway, you still need to separate your them into two requests,
- *     one EntityType is NODE and one EntityType is GATEWAY.
+ *     for both node/device and gateway, you still need to separate your rfnIdentifiers
+ *     into two requests, one request's EntityType is NODE and the other is GATEWAY.
  * 
  * 2. Make sure the max rfnIdentifiers you can query.
  * For example, you can query PRIMARY_GATEWAY_NODE_COMM for up to 1000 devices
@@ -43,11 +44,12 @@ import com.cannontech.common.rfn.message.neighbor.NeighborData;
 public enum RfnMetadataMulti implements Serializable {
 
     // ------ First Part: replace metadata package ------
+    
     // This covers RfnMetadata.PRIMARY_GATEWAY,
     //             RfnMetadata.COMM_STATUS
     //             RfnMetadata.COMM_STATUS_TIMESTAMP
     // null indicates the primary gateway is unknown.
-    PRIMARY_GATEWAY_NODE_COMM(NodeComm.class, 1000, EntityType.NODE),
+    PRIMARY_GATEWAY_NODE_COMM(NodeComm.class, 1000, EntityType.NODE), // ready for integration test
     
     // Number of Hops to Primary Gateway:
     // This replaces RfnMetadata.PRIMARY_GATEWAY_HOP_COUNT
@@ -59,45 +61,50 @@ public enum RfnMetadataMulti implements Serializable {
     //             RfnMetadata.NODE_ADDRESS
     //             RfnMetadata.NODE_FIRMWARE_VERSION
     //             RfnMetadata.NODE_TYPE
-    NODE_DATA(NodeData.class, 1000, EntityType.NODE),
+    NODE_DATA(NodeData.class, 1000, EntityType.NODE), // ready for integration test
 
     // This replaces RfnMetadata.NUM_ASSOCIATIONS
     // null indicates the meter doesn't support battery node association.
-    READY_BATTERY_NODE_COUNT(Integer.class, 1000, EntityType.NODE),
+    READY_BATTERY_NODE_COUNT(Integer.class, 1000, EntityType.NODE), // ready for integration test
     
     // Current Number of Neighbors:
     // This replaces RfnMetadata.NEIGHBOR_COUNT
     NEIGHBOR_COUNT(Integer.class, 1000, EntityType.GATEWAY, EntityType.NODE),
 
-    // Current Primary Forward Neighbor:
+    // Current Primary Forward Neighbor Data:
     // This replaces RfnMetadata.PRIMARY_NEIGHBOR,
     //               RfnMetadata.PRIMARY_NEIGHBOR_DATA_TIMESTAMP
     //               RfnMetadata.PRIMARY_NEIGHBOR_LINK_COST
-    PRIMARY_FORWARD_NEIGHBOR_DATA(NeighborData.class, 1000, EntityType.NODE),
+    PRIMARY_FORWARD_NEIGHBOR_DATA(NeighborData.class, 1000, EntityType.NODE), // ready for integration test
 
+        
     // ------ Second part: replace network package ------
-    // This replaces RfnNeighborDataRequest
+    
+    // This will replace the legacy network.RfnNeighborDataRequest
     NEIGHBOR(Neighbor.class, 1000, EntityType.GATEWAY, EntityType.NODE),
 
-    // ROUTES, PRIMARY_FORWARD_ROUTES, PRIMARY_FORWARD_ROUTES_BY_NEXT_HOP,
-    // PRIMARY_FORWARD_ROUTES_BY_DESTINATION_AND_NEXT_HOP, etc., could also be provided.
-    // So far only PRIMARY_FORWARD_ROUTES_TO_GATEWAY is needed, which returns
-    // all PRIMARY_FORWARD_ROUTES from this node to a gateway.
-    // The destination must be a gateway and unique in the return station.
-    // It replaces RfnPrimaryRouteDataRequest.
-    //PRIMARY_FORWARD_ROUTES_TO_GATEWAY(Route.class, 1000, EntityType.NODE),
+    // This replaces the legacy network.RfnPrimaryRouteDataRequest.
+    // Return all Primary Forward Routes from this node to a gateway.
+    // The destination must be a gateway (unique).
+    // One gateway can only have one (primary) forward route from this node.
+    GATEWAY_PRIMARY_FORWARD_ROUTE(Route.class, 1000, EntityType.NODE),
+        
     
     // ------ Third part: new features ------
-    
-    // GATEWAY_NODES(GatewayNodes.class, EntityType.GATEWAY), // not used now
-    
+
+    // GATEWAY_NODES are all nodes on the gateway's node list.
     // PRIMARY_GATEWAY_NODES use the gateway as their primary gateway while
-    //         GATEWAY_NODES above may not. GATEWAY_NODES are all nodes on the gateway's node list.
-    // A node can associate with multiple gateways but
-    // a primary node can only belong to one gateway or its primary gateway.   
+    //         GATEWAY_NODES may not since a node can associate with multiple gateways
+    // but can only have one primary gateway.
+    
+    // Return all nodes behind the gateway
+    GATEWAY_NODES(GatewayNodes.class, 1000, EntityType.GATEWAY), // not used now
+    
+    // Return only primary nodes behind the gateway
     PRIMARY_GATEWAY_NODES(GatewayNodes.class, 1000, EntityType.GATEWAY),
     
-    //PRIMARY_FORWARD_NODES(Route.class, 1000, EntityType.GATEWAY, EntityType.NODE),
+    // Return the (Primary Forward) Network Tree behind a gateway or node
+    PRIMARY_FORWARD_NODES(Route.class, 1000, EntityType.GATEWAY, EntityType.NODE), 
     ;
    
     private final Class<?> constantClass;

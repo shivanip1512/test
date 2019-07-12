@@ -605,7 +605,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      */
     private void loadMapColorCodedByGatewayFilteredByLinkStrength(NetworkMapFilter filter, NetworkMap map,
             AtomicInteger i, String gatewayName, Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData) {
-        Set<RfnIdentifier> ids = neighborMetaData.values().stream()
+      /*  Set<RfnIdentifier> ids = neighborMetaData.values().stream()
                 .filter(result -> result.isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA))
                 .map(result -> {
                 return (NeighborData) result.getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);
@@ -615,7 +615,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         if (!ids.isEmpty()) {
             Color color = Color.values()[i.getAndIncrement()];
             addDevicesToMap(map, color, gatewayName, ids);
-        }
+        }*/
     }
 
     /**
@@ -643,7 +643,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private void loadMapColorCodedByLinkStrength(NetworkMapFilter filter, MessageSourceAccessor accessor, NetworkMap map,
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData) {
         log.debug("Loading map filtered by link strength");
-        Map<LinkQuality, List<NeighborData>> groupedNeighbors = neighborMetaData.values().stream()
+      /*  Map<LinkQuality, List<NeighborData>> groupedNeighbors = neighborMetaData.values().stream()
                 .filter( result -> result.isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA))
                 .map(result -> {
                     return (NeighborData) result.getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);})
@@ -658,7 +658,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             String linkStrengthFormatted = accessor.getMessage(linkStrength.getFormatKey());
             
             addDevicesToMap(map, linkStrength.getColor(), linkStrengthFormatted, ids);
-        });
+        });*/
     }
     
     /**

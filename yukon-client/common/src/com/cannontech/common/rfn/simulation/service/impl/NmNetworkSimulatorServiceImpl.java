@@ -474,7 +474,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     RfnMetadataMultiQueryResult result = getResult(results, device, multi);
                     // Populate all fields
                     NeighborData neighborData = new NeighborData();
-                    neighborData.setNeighborRfnIdentifier(device);
                     List<Integer> linkCost = Arrays.asList(1, 2, 3, 4, 5);
                     int randomElement = linkCost.get(new Random().nextInt(linkCost.size()));
                     neighborData.setNeighborLinkCost((float) randomElement);

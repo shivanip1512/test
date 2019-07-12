@@ -3,23 +3,9 @@ package com.cannontech.common.rfn.message.neighbor;
 import java.io.Serializable;
 import java.util.Set;
 
-import com.cannontech.common.rfn.message.RfnIdentifier;
-
 public class NeighborData implements Serializable {
     
     private static final long serialVersionUID = 1L;
-    
-    private RfnIdentifier myRfnIdentifier;
-    
-    private RfnIdentifier neighborRfnIdentifier;
-    
-    // The following xxxSerialNumber could be Node S/N or Gateway S/N
-    
-    // private String mySerialNumber;
-
-    private String neighborSerialNumber;
-    
-    // The following are data from table ROUTE_DATA_POINT
     
     private long neighborDataTimestamp;
 
@@ -40,30 +26,6 @@ public class NeighborData implements Serializable {
     private LinkRate currentLinkRate; // Use Enum instead of ID (tinyint) or String
     
     private LinkPower currentLinkPower; // Use Enum instead of ID (tinyint) or String
-
-    public RfnIdentifier getMyRfnIdentifier() {
-        return myRfnIdentifier;
-    }
-
-    public void setMyRfnIdentifier(RfnIdentifier myRfnIdentifier) {
-        this.myRfnIdentifier = myRfnIdentifier;
-    }
-
-    public RfnIdentifier getNeighborRfnIdentifier() {
-        return neighborRfnIdentifier;
-    }
-
-    public void setNeighborRfnIdentifier(RfnIdentifier neighborRfnIdentifier) {
-        this.neighborRfnIdentifier = neighborRfnIdentifier;
-    }
-
-    public String getNeighborSerialNumber() {
-        return neighborSerialNumber;
-    }
-
-    public void setNeighborSerialNumber(String neighborSerialNumber) {
-        this.neighborSerialNumber = neighborSerialNumber;
-    }
 
     public long getNeighborDataTimestamp() {
         return neighborDataTimestamp;
@@ -153,16 +115,11 @@ public class NeighborData implements Serializable {
         result = prime * result + ((currentLinkRate == null) ? 0 : currentLinkRate.hashCode());
         result = prime * result + ((etxBand == null) ? 0 : etxBand.hashCode());
         result = prime * result + ((lastCommTime == null) ? 0 : lastCommTime.hashCode());
-        result = prime * result + ((myRfnIdentifier == null) ? 0 : myRfnIdentifier.hashCode());
         result = prime * result + (int) (neighborDataTimestamp ^ (neighborDataTimestamp >>> 32));
         result = prime * result + ((neighborFlags == null) ? 0 : neighborFlags.hashCode());
         result = prime * result + ((neighborLinkCost == null) ? 0 : neighborLinkCost.hashCode());
         result =
             prime * result + ((neighborMacAddress == null) ? 0 : neighborMacAddress.hashCode());
-        result = prime * result
-            + ((neighborRfnIdentifier == null) ? 0 : neighborRfnIdentifier.hashCode());
-        result =
-            prime * result + ((neighborSerialNumber == null) ? 0 : neighborSerialNumber.hashCode());
         result = prime * result + ((nextCommTime == null) ? 0 : nextCommTime.hashCode());
         result = prime * result + ((numSamples == null) ? 0 : numSamples.hashCode());
         return result;
@@ -191,11 +148,6 @@ public class NeighborData implements Serializable {
                 return false;
         } else if (!lastCommTime.equals(other.lastCommTime))
             return false;
-        if (myRfnIdentifier == null) {
-            if (other.myRfnIdentifier != null)
-                return false;
-        } else if (!myRfnIdentifier.equals(other.myRfnIdentifier))
-            return false;
         if (neighborDataTimestamp != other.neighborDataTimestamp)
             return false;
         if (neighborFlags == null) {
@@ -213,16 +165,6 @@ public class NeighborData implements Serializable {
                 return false;
         } else if (!neighborMacAddress.equals(other.neighborMacAddress))
             return false;
-        if (neighborRfnIdentifier == null) {
-            if (other.neighborRfnIdentifier != null)
-                return false;
-        } else if (!neighborRfnIdentifier.equals(other.neighborRfnIdentifier))
-            return false;
-        if (neighborSerialNumber == null) {
-            if (other.neighborSerialNumber != null)
-                return false;
-        } else if (!neighborSerialNumber.equals(other.neighborSerialNumber))
-            return false;
         if (nextCommTime == null) {
             if (other.nextCommTime != null)
                 return false;
@@ -239,10 +181,7 @@ public class NeighborData implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("Neighbor [myRfnIdentifier=%s, neighborRfnIdentifier=%s, neighborSerialNumber=%s, neighborDataTimestamp=%s, neighborMacAddress=%s, neighborLinkCost=%s, lastCommTime=%s, nextCommTime=%s, neighborFlags=%s, numSamples=%s, etxBand=%s, currentLinkRate=%s, currentLinkPower=%s]",
-                    myRfnIdentifier,
-                    neighborRfnIdentifier,
-                    neighborSerialNumber,
+            .format("NeighborData [neighborDataTimestamp=%s, neighborMacAddress=%s, neighborLinkCost=%s, lastCommTime=%s, nextCommTime=%s, neighborFlags=%s, numSamples=%s, etxBand=%s, currentLinkRate=%s, currentLinkPower=%s]",
                     neighborDataTimestamp,
                     neighborMacAddress,
                     neighborLinkCost,
