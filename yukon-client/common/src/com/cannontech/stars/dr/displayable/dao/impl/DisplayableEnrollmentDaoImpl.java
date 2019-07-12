@@ -130,6 +130,18 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
                 if (!type.isEnrollable()) {
                     return false;
                 }
+                
+                if (type == HardwareType.YUKON_METER) {
+                    if (program.getPaoType() == PaoType.LM_METER_DISCONNECT_PROGRAM) {
+                        return true;
+                    }
+                }
+                
+                if (type == HardwareType.NON_YUKON_METER) {
+                    if (program.getPaoType() == PaoType.LM_METER_DISCONNECT_PROGRAM) {
+                        return true;
+                    }
+                }
 
                 /* Exclude devices from the list if there are no load groups of the right type for
                  * the given load program and device.  All groups are looped over in the for loop, at

@@ -14,6 +14,7 @@ public class SmartLiteInventoryBaseRowMapper implements YukonRowMapper<LiteInven
     private static final YukonRowMapper<LiteLmHardwareBase> hardwareRowMapper = new LiteStarsLMHardwareRowMapper();
     private static final YukonRowMapper<LiteMeterHardwareBase> meterRowMapper = new LiteMeterHardwareBaseRowMapper();
     private static final YukonRowMapper<LiteInventoryBase> inventoryRowMapper = new LiteInventoryBaseRowMapper();
+    private static final YukonRowMapper<LiteInventoryBase> yukonMeterRowMapper = new LiteYukonMeterInventoryBaseRowMapper();
     
     @Override
     public LiteInventoryBase mapRow(YukonResultSet rs) throws SQLException {
@@ -36,6 +37,13 @@ public class SmartLiteInventoryBaseRowMapper implements YukonRowMapper<LiteInven
             }
         },
         
+        YUKON_METER() {
+            @Override
+            public LiteInventoryBase mapRow(YukonResultSet rs) throws SQLException {
+                return yukonMeterRowMapper.mapRow(rs);
+            }
+        },
+        
         GENERIC_INVENTORY() {
             @Override
             public LiteInventoryBase mapRow(YukonResultSet rs) throws SQLException {
@@ -49,6 +57,7 @@ public class SmartLiteInventoryBaseRowMapper implements YukonRowMapper<LiteInven
                 case YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC : return HARWARE;
                 
                 case YukonListEntryTypes.YUK_DEF_ID_INV_CAT_NON_YUKON_METER : return METER;
+                case YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT             : return YUKON_METER;
                 
                 default : return GENERIC_INVENTORY;
             }

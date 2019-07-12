@@ -58,6 +58,7 @@ public enum PaoTag {
     ECOBEE_PROGRAM_ENROLLMENT("ecobee Program Enrollment"),
     HONEYWELL_PROGRAM_ENROLLMENT("Honeywell Program Enrollment"),
     NEST_PROGRAM_ENROLLMENT("Nest Program Enrollment"),
+    METER_DISCONNECT_PROGRAM_ENROLLMENT("Meter Disconnect Program Enrollment"),
     ASSET_DETAIL_DISPLAYABLE("Asset Detail Displayable"),
     RELAY_DETAIL_DISPLAYABLE("Relay Detail Displayable"),
     RTU_DETAIL_DISPLAYABLE("RTU Detail Displayable"),

@@ -34,7 +34,8 @@ public enum HardwareConfigType implements DisplayableEnum {
     ECOBEE(7, PaoTag.ECOBEE_PROGRAM_ENROLLMENT, false),
     HONEYWELL(8, PaoTag.HONEYWELL_PROGRAM_ENROLLMENT, false),
     NEST(9, PaoTag.NEST_PROGRAM_ENROLLMENT, false),
-    ITRON(10, PaoTag.ITRON_PROGRAM_ENROLLMENT, false)
+    ITRON(10, PaoTag.ITRON_PROGRAM_ENROLLMENT, false),
+    DISCONNECT_METER(11, PaoTag.METER_DISCONNECT_PROGRAM_ENROLLMENT, false)
     ;
     
     private int hardwareConfigTypeId;

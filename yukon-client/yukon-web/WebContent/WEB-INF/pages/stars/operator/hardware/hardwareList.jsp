@@ -614,7 +614,7 @@
                                     <td>
                                         <cm:dropdown>
                                             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                                                <c:if test="${inventoryChecking}">
+                                                <c:if test="${inventoryChecking and (meter.hardwareType != 'NON_YUKON_METER')}">
                                                     <li>
                                                         <tags:pickerDialog extraArgs="${energyCompanyId}"
                                                                 id="availableMeterPicker${meter.inventoryId}"
@@ -628,7 +628,9 @@
                                                     </li>
                                                 </c:if>
                                             </cti:checkRolesAndProperties>
-                                            <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editMeterConfigUrl}${meter.deviceId}" />
+                                            <c:if test="${meter.hardwareType != 'NON_YUKON_METER'}">
+                                                <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editMeterConfigUrl}${meter.deviceId}" />
+                                            </c:if>
                                             <cti:checkRolesAndProperties value="METERING">
                                                 <li>
                                                     <c:if test="${meter.hardwareType != 'NON_YUKON_METER'}">

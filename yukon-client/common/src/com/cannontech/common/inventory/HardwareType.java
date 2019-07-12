@@ -27,7 +27,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     
     /* These are real MCTs that exist as yukon paos. These USED to have a type of 0, they now have their own def dev type.
      * Non disconnect meters currently behave as if this was still 0 and never actually use YUK_DEF_ID_DEV_TYPE_YUKON_METER*/
-    YUKON_METER(YUK_DEF_ID_DEV_TYPE_YUKON_METER, MCT, METER, null, false, false, false),
+    YUKON_METER(YUK_DEF_ID_DEV_TYPE_YUKON_METER, MCT, METER, DISCONNECT_METER, false, false, false),
     
     /* These are meters that only exist in stars in the MeterHardwareBase table. 
      * They do not represent MCT's or link to pao tables.*/
@@ -474,7 +474,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
     
     public boolean isEnrollable() {
-        return hardwareClass == SWITCH || hardwareClass == THERMOSTAT;
+        return hardwareClass == SWITCH || hardwareClass == THERMOSTAT || this.equals(YUKON_METER);
     }
     
     @Override
