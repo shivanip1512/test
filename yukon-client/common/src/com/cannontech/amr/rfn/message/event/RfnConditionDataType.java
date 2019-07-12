@@ -17,7 +17,9 @@ public enum RfnConditionDataType {
     OLD_DNP3_ADDRESS(Integer.class),
     NEW_DNP3_ADDRESS(Integer.class),
     PORT_TYPE(Short.class),
-    PORT_LOCKED_MINUTES(Long.class)
+    PORT_LOCKED_MINUTES(Long.class),
+    METER_CONFIGURATION_ID(String.class),
+    METER_CONFIGURATION_STATUS(MeterConfigurationStatus.class),
     ;
     
     private final Class<?> objectType;
