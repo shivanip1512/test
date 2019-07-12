@@ -17,6 +17,8 @@ yukon.ui.numeric= (function () {
         
         /** Initialize this module. */
         init: function () {
+
+            if (_initialized) return;
             
             $('.js-numeric').each(function(idx, elm) {
                 var minValue = $(this).data('minValue'),
@@ -28,9 +30,6 @@ yukon.ui.numeric= (function () {
                     step: stepValue
                 });
             });
-            
-            
-            if (_initialized) return;
             
             $(document).on('blur', '.js-numeric', function (event) {
                 var value = $(this).val(),
