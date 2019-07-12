@@ -51,7 +51,7 @@ public class WaterNodeCSVDaoImpl implements WaterNodeDao {
 
                             waterNodeDetails = new WaterNodeDetails();
                             waterNodeDetails.setSerialNumber(row[0]);
-                            waterNodeDetails.setMeterNumber(Integer.valueOf(row[1]));
+                            waterNodeDetails.setMeterNumber(String.valueOf(row[1]));
                             waterNodeDetails.setName(row[2]);
                             waterNodeDetails.setType(row[3]);
                             waterNodeDetails.setHighSleepingCurrentIndicator(false);
