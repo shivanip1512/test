@@ -103,6 +103,7 @@
 <!-- common Validation -->
 <entry key="yukon.web.modules.dr.setup.error.unique">{0} must be unique.</entry>
 <entry key="yukon.web.modules.dr.setup.error.required">{0} is required.</entry>
+<entry key="yukon.web.modules.dr.setup.error.invalid">Invalid {0} value.</entry>
 <entry key="yukon.web.modules.dr.setup.error.routeId.doesNotExist">Route Id does not exist.</entry>
 
 <!-- Control Scenario Validation -->
