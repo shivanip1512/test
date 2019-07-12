@@ -21,7 +21,6 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.users.model.PreferencePorterQueueCountsZoomOption;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.user.YukonUserContext;
@@ -72,9 +71,9 @@ public class PorterQueueCountsController {
             }
             seriesProperties.put("data", seriesData);
             if (!seriesItemResult.isEmpty()) {
-                 if (PointType.getForId(seriesItemResult.get(0).getType()).isStatus()) {
-                    seriesProperties.put("dataGrouping", ImmutableMap.of("enabled", false));
-                }
+                // Using PORT_QUEUE_COUNT attribute, which is a count with whole numbers only, do not group. (See PorterQueueCountsWidgetServiceImpl) 
+                seriesProperties.put("dataGrouping", ImmutableMap.of("enabled", false));
+
                 DateTime valueDeltaPrimeDT = new DateTime(seriesItemResult.get(0).getPointDataTimeStamp());
                 DateTime valueDeltaLimitDT = new DateTime(seriesItemResult.get(seriesData.size() - 1).getPointDataTimeStamp());
                 if (hasCurrentDateBoundary) {
