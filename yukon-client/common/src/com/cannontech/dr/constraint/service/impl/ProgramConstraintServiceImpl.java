@@ -53,11 +53,11 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     public int create(ProgramConstraint programConstraint) {
         Optional<LMDto> holidaySchedule = lmServiceHelper.getHolidaySchedule(programConstraint.getHolidaySchedule().getId());
         if (holidaySchedule.isEmpty()) {
-            throw new NotFoundException("Invalid Holiday Schedule ID");
+            throw new NotFoundException("Holiday Schedule Id not found");
         }
         Optional<LMDto> seasonSchedule = lmServiceHelper.getSeasonSchedule(programConstraint.getSeasonSchedule().getId());
         if (seasonSchedule.isEmpty()) {
-            throw new NotFoundException("Invalid Season Schedule ID");
+            throw new NotFoundException("Season Schedule Id not found");
         }
 
         LMProgramConstraint constraint = new LMProgramConstraint();
@@ -95,11 +95,11 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         }
         Optional<LMDto> holidaySchedule = lmServiceHelper.getHolidaySchedule(programConstraint.getHolidaySchedule().getId());
         if (holidaySchedule.isEmpty()) {
-            throw new NotFoundException("Invalid Holiday Schedule ID");
+            throw new NotFoundException("Holiday Schedule Id not found");
         }
         Optional<LMDto> seasonSchedule = lmServiceHelper.getSeasonSchedule(programConstraint.getSeasonSchedule().getId());
         if (seasonSchedule.isEmpty()) {
-            throw new NotFoundException("Invalid Season Schedule ID");
+            throw new NotFoundException("Season Schedule Id not found");
         }
         
         programConstraint.setId(constraintId);
