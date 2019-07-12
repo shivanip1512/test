@@ -76,7 +76,9 @@ updateSub = function (data) {
                             <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
                                 <th><i:inline key=".group"/></th>
                             </cti:checkEnergyCompanySetting>
-                            <th><i:inline key=".relay"/></th>
+                            <c:if test="${not isYukonMeter}">
+                                <th><i:inline key=".relay"/></th>
+                            </c:if>    
                         </tr>
             
                         <c:forEach var="enrollment" varStatus="status" items="${enrollments}">
@@ -107,12 +109,14 @@ updateSub = function (data) {
                                     </td>
                                 </cti:checkEnergyCompanySetting>
                                 <td>
-                                    <form:select path="programEnrollments[${status.index}].relay">
-                                        <form:option value="0"><i:inline key=".noRelay"/></form:option>
-                                        <c:forEach var="relayNumber" begin="1" end="${hardware.numRelays}">
-                                            <form:option value="${relayNumber}">${relayNumber}</form:option>
-                                        </c:forEach>
-                                    </form:select>
+                                <c:if test="${not isYukonMeter}">
+                                        <form:select path="programEnrollments[${status.index}].relay">
+                                            <form:option value="0"><i:inline key=".noRelay"/></form:option>
+                                            <c:forEach var="relayNumber" begin="1" end="${hardware.numRelays}">
+                                                <form:option value="${relayNumber}">${relayNumber}</form:option>
+                                            </c:forEach>
+                                        </form:select>
+                                </c:if>
                                 </td>
                         </c:forEach>
                     </table>

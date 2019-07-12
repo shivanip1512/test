@@ -251,9 +251,11 @@ public class OperatorHardwareConfigController {
         model.addAttribute("canEnableDisable", !inventory.getHardwareType().isZigbee() 
                                             && !inventory.getHardwareType().isEcobee()
                                             && !inventory.getHardwareType().isHoneywell()
-                                            && !inventory.getHardwareType().isNest());
+                                            && !inventory.getHardwareType().isNest()
+                                            && !inventory.getHardwareType().isMeter());
         model.addAttribute("hideHardareAddressing", inventory.getHardwareType().isHideHardwareAddressing());
         model.addAttribute("isZigbee", inventory.getHardwareType().isZigbee());
+        model.addAttribute("isYukonMeter", inventory.getHardwareType().isMeter());
         int deviceId = inventoryDao.getDeviceId(inventoryId);
         
         boolean supportsAddressReporting = inventory.getHardwareType().isRf() || inventory.getHardwareType().isZigbee() 
