@@ -25,10 +25,15 @@ public class LMServiceHelper {
         
         Integer gearId = (gears != null && gears.size() == 1) ? gears.get(0).getId() : null;
         if(gearId != null) {
-            return allGears.stream().filter(liteGear -> liteGear.getGearID() == gearId.intValue()).map(liteGear -> buildGear(liteGear)).collect(Collectors.toList());
+            return allGears.stream()
+                           .filter(liteGear -> liteGear.getGearID() == gearId.intValue())
+                           .map(liteGear -> buildGear(liteGear))
+                           .collect(Collectors.toList());
         }
         else {
-            return allGears.stream().map(liteGear -> buildGear(liteGear)).collect(Collectors.toList());
+            return allGears.stream()
+                           .map(liteGear -> buildGear(liteGear))
+                           .collect(Collectors.toList());
         }
     }
 
@@ -39,18 +44,15 @@ public class LMServiceHelper {
     public void validateProgramsAndGear(ControlScenario controlScenario) {
         List<ProgramDetails> validPrograms = loadProgramService.getAvailablePrograms();
         controlScenario.getAllPrograms().stream().forEach(program -> {
-            Optional<ProgramDetails> programDetails = validPrograms.stream().filter(
-                prg -> prg.getProgramId().compareTo(program.getProgramId()) == 0).findFirst();
-            if (programDetails.isEmpty()) {
-                throw new NotFoundException("Program ID : " + program.getProgramId() + " invalid");
-            } else {
-                List<LMDto> validGears = programDetails.get().getGears();
-                Optional<LMDto> gear = validGears.stream().filter(
-                    gr -> gr.getId().compareTo(program.getGears().get(0).getId()) == 0).findFirst();
-                if (gear.isEmpty()) {
-                    throw new NotFoundException("Gear ID : " + program.getGears().get(0).getId() + " invalid");
-                }
-            }
+            ProgramDetails programDetails = validPrograms.stream()
+                                                         .filter(prg -> prg.getProgramId().compareTo(program.getProgramId()) == 0)
+                                                         .findFirst()
+                                                         .orElseThrow(() -> new NotFoundException("Program Id not found"));
+
+            programDetails.getGears().stream()
+                                     .filter(gr -> gr.getId().compareTo(program.getGears().get(0).getId()) == 0)
+                                     .findFirst()
+                                     .orElseThrow(() -> new NotFoundException("Gear Id not found"));
         });
     }
 
@@ -59,8 +61,8 @@ public class LMServiceHelper {
      */
     public Optional<LMDto> getSeasonSchedule(Integer seasonScheduleId) {
         return programConstraintService.getSeasonSchedules().stream()
-                .filter(lmdto -> lmdto.getId().compareTo(seasonScheduleId) == 0)
-                .findFirst();
+                                                            .filter(lmdto -> lmdto.getId().compareTo(seasonScheduleId) == 0)
+                                                            .findFirst();
     }
 
     /**
@@ -68,7 +70,7 @@ public class LMServiceHelper {
      */
     public Optional<LMDto> getHolidaySchedule(Integer holidayScheduleId) {
         return programConstraintService.getHolidaySchedules().stream()
-                .filter(lmdto -> lmdto.getId().compareTo(holidayScheduleId) == 0)
-                .findFirst();
+                                                             .filter(lmdto -> lmdto.getId().compareTo(holidayScheduleId) == 0)
+                                                             .findFirst();
     }
 }

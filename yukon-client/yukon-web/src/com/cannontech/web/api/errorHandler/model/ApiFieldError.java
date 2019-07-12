@@ -2,12 +2,15 @@ package com.cannontech.web.api.errorHandler.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class ApiFieldError {
 
     private String field;
     private String code;
+    @JsonInclude(Include.NON_NULL)
     private Object rejectedValue;
     
     public ApiFieldError(String field, String code, Object rejectedValue) {

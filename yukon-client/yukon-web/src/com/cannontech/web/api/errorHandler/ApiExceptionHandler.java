@@ -211,7 +211,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .getGlobalErrors()
                 .stream()
                 .map(globalError -> new ApiGlobalError(
-                        globalError.getCode())
+                        messageSourceAccessor.getMessage(globalError.getCode()))
                 )
                 .collect(Collectors.toList());
 

@@ -3,6 +3,7 @@ package com.cannontech.common.dr.setup;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
+import org.apache.commons.collections4.CollectionUtils;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -67,16 +68,16 @@ public class ControlScenario {
         controlScenario.setScenarioName(getName());
 
         // Setting Programs list
-        getAllPrograms().forEach(program -> {
-            LMControlScenarioProgram lmControlScenarioProgram = new LMControlScenarioProgram();
-            lmControlScenarioProgram.setScenarioID(getId());
-            lmControlScenarioProgram.setProgramID(program.getProgramId());
-            lmControlScenarioProgram.setStartOffset(program.getStartOffsetInMinutes() * 60);
-            lmControlScenarioProgram.setStopOffset(program.getStopOffsetInMinutes() * 60);
-            lmControlScenarioProgram.setStartGear(program.getGears().get(0).getId());
-            controlScenario.getAllThePrograms().add(lmControlScenarioProgram);
-        });
-
-
+        if (CollectionUtils.isNotEmpty(getAllPrograms())) {
+            getAllPrograms().forEach(program -> {
+                LMControlScenarioProgram lmControlScenarioProgram = new LMControlScenarioProgram();
+                lmControlScenarioProgram.setScenarioID(getId());
+                lmControlScenarioProgram.setProgramID(program.getProgramId());
+                lmControlScenarioProgram.setStartOffset(program.getStartOffsetInMinutes() * 60);
+                lmControlScenarioProgram.setStopOffset(program.getStopOffsetInMinutes() * 60);
+                lmControlScenarioProgram.setStartGear(program.getGears().get(0).getId());
+                controlScenario.getAllThePrograms().add(lmControlScenarioProgram);
+            });
+        }
     }
 }

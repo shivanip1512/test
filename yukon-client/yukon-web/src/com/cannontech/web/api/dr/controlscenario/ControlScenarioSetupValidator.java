@@ -1,5 +1,6 @@
 package com.cannontech.web.api.dr.controlscenario;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
@@ -12,6 +13,7 @@ import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
 public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenario> {
     private final static String key = "yukon.web.modules.dr.setup.controlScenario.error.";
+    private final static String requiredKey = "yukon.web.modules.dr.setup.error.required";
     @Autowired private LMValidatorHelper lmValidatorHelper;
 
     public ControlScenarioSetupValidator() {
@@ -23,17 +25,23 @@ public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenar
 
         lmValidatorHelper.validateNewPaoName(scenario.getName(), PaoType.LM_SCENARIO, errors, "Scenario Name");
 
-        if (scenario.getAllPrograms() != null && scenario.getAllPrograms().size() > 0) {
+        if (CollectionUtils.isNotEmpty(scenario.getAllPrograms())) {
             for (int i = 0; i < scenario.getAllPrograms().size(); i++) {
                 ProgramDetails program = scenario.getAllPrograms().get(i);
-
+                if (program.getProgramId() == null) {
+                    lmValidatorHelper.checkIfFieldRequired("allPrograms[" + i + "].programId", errors, program.getProgramId(), "Program Id");
+                }
                 YukonValidationUtils.checkRange(errors, "allPrograms[" + i + "].startOffsetInMinutes", program.getStartOffsetInMinutes(), 0, 1439, true);
                 YukonValidationUtils.checkRange(errors, "allPrograms[" + i + "].stopOffsetInMinutes", program.getStopOffsetInMinutes(), 0, 1439, true);
 
-                if (program.getGears() == null || program.getGears().size() < 1) {
-                    errors.rejectValue("allPrograms[" + i + "].gears", "yukon.web.error.isBlank", "Cannot be blank.");
-                } else if (program.getGears().size() > 1 || program.getGears().get(0).getId() == null) {
-                    errors.rejectValue("allPrograms[" + i + "].gears", key + "oneGear", "Should require only one valid gear.");
+                if (CollectionUtils.isEmpty(program.getGears())) {
+                    errors.rejectValue("allPrograms[" + i + "].gears", requiredKey, new Object[] { "Start Gear" }, "");
+                } else if (program.getGears().size() > 1) {
+                    errors.reject(key + "oneGear");
+                } else if (program.getGears().get(0) == null) {
+                    lmValidatorHelper.checkIfFieldRequired("allPrograms[" + i + "].gears", errors, program.getGears().get(0), "Gear");
+                } else if(program.getGears().get(0).getId() == null) {
+                    lmValidatorHelper.checkIfFieldRequired("allPrograms[" + i + "].gears[0].id", errors, program.getGears().get(0).getId(), "Gear Id");
                 }
             }
         }

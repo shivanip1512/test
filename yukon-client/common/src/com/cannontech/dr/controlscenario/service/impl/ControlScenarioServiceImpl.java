@@ -1,7 +1,6 @@
 package com.cannontech.dr.controlscenario.service.impl;
 
-import java.util.Optional;
-
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.dr.setup.ControlScenario;
@@ -27,7 +26,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
 
     @Override
     public int create(ControlScenario controlScenario) {
-        if (controlScenario.getAllPrograms() != null) {
+        if (CollectionUtils.isNotEmpty(controlScenario.getAllPrograms())) {
             lmServiceHelper.validateProgramsAndGear(controlScenario);
         }
         LMScenario lmScenario = getDBPersistent(controlScenario);
@@ -38,7 +37,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
 
     @Override
     public int update(int controlScenarioId, ControlScenario controlScenario) {
-        if (controlScenario.getAllPrograms() != null) {
+        if (CollectionUtils.isNotEmpty(controlScenario.getAllPrograms())) {
             lmServiceHelper.validateProgramsAndGear(controlScenario);
         }
         controlScenario.setId(controlScenarioId);
@@ -65,14 +64,12 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
 
     @Override
     public int delete(int controlScenarioId, String controlScenarioName) {
-        Optional<LiteYukonPAObject> controlScenario =
-            dbCache.getAllLMScenarios().stream().filter(scenario -> scenario.getLiteID() == controlScenarioId
-                && scenario.getPaoName().equalsIgnoreCase(controlScenarioName)).findFirst();
-        if (controlScenario.isEmpty()) {
-            throw new NotFoundException("Id and Name combination not found");
-        }
+        LiteYukonPAObject controlScenario = dbCache.getAllLMScenarios().stream()
+                                                                       .filter(scenario -> scenario.getLiteID() == controlScenarioId && scenario.getPaoName().equals(controlScenarioName))
+                                                                       .findFirst()
+                                                                       .orElseThrow(() -> new NotFoundException("Scenario Id and Name combination not found"));
 
-        YukonPAObject lmScenario = (YukonPAObject) LiteFactory.createDBPersistent(controlScenario.get());
+        YukonPAObject lmScenario = (YukonPAObject) LiteFactory.createDBPersistent(controlScenario);
         dbPersistentDao.performDBChange(lmScenario, TransactionType.DELETE);
         return lmScenario.getPAObjectID();
 
