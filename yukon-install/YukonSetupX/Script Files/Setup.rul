@@ -879,6 +879,7 @@ begin
  	
  	//reapply old settings to newly updated services
     if( !REMOVEALLMODE ) then
+        Delay(2);
         LoadServiceSettings();
     endif;
  	
