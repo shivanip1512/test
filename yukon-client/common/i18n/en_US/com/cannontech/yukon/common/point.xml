@@ -290,6 +290,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PROFILE">Voltage Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.BATTERY_VOLTAGE">Battery Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.WATT_HOUR_PULSE_FAILURE">Watt-Hour Pulse Failure</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.WIFI_AP_CONNECTION_FAILURE">Wi-Fi Connection Failure</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.WIFI_BSSID_CHANGE">Wi-Fi BSSID Change</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.WIFI_PASSPHRASE_CHANGE">Wi-Fi Passphrase Change</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.WIFI_SSID_CHANGE">Wi-Fi SSID Change</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ZERO_USAGE_FLAG">Zero Usage Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ZIGBEE_LINK_STATUS">ZigBee Link Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TERMINAL_BLOCK_COVER_REMOVAL_FLAG">Terminal Block Cover Removal</entry>

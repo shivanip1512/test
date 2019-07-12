@@ -323,6 +323,10 @@ INIT_ATTRIBUTE( MaximumVoltagePhaseB,                               "MAXIMUM_VOL
 INIT_ATTRIBUTE( MaximumVoltagePhaseC,                               "MAXIMUM_VOLTAGE_PHASE_C" );
 INIT_ATTRIBUTE( VoltageProfile,                                     "VOLTAGE_PROFILE" );
 INIT_ATTRIBUTE( WattHourPulseFailure,                               "WATT_HOUR_PULSE_FAILURE" );
+INIT_ATTRIBUTE( WiFiApConnectionFailure,                            "WIFI_AP_CONNECTION_FAILURE" );
+INIT_ATTRIBUTE( WiFiBssidChange,                                    "WIFI_BSSID_CHANGE" );
+INIT_ATTRIBUTE( WiFiPassphraseChange,                               "WIFI_PASSPHRASE_CHANGE" );
+INIT_ATTRIBUTE( WiFiSsidChange,                                     "WIFI_SSID_CHANGE" );
 INIT_ATTRIBUTE( ZeroUsageFlag,                                      "ZERO_USAGE_FLAG" );
 INIT_ATTRIBUTE( ZigBeeLinkStatus,                                   "ZIGBEE_LINK_STATUS" );
 INIT_ATTRIBUTE( TerminalBlockCoverRemoval,                          "TERMINAL_BLOCK_COVER_REMOVAL_FLAG" );

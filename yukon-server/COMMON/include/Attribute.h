@@ -314,6 +314,10 @@ public:
     static const Attribute  MaximumVoltagePhaseC;
     static const Attribute  VoltageProfile;
     static const Attribute  WattHourPulseFailure;
+    static const Attribute  WiFiApConnectionFailure;
+    static const Attribute  WiFiBssidChange;
+    static const Attribute  WiFiPassphraseChange;
+    static const Attribute  WiFiSsidChange;
     static const Attribute  ZeroUsageFlag;
     static const Attribute  ZigBeeLinkStatus;
     static const Attribute  TerminalBlockCoverRemoval;

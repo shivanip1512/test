@@ -316,6 +316,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     VOLTAGE_PROFILE("Voltage Profile", AttributeGroup.PROFILE, false),    //require extra input, not "attribute" based readable
     BATTERY_VOLTAGE("Battery Voltage", AttributeGroup.VOLTAGE),
     WATT_HOUR_PULSE_FAILURE("Watt-Hour Pulse Failure", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    WIFI_AP_CONNECTION_FAILURE("Wi-Fi Connection Failure", AttributeGroup.RFN_OTHER_EVENT, false),
+    WIFI_BSSID_CHANGE("Wi-Fi BSSID Change", AttributeGroup.RFN_OTHER_EVENT, false),
+    WIFI_PASSPHRASE_CHANGE("Wi-Fi Passphrase Change", AttributeGroup.RFN_OTHER_EVENT, false),
+    WIFI_SSID_CHANGE("Wi-Fi SSID Change", AttributeGroup.RFN_OTHER_EVENT, false),
     ZERO_USAGE_FLAG("Zero Usage Flag", AttributeGroup.STATUS),
     ZIGBEE_LINK_STATUS("ZigBee Link Status", AttributeGroup.STATUS, false),
     TERMINAL_BLOCK_COVER_REMOVAL_FLAG("Terminal Block Cover Removal", AttributeGroup.STATUS, false),   //440 types only

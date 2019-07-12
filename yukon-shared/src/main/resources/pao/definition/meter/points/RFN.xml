@@ -13,7 +13,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <analog offset="388"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
-        <status offset="96"/>
+        <status offset="100"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Analog">
@@ -2357,6 +2357,26 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     </point>
     <point offset="96" type="Status">
         <name>CRC Failure Memory Corrupt</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="97" type="Status">
+        <name>Wi-Fi Connection Failure</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="98" type="Status">
+        <name>Wi-Fi BSSID Change</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="99" type="Status">
+        <name>Wi-Fi Passphrase Change</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="100" type="Status">
+        <name>Wi-Fi SSID Change</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Event Status"/>
     </point>

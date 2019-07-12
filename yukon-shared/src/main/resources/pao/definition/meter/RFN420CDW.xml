@@ -113,5 +113,9 @@
         <pointInfo name="Under Voltage" attributes="UNDER_VOLTAGE"/>
         <pointInfo name="Voltage" init="true" attributes="VOLTAGE,VOLTAGE_PROFILE"/>
         <pointInfo name="Voltage Alerts" attributes="VOLTAGE_ALERTS"/>
+        <pointInfo name="Wi-Fi Connection Failure" attributes="WIFI_AP_CONNECTION_FAILURE"/>
+        <pointInfo name="Wi-Fi BSSID Change" attributes="WIFI_BSSID_CHANGE"/>
+        <pointInfo name="Wi-Fi Passphrase Change" attributes="WIFI_PASSPHRASE_CHANGE"/>
+        <pointInfo name="Wi-Fi SSID Change" attributes="WIFI_SSID_CHANGE"/>
     </pointInfos>
 </pao>
