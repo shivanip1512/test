@@ -23,10 +23,10 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
         // Mandatory, max length(60) and special character check for name.
         lmValidatorHelper.validateName(programConstraint.getName(), errors, "Constraint name");
         
-        if(programConstraint.getSeasonSchedule() == null) {
+        if (programConstraint.getSeasonSchedule() == null || programConstraint.getSeasonSchedule().getId() == null) {
             errors.rejectValue("seasonSchedule", key, new Object[] { "Season Schedule" }, "");
         }
-        if(programConstraint.getHolidaySchedule() == null) {
+        if (programConstraint.getHolidaySchedule() == null || programConstraint.getHolidaySchedule().getId() == null) {
             errors.rejectValue("holidaySchedule", key, new Object[] { "Holiday Schedule" }, "");
         }
         // Holiday schedule and holiday usage check.Holiday usage is mandatory when holiday schedule is
