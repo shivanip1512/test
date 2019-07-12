@@ -8,8 +8,9 @@ import com.cannontech.web.support.waterNode.batteryLevel.WaterNodeBatteryLevel;
 
 public class WaterNodeDetails {
     private ArrayList<Double> voltages;
-    private Integer meterNumber;
     private ArrayList<Instant> timestamps;
+    private Integer PaObjectId;
+    private String meterNumber;
     private String serialNumber;
     private String name;
     private String type;
@@ -29,14 +30,22 @@ public class WaterNodeDetails {
         this.serialNumber = serialNumber;
     }
     
-    public Integer getMeterNumber() {
+    public String getMeterNumber() {
         return meterNumber;
     }
     
-    public void setMeterNumber(Integer meterNumber) {
+    public void setMeterNumber(String meterNumber) {
         this.meterNumber = meterNumber;
     }
     
+    public Integer getPaObjectId() {
+        return PaObjectId;
+    }
+
+    public void setPaObjectId(Integer PaObjectId) {
+        this.PaObjectId = PaObjectId;
+    }
+
     public ArrayList<Instant> getTimestamps() {
         return timestamps;
     }

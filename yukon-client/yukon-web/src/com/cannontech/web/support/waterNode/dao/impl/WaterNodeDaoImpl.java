@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.web.support.waterNode.dao.WaterNodeDao;
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
 
@@ -22,37 +24,36 @@ public class WaterNodeDaoImpl implements WaterNodeDao {
     @Override
     public List<WaterNodeDetails> getWaterNodeDetails(Instant startTime, Instant stopTime) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT rfa.SerialNumber AS 'serial number', ");
-        sql.append("ypo.PAObjectID as 'meter number', ");
-        sql.append("ypo.PAOName AS name, ypo.type, ");
-        sql.append("rph.TIMESTAMP AS timestamp, ");
-        sql.append("rph.VALUE AS 'battery voltage' ");
-
-        sql.append("FROM RAWPOINTHISTORY rph ");
-        sql.append("LEFT JOIN POINT point ON point.POINTID = rph.pointID ");
-        sql.append("LEFT JOIN YukonPAObject ypo ON ypo.PAObjectID = point.PAObjectID ");
-        sql.append("LEFT JOIN RfnAddress rfa ON ypo.PAObjectID = rfa.DeviceId ");
-        sql.append("WHERE ypo.Type LIKE '%RFW%' ");
-        sql.append("AND rph.TIMESTAMP").gt(startTime);
-        sql.append("AND rph.TIMESTAMP").lt(stopTime);
+        sql.append("SELECT rfa.SerialNumber, ypo.PaObjectId, ypo.PaoName, ypo.Type, rph.Timestamp, rph.Value, dmg.MeterNumber");
+        sql.append("FROM YukonPaObject ypo");
+        sql.append(  "JOIN Point p ON ypo.PaObjectId = p.PaObjectId");
+        sql.append(  "JOIN RawPointHistory rph ON rph.PointId = p.PointId");
+        sql.append(  "JOIN RfnAddress rfa ON ypo.PaObjectId = rfa.DeviceId");
+        sql.append(  "JOIN DeviceMeterGroup dmg ON dmg.DeviceId = ypo.PaObjectId");
+        sql.append("WHERE ypo.Type").in(PaoType.getWaterMeterTypes());
+        sql.append(  "AND p.PointType").eq_k(PointType.Analog);
+        sql.append(  "AND p.PointOffset").eq(5);
+        sql.append(  "AND rph.Timestamp").lte(stopTime);
+        sql.append(  "AND rph.Timestamp").gte(startTime);
+        sql.append("ORDER BY rph.PointId, rph.Timestamp;");
 
         final List<WaterNodeDetails> results = new ArrayList<WaterNodeDetails>();
-
         yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-                String serialNumber = rs.getString("serial number");
-                String oldSerialNumber = StringUtils.EMPTY;
+                int PaObjectId = rs.getInt("PaObjectId");
+                int oldPaObjectId = -1;
                 int currentNodeIndex = results.size();
                 if (currentNodeIndex != 0) {
-                    oldSerialNumber = results.get(currentNodeIndex - 1).getSerialNumber();
+                    oldPaObjectId = (results.get(currentNodeIndex - 1).getPaObjectId()).intValue();
                 }
-                if (!serialNumber.equals(oldSerialNumber)) {
+                if (oldPaObjectId!=PaObjectId) {
                     WaterNodeDetails waterNodeDetails = new WaterNodeDetails();
-                    waterNodeDetails.setSerialNumber(serialNumber);
-                    waterNodeDetails.setMeterNumber(rs.getInt("meter number"));
-                    waterNodeDetails.setName(rs.getString("name"));
-                    waterNodeDetails.setType(rs.getString("type"));
+                    waterNodeDetails.setSerialNumber(rs.getString("SerialNumber"));
+                    waterNodeDetails.setMeterNumber(rs.getString("MeterNumber"));
+                    waterNodeDetails.setName(rs.getString("PaoName"));
+                    waterNodeDetails.setType(rs.getString("Type"));
+                    waterNodeDetails.setPaObjectId(PaObjectId);
                     waterNodeDetails.setHighSleepingCurrentIndicator(false);
                     waterNodeDetails.setBatteryLevel(null);
                     results.add(waterNodeDetails);
@@ -60,8 +61,8 @@ public class WaterNodeDaoImpl implements WaterNodeDao {
                     // if a new waterNodeDetails object has not been created, desired index is size-1
                     currentNodeIndex--;
                 }
-                results.get(currentNodeIndex).addTimestamp(rs.getInstant("timestamp"));
-                results.get(currentNodeIndex).addVoltage(rs.getDouble("battery voltage"));
+                results.get(currentNodeIndex).addTimestamp(rs.getInstant("Timestamp"));
+                results.get(currentNodeIndex).addVoltage(rs.getDouble("Value"));
             }
         });
         return results;
