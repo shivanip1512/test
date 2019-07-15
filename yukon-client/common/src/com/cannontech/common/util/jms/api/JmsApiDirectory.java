@@ -108,8 +108,8 @@ import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
 /**
  * This is intended to be the single repository for all JmsApi information in the Yukon Java code.<br><br>
  * 
- * To add messaging for a new feature, create a new public static JmsApi object here, and add it to the {@code jmsApis}
- * map with a category.<br><br>
+ * To add messaging for a new feature, create a new public static final JmsApi object here, and add it to the 
+ * {@code jmsApis} map with a category.<br><br>
  * 
  * {@code JmsApi.builder} requires that all APIs have a name, description, communicationPattern, sender, receiver, queue 
  * and requestMessage specified. Additionally, you will need to specify ackQueue, responseQueue, ackMessage and
@@ -125,8 +125,7 @@ public final class JmsApiDirectory {
      * filtered in JmsApiDirectoryTest!
      */
     
-    //TODO: use this in InfrastructureWarningsRefreshServiceImpl
-    public static JmsApi<InfrastructureWarningsRequest,?,?> INFRASTRUCTURE_WARNINGS = 
+    public static final JmsApi<InfrastructureWarningsRequest,?,?> INFRASTRUCTURE_WARNINGS = 
             JmsApi.builder(InfrastructureWarningsRequest.class)
                   .name("Infrastructure Warnings Widget Refresh")
                   .description("Sent from the Infrastructure Warnings widget to the Infrastructure Warnings service "
@@ -138,7 +137,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    public static JmsApi<InfrastructureWarningsRefreshRequest,?,?> INFRASTRUCTURE_WARNINGS_CACHE_REFRESH = 
+    public static final JmsApi<InfrastructureWarningsRefreshRequest,?,?> INFRASTRUCTURE_WARNINGS_CACHE_REFRESH = 
             JmsApi.builder(InfrastructureWarningsRefreshRequest.class)
                   .name("Infrastructure Warnings WS Cache Refresh")
                   .description("Sent from the Infrastructure Warnings service to the Infrastructure Warnings Widget service "
@@ -150,9 +149,8 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_WEBSERVER)
                   .build();
     
-    //TODO: use this in DeviceDataMonitorServiceImpl
     //TODO: this queue name is wrong in exportedServicesContext.xml
-    public static JmsApi<DeviceDataMonitorStatusRequest,?,DeviceDataMonitorStatusResponse> DEVICE_DATA_MONITOR_STATUS =
+    public static final JmsApi<DeviceDataMonitorStatusRequest,?,DeviceDataMonitorStatusResponse> DEVICE_DATA_MONITOR_STATUS =
             JmsApi.builder(DeviceDataMonitorStatusRequest.class, DeviceDataMonitorStatusResponse.class)
                   .name("Device Data Monitor Status")
                   .description("Request from the Device Data Monitor front-end to the Device Data Monitor Calculation "
@@ -166,8 +164,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in DeviceDataMonitorServiceImpl
-    public static JmsApi<DeviceDataMonitorMessage,?,?> DEVICE_DATA_MONITOR_RECALC =
+    public static final JmsApi<DeviceDataMonitorMessage,?,?> DEVICE_DATA_MONITOR_RECALC =
             JmsApi.builder(DeviceDataMonitorMessage.class)
                   .name("Device Data Monitor Recalculation")
                   .description("Notification from the Device Data Monitor front-end to the Device Data Monitor "
@@ -179,8 +176,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in StatusPointMonitorProcessorFactory
-    public static JmsApi<OutageJmsMessage,?,?> STATUS_POINT_MONITOR_OUTAGE =
+    public static final JmsApi<OutageJmsMessage,?,?> STATUS_POINT_MONITOR_OUTAGE =
             JmsApi.builder(OutageJmsMessage.class)
                   .name("Status Point Monitor Outage")
                   .description("Outage notification sent from the Status Point Monitor to Multispeak code, which will "
@@ -193,7 +189,7 @@ public final class JmsApiDirectory {
                   .build();
     
     //This is only referenced in Spring configuration XML - monitorsContext.xml and pointInjectionContext.xml
-    public static JmsApi<RichPointData,?,?> RICH_POINT_DATA =
+    public static final JmsApi<RichPointData,?,?> RICH_POINT_DATA =
             JmsApi.builder(RichPointData.class)
                   .name("Rich Point Data")
                   .description("Sends point data (on a JMS topic) from the Rich Point Data Service to monitors for "
@@ -205,8 +201,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in RfnExpressComMessageServiceImpl
-    public static JmsApi<RfnExpressComUnicastRequest,RfnExpressComUnicastReply,RfnExpressComUnicastDataReply> RFN_EXPRESSCOM_UNICAST_WITH_DATA = 
+    public static final JmsApi<RfnExpressComUnicastRequest,RfnExpressComUnicastReply,RfnExpressComUnicastDataReply> RFN_EXPRESSCOM_UNICAST_WITH_DATA = 
             JmsApi.builder(RfnExpressComUnicastRequest.class, RfnExpressComUnicastReply.class, RfnExpressComUnicastDataReply.class)
                   .name("RFN Expresscom Unicast With Data")
                   .description("Attempts to send a unicast request for a RFN device. Will expect TWO responses. The " +
@@ -226,8 +221,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    //TODO: use this in RfnExpressComMessageServiceImpl
-    public static JmsApi<RfnExpressComUnicastRequest,?,RfnExpressComUnicastReply> RFN_EXPRESSCOM_UNICAST = 
+    public static final JmsApi<RfnExpressComUnicastRequest,?,RfnExpressComUnicastReply> RFN_EXPRESSCOM_UNICAST = 
             JmsApi.builder(RfnExpressComUnicastRequest.class, RfnExpressComUnicastReply.class)
                   .name("RFN Expresscom Unicast")
                   .description("Attempts to send a unicast request for a RFN device. Will expect ONE response. The " +
@@ -243,8 +237,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    //TODO: use this in RfnExpressComMessageServiceImpl
-    public static JmsApi<RfnExpressComUnicastRequest,RfnExpressComUnicastReply,RfnExpressComUnicastDataReply> RFN_EXPRESSCOM_UNICAST_BULK =
+    public static final JmsApi<RfnExpressComUnicastRequest,RfnExpressComUnicastReply,RfnExpressComUnicastDataReply> RFN_EXPRESSCOM_UNICAST_BULK =
             JmsApi.builder(RfnExpressComUnicastRequest.class, RfnExpressComUnicastReply.class, RfnExpressComUnicastDataReply.class)
                   .name("RFN Expresscom Unicast Bulk")
                   .description("Attempts to send unicast requests in bulk for a RFN devices. Will expect ONE response, "
@@ -265,8 +258,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
                   
-    //TODO: use this in RfnExpressComMessageServiceImpl
-    public static JmsApi<RfnExpressComBroadcastRequest,?,?> RFN_EXPRESSCOM_BROADCAST =
+    public static final JmsApi<RfnExpressComBroadcastRequest,?,?> RFN_EXPRESSCOM_BROADCAST =
             JmsApi.builder(RfnExpressComBroadcastRequest.class)
                   .name("RFN Expresscom Broadcast")
                   .description("Sends a broadcast message request out to the entire RFN network. Does not explicitly "
@@ -278,8 +270,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    //TODO: use this in DataStreamingCommunicationServiceImpl, DataStreamingSimulatorServiceImpl
-    public static JmsApi<DeviceDataStreamingConfigRequest,?,DeviceDataStreamingConfigResponse> DATA_STREAMING_CONFIG =
+    public static final JmsApi<DeviceDataStreamingConfigRequest,?,DeviceDataStreamingConfigResponse> DATA_STREAMING_CONFIG =
             JmsApi.builder(DeviceDataStreamingConfigRequest.class, DeviceDataStreamingConfigResponse.class)
                   .name("Data Streaming Config")
                   .description("Sends a verification, config or sync request to Network Manager. For a verification " +
@@ -297,8 +288,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
-    //TODO: use this in DataStreamingCommunicationServiceImpl
-    public static JmsApi<GatewayDataStreamingInfoRequest,?,GatewayDataStreamingInfoResponse> GATEWAY_DATA_STREAMING_INFO =
+    public static final JmsApi<GatewayDataStreamingInfoRequest,?,GatewayDataStreamingInfoResponse> GATEWAY_DATA_STREAMING_INFO =
             JmsApi.builder(GatewayDataStreamingInfoRequest.class, GatewayDataStreamingInfoResponse.class)
                   .name("Gateway Data Streaming Info")
                   .description("Sends a request for gateway data streaming information to Network Manager for the " +
@@ -314,8 +304,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
-    //TODO: use this in NmNetworkServiceImpl
-    public static JmsApi<RfnPrimaryRouteDataRequest,?,RfnPrimaryRouteDataReply> NETWORK_PRIMARY_ROUTE =
+    public static final JmsApi<RfnPrimaryRouteDataRequest,?,RfnPrimaryRouteDataReply> NETWORK_PRIMARY_ROUTE =
         JmsApi.builder(RfnPrimaryRouteDataRequest.class, RfnPrimaryRouteDataReply.class)
               .name("Network Primary Route")
               .description("Asks NM for the device's route. NM can return NO_PARENT if primary route information is"
@@ -332,8 +321,7 @@ public final class JmsApiDirectory {
               .receiver(YUKON_SIMULATORS)
               .build();
     
-    //TODO: use this in NmNetworkServiceImpl
-    public static JmsApi<RfnNeighborDataRequest,?,RfnNeighborDataReply> NETWORK_NEIGHBOR =
+    public static final JmsApi<RfnNeighborDataRequest,?,RfnNeighborDataReply> NETWORK_NEIGHBOR =
         JmsApi.builder(RfnNeighborDataRequest.class, RfnNeighborDataReply.class)
               .name("Network Neighbor")
               .description("Asks NM for the device's neighbors.")
@@ -347,8 +335,7 @@ public final class JmsApiDirectory {
               .receiver(YUKON_SIMULATORS)
               .build();
     
-    //TODO: use this in NmNetworkServiceImpl
-    public static JmsApi<RfnParentRequest,?,RfnParentReply> NETWORK_PARENT =
+    public static final JmsApi<RfnParentRequest,?,RfnParentReply> NETWORK_PARENT =
         JmsApi.builder(RfnParentRequest.class, RfnParentReply.class)
               .name("Network Parent")
               .description("Asks NM for the device's parent information.")
@@ -362,8 +349,7 @@ public final class JmsApiDirectory {
               .receiver(YUKON_SIMULATORS)
               .build();
     
-    //TODO: use this in RfnGatewayServiceImpl
-    public static JmsApi<GatewayCreateRequest,?,GatewayUpdateResponse> RF_GATEWAY_CREATE =
+    public static final JmsApi<GatewayCreateRequest,?,GatewayUpdateResponse> RF_GATEWAY_CREATE =
         JmsApi.builder(GatewayCreateRequest.class, GatewayUpdateResponse.class)
               .name("RF Gateway Create")
               .description("Sent by Yukon on RF Gateway creation to tell Network Manager to create the matching gateway "
@@ -378,9 +364,7 @@ public final class JmsApiDirectory {
               .receiver(YUKON_SIMULATORS)
               .build();
     
-    //TODO: use this in RfnGatewayServiceImpl
-    //TODO: Split out a new RequestReplyTemplate for these messages?
-    public static JmsApi<GatewayEditRequest,?,GatewayUpdateResponse> RF_GATEWAY_EDIT =
+    public static final JmsApi<GatewayEditRequest,?,GatewayUpdateResponse> RF_GATEWAY_EDIT =
             JmsApi.builder(GatewayEditRequest.class, GatewayUpdateResponse.class)
                   .name("RF Gateway Edit")
                   .description("Sent by Yukon when editing an RF Gateway, to tell Network Manager to make matching "
@@ -395,9 +379,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
-    //TODO: use this in RfnGatewayServiceImpl
-    //TODO: Split out a new RequestReplyTemplate for these messages?
-    public static JmsApi<GatewayDeleteRequest,?,GatewayUpdateResponse> RF_GATEWAY_DELETE =
+    public static final JmsApi<GatewayDeleteRequest,?,GatewayUpdateResponse> RF_GATEWAY_DELETE =
             JmsApi.builder(GatewayDeleteRequest.class, GatewayUpdateResponse.class)
                   .name("RF Gateway Delete")
                   .description("Sent by Yukon when deleting an RF Gateway, to tell Network manager to also delete the "
@@ -412,8 +394,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
-    //TODO: use this in RfnGatewaySimulatorServiceImpl
-    public static JmsApi<GatewayDeleteRequest,?,?> RF_GATEWAY_DELETE_FROM_NM =
+    public static final JmsApi<GatewayDeleteRequest,?,?> RF_GATEWAY_DELETE_FROM_NM =
             JmsApi.builder(GatewayDeleteRequest.class)
                   .name("RF Gateway Delete from NM")
                   .description("Sent by Network Manager when deleting an RF Gateway, to tell Yukon to also delete the "
@@ -426,9 +407,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in RfnGatewayServiceImpl
-    //TODO: Split out a new RequestReplyTemplate
-    public static JmsApi<GatewayScheduleDeleteRequest,?,GatewayActionResponse> RF_GATEWAY_SCHEDULE_DELETE =
+    public static final JmsApi<GatewayScheduleDeleteRequest,?,GatewayActionResponse> RF_GATEWAY_SCHEDULE_DELETE =
             JmsApi.builder(GatewayScheduleDeleteRequest.class, GatewayActionResponse.class)
                   .name("RF Gateway Schedule Delete")
                   .description("Sends a schedule delete request for an RF Gateway to Network Manager.")
@@ -441,9 +420,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    //TODO: use this in RfnGatewayServiceImpl
-    //TODO: Split out a new RequestReplyTemplate
-    public static JmsApi<GatewayCollectionRequest,?,GatewayActionResponse> RF_GATEWAY_COLLECTION =
+    public static final JmsApi<GatewayCollectionRequest,?,GatewayActionResponse> RF_GATEWAY_COLLECTION =
             JmsApi.builder(GatewayCollectionRequest.class, GatewayActionResponse.class)
                   .name("RF Gateway Collection")
                   .description("Sends a data collection request for an RF Gateway to Network Manager.")
@@ -456,9 +433,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    //TODO: use this in RfnGatewayServiceImpl
-    //TODO: Split out a new RequestReplyTemplate
-    public static JmsApi<GatewayConnectRequest,?,GatewayActionResponse> RF_GATEWAY_CONNECT =
+    public static final JmsApi<GatewayConnectRequest,?,GatewayActionResponse> RF_GATEWAY_CONNECT =
             JmsApi.builder(GatewayConnectRequest.class, GatewayActionResponse.class)
                   .name("RF Gateway Connect")
                   .description("Sends a connect request for an RF Gateway to Network Manager.")
@@ -471,9 +446,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    //TODO: use this in RfnGatewayServiceImpl
-    //TODO: Split out a new RequestReplyTemplate
-    public static JmsApi<GatewayScheduleRequest,?,GatewayActionResponse> RF_GATEWAY_SCHEDULE_REQUEST =
+    public static final JmsApi<GatewayScheduleRequest,?,GatewayActionResponse> RF_GATEWAY_SCHEDULE_REQUEST =
             JmsApi.builder(GatewayScheduleRequest.class, GatewayActionResponse.class)
                   .name("RF Gateway Schedule Request")
                   .description("Sends a schedule request for an RF Gateway to Network Manager.")
@@ -486,9 +459,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    //TODO: use this in RfnGatewayServiceImpl
-    //TODO: Split out a new RequestReplyTemplate
-    public static JmsApi<GatewayConnectionTestRequest,?,GatewayConnectionTestResponse> RF_GATEWAY_CONNECTION_TEST =
+    public static final JmsApi<GatewayConnectionTestRequest,?,GatewayConnectionTestResponse> RF_GATEWAY_CONNECTION_TEST =
             JmsApi.builder(GatewayConnectionTestRequest.class, GatewayConnectionTestResponse.class)
                   .name("RF Gateway Connection Test")
                   .description("Sends a connection test request for an RF Gateway to Network Manager.")
@@ -501,8 +472,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    //TODO: use this in RfnGatewayFirmwareUpgradeDaoImpl, RfnGatewaySimulatorServiceImpl
-    public static JmsApi<RfnUpdateServerAvailableVersionRequest,?,RfnUpdateServerAvailableVersionResponse> RF_UPDATE_SERVER_AVAILABLE_VERSION =
+    public static final JmsApi<RfnUpdateServerAvailableVersionRequest,?,RfnUpdateServerAvailableVersionResponse> RF_UPDATE_SERVER_AVAILABLE_VERSION =
             JmsApi.builder(RfnUpdateServerAvailableVersionRequest.class, RfnUpdateServerAvailableVersionResponse.class)
                   .name("RF Update Server Available Version")
                   .description("Requests the firmware version available on the firmware update server from Network "
@@ -517,8 +487,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
-    //TODO: use this in RfnGatewayFirmwareUpgradeServiceImpl, RfnGatewaySimulatorServiceImpl
-    public static JmsApi<RfnGatewayFirmwareUpdateRequest,?,RfnGatewayFirmwareUpdateResponse> RF_GATEWAY_FIRMWARE_UPGRADE =
+    public static final JmsApi<RfnGatewayFirmwareUpdateRequest,?,RfnGatewayFirmwareUpdateResponse> RF_GATEWAY_FIRMWARE_UPGRADE =
             JmsApi.builder(RfnGatewayFirmwareUpdateRequest.class, RfnGatewayFirmwareUpdateResponse.class)
                   .name("RF Gateway Firmware Upgrade")
                   .description("Sends a firmware upgrade request from Yukon to Network Manager, specifying a set of "
@@ -534,8 +503,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
-    //TODO: use this in RfnGatewayCertificateUpdateServiceImpl, RfnGatewaySimulatorServiceImpl
-    public static JmsApi<RfnGatewayUpgradeRequest,RfnGatewayUpgradeRequestAck,RfnGatewayUpgradeResponse> RF_GATEWAY_CERTIFICATE_UPDATE =
+    public static final JmsApi<RfnGatewayUpgradeRequest,RfnGatewayUpgradeRequestAck,RfnGatewayUpgradeResponse> RF_GATEWAY_CERTIFICATE_UPDATE =
             JmsApi.builder(RfnGatewayUpgradeRequest.class, RfnGatewayUpgradeRequestAck.class, RfnGatewayUpgradeResponse.class)
                   .name("RF Gateway Certificate Update")
                   .description("Sends a certificate update package to old 'gateway 1.5's via Network Manager. "
@@ -553,8 +521,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_SIMULATORS)
                   .build();
     
-    //TODO use this in RfnGatewayDataCacheImpl, RfnGatewaySimulatorServiceImpl
-    public static JmsApi<GatewayDataRequest,?,GatewayDataResponse> RF_GATEWAY_DATA =
+    public static final JmsApi<GatewayDataRequest,?,GatewayDataResponse> RF_GATEWAY_DATA =
             JmsApi.builder(GatewayDataRequest.class, GatewayDataResponse.class)
                   .name("RF Gateway Data")
                   .description("Sent from Yukon to Network Manager to request current data for an RF Gateway.")
@@ -570,8 +537,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
-    //TODO: use this in GatewayDataResponseListener
-    public static JmsApi<Serializable,?,?> RF_GATEWAY_DATA_INTERNAL =
+    public static final JmsApi<Serializable,?,?> RF_GATEWAY_DATA_INTERNAL =
             JmsApi.builder(Serializable.class)
                   .name("RF Gateway Data (Internal)")
                   .description("Yukon Service Manager takes gateway data (which receives it first, from Network "
@@ -583,8 +549,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_WEBSERVER)
                   .build();
     
-    //TODO: use this in RfnGatewaySimulatorServiceImpl
-    public static JmsApi<GatewayDataResponse,?,?> RF_GATEWAY_DATA_UNSOLICITED = 
+    public static final JmsApi<GatewayDataResponse,?,?> RF_GATEWAY_DATA_UNSOLICITED = 
             JmsApi.builder(GatewayDataResponse.class)
                   .name("RF Gateway Data (Unsolicited)")
                   .description("Sent from Network Manager to Yukon to provide updated RF Gateway data. (This is the "
@@ -598,8 +563,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in RfnGatewaySimulatorServiceImpl
-    public static JmsApi<GatewayArchiveRequest,?,?> RF_GATEWAY_ARCHIVE = 
+    public static final JmsApi<GatewayArchiveRequest,?,?> RF_GATEWAY_ARCHIVE = 
             JmsApi.builder(GatewayArchiveRequest.class)
                   .name("Gateway Archive Request")
                   .description("Sent by Network Manager to notify Yukon that a new gateway has been created.")
@@ -611,8 +575,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in RfnDemandResetServiceImpl
-    public static JmsApi<RfnMeterDemandResetRequest,?,RfnMeterDemandResetReply> RFN_METER_DEMAND_RESET =
+    public static final JmsApi<RfnMeterDemandResetRequest,?,RfnMeterDemandResetReply> RFN_METER_DEMAND_RESET =
             JmsApi.builder(RfnMeterDemandResetRequest.class, RfnMeterDemandResetReply.class)
                   .name("RFN Meter Demand Reset")
                   .description("Sends a demand reset to a meter.")
@@ -626,8 +589,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    //TODO: use this in RfnDeviceMetadataServiceImpl, NmNetworkSimulatorServiceImpl
-    public static JmsApi<RfnMetadataRequest,?,RfnMetadataResponse> RFN_METADATA =
+    public static final JmsApi<RfnMetadataRequest,?,RfnMetadataResponse> RFN_METADATA =
             JmsApi.builder(RfnMetadataRequest.class, RfnMetadataResponse.class)
                   .name("RFN Metadata")
                   .description("Sends a request for an RFN device's metadata from Yukon to Network Manager.")
@@ -641,8 +603,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
-    //TODO: use this in RfnMeterDisconnectService
-    public static JmsApi<RfnMeterDisconnectRequest,RfnMeterDisconnectInitialReply,RfnMeterDisconnectConfirmationReply> RFN_METER_DISCONNECT =
+    public static final JmsApi<RfnMeterDisconnectRequest,RfnMeterDisconnectInitialReply,RfnMeterDisconnectConfirmationReply> RFN_METER_DISCONNECT =
             JmsApi.builder(RfnMeterDisconnectRequest.class, RfnMeterDisconnectInitialReply.class, RfnMeterDisconnectConfirmationReply.class)
                   .name("RFN Meter Disconnect")
                   .description("Sends a disconnect request to an RFN meter via Network Manager. The initial reply "
@@ -659,8 +620,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    //TODO: use this in RfnMeterReadService
-    public static JmsApi<RfnMeterReadRequest,RfnMeterReadReply,RfnMeterReadDataReply> RFN_METER_READ =
+    public static final JmsApi<RfnMeterReadRequest,RfnMeterReadReply,RfnMeterReadDataReply> RFN_METER_READ =
             JmsApi.builder(RfnMeterReadRequest.class, RfnMeterReadReply.class, RfnMeterReadDataReply.class)
                   .name("Rfn Meter Read")
                   .description("Attempts to send a read request for an RFN meter. The first response is a status "
@@ -680,8 +640,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    //TODO: use this in RfnEventTestingServiceImpl
-    public static JmsApi<RfnMeterReadingArchiveRequest,?,RfnMeterReadingArchiveResponse> RFN_METER_READ_ARCHIVE = 
+    public static final JmsApi<RfnMeterReadingArchiveRequest,?,RfnMeterReadingArchiveResponse> RFN_METER_READ_ARCHIVE = 
             JmsApi.builder(RfnMeterReadingArchiveRequest.class, RfnMeterReadingArchiveResponse.class)
                   .name("Rfn Meter Read Archive")
                   .description("A notification from Network Manager to Yukon to provide new meter data.")
@@ -695,8 +654,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in RfnEventTestingServiceImpl, LcrReadingArchiveRequestListener, RfnLcrDataSimulatorService
-    public static JmsApi<RfnLcrReadingArchiveRequest,?,RfnLcrReadingArchiveResponse> RFN_LCR_READ_ARCHIVE = 
+    public static final JmsApi<RfnLcrReadingArchiveRequest,?,RfnLcrReadingArchiveResponse> RFN_LCR_READ_ARCHIVE = 
             JmsApi.builder(RfnLcrReadingArchiveRequest.class, RfnLcrReadingArchiveResponse.class)
                   .name("RFN LCR Read Archive")
                   .description("A notification from Network Manager to Yukon to provide new LCR data.")
@@ -711,8 +669,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in RfnEventTestingServiceImpl
-    public static JmsApi<RfnLcrArchiveRequest,?,RfnLcrArchiveResponse> RFN_LCR_ARCHIVE =
+    public static final JmsApi<RfnLcrArchiveRequest,?,RfnLcrArchiveResponse> RFN_LCR_ARCHIVE =
             JmsApi.builder(RfnLcrArchiveRequest.class, RfnLcrArchiveResponse.class)
                   .name("RFN LCR Archive")
                   .description("A notification from Network Manager to Yukon for creation of a new LCR device.")
@@ -726,8 +683,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
         
-    //TODO: use this in RfnEventTestingServiceImpl
-    public static JmsApi<RfnAlarmArchiveRequest,?,RfnAlarmArchiveResponse> RF_ALARM_ARCHIVE =
+    public static final JmsApi<RfnAlarmArchiveRequest,?,RfnAlarmArchiveResponse> RF_ALARM_ARCHIVE =
             JmsApi.builder(RfnAlarmArchiveRequest.class, RfnAlarmArchiveResponse.class)
                   .name("RF Alarm Archive")
                   .description("A notification from Network Manager to Yukon to provide RF alarm data.")
@@ -741,8 +697,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in RfnEventTestingServiceImpl
-    public static JmsApi<RfnEventArchiveRequest,?,RfnEventArchiveResponse> RF_EVENT_ARCHIVE =
+    public static final JmsApi<RfnEventArchiveRequest,?,RfnEventArchiveResponse> RF_EVENT_ARCHIVE =
             JmsApi.builder(RfnEventArchiveRequest.class, RfnEventArchiveResponse.class)
                   .name("RF Event Archive")
                   .description("A notification from Network Manager to Yukon to provide RF event data.")
@@ -756,8 +711,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in RfnEventTestingServiceImpl
-    public static JmsApi<LocationResponse,?,LocationResponseAck> LOCATION = 
+    public static final JmsApi<LocationResponse,?,LocationResponseAck> LOCATION = 
             JmsApi.builder(LocationResponse.class, LocationResponseAck.class)
                   .name("Location")
                   .description("A notification from Network Manager to Yukon that a device location has been updated.")
@@ -771,8 +725,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in DataCollectionWidgetService
-    public static JmsApi<CollectionRequest,?,?> DATA_COLLECTION =
+    public static final JmsApi<CollectionRequest,?,?> DATA_COLLECTION =
             JmsApi.builder(CollectionRequest.class)
                   .name("Data Collection Widget - Data Collection")
                   .description("Request that is initiated from the widget refresh button, sent from the Data Collection "
@@ -787,8 +740,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in PointDataCollectionService
-    public static JmsApi<RecalculationRequest,?,?> DATA_COLLECTION_RECALCULATION =
+    public static final JmsApi<RecalculationRequest,?,?> DATA_COLLECTION_RECALCULATION =
             JmsApi.builder(RecalculationRequest.class)
                   .name("Data Collection Widget - Recalculation")
                   .description("After a data collection is performed (periodically or due to a request from the UI), "
@@ -800,8 +752,8 @@ public final class JmsApiDirectory {
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_WEBSERVER)
                   .build();
-    //TODO: use this in SimulatorsCommunicationService, SimulatorsService
-    public static JmsApi<SimulatorRequest,?,SimulatorResponse> SIMULATORS =
+    
+    public static final JmsApi<SimulatorRequest,?,SimulatorResponse> SIMULATORS =
             JmsApi.builder(SimulatorRequest.class, SimulatorResponse.class)
                   .name("Simulators")
                   .description("This is the communication channel used by the Yukon web UI to send requests to, and"
@@ -815,10 +767,8 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SIMULATORS)
                   .build();
-
     
-    //TODO: use this in ZigbeeCommandStrategy
-    public static JmsApi<YukonTextMessage,?,?> ZIGBEE_SEP_TEXT =
+    public static final JmsApi<YukonTextMessage,?,?> ZIGBEE_SEP_TEXT =
             JmsApi.builder(YukonTextMessage.class)
                   .name("Zigbee Smart Energy Profile Text Message")
                   .description("Sent to initate a text message to a Zigbee device.")
@@ -829,8 +779,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in ZigbeeCommandStrategy
-    public static JmsApi<YukonCancelTextMessage,?,?> ZIGBEE_SEP_TEXT_CANCEL =
+    public static final JmsApi<YukonCancelTextMessage,?,?> ZIGBEE_SEP_TEXT_CANCEL =
             JmsApi.builder(YukonCancelTextMessage.class)
                   .name("Zigbee Smart Energy Profile Text Message Cancellation")
                   .description("Sent to cancel a text message sent to a Zigbee device.")
@@ -841,8 +790,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use this in DigiWebServiceImpl
-    public static JmsApi<SmartUpdateRequestMessage,?,?> ZIGBEE_SMART_UPDATE =
+    public static final JmsApi<SmartUpdateRequestMessage,?,?> ZIGBEE_SMART_UPDATE =
             JmsApi.builder(SmartUpdateRequestMessage.class)
                   .name("Zigbee Smart Update")
                   .description("Sent from Yukon webserver to Service Manager, which activates smart polling on a "
@@ -854,7 +802,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    public static JmsApi<LmReportedAddress,?,?> LM_ADDRESS_NOTIFICATION =
+    public static final JmsApi<LmReportedAddress,?,?> LM_ADDRESS_NOTIFICATION =
             JmsApi.builder(LmReportedAddress.class)
                   .name("LM Address Notification")
                   .description("Sends a load management device's address information, to be cached in the Yukon "
@@ -867,8 +815,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_WEBSERVER)
                   .build();
     
-    //TODO: use this in BrokerSystemMetricsImpl
-    public static JmsApi<BrokerSystemMetricsRequest,?,?> BROKER_SYSTEM_METRICS =
+    public static final JmsApi<BrokerSystemMetricsRequest,?,?> BROKER_SYSTEM_METRICS =
             JmsApi.builder(BrokerSystemMetricsRequest.class)
                   .name("Broker System Metrics")
                   .description("Sends system metrics data from the Yukon Message Broker to the Yukon Service Manager "
@@ -880,8 +827,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use in SystemHealthController, MeterReadingArchiveRequestListener, NmIntegrationController
-    public static JmsApi<RfnArchiveStartupNotification,?,?> ARCHIVE_STARTUP =
+    public static final JmsApi<RfnArchiveStartupNotification,?,?> ARCHIVE_STARTUP =
             JmsApi.builder(RfnArchiveStartupNotification.class)
                   .name("Archive Startup")
                   .description("Sent by Yukon to notify Network Manager that Yukon has just started up. Upon receipt, "
@@ -896,8 +842,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    //Used by SmartNotifInfrastructureWarningsDecider (smartNotificationContext.xml)
-    public static JmsApi<SmartNotificationEvent,?,?> SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT =
+    public static final JmsApi<SmartNotificationEvent,?,?> SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT =
             JmsApi.builder(SmartNotificationEvent.class)
                   .name("Smart Notification Infrastructure Warnings Event")
                   .description("Sent by the Infrastructure Warnings service, to the Smart Notification Infrastructure "
@@ -910,8 +855,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //Used by SmartNotifDeviceDataMonitorDecider (smartNotificationContext.xml)
-    public static JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT= 
+    public static final JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT= 
             JmsApi.builder(SmartNotificationEventMulti.class)
                   .name("Smart Notifications Device Data Monitor Event")
                   .description("Sent by the Device Data Monitor service, to the Smart Notification Device Data Monitor "
@@ -924,8 +868,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    // Used by SmartNotificationDeciderServiceImpl && SmartNotificationMessageAssembler (smartNotificationContext.xml)
-    public static JmsApi<SmartNotificationMessageParametersMulti, Serializable, Serializable> SMART_NOTIFICATION_MESSAGE_PARAMETERS =
+    public static final JmsApi<SmartNotificationMessageParametersMulti, Serializable, Serializable> SMART_NOTIFICATION_MESSAGE_PARAMETERS =
             JmsApi.builder(SmartNotificationMessageParametersMulti.class)
                   .name("Smart Notifications Message Parameters")
                   .description("Sent by the Smart Notification deciders when they have determined that a notification "
@@ -938,8 +881,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //Used by SmartNotificationWatchdogDecider (smartNotificationContext.xml)
-    public static JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT= 
+    public static final JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT= 
             JmsApi.builder(SmartNotificationEventMulti.class)
                   .name("Smart Notifications Yukon Watchdog Event")
                   .description("Sent by the yukon watchdog service, to the Smart Notification Yukon Watchdog "
@@ -952,8 +894,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //Used by SmartNotificationDataImportDecider (smartNotificationContext.xml)
-    public static JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_DATA_IMPORT_EVENT= 
+    public static final JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_DATA_IMPORT_EVENT= 
             JmsApi.builder(SmartNotificationEventMulti.class)
                   .name("Smart Notifications Data Import Event")
                   .description("Sent by the ScheduledDataImportTask and AccountImportService, to the Smart Notification Data Import "
@@ -966,8 +907,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
 
-    // Used by SmartNotificationsTestingController && SmartNotificationDailyDigestService (smartNotificationContext.xml)
-    public static JmsApi<DailyDigestTestParams,?,?> SMART_NOTIFICATION_DAILY_DIGEST_TEST = 
+    public static final JmsApi<DailyDigestTestParams,?,?> SMART_NOTIFICATION_DAILY_DIGEST_TEST = 
             JmsApi.builder(DailyDigestTestParams.class)
                   .name("Smart Notification Daily Digest Test")
                   .description("Sent from the test controller to the daily digest service to kick off a digest event "
@@ -979,7 +919,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    public static JmsApi<GatewaySetConfigRequest,?,GatewaySetConfigResponse> RF_GATEWAY_SET_CONFIG =
+    public static final JmsApi<GatewaySetConfigRequest,?,GatewaySetConfigResponse> RF_GATEWAY_SET_CONFIG =
             JmsApi.builder(GatewaySetConfigRequest.class, GatewaySetConfigResponse.class)
                   .name("Gateway Set Config")
                   .description("Sends gateway config update request to NM.")
@@ -993,11 +933,11 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
-    public static JmsApi<RfnMetadataMultiRequest,?,RfnMetadataMultiResponse> RF_METADATA_MULTI =
+    public static final JmsApi<RfnMetadataMultiRequest,?,RfnMetadataMultiResponse> RF_METADATA_MULTI =
             JmsApi.builder(RfnMetadataMultiRequest.class, RfnMetadataMultiResponse.class)
                   .name("Rfn Meta Data Multi")
                   .description("Sends metadata request to NM.")
-                  .communicationPattern(REQUEST_RESPONSE)
+                  .communicationPattern(REQUEST_MULTI_RESPONSE)
                   .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.metadatamulti.request"))
                   .responseQueue(JmsQueue.TEMP_QUEUE)
                   .requestMessage(RfnMetadataMultiRequest.class)
@@ -1007,8 +947,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
-    
-    public static JmsApi<EcobeeAuthTokenRequest,?,EcobeeAuthTokenResponse> ECOBEE_AUTH_TOKEN =
+    public static final JmsApi<EcobeeAuthTokenRequest,?,EcobeeAuthTokenResponse> ECOBEE_AUTH_TOKEN =
             JmsApi.builder(EcobeeAuthTokenRequest.class, EcobeeAuthTokenResponse.class)
             .name("Ecobee Auth Token")
             .description("Sent from Service Manager and Webserver and received by Service manager to generate Ecobee Auth Token")
@@ -1022,7 +961,7 @@ public final class JmsApiDirectory {
             .receiver(YUKON_SERVICE_MANAGER)
             .build();
     
-    public static JmsApi<AlarmArchiveRequest,?,AlarmArchiveResponse> NM_ALARM =
+    public static final JmsApi<AlarmArchiveRequest,?,AlarmArchiveResponse> NM_ALARM =
             JmsApi.builder(AlarmArchiveRequest.class, AlarmArchiveResponse.class)
             .name("NM Gateway Alarms")
             .description("Sent from NM and received by Yukon manager to handle processing of NM Alarms")
@@ -1035,7 +974,7 @@ public final class JmsApiDirectory {
             .receiver(YUKON_SERVICE_MANAGER)
             .build();
     
-    public static JmsApi<Serializable,?,?> RFN_DEVICE_CREATION_ALERT =
+    public static final JmsApi<Serializable,?,?> RFN_DEVICE_CREATION_ALERT =
             JmsApi.builder(Serializable.class)
                   .name("RFN Device Creation Alert")
                   .description("Yukon Service Manager passes alerts from RFN Device Creation Service to Yukon "
@@ -1047,7 +986,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_WEBSERVER)
                   .build();
     
-    public static JmsApi<RfnDeviceArchiveRequest,?,RfnDeviceArchiveResponse> RFN_DEVICE_ARCHIVE =
+    public static final JmsApi<RfnDeviceArchiveRequest,?,RfnDeviceArchiveResponse> RFN_DEVICE_ARCHIVE =
             JmsApi.builder(RfnDeviceArchiveRequest.class, RfnDeviceArchiveResponse.class)
                   .name("RFN Device Archive")
                   .description("A notification from Network Manager to Yukon for creation of a new device.")
@@ -1061,7 +1000,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    public static JmsApi<RfnStatusArchiveRequest,?,RfnStatusArchiveResponse> RFN_STATUS_ARCHIVE =
+    public static final JmsApi<RfnStatusArchiveRequest,?,RfnStatusArchiveResponse> RFN_STATUS_ARCHIVE =
             JmsApi.builder(RfnStatusArchiveRequest.class, RfnStatusArchiveResponse.class)
                   .name("RFN Status Archive")
                   .description("A notification from Network Manager to Yukon to archive status.")
@@ -1192,5 +1131,9 @@ public final class JmsApiDirectory {
         var categoryApiList = jmsApis.computeIfAbsent(category, unused -> new ArrayList<>());
         categoryApiList.addAll(Arrays.asList(apis));
         categoryApiList.sort(API_COMPARATOR);
+    }
+    
+    private JmsApiDirectory() {
+        // Utility class to hold JmsApi constants. Not instantiable.
     }
 }

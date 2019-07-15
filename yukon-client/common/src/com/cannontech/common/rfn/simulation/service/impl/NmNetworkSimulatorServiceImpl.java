@@ -338,7 +338,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                             metadata.put(RfnMetadata.NUM_ASSOCIATIONS, 3);
                             String primaryGateway = "Primary Gateway (Sim)";
                             List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-                            if (gateways.size() > 0) {
+                            if (!gateways.isEmpty()) {
                                 RfnGateway gateway = gateways.get(0);
                                 if(gateway.getData() != null) {
                                     primaryGateway = gateways.get(0).getNameWithIPAddress();
@@ -393,14 +393,15 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     ObjectMessage requestMessage = (ObjectMessage) metaDataMultiMessage;
                     if (requestMessage.getObject() instanceof RfnMetadataMultiRequest) {
                         RfnMetadataMultiRequest request = (RfnMetadataMultiRequest) requestMessage.getObject();
-                        log.debug("RfnMetadataMultiRequest identifier {} metadatas {} gateway ids {} or rfn ids {}",
+                        log.info("RfnMetadataMultiRequest identifier {} metadatas {} gateway ids {} or rfn ids {}",
                             request.getRequestID(), request.getPrimaryNodesForGatewayRfnIdentifiers().size(),
                             request.getRfnIdentifiers().size(), request.getRfnMetadatas());
 
-                        RfnMetadataMultiResponse reply = getMetadataMultiResponse(request);
-                        log.debug("RfnMetadataMultiRequest identifier {} response: {}",
-                            request.getRequestID(), reply.getResponseType());
-                        jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
+                        for (RfnMetadataMultiResponse reply : getPartitionedMetadataMultiResponse(request)) {
+                            log.info("RfnMetadataMultiRequest identifier: {} segment: {} response: {}",
+                                      request.getRequestID(), reply.getSegmentNumber(), reply.getResponseType());
+                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
+                        }
                     }
                 }
             }
@@ -419,6 +420,25 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = getResults(request);
         response.getQueryResults().putAll(results);
         return response;
+    }
+    
+
+    private List<RfnMetadataMultiResponse> getPartitionedMetadataMultiResponse(RfnMetadataMultiRequest request) {
+        List<RfnMetadataMultiResponse> responses = new ArrayList<>();
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = getResults(request);
+        List<List<RfnIdentifier>> parts = Lists.partition(Lists.newArrayList(results.keySet()), 1000);
+        log.debug("--Split identifiers {} into {} parts", results.size(), parts.size());
+    
+        for (int i = 0; i < parts.size(); i++) {
+            RfnMetadataMultiResponse response = new RfnMetadataMultiResponse(request.getRequestID(), parts.size(), i + 1);
+            response.setResponseType(settings.getMetadataResponseType());
+            response.setQueryResults(new HashMap<>());
+            parts.get(i).forEach(identifier -> response.getQueryResults().put(identifier, results.get(identifier)));
+            responses.add(response);
+            log.debug("--Created response {} (of {}) query results {}", response.getSegmentNumber(),
+                response.getTotalSegments(), response.getQueryResults().size());
+        }
+        return responses;
     }
     
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> getResults(RfnMetadataMultiRequest request) {

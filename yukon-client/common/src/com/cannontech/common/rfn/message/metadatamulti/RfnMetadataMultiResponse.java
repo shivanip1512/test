@@ -1,8 +1,8 @@
 package com.cannontech.common.rfn.message.metadatamulti;
 
-import java.io.Serializable;
 import java.util.Map;
 
+import com.cannontech.common.rfn.message.JmsMultiResponse;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
@@ -11,7 +11,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
  * JMS Queue name: 
  *     the temporary(i.e., reply-To) queue of the RfnMetadataMultiRequest.
  */
-public class RfnMetadataMultiResponse implements Serializable {
+public class RfnMetadataMultiResponse implements JmsMultiResponse {
     
     private static final long serialVersionUID = 1L;
     
@@ -66,14 +66,17 @@ public class RfnMetadataMultiResponse implements Serializable {
         this.queryResults = queryResults;
     }
 
-    public String getRequestID() {
+    @Override
+    public String getRequestId() {
         return requestID;
     }
-
+    
+    @Override
     public int getTotalSegments() {
         return totalSegments;
     }
 
+    @Override
     public int getSegmentNumber() {
         return segmentNumber;
     }
@@ -93,34 +96,46 @@ public class RfnMetadataMultiResponse implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         RfnMetadataMultiResponse other = (RfnMetadataMultiResponse) obj;
         if (queryResults == null) {
-            if (other.queryResults != null)
+            if (other.queryResults != null) {
                 return false;
-        } else if (!queryResults.equals(other.queryResults))
+            }
+        } else if (!queryResults.equals(other.queryResults)) {
             return false;
+        }
         if (requestID == null) {
-            if (other.requestID != null)
+            if (other.requestID != null) {
                 return false;
-        } else if (!requestID.equals(other.requestID))
+            }
+        } else if (!requestID.equals(other.requestID)) {
             return false;
+        }
         if (responseMessage == null) {
-            if (other.responseMessage != null)
+            if (other.responseMessage != null) {
                 return false;
-        } else if (!responseMessage.equals(other.responseMessage))
+            }
+        } else if (!responseMessage.equals(other.responseMessage)) {
             return false;
-        if (responseType != other.responseType)
+        }
+        if (responseType != other.responseType) {
             return false;
-        if (segmentNumber != other.segmentNumber)
+        }
+        if (segmentNumber != other.segmentNumber) {
             return false;
-        if (totalSegments != other.totalSegments)
+        }
+        if (totalSegments != other.totalSegments) {
             return false;
+        }
         return true;
     }
 

@@ -24,7 +24,13 @@ public enum JmsCommunicationPattern {
     REQUEST_ACK_RESPONSE("Request-Acknowledgement-Response",
                          "1. The sender sends a request message.\r\n" + 
                          "2. The receiver sends an initial response (ack), usually to indicate that the request was received.\r\n" + 
-                         "3. Possibly some time later, the receiver sends a full response indicating the result of the operation.")
+                         "3. Possibly some time later, the receiver sends a full response indicating the result of the operation."),
+    
+    /**
+     * The sender sends a request message, and the receiver replies with one or more responses.
+     */
+    REQUEST_MULTI_RESPONSE("Request-Multi-Response",
+                           "The sender sends a request message, and the receiver replies with one or more responses.")
     ;
     
     private final String niceString;

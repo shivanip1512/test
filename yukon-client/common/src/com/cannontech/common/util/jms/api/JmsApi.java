@@ -61,12 +61,12 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         }
         this.pattern = pattern;
         
-        if (senders == null || senders.size() == 0) {
+        if (senders == null || senders.isEmpty()) {
             throw new IllegalArgumentException(name + ": At least one sender must be specified");
         }
         this.senders = senders;
         
-        if (receivers == null || receivers.size() == 0) {
+        if (receivers == null || receivers.isEmpty()) {
             throw new IllegalArgumentException(name + ": At least one receiver must be specified");
         }
         this.receivers = receivers;
@@ -88,7 +88,7 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         
         if (pattern != JmsCommunicationPattern.NOTIFICATION && responseQueue == null) {
             throw new IllegalArgumentException(name + ": Response Queue must be specified for REQUEST_RESPONSE or " +
-                                               "REQUEST_ACK_RESPONSE pattern");
+                                               "REQUEST_ACK_RESPONSE or REQUEST_MULTI_RESPONSE pattern");
         } else if (responseQueue != null && StringUtils.isBlank(responseQueue.getName())) {
             throw new IllegalArgumentException(name + ": Response Queue name cannot be empty or whitespace");
         } else {
@@ -102,16 +102,14 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         
         if (pattern == JmsCommunicationPattern.REQUEST_ACK_RESPONSE && ackMessage == null) {
             throw new IllegalArgumentException(name + ": Ack Message must be specified for REQUEST_ACK_RESPONSE pattern");
-        } else {
-            this.ackMessage = Optional.ofNullable(ackMessage);
         }
+        this.ackMessage = Optional.ofNullable(ackMessage);
         
         if (pattern != JmsCommunicationPattern.NOTIFICATION && responseMessage == null) {
             throw new IllegalArgumentException(name + ": Response Message must be specified for REQUEST_RESPONSE or " +
-                                               "REQUEST_ACK_RESPONSE pattern");
-        } else {
-            this.responseMessage = Optional.ofNullable(responseMessage);
+                                               "REQUEST_ACK_RESPONSE or REQUEST_MULTI_RESPONSE pattern");
         }
+        this.responseMessage = Optional.ofNullable(responseMessage);
     }
     
     public String getName() {
@@ -150,12 +148,30 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         return queue;
     }
     
+    public String getQueueName() {
+        return queue.getName();
+    }
+    
     public Optional<JmsQueue> getAckQueue() {
         return ackQueue;
     }
     
+    public String getAckQueueName() {
+        if (ackQueue.isPresent()) {
+            return ackQueue.get().getName();
+        }
+        return null;
+    }
+    
     public Optional<JmsQueue> getResponseQueue() {
         return responseQueue;
+    }
+    
+    public String getResponseQueueName() {
+        if (responseQueue.isPresent()) {
+            return responseQueue.get().getName();
+        }
+        return null;
     }
     
     public Class<Rq> getRequestMessage() {

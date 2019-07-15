@@ -1,13 +1,12 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
-import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA;
-import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_GATEWAY_NODES;
-import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.GATEWAY;
-import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.LINK_QUALITY;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.*;
+import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -391,7 +390,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             throws NmNetworkException {
         Set<RfnIdentifier> devicesOtherThenGatways = devices.stream()
                 .filter(rfnDevice -> !rfnDevice.getPaoIdentifier().getPaoType().isRfGateway())
-                .map(rfnDevice -> rfnDevice.getRfnIdentifier())
+                .map(RfnDevice::getRfnIdentifier)
                 .collect(Collectors.toSet());
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = null;
         try {
@@ -551,8 +550,10 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         try {
             if (filter.getColorCodeBy() == LINK_QUALITY) {
+                //(Allocate identifiers to new set, because HashMap$KeySet is apparently not serializable)
+                Set<RfnIdentifier> identifiers = new HashSet<>(gateways.keySet());
                 Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData =
-                    metadataMultiService.getMetadataForGatewayRfnIdentifiers(gateways.keySet(),
+                    metadataMultiService.getMetadataForGatewayRfnIdentifiers(identifiers,
                         Set.of(PRIMARY_FORWARD_NEIGHBOR_DATA));
                 
                 //if user didn't specify link strength pre-fill with all values
@@ -568,8 +569,10 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             } else if (filter.getColorCodeBy() == GATEWAY) {
                 
                 if(filter.getLinkQuality().isEmpty()) {
+                    //(Allocate identifiers to new set, because HashMap$KeySet is apparently not serializable)
+                    Set<RfnIdentifier> identifiers = new HashSet<>(gateways.keySet());
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
-                        metadataMultiService.getMetadata(gateways.keySet(), Set.of(PRIMARY_GATEWAY_NODES));
+                        metadataMultiService.getMetadata(identifiers, Set.of(PRIMARY_GATEWAY_NODES));
                     
                     log.debug("Received primary gateway nodes from NM for {} devices", metaData.size());
                     

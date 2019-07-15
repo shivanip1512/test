@@ -1,5 +1,6 @@
 package com.cannontech.common.rfn.service.impl;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
@@ -25,44 +25,41 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.model.NmCommunicationException;
-import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
+import com.cannontech.common.rfn.service.BlockingJmsMultiReplyHandler;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.util.ScheduledExecutor;
-import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.RequestMultiReplyTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.Sets;
 
 public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiService {
-
+    private static final Logger rfnCommsLog = YukonLogManager.getRfnLogger();
+    private static final Logger log = YukonLogManager.getLogger(RfnMetadataMultiServiceImpl.class);
     private static final String nmError = RfnDeviceMetadataServiceImpl.nmError;
     private static final String commsError = RfnDeviceMetadataServiceImpl.commsError;
         
     @Autowired private ConnectionFactory connectionFactory;
-    @Autowired private ConfigurationSource configSource;
     @Autowired private ScheduledExecutor executor;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private RfnDeviceDao rfnDeviceDao;
-    private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
     
-    private static final Logger log = YukonLogManager.getLogger(RfnMetadataMultiServiceImpl.class);
-
-    private RequestReplyTemplateImpl<RfnMetadataMultiResponse> qrTemplate;    
+    private RequestMultiReplyTemplate<RfnMetadataMultiRequest, RfnMetadataMultiResponse> multiReplyTemplate;
     
     @Override
     public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(Set<RfnIdentifier> identifiers,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException {
         RfnMetadataMultiRequest request = getRequest(identifiers, requests);
         request.getRfnIdentifiers().addAll(identifiers);
-        return getMetaData(request);
+        return sendMetadataRequest(request);
     }
     
     @Override
     public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadataForGatewayRfnIdentifiers(Set<RfnIdentifier> identifiers,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException {
-        RfnMetadataMultiRequest request =  getRequest(identifiers, requests);
+        RfnMetadataMultiRequest request = getRequest(identifiers, requests);
         request.getPrimaryNodesForGatewayRfnIdentifiers().addAll(identifiers);
-        return getMetaData(request);
+        return sendMetadataRequest(request);
     }
     
     @Override
@@ -74,25 +71,28 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     /**
      * Returns meta data
      */
-    private Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetaData(RfnMetadataMultiRequest request)
+    private Map<RfnIdentifier, RfnMetadataMultiQueryResult> sendMetadataRequest(RfnMetadataMultiRequest request)
             throws NmCommunicationException {
         try {
+            // Set up request
             String requestIdentifier = String.valueOf(nextValueHelper.getNextValue("RfnMetadataMultiRequest"));
             request.setRequestID(requestIdentifier);
             log.debug("RfnMetadataMultiRequest identifier {} metadatas {} device ids {} gateway ids {}", requestIdentifier, request.getRfnMetadatas(),
                 request.getRfnIdentifiers().size(), request.getPrimaryNodesForGatewayRfnIdentifiers().size());
-            BlockingJmsReplyHandler<RfnMetadataMultiResponse> reply =
-                new BlockingJmsReplyHandler<>(RfnMetadataMultiResponse.class);
-            qrTemplate.send(request, reply);
-            RfnMetadataMultiResponse response = reply.waitForCompletion();
-            if(rfnCommsLog.isEnabled(Level.INFO)) {
-                rfnCommsLog.log(Level.INFO, "<<< " + response.toString());
+            
+            // Send request
+            BlockingJmsMultiReplyHandler<RfnMetadataMultiResponse> replyHandler = 
+                    new BlockingJmsMultiReplyHandler<>(RfnMetadataMultiResponse.class);
+            multiReplyTemplate.send(request, replyHandler);
+            
+            // Receive and validate responses. Merge into a single map. 
+            List<RfnMetadataMultiResponse> responses = replyHandler.waitForCompletion();
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metadata = new HashMap<>();
+            for (RfnMetadataMultiResponse response : responses) {
+                handleMetadataResponse(response, requestIdentifier);
+                metadata.putAll(response.getQueryResults());
             }
-            log.debug("RfnMetadataMultiResponse identifier {} [{} out of {}] response {}", requestIdentifier,
-                response.getSegmentNumber(), response.getTotalSegments(), response.getResponseType());
-            validateResponse(response,requestIdentifier);
-            updatePrimaryGatewayToDeviceMapping(response);
-            return response.getQueryResults();
+            return metadata;
         } catch (ExecutionException e) {
             log.error(commsError, e);
             throw new NmCommunicationException(commsError, e);
@@ -101,12 +101,22 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
 
     private RfnMetadataMultiRequest getRequest(Set<RfnIdentifier> identifiers, Set<RfnMetadataMulti> multi) {
         RfnMetadataMultiRequest request = new RfnMetadataMultiRequest();
-        request.setRfnIdentifiers(new HashSet<>());
+        request.setRfnIdentifiers(identifiers);
         request.setPrimaryNodesForGatewayRfnIdentifiers(new HashSet<>());
         request.setRfnMetadatas(multi);
         return request;
     }
 
+    private void handleMetadataResponse(RfnMetadataMultiResponse response, String requestId) throws NmCommunicationException {
+        if(rfnCommsLog.isEnabled(Level.INFO)) {
+            rfnCommsLog.log(Level.INFO, "<<< " + response.toString());
+        }
+        log.debug("RfnMetadataMultiResponse identifier {} [{} out of {}] response {}", requestId,
+            response.getSegmentNumber(), response.getTotalSegments(), response.getResponseType());
+        validateResponse(response, requestId);
+        updatePrimaryGatewayToDeviceMapping(response);
+    }
+    
     private void validateResponse(RfnMetadataMultiResponse response, String requestIdentifier)
             throws NmCommunicationException {
         if (response.getResponseType() != RfnMetadataMultiResponseType.OK) {
@@ -138,8 +148,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     
     @PostConstruct
     public void initialize() {
-        qrTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.RF_METADATA_MULTI.getName(),
-                configSource, connectionFactory, JmsApiDirectory.RF_METADATA_MULTI.getQueue().getName(), false);
+        multiReplyTemplate = new RequestMultiReplyTemplate<>(connectionFactory, JmsApiDirectory.RF_METADATA_MULTI);
     }
     
 }

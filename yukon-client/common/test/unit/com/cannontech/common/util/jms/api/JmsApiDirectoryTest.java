@@ -12,7 +12,6 @@ import org.junit.Test;
 
 public class JmsApiDirectoryTest {
     
-    @SuppressWarnings("unchecked")
     @Test
     public void test_allQueuesHaveCategory() {
         List<JmsApi<?,?,?>> apis;
