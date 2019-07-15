@@ -2,12 +2,11 @@ package com.cannontech.common.rfn.message;
 
 import java.io.Serializable;
 
-import com.cannontech.common.util.jms.RequestMultiReplyTemplate;
 
 /**
  * Interface for responses to a JMS request, where each request may have multiple responses. The number of expected
  * responses does not need to be known at the time of request.
- * @see RequestMultiReplyTemplate
+ * @see com.cannontech.common.util.jms.RequestMultiReplyTemplate RequestMultiReplyTemplate
  */
 public interface JmsMultiResponse extends Serializable {
 
