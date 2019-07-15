@@ -76,6 +76,7 @@ import com.cannontech.web.tools.mapping.model.Parent;
 import com.cannontech.web.tools.mapping.model.RouteInfo;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -608,17 +609,20 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      */
     private void loadMapColorCodedByGatewayFilteredByLinkStrength(NetworkMapFilter filter, NetworkMap map,
             AtomicInteger i, String gatewayName, Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData) {
-      /*  Set<RfnIdentifier> ids = neighborMetaData.values().stream()
-                .filter(result -> result.isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA))
-                .map(result -> {
-                return (NeighborData) result.getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);
-            }).filter(
-                neighborData -> filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData))).map(
-                    NeighborData::getNeighborRfnIdentifier).collect(Collectors.toSet());
-        if (!ids.isEmpty()) {
+
+        Set<RfnIdentifier> identifiers = neighborMetaData.entrySet().stream()
+            .filter(result-> result.getValue().isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA))
+            .filter(result-> {
+                NeighborData neighborData = (NeighborData) result.getValue().getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA); 
+                return filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData));
+            }).map(result-> result.getKey())
+            .collect(Collectors.toSet());
+            
+            
+        if (!identifiers.isEmpty()) {
             Color color = Color.values()[i.getAndIncrement()];
-            addDevicesToMap(map, color, gatewayName, ids);
-        }*/
+            addDevicesToMap(map, color, gatewayName, identifiers);
+        }
     }
 
     /**
@@ -645,23 +649,22 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      */
     private void loadMapColorCodedByLinkStrength(NetworkMapFilter filter, MessageSourceAccessor accessor, NetworkMap map,
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData) {
-        log.debug("Loading map filtered by link strength");
-      /*  Map<LinkQuality, List<NeighborData>> groupedNeighbors = neighborMetaData.values().stream()
-                .filter( result -> result.isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA))
-                .map(result -> {
-                    return (NeighborData) result.getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);})
-                .filter(neighborData -> filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData)))
-                .collect(Collectors.groupingBy(neighborData -> LinkQuality.getLinkQuality(neighborData),
-                            HashMap::new, Collectors.toList()));
+        log.debug("Loading map filtered by link quality");
+        
+        HashMultimap<LinkQuality, RfnIdentifier> identifiers = HashMultimap.create();
+        neighborMetaData.entrySet().stream()
+                    .filter(result-> result.getValue().isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA))
+                    .forEach(result -> {
+                        NeighborData neighborData = (NeighborData) result.getValue().getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);
+                        if(filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData))){
+                            identifiers.put(LinkQuality.getLinkQuality(neighborData), result.getKey());
+                        }
+                    });
 
-        groupedNeighbors.forEach((linkStrength, neighbors) -> {
-            Set<RfnIdentifier> ids = neighbors.stream()
-                    .map(NeighborData::getNeighborRfnIdentifier)
-                    .collect(Collectors.toSet());
-            String linkStrengthFormatted = accessor.getMessage(linkStrength.getFormatKey());
-            
-            addDevicesToMap(map, linkStrength.getColor(), linkStrengthFormatted, ids);
-        });*/
+        for (LinkQuality linkQuality : identifiers.keySet()) {
+            String linkQualityFormatted = accessor.getMessage(linkQuality.getFormatKey());
+            addDevicesToMap(map, linkQuality.getColor(), linkQualityFormatted, identifiers.get(linkQuality));
+        }
     }
     
     /**
