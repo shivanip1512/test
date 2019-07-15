@@ -168,8 +168,6 @@ public:
     void dumpAllDynamicData();
     bool isValid();
     void setValid(bool valid);
-    bool getReloadFromAMFMSystemFlag();
-    void setReloadFromAMFMSystemFlag(bool reload);
     bool get2wayFlagUpdate();
     void set2wayFlagUpdate(bool flag);
 
@@ -177,10 +175,8 @@ public:
     void resetDailyOperations();
     void calculateParentPowerFactor(long subBusId);
 
-    bool UpdateBusVerificationFlagsInDB(CtiCCSubstationBus* bus);
     virtual bool UpdatePaoDisableFlagInDB(CapControlPao* pao, bool disableFlag, bool forceFullReload = false);
     bool UpdateCapBankOperationalStateInDB(CtiCCCapBank* capbank);
-    bool UpdateCapBankInDB(CtiCCCapBank* capbank);
     bool UpdateFeederBankListInDB(CtiCCFeeder* feeder);
     virtual bool UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* bus);
 
@@ -458,30 +454,11 @@ private:
     long isKVARAvailable( long kvarNeeded );
 
     void reset();
-    //bool CtiCCSubstationBusStore::findPointId(long pointId);
-    void checkAMFMSystemForUpdates();
-    void handleAMFMChanges(Cti::RowReader& rdr);
     void shutdown();
-
-    void feederReconfigureM3IAMFM( std::string& capacitor_id_string, long circt_id_normal,
-                                   std::string& circt_nam_normal, long circt_id_current,
-                                   std::string& circt_name_current, CtiTime& switch_datetime,
-                                   std::string& owner, std::string& capacitor_name, std::string& kvar_rating,
-                                   std::string& cap_fs, std::string& cbc_model, std::string& serial_no,
-                                   std::string& location, std::string& switching_seq, std::string& cap_disable_flag,
-                                   std::string& cap_disable_type, std::string& inoperable_bad_order_equipnote,
-                                   std::string& open_tag_note, std::string& cap_change_type );
-    void capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeeder, CtiCCCapBank* movedCapBank,
-                                       long feederid, long capswitchingorder);
-    void capBankDifferentOrderSameFeeder(CtiCCFeeder* currentFeeder, CtiCCCapBank* currentCapBank,
-                                         long capswitchingorder);
-    void capOutOfServiceM3IAMFM(long feederid, long capid, std::string& enableddisabled, std::string& fixedswitched);
-    void feederOutOfServiceM3IAMFM(long feederid, std::string& fixedswitched, std::string& enableddisabled);
 
     bool updateDisableFlag(unsigned int paoid, bool isDisabled);
 
     void doResetThr();
-    void doAMFMThr();
     void doOpStatsThr();
     bool deleteCapControlMaps();
 
@@ -492,12 +469,10 @@ private:
     CtiCCSpArea_vec *_ccSpecialAreas;
 
     boost::thread   _resetThr;
-    boost::thread   _amfmThr;
     boost::thread   _opStatThr;
 
     bool _isvalid;
     bool _storeRecentlyReset;
-    bool _reloadfromamfmsystemflag;
     CtiTime _lastdbreloadtime;
     CtiTime _lastindividualdbreloadtime;
     bool _2wayFlagUpdate;
@@ -518,24 +493,6 @@ private:
 
     //The singleton instance of CtiCCSubstationBusStore
     static CtiCCSubstationBusStore* _instance;
-
-    //Possible static strings
-    static const std::string m3iAMFMInterfaceString;
-
-    static const std::string m3iAMFMChangeTypeCircuitOutOfService;
-    static const std::string m3iAMFMChangeTypeCircuitReturnToService;
-    static const std::string m3iAMFMChangeTypeCapOutOfService;
-    static const std::string m3iAMFMChangeTypeCapReturnedToService;
-    static const std::string m3iAMFMChangeTypeCircuitReconfigured;
-    static const std::string m3iAMFMChangeTypeCircuitReconfiguredToNormal;
-    //static const string M3IAMFMCapChangeTypeString;
-
-    static const std::string m3iAMFMEnabledString;
-    static const std::string m3iAMFMDisabledString;
-    static const std::string m3iAMFMFixedString;
-    static const std::string m3iAMFMSwitchedString;
-
-    static const std::string m3iAMFMNullString;
 
     PaoIdToSpecialAreaMap _paobject_specialarea_map;
     PaoIdToAreaMap        _paobject_area_map;
