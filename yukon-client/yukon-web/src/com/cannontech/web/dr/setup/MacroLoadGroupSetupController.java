@@ -63,7 +63,7 @@ public class MacroLoadGroupSetupController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private IDatabaseCache dbCache;
 
-    private static final String baseKey = "yukon.web.modules.dr.setup.macroLoadGroup.";
+    private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final Logger log = YukonLogManager.getLogger(MacroLoadGroupSetupController.class);
 
@@ -75,7 +75,7 @@ public class MacroLoadGroupSetupController {
             model.addAttribute("mode", PageEditMode.VIEW);
             MacroLoadGroup macroLoadGroupBase = retrieveGroup(userContext, request, id, url);
             if (macroLoadGroupBase == null) {
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "macroLoadGroup.retrieve.error"));
                 return "redirect:/dr/setup/list";
             }
             macroLoadGroupBase.setId(id);
@@ -95,7 +95,7 @@ public class MacroLoadGroupSetupController {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupRetrieveUrl + id);
             MacroLoadGroup macroLoadGroup = retrieveGroup(userContext, request, id, url);
             if (macroLoadGroup == null) {
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "macroLoadGroup.retrieve.error"));
                 return "redirect:/dr/setup/list";
             } else if (model.containsAttribute("macroLoadGroup")) {
                 macroLoadGroup = (MacroLoadGroup) model.get("macroLoadGroup");
@@ -154,7 +154,7 @@ public class MacroLoadGroupSetupController {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) responseEntity.getBody();
                 int copiedLoadGroupId = paoIdMap.get("paoId");
                 json.put("copiedLoadGroupId", String.valueOf(copiedLoadGroupId));
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.copied"));
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "copy.success", lmCopy.getName()));
             }
 
         } catch (ApiCommunicationException e) {
@@ -163,7 +163,7 @@ public class MacroLoadGroupSetupController {
             json.put("redirectUrl", "/dr/setup/list");
         } catch (RestClientException ex) {
             log.error("Error while copying load group: ", ex);
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", lmCopy.getName()));
             json.put("redirectUrl", "/dr/setup/list");
         }
         response.setContentType("application/json");
@@ -213,7 +213,7 @@ public class MacroLoadGroupSetupController {
             if (response.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
                 int groupId = paoIdMap.get("paoId");
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.saved"));
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", macroLoadGroup.getName()));
                 return "redirect:/dr/setup/macroLoadGroup/" + groupId;
             }
         } catch (ApiCommunicationException e) {
@@ -222,7 +222,7 @@ public class MacroLoadGroupSetupController {
             return "redirect:/dr/setup/list";
         } catch (RestClientException ex) {
             log.error("Error creating load group: ", ex);
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", macroLoadGroup.getName()));
             return "redirect:/dr/setup/list";
         }
         return null;
@@ -238,7 +238,7 @@ public class MacroLoadGroupSetupController {
                 apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.deleted"));
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
                 return "redirect:/dr/setup/list";
             }
         } catch (ApiCommunicationException e) {
@@ -247,7 +247,7 @@ public class MacroLoadGroupSetupController {
             return "redirect:/dr/setup/list";
         } catch (RestClientException ex) {
             log.error("Error deleting macro load group: ", ex);
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName()));
             return "redirect:/dr/setup/list";
         }
         return "dr/setup/list.jsp";

@@ -5,6 +5,14 @@
 <entry key="yukon.web.modules.dr.setup.pageName">Setup</entry>
 <entry key="yukon.web.modules.dr.setup.createObject.title">Create Demand Response Object</entry>
 
+<!-- Common keys -->
+<entry key="yukon.web.modules.dr.setup.save.error">{0} could not be saved.</entry>
+<entry key="yukon.web.modules.dr.setup.save.success">{0} saved successfully.</entry>
+<entry key="yukon.web.modules.dr.setup.copy.error">{0} could not be copied.</entry>
+<entry key="yukon.web.modules.dr.setup.copy.success">{0} copied successfully.</entry>
+<entry key="yukon.web.modules.dr.setup.delete.error">{0} could not be deleted.</entry>
+<entry key="yukon.web.modules.dr.setup.delete.success">{0} deleted successfully.</entry>
+
 <!-- Load Group -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.CREATE.pageName">Create Load Group</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.CREATE.pageDescription">Create Load Group</entry>
@@ -45,14 +53,8 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.digisep.utilityEnrollmentGroup">Utility Enrollment Group</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.digisep.rampIn">Ramp In Time (min)</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.digisep.rampOut">Ramp Out Time (min)</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.info.saved">Load Group saved successfully.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.save.error">Load Group could not be saved - {0}</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.retrieve.error">Load Group could not be retrieved.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.info.deleted">Load Group deleted successfully.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.delete.error">Load Group could not be deleted.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.copy">Copy Load Group</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.info.copied">Load Group copied successfully.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.copy.error">Load Group could not be copied.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.route">Communication Route</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.serviceProvider">SPID</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.geo">GEO</entry>
@@ -99,6 +101,7 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_6">L 6</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_7">L 7</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_8">L 8</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.allSwitchTypes">All Switch Types</entry>
 
 <!-- common Validation -->
 <entry key="yukon.web.modules.dr.setup.error.unique">{0} must be unique.</entry>
@@ -170,14 +173,20 @@
 <entry key="yukon.web.modules.dr.setup.macroLoadGroup.name">Name</entry>
 <entry key="yukon.web.modules.dr.setup.macroLoadGroup.type">Type</entry>
 <entry key="yukon.web.modules.dr.setup.macroLoadGroup.addOrRemoveLoadGroups.title">Add/Remove Load Groups</entry>
-<entry key="yukon.web.modules.dr.setup.macroLoadGroup.info.saved">Macro Load Group saved successfully.</entry>
-<entry key="yukon.web.modules.dr.setup.macroLoadGroup.info.deleted">Macro Load Group deleted successfully.</entry>
 <entry key="yukon.web.modules.dr.setup.macroLoadGroup.retrieve.error">Macro Load Group could not be retrieved.</entry>
-<entry key="yukon.web.modules.dr.setup.macroLoadGroup.delete.error">Macro Load Group could not be deleted.</entry>
 <entry key="yukon.web.modules.dr.setup.macroLoadGroup.assignedLoadGroups.title">Assigned Load Groups</entry>
 <entry key="yukon.web.modules.dr.setup.macroLoadGroup.copy.title">Copy Macro Load Group</entry>
-<entry key="yukon.web.modules.dr.setup.macroLoadGroup.info.copied">Macro Load Group copied successfully.</entry>
-<entry key="yukon.web.modules.dr.setup.macroLoadGroup.copy.error">Macro Load Group could not be copied.</entry>
-<entry key="yukon.web.modules.dr.setup.macroLoadGroup.save.error">{0} could not be saved.</entry>
+
+<!-- Filter By Objects -->
+<!-- TODO: Uncomment these keys while working on the respective setup pages. -->
+<!-- <entry key="yukon.web.modules.dr.setup.CONTROL_AREA">Control Area</entry>
+<entry key="yukon.web.modules.dr.setup.CONTROL_SECNARIO">Control Scenario</entry>
+<entry key="yukon.web.modules.dr.setup.GEAR">GEAR</entry> -->
+<entry key="yukon.web.modules.dr.setup.LOAD_GROUP">Load Group</entry>
+<entry key="yukon.web.modules.dr.setup.LOAD_PROGRAM">Load Program</entry>
+
+<entry key="yukon.web.modules.dr.setup.loadGroup.filter.NAME">Name</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.filter.SWITCH_TYPE">Switch Type</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.filter.allSwitchTypes">All Switch Types</entry>
 
 </properties>

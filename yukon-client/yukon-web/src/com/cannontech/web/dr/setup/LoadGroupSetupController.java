@@ -54,7 +54,7 @@ import com.cannontech.yukon.IDatabaseCache;
 @RequestMapping("/setup/loadGroup")
 public class LoadGroupSetupController {
     
-    private static final String baseKey = "yukon.web.modules.dr.setup.loadGroup.";
+    private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
     private static final List<PaoType> switchTypes =
@@ -112,7 +112,7 @@ public class LoadGroupSetupController {
             model.addAttribute("mode", PageEditMode.VIEW);
             LoadGroupBase loadGroup = retrieveGroup(userContext, request, id, url);
             if (loadGroup == null) {
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "loadGroup.retrieve.error"));
                 return "redirect:/dr/setup/list";
             }
             model.addAttribute("selectedSwitchType", loadGroup.getType());
@@ -135,7 +135,7 @@ public class LoadGroupSetupController {
             model.addAttribute("mode", PageEditMode.EDIT);
             LoadGroupBase loadGroup = retrieveGroup(userContext, request, id, url);
             if (loadGroup == null) {
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "loadGroup.retrieve.error"));
                 return "redirect:/dr/setup/list";
             } else if (model.containsAttribute("loadGroup")) {
                 loadGroup = (LoadGroupBase) model.get("loadGroup");
@@ -177,7 +177,7 @@ public class LoadGroupSetupController {
             if (response.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> groupIdMap = (HashMap<String, Integer>) response.getBody();
                 int groupId = groupIdMap.get("groupId");
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.saved"));
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", loadGroup.getName()));
                 return "redirect:/dr/setup/loadGroup/" + groupId;
             }
 
@@ -187,7 +187,7 @@ public class LoadGroupSetupController {
             return "redirect:/dr/setup/list";
         } catch (RestClientException ex) {
             log.error("Error creating load group: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", loadGroup.getName()));
             return "redirect:/dr/setup/list";
         }
         return null;
@@ -202,7 +202,7 @@ public class LoadGroupSetupController {
             ResponseEntity<? extends Object> response = deleteGroup(userContext, request, url, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.deleted"));
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
                 return "redirect:/dr/setup/list";
             }
         } catch (ApiCommunicationException e) {
@@ -211,10 +211,10 @@ public class LoadGroupSetupController {
             return "redirect:/dr/setup/list";
         } catch (RestClientException ex) {
             log.error("Error deleting load group: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName()));
             return "redirect:/dr/setup/list";
         }
-        return "dr/setup/list.jsp";
+        return "dr/setup/list/list.jsp";
     }
 
     @PostMapping("/{id}/copy")
@@ -238,7 +238,7 @@ public class LoadGroupSetupController {
                 json.put("groupId", Integer.toString(groupId));
                 servletResponse.setContentType("application/json");
                 JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "info.copied"));
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "copy.success", lmCopy.getName()));
                 return null;
             }
 
@@ -251,7 +251,7 @@ public class LoadGroupSetupController {
             return null;
         } catch (RestClientException ex) {
             log.error("Error while copying load group: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", lmCopy.getName()));
             json.put("redirectUrl", "/dr/setup/list");
             servletResponse.setContentType("application/json");
             JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
