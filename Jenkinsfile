@@ -23,10 +23,8 @@ pipeline {
                                  cleanWs()
                            }
 						   try{
-						        if(params.RELEASE_MODE == false){
-								      //Use Jenkins build number to create Yukon Build version for normal builds.
-									  env.YUKON_BUILD_RELEASE_NUMBER = "${env.BUILD_NUMBER}"
-								}
+								//Use Jenkins build number to create Yukon Build version for normal builds.
+							    env.YUKON_BUILD_RELEASE_NUMBER = "${env.BUILD_NUMBER}"
 								bat 'java -version'
 								checkout([$class: 'SubversionSCM',
 								additionalCredentials: [],
