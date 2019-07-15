@@ -31,7 +31,7 @@ begin
 	TARGETDIR = "C:\\Yukon";
 	SdWelcome("Yukon Application Suite", 
 			  "Welcome to the installer for the Yukon Application suite."
-			  + "\nThis program will install Yukon " + IFX_PRODUCT_VERSION
+			  + "\nThis program will install Yukon " + PrettifyToOldVersionStringFormat(IFX_PRODUCT_VERSION)
 			  + " on your computer.\nTo continue, click Next.");
     RemoveCalcHist();
 	Dialog_AskDestinationPath:
@@ -154,7 +154,7 @@ begin
     bOptYes = TRUE;
     nResult = AskOptions(EXCLUSIVE,
 				"This software requires a Yukon database of version "
-    			+ IFX_PRODUCT_VERSION + ".  " 
+    			+ PrettifyToOldVersionStringFormat(IFX_PRODUCT_VERSION) + ".  " 
     			+ "Would you like to open the DB Tools Frame to "
     			+ "update an existing database?",
     			"Yes", bOptYes,
@@ -273,7 +273,7 @@ end;
 function OnUpdateUIBefore()
 number nResult ;
 BOOL bOptYes, bOptNo, bOpt;
-string sMasterConfig, sOldVersion, sMsg1, sMsg2, sCMD, sArgs, sDir, szComputerName, shortcutDir;
+string sMasterConfig, sOldVersion, sMsg1, sMsg2, sCMD, sArgs, sDir, szComputerName, shortcutDir, sBackupDir, svResult;
 begin
 	//set the string shown on the installer windows' title bars
 	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
@@ -301,7 +301,7 @@ begin
 	nResult = SdWelcome("Yukon Application Suite",
 					    "An older version of the Yukon Application Suite is"
 					    +"\ncurrently installed. This setup will update the"
-					    +"\npreviously installed features to version " + IFX_PRODUCT_VERSION 
+					    +"\npreviously installed features to version " + PrettifyToOldVersionStringFormat(IFX_PRODUCT_VERSION) 
 					    +".\nClick Next to continue.");
 	Enable(BACKBUTTON);
 	
@@ -353,9 +353,17 @@ begin
 	
     //YUK-15645 Remove JVM setting while upgrading to 6.5.6 version (or new version ) from lower version.
     RemoveJvmParams();
-    TOMCATBACKUPFILE = TARGETDIR + "\\Server\\Config\\Backup\\server_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml";
-	CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml");
-	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml");
+    TOMCATBACKUPFILE = TARGETDIR + "\\Server\\Config\\Backup\\server_" + sOldVersion + ".xml";
+    
+    sBackupDir = TARGETDIR + "\\Server\\Config\\Backup\\";
+    if(FindFile(sBackupDir, "server_" + sOldVersion + ".xml", svResult) < 0) then
+	CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", sBackupDir + "server_" + sOldVersion + ".xml");
+	endif;
+	
+	if(FindFile(sBackupDir, "web_" + sOldVersion + ".xml", svResult) < 0) then
+	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", sBackupDir + "web_" + sOldVersion + ".xml");
+	endif;
+	
     // Take backup of logging config files if installedVersion < "7.1.0"
     if(IsInstalledVersionLesser("7.1.0")) then 
         BackupLoggingConfigFiles(sOldVersion);
@@ -485,7 +493,7 @@ begin
 	AskOptions(EXCLUSIVE,
 				"The Yukon files have been updated.  "
 				+ "This Yukon software requires a Yukon database"
-    			+ " of version " + IFX_PRODUCT_VERSION + ".  " 
+    			+ " of version " + PrettifyToOldVersionStringFormat(IFX_PRODUCT_VERSION) + ".  " 
     			+ "Would you like to open the DB Tools Frame to "
     			+ "update an existing database?",
     			"Yes", bOptYes,
@@ -720,7 +728,7 @@ end;
 //---------------------------------------------------------------------------
 function OnMaintUIBefore()
     number nResult, nType;
-    string szTitle, szMsg, sMsg1, sMsg2, sInstalledVersion, sDir;
+    string szTitle, szMsg, sMsg1, sMsg2, sInstalledVersion, sDir, sOldVersion;
     BOOL bOpt, bOptNo, bOptYes;
 begin
 	//set the string shown on the installer windows' title bars
@@ -735,15 +743,17 @@ if(IsDowngrade()) then
 		sInstalledVersion = CleanupInstalledVersionNum();
 		sMsg1 = "Version " + sInstalledVersion + " of the Yukon Application "
 				+ "Suite is currently installed. This installer is version "
-				+ IFX_PRODUCT_VERSION + ".";
+				+ PrettifyToOldVersionStringFormat(IFX_PRODUCT_VERSION) + ".";
 		sMsg2 = "The Yukon Installer cannot revert the product to a previous "
 				+ "version.";
 		SdFinish("Newer Version Installed", sMsg1, sMsg2, "", "", bOpt, bOpt);
 		abort; //shut down the installer
 endif;
 
-CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml");
-CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml");
+// Get installed 3-digit Yukon Version
+sOldVersion = CleanupInstalledVersionNum();
+CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + sOldVersion + ".xml");
+CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", TARGETDIR + "\\Server\\Config\\Backup\\web_" + sOldVersion + ".xml");
 CleanupTomcatWebapps();
 //Beginning of UI Sequence
 Dlg_Start:
@@ -917,5 +927,3 @@ begin
        	SdFinish ( szTitle , szMsg1 , szMsg2 , szOpt1 , szOpt2 , bvOpt1 , bvOpt2 );
     endif;
 end;
-
-

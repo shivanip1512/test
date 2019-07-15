@@ -265,7 +265,7 @@
         <exec failonerror="false" executable="${isshield}" resultproperty="installererrorcode">
             <arg line="-p '${isfile}'" />
             <!-- Populate the YukonBuildVersion environment variable so installer version matches yukon version -->
-            <env key="YukonBuildVersion" value="${version.internal}" />
+            <env key="YukonBuildVersion" value="${version.major}.${version.minor}.${env.YUKON_BUILD_RELEASE_NUMBER}.${version.revision}" />
         </exec>
 
         <condition property="out" value="${erroroutput}" else="">
