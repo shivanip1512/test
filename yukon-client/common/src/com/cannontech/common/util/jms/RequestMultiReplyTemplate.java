@@ -137,17 +137,22 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
         DynamicDestinationResolver resolver = new DynamicDestinationResolver();
         Destination replyQueue = getReplyQueue(session);
         
-        try(
-            // Create MessageProducer to send
-            MessageProducer producer = session.createProducer(resolver.resolveDestinationName(session, getRequestQueueName(), pubSubDomain));
-            // Create ReplyConsumer to receive
-            MessageConsumer replyConsumer = session.createConsumer(replyQueue);
-        ) {
+        // Create MessageProducer to send
+        MessageProducer producer = session.createProducer(resolver.resolveDestinationName(session, getRequestQueueName(), pubSubDomain));
+        // Create ReplyConsumer to receive
+        MessageConsumer replyConsumer = session.createConsumer(replyQueue);
+        
+        try {
             ObjectMessage requestMessage = session.createObjectMessage(request);
             requestMessage.setJMSReplyTo(replyQueue);
             logSend(request, requestMessage);
             producer.send(requestMessage);
             handleRepliesAndOrTimeouts(replyHandler, replyConsumer);
+        } catch (Exception e) {
+            log.error("Error sending request.", e);
+        } finally {
+            producer.close();
+            replyConsumer.close();
         }
     }
     
