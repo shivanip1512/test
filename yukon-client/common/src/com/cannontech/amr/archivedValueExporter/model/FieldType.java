@@ -17,6 +17,7 @@ public enum FieldType implements Displayable{
     ADDRESS("Address/Serial Number", OptionalField.ADDRESS_OR_SERIAL_NUMBER),
     ROUTE("Route", OptionalField.ROUTE_NAME),
     PLAIN_TEXT("Plain Text"),
+    RUNTIME("Time of Export"),
     ATTRIBUTE("Attribute"),
     ATTRIBUTE_NAME("Attribute Name"),
     UNIT_OF_MEASURE("Unit of Measure"),
@@ -34,9 +35,9 @@ public enum FieldType implements Displayable{
      */
     
     public static final Set<FieldType> FIXED_ATTRIBUTE_FIELD_TYPES = 
-            ImmutableSet.of(ADDRESS, ATTRIBUTE, DEVICE_NAME, DEVICE_TYPE, METER_NUMBER, PLAIN_TEXT, ROUTE); 
+            ImmutableSet.of(ADDRESS, ATTRIBUTE, DEVICE_NAME, DEVICE_TYPE, METER_NUMBER, PLAIN_TEXT, ROUTE, RUNTIME); 
     public static final Set<FieldType> DYNAMIC_ATTRIBUTE_FIELD_TYPES = 
-            ImmutableSet.of(ADDRESS, ATTRIBUTE_NAME, DEVICE_NAME, DEVICE_TYPE, METER_NUMBER, PLAIN_TEXT, POINT_NAME, ROUTE, POINT_STATE, POINT_TIMESTAMP, UNIT_OF_MEASURE, POINT_VALUE, POINT_QUALITY); 
+            ImmutableSet.of(ADDRESS, ATTRIBUTE_NAME, DEVICE_NAME, DEVICE_TYPE, METER_NUMBER, PLAIN_TEXT, POINT_NAME, ROUTE, POINT_STATE, POINT_TIMESTAMP, RUNTIME, UNIT_OF_MEASURE, POINT_VALUE, POINT_QUALITY); 
     
     private final static String keyPrefix = "yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.";
     

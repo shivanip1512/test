@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +53,7 @@ import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -77,6 +77,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class DataExporterHomeController {
     
     @Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
+    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private DataRangeValidator dataRangeValidator;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
@@ -237,9 +238,9 @@ public class DataExporterHomeController {
         DataRange dataRange = archivedValuesExporter.getRunDataRange();
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId());
         
-        SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("MMddyyyy");
-        String fileNameDateFormatString = fileNameDateFormat.format(Instant.now().toDate());
-        String fileName = ServletUtil.makeWindowsSafeFileName(format.getFormatName() + fileNameDateFormatString) + ".csv";
+        String timestamp = dateFormattingService.format(new Instant(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+
+        String fileName = ServletUtil.makeWindowsSafeFileName(format.getFormatName() + "_"+ timestamp) + ".csv";
         
         response.setDateHeader("Expires", 0); // prevents caching at the proxy server
         response.setContentType("text/x-comma-separated-values");

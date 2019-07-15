@@ -329,6 +329,7 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.RF_SERIAL_NUMBER">RF Serial Number</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.PLAIN_TEXT">Plain Text</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.ROUTE">Route</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.RUNTIME">Time of Export</entry>
 
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.ATTRIBUTE">Attribute</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.ATTRIBUTE_NAME">Attribute Name</entry>

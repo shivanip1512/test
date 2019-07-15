@@ -396,15 +396,19 @@ yukon.tools.dataExporterFormat = (function () {
                 }
                 
                 // show hide reading/timestamp patterns
-                if (type === 'ATTRIBUTE' || type === 'POINT_TIMESTAMP' || type === 'POINT_VALUE') {
+                if (type === 'ATTRIBUTE' || type === 'POINT_TIMESTAMP' || type === 'POINT_VALUE' || type == 'RUNTIME') {
                     if (type === 'ATTRIBUTE') {
                         attributeSelect.show();
                         attributeSelect.find("option:selected").removeAttr('selected');
                         attributeSelect.find("option[value='POINT_STATE']").toggleClass('dn', !field.attribute.statusType);
                     }
-                    otherOptions.show();
+                    if (type == 'RUNTIME') {
+                        otherOptions.hide();
+                    } else {
+                        otherOptions.show();
+                    }
                     
-                    if ((type === 'ATTRIBUTE' && attrVal === 'TIMESTAMP') || type === 'POINT_TIMESTAMP') {
+                    if ((type === 'ATTRIBUTE' && attrVal === 'TIMESTAMP') || type === 'POINT_TIMESTAMP' || type === 'RUNTIME') {
                         pattern.val(_getTimestampPattern());
                         timestampPattern.show();
                         readingPattern.hide();

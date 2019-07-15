@@ -385,11 +385,11 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             YukonUserContext userContext, Table<Integer, PointIdentifier, LiteUnitMeasure> unitMeasureLookupTable) {
 
         StringBuilder reportRow = new StringBuilder();
-
+        Instant now = Instant.now();  // time all rows/report were generated
         for (int i = 0; i < format.getFields().size(); i++) {
             ExportField field = format.getFields().get(i);
             String value = getValue(field, pao, paoData, attribute, pointValueQualityHolder, userContext,
-                    format.getDateTimeZoneFormat(), unitMeasureLookupTable);
+                    format.getDateTimeZoneFormat(), unitMeasureLookupTable, now);
 
             if (StringUtils.isEmpty(value) && field.getField().getType() != FieldType.PLAIN_TEXT) {
                 switch (field.getMissingAttribute()) {
@@ -421,7 +421,9 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             Attribute attribute,
             PointValueQualityHolder pointValueQualityHolder, 
             YukonUserContext userContext, 
-            TimeZoneFormat tzFormat, Table<Integer, PointIdentifier, LiteUnitMeasure> unitMeasureLookupTable) {
+            TimeZoneFormat tzFormat,
+            Table<Integer, PointIdentifier, LiteUnitMeasure> unitMeasureLookupTable,
+            Instant reportRunTime) {
 
         switch (exportField.getField().getType()) {
         case METER_NUMBER:
@@ -464,6 +466,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             case POINT_STATE:
                 return getPointState(userContext, pao, pointValueQualityHolder);
             }
+        case RUNTIME:
+            return getTimestamp(exportField, reportRunTime.toDate(), userContext, tzFormat);
         default:
             throw new IllegalArgumentException(exportField.getField().getType() +" is not currently supported in the export report process");
         }
@@ -585,7 +589,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             Table<Integer, PointIdentifier, LiteUnitMeasure> unitMeasureLookupTable) {
 
         StringBuilder dataRow = new StringBuilder();
-
+        Instant now = Instant.now();  // time all rows/report were generated
+        
         for (int i = 0; i < format.getFields().size(); i++) {
             ExportField field = format.getFields().get(i);
 
@@ -595,7 +600,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             }
 
             String value = getValue(field, pao, paoData, null, pointValueQualityHolder, userContext,
-                    format.getDateTimeZoneFormat(), unitMeasureLookupTable);
+                    format.getDateTimeZoneFormat(), unitMeasureLookupTable, now);
 
             if (StringUtils.isEmpty(value) && field.getField().getType() != FieldType.PLAIN_TEXT) {
                 switch (field.getMissingAttribute()) {
@@ -717,9 +722,12 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         if (pointValueQualityHolder == null) {
             return "";
         }
-
+        return getTimestamp(field, pointValueQualityHolder.getPointDataTimeStamp(), userContext, tzFormat);
+    }
+    
+    private String getTimestamp(ExportField field, Date date, YukonUserContext userContext, TimeZoneFormat tzFormat) {
         DateTimeZone timeZone = getReportTZ(tzFormat, userContext);
-        DateTime dateTime =new DateTime(pointValueQualityHolder.getPointDataTimeStamp()).withZone(timeZone);
+        DateTime dateTime = new DateTime(date).withZone(timeZone);
         if (tzFormat == TimeZoneFormat.LOCAL_NO_DST) {
             DateTimeFormatter dateTimeFormat= ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
             dateTime = dateTimeFormat.parseDateTime(dateTime.toString());

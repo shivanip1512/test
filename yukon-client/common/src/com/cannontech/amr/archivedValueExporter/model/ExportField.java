@@ -157,7 +157,9 @@ public class ExportField implements Displayable {
     }
     
     public boolean isTimestamp() {
-        return field.getType() == FieldType.POINT_TIMESTAMP || (field.isAttributeType() && attributeField == AttributeField.TIMESTAMP);
+        return field.getType() == FieldType.POINT_TIMESTAMP || 
+                (field.isAttributeType() && attributeField == AttributeField.TIMESTAMP) ||
+                field.getType() == FieldType.RUNTIME;
     }
     
     @JsonIgnore
