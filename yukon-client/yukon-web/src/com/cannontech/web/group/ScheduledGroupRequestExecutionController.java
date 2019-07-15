@@ -38,6 +38,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -645,7 +646,7 @@ public class ScheduledGroupRequestExecutionController {
 
         this.meterCommands = new ArrayList<LiteCommand>();
 
-        List<LiteDeviceTypeCommand> devTypeCmds = commandDao.getAllDevTypeCommands(DeviceTypes.STRING_MCT_410IL[0]);
+        List<LiteDeviceTypeCommand> devTypeCmds = commandDao.getAllDevTypeCommands(PaoType.MCT410IL.getDbString());
         for (LiteDeviceTypeCommand devTypeCmd : devTypeCmds) {
             int cmdId = devTypeCmd.getCommandId();
             LiteCommand liteCmd = commandDao.getCommand(cmdId);

@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -19,7 +18,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
-import com.cannontech.common.stream.StreamUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 /**

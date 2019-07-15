@@ -1,5 +1,6 @@
 package com.cannontech.tools.msg;
 
+import com.cannontech.common.pao.PaoType;
 /**
  * Insert the type's description here.
  * Creation date: (6/13/00 10:50:34 AM)
@@ -78,8 +79,8 @@ public static void main(String[] args)
 			DBChangeMsg msg = new DBChangeMsg(
 					id[j],
 					DBChangeMsg.CHANGE_PAO_DB,
-					PAOGroups.STRING_CAT_DEVICE,
-					PAOGroups.STRING_CAP_BANK[0],
+					PaoCategory.DEVICE.getDbString(),
+					PaoType.CAPBANK.getDbString(),
 					DbChangeType.UPDATE );
 
 			msg.setTimeStamp( new java.util.Date() );

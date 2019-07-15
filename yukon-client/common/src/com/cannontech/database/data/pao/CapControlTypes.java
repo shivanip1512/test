@@ -24,7 +24,6 @@ public interface CapControlTypes extends TypeBase
 	public static final String STRING_CAPCONTROL_FEEDER = CapControlType.FEEDER.getDbValue();
     public static final String STRING_CAPCONTROL_AREA= CapControlType.AREA.getDbValue();
     public static final String STRING_CAPCONTROL_SPECIAL_AREA= CapControlType.SPECIAL_AREA.getDbValue();
-    public static final String STRING_CAPCONTROL_CAPBANK = DeviceTypes.STRING_CAP_BANK[0];
     public static final String STRING_CAPCONTROL_STRATEGY = CapControlType.STRATEGY.getDbValue();
     public static final String STRING_CAPCONTROL_SCHEDULE = CapControlType.SCHEDULE.getDbValue();
     public static final String STRING_CAPCONTROL_LTC = CapControlType.LTC.getDbValue();
