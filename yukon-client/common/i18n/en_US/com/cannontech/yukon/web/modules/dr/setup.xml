@@ -189,4 +189,8 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.filter.SWITCH_TYPE">Switch Type</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.filter.allSwitchTypes">All Switch Types</entry>
 
+<!-- Program Constraint -->
+<entry key="yukon.web.modules.dr.setup.constraint.error.used">{0} because it is in use by a Program.</entry>
+
+
 </properties>

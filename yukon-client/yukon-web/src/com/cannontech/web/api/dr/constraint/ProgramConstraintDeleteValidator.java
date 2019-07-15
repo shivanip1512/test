@@ -13,6 +13,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteLMConstraint;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
@@ -22,6 +23,7 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public class ProgramConstraintDeleteValidator extends SimpleValidator<LMDelete>{
     private static final Logger log = YukonLogManager.getLogger(ProgramConstraintDeleteValidator.class);
+    private static final String key = "yukon.web.modules.dr.setup.constraint.error.used";
 
     @Autowired DBDeletionDao dbDeletionDao;
     @Autowired private IDatabaseCache dbCache;
@@ -40,14 +42,14 @@ public class ProgramConstraintDeleteValidator extends SimpleValidator<LMDelete>{
                 .filter(constraint -> constraint.getConstraintID() == Integer.parseInt(constraintId))
                 .findFirst();
         if (liteLMConstraint.isEmpty()) {
-            errors.reject("Constraint Id not found");
+            throw new NotFoundException("Constraint Id not found");
         }
         LMProgramConstraint constraint = (LMProgramConstraint) LiteFactory.createDBPersistent(liteLMConstraint.get());
         DBDeleteResult dbDeleteResult = dbDeletionDao.getDeleteInfo(constraint, constraint.getConstraintName());
         try {
             if (LMProgramConstraint.inUseByProgram(dbDeleteResult.getItemID(), CtiUtilities.getDatabaseAlias())) {
                 if (dbDeleteResult.isDeletable()) {
-                    errors.reject(dbDeleteResult.getUnableDelMsg().toString().concat(" because it is in use by a Program."));
+                    errors.reject(key, new Object[] { dbDeleteResult.getUnableDelMsg() }, "");
                 }
             }
         } catch (SQLException e) {
