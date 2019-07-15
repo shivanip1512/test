@@ -274,6 +274,7 @@
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.drivingDirections">Driving Directions</entry>
     
     <!-- cbcPointTimestamps.jsp -->
+    <entry key="yukon.web.modules.capcontrol.cbcPoints.scanNow.label">Scan Now</entry>
     <entry key="yukon.web.modules.capcontrol.cbcPoints.value">Value</entry>
     <entry key="yukon.web.modules.capcontrol.cbcPoints.timestamp">Timestamp</entry>
     <entry key="yukon.web.modules.capcontrol.cbcPoints.analogPoints">Analog Points</entry>

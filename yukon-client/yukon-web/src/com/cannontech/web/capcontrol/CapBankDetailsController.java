@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.capcontrol.BankLocation;
 import com.cannontech.capcontrol.CBCPointGroup;
 import com.cannontech.capcontrol.LiteCapBankAdditional;
+import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.CapControlDao;
@@ -30,6 +32,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
@@ -56,6 +59,7 @@ public class CapBankDetailsController {
     @Autowired private SubstationService substationService;
     @Autowired private SubstationDao substationDao;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private CapbankDao capbankDao;
 
     @RequestMapping("capBankLocations")
     public String capBankLocations(ModelMap model, FlashScope flash, LiteYukonUser user, int value) {
@@ -182,6 +186,9 @@ public class CapBankDetailsController {
     @RequestMapping("cbcPoints")
     public String cbcPoints(ModelMap model, int cbcId) {
         PaoType paoType = paoDao.getLiteYukonPAO(cbcId).getPaoType();
+        PaoIdentifier capbank = capbankDao.findCapBankByCbc(cbcId);
+        model.addAttribute("capBankId", capbank.getPaoId());
+        model.addAttribute("scanCommand", CommandType.SEND_SCAN_2WAY_DEVICE);
 
         Map<CBCPointGroup, List<LitePoint>> pointTimestamps = capControlDao.getSortedCBCPointTimeStamps(cbcId);
         model.addAttribute("pointMap", pointTimestamps);

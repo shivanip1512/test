@@ -7,6 +7,20 @@
 <cti:msgScope paths="modules.capcontrol.cbcPoints">
 
     <div>
+        <cti:checkRolesAndProperties value="CAPBANK_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
+            ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITHOUT_YUKON_ACTIONS">
+            <cti:getProperty var="warnOnCommands" property='CONTROL_CONFIRMATION_POPUPS'/>
+            <cti:button nameKey="scanNow" classes="fr js-scan-cbc-now" data-command-id="${scanCommand.commandId}" 
+                data-pao-id="${capBankId}" data-warn-on-commands="${warnOnCommands}"/>
+            <div id="scanCommandConfirmation" class="dn js-command-confirmation" data-dialog 
+                data-title="<cti:msg2 key="yukon.web.modules.capcontrol.menu.confirmation"/>" data-event="yukon:command:confirm" 
+                data-ok-text="<cti:msg2 key="yukon.web.modules.capcontrol.menu.sendCommandButton.label"/>"><br/>
+                <cti:msg2 var="commandName" key="${scanCommand}"/>
+                <span class="user-message error"><i:inline key="yukon.web.modules.capcontrol.command.confirm" 
+                      arguments="${commandName}"/>
+                </span>
+            </div>
+        </cti:checkRolesAndProperties>
 
         <table class="compact-results-table stacked">
             <thead>

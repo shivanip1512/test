@@ -34,6 +34,30 @@ $(document).on('click', 'li.menuOption.command', function(event) {
     }
 });
 
+$(document).on('click', '.js-scan-cbc-now', function(event) {
+    var showConfirmation = false,
+        itemId = $(this).data('paoId'),
+        commandId = $(this).data('commandId'),
+        confirmPopupLevel = $(this).data('warnOnCommands');
+     if (confirmPopupLevel === 'ALL_COMMANDS') {
+         var popup = $('#scanCommandConfirmation'),
+             title = popup.data('title'),
+             okButtonText = popup.data('okText');
+         popup.data('itemId', itemId);
+         popup.data('commandId', commandId);
+         popup.dialog({
+             title: title, 
+             width: 'auto',
+             modal: true,
+             buttons: yukon.ui.buttons({okText: okButtonText, event: 'yukon:command:confirm'})
+         });
+         //make it so the user has to intentionally click the button
+         document.activeElement.blur();
+     } else {
+         doItemCommand(itemId, commandId, event);
+     }
+ });
+
 $(document).on('click', 'li.menuOption.stateChange', function(event) {
     yukon.da.common.hideMenu();
     doChangeState($(event.currentTarget).closest("ul").find("input[name='paoId']").val(), $(event.currentTarget).val());
@@ -45,7 +69,7 @@ $(document).on('yukon:command:confirm', function (ev) {
         itemId = popup.data('itemId'),
         commandId = popup.data('commandId');
     doItemCommand(itemId, commandId);
-    $('.js-command-confirmation').dialog('destroy');
+    popup.dialog('destroy');
 });
 
 /** User has clicked on a system command (Enable/Disable System or Reset All Ops **/
