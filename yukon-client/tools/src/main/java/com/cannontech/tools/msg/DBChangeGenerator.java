@@ -8,7 +8,6 @@ import com.cannontech.common.pao.PaoType;
  * @author:
  */
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
