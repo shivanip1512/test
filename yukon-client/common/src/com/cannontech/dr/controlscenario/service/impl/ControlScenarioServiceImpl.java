@@ -65,7 +65,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
     @Override
     public int delete(int controlScenarioId, String controlScenarioName) {
         LiteYukonPAObject controlScenario = dbCache.getAllLMScenarios().stream()
-                                                                       .filter(scenario -> scenario.getLiteID() == controlScenarioId && scenario.getPaoName().equals(controlScenarioName))
+                                                                       .filter(scenario -> scenario.getLiteID() == controlScenarioId && scenario.getPaoName().equalsIgnoreCase(controlScenarioName))
                                                                        .findFirst()
                                                                        .orElseThrow(() -> new NotFoundException("Scenario Id and Name combination not found"));
 
