@@ -7,6 +7,8 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 
+import com.cannontech.common.pao.PaoType;
+
 
 public class YukonObjectCriteriaHelper implements YukonObjectCriteria {
     
@@ -16,6 +18,7 @@ public class YukonObjectCriteriaHelper implements YukonObjectCriteria {
         query.setMinimumNumberShouldMatch(1);
     }
     
+    @Override
     public Query getCriteria() {
         return query.build();
     }
@@ -36,5 +39,8 @@ public class YukonObjectCriteriaHelper implements YukonObjectCriteria {
         TermRangeQuery rangeQuery = TermRangeQuery.newStringRange(field, lowerTerm, upperTerm, includeLower, includeUpper);
         query.add(rangeQuery, clause);
     }
-    
+ 
+    protected void typeShouldOccur(PaoType type) {
+        addCriteria("type", type.getDbString(), BooleanClause.Occur.SHOULD);
+    }
 }
