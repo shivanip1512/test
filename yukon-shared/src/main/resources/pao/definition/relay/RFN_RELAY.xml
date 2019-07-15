@@ -17,7 +17,7 @@
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
         <pointInfo name="Outage Count" init="true" attributes="RFN_OUTAGE_COUNT"/>
-        <pointInfo name="Outage Log" init="true" attributes="OUTAGE_LOG"/>
+        <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
         <pointInfo name="Outage Restore Count" init="true" attributes="RFN_OUTAGE_RESTORE_COUNT"/>
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
     </pointInfos>

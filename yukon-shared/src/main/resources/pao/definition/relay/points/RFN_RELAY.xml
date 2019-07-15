@@ -35,6 +35,12 @@
         <unitofmeasure value="COUNTS"/>
         <decimalplaces value="0"/>
     </point>
+    <point offset="100" type="Analog">
+        <name>Outages</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="3"/>
+    </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="63" type="Status">
         <name>Bad Upgrade Security Param</name>
