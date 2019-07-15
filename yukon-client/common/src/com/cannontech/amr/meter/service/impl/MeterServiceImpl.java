@@ -11,16 +11,20 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class MeterServiceImpl implements MeterService {
     
     @Autowired private AttributeService attributeService;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
@@ -76,13 +80,8 @@ public class MeterServiceImpl implements MeterService {
         if (attributeService.pointExistsForAttribute(device, BuiltInAttribute.DISCONNECT_STATUS)) {
             
             LitePoint liteDisconnectPoint = attributeService.getPointForAttribute(device, BuiltInAttribute.DISCONNECT_STATUS);
-            
-            DBChangeMsg msg = new DBChangeMsg(liteDisconnectPoint.getLiteID(),
-                                              DBChangeMsg.CHANGE_POINT_DB,
-                                              DBChangeMsg.CAT_POINT,
-                                              liteDisconnectPoint.getPointTypeEnum().getDatabaseRepresentation().toString(),
-                                              DbChangeType.DELETE);
-            dbChangeManager.processDbChange(msg);
+            DBPersistent pointBase = LiteFactory.convertLiteToDBPers(liteDisconnectPoint);
+            dbPersistentDao.performDBChange(pointBase,TransactionType.DELETE);
         }
         
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
