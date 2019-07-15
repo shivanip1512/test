@@ -198,7 +198,9 @@ ObjectBlockPtr ObjectBlock::makeRangedBlock(ObjectPtr object, const unsigned ran
 {
     auto objBlock =
             makeObjectBlock(
-                    NoIndex_ByteStartStop,
+                    rangeStart < 256
+                        ? NoIndex_ByteStartStop
+                        : NoIndex_ShortStartStop,
                     object->getGroup(),
                     object->getVariation());
 
@@ -208,6 +210,98 @@ ObjectBlockPtr ObjectBlock::makeRangedBlock(ObjectPtr object, const unsigned ran
 
     return std::move(objBlock);
 }
+
+
+template<class T>
+static ObjectBlockPtr ObjectBlock::makeRangedBlock(std::map<unsigned, std::unique_ptr<const T>> objects)
+{
+    if( objects.empty() )
+    {
+        return ObjectBlockPtr();
+    }
+
+    const unsigned biggestIndex = objects.rbegin()->first;  // max offset in the block
+
+    const T &object = *(objects.begin()->second);
+
+    auto objBlock =
+            makeObjectBlock(
+                biggestIndex < 256
+                    ? NoIndex_ByteStartStop
+                    : NoIndex_ShortStartStop,
+                object.getGroup(),
+                object.getVariation());
+
+    objBlock->_start = objects.begin()->first;      // first offset
+
+    for( auto &kv : objects )
+    {
+        objBlock->_objectList.emplace_back(std::move(kv.second));
+        objBlock->_objectIndices.push_back(kv.first);
+    }
+
+    return std::move(objBlock);
+}
+
+
+template<class T>
+static std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks(std::map<unsigned, std::unique_ptr<const T>> objects)
+{
+    // create a mapping of the start index to number of consecutive indexes on the input collection keys
+    //  e.g  { 1, 2, 3, 6, 8, 9 } -->  { { 1, 3 }, { 6, 1 }, { 8, 2 } }
+
+    std::map<unsigned, unsigned>    splices;
+
+    unsigned
+        stride = 0,
+        workingIndex = 0;
+
+    for ( auto & e : objects )
+    {
+        if ( e.first != ( workingIndex + stride ) )
+        {
+            workingIndex = e.first;
+            stride = 0;
+        }
+        splices[ workingIndex ] = ++stride;
+    }
+
+    // break up the input and build the individual blocks
+
+    std::vector<ObjectBlockPtr> blocks;
+
+    for ( auto & [ startIndex, indexCount ] : splices )
+    {
+        std::map<unsigned, std::unique_ptr<const T>> subsetObjects;
+
+        // extract each splice into the subset mapping and build the block from it
+
+        for ( unsigned count = 0; count < indexCount; ++count )
+        {
+            auto node = objects.extract( startIndex + count );
+            subsetObjects.insert( std::move(node) );
+        }
+
+        blocks.emplace_back( ObjectBlock::makeRangedBlock( std::move(subsetObjects) ) );
+    }
+
+    return std::move(blocks);
+}
+
+
+//  explicit instantiations for DNP Slave (since it is used internally in ctiprot.dll, no need to export with IM_EX_PROT)
+template ObjectBlockPtr ObjectBlock::makeRangedBlock( std::map<unsigned, std::unique_ptr<const AnalogInput>> objects );
+template ObjectBlockPtr ObjectBlock::makeRangedBlock( std::map<unsigned, std::unique_ptr<const AnalogOutputStatus>> objects );
+template ObjectBlockPtr ObjectBlock::makeRangedBlock( std::map<unsigned, std::unique_ptr<const BinaryInput>> objects );
+template ObjectBlockPtr ObjectBlock::makeRangedBlock( std::map<unsigned, std::unique_ptr<const BinaryOutput>> objects );
+template ObjectBlockPtr ObjectBlock::makeRangedBlock( std::map<unsigned, std::unique_ptr<const Counter>> objects );
+
+
+template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const AnalogInput>> objects );
+template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const AnalogOutputStatus>> objects );
+template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const BinaryInput>> objects );
+template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const BinaryOutput>> objects );
+template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const Counter>> objects );
 
 
 ObjectBlockPtr ObjectBlock::makeNoIndexNoRange( int group, int variation )

@@ -114,7 +114,11 @@ public:
     ObjectBlock(const ObjectBlock &) = delete;
     ObjectBlock &operator=(const ObjectBlock &) = delete;
 
-    static ObjectBlockPtr makeRangedBlock     (ObjectPtr obj, const unsigned rangeStart);  //  can add vector overload when necessary
+    static ObjectBlockPtr makeRangedBlock(ObjectPtr obj, const unsigned rangeStart);
+    template<class T>
+    static ObjectBlockPtr makeRangedBlock(std::map<unsigned, std::unique_ptr<const T>> objects);
+    template<class T>
+    static std::vector<ObjectBlockPtr> makeRangedBlocks(std::map<unsigned, std::unique_ptr<const T>> objects);
 
     static ObjectBlockPtr makeNoIndexNoRange  (int group, int variation);
 

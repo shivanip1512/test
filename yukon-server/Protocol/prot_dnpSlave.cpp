@@ -334,12 +334,53 @@ void DnpSlaveProtocol::setScanCommand( std::vector<DnpSlave::output_point> outpu
 
     std::vector<ObjectBlockPtr> dobs;
 
-    if( ! analog_inputs.empty()       )  dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(analog_inputs)));
-    if( ! binary_inputs.empty()       )  dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(binary_inputs)));
-    if( ! accumulators.empty()        )  dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(accumulators)));
-    if( ! demand_accumulators.empty() )  dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(demand_accumulators)));
-    if( ! analog_outputs.empty()      )  dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(analog_outputs)));
-    if( ! binary_outputs.empty()      )  dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(binary_outputs)));
+    if( ! analog_inputs.empty() )
+    {
+        for( auto& e : ObjectBlock::makeRangedBlocks(std::move(analog_inputs)) )
+        {
+            dobs.emplace_back(std::move(e));
+        }
+    }
+
+    if( ! binary_inputs.empty() )
+    {
+        for( auto& e : ObjectBlock::makeRangedBlocks(std::move(binary_inputs)) )
+        {
+            dobs.emplace_back(std::move(e));
+        }
+    }
+
+    if( ! accumulators.empty() )
+    {
+        for( auto& e : ObjectBlock::makeRangedBlocks(std::move(accumulators)) )
+        {
+            dobs.emplace_back(std::move(e));
+        }
+    }
+
+    if( ! demand_accumulators.empty() )
+    {
+        for( auto& e : ObjectBlock::makeRangedBlocks(std::move(demand_accumulators)) )
+        {
+            dobs.emplace_back(std::move(e));
+        }
+    }
+
+    if( ! analog_outputs.empty() )
+    {
+        for( auto& e : ObjectBlock::makeRangedBlocks(std::move(analog_outputs)) )
+        {
+            dobs.emplace_back(std::move(e));
+        }
+    }
+
+    if( ! binary_outputs.empty() )
+    {
+        for( auto& e : ObjectBlock::makeRangedBlocks(std::move(binary_outputs)) )
+        {
+            dobs.emplace_back(std::move(e));
+        }
+    }
 
     _application.setCommand(
             ApplicationLayer::ResponseResponse,

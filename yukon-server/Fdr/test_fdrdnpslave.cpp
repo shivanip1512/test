@@ -371,16 +371,15 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
     dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
     const byte_str expected(
-        "05 64 48 44 02 00 1e 00 07 4f "
-        "c0 ca 81 00 00 1e 01 28 02 00 03 00 00 3f 01 00 ef cc "
-        "00 04 00 01 40 01 00 00 01 02 28 02 00 01 00 01 2e 4a "
-        "02 00 81 14 01 28 01 00 00 00 01 13 00 00 00 28 69 58 "
-        "01 28 01 00 06 00 01 40 01 00 00 0a 02 28 01 00 17 f7 "
-        "05 00 01 f9 b6");
+            "05 64 3a 44 02 00 1e 00 8e 4e "
+            "c0 ca 81 00 00 1e 01 00 03 04 00 3f 01 00 00 01 51 da "
+            "40 01 00 00 01 02 00 01 02 01 81 14 01 00 00 00 1b a6 "
+            "01 13 00 00 00 28 01 00 06 06 01 40 01 00 00 0a 4d 11 "
+            "02 00 05 05 01 71 6c");
 
     /*
     05 64   - header bytes
-    34  - length 52
+    3a  - length 58
     44  - DLC remote, DL request, FCB 0, FCB invalid?, user data
     02 00   - destination 2
     1e 00   - source 30
@@ -389,39 +388,35 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
 
     ca  - application sequence 0, first, final, sequence 10
     81  - application response
-    00 00 - no IIN set
+    00 00   - no IIN set
 
-    1e 01  28 02 00 - 32-bit analog with flags, 2 byte count, 2 byte index, 2 objects
-    
-    03 00 - index 3
-    01 - online
+    1e 01 00 03 04  - 32-bit analog with flags, 1 byte start and stop index
+        - index 3
+    00  - offline
     3f 01 00 00 - value 13f = 319
-
-    04 00 - index 4
-    00 - offline
+        - index 4
+    01  - online
     40 01 00 00 - value 140 = 320
 
-    01 02  28 02 00 - binary input with status, 2 byte count, 2 byte index, 2 objects
-    
-    01 00 - index 1
-    01 - online, state 0
+    01 02 00 01 02  - binary input with status, 1 byte start and stop index
+        - index 1
+    01  - online, state 0
+        - index 2
+    81  - online, state 1
 
-    02 00 - index 2
-    81 - online, state 1
+    14 01 00 00 00  - 32-bit counter, 1 byte start and stop index
+        - index 0
+    01  - online
+    13 00 00 00 - value 13 = 19
 
-    14 01  28 01 00 - 32-bit counter, 2 byte count, 2 byte index, 1 object
-    00 00 - index 0
-    01 - online
-    13 00 00 00 - value 19
+    28 01 00 06 06  - 32 bit analog output with status, 1 byte start and stop index
+        - index 6
+    01  - online
+    40 01 00 00 - value 140 = 320
 
-    28 01  28 01 00 - 32 bit analog output with status, 2 byte count, 2 byte index, 1 object
-    06 00 - index 6
-    01 - online
-    40 01 00 00 - value 320
-
-    0a 02  28 01 00 - binary output with status, 2 byte count, 2 byte index, 1 object
-    05 00 - index 5
-    01 - online, state 0
+    0a 02 00 05 05  - binary output with status, 1 byte start and stop index
+        - index 5
+    01  - online, state 0
     */
 
     BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
@@ -479,9 +474,8 @@ BOOST_AUTO_TEST_CASE( test_scan_request_class1230 )
     dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
     const byte_str expected(
-            "05 64 16 44 02 00 1e 00 be 68 "
-            "c0 ca 81 00 00 14 01 28 01 00 00 00 00 13 00 00 00 1c "
-            "00 ff ff");
+            "05 64 14 44 02 00 1e 00 09 4e "
+            "c0 ca 81 00 00 14 01 00 00 00 00 13 00 00 00 f8 da");
 
     BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
     BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
@@ -550,72 +544,50 @@ BOOST_AUTO_TEST_CASE( test_scan_request_multiple_packet )
 
     dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
-    BOOST_REQUIRE_EQUAL(connection.messages.size(), 3);
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 2);
 
     auto msgItr = connection.messages.begin();
 
     {
         const byte_str expected(
                 "05 64 ff 44 02 00 1e 00 f9 09 "
-                "40 ca 81 00 00 1e 01 28 28 00 00 00 00 01 00 00 d9 a9 "
-                "00 01 00 00 02 00 00 00 02 00 00 03 00 00 00 03 9c 16 "
-                "00 00 04 00 00 00 04 00 00 05 00 00 00 05 00 00 f7 ce "
-                "06 00 00 00 06 00 00 07 00 00 00 07 00 00 08 00 3d eb "
-                "00 00 08 00 00 09 00 00 00 09 00 00 0a 00 00 00 fe e4 "
-                "0a 00 00 0b 00 00 00 0b 00 00 0c 00 00 00 0c 00 a3 a5 "
-                "00 0d 00 00 00 0d 00 00 0e 00 00 00 0e 00 00 0f 31 62 "
-                "00 00 00 0f 00 00 10 00 00 00 10 00 00 11 00 00 0a 44 "
-                "00 11 00 00 12 00 00 00 12 00 00 13 00 00 00 13 f6 fc "
-                "00 00 14 00 00 00 14 00 00 15 00 00 00 15 00 00 c6 5c "
-                "16 00 00 00 16 00 00 17 00 00 00 17 00 00 18 00 31 cb "
-                "00 00 18 00 00 19 00 00 00 19 00 00 1a 00 00 00 0f 9d "
-                "1a 00 00 1b 00 00 00 1b 00 00 1c 00 00 00 1c 00 8d 4c "
-                "00 1d 00 00 00 1d 00 00 1e 00 00 00 1e 00 00 1f 52 7d "
-                "00 00 00 1f 00 00 20 00 00 00 20 00 00 21 00 00 9f b0 "
-                "00 21 00 00 22 00 00 00 22 00 5b 4f");
+                "40 ca 81 00 00 1e 01 00 00 27 00 01 00 00 00 00 18 25 "
+                "02 00 00 00 00 03 00 00 00 00 04 00 00 00 00 05 3d fd "
+                "00 00 00 00 06 00 00 00 00 07 00 00 00 00 08 00 9c b1 "
+                "00 00 00 09 00 00 00 00 0a 00 00 00 00 0b 00 00 52 b8 "
+                "00 00 0c 00 00 00 00 0d 00 00 00 00 0e 00 00 00 42 39 "
+                "00 0f 00 00 00 00 10 00 00 00 00 11 00 00 00 00 96 29 "
+                "12 00 00 00 00 13 00 00 00 00 14 00 00 00 00 15 53 b2 "
+                "00 00 00 00 16 00 00 00 00 17 00 00 00 00 18 00 55 70 "
+                "00 00 00 19 00 00 00 00 1a 00 00 00 00 1b 00 00 a6 84 "
+                "00 00 1c 00 00 00 00 1d 00 00 00 00 1e 00 00 00 20 8e "
+                "00 1f 00 00 00 00 20 00 00 00 00 21 00 00 00 00 46 15 "
+                "22 00 00 00 00 23 00 00 00 00 24 00 00 00 00 25 e1 63 "
+                "00 00 00 00 26 00 00 00 00 27 00 00 00 00 28 00 77 7f "
+                "00 00 01 02 00 00 27 80 00 80 00 80 00 80 00 80 fb fa "
+                "00 80 00 80 00 80 00 80 00 80 00 80 00 80 00 80 d0 34 "
+                "00 80 00 80 00 80 00 80 00 80 d6 9a");
 
         BOOST_CHECK_EQUAL_RANGES(expected, *msgItr);
     }
     msgItr++;
     {
         const byte_str expected(
-                "05 64 ff 44 02 00 1e 00 f9 09 "
-                "01 00 23 00 00 00 23 00 00 24 00 00 00 24 00 00 b6 c6 "
-                "25 00 00 00 25 00 00 26 00 00 00 26 00 00 27 00 d3 10 "
-                "00 00 27 00 00 28 00 00 00 01 02 28 28 00 00 00 a2 0b "
-                "80 01 00 00 02 00 80 03 00 00 04 00 80 05 00 00 50 eb "
-                "06 00 80 07 00 00 08 00 80 09 00 00 0a 00 80 0b db 2d "
-                "00 00 0c 00 80 0d 00 00 0e 00 80 0f 00 00 10 00 4b fb "
-                "80 11 00 00 12 00 80 13 00 00 14 00 80 15 00 00 6c b3 "
-                "16 00 80 17 00 00 18 00 80 19 00 00 1a 00 80 1b dd 22 "
-                "00 00 1c 00 80 1d 00 00 1e 00 80 1f 00 00 20 00 93 4c "
-                "80 21 00 00 22 00 80 23 00 00 24 00 80 25 00 00 28 5b "
-                "26 00 80 27 00 00 14 01 28 28 00 00 00 00 01 00 7f d9 "
-                "00 00 01 00 00 02 00 00 00 02 00 00 03 00 00 00 96 58 "
-                "03 00 00 04 00 00 00 04 00 00 05 00 00 00 05 00 7c d0 "
-                "00 06 00 00 00 06 00 00 07 00 00 00 07 00 00 08 6f ea "
-                "00 00 00 08 00 00 09 00 00 00 09 00 00 0a 00 00 43 77 "
-                "00 0a 00 00 0b 00 00 00 0b 00 d0 cd");
-
-        BOOST_CHECK_EQUAL_RANGES(expected, *msgItr);
-    }
-    msgItr++;
-    {
-        const byte_str expected(
-                "05 64 cf 44 02 00 1e 00 ba 80 "
-                "82 00 0c 00 00 00 0c 00 00 0d 00 00 00 0d 00 00 47 8d "
-                "0e 00 00 00 0e 00 00 0f 00 00 00 0f 00 00 10 00 13 24 "
-                "00 00 10 00 00 11 00 00 00 11 00 00 12 00 00 00 4b 07 "
-                "12 00 00 13 00 00 00 13 00 00 14 00 00 00 14 00 1a 38 "
-                "00 15 00 00 00 15 00 00 16 00 00 00 16 00 00 17 5f d4 "
-                "00 00 00 17 00 00 18 00 00 00 18 00 00 19 00 00 17 4f "
-                "00 19 00 00 1a 00 00 00 1a 00 00 1b 00 00 00 1b c3 89 "
-                "00 00 1c 00 00 00 1c 00 00 1d 00 00 00 1d 00 00 62 b3 "
-                "1e 00 00 00 1e 00 00 1f 00 00 00 1f 00 00 20 00 36 f7 "
-                "00 00 20 00 00 21 00 00 00 21 00 00 22 00 00 00 58 8d "
-                "22 00 00 23 00 00 00 23 00 00 24 00 00 00 24 00 11 4e "
-                "00 25 00 00 00 25 00 00 26 00 00 00 26 00 00 27 fa f5 "
-                "00 00 00 27 00 00 28 00 00 00 41 12");
+                "05 64 d8 44 02 00 1e 00 45 26 "
+                "81 00 80 00 80 00 14 01 00 00 27 00 01 00 00 00 08 51 "
+                "00 02 00 00 00 00 03 00 00 00 00 04 00 00 00 00 08 a7 "
+                "05 00 00 00 00 06 00 00 00 00 07 00 00 00 00 08 a9 9f "
+                "00 00 00 00 09 00 00 00 00 0a 00 00 00 00 0b 00 2f db "
+                "00 00 00 0c 00 00 00 00 0d 00 00 00 00 0e 00 00 da cb "
+                "00 00 0f 00 00 00 00 10 00 00 00 00 11 00 00 00 d7 b0 "
+                "00 12 00 00 00 00 13 00 00 00 00 14 00 00 00 00 f2 b1 "
+                "15 00 00 00 00 16 00 00 00 00 17 00 00 00 00 18 c7 d0 "
+                "00 00 00 00 19 00 00 00 00 1a 00 00 00 00 1b 00 e6 1a "
+                "00 00 00 1c 00 00 00 00 1d 00 00 00 00 1e 00 00 2e f7 "
+                "00 00 1f 00 00 00 00 20 00 00 00 00 21 00 00 00 1e 55 "
+                "00 22 00 00 00 00 23 00 00 00 00 24 00 00 00 00 fc 8a "
+                "25 00 00 00 00 26 00 00 00 00 27 00 00 00 00 28 75 01 "
+                "00 00 00 ff ff");
 
         BOOST_CHECK_EQUAL_RANGES(expected, *msgItr);
     }
