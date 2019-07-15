@@ -11,7 +11,8 @@ import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
 public class ProgramConstraintValidator extends SimpleValidator<ProgramConstraint> {
 
-    private final static String key = "yukon.web.modules.dr.setup.error.required";
+    private final static String requiredKey = "yukon.web.modules.dr.setup.error.required";
+    private final static String invalidKey = "yukon.web.modules.dr.setup.error.invalid";
     @Autowired LMValidatorHelper lmValidatorHelper;
 
     public ProgramConstraintValidator() {
@@ -24,21 +25,23 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
         lmValidatorHelper.validateName(programConstraint.getName(), errors, "Constraint name");
         
         if (programConstraint.getSeasonSchedule() == null || programConstraint.getSeasonSchedule().getId() == null) {
-            errors.rejectValue("seasonSchedule", key, new Object[] { "Season Schedule" }, "");
+            errors.rejectValue("seasonSchedule", requiredKey, new Object[] { "Season Schedule" }, "");
         }
         if (programConstraint.getHolidaySchedule() == null || programConstraint.getHolidaySchedule().getId() == null) {
-            errors.rejectValue("holidaySchedule", key, new Object[] { "Holiday Schedule" }, "");
+            errors.rejectValue("holidaySchedule", requiredKey, new Object[] { "Holiday Schedule" }, "");
         }
         // Holiday schedule and holiday usage check.Holiday usage is mandatory when holiday schedule is
         // selected. When none select is selected id will be sent as 0
         if (!errors.hasFieldErrors("holidaySchedule")) {
             Integer holidayScheduleId = programConstraint.getHolidaySchedule().getId();
             if (holidayScheduleId != null && holidayScheduleId.compareTo(0) > 0) {
-                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "holidayUsage", key,
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "holidayUsage", requiredKey,
                     new Object[] { "Holiday Usage" });
                 if (programConstraint.getHolidayUsage() == HolidayUsage.NONE) {
-                    errors.rejectValue("holidayUsage", key, new Object[] { "Holiday Usage" }, "");
+                    errors.rejectValue("holidayUsage", requiredKey, new Object[] { "Holiday Usage" }, "");
                 }
+            }else if(programConstraint.getHolidayUsage() != HolidayUsage.NONE){
+                errors.rejectValue("holidayUsage", invalidKey, new Object[] { "Holiday Usage" }, "");
             }
         }
         lmValidatorHelper.checkIfFieldRequired("maxActivateSeconds", errors, programConstraint.getMaxActivateSeconds(), "Max Activate");

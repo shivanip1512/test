@@ -99,9 +99,11 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         if (holidaySchedule.isEmpty()) {
             throw new NotFoundException("Holiday Schedule Id not found");
         }
-        Optional<LMDto> seasonSchedule = lmServiceHelper.getSeasonSchedule(programConstraint.getSeasonSchedule().getId());
-        if (seasonSchedule.isEmpty()) {
-            throw new NotFoundException("Season Schedule Id not found");
+        if (programConstraint.getSeasonSchedule().getId() != 0) {
+            Optional<LMDto> seasonSchedule = lmServiceHelper.getSeasonSchedule(programConstraint.getSeasonSchedule().getId());
+            if (seasonSchedule.isEmpty()) {
+                throw new NotFoundException("Season Schedule Id not found");
+            }
         }
         
         programConstraint.setId(constraintId);
