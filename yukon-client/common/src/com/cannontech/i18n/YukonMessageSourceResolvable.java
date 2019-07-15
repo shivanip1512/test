@@ -14,6 +14,10 @@ import com.google.common.collect.ObjectArrays;
  */
 public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable {
     private static final long serialVersionUID = 3775006143046764578L;
+    
+    public YukonMessageSourceResolvable() {
+        super("");
+    }
 
     public YukonMessageSourceResolvable(MessageSourceResolvable resolvable) {
         super(resolvable);

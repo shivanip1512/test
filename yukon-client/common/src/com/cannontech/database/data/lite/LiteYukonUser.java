@@ -30,6 +30,10 @@ public class LiteYukonUser extends LiteBase {
         };
     };
     
+    public LiteYukonUser() {
+        
+    }
+    
     public LiteYukonUser(int id) {
         this(id,null,null);
     }

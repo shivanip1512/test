@@ -3,11 +3,17 @@ package com.cannontech.web.picker;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public class OutputColumn {
     private String field;
+    @JsonDeserialize(as = YukonMessageSourceResolvable.class)
     private MessageSourceResolvable title;
     private int maxCharsDisplayed = 0;
+    
+    public OutputColumn() {
+        
+    }
 
     public OutputColumn(String field, MessageSourceResolvable title) {
         this.field = field;
@@ -26,6 +32,7 @@ public class OutputColumn {
         this.field = field;
     }
 
+    @JsonDeserialize(as = YukonMessageSourceResolvable.class)
     public MessageSourceResolvable getTitle() {
         return title;
     }

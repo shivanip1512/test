@@ -13,13 +13,16 @@ import org.apache.lucene.search.TermQuery;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.search.lucene.criteria.YukonObjectCriteria;
+import com.cannontech.web.search.lucene.criteria.YukonObjectCriteriaHelper;
 import com.cannontech.web.search.searcher.Searcher;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public abstract class LucenePicker<T> extends BasePicker<T> {
     
     protected YukonObjectCriteria criteria = null;
     protected Searcher<T> searcher;
     
+    @JsonDeserialize(as = YukonObjectCriteriaHelper.class)
     public YukonObjectCriteria getCriteria() {
         return criteria;
     }
