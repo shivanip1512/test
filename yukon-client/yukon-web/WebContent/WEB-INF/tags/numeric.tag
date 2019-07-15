@@ -92,4 +92,4 @@
 
 </spring:bind>
 
-<cti:includeScript link="/resources/js/common/yukon.ui.numeric.js"/>
+<cti:includeScript link="/resources/js/common/yukon.ui.numeric.js" force="true"/>
