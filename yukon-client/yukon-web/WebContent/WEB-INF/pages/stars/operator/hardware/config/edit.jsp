@@ -109,14 +109,14 @@ updateSub = function (data) {
                                     </td>
                                 </cti:checkEnergyCompanySetting>
                                 <td>
-                                <c:if test="${not isYukonMeter}">
+                                    <c:if test="${not isYukonMeter}">
                                         <form:select path="programEnrollments[${status.index}].relay">
                                             <form:option value="0"><i:inline key=".noRelay"/></form:option>
                                             <c:forEach var="relayNumber" begin="1" end="${hardware.numRelays}">
                                                 <form:option value="${relayNumber}">${relayNumber}</form:option>
                                             </c:forEach>
                                         </form:select>
-                                </c:if>
+                                    </c:if>
                                 </td>
                         </c:forEach>
                     </table>
