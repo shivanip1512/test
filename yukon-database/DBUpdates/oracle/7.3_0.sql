@@ -234,6 +234,22 @@ ALTER TABLE NestSyncValue RENAME CONSTRAINT FK_NestSDetail_NestSValue TO FK_NSDe
 INSERT INTO DBUpdates VALUES ('YUK-20075', '7.3.0', SYSDATE);
 /* @end YUK-20075 */
 
+/* @start YUK-20229 */
+UPDATE POINT
+SET 
+    POINTOFFSET = 100,
+    POINTNAME = 'Outages'
+WHERE POINTOFFSET = 24
+AND POINTTYPE = 'Analog'
+AND PAObjectID IN (
+    SELECT YPO.PAObjectID
+    FROM YukonPAObject YPO
+    WHERE YPO.Type = 'RFN Relay'
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-20229', '7.3.0', SYSDATE);
+/* @end YUK-20229 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
