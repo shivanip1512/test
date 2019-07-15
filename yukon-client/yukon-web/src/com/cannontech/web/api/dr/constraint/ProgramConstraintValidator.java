@@ -40,7 +40,7 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
                 if (programConstraint.getHolidayUsage() == HolidayUsage.NONE) {
                     errors.rejectValue("holidayUsage", requiredKey, new Object[] { "Holiday Usage" }, "");
                 }
-            }else if(programConstraint.getHolidayUsage() != HolidayUsage.NONE){
+            } else if (programConstraint.getHolidayUsage() != HolidayUsage.NONE) {
                 errors.rejectValue("holidayUsage", invalidKey, new Object[] { "Holiday Usage" }, "");
             }
         }
