@@ -1,5 +1,6 @@
 package com.cannontech.tools.msg;
 
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
 /**
  * Insert the type's description here.
