@@ -422,7 +422,6 @@ public:
                 MultiVoltControlUnit,
                 MultiVoltVarControlUnit,
                 PFactorKWKVarControlUnit,
-                // PFactorKWKQControlUnit, // this does not exist on the java client side
                 IntegratedVoltVarControlUnit,
                 TimeOfDayControlUnit
         };

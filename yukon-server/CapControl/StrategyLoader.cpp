@@ -15,7 +15,6 @@
 #include "MultiVoltVarStrategy.h"
 #include "NoStrategy.h"
 #include "PFactorKWKVarStrategy.h"
-#include "PFactorKWKQStrategy.h"
 #include "TimeOfDayStrategy.h"
 #include "VoltStrategy.h"
 #include "database_connection.h"
@@ -76,10 +75,6 @@ void StrategyLoader::parseCoreReader(Cti::RowReader & reader, StrategyManager::S
         else if ( controlUnits == ControlStrategy::PFactorKWKVarControlUnit )
         {
             strategy.reset( new PFactorKWKVarStrategy );
-        }
-        else if ( controlUnits == ControlStrategy::PFactorKWKQControlUnit )
-        {
-            strategy.reset( new PFactorKWKQStrategy );
         }
         else if ( controlUnits == ControlStrategy::TimeOfDayControlUnit )
         {

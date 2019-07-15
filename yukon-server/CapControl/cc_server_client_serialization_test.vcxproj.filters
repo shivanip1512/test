@@ -218,9 +218,6 @@
     <ClCompile Include="pao_schedule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PFactorKWKQStrategy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PFactorKWKVarStrategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -539,9 +536,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\pao_schedule.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\PFactorKWKQStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\PFactorKWKVarStrategy.h">

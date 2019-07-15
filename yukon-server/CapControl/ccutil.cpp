@@ -289,8 +289,7 @@ double calculateKVARSolution( const std::string & controlUnits, double setPoint,
         return setPoint - varValue;
     }
 
-    if( ciStringEqual(controlUnits,ControlStrategy::PFactorKWKVarControlUnit) ||
-        ciStringEqual(controlUnits,ControlStrategy::PFactorKWKQControlUnit))
+    if( ciStringEqual(controlUnits,ControlStrategy::PFactorKWKVarControlUnit))
     {
         double targetKVAR = 0.0;
         if (setPoint != 0)

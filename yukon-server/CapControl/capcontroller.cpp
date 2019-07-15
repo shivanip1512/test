@@ -2042,8 +2042,7 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
     if (primarySub != NULL)
     {
         if ( currentBus->getStrategy()->getUnitType() == ControlStrategy::KVar ||
-             currentBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
-             currentBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
+             currentBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar )
         {
             if (primarySub->getPrimaryBusFlag())
             {
@@ -2175,8 +2174,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                         {
                             text += " Alt Sub Enabled";
                             if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::KVar ||
-                                 currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
-                                 currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
+                                 currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar )
                             {
 
                                 altSub->setPrimaryBusFlag(true);
@@ -2235,8 +2233,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                             altSub->setBusUpdatedFlag(true);
                             text += " Alt Sub Not Enabled";
                             if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::KVar ||
-                                 currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
-                                 currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
+                                 currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar )
                             {
 
                                 CtiFeeder_vec& ccFeeders = altSub->getCCFeeders();
@@ -2499,10 +2496,6 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, PointQu
 
                         if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
                         {
-                            if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
-                            {
-                                currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentSubstationBus->getCurrentWattLoadPointValue()),timestamp);
-                            }
                             currentSubstationBus->setPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                             currentSubstationBus->setEstimatedPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                             store->calculateParentPowerFactor(currentSubstationBus->getPaoId());
@@ -2541,11 +2534,6 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, PointQu
                     if( timestamp > currentSubstationBus->getLastWattPointTime() )
                     {
                         currentSubstationBus->setLastWattPointTime(timestamp);
-                        if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
-                        {
-                            double tempKQ = currentSubstationBus->convertKVARToKQ(value,currentSubstationBus->getCurrentWattLoadPointValue());
-                            currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value),timestamp);
-                        }
 
                         if (currentSubstationBus->getCurrentWattLoadPointValue() != value)
                         {
@@ -2688,8 +2676,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, PointQu
                     if (altSub != NULL)
                     {
                         if ( altSub->getStrategy()->getUnitType() == ControlStrategy::KVar ||
-                             altSub->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
-                             altSub->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
+                             altSub->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar )
                         {
                             if (currentSubstationBus->getPrimaryBusFlag())
                             {
@@ -2872,10 +2859,6 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, PointQu
 
                             if( currentFeeder->getCurrentWattLoadPointId() > 0 )
                             {
-                                if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
-                                {
-                                    currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentFeeder->getCurrentWattLoadPointValue()), timestamp);
-                                }
                                 currentFeeder->setPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
                                 currentFeeder->setEstimatedPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
                                 currentSubstationBus->figureAndSetPowerFactorByFeederValues();
@@ -2910,11 +2893,6 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, PointQu
                         if( timestamp > currentFeeder->getLastWattPointTime() )
                         {
                             currentFeeder->setLastWattPointTime(timestamp);
-                            if ( currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
-                            {
-                                double tempKQ = currentSubstationBus->convertKVARToKQ(value,currentFeeder->getCurrentWattLoadPointValue());
-                                currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value),timestamp);
-                            }
 
                             if (currentFeeder->getCurrentWattLoadPointValue() != value)
                             {

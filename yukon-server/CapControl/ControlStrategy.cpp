@@ -653,7 +653,6 @@ const std::string ControlStrategy::VoltsControlUnit                 = "VOLTS";
 const std::string ControlStrategy::MultiVoltControlUnit             = "MULTI_VOLT";
 const std::string ControlStrategy::MultiVoltVarControlUnit          = "MULTI_VOLT_VAR";
 const std::string ControlStrategy::PFactorKWKVarControlUnit         = "PFACTOR_KW_KVAR";
-const std::string ControlStrategy::PFactorKWKQControlUnit           = "PFACTOR_KW_KQ";
 const std::string ControlStrategy::TimeOfDayControlUnit             = "TIME_OF_DAY";
 const std::string ControlStrategy::IntegratedVoltVarControlUnit     = "INTEGRATED_VOLT_VAR";
 

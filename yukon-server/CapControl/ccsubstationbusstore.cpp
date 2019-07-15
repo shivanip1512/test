@@ -3940,8 +3940,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                         if (CtiCCSubstationBusPtr dualBus = findInMap(currentCCSubstationBus->getAltDualSubId(), paobject_subbus_map))
                         {
                             if ( currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::KVar ||
-                                 currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
-                                 currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
+                                 currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar )
                             {
                                 if (dualBus->getCurrentVarLoadPointId() > 0)
                                 {
@@ -6418,7 +6417,6 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                         {
                             case ControlStrategy::KVar:
                             case ControlStrategy::PFactorKWKVar:
-                            case ControlStrategy::PFactorKWKQ:
                             {
                                 pointID = subToDelete->getCurrentVarLoadPointId();
                                 break;

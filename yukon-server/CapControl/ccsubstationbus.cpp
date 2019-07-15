@@ -701,8 +701,7 @@ double CtiCCSubstationBus::getSetPoint()
     double leadLevel = (getPeakTimeFlag()?getStrategy()->getPeakLead():getStrategy()->getOffPeakLead());
     double setPoint = ((lagLevel + leadLevel)/2);
 
-    if ( getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
-         getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
+    if ( getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar )
     {
         setPoint = (getPeakTimeFlag()?getStrategy()->getPeakPFSetPoint():getStrategy()->getOffPeakPFSetPoint());
     }
@@ -1118,8 +1117,7 @@ void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentD
                 }
 
 
-                if ( getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
-                     getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
+                if ( getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar )
                 {
                     setPoint = (getPeakTimeFlag()?getStrategy()->getPeakPFSetPoint():getStrategy()->getOffPeakPFSetPoint());
                 }
@@ -1197,8 +1195,7 @@ void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentD
                             setSolution("Not Normal Quality.  Volt Control Inhibited.");
                         }
                     }
-                    else if ( getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
-                              getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ )
+                    else if ( getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar )
                     {
                         if (!_IGNORE_NOT_NORMAL_FLAG ||
                             (getCurrentVarPointQuality() == NormalQuality && getCurrentWattPointQuality() == NormalQuality) )
@@ -1510,9 +1507,9 @@ void CtiCCSubstationBus::regularSubstationBusControl(double lagLevel, double lea
 
             }
         }
-        else if ( ( getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
-                    getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ ) &&
-                    getCurrentVarLoadPointId() > 0 && getCurrentWattLoadPointId() > 0 )
+        else if ( getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar
+                  && getCurrentVarLoadPointId() > 0 
+                  && getCurrentWattLoadPointId() > 0 )
         {
             if( getKVARSolution() < 0 && !(getMaxDailyOpsHitFlag() && getStrategy()->getMaxOperationDisableFlag()) ) //end day on a trip.
             {
@@ -1893,9 +1890,9 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
                 }
             }
         }
-        else if ( ( getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar ||
-                    getStrategy()->getUnitType() == ControlStrategy::PFactorKWKQ ) &&
-                    getCurrentVarLoadPointId() > 0 && getCurrentWattLoadPointId() > 0 )
+        else if ( getStrategy()->getUnitType() == ControlStrategy::PFactorKWKVar
+                  && getCurrentVarLoadPointId() > 0 
+                  && getCurrentWattLoadPointId() > 0 )
         {
             if( getKVARSolution() < 0 && !(getMaxDailyOpsHitFlag()  && getStrategy()->getMaxOperationDisableFlag() ))  //end day on a trip.
             {
@@ -5137,32 +5134,6 @@ bool CtiCCSubstationBus::insertDynamicData( Cti::Database::DatabaseConnection & 
 
     return Cti::Database::executeCommand( writer, CALLSITE, Cti::Database::LogDebug( _CC_DEBUG & CC_DEBUG_DATABASE ) );
 }
-
-/*-------------------------------------------------------------------------
-    convertKQToKVAR
-
-    Converts KQ to KVAR, needs kw also
---------------------------------------------------------------------------*/
-double CtiCCSubstationBus::convertKQToKVAR(double kq, double kw)
-{
-    double returnKVAR = 0.0;
-    returnKVAR = ((2.0*kq)-kw)/SQRT3;
-    return returnKVAR;
-}
-
-/*-------------------------------------------------------------------------
-    convertKVARToKQ
-
-    Converts KVAR to KQ, needs kw also
---------------------------------------------------------------------------*/
-double CtiCCSubstationBus::convertKVARToKQ(double kvar, double kw)
-{
-    double returnKQ = 0.0;
-    returnKQ = ((SQRT3*kvar)+kw)/2.0;
-    return returnKQ;
-}
-
-
 
 bool CtiCCSubstationBus::isBusPerformingVerification()
 {

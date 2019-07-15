@@ -1251,8 +1251,7 @@ void CtiCCFeeder::figureAndSetTargetVarValue(const string& controlMethod, const 
         {
             feederControlUnits = getStrategy()->getControlUnits();
         }
-        if (ciStringEqual(feederControlUnits, ControlStrategy::PFactorKWKVarControlUnit) ||
-            ciStringEqual(feederControlUnits, ControlStrategy::PFactorKWKQControlUnit ))
+        if (ciStringEqual(feederControlUnits, ControlStrategy::PFactorKWKVarControlUnit))
         {
             double setpoint = (peakTimeFlag?getStrategy()->getPeakPFSetPoint():getStrategy()->getOffPeakPFSetPoint());
             setKVARSolution(calculateKVARSolution(feederControlUnits, setpoint, getCurrentVarLoadPointValue(), getCurrentWattLoadPointValue(), *this));
@@ -1301,9 +1300,10 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
         feederControlUnits = getStrategy()->getControlUnits();
         maxOpsDisableFlag = getStrategy()->getMaxOperationDisableFlag();
     }
-    if( ciStringEqual(feederControlUnits, ControlStrategy::PFactorKWKVarControlUnit) ||
-       ciStringEqual(feederControlUnits, ControlStrategy::PFactorKWKQControlUnit) )
+    if( ciStringEqual(feederControlUnits, ControlStrategy::PFactorKWKVarControlUnit))
+    {
         setpoint = (peakTimeFlag?getStrategy()->getPeakPFSetPoint():getStrategy()->getOffPeakPFSetPoint());
+    }
 
     //Integration Control Point setting...
     setIWControl(getCurrentWattLoadPointValue());
@@ -1482,8 +1482,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                 }
             }
         }
-        else if( (ciStringEqual(feederControlUnits,ControlStrategy::PFactorKWKVarControlUnit) ||
-                 ciStringEqual(feederControlUnits,ControlStrategy::PFactorKWKQControlUnit) )
+        else if( ciStringEqual(feederControlUnits,ControlStrategy::PFactorKWKVarControlUnit)
                  && getCurrentVarLoadPointId() > 0 && getCurrentWattLoadPointId() > 0 )
         {
             if( getKVARSolution() < 0 &&
@@ -4815,8 +4814,7 @@ string CtiCCFeeder::createTextString(const string& controlMethod, int control, d
         text += doubleToString(monitorValue, getDecimalPlaces());
     }
     else if (ciStringEqual(getParentControlUnits(), ControlStrategy::KVarControlUnit) ||
-             ciStringEqual(getParentControlUnits(), ControlStrategy::PFactorKWKVarControlUnit) ||
-             ciStringEqual(getParentControlUnits(), ControlStrategy::PFactorKWKQControlUnit))
+             ciStringEqual(getParentControlUnits(), ControlStrategy::PFactorKWKVarControlUnit))
     {
         if (ciStringEqual(controlMethod,ControlStrategy::SubstationBusControlMethod))
         {

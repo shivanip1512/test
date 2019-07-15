@@ -8,7 +8,6 @@
 #include "MultiVoltStrategy.h"
 #include "MultiVoltVarStrategy.h"
 #include "PFactorKWKVarStrategy.h"
-#include "PFactorKWKQStrategy.h"
 #include "TimeOfDayStrategy.h"
 #include "StrategyLoader.h"
 #include "test_reader.h"
@@ -423,30 +422,6 @@ BOOST_AUTO_TEST_CASE(test_Strategy_upper_and_lower_volt_limit_support)
     // PFactorKWKVarStrategy
     {
         PFactorKWKVarStrategy   strategy;
-
-        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( true ) );     // peak
-        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( false ) );    // offpeak
-        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( true ) );     // peak
-        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( false ) );    // offpeak
-
-        strategy.setPeakTimeFlag( false );
-
-        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLead() );
-        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLag() );
-        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLead() );
-        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLag() );
-
-        strategy.setPeakTimeFlag( true );
-
-        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLead() );
-        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLag() );
-        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLead() );
-        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLag() );
-    }
-
-    // PFactorKWKQStrategy
-    {
-        PFactorKWKQStrategy strategy;
 
         BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( true ) );     // peak
         BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( false ) );    // offpeak

@@ -506,8 +506,6 @@
     </ClCompile>
     <ClCompile Include="pao_schedule.cpp">
     </ClCompile>
-    <ClCompile Include="PFactorKWKQStrategy.cpp">
-    </ClCompile>
     <ClCompile Include="PFactorKWKVarStrategy.cpp">
     </ClCompile>
     <ClCompile Include="PointResponse.cpp">

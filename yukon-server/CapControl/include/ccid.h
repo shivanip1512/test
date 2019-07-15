@@ -42,11 +42,6 @@ class CtiTime;
 #define TRIGGER_DMV_TEST_MSG_ID      537
 
 
-
-// square root of 3 for power factor calculations
-#define SQRT3               1.7320508075688772935274463415059
-#define BEFOREPHASEMULTIPLIER   100000
-
 /* Various debug levels */
 #define CC_DEBUG_NONE              0x00000000
 #define CC_DEBUG_STANDARD          0x00000001

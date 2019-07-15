@@ -20,7 +20,6 @@ public:
         MultiVolt,
         MultiVoltVar,
         PFactorKWKVar,
-        PFactorKWKQ,
         TimeOfDayUnit,
         IntegratedVoltVar
     };
@@ -31,7 +30,6 @@ public:
     static const std::string MultiVoltControlUnit;
     static const std::string MultiVoltVarControlUnit;
     static const std::string PFactorKWKVarControlUnit;
-    static const std::string PFactorKWKQControlUnit;
     static const std::string TimeOfDayControlUnit;
     static const std::string IntegratedVoltVarControlUnit;
 
