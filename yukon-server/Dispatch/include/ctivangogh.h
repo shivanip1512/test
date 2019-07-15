@@ -203,7 +203,7 @@ public:
     BOOL  isTagForConnection(const CtiServer::ptr_type   &Conn, const CtiTagMsg &Msg);
 
     YukonError_t processMessage(CtiMessage *pMsg);
-    void postRegistrationUpload(CtiVanGoghConnectionManager& VGCM, std::set<long> &ptIds, const bool tag_as_moa);
+    void postRegistrationUpload(CtiVanGoghConnectionManager& VGCM, std::set<long> &ptIds, const bool tag_as_upload);
 
     void  loadPendingSignals();
     void  purifyClientConnectionList();
