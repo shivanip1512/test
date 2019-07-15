@@ -8,7 +8,7 @@
     <tags>
         <tag name="COMMANDER_REQUESTS"/>
         <tag name="DEVICE_CONFIGURATION"/>
-        <tag name="DEVICE_ICON_TYPE" option="electric_meter"/>
+        <tag name="DEVICE_ICON_TYPE" option="wifi_electric_meter"/>
         <tag name="METER_DETAIL_DISPLAYABLE"/>
         <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
         <tag name="OUTAGE"/>

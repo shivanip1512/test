@@ -337,6 +337,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> gasMeterTypes;
     private final static ImmutableSet<PaoType> nestTypes;
     private final static ImmutableSet<PaoType> loadGroupSupportingRoute;
+    private final static ImmutableSet<PaoType> wifiTypes;
 
     public final static int INVALID = -1;
     
@@ -575,6 +576,11 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         itronTypes = ImmutableSet.of(
             LCR6600S,
             LCR6601S
+        );
+        
+        wifiTypes = ImmutableSet.of(
+            RFN420CLW,
+            RFN420CDW
         );
         
         mctTypes = ImmutableSet.of(
@@ -1110,6 +1116,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
 
     public static ImmutableSet<PaoType> getTlvReportingTypes() {
         return tlvReportingTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getWifiTypes() {
+        return wifiTypes;
     }
 
     /**

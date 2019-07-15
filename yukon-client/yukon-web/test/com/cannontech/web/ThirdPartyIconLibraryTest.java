@@ -145,6 +145,7 @@ public class ThirdPartyIconLibraryTest {
                     "marker-meter-gas-grey.png", 
                     "marker-meter-plc-elec-grey.png", 
                     "marker-meter-water-grey.png", 
+                    "marker-meter-wifi-grey.png", 
                     "marker-plc-lcr-grey.png", 
                     "marker-relay-grey.png", 
                     "marker-thermostat-grey.png", 

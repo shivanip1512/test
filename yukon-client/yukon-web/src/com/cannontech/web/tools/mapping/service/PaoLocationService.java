@@ -13,6 +13,7 @@ public interface PaoLocationService {
     public enum Icon {
         METER_ELECTRIC,
         METER_PLC_ELECTRIC,
+        METER_WIFI_ELECTRIC,
         METER_WATER,
         METER_GAS,
         TRANSMITTER,
