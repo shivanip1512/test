@@ -13,7 +13,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <analog offset="388"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
-        <status offset="100"/>
+        <status offset="101"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Analog">
@@ -2377,6 +2377,11 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     </point>
     <point offset="100" type="Status">
         <name>Wi-Fi SSID Change</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="101" type="Status">
+        <name>Remote Meter Configuration Failure</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Event Status"/>
     </point>
