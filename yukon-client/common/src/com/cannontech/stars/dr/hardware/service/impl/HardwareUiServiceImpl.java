@@ -191,6 +191,16 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 String paoName = displayablePao.getName();
                 hardware.setDisplayName(paoType + " " + paoName);
                 hardware.setMeterNumber(inventoryDao.getMeterNumberForDevice(deviceId));
+                
+                // If this meter has LMHardwareBase, set the hardware type entryID.
+                try {
+                    LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(liteInventoryBase.getInventoryID());
+                    
+                    hardware.setHardwareTypeEntryId(lmHardwareBase.getLMHarewareTypeId());
+                } catch (NotFoundException e) {
+                    // This is normal, this meter has no lmHardwareBase. Ignore it.
+                }
+                
             } else {
                 /* Not attached to a real MCT yet. Use label for name if you can */
                 /* and use the MCT list enty of the energy company as the device type. */

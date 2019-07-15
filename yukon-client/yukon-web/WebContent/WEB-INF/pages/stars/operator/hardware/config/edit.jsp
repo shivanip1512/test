@@ -168,7 +168,7 @@ updateSub = function (data) {
         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
             <c:choose>
                 <c:when test="${fn:length(enrollments) > 0}">
-                    <c:if test="${configurable}">
+                    <c:if test="${configurable and (not isYukonMeter)}">
                         <cti:msg2 key=".config.description" var="configTitle"/>
                         <cti:button type="submit" nameKey="config" onclick="$('#actionInput').val('config');" title="${configTitle}" classes="action primary"/>
                         <cti:msg2 key=".saveToBatch.description" var="saveToBatchTitle"/>

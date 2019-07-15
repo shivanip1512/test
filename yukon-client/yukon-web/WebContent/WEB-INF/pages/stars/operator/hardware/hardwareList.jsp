@@ -612,36 +612,43 @@
                                         ${fn:escapeXml(meter.displayLabel)}
                                     </td>
                                     <td>
-                                        <cm:dropdown>
-                                            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                                                <c:if test="${inventoryChecking and (meter.hardwareType != 'NON_YUKON_METER')}">
-                                                    <li>
-                                                        <tags:pickerDialog extraArgs="${energyCompanyId}"
-                                                                id="availableMeterPicker${meter.inventoryId}"
-                                                                type="availableMctPicker"
-                                                                destinationFieldId="newInventoryId"
-                                                                immediateSelectMode="true"
-                                                                endAction="function(items) { return changeOut(${meter.inventoryId}, true); }" >
-                                                            <cti:icon icon="icon-arrow-swap"/>
-                                                            <cti:msg2 key=".changeOut.label"/> 
-                                                        </tags:pickerDialog>
-                                                    </li>
+                                        <c:if test="${meter.hardwareType != 'NON_YUKON_METER'}">
+                                            <cm:dropdown>
+                                                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                                                    <c:if test="${inventoryChecking}">
+                                                        <li>
+                                                            <tags:pickerDialog extraArgs="${energyCompanyId}"
+                                                                    id="availableMeterPicker${meter.inventoryId}"
+                                                                    type="availableMctPicker"
+                                                                    destinationFieldId="newInventoryId"
+                                                                    immediateSelectMode="true"
+                                                                    endAction="function(items) { return changeOut(${meter.inventoryId}, true); }" >
+                                                                <cti:icon icon="icon-arrow-swap"/>
+                                                                <cti:msg2 key=".changeOut.label"/> 
+                                                            </tags:pickerDialog>
+                                                        </li>
+                                                    </c:if>
+                                                </cti:checkRolesAndProperties>
+                                                <c:if test="${meter.getHardwareTypeEntryId() == 0}">
+                                                    <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editMeterConfigUrl}${meter.deviceId}" />
                                                 </c:if>
-                                            </cti:checkRolesAndProperties>
-                                            <c:if test="${meter.hardwareType != 'NON_YUKON_METER'}">
-                                                <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editMeterConfigUrl}${meter.deviceId}" />
-                                            </c:if>
-                                            <cti:checkRolesAndProperties value="METERING">
-                                                <li>
-                                                    <c:if test="${meter.hardwareType != 'NON_YUKON_METER'}">
+                                                <c:if test="${(meter.hardwareType == 'YUKON_METER') and (meter.getHardwareTypeEntryId() > 0)}">
+                                                    <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editConfigUrl}${meter.inventoryId}" />
+                                                </c:if>
+                                                <cti:checkRolesAndProperties value="METERING">
+                                                    <li>
                                                         <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
                                                             <cti:icon icon="icon-control-equalizer-blue"/>
                                                             <cti:msg2 key="yukon.web.components.button.meterDetail.label"/>
                                                         </cti:paoDetailUrl>
-                                                    </c:if>
-                                                </li>
-                                            </cti:checkRolesAndProperties>
-                                        </cm:dropdown>
+                                                    </li>
+                                                </cti:checkRolesAndProperties>
+                                            </cm:dropdown>
+                                        </c:if>
+                                        <c:if test="${meter.hardwareType == 'NON_YUKON_METER'}">
+                                            <cm:dropdown triggerClasses="dn">
+                                            </cm:dropdown>
+                                        </c:if>
                                     </td>
                                 </c:if>
                             </tr>
