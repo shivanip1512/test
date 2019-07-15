@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
-        <analog offset="24"/>
+        <analog offset="100"/>
         <status offset="64"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -25,12 +25,6 @@
     </point>
     <point offset="23" type="Analog">
         <name>Outage Restore Count</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="COUNTS"/>
-        <decimalplaces value="0"/>
-    </point>
-    <point offset="24" type="Analog">
-        <name>Outage Log</name>
         <multiplier value="1"/>
         <unitofmeasure value="COUNTS"/>
         <decimalplaces value="0"/>
