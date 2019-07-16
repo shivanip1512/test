@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -146,14 +147,15 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                     fields.add("");
                 }
                 fields.add(dateFormattingService.format(new Instant(), DateFormatEnum.BOTH, result.getContext()));
-                fields.add(detail.getDetail() != null ? accessor.getMessage(detail.getDetail()) : "");
-                fields.add(StringUtils.defaultIfEmpty(detail.getDeviceErrorText(), ""));
+                fields.add(detail.getDetail() != null ? StringEscapeUtils.escapeCsv(accessor.getMessage(detail.getDetail())) : "");
+                fields.add(StringEscapeUtils.escapeCsv(StringUtils.defaultIfEmpty(detail.getDeviceErrorText(), "")));
                 if (result.getAction().contains(CONFIG_NAME)) {
                     fields.add(StringUtils.defaultIfEmpty(detail.getConfigName(), ""));
                 }
                 if (result.getAction().contains(DEVICE_TYPE)) {
                     fields.add(detail.getDevice() != null
-                            ? accessor.getMessage(detail.getDevice().getDeviceType().getFormatKey()) : "");                }
+                            ? accessor.getMessage(detail.getDevice().getDeviceType().getFormatKey()) : "");
+                }
                 String pointName = "";
                 String value = "";
                 if (result.getAction().contains(POINT_DATA)) {
@@ -173,24 +175,22 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                             }
                         }
                         try {
-                            value = "\"" + pointFormattingService.getValueString(detail.getValue(), Format.FULL,
-                                result.getContext()) + "\"";
-
+                            value = pointFormattingService.getValueString(detail.getValue(), Format.FULL, result.getContext());
                         } catch (NotFoundException e) {
                             log.error(e);
                         }
                     }
                     fields.add(pointName);
-                    fields.add(value);
+                    fields.add(StringEscapeUtils.escapeCsv(value));
                 }
                 if (result.getAction().contains(LAST_VALUE)) {
                     if (StringUtils.isNotEmpty(detail.getLastValue())) {
                         value = detail.getLastValue().replaceAll("/", "");
                         value = value.replaceAll("\n", "    ");
                     }
-                    fields.add(value);
+                    fields.add(StringEscapeUtils.escapeCsv(value));
                 }
-                fields.add(StringUtils.defaultString(detail.getExecutionExceptionText()));
+                fields.add(StringEscapeUtils.escapeCsv(StringUtils.defaultString(detail.getExecutionExceptionText())));
                 data.add(String.join(",", fields));
             }
             writeToFile(data, result.getCacheKey());
