@@ -13,7 +13,7 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.data.pao.CapControlTypes;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
@@ -21,7 +21,7 @@ import com.cannontech.spring.YukonSpringHook;
 
 public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTelemetryDataModel.ModelRow> implements CapControlFilterable {
     
-    private List<ModelRow> data = new ArrayList<ModelRow>();
+    private List<ModelRow> data = new ArrayList<>();
     private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
     @SuppressWarnings("unused")
     private Set<Integer> capBankIds;
@@ -30,6 +30,9 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
     private Set<Integer> substationIds;
     private Set<Integer> areaIds;
     private CapControlCache capControlCache = (CapControlCache)YukonSpringHook.getBean("capControlCache");
+
+    private static final String SUBBUS_DB_VALUE = CapControlType.SUBBUS.getDbValue();
+    private static final String FEEDER_DB_VALUE = CapControlType.FEEDER.getDbValue();
     
     public AbnormalTelemetryDataModel() {
     }
@@ -53,20 +56,24 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
         return ModelRow.class;
     }
     
+    @Override
     public String getTitle() {
         return "Abnormal Telemetry Data Report";
     }
 
+    @Override
     public int getRowCount() {
         return data.size();
     }
 
+    @Override
     public void doLoadData() {
         
         StringBuffer sql = buildSQLStatement();
         CTILogger.info(sql.toString()); 
         
         jdbcOps.query(sql.toString(), new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 
                 AbnormalTelemetryDataModel.ModelRow row = new AbnormalTelemetryDataModel.ModelRow();
@@ -84,7 +91,7 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
                 
                 if(areaIds != null && !areaIds.isEmpty()) {
                     Integer areaId = -1;
-                    if(row.type.equalsIgnoreCase(CapControlTypes.STRING_CAPCONTROL_SUBBUS)){
+                    if(row.type.equalsIgnoreCase(SUBBUS_DB_VALUE)){
                         SubBus bus = capControlCache.getSubBus(paoId);
                         Integer stationId = bus.getParentID();
                         if(stationId > 0) {
@@ -109,7 +116,7 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
                     }
                 }else if(substationIds != null && !substationIds.isEmpty()) {
                     Integer substationId = -1;
-                    if(row.type.equalsIgnoreCase(CapControlTypes.STRING_CAPCONTROL_SUBBUS)){
+                    if(row.type.equalsIgnoreCase(SUBBUS_DB_VALUE)){
                         SubBus bus = capControlCache.getSubBus(paoId);
                         Integer parentId = bus.getParentID();
                         if(parentId > 0) {
@@ -134,7 +141,7 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
                     }
                 }else if(subbusIds != null && !subbusIds.isEmpty()){
                     Integer busId = -1;
-                    if(row.type.equalsIgnoreCase(CapControlTypes.STRING_CAPCONTROL_SUBBUS)){
+                    if(row.type.equalsIgnoreCase(SUBBUS_DB_VALUE)){
                         busId = paoId;
                     }else {
                         Feeder fdr = capControlCache.getFeeder(paoId);
@@ -149,7 +156,7 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
                     }
                 }else if(feederIds != null && !feederIds.isEmpty()){
                     Integer fdrId = -1;
-                    if(row.type.equalsIgnoreCase(CapControlTypes.STRING_CAPCONTROL_FEEDER)){
+                    if(row.type.equalsIgnoreCase(FEEDER_DB_VALUE)){
                         fdrId = paoId;
                     }
                     
@@ -397,22 +404,27 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
         return sql;
     }
     
+    @Override
     public void setCapBankIdsFilter(Set<Integer> capBankIds) {
         this.capBankIds = capBankIds;
     }
 
+    @Override
     public void setFeederIdsFilter(Set<Integer> feederIds) {
         this.feederIds = feederIds;
     }
     
+    @Override
     public void setSubbusIdsFilter(Set<Integer> subbusIds) {
         this.subbusIds = subbusIds;
     }
     
+    @Override
     public void setSubstationIdsFilter(Set<Integer> substationIds) {
         this.substationIds = substationIds;
     }
     
+    @Override
     public void setAreaIdsFilter(Set<Integer> areaIds) {
         this.areaIds = areaIds;
     }
