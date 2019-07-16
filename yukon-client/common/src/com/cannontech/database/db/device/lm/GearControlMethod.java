@@ -44,7 +44,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
     ThermostatRamping(ThermostatSetbackGear.class, "Thermostat Ramping", PaoType.LM_DIRECT_PROGRAM),
     SimpleThermostatRamping(SimpleThermostatRampingGear.class, "Simple Thermostat Ramping", PaoType.LM_DIRECT_PROGRAM),
     BeatThePeak(BeatThePeakGear.class, "Beat The Peak", PaoType.LM_DIRECT_PROGRAM),
-    SimpleOnOff(SimpleOnOffGear.class, "Simple On/Off", PaoType.LM_DIRECT_PROGRAM),
+    SimpleOnOff(SimpleOnOffGear.class, "Simple On/Off", PaoType.LM_METER_DISCONNECT_PROGRAM),
     NoControl(NoControlGear.class, "No Control", PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM);
 
 	private Class<?> gearClass;
