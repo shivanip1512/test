@@ -1,5 +1,7 @@
 package com.cannontech.common.dr.program.setup.model;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import com.cannontech.common.dr.gear.setup.OperationalState;
@@ -59,7 +61,11 @@ public class LoadProgram {
     }
 
     public void setTriggerOffset(Double triggerOffset) {
-        this.triggerOffset = triggerOffset;
+        if (triggerOffset != null) {
+            this.triggerOffset = new BigDecimal(triggerOffset).setScale(4, RoundingMode.HALF_DOWN).doubleValue();
+        } else {
+            this.triggerOffset = triggerOffset;
+        }
     }
 
     public Double getRestoreOffset() {
@@ -67,7 +73,11 @@ public class LoadProgram {
     }
 
     public void setRestoreOffset(Double restoreOffset) {
-        this.restoreOffset = restoreOffset;
+        if (restoreOffset != null) {
+            this.restoreOffset = new BigDecimal(restoreOffset).setScale(4, RoundingMode.HALF_DOWN).doubleValue();
+        } else {
+            this.restoreOffset = restoreOffset;
+        }
     }
 
     public OperationalState getOperationalState() {

@@ -126,6 +126,17 @@
 
 <!-- Load Program Validation -->
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.constraintId.doesNotExist">Constraint Id does not exist.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.notificationGrpID.doesNotExist">Notification Group Id does not exist.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.subordinateProgId.doesNotExist">Subordinate Program Id does not exist.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.groupId.doesNotExist">Load Group Id does not exist.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.noGroup">At least 1 load group must be present in this current program.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.noGear">Program must contain 1 or more gears.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.groupEnrollmentConflict">The load group you are trying to move is currently being used in customer enrollment. ({0})</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.nestGroup">Only 1 load group may be present in a nest program.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.oneLatchAllowed">Only 1 latching gear is allowed for Program.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.latchNotAllowedWithOtherGears">Latching gear can not exist alongside other gear types.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.maxGearCount">Program is only allowed {0} or less gears to be defined for it.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.notAllowedGroupPoint">LMGroup Point groups are only allowed if a latching gear is present.</entry>
 
 <!-- Gear setup -->
 <entry key="yukon.web.modules.dr.setup.gear.ABSOLUTE">Absolutes</entry>

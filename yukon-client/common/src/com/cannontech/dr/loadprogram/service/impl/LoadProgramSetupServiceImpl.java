@@ -249,13 +249,15 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                 prog.getDirectProgram().setNotifyInactiveOffset(-1);
             }
 
-            if (loadProgram.getNotification().getNotifyOnAdjust()) {
+            Boolean notifyOnAdjust = loadProgram.getNotification().getNotifyOnAdjust();
+            if (notifyOnAdjust != null && notifyOnAdjust) {
                 prog.getDirectProgram().setNotifyAdjust(LMProgramDirect.NOTIFY_ADJUST_ENABLED);
             } else {
                 prog.getDirectProgram().setNotifyAdjust(LMProgramDirect.NOTIFY_ADJUST_DISABLED);
             }
 
-            if (loadProgram.getNotification().getEnableOnSchedule()) {
+            Boolean enableOnSchedule = loadProgram.getNotification().getEnableOnSchedule();
+            if (enableOnSchedule != null && enableOnSchedule) {
                 prog.getDirectProgram().setEnableSchedule(LMProgramDirect.NOTIFY_SCHEDULE_ENABLED);
             } else {
                 prog.getDirectProgram().setEnableSchedule(LMProgramDirect.NOTIFY_SCHEDULE_DISABLED);

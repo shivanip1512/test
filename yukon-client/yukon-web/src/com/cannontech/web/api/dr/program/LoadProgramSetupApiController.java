@@ -39,6 +39,7 @@ public class LoadProgramSetupApiController {
     @Autowired private LoadProgramSetupService loadProgramService;
     @Autowired LMDeleteValidator lmDeleteValidator;
     @Autowired LMProgramCopyValidator lmProgramCopyValidator;
+    @Autowired LMProgramValidator lmProgramValidator;
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> retrieve(@PathVariable int id) {
@@ -47,7 +48,7 @@ public class LoadProgramSetupApiController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Object> create(@RequestBody LoadProgram loadProgram) {
+    public ResponseEntity<Object> create(@Valid @RequestBody LoadProgram loadProgram) {
         int paoId = loadProgramService.create(loadProgram);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("programId", paoId);
@@ -71,7 +72,7 @@ public class LoadProgramSetupApiController {
     }
 
     @PostMapping("/update/{id}")
-    public ResponseEntity<Object> update(@RequestBody LoadProgram loadProgram, @PathVariable int id) {
+    public ResponseEntity<Object> update(@Valid @RequestBody LoadProgram loadProgram, @PathVariable int id) {
         int paoId = loadProgramService.update(id, loadProgram);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("programId", paoId);
@@ -130,7 +131,12 @@ public class LoadProgramSetupApiController {
     }
     
     @InitBinder("loadProgramCopy")
-    public void setupBinderCopy(WebDataBinder binder) {
+    public void setupBinderProgramCopy(WebDataBinder binder) {
         binder.addValidators(lmProgramCopyValidator);
+    }
+    
+    @InitBinder("loadProgram")
+    public void setupBinderProgramCreation(WebDataBinder binder) {
+        binder.addValidators(lmProgramValidator);
     }
 }
