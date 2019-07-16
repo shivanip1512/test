@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="paoTypes" type="{}paoTypes"/>
+ *         &lt;element name="creatable" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="tags" type="{}tags" minOccurs="0"/>
  *         &lt;element name="configurations" type="{}configurations" minOccurs="0"/>
  *         &lt;element name="pointInfos" type="{}pointInfos" minOccurs="0"/>
@@ -32,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "override", propOrder = {
     "paoTypes",
+    "creatable",
     "tags",
     "configurations",
     "pointInfos"
@@ -40,6 +42,7 @@ public class Override {
 
     @XmlElement(required = true)
     protected PaoTypes paoTypes;
+    protected Boolean creatable;
     protected Tags tags;
     protected Configurations configurations;
     protected PointInfos pointInfos;
@@ -66,6 +69,30 @@ public class Override {
      */
     public void setPaoTypes(PaoTypes value) {
         this.paoTypes = value;
+    }
+
+    /**
+     * Gets the value of the creatable property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isCreatable() {
+        return creatable;
+    }
+
+    /**
+     * Sets the value of the creatable property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setCreatable(Boolean value) {
+        this.creatable = value;
     }
 
     /**

@@ -1,7 +1,10 @@
 
 package com.cannontech.common.pao.definition.loader.jaxb;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
+import javax.xml.namespace.QName;
 
 
 /**
@@ -21,6 +24,7 @@ import javax.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _Creatable_QNAME = new QName("", "creatable");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.cannontech.common.pao.definition.loader.jaxb
@@ -219,6 +223,15 @@ public class ObjectFactory {
      */
     public Point.Calculation.Components.Component createPointCalculationComponentsComponent() {
         return new Point.Calculation.Components.Component();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "", name = "creatable")
+    public JAXBElement<Boolean> createCreatable(Boolean value) {
+        return new JAXBElement<Boolean>(_Creatable_QNAME, Boolean.class, null, value);
     }
 
 }

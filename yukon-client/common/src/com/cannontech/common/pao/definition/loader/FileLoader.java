@@ -357,27 +357,30 @@ public class FileLoader {
 
         Map<String, Pao> typeToPao =  Maps.uniqueIndex(paos, Pao::getPaoType);
         overrides.getOverride().forEach(override -> {  
-            List<String> paoTypes  = Stream.of(override.getPaoTypes())
-                                           .filter(Objects::nonNull)
-                                           .map(PaoTypes::getPaoType)
-                                           .flatMap(List::stream)
-                                           .filter(paoType -> allPaoTypes.contains(paoType))
-                                           .collect(Collectors.toList());
+            Map<Boolean, List<String>> validPaoTypes = 
+                    Optional.ofNullable(override.getPaoTypes()).stream()
+                            .flatMap(pt -> pt.getPaoType().stream())
+                            .collect(Collectors.partitioningBy(allPaoTypes::contains));
             
-            List<OverrideCategory> overrideCategories = Optional.ofNullable(override.getConfigurations())
-                                                                .map(Configurations::getCategory)
-                                                                .orElse(new ArrayList<>());
-            List<OverrideTag> overrideTags = Optional.ofNullable(override.getTags())
-                                                     .map(Tags::getTag)
-                                                     .orElse(new ArrayList<>());
-            List<OverridePointInfo> overridePointInfos = Optional.ofNullable(override.getPointInfos())
-                                                                 .map(PointInfos::getPointInfo)
-                                                                 .orElse(new ArrayList<>());
-            paoTypes.forEach(paoType -> {
+            List<OverrideCategory> overrideCategories = 
+                    Optional.ofNullable(override.getConfigurations())
+                            .map(Configurations::getCategory)
+                            .orElse(Collections.emptyList());
+            List<OverrideTag> overrideTags = 
+                    Optional.ofNullable(override.getTags())
+                            .map(Tags::getTag)
+                            .orElse(Collections.emptyList());
+            List<OverridePointInfo> overridePointInfos = 
+                    Optional.ofNullable(override.getPointInfos())
+                            .map(PointInfos::getPointInfo)
+                            .orElse(Collections.emptyList());
+
+            validPaoTypes.get(true).forEach(paoType -> {
                 try {
                     log.info("");
                     log.info("-- Applying custom overrides for device " + paoType + "");
                     Pao pao = typeToPao.get(paoType);
+                    overrideCreatable(pao, override.isCreatable());
                     overrideTags(pao, overrideTags);
                     overrideConfigurations(pao, overrideCategories);
                     overidePointInfo(pao, overridePointInfos);
@@ -386,10 +389,20 @@ public class FileLoader {
                     log.error("Can't parse " + paoType + " override in " + OVERRIDE_FILE_LOCATION, e);
                 }
             });
+            
+            validPaoTypes.get(false).stream()
+                                    .reduce((a,b) -> a + "," + b)
+                                    .ifPresent(invalidPaoTypes -> log.error("Ignoring invalid types: " + invalidPaoTypes));
         });
 
         log.info("- Applying custom overrides to device definitions complete.");
+    }
 
+    private void overrideCreatable(Pao pao, Boolean creatable) {
+        if (creatable != null) {
+            pao.setCreatable(creatable);
+            logOverride(Action.UPDATE, pao.getPaoType(), creatable.toString(), "creatable", null, null);
+        }
     }
     
     private void overidePointInfo(Pao pao, List<OverridePointInfo> pointInfos) {

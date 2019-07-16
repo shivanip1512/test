@@ -12,6 +12,7 @@
             <xs:element type="xs:string" name="paoType" maxOccurs="unbounded" minOccurs="1" />
         </xs:sequence>
     </xs:complexType>
+    <xs:element name="creatable" type="xs:boolean"/>
     <xs:complexType name="tag">
         <xs:annotation>
             <xs:appinfo>
@@ -71,6 +72,7 @@
     <xs:complexType name="override">
         <xs:sequence>
             <xs:element type="paoTypes" name="paoTypes" minOccurs="1" maxOccurs="1"/>
+            <xs:element type="xs:boolean" name="creatable" minOccurs="0" maxOccurs="1"/>
             <xs:element type="tags" name="tags" minOccurs="0" maxOccurs="1"/>
             <xs:element type="configurations" name="configurations" minOccurs="0" maxOccurs="1"/>
             <xs:element type="pointInfos" name="pointInfos" minOccurs="0" maxOccurs="1"/>

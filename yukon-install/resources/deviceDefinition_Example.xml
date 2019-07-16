@@ -131,6 +131,27 @@
         </tags>
     </override>
     
+    <!-- Enabling creation example -->
+    <override>
+        <paoTypes>
+            <paoType>DR_87</paoType>
+            <paoType>LMT_2</paoType>
+            <paoType>DAVISWEATHER</paoType>
+        </paoTypes>
+        <!-- Allows creation of the specified types. -->
+        <creatable>true</creatable>
+    </override>
+    
+    <!-- Disabling creation example -->
+    <override>
+        <paoTypes>
+            <paoType>RFN420FL</paoType>
+            <paoType>RFN430SL0</paoType>
+        </paoTypes>
+        <!-- Disables creation of the specified types. -->
+        <creatable>false</creatable>
+    </override>
+    
     <!-- Configuration addition and removal example -->
     <override>
         <paoTypes>
