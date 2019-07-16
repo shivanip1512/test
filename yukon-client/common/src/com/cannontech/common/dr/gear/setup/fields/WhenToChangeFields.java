@@ -59,10 +59,10 @@ public class WhenToChangeFields {
         setWhenToChange(whenToChange);
 
         if (whenToChange == WhenToChange.Priority) {
-            setChangePriority(directGear.getChangeDuration() / 60);
+            setChangePriority(directGear.getChangePriority());
         }
         if (whenToChange == WhenToChange.Duration) {
-            setChangeDurationInMinutes(directGear.getChangeDuration());
+            setChangeDurationInMinutes(directGear.getChangeDuration() / 60);
         }
         if (whenToChange == WhenToChange.TriggerOffset) {
             setTriggerNumber(directGear.getChangeTriggerNumber());
