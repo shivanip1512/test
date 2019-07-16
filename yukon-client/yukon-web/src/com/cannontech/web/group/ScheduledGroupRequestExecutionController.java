@@ -51,7 +51,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
