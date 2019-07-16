@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -346,15 +345,13 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     void sendRestore(int yukonGroupId, String macAddress, Long itronGroupId, boolean enableRandomization) {
         LiteYukonPAObject group = getGroup(yukonGroupId);
 
-        Optional<Long> eventId = itronDao.getActiveEvent(yukonGroupId);
-        if (eventId.isEmpty()) {
-            throw new ItronEventNotFoundException( "Unable to restore, Itron event id doesn't exist.");
-        }
+        long eventId = itronDao.getActiveEvent(yukonGroupId)
+                               .orElseThrow(() -> new ItronEventNotFoundException("Unable to restore, Itron event id doesn't exist."));
         
         String url = ItronEndpointManager.PROGRAM_EVENT.getUrl(settingDao);
         try {
             CancelHANLoadControlProgramEventOnDevicesRequest request =
-                ProgramEventManagerHelper.buildRestoreRequest(itronGroupId, eventId.get(), macAddress, enableRandomization);
+                ProgramEventManagerHelper.buildRestoreRequest(itronGroupId, eventId, macAddress, enableRandomization);
             log.debug(XmlUtils.getPrettyXml(request));
             log.debug("ITRON-sendRestore url:{} mac address:{} yukon group:{} itron event id:{}.", url, macAddress,
                 group.getPaoName(), eventId);
@@ -385,11 +382,11 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             List<String> macAddresses =
                 Lists.newArrayList(deviceDao.getDeviceMacAddresses(inventoryIdsToDeviceIds.values()).values());
             return createOrUpdateGroup(String.valueOf(group.getLiteID()), macAddresses);
-        } else {
-            //remove all devices from group
-            //TODO: YUK-19991 - this is broken - we can't update an Itron group to be empty...
-            return createOrUpdateGroup(String.valueOf(group.getLiteID()), new ArrayList<>());
         }
+        
+        //remove all devices from group
+        //TODO: YUK-19991 - this is broken - we can't update an Itron group to be empty...
+        return createOrUpdateGroup(String.valueOf(group.getLiteID()), new ArrayList<>());
     }
     
     /**
@@ -726,17 +723,19 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     private LiteYukonPAObject getGroup(int yukonGroupId) {
-        LiteYukonPAObject groupPao = cache.getAllLMGroups().stream()
-                .filter(group -> group.getLiteID() == yukonGroupId)
-                .findFirst().get();
-        return groupPao;
+        return cache.getAllLMGroups()
+                    .stream()
+                    .filter(group -> group.getLiteID() == yukonGroupId)
+                    .findFirst()
+                    .orElseThrow();
     }
 
     private LiteYukonPAObject getProgram(int yukonProgramId) {
-        LiteYukonPAObject programPao = cache.getAllLMPrograms().stream()
-                .filter(program -> program.getLiteID() == yukonProgramId)
-                .findFirst().get();
-        return programPao;
+        return cache.getAllLMPrograms()
+                    .stream()
+                    .filter(program -> program.getLiteID() == yukonProgramId)
+                    .findFirst()
+                    .orElseThrow();
     }
     
     /**
@@ -767,9 +766,10 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             throw (ItronCommunicationException) e;
         } else if (e instanceof SoapFaultClientException) {
             soapFaultParsers.stream()
-                .filter(parser -> parser.isSupported(manager))
-                .findFirst().get()
-                .handleSoapFault((SoapFaultClientException) e, faultCodesToIgnore, log);
+                            .filter(parser -> parser.isSupported(manager))
+                            .findFirst()
+                            .orElseThrow()
+                            .handleSoapFault((SoapFaultClientException) e, faultCodesToIgnore, log);
         } else {
             log.error("Communication error:", e);
             throw new ItronCommunicationException("Communication error:", e);
@@ -783,13 +783,13 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             Cache<Integer, Enrollment> cacheToCheck) {
         Enrollment newValueToCache = new Enrollment(groupId, enrollments);
         Enrollment valueInCache = cacheToCheck.getIfPresent(account.getAccountId());
-        if (valueInCache != null) {
-            if (CollectionUtils.isEqualCollection(newValueToCache.inventoryIds, valueInCache.inventoryIds)
-                && newValueToCache.groupId == valueInCache.groupId) {
-                log.debug("ITRON-skipping sending enroll/unroll messages for account number {}, as the messages were already sent. ",
-                    account.getAccountNumber());
-                return true;
-            }
+        if (valueInCache != null 
+                && CollectionUtils.isEqualCollection(newValueToCache.inventoryIds, valueInCache.inventoryIds)
+                    && newValueToCache.groupId == valueInCache.groupId) {
+            
+            log.debug("ITRON-skipping sending enroll/unroll messages for account number {}, as the messages were already sent. ",
+                account.getAccountNumber());
+            return true;
         }
         cacheToCheck.put(account.getAccountId(), newValueToCache);
         return false;
@@ -801,7 +801,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         
         public Enrollment(int groupId, List<ProgramEnrollment> enrollments){
             inventoryIds = enrollments.stream()
-                    .map(enrollment -> enrollment.getInventoryId())
+                    .map(ProgramEnrollment::getInventoryId)
                     .collect(Collectors.toList());
             this.groupId = groupId;
         }

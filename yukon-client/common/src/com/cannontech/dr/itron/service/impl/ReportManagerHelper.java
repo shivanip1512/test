@@ -28,8 +28,7 @@ public class ReportManagerHelper implements SoapFaultParser {
     public void handleSoapFault(SoapFaultClientException e, Set<String> faultCodesToIgnore, Logger log) {
         SoapFaultDetail soapFaultDetail = e.getSoapFault().getFaultDetail();
         soapFaultDetail.getDetailEntries().forEachRemaining(detail -> {
-            SoapFaultDetailElement detailElementChild =
-                (SoapFaultDetailElement) soapFaultDetail.getDetailEntries().next();
+            SoapFaultDetailElement detailElementChild = soapFaultDetail.getDetailEntries().next();
             Source detailSource = detailElementChild.getSource();
             ErrorFault fault = (ErrorFault) ItronEndpointManager.REPORT.getMarshaller().unmarshal(detailSource);
             log.debug(XmlUtils.getPrettyXml(fault));

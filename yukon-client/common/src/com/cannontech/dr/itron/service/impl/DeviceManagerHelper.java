@@ -19,6 +19,7 @@ import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.DeviceIdentifi
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIGroupRequestType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditD2GAttributeType;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditESIType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditHANDeviceRequest;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditPrimaryHANDeviceType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ErrorFault;
@@ -57,9 +58,9 @@ public class DeviceManagerHelper implements SoapFaultParser {
     /**
      * <urn:EditHANDeviceRequest>
      *  <urn:D2GAttributes>
-     *      <urn:PrimaryAttributes>
+     *      <urn:ESI>
      *          <urn:MacID>66bbbeee00000200</urn:MacID>
-     *      </urn:PrimaryAttributes>
+     *      </urn:ESI>
      *      <urn:ServicePointUtilID Null="false">ABC</urn:ServicePointUtilID>
      *  </urn:D2GAttributes>
      * </urn:EditHANDeviceRequest>
@@ -73,10 +74,10 @@ public class DeviceManagerHelper implements SoapFaultParser {
         //Create inner D2GAttributes 
         EditD2GAttributeType d2GAttributes = new EditD2GAttributeType();
         
-        //Create PrimaryAttributes and add it to D2GAttributes
-        EditPrimaryHANDeviceType primaryAttributes = new EditPrimaryHANDeviceType();
-        primaryAttributes.setMacID(macAddress);
-        d2GAttributes.setPrimaryAttributes(primaryAttributes);
+        //Create EditESIType and add it to D2GAttributes
+        EditESIType esi = new EditESIType();
+        esi.setMacID(macAddress);
+        d2GAttributes.setESI(esi);
         
         //Create ServicePointUtilID and add it to D2GAttributes
         NullableString servicePointUtilId = new NullableString();
