@@ -3332,33 +3332,6 @@
                 <modifier>Max</modifier>
             </baseModifiers>
         </point>
-        <point name="Peak kVAr" icd="false">
-            <uom>Var</uom>
-            <multiplier value=".001" />
-            <parseSiPrefix />
-            <modifiers match="equal">
-                <modifier>Max</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-            </modifiers>
-        </point>
-        <point name="Coincident Cumulative Peak kVAr" icd="false">
-            <uom>Var</uom>
-            <multiplier value=".001" />
-            <parseSiPrefix />
-            <modifiers match="equal">
-                <modifier>Max</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Cumulative</modifier>
-            </modifiers>
-            <baseUom>Var</baseUom>
-            <baseModifiers match="equal">
-                <modifier>Max</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-            </baseModifiers>
-        </point>
     </pointGroup>
     
     <!-- ITRON SENTINEL LEVEL 2 & 3 -->
@@ -3523,6 +3496,153 @@
                 <modifier>Quadrant 4</modifier>
                 <modifier>TOU Rate D</modifier>
             </modifiers>
+        </point>
+        <point name="Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+        </point>
+        <point name="Coincident Cumulative Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Cumulative</modifier>
+            </modifiers>
+            <baseUom>Var</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate A Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="Coincident Cumulative Peak kVAr (Rate A kVAr)">
+            <uom>Var</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Cumulative</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+            <baseUom>Var</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate A</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate B Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="Coincident Cumulative Peak kVAr (Rate B kVAr)">
+            <uom>Var</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Cumulative</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+            <baseUom>Var</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate B</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate C Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="Coincident Cumulative Peak kVAr (Rate C kVAr)">
+            <uom>Var</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Cumulative</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+            <baseUom>Var</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate C</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate D Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+        </point>
+        <point name="Coincident Cumulative Peak kVAr (Rate D kVAr)">
+            <uom>Var</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Cumulative</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+            <baseUom>Var</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate D</modifier>
+            </baseModifiers>
         </point>
     </pointGroup>
     

@@ -31,6 +31,10 @@
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Coincident Cumulative Peak kVAr"/>
+        <pointInfo name="Coincident Cumulative Peak kVAr (Rate A kVAr)"/>
+        <pointInfo name="Coincident Cumulative Peak kVAr (Rate B kVAr)"/>
+        <pointInfo name="Coincident Cumulative Peak kVAr (Rate C kVAr)"/>
+        <pointInfo name="Coincident Cumulative Peak kVAr (Rate D kVAr)"/>
         <pointInfo name="Coincident Power Factor" attributes="POWER_FACTOR_COIN"/>
         <pointInfo name="Configuration Error" attributes="CONFIGURATION_ERROR"/>
         <pointInfo name="Current Neutral to Ground" attributes="NEUTRAL_CURRENT"/>
@@ -122,12 +126,16 @@
         <pointInfo name="Ram Error" attributes="RAM_ERROR"/>
         <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A"/>
         <pointInfo name="Rate A Net Received kVArh" attributes="NET_RECEIVED_KVARH_RATE_A"/>
+        <pointInfo name="Rate A Peak kVAr" attributes="PEAK_KVAR_RATE_A"/>
         <pointInfo name="Rate B kWh" attributes="USAGE_RATE_B"/>
         <pointInfo name="Rate B Net Received kVArh" attributes="NET_RECEIVED_KVARH_RATE_B"/>
+        <pointInfo name="Rate B Peak kVAr" attributes="PEAK_KVAR_RATE_B"/>
         <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C"/>
         <pointInfo name="Rate C Net Received kVArh" attributes="NET_RECEIVED_KVARH_RATE_C"/>
+        <pointInfo name="Rate C Peak kVAr" attributes="PEAK_KVAR_RATE_C"/>
         <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D"/>
         <pointInfo name="Rate D Net Received kVArh" attributes="NET_RECEIVED_KVARH_RATE_D"/>
+        <pointInfo name="Rate D Peak kVAr" attributes="PEAK_KVAR_RATE_D"/>
         <pointInfo name="Received kVArh" init="true" attributes="RECEIVED_KVARH"/>
         <pointInfo name="Received kVArh (Rate A kVArh)" init="true" attributes="RECEIVED_KVARH_RATE_A"/>
         <pointInfo name="Received kVArh (Rate B kVArh)" attributes="RECEIVED_KVARH_RATE_B"/>
