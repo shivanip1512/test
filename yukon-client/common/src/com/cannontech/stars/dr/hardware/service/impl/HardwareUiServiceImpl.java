@@ -178,7 +178,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         InventoryCategory hardwareCategory = InventoryCategory.valueOf(categoryEntry.getYukonDefID());
 
         // Logic for determining display name and type is duplicated in InventoryPageIndexBuilder.
-        if (hardwareCategory == InventoryCategory.MCT) {
+        if (hardwareCategory == InventoryCategory.YUKON_METER) {
             /* Hardware is an MCT */
             hardware.setHardwareType(HardwareType.YUKON_METER);
             
@@ -349,7 +349,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         
         HardwareType hardwareType = hardware.getHardwareType();
         if (hardwareType.isMeter()) {
-            if (hardwareType.getInventoryCategory() == InventoryCategory.MCT) {
+            if (hardwareType.getInventoryCategory() == InventoryCategory.YUKON_METER) {
                 if (StringUtils.isBlank(liteInventoryBase.getDeviceLabel())) {
                     LiteYukonPAObject device =
                         YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(liteInventoryBase.getDeviceID());
@@ -494,7 +494,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         hardware.setHardwareType(hardwareType);
         
         if (hardwareType.isMeter()) {
-            if (hardwareType.getInventoryCategory() == InventoryCategory.MCT) {
+            if (hardwareType.getInventoryCategory() == InventoryCategory.YUKON_METER) {
                 /* InventoryBase */
                 LiteInventoryBase inventoryBase = buildInventoryBase(hardware, energyCompany);
                 

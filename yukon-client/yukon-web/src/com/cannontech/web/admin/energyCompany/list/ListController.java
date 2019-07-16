@@ -172,14 +172,14 @@ public class ListController {
             final Predicate<YukonListEntry> meterTypeEntry = new Predicate<YukonListEntry>() {
                 @Override
                 public boolean apply(YukonListEntry entry) {
-                    return entry.getDefinition() == YukonDefinition.DEV_TYPE_METER;
+                    return entry.getDefinition() == YukonDefinition.DEV_TYPE_NON_YUKON_METER;
                 }
             };
             final List<YukonListEntry> meterTypeEntries = Lists.newArrayList(Iterables.filter(entries, meterTypeEntry));
             if (meterTypeEntries.isEmpty()) {
                 // If the entry with the "Meter" type was not found, the type is removed from the
                 // selection list.
-                listDefinitions.remove(YukonDefinition.DEV_TYPE_METER);
+                listDefinitions.remove(YukonDefinition.DEV_TYPE_NON_YUKON_METER);
             }
         }
         

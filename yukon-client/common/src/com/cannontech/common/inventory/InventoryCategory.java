@@ -8,7 +8,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 public enum InventoryCategory {
     ONE_WAY_RECEIVER(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC), 
     TWO_WAY_RECEIVER(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC), 
-    MCT(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT), 
+    YUKON_METER(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_YUKON_METER), 
     NON_YUKON_METER(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_NON_YUKON_METER);
 
     private int definitionId;

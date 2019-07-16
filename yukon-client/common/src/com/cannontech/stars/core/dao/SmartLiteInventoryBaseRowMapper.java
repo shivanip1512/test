@@ -57,7 +57,7 @@ public class SmartLiteInventoryBaseRowMapper implements YukonRowMapper<LiteInven
                 case YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC : return HARWARE;
                 
                 case YukonListEntryTypes.YUK_DEF_ID_INV_CAT_NON_YUKON_METER : return METER;
-                case YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT             : return YUKON_METER;
+                case YukonListEntryTypes.YUK_DEF_ID_INV_CAT_YUKON_METER             : return YUKON_METER;
                 
                 default : return GENERIC_INVENTORY;
             }

@@ -43,7 +43,7 @@ public class AvailableMctFilter implements SqlFilter {
         limiter2.append("    JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
         limiter2.append("  WHERE etim.EnergyCompanyId ").in(energyCompanyIds);
         limiter2.append("    AND ib.accountId = 0 ");
-        limiter2.append("    AND yle.YukonDefinitionId = ").append(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).append(")");
+        limiter2.append("    AND yle.YukonDefinitionId = ").append(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_YUKON_METER).append(")");
         
         SqlFragmentCollection retVal = SqlFragmentCollection.newOrCollection();
         retVal.add(limiter1);

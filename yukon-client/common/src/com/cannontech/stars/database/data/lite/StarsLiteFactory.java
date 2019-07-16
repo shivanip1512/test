@@ -698,7 +698,7 @@ public class StarsLiteFactory {
                  * Shouldn't truly make this the default, though, in case something else comes through here, so we'll still check
                  */
                 YukonListEntry listEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(((LiteInventoryBase)lite).getCategoryID());
-                if(lite instanceof LiteInventoryBase && listEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT) {
+                if(lite instanceof LiteInventoryBase && listEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_YUKON_METER) {
                     db = new InventoryBase(((LiteInventoryBase)lite).getInventoryID());
                     ((InventoryBase)db).setAccountID(((LiteInventoryBase)lite).getAccountID());
                 }

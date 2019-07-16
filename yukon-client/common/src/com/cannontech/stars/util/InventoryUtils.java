@@ -48,9 +48,9 @@ public class InventoryUtils {
             return selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC).getEntryID();
         }
         else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER ||
-                entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_YUKON_METER)
+                entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ELECTRIC_METER)
         {
-            return selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).getEntryID();
+            return selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_INV_CAT_YUKON_METER).getEntryID();
         }
         
         return CtiUtilities.NONE_ZERO_ID;
@@ -68,7 +68,7 @@ public class InventoryUtils {
     
     public static boolean isMCT(int categoryId) {
         YukonListEntry entry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( categoryId );
-        return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
+        return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_YUKON_METER);
     }
     
     public static boolean is3102(int devTypeId) {

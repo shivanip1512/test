@@ -114,7 +114,7 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
         String displayName;
         String displayType = null;
         InventoryCategory hardwareCategory = InventoryCategory.valueOf(rs.getInt("yukonDefinitionId"));
-        if (hardwareCategory == InventoryCategory.MCT) {
+        if (hardwareCategory == InventoryCategory.YUKON_METER) {
             int deviceId = rs.getInt("deviceId");
             if (deviceId > 0) {
                 PaoType devicePaoType = rs.getEnum("devicePaoType", PaoType.class);

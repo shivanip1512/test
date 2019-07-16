@@ -133,14 +133,14 @@
 <entry key="yukon.dr.selectionList.definition.CUST_ACT_UNINSTALL">Uninstall</entry>
 <entry key="yukon.dr.selectionList.definition.INV_CAT_ONEWAYREC">One Way Receiver</entry>
 <entry key="yukon.dr.selectionList.definition.INV_CAT_TWOWAYREC">Two Way Receiver</entry>
-<entry key="yukon.dr.selectionList.definition.INV_CAT_MCT">MCT</entry>
+<entry key="yukon.dr.selectionList.definition.INV_CAT_MCT">Yukon Meter</entry>
 <entry key="yukon.dr.selectionList.definition.INV_CAT_NON_YUKON_METER">Non Yukon Meter</entry>
 
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_EXPRESSSTAT">ExpressStat</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_5000_XCOM">LCR-5000 (ExpressCom)</entry>
-<entry key="yukon.dr.selectionList.definition.DEV_TYPE_METER">Meter</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_NON_YUKON_METER">Inventory Meter</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_COMM_EXPRESSSTAT">Commercial ExpressStat</entry>
-<entry key="yukon.dr.selectionList.definition.DEV_TYPE_YUKON_METER">Yukon Meter</entry>
+<entry key="yukon.dr.selectionList.definition.DEV_TYPE_ELECTRIC_METER">Electric Meter</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_4700">LCR-4700</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_4600">LCR-4600</entry>
 <entry key="yukon.dr.selectionList.definition.DEV_TYPE_LCR_4000">LCR-4000</entry>

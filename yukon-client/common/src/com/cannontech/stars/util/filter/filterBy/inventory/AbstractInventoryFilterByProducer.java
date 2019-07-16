@@ -44,7 +44,7 @@ public abstract class AbstractInventoryFilterByProducer implements FilterByProdu
         }
         @Override
         public List<Object> getParameterValues() {
-            return Arrays.<Object>asList(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
+            return Arrays.<Object>asList(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_YUKON_METER);
         }
     };
     
@@ -61,7 +61,7 @@ public abstract class AbstractInventoryFilterByProducer implements FilterByProdu
         public List<Object> getParameterValues() {
             return Arrays.<Object>asList(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC,
                                          YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC,
-                                         YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
+                                         YukonListEntryTypes.YUK_DEF_ID_INV_CAT_YUKON_METER);
         }
     };
     

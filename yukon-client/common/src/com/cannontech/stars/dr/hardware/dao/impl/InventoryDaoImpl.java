@@ -339,7 +339,7 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("LEFT JOIN yukonListEntry le ON lmhb.lmHardwareTypeId = le.entryId");
         sql.append("JOIN yukonListEntry le2 ON ib.categoryid = le2.entryId"); // Only used to filter
         sql.append("WHERE ib.accountID").eq(accountId);
-        sql.append("AND le2.yukondefinitionid").eq_k(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
+        sql.append("AND le2.yukondefinitionid").eq_k(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_YUKON_METER);
         
         List<HardwareSummary> hardwareList = jdbcTemplate.query(sql, meterSummaryRowMapper);
         
@@ -1158,7 +1158,7 @@ public class InventoryDaoImpl implements InventoryDao {
         limiter2.append("    JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
         limiter2.append("  WHERE etim.EnergyCompanyId ").in(ecId);
         limiter2.append("    AND ib.accountId = 0 ");
-        limiter2.append("    AND yle.YukonDefinitionId = ").append(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).append(")");
+        limiter2.append("    AND yle.YukonDefinitionId = ").append(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_YUKON_METER).append(")");
         
         SqlFragmentCollection whereClause = SqlFragmentCollection.newOrCollection();
         whereClause.add(limiter1);
