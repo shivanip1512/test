@@ -152,7 +152,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                         errors.rejectValue("gearName", "yukon.web.modules.dr.setup.error.required", new Object[] { "Gear Name" }, "");
                     }
 
-                    lmValidatorHelper.checkIfFieldRequired("gearNumber", errors, gear.getGearId(), "Gear Number");
+                    lmValidatorHelper.checkIfFieldRequired("gearNumber", errors, gear.getGearNumber(), "Gear Number");
                     errors.popNestedPath();
 
                     // Validate Gear Fields
