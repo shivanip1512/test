@@ -137,6 +137,8 @@
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.latchNotAllowedWithOtherGears">Latching gear can not exist alongside other gear types.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.maxGearCount">Program is only allowed {0} or less gears to be defined for it.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.notAllowedGroupPoint">LMGroup Point groups are only allowed if a latching gear is present.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.notSupportedControlMethod">Control Method {0} is not supported for program type {1}</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.notSupportedProgramType">Program type {0} is not supported</entry>
 
 <!-- Gear setup -->
 <entry key="yukon.web.modules.dr.setup.gear.ABSOLUTE">Absolutes</entry>

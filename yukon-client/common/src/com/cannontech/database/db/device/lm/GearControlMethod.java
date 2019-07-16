@@ -1,6 +1,7 @@
 package com.cannontech.database.db.device.lm;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.device.lm.BeatThePeakGear;
 import com.cannontech.database.data.device.lm.EcobeeCycleGear;
@@ -14,45 +15,48 @@ import com.cannontech.database.data.device.lm.NestStandardCycleGear;
 import com.cannontech.database.data.device.lm.NoControlGear;
 import com.cannontech.database.data.device.lm.RotationGear;
 import com.cannontech.database.data.device.lm.SepCycleGear;
-import com.cannontech.database.data.device.lm.SimpleOnOffGear;
 import com.cannontech.database.data.device.lm.SepTemperatureOffsetGear;
+import com.cannontech.database.data.device.lm.SimpleOnOffGear;
 import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
 import com.cannontech.database.data.device.lm.SmartCycleGear;
 import com.cannontech.database.data.device.lm.TargetCycleGear;
 import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
 import com.cannontech.database.data.device.lm.TimeRefreshGear;
 import com.cannontech.database.data.device.lm.TrueCycleGear;
+import com.google.common.collect.ImmutableSet;
 
 public enum GearControlMethod implements DatabaseRepresentationSource, DisplayableEnum {
-    TimeRefresh(TimeRefreshGear.class, "Time Refresh"),
-    SmartCycle(SmartCycleGear.class, "Smart Cycle"),
-    SepCycle(SepCycleGear.class, "SEP Cycle"),
-    EcobeeCycle(EcobeeCycleGear.class, "ecobee Cycle"),
-    HoneywellCycle(HoneywellCycleGear.class, "Honeywell Cycle"),
-    ItronCycle(ItronCycleGear.class, "Itron Cycle"),
-    NestCriticalCycle(NestCriticalCycleGear.class, "Nest Critical Cycle"),
-    NestStandardCycle(NestStandardCycleGear.class, "Nest Standard Cycle"),
-    SepTemperatureOffset(SepTemperatureOffsetGear.class, "SEP Temperature Offset"),
-    MasterCycle(MasterCycleGear.class, "Master Cycle"),
-    Rotation(RotationGear.class, "Rotation"),
-    Latching(LatchingGear.class, "Latching"),
-    TrueCycle(TrueCycleGear.class, "True Cycle"),
-    MagnitudeCycle(MagnitudeCycleGear.class, "Magnitude Cycle"),    
-    TargetCycle(TargetCycleGear.class, "Target Cycle"),
-    ThermostatRamping(ThermostatSetbackGear.class, "Thermostat Ramping"),
-    SimpleThermostatRamping(SimpleThermostatRampingGear.class, "Simple Thermostat Ramping"),
-    BeatThePeak(BeatThePeakGear.class, "Beat The Peak"),
-    SimpleOnOff(SimpleOnOffGear.class, "Simple On/Off"),
-    NoControl(NoControlGear.class, "No Control");
+    TimeRefresh(TimeRefreshGear.class, "Time Refresh", PaoType.LM_DIRECT_PROGRAM),
+    SmartCycle(SmartCycleGear.class, "Smart Cycle", PaoType.LM_DIRECT_PROGRAM),
+    SepCycle(SepCycleGear.class, "SEP Cycle", PaoType.LM_SEP_PROGRAM),
+    EcobeeCycle(EcobeeCycleGear.class, "ecobee Cycle", PaoType.LM_HONEYWELL_PROGRAM),
+    HoneywellCycle(HoneywellCycleGear.class, "Honeywell Cycle", PaoType.LM_HONEYWELL_PROGRAM),
+    ItronCycle(ItronCycleGear.class, "Itron Cycle", PaoType.LM_ITRON_PROGRAM),
+    NestCriticalCycle(NestCriticalCycleGear.class, "Nest Critical Cycle", PaoType.LM_NEST_PROGRAM),
+    NestStandardCycle(NestStandardCycleGear.class, "Nest Standard Cycle", PaoType.LM_NEST_PROGRAM),
+    SepTemperatureOffset(SepTemperatureOffsetGear.class, "SEP Temperature Offset", PaoType.LM_SEP_PROGRAM),
+    MasterCycle(MasterCycleGear.class, "Master Cycle", PaoType.LM_DIRECT_PROGRAM),
+    Rotation(RotationGear.class, "Rotation", PaoType.LM_DIRECT_PROGRAM),
+    Latching(LatchingGear.class, "Latching", PaoType.LM_DIRECT_PROGRAM),
+    TrueCycle(TrueCycleGear.class, "True Cycle", PaoType.LM_DIRECT_PROGRAM),
+    MagnitudeCycle(MagnitudeCycleGear.class, "Magnitude Cycle", PaoType.LM_DIRECT_PROGRAM),
+    TargetCycle(TargetCycleGear.class, "Target Cycle", PaoType.LM_DIRECT_PROGRAM),
+    ThermostatRamping(ThermostatSetbackGear.class, "Thermostat Ramping", PaoType.LM_DIRECT_PROGRAM),
+    SimpleThermostatRamping(SimpleThermostatRampingGear.class, "Simple Thermostat Ramping", PaoType.LM_DIRECT_PROGRAM),
+    BeatThePeak(BeatThePeakGear.class, "Beat The Peak", PaoType.LM_DIRECT_PROGRAM),
+    SimpleOnOff(SimpleOnOffGear.class, "Simple On/Off", PaoType.LM_DIRECT_PROGRAM),
+    NoControl(NoControlGear.class, "No Control", PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM);
 
 	private Class<?> gearClass;
     private String displayName;
+    private ImmutableSet<PaoType> programTypes;
     private String baseKey = "yukon.web.modules.dr.gearControlMethod.";
 
-	private GearControlMethod(Class<?> gear, String displayName) {
-		this.gearClass = gear;
-		this.displayName = displayName;
-	}
+    private GearControlMethod(Class<?> gear, String displayName, PaoType... programTypes) {
+        this.gearClass = gear;
+        this.displayName = displayName;
+        this.programTypes = ImmutableSet.copyOf(programTypes);
+    }
 
 	public String getDisplayName() {
 		return displayName;
@@ -65,7 +69,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
 			return NoControl;
 		}
 	}
-	
+
 	public boolean isRamping() {
 	    return this == SimpleThermostatRamping || this == ThermostatRamping;
 	}
@@ -95,4 +99,9 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
     public String getFormatKey() {
         return baseKey + name();
     }
+
+    public ImmutableSet<PaoType> getProgramTypes() {
+        return programTypes;
+    }
+
 }

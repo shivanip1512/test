@@ -28,6 +28,7 @@ import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.ImmutableSet;
 
 public class LMProgramValidator extends SimpleValidator<LoadProgram> {
 
@@ -47,6 +48,11 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         lmValidatorHelper.validateNewPaoName(loadProgram.getName(), loadProgram.getType(), errors, "Program Name");
         //Type
         lmValidatorHelper.checkIfFieldRequired("type", errors, loadProgram.getType(), "Type");
+        if (!errors.hasFieldErrors("type")) {
+            if (!loadProgram.getType().isDirectProgram()) {
+                errors.reject(key + "notSupportedProgramType", new Object[] { loadProgram.getType() }, "");
+            }
+        }
         lmValidatorHelper.checkIfFieldRequired("operationalState", errors, loadProgram.getOperationalState(), "Operational State");
         
         lmValidatorHelper.checkIfFieldRequired("constraint", errors, loadProgram.getConstraint(), "Program Constraint");
@@ -82,32 +88,31 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
 
                 if (!errors.hasFieldErrors("groupId")) {
                     if (!cache.getAllPaosMap().containsKey(group.getGroupId())) {
-                        errors.rejectValue("assignedGroups[" + i + "].groupId", key + "groupId.doesNotExist");
+                        errors.rejectValue("groupId", key + "groupId.doesNotExist");
                     }
                 }
                 
                 if (!errors.hasFieldErrors("groupId")) {
-                    LiteYukonPAObject pao = cache.getAllPaosMap().get(group.getGroupId());
+                    LiteYukonPAObject pao = getGroupFromCache(group);
                     if (loadGroupDao.isLoadGroupInUse(group.getGroupId())) {
                         errors.reject(key + "groupEnrollmentConflict", new Object[] { pao.getPaoName() }, "");
                     }
                 }
 
                 if (!errors.hasFieldErrors("groupId")) {
-                    LiteYukonPAObject pao = cache.getAllPaosMap().get(group.getGroupId());
+                    LiteYukonPAObject pao = getGroupFromCache(group);
                     if (PaoType.NEST == pao.getPaoType() && i > 0) {
                         errors.reject(key + "nestGroup", new Object[] { pao.getPaoName() }, "");
                     }
                 }
                 if (!errors.hasFieldErrors("groupId")) {
-                    LiteYukonPAObject pao = cache.getAllPaosMap().get(group.getGroupId());
+                    LiteYukonPAObject pao = getGroupFromCache(group);
                     Boolean isLatchGear = loadProgram.getGears().stream()
                                                                 .allMatch(gear -> gear.getControlMethod() == GearControlMethod.Latching);
                     if (PaoType.LM_GROUP_POINT == pao.getPaoType() && !isLatchGear) {
                         errors.reject(key + "notAllowedGroupPoint");
                     }
                 }
-                
                 if (i > 0) {
                     lmValidatorHelper.checkIfFieldRequired("groupOrder", errors,
                         group.getGroupOrder(), "Group Order");
@@ -137,21 +142,28 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
             }
            
             for (int i = 0; i < loadProgram.getGears().size(); i++) {
-                errors.pushNestedPath("gears[" + i + "]");
+
                 ProgramGear gear = loadProgram.getGears().get(i);
-                if (gear.getGearName() == null || !StringUtils.hasText(gear.getGearName().toString())) {
-                    errors.rejectValue("gearName", "yukon.web.modules.dr.setup.error.required", new Object[] { "Gear Names" }, "");
-                }
+                ImmutableSet<PaoType> supportedProgramTypesForGearType = gear.getControlMethod().getProgramTypes();
 
-                lmValidatorHelper.checkIfFieldRequired("gearNumber", errors, gear.getGearId(), "Gear Number");
-                errors.popNestedPath();
-                // Validate Gear Fields
+                if (supportedProgramTypesForGearType.contains(loadProgram.getType())) {
+                    errors.pushNestedPath("gears[" + i + "]");
+                    if (gear.getGearName() == null || !StringUtils.hasText(gear.getGearName().toString())) {
+                        errors.rejectValue("gearName", "yukon.web.modules.dr.setup.error.required", new Object[] { "Gear Name" }, "");
+                    }
 
-                ProgramGearFields fields = gear.getFields();
-                if (fields != null) {
-                    errors.pushNestedPath("gears[" + i + "].fields");
-                    gearFieldsValidatorMap.get(gear.getControlMethod()).validate(fields, errors);
+                    lmValidatorHelper.checkIfFieldRequired("gearNumber", errors, gear.getGearId(), "Gear Number");
                     errors.popNestedPath();
+
+                    // Validate Gear Fields
+                    ProgramGearFields fields = gear.getFields();
+                    if (fields != null) {
+                        errors.pushNestedPath("gears[" + i + "].fields");
+                        gearFieldsValidatorMap.get(gear.getControlMethod()).validate(fields, errors);
+                        errors.popNestedPath();
+                    }
+                } else {
+                    errors.reject(key + "notSupportedControlMethod", new Object[] { gear.getControlMethod(), loadProgram.getType() }, "");
                 }
 
             }
@@ -163,20 +175,13 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
             if (window.getControlWindowOne() != null) {
                 Integer availableStartTimeInMinutes = window.getControlWindowOne().getAvailableStartTimeInMinutes();
                 Integer availableStopTimeInMinutes = window.getControlWindowOne().getAvailableStopTimeInMinutes();
-                errors.pushNestedPath("controlWindow.controlWindowOne");
-                YukonValidationUtils.checkRange(errors, "availableStartTimeInMinutes",availableStartTimeInMinutes, 0, 1439, false);
-                YukonValidationUtils.checkRange(errors, "availableStopTimeInMinutes", availableStopTimeInMinutes, 0, 1439, false);
-                errors.popNestedPath();
+                validateControlWindowTime("controlWindow.controlWindowOne", errors, availableStartTimeInMinutes, availableStopTimeInMinutes);
             }
 
             if (window.getControlWindowTwo() != null) {
                 Integer availableStartTimeInMinutes = window.getControlWindowTwo().getAvailableStartTimeInMinutes();
                 Integer availableStopTimeInMinutes = window.getControlWindowTwo().getAvailableStopTimeInMinutes();
-
-                errors.pushNestedPath("controlWindow.controlWindowOne");
-                YukonValidationUtils.checkRange(errors, "availableStartTimeInMinutes",availableStartTimeInMinutes, 0, 1439, false);
-                YukonValidationUtils.checkRange(errors, "availableStopTimeInMinutes", availableStopTimeInMinutes, 0, 1439, false);
-                errors.popNestedPath();
+                validateControlWindowTime("controlWindow.controlWindowTwo", errors, availableStartTimeInMinutes, availableStopTimeInMinutes);
             }
         }
 
@@ -217,6 +222,21 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
             }
         }
 
+    }
+    
+    private void validateControlWindowTime(String nestedPath, Errors errors, Integer availableStartTimeInMinutes,
+            Integer availableStopTimeInMinutes) {
+        if (availableStartTimeInMinutes != null && availableStopTimeInMinutes != null) {
+            errors.pushNestedPath(nestedPath);
+            YukonValidationUtils.checkRange(errors, "availableStartTimeInMinutes", availableStartTimeInMinutes, 0, 1439, false);
+            YukonValidationUtils.checkRange(errors, "availableStopTimeInMinutes", availableStopTimeInMinutes, 0, 1439, false);
+            errors.popNestedPath();
+        }
+
+    }
+
+    private LiteYukonPAObject getGroupFromCache(ProgramGroup group) {
+        return cache.getAllPaosMap().get(group.getGroupId());
     }
 
     @Autowired
