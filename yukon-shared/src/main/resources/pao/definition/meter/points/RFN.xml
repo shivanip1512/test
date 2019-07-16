@@ -1908,31 +1908,31 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -DemandAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="21" type="DemandAccumulator">
         <name>Peak kW Frozen</name>
-        <multiplier value="0.1"/>
+        <multiplier value="1"/>
         <unitofmeasure value="KW"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="221" type="DemandAccumulator">
         <name>Peak kW Frozen (Rate A kW)</name>
-        <multiplier value="0.1"/>
+        <multiplier value="1"/>
         <unitofmeasure value="KW"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="231" type="DemandAccumulator">
         <name>Peak kW Frozen (Rate B kW)</name>
-        <multiplier value="0.1"/>
+        <multiplier value="1"/>
         <unitofmeasure value="KW"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="241" type="DemandAccumulator">
         <name>Peak kW Frozen (Rate C kW)</name>
-        <multiplier value="0.1"/>
+        <multiplier value="1"/>
         <unitofmeasure value="KW"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="251" type="DemandAccumulator">
         <name>Peak kW Frozen (Rate D kW)</name>
-        <multiplier value="0.1"/>
+        <multiplier value="1"/>
         <unitofmeasure value="KW"/>
         <decimalplaces value="3"/>
     </point>
