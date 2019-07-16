@@ -3,12 +3,10 @@ package com.cannontech.common.dr.program.setup.model;
 import javax.validation.Valid;
 
 import com.cannontech.common.dr.gear.setup.OperationalState;
-import com.cannontech.common.pao.PaoType;
 
 public class LoadProgramCopy {
 
     private String name;
-    private PaoType type;
 
     @Valid
     private ProgramConstraint constraint;
@@ -21,12 +19,7 @@ public class LoadProgramCopy {
     public void setName(String name) {
         this.name = name;
     }
-    public PaoType getType() {
-        return type;
-    }
-    public void setType(PaoType type) {
-        this.type = type;
-    }
+
     public ProgramConstraint getConstraint() {
         return constraint;
     }

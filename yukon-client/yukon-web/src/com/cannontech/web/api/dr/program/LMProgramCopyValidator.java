@@ -26,8 +26,7 @@ public class LMProgramCopyValidator extends SimpleValidator<LoadProgramCopy> {
     protected void doValidation(LoadProgramCopy loadProgramCopy, Errors errors) {
         //Name validation
         lmValidatorHelper.validateCopyPaoName(loadProgramCopy.getName(), errors, "Program Name");
-        //Type
-        lmValidatorHelper.checkIfFieldRequired("type", errors, loadProgramCopy.getType(), "Type");
+
         lmValidatorHelper.checkIfFieldRequired("operationalState", errors, loadProgramCopy.getOperationalState(), "Operational State");
         
         lmValidatorHelper.checkIfFieldRequired("constraint", errors, loadProgramCopy.getConstraint(), "Program Constraint");

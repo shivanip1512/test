@@ -50,4 +50,9 @@ public interface LoadProgramSetupService extends LMSetupService<LoadProgram, Loa
      */
 
     List<ProgramDetails> getAvailablePrograms();
+    
+    /**
+     * Return all the Load Groups associated with programType.
+     */
+    List<ProgramGroup> getAllProgramLoadGroups(PaoType programType);
 }

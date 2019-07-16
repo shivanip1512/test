@@ -587,7 +587,8 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
            
     }
 
-    private List<ProgramGroup> getAllProgramLoadGroups(PaoType programType) {
+    @Override
+    public List<ProgramGroup> getAllProgramLoadGroups(PaoType programType) {
         List<LiteYukonPAObject> groups = dbCache.getAllLoadManagement();
         
         List<ProgramGroup> programGroups = new ArrayList<>();

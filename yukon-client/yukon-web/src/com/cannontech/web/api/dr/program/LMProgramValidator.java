@@ -3,6 +3,7 @@ package com.cannontech.web.api.dr.program;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -12,7 +13,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.gear.setup.fields.ProgramGearFields;
-import com.cannontech.web.api.dr.gear.setup.fields.validator.ProgramGearFieldsValidator;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
 import com.cannontech.common.dr.program.setup.model.NotificationGroup;
@@ -22,10 +22,11 @@ import com.cannontech.common.dr.program.setup.model.ProgramGroup;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.IlmDefines;
+import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
+import com.cannontech.web.api.dr.gear.setup.fields.validator.ProgramGearFieldsValidator;
 import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableSet;
@@ -37,6 +38,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
     @Autowired private LMValidatorHelper lmValidatorHelper;
     @Autowired private IDatabaseCache cache;
     @Autowired LoadGroupDao loadGroupDao;
+    @Autowired LoadProgramSetupService programSetupService;
     private Map <GearControlMethod, ProgramGearFieldsValidator<? extends ProgramGearFields>> gearFieldsValidatorMap = new HashMap<>();
 
     public LMProgramValidator() {
@@ -72,10 +74,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
             errors.popNestedPath();
         }
 
-        YukonValidationUtils.checkRange(errors, "restoreOffset", loadProgram.getRestoreOffset(), 0.0, 99999.9999,
-            false);
-        YukonValidationUtils.checkRange(errors, "triggerOffset", loadProgram.getTriggerOffset(), -9999.9999, 99999.9999,
-            false);
+        YukonValidationUtils.checkRange(errors, "restoreOffset", loadProgram.getRestoreOffset(), 0.0, 99999.9999, false);
+        YukonValidationUtils.checkRange(errors, "triggerOffset", loadProgram.getTriggerOffset(), -9999.9999, 99999.9999, false);
 
         if (CollectionUtils.isEmpty(loadProgram.getAssignedGroups())) {
             errors.reject(key + "noGroup");
@@ -87,35 +87,29 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                 lmValidatorHelper.checkIfFieldRequired("groupId", errors, group.getGroupId(), "Group Id");
 
                 if (!errors.hasFieldErrors("groupId")) {
-                    if (!cache.getAllPaosMap().containsKey(group.getGroupId())) {
+                    Optional<ProgramGroup> programGroup = getProgramGroup(group, loadProgram.getType());
+                    if (programGroup.isEmpty()) {
                         errors.rejectValue("groupId", key + "groupId.doesNotExist");
-                    }
-                }
-                
-                if (!errors.hasFieldErrors("groupId")) {
-                    LiteYukonPAObject pao = getGroupFromCache(group);
-                    if (loadGroupDao.isLoadGroupInUse(group.getGroupId())) {
-                        errors.reject(key + "groupEnrollmentConflict", new Object[] { pao.getPaoName() }, "");
-                    }
-                }
+                    } else {
 
-                if (!errors.hasFieldErrors("groupId")) {
-                    LiteYukonPAObject pao = getGroupFromCache(group);
-                    if (PaoType.NEST == pao.getPaoType() && i > 0) {
-                        errors.reject(key + "nestGroup", new Object[] { pao.getPaoName() }, "");
+                        if (loadGroupDao.isLoadGroupInUse(group.getGroupId())) {
+                            errors.reject(key + "groupEnrollmentConflict", new Object[] { programGroup.get().getGroupName() }, "");
+                        }
+
+                        if (PaoType.LM_GROUP_NEST == programGroup.get().getType() && i > 0) {
+                            errors.reject(key + "nestGroup", new Object[] { programGroup.get().getGroupName() }, "");
+                        }
+
+                        Boolean isLatchGear = loadProgram.getGears().stream()
+                                                                    .allMatch(gear -> gear.getControlMethod() == GearControlMethod.Latching);
+                        if (PaoType.LM_GROUP_POINT == programGroup.get().getType() && !isLatchGear) {
+                            errors.reject(key + "notAllowedGroupPoint");
+                        }
                     }
-                }
-                if (!errors.hasFieldErrors("groupId")) {
-                    LiteYukonPAObject pao = getGroupFromCache(group);
-                    Boolean isLatchGear = loadProgram.getGears().stream()
-                                                                .allMatch(gear -> gear.getControlMethod() == GearControlMethod.Latching);
-                    if (PaoType.LM_GROUP_POINT == pao.getPaoType() && !isLatchGear) {
-                        errors.reject(key + "notAllowedGroupPoint");
-                    }
+
                 }
                 if (i > 0) {
-                    lmValidatorHelper.checkIfFieldRequired("groupOrder", errors,
-                        group.getGroupOrder(), "Group Order");
+                    lmValidatorHelper.checkIfFieldRequired("groupOrder", errors, group.getGroupOrder(), "Group Order");
                 }
                 
                 errors.popNestedPath();
@@ -235,8 +229,11 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
 
     }
 
-    private LiteYukonPAObject getGroupFromCache(ProgramGroup group) {
-        return cache.getAllPaosMap().get(group.getGroupId());
+    private Optional<ProgramGroup> getProgramGroup(ProgramGroup group, PaoType programType) {
+        Optional<ProgramGroup> lmGroup = programSetupService.getAllProgramLoadGroups(programType).stream()
+                                                                                                 .filter(programGroup -> programGroup.getGroupId() == group.getGroupId())
+                                                                                                 .findFirst();
+        return lmGroup;
     }
 
     @Autowired
