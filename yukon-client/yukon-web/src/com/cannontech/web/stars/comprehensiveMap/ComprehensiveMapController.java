@@ -196,7 +196,7 @@ public class ComprehensiveMapController {
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
         
         try {
-            metaData = metadataMultiService.getMetadata(rfnIdentifiers, Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, 
+            metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers, Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, 
                                                                                          RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
                                                                                          RfnMetadataMulti.NODE_DATA));
         } catch (NmCommunicationException e1) {

@@ -47,27 +47,29 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     private RequestMultiReplyTemplate<RfnMetadataMultiRequest, RfnMetadataMultiResponse> multiReplyTemplate;
     
     @Override
-    public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(Set<RfnIdentifier> identifiers,
+    public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadataForDeviceRfnIdentifiers(Set<RfnIdentifier> identifiers,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException {
-        RfnMetadataMultiRequest request = getRequest(identifiers, requests);
+        RfnMetadataMultiRequest request = getRequest(requests);
         request.getRfnIdentifiers().addAll(identifiers);
+        return sendMetadataRequest(request);
+    }
+    
+    @Override
+    public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadataForDeviceRfnIdentifier(RfnIdentifier identifier,
+            Set<RfnMetadataMulti> requests) throws NmCommunicationException {
+        RfnMetadataMultiRequest request = getRequest(requests);
+        request.setRfnIdentifiers(Sets.newHashSet(identifier));
         return sendMetadataRequest(request);
     }
     
     @Override
     public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadataForGatewayRfnIdentifiers(Set<RfnIdentifier> identifiers,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException {
-        RfnMetadataMultiRequest request = getRequest(identifiers, requests);
+        RfnMetadataMultiRequest request = getRequest(requests);
         request.getPrimaryNodesForGatewayRfnIdentifiers().addAll(identifiers);
         return sendMetadataRequest(request);
     }
     
-    @Override
-    public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(RfnIdentifier identifier,
-            Set<RfnMetadataMulti> requests) throws NmCommunicationException {
-        return getMetadata(Sets.newHashSet(identifier), requests);
-    }
-
     /**
      * Returns meta data
      */
@@ -99,9 +101,9 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
         }
     }
 
-    private RfnMetadataMultiRequest getRequest(Set<RfnIdentifier> identifiers, Set<RfnMetadataMulti> multi) {
+    private RfnMetadataMultiRequest getRequest(Set<RfnMetadataMulti> multi) {
         RfnMetadataMultiRequest request = new RfnMetadataMultiRequest();
-        request.setRfnIdentifiers(identifiers);
+        request.setRfnIdentifiers(new HashSet<>());
         request.setPrimaryNodesForGatewayRfnIdentifiers(new HashSet<>());
         request.setRfnMetadatas(multi);
         return request;

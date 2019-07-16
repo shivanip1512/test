@@ -50,7 +50,7 @@ public class RfnMetadataMultiQueryResult implements Serializable {
     
     public boolean isValidResultForMulti(RfnMetadataMulti multi) {
        return this.getResultType() == RfnMetadataMultiQueryResultType.OK
-                && this.getMetadatas() != null && this.getMetadatas().containsKey(multi);
+                && this.getMetadatas() != null && this.getMetadatas().containsKey(multi) && this.getMetadatas().get(multi) != null;
     }
 
     @Override

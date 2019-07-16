@@ -395,7 +395,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 .collect(Collectors.toSet());
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = null;
         try {
-            metaData = metadataMultiService.getMetadata(devicesOtherThenGatways,
+            metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(devicesOtherThenGatways,
                 Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA));
         } catch (NmCommunicationException e) {
             throw new NmNetworkException(commsError, e, "commsError");
@@ -573,7 +573,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     //(Allocate identifiers to new set, because HashMap$KeySet is apparently not serializable)
                     Set<RfnIdentifier> identifiers = new HashSet<>(gateways.keySet());
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
-                        metadataMultiService.getMetadata(identifiers, Set.of(PRIMARY_GATEWAY_NODES));
+                        metadataMultiService.getMetadataForDeviceRfnIdentifiers(identifiers, Set.of(PRIMARY_GATEWAY_NODES));
                     
                     log.debug("Received primary gateway nodes from NM for {} devices", metaData.size());
                     

@@ -20,7 +20,7 @@ public interface RfnDeviceMetadataMultiService {
      * 
      * @throws NmCommunicationException if there was communication error or if NM returned an error
      */
-    Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(Set<RfnIdentifier> identifiers,
+    Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadataForDeviceRfnIdentifiers(Set<RfnIdentifier> identifiers,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException;
     /**
      * Attempts to send a request for meta-data for rf device.
@@ -29,7 +29,7 @@ public interface RfnDeviceMetadataMultiService {
      * @throws NmCommunicationException if there was communication error or if NM returned an error
      */
 
-    Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadata(RfnIdentifier identifier,
+    Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadataForDeviceRfnIdentifier(RfnIdentifier identifier,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException;
     
     /**
