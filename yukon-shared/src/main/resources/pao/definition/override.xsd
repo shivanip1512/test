@@ -12,7 +12,6 @@
             <xs:element type="xs:string" name="paoType" maxOccurs="unbounded" minOccurs="1" />
         </xs:sequence>
     </xs:complexType>
-    <xs:element name="creatable" type="xs:boolean"/>
     <xs:complexType name="tag">
         <xs:annotation>
             <xs:appinfo>
