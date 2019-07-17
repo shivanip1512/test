@@ -38,7 +38,7 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.service.MeterService;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectCmdType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
@@ -210,7 +210,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         };
         
         WaitableCallback callback = new WaitableCallback();
-		rfnMeterDisconnectService.send(meter, RfnMeterDisconnectStatusType.QUERY, callback);
+		rfnMeterDisconnectService.send(meter, RfnMeterDisconnectCmdType.QUERY, callback);
 	    try {
 	    	callback.waitForCompletion();
         } catch (InterruptedException e) { /* Ignore */ }

@@ -19,7 +19,7 @@ import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReply;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectRequest;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectCmdType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadDataReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadRequest;

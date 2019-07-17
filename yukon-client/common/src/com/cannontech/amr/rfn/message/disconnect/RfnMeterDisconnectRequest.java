@@ -13,9 +13,9 @@ public class RfnMeterDisconnectRequest implements RfnIdentifyingMessage, Seriali
     private static final long serialVersionUID = 2L;
 
     private RfnIdentifier rfnIdentifier;
-    private RfnMeterDisconnectStatusType action;
+    private RfnMeterDisconnectCmdType action;
 
-    public RfnMeterDisconnectRequest(RfnIdentifier meter, RfnMeterDisconnectStatusType action) {
+    public RfnMeterDisconnectRequest(RfnIdentifier meter, RfnMeterDisconnectCmdType action) {
         setRfnIdentifier(meter);
         setAction(action);
     }
@@ -28,11 +28,11 @@ public class RfnMeterDisconnectRequest implements RfnIdentifyingMessage, Seriali
         this.rfnIdentifier = rfnIdentifier;
     }
 
-    public void setAction(RfnMeterDisconnectStatusType action) {
+    public void setAction(RfnMeterDisconnectCmdType action) {
         this.action = action;
     }
 
-    public RfnMeterDisconnectStatusType getAction() {
+    public RfnMeterDisconnectCmdType getAction() {
         return action;
     }
 

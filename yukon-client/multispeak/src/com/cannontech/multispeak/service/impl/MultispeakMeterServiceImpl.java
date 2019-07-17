@@ -40,7 +40,7 @@ import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterBy;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectCmdType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
@@ -1170,7 +1170,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
      * Returns immediately, does not wait for a response. 
      * Callback will initiate a cdEventNotification on success or error.
      */
-    private void doRfnConnectDisconnect(final RfnMeter meter, RfnMeterDisconnectStatusType action,
+    private void doRfnConnectDisconnect(final RfnMeter meter, RfnMeterDisconnectCmdType action,
             final MultispeakVendor mspVendor, final String transactionId, final String responseUrl) {
 
         RfnMeterDisconnectCallback rfnCallback = new RfnMeterDisconnectCallback() {

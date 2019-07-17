@@ -37,7 +37,7 @@ import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectCmdType;
 import com.cannontech.amr.rfn.message.event.Direction;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
@@ -626,7 +626,7 @@ public class SimpleImmutabilityTest {
             RfnMeterDisconnectConfirmationReplyType.class,
             RfnMeterDisconnectInitialReplyType.class,
             RfnMeterDisconnectState.class,
-            RfnMeterDisconnectStatusType.class,
+            RfnMeterDisconnectCmdType.class,
             RfnMeterReadingDataReplyType.class,
             RfnMeterReadingReplyType.class,
             RfnMeterReadingType.class,

@@ -13,7 +13,7 @@ import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationR
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReply;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectRequest;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectCmdType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -71,7 +71,7 @@ public class RfnMeterDisconnectService {
      * @param callback The callback to use for updating status, errors and disconnect result.
      */
     public void send(final RfnMeter meter, 
-                     final RfnMeterDisconnectStatusType action, 
+                     final RfnMeterDisconnectCmdType action, 
                      final RfnMeterDisconnectCallback callback) {
         
         JmsReplyReplyHandler<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply> handler 

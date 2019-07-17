@@ -18,7 +18,7 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectCmdType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.amr.rfn.model.RfnMeter;
@@ -169,7 +169,7 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         final AtomicInteger pendingRequests = new AtomicInteger(meters.size());
         for (final RfnMeter meter : meters) {
             var disconnectCallback = getDisconnectCallback(meter, delegateCallback, pendingRequests);
-            rfnMeterDisconnectService.send(meter, RfnMeterDisconnectStatusType.QUERY, disconnectCallback);
+            rfnMeterDisconnectService.send(meter, RfnMeterDisconnectCmdType.QUERY, disconnectCallback);
         }
     }
 

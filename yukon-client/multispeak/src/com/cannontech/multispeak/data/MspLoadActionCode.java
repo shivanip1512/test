@@ -3,7 +3,7 @@ package com.cannontech.multispeak.data;
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectCmdType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
@@ -98,10 +98,10 @@ public enum MspLoadActionCode {
      * @param configSource
      * @return
      */
-    public RfnMeterDisconnectStatusType getRfnMeterDisconnectStatusType(ConfigurationSource configSource) {
+    public RfnMeterDisconnectCmdType getRfnMeterDisconnectStatusType(ConfigurationSource configSource) {
         switch (this) {
         case CONNECT:
-            return RfnMeterDisconnectStatusType.RESUME;
+            return RfnMeterDisconnectCmdType.RESUME;
         case ARMED:
         case ARM: {
             String arm = configSource.getString(MasterConfigString.RFN_METER_DISCONNECT_ARMING, "FALSE");
@@ -109,13 +109,13 @@ public enum MspLoadActionCode {
             switch (mode) {
             case ARM:
             case BOTH:
-                return RfnMeterDisconnectStatusType.ARM;
+                return RfnMeterDisconnectCmdType.ARM;
             default:
-                return RfnMeterDisconnectStatusType.RESUME;
+                return RfnMeterDisconnectCmdType.RESUME;
             }
         }
         case DISCONNECT:
-            return RfnMeterDisconnectStatusType.TERMINATE;
+            return RfnMeterDisconnectCmdType.TERMINATE;
         case UNKNOWN:
         default:
             return null;
