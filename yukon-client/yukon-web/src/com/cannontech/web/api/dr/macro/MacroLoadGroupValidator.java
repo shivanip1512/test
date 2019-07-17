@@ -29,7 +29,7 @@ public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
 
         if (!errors.hasFieldErrors("type")) {
             if (loadGroup.getType() != PaoType.MACRO_GROUP) {
-                errors.rejectValue("type", key + "type.invalid");
+                errors.rejectValue("type", key + "type.invalid", new Object[] { "macro load group" }, "");
             }
         }
 
