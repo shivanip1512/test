@@ -1,10 +1,12 @@
 package com.cannontech.common.dr.program.setup.model;
 
 import com.cannontech.common.pao.PaoType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(value={ "groupName", "groupOrder", "type"}, allowGetters= true, ignoreUnknown = true)
 public class ProgramGroup {
 
     private Integer groupId;

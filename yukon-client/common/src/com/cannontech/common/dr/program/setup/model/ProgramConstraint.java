@@ -1,5 +1,8 @@
 package com.cannontech.common.dr.program.setup.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(value={ "constraintName"}, allowGetters= true, ignoreUnknown = true)
 public class ProgramConstraint {
 
     private Integer constraintId;

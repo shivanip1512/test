@@ -9,9 +9,11 @@ import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
 import com.cannontech.database.db.device.lm.LMGroupExpressComAddress;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonIgnoreProperties(value={ "routeName"}, allowGetters= true, ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
 public class LoadGroupExpresscom extends LoadGroupBase {
     private Integer routeId;

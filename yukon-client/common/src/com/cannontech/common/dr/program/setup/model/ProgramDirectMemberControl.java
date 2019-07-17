@@ -1,5 +1,8 @@
 package com.cannontech.common.dr.program.setup.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(value={ "subordinateProgName"}, allowGetters= true, ignoreUnknown = true)
 public class ProgramDirectMemberControl {
 
     private Integer subordinateProgId;

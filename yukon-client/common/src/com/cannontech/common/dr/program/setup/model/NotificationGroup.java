@@ -1,5 +1,8 @@
 package com.cannontech.common.dr.program.setup.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(value={ "notificationGrpName"}, allowGetters= true, ignoreUnknown = true)
 public class NotificationGroup {
 
     private Integer notificationGrpID;
