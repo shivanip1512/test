@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -170,6 +169,9 @@ public class LoadGroupSetupController {
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadGroup, "loadGroup");
                 result = helper.populateBindingError(result, error, response);
+                if (loadGroup.getType() != null) {
+                    controllerHelper.setValidationMessageInFlash(result, flash, loadGroup.getType());
+                }
                 return bindAndForward(loadGroup, result, redirectAttributes);
             }
 
@@ -360,14 +362,5 @@ public class LoadGroupSetupController {
     private PaoType getPaoTypeForPaoId(int loadGroupId) {
         LiteYukonPAObject litePao = dbCache.getAllPaosMap().get(loadGroupId);
         return litePao.getPaoType();
-    }
-
-    /**
-     * Returns the Load Group name based upon the Load Group Id
-     */
-    private String getPaoNameForPaoId(int loadGroupId) {
-        Optional<LiteYukonPAObject> loadGroup =
-            dbCache.getAllLMGroups().stream().filter(group -> group.getLiteID() == loadGroupId).findFirst();
-        return loadGroup.get().getPaoName();
     }
 }

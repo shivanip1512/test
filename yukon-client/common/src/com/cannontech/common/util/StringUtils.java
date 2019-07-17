@@ -268,7 +268,7 @@ public final class StringUtils {
     }
     
     /**
-     * Converts integer value to binary value.
+     * Converts integer value to 16 bit binary value.
      */
     public static String convertIntegerToBinary(Integer value) {
         StringBuffer binaryValue = new StringBuffer();
@@ -284,7 +284,7 @@ public final class StringUtils {
     }
 
     /**
-     * Converts binary value to integer.
+     * Converts 16 bit binary value to integer.
      */
     public static Integer convertBinaryToInteger(String binaryValue) {
         int val = 0;

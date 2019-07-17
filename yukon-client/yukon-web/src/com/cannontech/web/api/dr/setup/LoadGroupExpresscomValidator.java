@@ -12,9 +12,9 @@ import com.cannontech.common.validator.YukonValidationUtils;
 @Service
 public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGroupExpresscom> {
     private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
-    
+
     @Autowired private LMValidatorHelper lmValidatorHelper;
-    
+
     public LoadGroupExpresscomValidator() {
         super(LoadGroupExpresscom.class);
     }
@@ -31,10 +31,10 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
         if (loadGroup.getType() == PaoType.LM_GROUP_EXPRESSCOMM) {
             lmValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
         }
-        
+
         // Address Usage should have atleast one field
         lmValidatorHelper.checkIfListRequired("addressUsage", errors, loadGroup.getAddressUsage(), "Address Usage");
-        
+
         // Address Usage should have atleast Load, program or splinter
         if (!errors.hasFieldErrors("addressUsage")) {
             boolean loadAddressUsage = loadGroup.getAddressUsage().stream().anyMatch(e -> e.isLoadAddressUsage());
@@ -42,14 +42,14 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 errors.rejectValue("addressUsage", key + "loadRequired", new Object[] { "Address Usage" }, "");
             }
         }
-        
+
         // SPID is mandatory and check for range
         lmValidatorHelper.checkIfFieldRequired("serviceProvider", errors, loadGroup.getServiceProvider(),
             "Service Provider");
         if (!errors.hasFieldErrors("serviceProvider")) {
             YukonValidationUtils.checkRange(errors, "serviceProvider", loadGroup.getServiceProvider(), 1, 65534, true);
         }
-        
+
         if (!errors.hasFieldErrors("addressUsage")) {
             if (loadGroup.getAddressUsage().contains(AddressUsage.SERIAL)) {
                 lmValidatorHelper.checkIfFieldRequired("serialNumber", errors, loadGroup.getSerialNumber(),
@@ -76,7 +76,7 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                     errors.rejectValue("geo", key + "notRequired", new Object[] { AddressUsage.GEO, "geo" }, "");
                 }
             }
-            
+
             if (loadGroup.getAddressUsage().contains(AddressUsage.SUBSTATION)) {
                 // Validate substation
                 lmValidatorHelper.checkIfFieldRequired("substation", errors, loadGroup.getSubstation(), "Substation");
@@ -85,20 +85,22 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 }
             } else {
                 if (loadGroup.getSubstation() != null) {
-                    errors.rejectValue("substation", key + "notRequired", new Object[] { AddressUsage.SUBSTATION, "substation" }, "");
+                    errors.rejectValue("substation", key + "notRequired",
+                        new Object[] { AddressUsage.SUBSTATION, "substation" }, "");
                 }
             }
 
             if (loadGroup.getAddressUsage().contains(AddressUsage.FEEDER)) {
                 // validate Feeder
                 lmValidatorHelper.checkIfFieldRequired("feeder", errors, loadGroup.getFeeder(), "Feeder");
-                lmValidatorHelper.checkStringLength("feeder", errors, loadGroup.getFeeder(), "Feeder",16);
+                lmValidatorHelper.checkStringLength("feeder", errors, loadGroup.getFeeder(), "Feeder", 16);
             } else {
-                if (loadGroup.getFeeder() != null) {
-                    errors.rejectValue("feeder", key + "notRequired", new Object[] { AddressUsage.FEEDER, "feeder" }, "");
+                if (loadGroup.getFeeder() != null && !loadGroup.getFeeder().isEmpty()) {
+                    errors.rejectValue("feeder", key + "notRequired", new Object[] { AddressUsage.FEEDER, "feeder" },
+                        "");
                 }
             }
-        
+
             if (loadGroup.getAddressUsage().contains(AddressUsage.ZIP)) {
                 // validate Zip
                 lmValidatorHelper.checkIfFieldRequired("zip", errors, loadGroup.getZip(), "Zip");
@@ -130,7 +132,8 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 }
             } else {
                 if (loadGroup.getProgram() != null) {
-                    errors.rejectValue("program", key + "notRequired", new Object[] { AddressUsage.PROGRAM, "program" }, "");
+                    errors.rejectValue("program", key + "notRequired", new Object[] { AddressUsage.PROGRAM, "program" },
+                        "");
                 }
             }
             if (loadGroup.getAddressUsage().contains(AddressUsage.SPLINTER)) {
@@ -141,7 +144,8 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 }
             } else {
                 if (loadGroup.getSplinter() != null) {
-                    errors.rejectValue("splinter", key + "notRequired", new Object[] { AddressUsage.SPLINTER, "splinter" }, "");
+                    errors.rejectValue("splinter", key + "notRequired",
+                        new Object[] { AddressUsage.SPLINTER, "splinter" }, "");
                 }
             }
             if (loadGroup.getAddressUsage().contains(AddressUsage.LOAD)) {

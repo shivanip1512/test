@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 
 import com.cannontech.common.dr.setup.AddressUsage;
 import com.cannontech.common.dr.setup.ControlPriority;
@@ -32,6 +33,7 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiControllerHelper;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.collect.ImmutableList;
 
 @Service
@@ -154,5 +156,24 @@ public class LoadGroupSetupControllerHelper {
     
     public static List<Integer> getFeederList() {
         return ImmutableList.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+    }
+    
+    /**
+     * Set validation messages that have to be shown in flash scope.
+     */
+    public void setValidationMessageInFlash(BindingResult result, FlashScope flash, PaoType type) {
+        switch (type) {
+        case LM_GROUP_EXPRESSCOMM:
+        case LM_GROUP_RFN_EXPRESSCOMM:
+            if (result.hasFieldErrors("addressUsage")) {
+                flash.setError(result.getFieldError("addressUsage"));
+            }
+            if (result.hasFieldErrors("feeder")) {
+                flash.setError(result.getFieldError("feeder"));
+            }
+            if (result.hasFieldErrors("relayUsage")) {
+                flash.setError(result.getFieldError("relayUsage"));
+            }
+        }
     }
 }
