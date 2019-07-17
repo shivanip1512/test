@@ -19,6 +19,8 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.encryption.CryptoException;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.system.GlobalSettingCryptoUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -182,6 +184,12 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
         cache.clear();
     }
 
+    @Override
+    public boolean isDbChangeForSetting(DatabaseChangeEvent event, GlobalSettingType globalSettingType) {
+        return (event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING && 
+                Integer.valueOf(event.getPrimaryKey()).equals(getSetting(globalSettingType).getId()));
+    }
+    
     private final YukonRowMapper<GlobalSetting> settingMapper = new YukonRowMapper<GlobalSetting>() {
         @Override
         public GlobalSetting mapRow(YukonResultSet rs) throws SQLException {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +18,6 @@ import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
@@ -31,13 +31,9 @@ public class UpdateServerConfigHelper {
     @PostConstruct
     public void init() {
         asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
-            Integer primaryKeyId = Integer.valueOf(event.getPrimaryKey());
-            if ((event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING) && (primaryKeyId.equals(
-                globalSettingDao.getSetting(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER).getId())
-                || primaryKeyId.equals(
-                    globalSettingDao.getSetting(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER).getId())
-                || primaryKeyId.equals(
-                    globalSettingDao.getSetting(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD).getId()))) {
+            if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER) ||
+                    globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER) ||
+                    globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD)) {
                 sendNMConfiguration();
             }
         });

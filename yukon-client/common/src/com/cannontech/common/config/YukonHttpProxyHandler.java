@@ -10,7 +10,6 @@ import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
@@ -27,8 +26,7 @@ public class YukonHttpProxyHandler {
         asyncDynamicDataSource.addDatabaseChangeEventListener(new DatabaseChangeEventListener() {
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
-                if (event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING && 
-                    event.getPrimaryKey() == settingDao.getSetting(GlobalSettingType.HTTP_PROXY).getId().intValue()) {
+                if (settingDao.isDbChangeForSetting(event, GlobalSettingType.HTTP_PROXY)) {
                     YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(proxy -> proxy.setAsSystemProxy());
                 }
             }

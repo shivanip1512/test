@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.MethodNotImplementedException;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.model.GlobalSetting;
@@ -64,5 +65,9 @@ public class GlobalSettingDaoAdapter implements GlobalSettingDao {
     public boolean hasDatabaseEntry(GlobalSettingType setting) {
         throw new MethodNotImplementedException();
     }
-
+    
+    @Override
+    public boolean isDbChangeForSetting(DatabaseChangeEvent event, GlobalSettingType globalSettingType) {
+        throw new MethodNotImplementedException();
+    }
 }

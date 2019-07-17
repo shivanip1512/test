@@ -3,6 +3,7 @@ package com.cannontech.system.dao;
 import java.util.Optional;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.model.GlobalSetting;
 
@@ -139,4 +140,8 @@ public interface GlobalSettingDao {
      */
     public void valueChanged();
 
+    /**
+     * Returns true when the event's Id matches the Id of globalSetting.
+     */
+    public boolean isDbChangeForSetting(DatabaseChangeEvent event, GlobalSettingType globalSettingType);
 }
