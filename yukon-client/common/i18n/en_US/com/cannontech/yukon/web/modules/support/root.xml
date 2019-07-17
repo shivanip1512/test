@@ -222,6 +222,24 @@
     <entry key="yukon.web.modules.support.routeUsage.variableBit"><![CDATA[Variable Bit: <span class="variableBit">{0}</span>]]></entry>
     <entry key="yukon.web.modules.support.routeUsage.level">Level {0}</entry>
     
+    <!-- waterNode.jsp -->
+    <entry key="yukon.web.modules.support.waterNode.pageName">Water Node Battery Analysis</entry>
+    <entry key="yukon.web.modules.support.waterNode.title">Water Node Analysis</entry>
+    <entry key="yukon.web.modules.support.waterNode.description">
+        The battery depletion report documents the condition of all active water nodes.
+        Clicking "generate report" will generate a report with the serial number, meter number, 
+        device name, device type, battery condition category, high sleeping current indicator,
+        and most recent battery voltage reading of each water node. Analysis will be performed
+        on the previous six days' data readings to evaluate each node for the presence of high
+        sleeping current, and on the previous three days' data to evaluate the battery level of
+        each node.
+    </entry>
+    <entry key="yukon.web.modules.support.waterNode.generateReport.label">Generate Report</entry>
+    <entry key="yukon.web.modules.support.waterNode.NORMAL">Normal</entry>
+    <entry key="yukon.web.modules.support.waterNode.LOW">Low</entry>
+    <entry key="yukon.web.modules.support.waterNode.CRITICALLY_LOW">Critically Low</entry>
+    <entry key="yukon.web.modules.support.waterNode.UNREPORTED">Unreported</entry>
+    
     <!-- deviceDefinition/deviceDefinitionViewer.jsp -->
     <entry key="yukon.web.modules.support.deviceDef.pageName">Device Definitions</entry>
     <entry key="yukon.web.modules.support.deviceDef.filters.title">Filters</entry>

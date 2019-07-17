@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 
 import com.cannontech.common.pao.PaoType;
@@ -18,8 +17,7 @@ import com.cannontech.web.support.waterNode.dao.WaterNodeDao;
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
 
 public class WaterNodeDaoImpl implements WaterNodeDao {
-    @Autowired
-    YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired YukonJdbcTemplate yukonJdbcTemplate;
 
     @Override
     public List<WaterNodeDetails> getWaterNodeDetails(Instant startTime, Instant stopTime) {
@@ -33,6 +31,8 @@ public class WaterNodeDaoImpl implements WaterNodeDao {
         sql.append("WHERE ypo.Type").in(PaoType.getWaterMeterTypes());
         sql.append(  "AND p.PointType").eq_k(PointType.Analog);
         sql.append(  "AND p.PointOffset").eq(5);
+        sql.append(  "AND rph.Timestamp IS NOT NULL");
+        sql.append(  "AND rph.Value IS NOT NULL");
         sql.append(  "AND rph.Timestamp").lte(stopTime);
         sql.append(  "AND rph.Timestamp").gte(startTime);
         sql.append("ORDER BY rph.PointId, rph.Timestamp;");
