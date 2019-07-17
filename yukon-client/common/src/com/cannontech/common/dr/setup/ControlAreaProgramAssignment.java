@@ -1,17 +1,21 @@
 package com.cannontech.common.dr.setup;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class ControlAreaProgramAssignment {
 
-    private Integer programDeviceId;
+    private Integer programId;
     private Integer startPriority;
     private Integer stopPriority;
 
-    public Integer getProgramDeviceId() {
-        return programDeviceId;
+    public Integer getProgramId() {
+        return programId;
     }
 
-    public void setProgramDeviceId(Integer programDeviceId) {
-        this.programDeviceId = programDeviceId;
+    public void setProgramId(Integer programId) {
+        this.programId = programId;
     }
 
     public Integer getStartPriority() {

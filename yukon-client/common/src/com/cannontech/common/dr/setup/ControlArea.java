@@ -6,7 +6,6 @@ import com.cannontech.common.util.TimeIntervals;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(value = { "controlAreaId" }, allowGetters = true, ignoreUnknown = true)
@@ -19,7 +18,7 @@ public class ControlArea {
     private DailyDefaultState dailyDefaultState;
     private Integer dailyStartTimeInMinutes;
     private Integer dailyStopTimeInMinutes;
-    private TriggerActiveFlag allTriggersActiveFlag;
+    private boolean allTriggersActiveFlag;
 
     private List<ControlAreaTrigger> triggers;
     private List<ControlAreaProgramAssignment> programAssignment;
@@ -80,11 +79,11 @@ public class ControlArea {
         this.dailyStopTimeInMinutes = dailyStopTimeInMinutes;
     }
 
-    public TriggerActiveFlag getAllTriggersActiveFlag() {
+    public boolean getAllTriggersActiveFlag() {
         return allTriggersActiveFlag;
     }
 
-    public void setAllTriggersActiveFlag(TriggerActiveFlag allTriggersActiveFlag) {
+    public void setAllTriggersActiveFlag(boolean allTriggersActiveFlag) {
         this.allTriggersActiveFlag = allTriggersActiveFlag;
     }
 

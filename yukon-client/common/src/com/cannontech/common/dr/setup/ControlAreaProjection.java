@@ -1,11 +1,14 @@
 package com.cannontech.common.dr.setup;
 
 import com.cannontech.common.util.TimeIntervals;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
 public class ControlAreaProjection {
 
     private ControlAreaProjectionType projectionType;
-    private Integer projectionPoints;
+    private Integer projectionPoint;
     private TimeIntervals projectAheadDuration;
 
     public ControlAreaProjectionType getProjectionType() {
@@ -16,12 +19,12 @@ public class ControlAreaProjection {
         this.projectionType = projectionType;
     }
 
-    public Integer getProjectionPoints() {
-        return projectionPoints;
+    public Integer getProjectionPoint() {
+        return projectionPoint;
     }
 
-    public void setProjectionPoints(Integer projectionPoints) {
-        this.projectionPoints = projectionPoints;
+    public void setProjectionPoint(Integer projectionPoint) {
+        this.projectionPoint = projectionPoint;
     }
 
     public TimeIntervals getProjectAheadDuration() {
