@@ -142,4 +142,12 @@
             <tags:input id="js-splinter" path="splinter" size="25" maxlength="60"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
+
+    <div id="addressing-popup" data-dialog class="dn" 
+            data-title="<cti:msg2 key=".loadAddressingPopup.title"/>"
+            data-event="yukon:dr:setup:loadGroup:addressing"
+            data-ok-text="<cti:msg2 key="yukon.common.no"/>"
+            data-cancel-text="<cti:msg2 key="yukon.common.yes"/>"
+            data-width="500" data-height="250"><cti:msg2 key=".loadAddressingPopup.message"/></div>
+            
 </tags:sectionContainer2>

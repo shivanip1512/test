@@ -92,6 +92,23 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
             $('#js-sendControlMessageYes').addClass('dn');
             $('#js-sendControlMessageNo').removeClass('dn');
         }
+        if ($("input[id=LOAD_chk]:checked").length !== 0) {
+            if (($("input[id=LOAD_chk]:checked").length !== 0) && 
+            ($("input[id=PROGRAM_chk]:checked").length !== 0 || $("input[id=SPLINTER_chk]:checked").length !== 0)) {
+            var popup = $('#addressing-popup'),
+                title = popup.data('title'),
+                okButtonText = popup.data('okText'),
+                cancelButtonText = popup.data('cancelText'),
+                width = popup.data('width');
+            popup.dialog({
+                title: title, 
+                modal: true,
+                width: width,
+                buttons: yukon.ui.buttons({okText: okButtonText, event: 'yukon:uncheck:load',
+                    cancelText: cancelButtonText})
+               });
+            }
+        }
     },
     _buildFeederValue = function() {
         var feederValue ='';
@@ -193,6 +210,12 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
             });
             $(document).on('click', '#save', function (event) {
                 _setValues();
+             });
+            $(document).on('yukon:uncheck:load', function (ev) {
+                $('#LOAD_chk').prop("checked", false);
+                $('#js-sendControlMessageYes').addClass('dn');
+                $('#js-sendControlMessageNo').removeClass('dn');
+                $("#addressing-popup").dialog('close');
              });
             
             _initialized = true;

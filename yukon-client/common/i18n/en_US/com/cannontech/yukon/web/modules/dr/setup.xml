@@ -103,6 +103,11 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_7">Load 7</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_8">Load 8</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.filter.selectSwitchTypes">Select Switch Type(s)</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.loadAddressingPopup.title">Load level group addressing vs. load number addressing</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.loadAddressingPopup.message">
+By including load in your address usage, you are requiring the load to be configured
+with the specified program address for it to respond to the request for control.
+Are you sure you want do this?</entry>
 
 <!-- common Validation -->
 <entry key="yukon.web.modules.dr.setup.error.unique">{0} must be unique.</entry>
