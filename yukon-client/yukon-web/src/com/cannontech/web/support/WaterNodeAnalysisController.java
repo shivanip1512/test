@@ -1,6 +1,7 @@
 package com.cannontech.web.support;
 
 import org.apache.commons.compress.utils.Lists;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import java.io.IOException;
@@ -34,9 +35,9 @@ public class WaterNodeAnalysisController {
         @Autowired private WaterNodeService waterNodeService; 
         @GetMapping("generateReport")
         public void downloadWaterNodeReport(HttpServletResponse response, YukonUserContext userContext) throws IOException {
-            long oneDayInMillis = 24*60*60*1000;
-            Instant intervalEnd = Instant.now().minus(oneDayInMillis);//TODO: clarify with David if this is what he meant by 24 hrs previously
-            Instant intervalStart =  intervalEnd.minus(6*oneDayInMillis);//interval lasts six days
+            
+            Instant intervalEnd = Instant.now().minus(Duration.standardDays(1));//TODO: clarify with David if this is what he meant by 24 hrs previously
+            Instant intervalStart =  intervalEnd.minus(Duration.standardDays(6));//interval lasts six days
             
             String[] headerRow = getReportHeaderRow();
             List<String[]> dataRows = getReportDataRows(intervalStart,intervalEnd);
