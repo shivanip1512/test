@@ -48,6 +48,10 @@ public class Field implements Displayable {
     public boolean isDeviceType() {
         return type == FieldType.DEVICE_TYPE;
     }
+    
+    public boolean isRuntimeType() {
+        return type == FieldType.RUNTIME;
+    }
 
     @JsonIgnore
     @Override
