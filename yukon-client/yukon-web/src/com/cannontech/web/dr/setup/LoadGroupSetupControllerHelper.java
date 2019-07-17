@@ -84,6 +84,9 @@ public class LoadGroupSetupControllerHelper {
                 if (loadGroup.getAddressUsage().contains(AddressUsage.SPLINTER)) {
                     model.addAttribute("displaySplinter", true);
                 }
+                if (loadGroup.getAddressUsage().contains(AddressUsage.LOAD)) {
+                    model.addAttribute("loadSelected", true);
+                }
             } else {
                 if (type == PaoType.LM_GROUP_EXPRESSCOMM) {
                     setCommunicationRoute(model, request, userContext);
@@ -130,8 +133,9 @@ public class LoadGroupSetupControllerHelper {
         switch (group.getType()) {
         case LM_GROUP_EXPRESSCOMM:
         case LM_GROUP_RFN_EXPRESSCOMM:
-            ((LoadGroupExpresscom) group).setServiceProvider(0);
-            ((LoadGroupExpresscom) group).setProtocolPriority(ControlPriority.HIGH);
+            LoadGroupExpresscom expresscomGroup = ((LoadGroupExpresscom) group);
+            expresscomGroup.setServiceProvider(1);
+            expresscomGroup.setProtocolPriority(ControlPriority.DEFAULT);
             break;
         case LM_GROUP_EMETCON:
             ((LoadGroupEmetcon) group).setGoldAddress(1);
@@ -142,7 +146,10 @@ public class LoadGroupSetupControllerHelper {
         case LM_GROUP_DIGI_SEP:
             ((LoadGroupDigiSep) group).setRampInMinutes(30);
             ((LoadGroupDigiSep) group).setRampOutMinutes(30);
+            break;
         }
+        // Set default value for common field.
+        group.setkWCapacity(0.0);
     }
     
     public static List<Integer> getFeederList() {

@@ -338,6 +338,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> nestTypes;
     private final static ImmutableSet<PaoType> loadGroupSupportingRoute;
     private final static ImmutableSet<PaoType> wifiTypes;
+    private final static ImmutableSet<PaoType> loadGroupSupportedFromWeb;
 
     public final static int INVALID = -1;
     
@@ -754,6 +755,19 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_GROUP_VERSACOM
           );
         
+        loadGroupSupportedFromWeb = ImmutableSet.of(
+            LM_GROUP_DIGI_SEP,
+            LM_GROUP_ECOBEE,
+            LM_GROUP_HONEYWELL,
+            LM_GROUP_ITRON,
+            LM_GROUP_NEST,
+            LM_GROUP_EMETCON,
+            LM_GROUP_EXPRESSCOMM,
+            LM_GROUP_RFN_EXPRESSCOMM,
+            LM_GROUP_VERSACOM,
+            LM_GROUP_METER_DISCONNECT
+          );
+        
         rfElectricTypes = Sets.difference(rfMeterTypes, Sets.union(waterMeterTypes, gasMeterTypes)).immutableCopy();
     }
     
@@ -1127,7 +1141,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
      */
     public static List<PaoType> getAllLMGroupTypes() {
         List<PaoType> paoTypes = Arrays.stream(PaoType.values())
-                                       .filter(paoType -> paoType.isLoadGroup() && paoType != PaoType.MACRO_GROUP)
+                                       .filter(paoType -> paoType.isLoadGroup() && paoType.isLoadGroupSupportedFromWeb()&& paoType != PaoType.MACRO_GROUP)
                                        .collect(Collectors.toList());
         return paoTypes;
     }
@@ -1177,5 +1191,12 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public boolean isLoadGroupSupportRoute() {
         return (isLoadGroup() && loadGroupSupportingRoute.contains(this));
+    }
+    
+    /**
+     * Load Group currently supported from web. 
+     */
+    public boolean isLoadGroupSupportedFromWeb() {
+        return loadGroupSupportedFromWeb.contains(this);
     }
 }

@@ -34,6 +34,7 @@ public class LiteYukonPAObject extends LiteBase implements YukonPao {
     
     public LiteYukonPAObject() {
         super();
+        setLiteType(LiteTypes.YUKON_PAOBJECT);
     }
     /**
      * @param paoId

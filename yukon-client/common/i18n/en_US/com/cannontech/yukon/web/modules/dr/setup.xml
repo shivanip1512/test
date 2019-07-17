@@ -93,14 +93,15 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.PROGRAM">Program</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.LOAD">Load</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.SPLINTER">Splinter</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.Load_1">L 1</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.Load_2">L 2</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.Load_3">L 3</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.Load_4">L 4</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.Load_5">L 5</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.Load_6">L 6</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.Load_7">L 7</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.Load_8">L 8</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.SERVICE">SPID</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_1">Load 1</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_2">Load 2</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_3">Load 3</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_4">Load 4</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_5">Load 5</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_6">Load 6</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_7">Load 7</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.Load_8">Load 8</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.allSwitchTypes">All Switch Types</entry>
 
 <!-- common Validation -->
@@ -108,6 +109,7 @@
 <entry key="yukon.web.modules.dr.setup.error.required">{0} is required.</entry>
 <entry key="yukon.web.modules.dr.setup.error.invalid">Invalid {0} value.</entry>
 <entry key="yukon.web.modules.dr.setup.error.routeId.doesNotExist">Route Id does not exist.</entry>
+<entry key="yukon.web.modules.dr.setup.error.stringLength">{0} must be of {1} character.</entry>
 
 <!-- Control Scenario Validation -->
 <entry key="yukon.web.modules.dr.setup.controlScenario.error.oneGear">Only one valid gear is allowed.</entry>
@@ -123,6 +125,9 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.assignedLoadGroup.required">At least one load group must be assigned.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.type.invalid">Invalid macro load group type</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.deviceClassSet.required">At least one device class set must be assigned</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.loadAddress.required">At least usage type should be selected</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.notRequired">Address Usage do not have {0}, remove {1}.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.loadRequired">{0} should atleast have LOAD, SPLINTER or PROGRAM</entry>
 
 <!-- Load Program Validation -->
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.constraintId.doesNotExist">Constraint Id does not exist.</entry>

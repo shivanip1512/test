@@ -133,4 +133,18 @@ public class StringUtilsTest {
         String result = StringUtils.formatStringWithPattern(testValue, pattern);
         assertTrue(result.equals("135"));
     }
+    
+    @Test
+    public void isValidBinary() {
+        Integer testValue = 1;
+        String result = StringUtils.convertIntegerToBinary(testValue);
+        assertTrue(result.equals("1000000000000000"));
+    }
+    
+    @Test
+    public void isValidInteger() {
+        String testValue = "1000000000000000";
+        Integer result = StringUtils.convertBinaryToInteger(testValue);
+        assertTrue(result.equals(1));
+    }
 }

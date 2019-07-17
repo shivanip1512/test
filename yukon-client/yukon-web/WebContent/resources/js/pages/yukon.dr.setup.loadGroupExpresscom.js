@@ -17,65 +17,72 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
         if ($("input[id=GEO_chk]:checked").length !== 0) {
             $('#js-geoRow').show();	
         } else {
-            $('#js-geo').val(0);
             $('#js-geoRow').hide();
         }
         if ($("input[id=SUBSTATION_chk]:checked").length !== 0) {
             $('#js-substationRow').show();	
         } else {
-            $('#js-substation').val(0);
             $('#js-substationRow').hide();
         }
         if ($("input[id=FEEDER_chk]:checked").length !== 0) {
             $('#js-feederRow').show();	
         } else {
-            $('#js-feeder').find('input[type=checkbox]:checked').prop("checked", false)
             $('#js-feederRow').hide();
         }
         if ($("input[id=ZIP_chk]:checked").length !== 0) {
             $('#js-zipRow').show();	
         } else {
-            $('#js-zip').val(0);
             $('#js-zipRow').hide();
         }
         if ($("input[id=USER_chk]:checked").length !== 0) {
             $('#js-userRow').show();	
         } else {
-            $('#js-user').val(0);
             $('#js-userRow').hide();
         }
         if ($("input[id=SERIAL_chk]:checked").length !== 0) {
             $('#js-serialRow').show();
-            $('#js-geo').val(0);
-            $('#js-geoRow').hide();
-            $('#js-substation').val(0);
-            $('#js-substationRow').hide();
-            $('#js-feeder').find('input[type=checkbox]:checked').prop("checked", false)
-            $('#js-feederRow').hide();
-            $('#js-zip').val(0);
-            $('#js-zipRow').hide();
-            $('#js-user').val(0);
-            $('#js-userRow').hide();
-            
-            // uncheck all checkbox except for serial
-            $('#js-addressUsage').find('input[type=checkbox]:checked').prop("checked", false)
             $('#SERIAL_chk').prop("checked", true);
+            
+            // disable other buttons
+            $('#GEO_chk').prop("disabled", true);
+            $('#SUBSTATION_chk').prop("disabled", true);
+            $('#FEEDER_chk').prop("disabled", true);
+            $('#ZIP_chk').prop("disabled", true);
+            $('#USER_chk').prop("disabled", true);
+            
+            // disable other textbox
+            $('#js-geo').attr("disabled", "disabled");
+            $('#js-substation').attr("disabled", "disabled");
+            $('#js-zip').attr("disabled", "disabled");
+            $('#js-user').attr("disabled", "disabled");
+            $('#js-feeder').find('input[type=checkbox]').prop("disabled", true);
         } else {
-            $('#js-serial').val(0);
-            $('#js-serialRow').hide();
+             $('#js-serialRow').hide();
+             // enable other checkbox
+             $('#GEO_chk').prop("readonly", false);
+             $('#SUBSTATION_chk').prop("disabled", false);
+             $('#FEEDER_chk').prop("disabled", false);
+             $('#ZIP_chk').prop("disabled", false);
+             $('#USER_chk').prop("disabled", false);
+             
+             // enable textbox
+             $('#js-geo').removeAttr("disabled");
+             $('#js-substation').removeAttr("disabled");
+             $('#js-feeder').removeAttr("disabled");
+             $('#js-zip').removeAttr("disabled");
+             $('#js-user').removeAttr("disabled");
+             $('#js-feeder').find('input[type=checkbox]').prop("disabled", false);
         }
      },
     _handleLoads = function () {
         if ($("input[id=PROGRAM_chk]:checked").length !== 0) {
             $('#js-programRow').show();	
         } else {
-            $('#js-program').val(0);
             $('#js-programRow').hide();
         }
         if ($("input[id=SPLINTER_chk]:checked").length !== 0) {
             $('#js-splinterRow').show();	
         } else {
-            $('#js-splinter').val(0);
             $('#js-splinterRow').hide();
         }
         if ($("input[id=LOAD_chk]:checked").length !== 0) {
@@ -134,6 +141,32 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
         if(addressUsage.indexOf('SPLINTER') > -1) {
             $('#SPLINTER_chk').prop("checked", true)
         }
+    },
+    _setValues = function() {
+        if ($("input[id=GEO_chk]:checked").length === 0) {
+            $('#js-geo').val(0);	
+        }
+        if ($("input[id=SUBSTATION_chk]:checked").length === 0) {
+            $('#js-substation').val(0);
+        }
+        if ($("input[id=FEEDER_chk]:checked").length === 0) {
+            $('#feederValueString').val(0);	
+        }
+        if ($("input[id=ZIP_chk]:checked").length === 0) {
+            $('#js-zip').val(0);
+        }
+        if ($("input[id=USER_chk]:checked").length === 0) {
+            $('#js-user').val(0);	
+        }
+        if ($("input[id=SERIAL_chk]:checked").length === 0) {
+            $('#js-user').val(0);	
+        }
+        if ($("input[id=PROGRAM_chk]:checked").length === 0) {
+            $('#js-program').val(0);	
+        }
+        if ($("input[id=SPLINTER_chk]:checked").length === 0) {
+            $('#js-splinter').val(0);	
+        }
     }
     
     mod = {
@@ -148,7 +181,7 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
                 _setFeederValue();
                 _handleLoads();
            }
-
+           
             $(document).on('click', '#js-addressUsage', function (event) {
                 _handleAddressing();
             });
@@ -158,6 +191,9 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
             $(document).on('click', '#js-feederRow', function (event) {
                _buildFeederValue();
             });
+            $(document).on('click', '#save', function (event) {
+                _setValues();
+             });
             
             _initialized = true;
         }

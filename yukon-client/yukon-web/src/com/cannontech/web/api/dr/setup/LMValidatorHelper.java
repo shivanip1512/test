@@ -1,5 +1,6 @@
 package com.cannontech.web.api.dr.setup;
 
+import java.util.List;
 import java.util.Set;
 
 
@@ -27,6 +28,17 @@ public class LMValidatorHelper {
         if (fieldValue == null || !StringUtils.hasText(fieldValue.toString())) {
             errors.rejectValue(field, key + "required", new Object[] { fieldName }, "");
         }
+    }
+
+    public void checkStringLength(String field, Errors errors, String fieldValue, String fieldName, int stringLength) {
+        if (fieldValue != null && fieldValue.length() != stringLength) {
+            errors.rejectValue(field, key + "stringLength", new Object[] { fieldName, stringLength }, "");
+        }
+    }
+    
+    // Type
+    public void checkIfEmptyPaoType(Errors errors) {
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", key + "required", new Object[] { "Type" });
     }
 
     public void validateName(String paoName, Errors errors, String fieldName) {
@@ -58,6 +70,15 @@ public class LMValidatorHelper {
             if (paoId != null) {
                 validateUniquePaoName(paoName, paoDao.getLiteYukonPAO(paoId).getPaoType(), errors, fieldName);
             }
+        }
+    }
+    
+    /**
+     * Validate a required list is empty
+     */
+    public void checkIfListRequired(String field, Errors errors, List<?> fieldValue, String fieldName) {
+        if (fieldValue == null || fieldValue.isEmpty()) {
+            errors.rejectValue(field, key + "required", new Object[] { fieldName }, "");
         }
     }
 

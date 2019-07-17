@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
 import com.cannontech.database.db.device.lm.LMGroupExpressComAddress;
@@ -156,7 +157,7 @@ public class LoadGroupExpresscom extends LoadGroupBase {
         setSubstation(loadGroupExpresscom.getSubstationAddress().getAddress() == 0 ? null
             : loadGroupExpresscom.getSubstationAddress().getAddress());
         Integer feederAddress = loadGroupExpresscom.getFeederAddress().getAddress();
-        setFeeder(feederAddress == 0 ? null : getFeederBinary(feederAddress));
+        setFeeder(feederAddress == 0 ? null : StringUtils.convertIntegerToBinary(feederAddress));
         setProgram(loadGroupExpresscom.getProgramAddress().getAddress() == 0 ? null
             : loadGroupExpresscom.getProgramAddress().getAddress());
         setZip(loadGroupExpresscom.getZipCodeAddress().getAddress() == 0 ? null
@@ -176,7 +177,13 @@ public class LoadGroupExpresscom extends LoadGroupBase {
         String addressUsageString = loadGroupExpresscom.getLMGroupExpressComm().getAddressUsage();
         List<AddressUsage> addressUsage = new ArrayList<>();
         for (int i = 0; i < addressUsageString.length(); i++) {
-            addressUsage.add(AddressUsage.getDisplayValue(addressUsageString.charAt(i)));
+            addressUsage.add(AddressUsage.getForAbbreviation(addressUsageString.charAt(i)));
+        }
+        // SPID is not send in address usage but is stored, so removing.
+        addressUsage.remove(AddressUsage.SERVICE);
+        // If serial has value then set it in address usage.
+        if (!loadGroupExpresscom.getLMGroupExpressComm().getSerialNumber().equals("0")) {
+            addressUsage.add(AddressUsage.SERIAL);
         }
         setAddressUsage(addressUsage);
         String loadsString = loadGroupExpresscom.getLMGroupExpressComm().getRelayUsage();
@@ -184,13 +191,13 @@ public class LoadGroupExpresscom extends LoadGroupBase {
             loadsString = loadsString.trim();
             List<Loads> loads = new ArrayList<>();
             for (int i = 0; i < loadsString.length(); i++) {
-                loads.add(Loads.getDisplayValue(Character.getNumericValue(loadsString.charAt(i))));
+                loads.add(Loads.getForLoads(Character.getNumericValue(loadsString.charAt(i))));
             }
             setRelayUsage(loads);
         }
 
         Integer controlPriorityValue = loadGroupExpresscom.getLMGroupExpressComm().getProtocolPriority();
-        setProtocolPriority(ControlPriority.getDisplayValue(controlPriorityValue));
+        setProtocolPriority(ControlPriority.getForPriority(controlPriorityValue));
     }
 
     @Override
@@ -203,7 +210,7 @@ public class LoadGroupExpresscom extends LoadGroupBase {
         lmGroupExpressom.setGeoAddress(createAddress(getGeo(), AddressUsage.GEO));
         lmGroupExpressom.setSubstationAddress(createAddress(getSubstation(), AddressUsage.SUBSTATION));
         if (getFeeder() != null) {
-            Integer feeder = getFeederInteger(getFeeder());
+            Integer feeder = StringUtils.convertBinaryToInteger(getFeeder());
             lmGroupExpressom.setFeederAddress(createAddress(feeder, AddressUsage.FEEDER));
         }
 
@@ -219,8 +226,17 @@ public class LoadGroupExpresscom extends LoadGroupBase {
         } else {
             expresscom.setRouteID(getRouteId());
         }
-        expresscom.setSerialNumber(getSerialNumber() == null ? "0" : getSerialNumber());
-
+        if (getSerialNumber() == null || getSerialNumber().trim().isBlank()) {
+            expresscom.setSerialNumber("0");
+        } else {
+            expresscom.setSerialNumber(getSerialNumber());
+        }
+        
+        
+        // Serial is not store in address usage so ignore it
+        getAddressUsage().remove(AddressUsage.SERIAL);
+        // SPID is a mandatory field and should be saved in address usage
+        getAddressUsage().add(AddressUsage.SERVICE);
         String addressUsageAbbreviation =
             getAddressUsage().stream().map(e -> e.getAbbreviation()).map(String::valueOf).collect(Collectors.joining());
         expresscom.setAddressUsage(addressUsageAbbreviation);
@@ -232,35 +248,6 @@ public class LoadGroupExpresscom extends LoadGroupBase {
         lmGroupExpressom.setLMGroupExpressComm(expresscom);
     }
     
-    /**
-     * Converts binary value to integer for feeder
-     */
-    private Integer getFeederInteger(String feeder) {
-        int val = 0;
-        for (int i = feeder.length() - 1; i >= 0; i--) {
-            val <<= 1;
-            if (feeder.charAt(i) == '1') {
-                val += 1;
-            }
-        }
-        return val;
-    }
-    
-    /**
-     * Converts integer value to binary value for feeder
-     */
-    private String getFeederBinary(Integer feeder) {
-        StringBuffer feederBinary = new StringBuffer(); 
-        for (int i = 0; i < 16; i++) {
-            if ((feeder & 1) == 0) {
-                feederBinary.append(0);
-            } else {
-                feederBinary.append(1);
-            }
-            feeder >>= 1;
-        }
-        return feederBinary.toString();
-    }
 
     /**
      * Create addressing for passed addressing type

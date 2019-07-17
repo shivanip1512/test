@@ -52,27 +52,17 @@
                     <tags:input id="name" path="name" size="25" maxlength="60" autofocus="autofocus"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".type">
-                    <cti:displayForPageEditModes modes="EDIT,CREATE">
+                    <cti:displayForPageEditModes modes="CREATE">
                         <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl"/>
                         <tags:selectWithItems items="${switchTypes}" id="type" path="type" defaultItemLabel="${selectLbl}" defaultItemValue=""/>
                     </cti:displayForPageEditModes>
-                    <cti:displayForPageEditModes modes="VIEW">
+                    <cti:displayForPageEditModes modes="EDIT,VIEW">
                         <i:inline key="${loadGroup.type}"/>
+                        <form:hidden path="type" value="${loadGroup.type}"/>
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
                 <c:if test="${selectedSwitchType == 'LM_GROUP_ITRON'}">
                     <%@ include file="itron.jsp" %>
-                </c:if>
-                <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
-                      selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">
-                    <tags:nameValue2 nameKey=".controlPriority">
-                        <cti:displayForPageEditModes modes="CREATE,EDIT">
-                            <tags:selectWithItems items="${protocolPriority}" id="protocolPriority" path="protocolPriority"/>
-                        </cti:displayForPageEditModes>
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key="${loadGroup.protocolPriority}"/>
-                        </cti:displayForPageEditModes>
-                    </tags:nameValue2>
                 </c:if>
                 <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
                       selectedSwitchType == 'LM_GROUP_EMETCON'}">
@@ -87,25 +77,26 @@
                 </c:if>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
-
-        <!-- Include jsp for load group type -->
-        <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
+        <div id='.js-loadgroup-container'>
+            <!-- Include jsp for load group type -->
+            <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
                       selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">
-            <%@ include file="expresscom.jsp" %>
-        </c:if>
-        <c:if test="${selectedSwitchType == 'LM_GROUP_DIGI_SEP'}">
-            <%@ include file="digisep.jsp" %>
-        </c:if>
-        <c:if test="${selectedSwitchType == 'LM_GROUP_EMETCON'}">
-            <%@ include file="emetcon.jsp" %>
-        </c:if>
-        <c:if test="${not empty selectedSwitchType}">
-            <%@ include file="loadGroupOptional.jsp" %>
-        </c:if>
+                <%@ include file="expresscom.jsp" %>
+            </c:if>
+            <c:if test="${selectedSwitchType == 'LM_GROUP_DIGI_SEP'}">
+                <%@ include file="digisep.jsp" %>
+            </c:if>
+            <c:if test="${selectedSwitchType == 'LM_GROUP_EMETCON'}">
+                <%@ include file="emetcon.jsp" %>
+            </c:if>
+            <c:if test="${not empty selectedSwitchType}">
+                <%@ include file="loadGroupOptional.jsp" %>
+            </c:if>
+        </div>
 
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <cti:button nameKey="save" type="submit" classes="primary action" />
+                <cti:button id="save" nameKey="save" type="submit" classes="primary action" />
             </cti:displayForPageEditModes>
             
             <cti:displayForPageEditModes modes="EDIT">

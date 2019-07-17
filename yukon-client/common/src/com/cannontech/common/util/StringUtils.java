@@ -267,4 +267,34 @@ public final class StringUtils {
         return formatedString;
     }
     
+    /**
+     * Converts integer value to binary value.
+     */
+    public static String convertIntegerToBinary(Integer value) {
+        StringBuffer binaryValue = new StringBuffer();
+        for (int i = 0; i < 16; i++) {
+            if ((value & 1) == 0) {
+                binaryValue.append(0);
+            } else {
+                binaryValue.append(1);
+            }
+            value >>= 1;
+        }
+        return binaryValue.toString();
+    }
+
+    /**
+     * Converts binary value to integer.
+     */
+    public static Integer convertBinaryToInteger(String binaryValue) {
+        int val = 0;
+        for (int i = binaryValue.length() - 1; i >= 0; i--) {
+            val <<= 1;
+            if (binaryValue.charAt(i) == '1') {
+                val += 1;
+            }
+        }
+        return val;
+    }
+    
 }

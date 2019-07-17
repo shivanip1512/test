@@ -4,7 +4,10 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupVersacom;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
 public class LoadGroupVersacom extends LoadGroupBase {
     // Communication Route Id
     private Integer routeId;

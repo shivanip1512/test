@@ -98,7 +98,6 @@ public class LoadGroupSetupController {
             controllerHelper.setDefaultValues(loadGroup);
         }
         model.addAttribute("loadGroup", loadGroup);
-        List<PaoType> switchTypes = PaoType.getAllLMGroupTypes();
         model.addAttribute("switchTypes", switchTypes);
         model.addAttribute("selectedSwitchType", type);
         controllerHelper.buildModelMap(PaoType.valueOf(type), model, request, userContext);
@@ -157,7 +156,7 @@ public class LoadGroupSetupController {
 
     @PostMapping("/save")
     public String save(@ModelAttribute("loadGroup") LoadGroupBase loadGroup, BindingResult result, YukonUserContext userContext,
-            FlashScope flash, RedirectAttributes redirectAttributes, ModelMap model, HttpServletRequest request) {
+            FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
         try {
             String url;
@@ -264,17 +263,17 @@ public class LoadGroupSetupController {
      * Load Group - Copy Popup functionality.
      */
     @GetMapping("/{id}/rendercopyloadGroup")
-    public String renderCopyloadGroup(@PathVariable int id, ModelMap model, YukonUserContext userContext,
+    public String renderCopyLoadGroup(@PathVariable int id, ModelMap model, YukonUserContext userContext,
             HttpServletRequest request) {
 
         PaoType loadGroupType = getPaoTypeForPaoId(id);
         LMCopy lmCopy = LMModelFactory.createLoadGroupCopy(loadGroupType);
 
+        LiteYukonPAObject litePao = dbCache.getAllPaosMap().get(id);
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
-        lmCopy.setName(messageSourceAccessor.getMessage("yukon.common.copyof", getPaoNameForPaoId(id)));
+        lmCopy.setName(messageSourceAccessor.getMessage("yukon.common.copyof", litePao.getPaoName()));
         model.addAttribute("lmCopy", lmCopy);
-        if ((loadGroupType == PaoType.LM_GROUP_EXPRESSCOMM) || (loadGroupType == PaoType.LM_GROUP_EMETCON)
-            || (loadGroupType == PaoType.LM_GROUP_VERSACOM)) {
+        if (loadGroupType.isLoadGroupSupportRoute()) {
             model.addAttribute("routes", cache.getAllRoutes());
         }
         model.addAttribute("loadGroupId", id);
@@ -344,8 +343,7 @@ public class LoadGroupSetupController {
     private String bindAndForwardForCopy(LMCopy lmCopy, BindingResult result, ModelMap model,
             HttpServletResponse response, int id) {
         PaoType loadGroupType = getPaoTypeForPaoId(id);
-        if ((loadGroupType == PaoType.LM_GROUP_EXPRESSCOMM) || (loadGroupType == PaoType.LM_GROUP_EMETCON)
-            || (loadGroupType == PaoType.LM_GROUP_VERSACOM)) {
+        if (loadGroupType.isLoadGroupSupportRoute()) {
             model.addAttribute("routes", cache.getAllRoutes());
         }
         model.addAttribute("lmCopy", lmCopy);
@@ -360,9 +358,8 @@ public class LoadGroupSetupController {
      * Returns the PaoType based upon the Load Group Id
      */
     private PaoType getPaoTypeForPaoId(int loadGroupId) {
-        Optional<LiteYukonPAObject> loadGroup =
-            dbCache.getAllLMGroups().stream().filter(group -> group.getLiteID() == loadGroupId).findFirst();
-        return loadGroup.get().getPaoType();
+        LiteYukonPAObject litePao = dbCache.getAllPaosMap().get(loadGroupId);
+        return litePao.getPaoType();
     }
 
     /**

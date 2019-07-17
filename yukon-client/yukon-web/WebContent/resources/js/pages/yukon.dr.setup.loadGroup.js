@@ -14,6 +14,7 @@ yukon.dr.setup.loadGroup = (function() {
     _initialized = false,
 
     _loadGroup = function() {
+    	yukon.ui.block($('.js-loadgroup-container'));
         var type = $('#type').val();
         var name = $('#name').val();
         $.ajax({
@@ -22,7 +23,7 @@ yukon.dr.setup.loadGroup = (function() {
             data: {name: name}
         }).done(function(data) {
              $('#loadGroup').html(data);
-        }).fail(function(data) {
+             yukon.ui.unblock($('.js-loadgroup-container'));
         });
     }, 
     
