@@ -18,6 +18,7 @@ import com.cannontech.common.dr.program.setup.model.LoadProgram;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
+import com.cannontech.common.dr.setup.LoadGroupFilter;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -46,7 +47,7 @@ public class LMSetupFilterController {
     @GetMapping("/list")
     public String list(ModelMap model, YukonUserContext userContext) {
         if(!model.containsAttribute("filterByType")) {
-            filterLoadGroups(new LoadGroupBase(), SortingParameters.of("NAME", Direction.desc), PagingParameters.EVERYTHING, model, userContext);
+            filterLoadGroups(new LoadGroupFilter(), SortingParameters.of("NAME", Direction.desc), PagingParameters.EVERYTHING, model, userContext);
         }
         model.addAttribute("filterByTypes", LmSetupFilterType.values());
         return "dr/setup/list/list.jsp";
@@ -58,10 +59,10 @@ public class LMSetupFilterController {
         switch (filterByType) {
         case LOAD_GROUP:
             model.addAttribute("switchTypes", PaoType.getAllLMGroupTypes());
-            if (model.containsAttribute("loadGroupBase")) {
-                model.addAttribute("loadGroupBase", (LoadGroupBase) model.get("loadGroupBase"));
+            if (model.containsAttribute("loadGroupFilter")) {
+                model.addAttribute("loadGroupFilter", (LoadGroupFilter) model.get("loadGroupFilter"));
             } else {
-                model.addAttribute("loadGroupBase", new LoadGroupBase());
+                model.addAttribute("loadGroupFilter", new LoadGroupFilter());
             }
         case LOAD_PROGRAM:
             if (model.containsAttribute("loadProgram")) {
@@ -74,7 +75,7 @@ public class LMSetupFilterController {
     }
 
     @RequestMapping(value = "/filterLoadGroups", method = RequestMethod.GET)
-    public String filterLoadGroups(@ModelAttribute LoadGroupBase loadGroupBase,
+    public String filterLoadGroups(@ModelAttribute LoadGroupFilter loadGroupFilter,
             @DefaultSort(dir = Direction.desc, sort = "NAME") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging, ModelMap model, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -86,11 +87,12 @@ public class LMSetupFilterController {
             model.addAttribute(column.name(), col);
         }
 
-        FilterCriteria<LoadGroupBase> filterCriteria =
-            new FilterCriteria<LoadGroupBase>(loadGroupBase, sorting, paging);
+        FilterCriteria<LoadGroupFilter> filterCriteria =
+            new FilterCriteria<LoadGroupFilter>(loadGroupFilter, sorting, paging);
         log.info("Load Group Filter Parameters");
-        log.info("Name: " + ((LoadGroupBase)filterCriteria.getFilteringParameter()).getName());
-        log.info("Switch Type: " + ((LoadGroupBase)filterCriteria.getFilteringParameter()).getType());
+        log.info("Name: " + ((LoadGroupFilter)filterCriteria.getFilteringParameter()).getName());
+        log.info("Switch Types: ");
+        ((LoadGroupFilter)filterCriteria.getFilteringParameter()).getSwitchTypes().stream().forEach(type -> log.info(type));
         log.info("Paging: " + filterCriteria.getPagingParameters());
         log.info("Sorting: " + filterCriteria.getSortingParameters());
         
@@ -122,9 +124,8 @@ public class LMSetupFilterController {
         model.addAttribute("loadGroupDetails", loadGroupDetails);
         
         model.addAttribute("switchTypes", PaoType.getAllLMGroupTypes());
-        
         model.addAttribute("filterByType", LmSetupFilterType.LOAD_GROUP);
-        model.addAttribute("loadGroupBase", loadGroupBase);
+        model.addAttribute("loadGroupFilter", loadGroupFilter);
         model.addAttribute("filterByTypes", LmSetupFilterType.values());
         return "dr/setup/list/list.jsp";
     }

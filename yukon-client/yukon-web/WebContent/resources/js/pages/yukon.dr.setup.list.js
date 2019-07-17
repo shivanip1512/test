@@ -24,6 +24,7 @@ yukon.dr.setup.list = (function() {
                 $("form.js-filter-load-groups-form").find('.chosen-container-single').css({
                    "margin-top" : "-3px",
                    "margin-right" : "10px"});
+                $("#js-switch-types").chosen({width: "450px"});
             }
             
             $(document).on('change', '.js-filter-by', function () {

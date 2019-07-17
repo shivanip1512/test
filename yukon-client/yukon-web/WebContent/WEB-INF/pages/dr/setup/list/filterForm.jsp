@@ -9,14 +9,11 @@
 
 <c:if test="${filterByType == 'LOAD_GROUP'}">
     <cti:url var="filterLoadGroupsUrl" value="/dr/setup/filterLoadGroups"/>
-    <form:form action="${filterLoadGroupsUrl}" method="get" modelAttribute="loadGroupBase" cssClass="js-filter-load-groups-form">
-        <div class="dib">
+    <form:form action="${filterLoadGroupsUrl}" method="get" modelAttribute="loadGroupFilter" cssClass="js-filter-load-groups-form">
         <tags:input path="name" placeholder="${namePlaceholder}"/>
-        <cti:msg2 var="allSwitchTypesLbl" key="yukon.web.modules.dr.setup.loadGroup.allSwitchTypes"/>
-        <tags:selectWithItems defaultItemLabel="${allSwitchTypesLbl}" id="js-switch-types" items="${switchTypes}" path="type"
-                              inputClass="js-init-chosen" />
-        </div>
-        <cti:button label="${filterLbl}" classes="fr primary action" type="submit"/>
+        <cti:msg2 var="selectSwitchTypesLbl" key="yukon.web.modules.dr.setup.loadGroup.filter.selectSwitchTypes"/>
+        <tags:selectWithItems items="${switchTypes}" path="switchTypes" dataPlaceholder="${selectSwitchTypes}" id="js-switch-types" />
+        <cti:button label="${filterLbl}" classes="fr primary action vam" type="submit"/>
     </form:form>
 </c:if>
 <c:if test="${filterByType == 'LOAD_PROGRAM'}">
@@ -26,10 +23,3 @@
         <cti:button label="${filterLbl}" classes="primary action fr" type="submit"/>
     </form:form>
 </c:if>
-
-
-<script>
-    if ($("#js-switch-types").exists()) {
-        $("#js-switch-types").chosen({width: "250px"});
-    }
-</script>
