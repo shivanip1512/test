@@ -641,7 +641,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request_maximum_packet )
 
     for( auto pointtype : { PulseAccumulatorPointType, DemandAccumulatorPointType, StatusPointType, StatusOutputPointType, AnalogPointType, AnalogOutputPointType } )
     {
-        for( int pointoffset = 1; pointoffset <= 900; ++pointoffset, ++pointid )
+        for( int pointoffset = 1; pointoffset <= 600; ++pointoffset, ++pointid )
         //  Pulse Accumulator offset 17, point ID 42
         {
             //Initialize the interface to have a point in a group.
