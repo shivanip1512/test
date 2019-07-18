@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.login.ldap.LDAPEncryptionType;
 import com.cannontech.common.login.ldap.LDAPService;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -54,13 +55,14 @@ public class LDAPADLogin  implements AuthenticationProvider {
     private String getURLs(List<String> hostList, List<String> portList) {
         StringBuilder urls = new StringBuilder();
         int index = 0;
+        LDAPEncryptionType encryptionType = globalSettingDao.getEnum(GlobalSettingType.AD_SSL_ENABLED, LDAPEncryptionType.class);
         for (String host : hostList) {
             int portIndex = 0;
             if (index < portList.size()) {
                 portIndex = index;
             }
 
-            urls.append("ldap://" + host + ":" + portList.get(portIndex) + " ");
+            urls.append(encryptionType.getProtocol() + "://" + host + ":" + portList.get(portIndex) + " ");
             index++;
         }
 
@@ -77,11 +79,11 @@ public class LDAPADLogin  implements AuthenticationProvider {
     public boolean connect(final String username, final String password) {
         String url = getConnectionURL();
         String timeout = getConnectionTimeout();
-        boolean sslcheck = globalSettingDao.getBoolean(GlobalSettingType.AD_SSL_ENABLED);
+        LDAPEncryptionType encryptionType = globalSettingDao.getEnum(GlobalSettingType.AD_SSL_ENABLED, LDAPEncryptionType.class);
         Context ctx = null;
         try {
-            if (sslcheck) {
-                ctx = ldapService.getSSLContext(url, username, password, timeout);
+            if (encryptionType == LDAPEncryptionType.TLS) {
+                ctx = ldapService.getTLSContext(url, username, password, timeout);
             } else {
                 ctx = ldapService.getContext(url, username, password, timeout);
             }

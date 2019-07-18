@@ -9,6 +9,7 @@ import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.clientutils.ClientApplicationRememberMe;
 import com.cannontech.common.config.SmtpEncryptionType;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.login.ldap.LDAPEncryptionType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
@@ -42,14 +43,14 @@ public enum GlobalSettingType implements DisplayableEnum {
     LDAP_SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1", GlobalSettingTypeValidators.ipHostNameValidator),
     LDAP_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 389),
     LDAP_SERVER_TIMEOUT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 30),
-    LDAP_SSL_ENABLED(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),
+    LDAP_SSL_ENABLED(GlobalSettingSubCategory.AUTHENTICATION, InputTypeFactory.enumType(LDAPEncryptionType.class), LDAPEncryptionType.NONE),
 
     // Authentication > Active Directory (only enabled when DEFAULT_AUTH_TYPE = AD)
     AD_SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1", GlobalSettingTypeValidators.ipHostNameValidator),
     AD_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "389", GlobalSettingTypeValidators.portValidator), // stringType because space separated listed of ints is allowed
     AD_SERVER_TIMEOUT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 30),
     AD_NTDOMAIN(GlobalSettingSubCategory.AUTHENTICATION, stringType(), null),
-    AD_SSL_ENABLED(GlobalSettingSubCategory.AUTHENTICATION, booleanType(), true),
+    AD_SSL_ENABLED(GlobalSettingSubCategory.AUTHENTICATION, InputTypeFactory.enumType(LDAPEncryptionType.class), LDAPEncryptionType.NONE),
 
     CLIENT_APPLICATIONS_REMEMBER_ME(GlobalSettingSubCategory.AUTHENTICATION,
                                    InputTypeFactory.enumType(ClientApplicationRememberMe.class),

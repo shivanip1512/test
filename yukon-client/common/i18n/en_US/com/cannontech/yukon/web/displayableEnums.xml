@@ -274,8 +274,8 @@
     <entry key="yukon.common.setting.AD_SERVER_PORT.description">Active Directory Server Port. A space separated list of ports can be provided for failover. These must directly correspond to the AD Server Address list ordering.</entry>
     <entry key="yukon.common.setting.AD_SERVER_ADDRESS">AD Server Address</entry>
     <entry key="yukon.common.setting.AD_SERVER_ADDRESS.description">Active Directory Server Address. A space separated list of addresses can be provided for failover.</entry>
-    <entry key="yukon.common.setting.AD_SSL_ENABLED">AD SSL Enabled</entry>
-    <entry key="yukon.common.setting.AD_SSL_ENABLED.description">Controls the use of SSL for the Active Directory connection</entry>
+    <entry key="yukon.common.setting.AD_SSL_ENABLED">AD Encryption</entry>
+    <entry key="yukon.common.setting.AD_SSL_ENABLED.description">Controls the encryption type used for the Active Directory connection.</entry>
     <entry key="yukon.common.setting.CLIENT_APPLICATIONS_REMEMBER_ME">Application Remember Me</entry>
     <entry key="yukon.common.setting.CLIENT_APPLICATIONS_REMEMBER_ME.description">Choose which credentials are remembered by Yukon Applications. Credentials are encrypted and saved on your computer in a manner that is difficult but not impossible for an intruder to read.</entry>
     <entry key="yukon.common.setting.LDAP_SERVER_TIMEOUT">LDAP Server Timeout</entry>
@@ -290,8 +290,8 @@
     <entry key="yukon.common.setting.LDAP_USER_SUFFIX.description">LDAP User Suffix</entry>
     <entry key="yukon.common.setting.LDAP_DN">LDAP Domain Name</entry>
     <entry key="yukon.common.setting.LDAP_DN.description">dc=com</entry>
-    <entry key="yukon.common.setting.LDAP_SSL_ENABLED">LDAP SSL Enabled</entry>
-    <entry key="yukon.common.setting.LDAP_SSL_ENABLED.description">Controls the use of SSL for the LDAP connection</entry>
+    <entry key="yukon.common.setting.LDAP_SSL_ENABLED">LDAP Encryption</entry>
+    <entry key="yukon.common.setting.LDAP_SSL_ENABLED.description">Controls the encryption type used for the LDAP connection.</entry>
     <entry key="yukon.common.setting.DEFAULT_AUTH_TYPE">Default Auth Type</entry>
     <entry key="yukon.common.setting.DEFAULT_AUTH_TYPE.description">Default authentication type, possible values: Active Directory, Encrypted, LDAP, Radius, No Login.</entry>
     <entry key="yukon.common.setting.AUTH_TIMEOUT">Radius Authentication Timeout</entry>
