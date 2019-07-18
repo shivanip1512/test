@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -22,12 +24,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.amr.disconnect.model.DisconnectCommand;
+import com.cannontech.amr.disconnect.model.DisconnectMeterResult;
+import com.cannontech.amr.disconnect.service.DisconnectService;
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -97,6 +106,8 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private LoadGroupDao loadGroupDao;
     @Autowired private IDatabaseCache cache;
     @Autowired private PointFormattingService pointFormattingService;
+    @Autowired private MeterDao meterDao;
+    @Autowired private DisconnectService disconnectService;
 
     @RequestMapping(value = "/program/list", method = RequestMethod.GET)
     public String list(ModelMap model, YukonUserContext userContext,
@@ -211,6 +222,43 @@ public class ProgramController extends ProgramControllerBase {
         
         model.addAttribute("disconnectStatusList", list);
         return "dr/disconnectStatus.jsp";
+    }
+    
+    @PostMapping("/disconnectStatus/restore")
+    public @ResponseBody Map<String, Object> restore(int deviceId, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        Map<String, Object> json = new HashMap<>();
+        YukonMeter meter = meterDao.getForId(deviceId);
+        DisconnectMeterResult result = disconnectService.execute(DisconnectCommand.CONNECT,
+                                                                 DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
+                                                                 userContext.getYukonUser());
+        addDisconnectResultToModel(json, result, accessor);
+        return json;
+    }
+    
+    @PostMapping("/disconnectStatus/resendShed")
+    public @ResponseBody Map<String, Object> resendShed(int deviceId, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        Map<String, Object> json = new HashMap<>();
+        YukonMeter meter = meterDao.getForId(deviceId);
+        DisconnectMeterResult result = disconnectService.execute(DisconnectCommand.DISCONNECT,
+                                                                 DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
+                                                                 userContext.getYukonUser());
+        addDisconnectResultToModel(json, result, accessor);
+        return json;
+    }
+    
+    private void addDisconnectResultToModel(Map<String, Object> json, DisconnectMeterResult result, MessageSourceAccessor accessor) {
+        if (result.getError() != null) {
+            json.put("errors", Lists.newArrayList(result.getError()));
+        }
+        if (StringUtils.isNotEmpty(result.getProcessingException())) {
+            json.put("errors", result.getProcessingException());
+        }
+        
+        json.put("success", result.isSuccess());
+        json.put("status", accessor.getMessage(result.getState().getFormatKey()));
+        json.put("time", result.getDisconnectTime());
     }
     
     public enum DisconnectSortBy implements DisplayableEnum {

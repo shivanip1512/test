@@ -1145,5 +1145,7 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.disconnectStatus.crumbTitle">Disconnect Status</entry>
 <entry key="yukon.web.modules.dr.disconnectStatus.device">Device</entry>
 <entry key="yukon.web.modules.dr.disconnectStatus.status">Disconnect Status</entry>
+<entry key="yukon.web.modules.dr.disconnectStatus.manualRestore">Manual Restore</entry>
+<entry key="yukon.web.modules.dr.disconnectStatus.resendShed">Re-Send Shed</entry>
 
 </properties>
