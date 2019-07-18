@@ -810,7 +810,7 @@
           <page name="localization" type="BASIC" />
           <page name="fileExportHistory" type="BASIC" />
           <page name="threadDump" type="BASIC" />
-          <Page name="waterNode" type="BASIC" />
+          <page name="waterNode" type="BASIC" />
           <page name="routeUsage" type="BASIC" />
           <page name="eventViewer" type="BASIC">
             <pages>
