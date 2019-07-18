@@ -5,18 +5,9 @@ import java.util.List;
 import com.cannontech.common.pao.PaoType;
 import com.google.common.collect.Lists;
 
-public class LoadGroupFilter {
+public class LoadGroupFilter extends FilterBase {
 
-    private String name;
-    private List<PaoType> switchTypes = Lists.newArrayList()    ;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private List<PaoType> switchTypes = Lists.newArrayList();
 
     public List<PaoType> getSwitchTypes() {
         return switchTypes;
