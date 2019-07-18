@@ -283,6 +283,20 @@ END;
 INSERT INTO DBUpdates VALUES ('YUK-20281', '7.3.0', SYSDATE);
 /* @end YUK-20281 */
 
+/* @start YUK-20294 */
+UPDATE GlobalSetting 
+SET Value = 'NONE'
+WHERE Name IN ('LDAP_SSL_ENABLED', 'AD_SSL_ENABLED') 
+AND Value = '0';
+
+UPDATE GlobalSetting 
+SET Value = 'TLS'
+WHERE Name IN ('LDAP_SSL_ENABLED', 'AD_SSL_ENABLED') 
+AND Value = '1';
+
+INSERT INTO DBUpdates VALUES ('YUK-20294', '7.3.0', SYSDATE);
+/* @end YUK-20294 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
