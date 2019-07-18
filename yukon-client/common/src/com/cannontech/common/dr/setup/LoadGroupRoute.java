@@ -1,12 +1,12 @@
 package com.cannontech.common.dr.setup;
 
 public interface LoadGroupRoute {
+    
+    void setRouteId(Integer routeId);
 
-    public void setRouteId(Integer routeId);
+    Integer getRouteId();
 
-    public Integer getRouteId();
+    void setRouteName(String routeName);
 
-    public void setRouteName(String routeName);
-
-    public String getRouteName();
+    String getRouteName();
 }
