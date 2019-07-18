@@ -402,33 +402,24 @@ YukonError_t ApplicationLayer::generate( TransportLayer &_transport )
     {
         case Loopback:
         {
-            _transport.initLoopback();
-            
-            break;
+            return _transport.initLoopback();
         }
 
         case SendFirstResponse:
-        {
-            _transport.initForOutput((unsigned char *)&_response, _response.buf_len + RspHeaderSize);
-        }
         case SendResponse:
         {
-            break;
+            return _transport.initForOutput((unsigned char *)&_response, _response.buf_len + RspHeaderSize);
         }
         case SendRequest:
         {
             //  _request was initialized by DNPInterface::generate()
-            _transport.initForOutput((unsigned char *)&_request, _request.buf_len + ReqHeaderSize);
-
-            break;
+            return _transport.initForOutput((unsigned char *)&_request, _request.buf_len + ReqHeaderSize);
         }
 
         case RecvUnsolicited:
         case RecvResponse:
         {
-            _transport.initForInput((unsigned char *)&_response, BufferSize);
-
-            break;
+            return _transport.initForInput((unsigned char *)&_response, BufferSize);
         }
 
         case SendUnexpectedConfirm:
@@ -436,9 +427,7 @@ YukonError_t ApplicationLayer::generate( TransportLayer &_transport )
         {
             generateAck(&_acknowledge, _response.ctrl);
 
-            _transport.initForOutput((unsigned char *)&_acknowledge, sizeof(_acknowledge));
-
-            break;
+            return _transport.initForOutput((unsigned char *)&_acknowledge, sizeof(_acknowledge));
         }
 
         default:
@@ -452,8 +441,6 @@ YukonError_t ApplicationLayer::generate( TransportLayer &_transport )
             return ClientErrors::Abnormal;
         }
     }
-
-    return ClientErrors::None;
 }
 
 

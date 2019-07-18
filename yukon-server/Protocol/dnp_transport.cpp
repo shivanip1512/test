@@ -38,47 +38,44 @@ TransportLayer &TransportLayer::operator=(const TransportLayer &aRef)
 }
 
 
-int TransportLayer::initLoopback()
+YukonError_t TransportLayer::initLoopback()
 {
     _ioState = Loopback;
 
     return ClientErrors::None;
 }
 
-int TransportLayer::initForOutput(unsigned char *buf, unsigned len)
+YukonError_t TransportLayer::initForOutput(unsigned char *buf, unsigned len)
 {
-    int retVal = ClientErrors::None;
+    using Packet = TransportPacket;
 
-    _payload_out.data   = buf;
-    _payload_out.length = len;
+    _payload_out.data = nullptr;
+    _payload_out.length = 0;
     _payload_out.used = 0;
 
     _sequence_out = 0;
+    _ioState = Uninitialized;
 
-    if( len > 0 && buf )
+    if( len <= 0 || buf == nullptr )
     {
-        _ioState = Output;
+        return ClientErrors::Memory;
     }
-    else
+    if( len > Packet::MaxPayloadLen * Packet::MaxPackets )
     {
-        _payload_out.data   = NULL;
-        _payload_out.length = 0;
-
-        _ioState = Uninitialized;
-
-        //  maybe set error return... ?
-
-        CTILOG_ERROR(dout, "error initializing transport layer, len = \""<< len <<"\", buf = \""<< buf);
+        return ClientErrors::BadLength;
     }
 
-    return retVal;
+    _payload_out.data = buf;
+    _payload_out.length = len;
+
+    _ioState = Output;
+
+    return ClientErrors::None;
 }
 
 
-int TransportLayer::initForInput(unsigned char *buf, unsigned max_len)
+YukonError_t TransportLayer::initForInput(unsigned char *buf, unsigned max_len)
 {
-    int retVal = ClientErrors::None;
-
     _payload_in.data   = buf;
     _payload_in.length = max_len;
     _payload_in.used = 0;
@@ -87,7 +84,7 @@ int TransportLayer::initForInput(unsigned char *buf, unsigned max_len)
 
     _ioState = Input;
 
-    return retVal;
+    return ClientErrors::None;
 }
 
 

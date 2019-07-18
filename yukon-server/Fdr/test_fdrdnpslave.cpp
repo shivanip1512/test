@@ -439,7 +439,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request_class1230 )
     dnpSlave.setSendToList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     //  Pulse Accumulator offset 17, point ID 42
     {
@@ -460,7 +460,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request_class1230 )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, true);
     }
@@ -496,7 +496,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request_multiple_packet )
     dnpSlave.setSendToList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     unsigned pointid = 37;
 
@@ -529,7 +529,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request_multiple_packet )
 
             fdrPoint->setDestinationList(destinationList);
 
-            fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+            fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
             dnpSlave.translateSinglePoint(fdrPoint, true);
         }
@@ -593,6 +593,71 @@ BOOST_AUTO_TEST_CASE( test_scan_request_multiple_packet )
     }
 }
 
+BOOST_AUTO_TEST_CASE( test_scan_request_maximum_packet )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.getSendToList().deletePointList();
+    dnpSlave.setSendToList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(nullptr);
+
+    unsigned pointid = 37;
+
+    for( auto pointtype : { PulseAccumulatorPointType, DemandAccumulatorPointType, StatusPointType, StatusOutputPointType, AnalogPointType, AnalogOutputPointType } )
+    {
+        for( int pointoffset = 1; pointoffset <= 900; ++pointoffset, ++pointid )
+        //  Pulse Accumulator offset 17, point ID 42
+        {
+            //Initialize the interface to have a point in a group.
+            CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+            fdrPoint->setPointID(pointid);
+            fdrPoint->setPaoID(52);
+            fdrPoint->setOffset(pointoffset * 25 / 24);
+            fdrPoint->setPointType(PulseAccumulatorPointType);
+            fdrPoint->setValue(
+                    (pointtype == StatusPointType || pointtype == StatusOutputPointType)
+                        ? pointoffset % 2
+                        : pointoffset);
+
+            CtiFDRDestination pointDestination(
+                    fdrPoint->getPointID(),
+                    "MasterId:2;SlaveId:30;"
+                        "POINTTYPE:" + desolvePointType(pointtype) + ";"
+                        "Offset:" + std::to_string(pointoffset), "Test Destination");
+
+            vector<CtiFDRDestination> destinationList;
+
+            destinationList.push_back(pointDestination);
+
+            fdrPoint->setDestinationList(destinationList);
+
+            fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
+
+            dnpSlave.translateSinglePoint(fdrPoint, true);
+        }
+    }
+
+    const byte_str request(
+        "05 64 17 c4 1e 00 02 00 78 b5 "
+        "c0 ca 01 32 01 06 3c 02 06 3c 03 06 3c 04 06 3c 9d f5 "
+        "01 06 75 e1");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 58);
+}
+
 
 /**
 * Verify behavior of various "control close" messages sent to a point.
@@ -613,7 +678,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_receive )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -634,7 +699,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_receive )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -830,7 +895,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_dispatch )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -851,7 +916,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_dispatch )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -1062,7 +1127,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_porter )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -1083,7 +1148,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_porter )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -1280,7 +1345,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -1301,7 +1366,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -1541,7 +1606,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_receive )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -1562,7 +1627,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_receive )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -1723,7 +1788,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_dispatch )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -1744,7 +1809,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_dispatch )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -1918,7 +1983,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_porter )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -1939,7 +2004,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_porter )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -2106,7 +2171,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_sbo_porter )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -2127,7 +2192,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_sbo_porter )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -2363,7 +2428,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_shortIndexShortQuantity )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -2384,7 +2449,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_shortIndexShortQuantity )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -2422,7 +2487,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_MCT )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -2443,7 +2508,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_MCT )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -2481,7 +2546,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_CBC )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -2502,7 +2567,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_visualTD_CBC )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -2540,7 +2605,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_controlDisabled )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -2561,7 +2626,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_controlDisabled )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, true);
     }
@@ -2599,7 +2664,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_invalidObject )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -2620,7 +2685,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_invalidObject )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, true);
     }
@@ -2651,7 +2716,7 @@ BOOST_AUTO_TEST_CASE(test_control_porter_timeout)
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -2672,7 +2737,7 @@ BOOST_AUTO_TEST_CASE(test_control_porter_timeout)
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -2733,7 +2798,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_receive )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -2754,7 +2819,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_receive )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -2803,7 +2868,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_dispatch )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -2824,7 +2889,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_dispatch )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -2874,7 +2939,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_controloffset )
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -2895,7 +2960,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_controloffset )
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -2966,7 +3031,7 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput)
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -2987,7 +3052,7 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput)
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
@@ -3058,7 +3123,7 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput_double)
     dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(0);
+    fdrPointList.setPointList(nullptr);
 
     {
         //Initialize the interface to have a point in a group.
@@ -3079,7 +3144,7 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput_double)
 
         fdrPoint->setDestinationList(destinationList);
 
-        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
 
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
