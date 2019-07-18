@@ -250,6 +250,39 @@ AND PAObjectID IN (
 INSERT INTO DBUpdates VALUES ('YUK-20229', '7.3.0', SYSDATE);
 /* @end YUK-20229 */
 
+/* @start YUK-20281 */
+INSERT INTO YukonListEntry VALUES (
+    (SELECT MAX(YLE.EntryID) + 1 FROM YukonListEntry YLE), 
+    1005, 0, 'Electric Meter', 1341);
+
+/* @start-block */
+DECLARE
+    v_maxEntryId NUMBER;
+BEGIN
+    SELECT MAX(YLE.EntryID) INTO v_maxEntryId FROM YukonListEntry YLE;
+
+    INSERT INTO YukonListEntry (EntryID, ListID, EntryOrder, EntryText, YukonDefinitionID) 
+    SELECT 
+        v_maxEntryId + ROW_NUMBER() OVER (ORDER BY YLE.EntryID),
+        YLE.ListID,
+        YLE.EntryOrder + 1,
+        'Electric Meter',
+        1341
+    FROM YukonSelectionList YSL
+    JOIN YukonListEntry YLE
+        ON YSL.ListID = YLE.ListID
+    WHERE YSL.EnergyCompanyId != -1
+    AND YSL.Ordering = 'O'
+    AND YSL.ListName = 'DeviceType'
+    AND YLE.YukonDefinitionID != 1341
+    AND YLE.EntryOrder = (SELECT MAX(EntryOrder) FROM YukonListEntry WHERE ListID = YLE.ListID);
+END;
+/
+/* @end-block */
+
+INSERT INTO DBUpdates VALUES ('YUK-20281', '7.3.0', SYSDATE);
+/* @end YUK-20281 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
