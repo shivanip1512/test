@@ -58,10 +58,10 @@ public:
 
     TransportLayer &operator=( const TransportLayer &aRef );
 
-    int initLoopback();
+    YukonError_t initLoopback();
 
-    int initForOutput( unsigned char *buf, unsigned len );
-    int initForInput ( unsigned char *buf, unsigned len );
+    YukonError_t initForOutput( unsigned char *buf, unsigned len );
+    YukonError_t initForInput ( unsigned char *buf, unsigned len );
 
     YukonError_t generate( DatalinkLayer &datalink );
     YukonError_t decode  ( DatalinkLayer &datalink );
@@ -85,15 +85,16 @@ class TransportPacket
 
     std::vector<unsigned char> _payload;
 
+public:
     enum
     {
-        MaxPayloadLen = 249
+        MaxPayloadLen = 249,
+        MaxPackets = 64  //  2^6 sequences = 64 packets max
     };
 
-public:
     TransportPacket(bool first, const unsigned seq, const unsigned char *buf, const unsigned len) :
         _first(first),
-        _final(len <= MaxPayloadLen),
+        _final(len <= MaxPayloadLen),  //  only the final packet if we can fit all of the data in this packet
         _sequence(seq),
         _payload(buf, buf + std::min<unsigned>(len, MaxPayloadLen))
     {

@@ -15,7 +15,7 @@ public:
 
     enum
     {
-        BufferSize = 4096
+        BufferSize = 16384
     };
 
     using object_block_queue = std::deque<ObjectBlockPtr>;
