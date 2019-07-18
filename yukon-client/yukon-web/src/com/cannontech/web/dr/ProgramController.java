@@ -173,7 +173,7 @@ public class ProgramController extends ProgramControllerBase {
     
     @GetMapping("/program/disconnectStatus")
     public String disconnectStatus(ModelMap model, int programId, @DefaultSort(dir=Direction.asc, sort="device") SortingParameters sorting, 
-                                   YukonUserContext userContext) {
+                                   @DefaultItemsPerPage(value=250) PagingParameters paging, YukonUserContext userContext) {
         DisplayablePao program = programService.getProgram(programId);
         model.addAttribute("program", program);
         model.addAttribute("programId", programId);
@@ -189,7 +189,12 @@ public class ProgramController extends ProgramControllerBase {
 
         //get all disconnect status for devices
         Map<LiteYukonPAObject, PointValueHolder> disconnectStatus = attributeDynamicDataSource.getPaoPointValues(devices, BuiltInAttribute.DISCONNECT_STATUS);
-
+        
+        SearchResults<Map.Entry<LiteYukonPAObject, PointValueHolder>> searchResult = new SearchResults<>();
+        int startIndex = paging.getStartIndex();
+        int itemsPerPage = paging.getItemsPerPage();
+        int endIndex = Math.min(startIndex + itemsPerPage, disconnectStatus.size());
+        
         DisconnectSortBy sortBy = DisconnectSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         
@@ -209,6 +214,10 @@ public class ProgramController extends ProgramControllerBase {
             comparator = Collections.reverseOrder(comparator);
         }
         Collections.sort(list, comparator);
+        
+        list = list.subList(startIndex, endIndex);
+        searchResult.setBounds(startIndex, itemsPerPage, disconnectStatus.size());
+        searchResult.setResultList(list);
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
 
@@ -220,7 +229,7 @@ public class ProgramController extends ProgramControllerBase {
             model.addAttribute(column.name(), col);
         }
         
-        model.addAttribute("disconnectStatusList", list);
+        model.addAttribute("disconnectStatusList", searchResult);
         return "dr/disconnectStatus.jsp";
     }
     

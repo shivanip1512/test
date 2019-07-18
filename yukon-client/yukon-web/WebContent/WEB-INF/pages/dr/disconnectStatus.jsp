@@ -20,7 +20,7 @@
                 </cti:checkRolesAndProperties>
             </thead>
             <tbody>
-                <c:forEach var="disconnectStatus" items="${disconnectStatusList}">
+                <c:forEach var="disconnectStatus" items="${disconnectStatusList.resultList}">
                     <c:set var="pao" value="${disconnectStatus.key}"/>
                     <c:set var="pointData" value="${disconnectStatus.value}"/>
                     <c:set var="paoId" value="${pao.paoIdentifier.paoId}"/>
@@ -46,6 +46,7 @@
                 </c:forEach>
             </tbody>
         </table>
+        <tags:pagingResultsControls result="${disconnectStatusList}" adjustPageCount="true" thousands="true"/>
     </div>
     
     <cti:includeScript link="/resources/js/pages/yukon.dr.disconnectStatus.js"/>
