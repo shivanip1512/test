@@ -189,6 +189,14 @@
 					<cm:dropdownOption icon="icon-cog-edit" disabled="true" key=".actions.changeGears" title="${noProgramControl}" />
 					<cm:dropdownOption icon="icon-delete" disabled="true" key=".actions.disable" title="${noProgramControl}" />
 				</cti:checkPaoAuthorization>
+                
+                <!-- Meter Disconnect Status -->
+                <c:if test="${program.paoIdentifier.paoType == 'LM_METER_DISCONNECT_PROGRAM'}">
+                    <cti:url var="url" value="/dr/program/disconnectStatus">
+                        <cti:param name="programId" value="${programId}"/>
+                    </cti:url>
+                    <cm:dropdownOption icon="icon-disconnect" key=".actions.disconnectStatus" href="${url}"/>
+                </c:if>
 			</div>
 		</div>
 	</div>

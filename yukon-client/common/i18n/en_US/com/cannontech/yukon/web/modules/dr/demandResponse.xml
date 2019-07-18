@@ -1057,6 +1057,7 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.programDetail.actions.disableIcon.alt">This Program is Enabled, Click to Disable</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.noChangeGear">You do not have permission to change gears.</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.noEnableDisable">You do not have permission to control this Program.</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.disconnectStatus">Disconnect Status</entry>
 
 <entry key="yukon.web.modules.dr.programDetail.heading.loadGroups">Load Groups</entry>
 
@@ -1137,4 +1138,12 @@ The devices in this category have not reported DR message for the event.
             <li><span class="fwb bg-color-grey txt-color-white">Unreported (Grey)</span> - 
             Device has not yet reported all data required to confirm or deny receipt of unique RF Broadcast Performance test message.</li>
         </ul>]]></entry>
+        
+<!-- Disconnect Status -->
+<entry key="yukon.web.modules.dr.disconnectStatus.pageTitle">Disconnect Status: {0}</entry>
+<entry key="yukon.web.modules.dr.disconnectStatus.pageHeading">Disconnect Status</entry>
+<entry key="yukon.web.modules.dr.disconnectStatus.crumbTitle">Disconnect Status</entry>
+<entry key="yukon.web.modules.dr.disconnectStatus.device">Device</entry>
+<entry key="yukon.web.modules.dr.disconnectStatus.status">Disconnect Status</entry>
+
 </properties>

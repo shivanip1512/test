@@ -497,6 +497,12 @@
               <page name="programDetail" type="DETAIL">
                 <link>/dr/program/detail?programId=${programId}</link>
                 <labelArgument>${program.name}</labelArgument>
+                <pages>
+                	<page name="disconnectStatus" type="BASIC">
+                		<link>/dr/program/disconnectStatus?programId=${programId}</link>
+                		<labelArgument>${program.name}</labelArgument>
+                	</page>
+                </pages>
               </page>
             </pages>
           </page>

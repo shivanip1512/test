@@ -14,6 +14,7 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.google.common.collect.Maps;
 
 public class AttributeDynamicDataSource {
@@ -32,6 +33,17 @@ public class AttributeDynamicDataSource {
         for (YukonPao pao : paos) {
             PointValueHolder value = getPointValue(pao, attribute);
             pointValues.put(pao.getPaoIdentifier(), value);
+        }
+        
+        return pointValues;
+    }
+    
+    public Map<LiteYukonPAObject,PointValueHolder> getPaoPointValues(Collection<? extends LiteYukonPAObject> paos, Attribute attribute) {
+        Map<LiteYukonPAObject,PointValueHolder> pointValues = Maps.newHashMapWithExpectedSize(paos.size());
+        
+        for (LiteYukonPAObject pao : paos) {
+            PointValueHolder value = getPointValue(pao, attribute);
+            pointValues.put(pao, value);
         }
         
         return pointValues;
