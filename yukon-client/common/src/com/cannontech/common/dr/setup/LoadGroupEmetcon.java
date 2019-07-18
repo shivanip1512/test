@@ -1,9 +1,8 @@
 package com.cannontech.common.dr.setup;
 
-import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupEmetcon;
 
-public class LoadGroupEmetcon extends LoadGroupBase {
+public class LoadGroupEmetcon extends LoadGroupBase<LMGroupEmetcon> implements LoadGroupRoute{
     private Integer goldAddress;
     private Integer silverAddress;
     private EmetconAddressUsage addressUsage;
@@ -43,51 +42,54 @@ public class LoadGroupEmetcon extends LoadGroupBase {
         this.relayUsage = relayUsage;
     }
 
+    @Override
     public Integer getRouteId() {
         return routeId;
     }
 
+    @Override
     public void setRouteId(Integer routeId) {
         this.routeId = routeId;
     }
 
+    @Override
     public String getRouteName() {
         return routeName;
     }
 
+    @Override
     public void setRouteName(String routeName) {
         this.routeName = routeName;
     }
 
     @Override
-    public void buildModel(LMGroup loadGroup) {
+    public void buildModel(LMGroupEmetcon lmGroupEmetcon) {
         // Set parent fields
-        super.buildModel(loadGroup);
+        super.buildModel(lmGroupEmetcon);
 
         // Set addressing fields
-        setGoldAddress(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getGoldAddress());
-        setSilverAddress(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getSilverAddress());
-        setAddressUsage(EmetconAddressUsage.getDisplayValue(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getAddressUsage()));
-        setRelayUsage(EmetconRelayUsage.getDisplayValue(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getRelayUsage()));
-        setRouteId(((LMGroupEmetcon) loadGroup).getLmGroupEmetcon().getRouteID());
+        setGoldAddress(lmGroupEmetcon.getLmGroupEmetcon().getGoldAddress());
+        setSilverAddress(lmGroupEmetcon.getLmGroupEmetcon().getSilverAddress());
+        setAddressUsage(EmetconAddressUsage.getDisplayValue(lmGroupEmetcon.getLmGroupEmetcon().getAddressUsage()));
+        setRelayUsage(EmetconRelayUsage.getDisplayValue(lmGroupEmetcon.getLmGroupEmetcon().getRelayUsage()));
+        setRouteId(lmGroupEmetcon.getLmGroupEmetcon().getRouteID());
 
     }
 
     @Override
-    public void buildDBPersistent(LMGroup group) {
+    public void buildDBPersistent(LMGroupEmetcon group) {
         // Set parent fields
         super.buildDBPersistent(group);
 
         // Set LMGroupEmetcon fields.
-        com.cannontech.database.db.device.lm.LMGroupEmetcon lmGroupEmetcon =
-            ((LMGroupEmetcon) group).getLmGroupEmetcon();
+        com.cannontech.database.db.device.lm.LMGroupEmetcon lmGroupEmetcon = group.getLmGroupEmetcon();
         lmGroupEmetcon.setGoldAddress(getGoldAddress());
         lmGroupEmetcon.setSilverAddress(getSilverAddress());
         lmGroupEmetcon.setAddressUsage((Character) getAddressUsage().getDatabaseRepresentation());
         lmGroupEmetcon.setRelayUsage((Character) getRelayUsage().getDatabaseRepresentation());
         lmGroupEmetcon.setRouteID(getRouteId());
 
-        ((LMGroupEmetcon) group).setLmGroupEmetcon(lmGroupEmetcon);
+        group.setLmGroupEmetcon(lmGroupEmetcon);
     }
 
 }

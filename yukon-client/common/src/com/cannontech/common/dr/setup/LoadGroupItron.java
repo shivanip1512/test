@@ -1,9 +1,8 @@
 package com.cannontech.common.dr.setup;
 
-import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupItron;
 
-public class LoadGroupItron extends LoadGroupBase {
+public class LoadGroupItron extends LoadGroupBase<LMGroupItron> {
     private Integer virtualRelayId;
 
     public Integer getVirtualRelayId() {
@@ -15,19 +14,19 @@ public class LoadGroupItron extends LoadGroupBase {
     }
 
     @Override
-    public void buildModel(LMGroup loadGroup) {
+    public void buildModel(LMGroupItron lmGroupItron) {
         // Set parent fields
-        super.buildModel(loadGroup);
+        super.buildModel(lmGroupItron);
 
         // Set VirtualRelayId field
-        setVirtualRelayId(((LMGroupItron) loadGroup).getRelay());
+        setVirtualRelayId(lmGroupItron.getRelay());
     }
 
     @Override
-    public void buildDBPersistent(LMGroup group) {
+    public void buildDBPersistent(LMGroupItron lmGroupItron) {
         // Set parent fields
-        super.buildDBPersistent(group);
-        ((LMGroupItron) group).setRelay(getVirtualRelayId());
+        super.buildDBPersistent(lmGroupItron);
+        lmGroupItron.setRelay(getVirtualRelayId());
 
     }
 }

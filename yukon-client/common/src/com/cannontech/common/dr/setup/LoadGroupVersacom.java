@@ -2,16 +2,15 @@ package com.cannontech.common.dr.setup;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupVersacom;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class LoadGroupVersacom extends LoadGroupBase {
+public class LoadGroupVersacom extends LoadGroupBase<LMGroupVersacom> implements LoadGroupRoute{
     // Communication Route Id
     private Integer routeId;
-
+    private String routeName;
     // Addressing
     private Integer utilityAddress ;
     private Integer sectionAddress = 0;
@@ -23,12 +22,24 @@ public class LoadGroupVersacom extends LoadGroupBase {
     private String addressUsage = StringUtils.EMPTY;
     private String relayUsage = "1";
 
+    @Override
     public Integer getRouteId() {
         return routeId;
     }
 
+    @Override
     public void setRouteId(Integer routeId) {
         this.routeId = routeId;
+    }
+
+    @Override
+    public String getRouteName() {
+        return routeName;
+    }
+
+    @Override
+    public void setRouteName(String routeName) {
+        this.routeName = routeName;
     }
 
     public Integer getUtilityAddress() {
@@ -88,7 +99,7 @@ public class LoadGroupVersacom extends LoadGroupBase {
     }
     
     @Override
-    public void buildDBPersistent(LMGroup group) {
+    public void buildDBPersistent(LMGroupVersacom group) {
         super.buildDBPersistent(group);
         // Set lmGroupVersacom fields
         com.cannontech.database.db.device.lm.LMGroupVersacom lmGroupVersacom =
@@ -102,16 +113,16 @@ public class LoadGroupVersacom extends LoadGroupBase {
         lmGroupVersacom.setSerialAddress(getSerialAddress());
         lmGroupVersacom.setUtilityAddress(getUtilityAddress());
         lmGroupVersacom.setDeviceID(getId());
-        ((LMGroupVersacom) group).setLmGroupVersacom(lmGroupVersacom);
+        group.setLmGroupVersacom(lmGroupVersacom);
     }
     
     @Override
-    public void buildModel(LMGroup loadGroup) {
+    public void buildModel(LMGroupVersacom loadGroup) {
         super.buildModel(loadGroup);
-        LMGroupVersacom lMGroupVersacom = (LMGroupVersacom) loadGroup;
-        setRouteId(lMGroupVersacom.getRouteID());
+
+        setRouteId(loadGroup.getRouteID());
         com.cannontech.database.db.device.lm.LMGroupVersacom lmGroupVersacom = 
-                                                lMGroupVersacom.getLmGroupVersacom();
+                loadGroup.getLmGroupVersacom();
         setUtilityAddress(lmGroupVersacom.getUtilityAddress());
         setSectionAddress(lmGroupVersacom.getSectionAddress());
         setClassAddress(lmGroupVersacom.getClassAddress());
