@@ -219,8 +219,13 @@ public class ComprehensiveMapController {
             dataRow[2] = rfnDevice.getPaoType().getPaoTypeName();
             dataRow[3] = device.getSensorSerialNumber();
             PaoLocation location = locations.get(paoId);
-            dataRow[4] = String.valueOf(location.getLatitude());
-            dataRow[5] = String.valueOf(location.getLongitude());
+            if(location == null) {
+                dataRow[4] = "";
+                dataRow[5] = "";
+            } else {
+                dataRow[4] = String.valueOf(location.getLatitude());
+                dataRow[5] = String.valueOf(location.getLongitude());
+            }
             RfnMetadataMultiQueryResult metadata = metaData.get(device);
             if (metadata != null) {
                 if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM)) {
