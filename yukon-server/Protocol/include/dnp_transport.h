@@ -94,7 +94,7 @@ public:
 
     TransportPacket(bool first, const unsigned seq, const unsigned char *buf, const unsigned len) :
         _first(first),
-        _final(len <= MaxPayloadLen),  //  only the final packet if we can fit all of the data in this packet
+        _final(len <= MaxPayloadLen),  //  this is only the final packet if we can fit all remaining data into it
         _sequence(seq),
         _payload(buf, buf + std::min<unsigned>(len, MaxPayloadLen))
     {

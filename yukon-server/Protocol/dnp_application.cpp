@@ -406,9 +406,12 @@ YukonError_t ApplicationLayer::generate( TransportLayer &_transport )
         }
 
         case SendFirstResponse:
-        case SendResponse:
         {
             return _transport.initForOutput((unsigned char *)&_response, _response.buf_len + RspHeaderSize);
+        }
+        case SendResponse:
+        {
+            return ClientErrors::None;
         }
         case SendRequest:
         {
