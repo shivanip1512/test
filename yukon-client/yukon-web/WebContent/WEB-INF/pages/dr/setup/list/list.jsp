@@ -33,11 +33,11 @@
     
     <!-- Filter Inputs -->
     <hr>
-        <div class="two-column-table filter-section dib">
+        <div class="filter-section">
             <i:inline key="yukon.common.filterBy"/>
             <tags:simpleSelect name="js-filter-by" items="${filterByTypes}" itemLabelKey="formatKey" cssClass="js-filter-by"
                                selectedItem="${filterByType}"/>
-            <div class="dib js-filter-options">
+            <div class="dib vat js-filter-options">
                 <%@ include file="filterForm.jsp" %>
             </div>
         </div>
