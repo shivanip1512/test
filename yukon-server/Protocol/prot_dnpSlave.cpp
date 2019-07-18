@@ -334,53 +334,21 @@ void DnpSlaveProtocol::setScanCommand( std::vector<DnpSlave::output_point> outpu
 
     std::vector<ObjectBlockPtr> dobs;
 
-    if( ! analog_inputs.empty() )
-    {
-        for( auto& e : ObjectBlock::makeRangedBlocks(std::move(analog_inputs)) )
-        {
-            dobs.emplace_back(std::move(e));
-        }
-    }
+    const auto insertPoints = [ &dobs ]( auto && points ) 
+                              { 
+                                  if( ! points.empty() ) 
+                                  {
+                                      auto blocks = ObjectBlock::makeRangedBlocks(std::move(points));
+                                      std::move(blocks.begin(), blocks.end(), std::back_inserter(dobs));
+                                  }
+                              };
 
-    if( ! binary_inputs.empty() )
-    {
-        for( auto& e : ObjectBlock::makeRangedBlocks(std::move(binary_inputs)) )
-        {
-            dobs.emplace_back(std::move(e));
-        }
-    }
-
-    if( ! accumulators.empty() )
-    {
-        for( auto& e : ObjectBlock::makeRangedBlocks(std::move(accumulators)) )
-        {
-            dobs.emplace_back(std::move(e));
-        }
-    }
-
-    if( ! demand_accumulators.empty() )
-    {
-        for( auto& e : ObjectBlock::makeRangedBlocks(std::move(demand_accumulators)) )
-        {
-            dobs.emplace_back(std::move(e));
-        }
-    }
-
-    if( ! analog_outputs.empty() )
-    {
-        for( auto& e : ObjectBlock::makeRangedBlocks(std::move(analog_outputs)) )
-        {
-            dobs.emplace_back(std::move(e));
-        }
-    }
-
-    if( ! binary_outputs.empty() )
-    {
-        for( auto& e : ObjectBlock::makeRangedBlocks(std::move(binary_outputs)) )
-        {
-            dobs.emplace_back(std::move(e));
-        }
-    }
+    insertPoints(std::move(analog_inputs));
+    insertPoints(std::move(binary_inputs));
+    insertPoints(std::move(accumulators));
+    insertPoints(std::move(demand_accumulators));
+    insertPoints(std::move(analog_outputs));
+    insertPoints(std::move(binary_outputs));
 
     _application.setCommand(
             ApplicationLayer::ResponseResponse,

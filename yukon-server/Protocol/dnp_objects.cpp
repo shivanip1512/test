@@ -220,24 +220,26 @@ static ObjectBlockPtr ObjectBlock::makeRangedBlock(std::map<unsigned, std::uniqu
         return ObjectBlockPtr();
     }
 
-    const unsigned biggestIndex = objects.rbegin()->first;  // max offset in the block
+    // We sample an object to get the group and variation and we also need to know
+    //  the largest offset so we can choose the proper qualifier code.  Grab the
+    //  entry at the end of the map.
 
-    const T &object = *(objects.begin()->second);
+    const auto & [ biggestIndex, sampleObject ] = *objects.rbegin();
 
     auto objBlock =
             makeObjectBlock(
                 biggestIndex < 256
                     ? NoIndex_ByteStartStop
                     : NoIndex_ShortStartStop,
-                object.getGroup(),
-                object.getVariation());
+                sampleObject->getGroup(),
+                sampleObject->getVariation());
 
-    objBlock->_start = objects.begin()->first;      // first offset
+    objBlock->_start = biggestIndex - objects.size() + 1;   // first offset
 
-    for( auto &kv : objects )
+    for( auto & [ index, objectPtr ] : objects )
     {
-        objBlock->_objectList.emplace_back(std::move(kv.second));
-        objBlock->_objectIndices.push_back(kv.first);
+        objBlock->_objectList.emplace_back(std::move(objectPtr));
+        objBlock->_objectIndices.push_back(index);
     }
 
     return std::move(objBlock);
@@ -343,42 +345,6 @@ ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( ObjectPtr object, unsigned ind
 
     return std::move(objBlock);
 }
-
-
-template <class T>
-ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const T>> objects )
-{
-    if( objects.empty() )
-    {
-        return ObjectBlockPtr();
-    }
-
-    const T &object = *(objects.begin()->second);
-
-    auto objBlock =
-            makeObjectBlock(
-                    ShortIndex_ShortQty,
-                    object.getGroup(),
-                    object.getVariation());
-
-    for( auto &kv : objects )
-    {
-        unsigned index = kv.first;
-
-        objBlock->_objectList.emplace_back(std::move(kv.second));
-        objBlock->_objectIndices.push_back(index);
-    }
-
-    return std::move(objBlock);
-}
-
-
-//  explicit instantiations for DNP Slave (since it is used internally in ctiprot.dll, no need to export with IM_EX_PROT)
-template ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const AnalogInput>> objects );
-template ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const AnalogOutputStatus>> objects );
-template ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const BinaryInput>> objects );
-template ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const BinaryOutput>> objects );
-template ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const Counter>> objects );
 
 
 ObjectBlockPtr ObjectBlock::makeQuantityBlock( ObjectPtr object )

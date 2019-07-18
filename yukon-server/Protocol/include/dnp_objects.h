@@ -124,8 +124,6 @@ public:
 
     static ObjectBlockPtr makeIndexedBlock    (ObjectPtr obj, unsigned index);
     static ObjectBlockPtr makeLongIndexedBlock(ObjectPtr obj, unsigned index);
-    template<class T>
-    static ObjectBlockPtr makeLongIndexedBlock(std::map<unsigned, std::unique_ptr<const T>> objects);
 
     static ObjectBlockPtr makeQuantityBlock   (ObjectPtr obj);
 
