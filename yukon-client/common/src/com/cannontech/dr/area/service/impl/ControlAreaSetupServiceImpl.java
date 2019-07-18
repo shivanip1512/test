@@ -17,13 +17,13 @@ import com.cannontech.common.dr.setup.ControlAreaTriggerType;
 import com.cannontech.common.dr.setup.DailyDefaultState;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDto;
-import com.cannontech.common.dr.setup.TFBoolean;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.database.TFBoolean;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.lm.LMControlArea;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -195,9 +195,9 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                 ? null : lmcontrolarea.getDefDailyStopTime() / 60);
 
         if (lmcontrolarea.getRequireAllTriggersActiveFlag().equals(TFBoolean.TRUE.getDatabaseRepresentation())) {
-            controlArea.setAllTriggersActiveFlag(TFBoolean.TRUE.getBoolean());
+            controlArea.setAllTriggersActiveFlag(TFBoolean.TRUE);
         } else {
-            controlArea.setAllTriggersActiveFlag(TFBoolean.FALSE.getBoolean());
+            controlArea.setAllTriggersActiveFlag(TFBoolean.FALSE);
         }
         buildTriggerModel(lmControlArea, controlArea);
         buildProgramAssignmentModel(lmControlArea, controlArea);
@@ -234,7 +234,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
 
         lmDbControlArea.setDefOperationalState(controlArea.getDailyDefaultState().name());
 
-        lmDbControlArea.setRequireAllTriggersActiveFlag((Character) TFBoolean.valueOf(controlArea.getAllTriggersActiveFlag()).getDatabaseRepresentation());
+        lmDbControlArea.setRequireAllTriggersActiveFlag((Character) controlArea.getAllTriggersActiveFlag().getDatabaseRepresentation());
 
         if (controlArea.getDailyStartTimeInMinutes() != null) {
             lmDbControlArea.setDefDailyStartTime(controlArea.getDailyStartTimeInMinutes() * 60);

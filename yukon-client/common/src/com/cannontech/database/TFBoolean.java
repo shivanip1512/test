@@ -1,6 +1,8 @@
-package com.cannontech.common.dr.setup;
+package com.cannontech.database;
 
 import com.cannontech.common.util.DatabaseRepresentationSource;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TFBoolean implements DatabaseRepresentationSource {
     TRUE {
@@ -26,8 +28,10 @@ public enum TFBoolean implements DatabaseRepresentationSource {
         }
     };
 
+    @JsonValue
     public abstract boolean getBoolean();
 
+    @JsonCreator
     public static TFBoolean valueOf(boolean value) {
         return value ? TRUE : FALSE;
     }

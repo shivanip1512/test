@@ -3,6 +3,7 @@ package com.cannontech.common.dr.setup;
 import java.util.List;
 
 import com.cannontech.common.util.TimeIntervals;
+import com.cannontech.database.TFBoolean;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -18,7 +19,7 @@ public class ControlArea {
     private DailyDefaultState dailyDefaultState;
     private Integer dailyStartTimeInMinutes;
     private Integer dailyStopTimeInMinutes;
-    private boolean allTriggersActiveFlag;
+    private TFBoolean allTriggersActiveFlag;
 
     private List<ControlAreaTrigger> triggers;
     private List<ControlAreaProgramAssignment> programAssignment;
@@ -79,11 +80,11 @@ public class ControlArea {
         this.dailyStopTimeInMinutes = dailyStopTimeInMinutes;
     }
 
-    public boolean getAllTriggersActiveFlag() {
+    public TFBoolean getAllTriggersActiveFlag() {
         return allTriggersActiveFlag;
     }
 
-    public void setAllTriggersActiveFlag(boolean allTriggersActiveFlag) {
+    public void setAllTriggersActiveFlag(TFBoolean allTriggersActiveFlag) {
         this.allTriggersActiveFlag = allTriggersActiveFlag;
     }
 
