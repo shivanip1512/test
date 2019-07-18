@@ -84,6 +84,7 @@ public class LoadGroupBase<T extends LMGroup> implements LoadGroupSetupBase<T> {
         this.id = id;
     }
 
+    @Override
     public void buildModel(LMGroup loadGroup) {
         setName(loadGroup.getPAOName());
         setId(loadGroup.getPAObjectID());
@@ -94,6 +95,7 @@ public class LoadGroupBase<T extends LMGroup> implements LoadGroupSetupBase<T> {
         setDisableGroup(loadGroup.isDisabled());
     }
 
+    @Override
     public void buildDBPersistent(LMGroup group) {
         // PAO settings
         group.setPAOName(getName());
