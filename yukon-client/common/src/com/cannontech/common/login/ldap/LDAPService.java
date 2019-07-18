@@ -43,7 +43,7 @@ public class LDAPService {
     }
 
 
-    public Context getSSLContext(final String url, final String user, final String password,
+    public Context getTLSContext(final String url, final String user, final String password,
                                  final String timeout) throws NamingException, IOException {
 
         Hashtable<String, String> env = new Hashtable<String, String>();

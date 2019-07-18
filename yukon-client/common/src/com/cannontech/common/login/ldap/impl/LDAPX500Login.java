@@ -9,16 +9,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.login.ldap.LDAPService;
+import com.cannontech.common.login.ldap.LDAPEncryptionType;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
 public class LDAPX500Login implements AuthenticationProvider {
-    
-    @Autowired private ConfigurationSource configurationSource;
     @Autowired protected GlobalSettingDao globalSettingDao;
     private static Logger log = YukonLogManager.getLogger(LDAPX500Login.class);
     protected LDAPService ldapService;
@@ -44,13 +42,9 @@ public class LDAPX500Login implements AuthenticationProvider {
     public String getConnectionURL() {
         String host = globalSettingDao.getString(GlobalSettingType.LDAP_SERVER_ADDRESS);
         String port = globalSettingDao.getString(GlobalSettingType.LDAP_SERVER_PORT);
-        String url = "ldap://" + host + ":" + port;
-        
-        boolean useLdaps = configurationSource.getBoolean("LDAPS" , false);
-        if (useLdaps) {
-            url = "ldaps://" + host + ":" + port;
-        }
-        log.info("LDAP Connection URL: {}", url);
+        LDAPEncryptionType encryptionType = globalSettingDao.getEnum(GlobalSettingType.LDAP_SSL_ENABLED, LDAPEncryptionType.class);
+        String url = encryptionType.getProtocol() + "://" + host + ":" + port;
+        log.debug("LDAP Connection URL: {}", url);
         return url;
     }
 
@@ -65,11 +59,11 @@ public class LDAPX500Login implements AuthenticationProvider {
     public boolean connect(final String username, final String password) {
         String url = getConnectionURL();
         String timeout = getConnectionTimeout();
-        boolean sslcheck = globalSettingDao.getBoolean(GlobalSettingType.LDAP_SSL_ENABLED);
+        LDAPEncryptionType encryptionType = globalSettingDao.getEnum(GlobalSettingType.LDAP_SSL_ENABLED, LDAPEncryptionType.class);
         Context ctx = null;
         try {
-            if (sslcheck) {
-                ctx = ldapService.getSSLContext(url, username, password, timeout);
+            if (encryptionType == LDAPEncryptionType.TLS) {
+                ctx = ldapService.getTLSContext(url, username, password, timeout);
             } else {
                 ctx = ldapService.getContext(url, username, password, timeout);
             }
@@ -114,22 +108,25 @@ public class LDAPX500Login implements AuthenticationProvider {
         } else {
             user = ldapUserPrefix + username + "," + ldapUserSuffix + "," + ldapDn;
         }
-        log.info("LDAP User Connection String: {}", user);
+        log.debug("LDAP User Connection String: {}", user);
         return user;
     }
 
     public void setLdapService(final LDAPService ldapService) {
         this.ldapService = ldapService;
     }
-    
+   
     public void logContext(Context ctx) {
-      try {
-          for (Object key : ctx.getEnvironment().keySet()) {
-              log.info("LDAP Context Key: {}   Value: {}", key, 
-                       key.equals(Context.SECURITY_CREDENTIALS) ? "*****" : ctx.getEnvironment().get(key));
+      if (log.isDebugEnabled()) {
+          try {
+              for (Object key : ctx.getEnvironment().keySet()) {
+                  log.debug("LDAP Context Key: {}   Value: {}", key,
+                            key.equals(Context.SECURITY_CREDENTIALS) ? 
+                                    "*****" : ctx.getEnvironment().get(key));   //hide the password
+              }
+          } catch (NamingException e) {
+              log.warn("caught exception in log", e);
           }
-      } catch (NamingException e) {
-          log.warn("caught exception in log", e);
       }
   }
 }
