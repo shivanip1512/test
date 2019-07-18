@@ -13,7 +13,7 @@
         <tags:input path="name" placeholder="${namePlaceholder}" inputClass="vat"/>
         <cti:msg2 var="selectSwitchTypesLbl" key="yukon.web.modules.dr.setup.loadGroup.filter.selectSwitchTypes"/>
         <tags:selectWithItems items="${switchTypes}" path="switchTypes" dataPlaceholder="${selectSwitchTypes}" id="js-switch-types" />
-        <cti:button label="${filterLbl}" classes="fr primary action vam" type="submit"/>
+        <cti:button label="${filterLbl}" classes="fr primary action vam ML15" type="submit"/>
     </form:form>
 </c:if>
 <c:if test="${filterByType == 'LOAD_PROGRAM'}">
