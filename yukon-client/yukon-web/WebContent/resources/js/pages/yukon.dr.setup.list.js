@@ -13,6 +13,15 @@ yukon.dr.setup.list = (function() {
     var
     _initialized = false,
     
+    _initFilterOptions = function () {
+        if ($("#js-switch-types").exists()) {
+            $("form.js-filter-load-groups-form").find('.chosen-container-single').css({
+               "margin-top" : "-3px",
+               "margin-right" : "10px"});
+            $("#js-switch-types").chosen({width: "450px"});
+        }
+    },
+    
     mod = {
         
         /** Initialize this module. */
@@ -20,16 +29,12 @@ yukon.dr.setup.list = (function() {
             
             if (_initialized) return;
             
-            if ($("#js-switch-types").exists()) {
-                $("form.js-filter-load-groups-form").find('.chosen-container-single').css({
-                   "margin-top" : "-3px",
-                   "margin-right" : "10px"});
-                $("#js-switch-types").chosen({width: "450px"});
-            }
+            _initFilterOptions();
             
             $(document).on('change', '.js-filter-by', function () {
                 $.get(yukon.url('/dr/setup/loadFilterByOptions/' + $('.js-filter-by').find(":selected").val()), function (data) {
                     $('.js-filter-options').html(data);
+                    _initFilterOptions();
                 });
             });
             

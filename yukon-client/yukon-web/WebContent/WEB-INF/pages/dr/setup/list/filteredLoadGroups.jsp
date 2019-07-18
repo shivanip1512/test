@@ -5,8 +5,10 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:url var="filterUrl" value="/dr/setup/filterLoadGroups">
-    <cti:param name="name" value="${loadGroupBase.name}"/>
-    <cti:param name="type" value="${loadGroupBase.type}"/>
+    <cti:param name="name" value="${loadGroupFilter.name}"/>
+    <c:forEach var="switchType" items="${loadGroupFilter.switchTypes}">
+        <cti:param name="switchTypes" value="${switchType}"/>
+    </c:forEach>
 </cti:url>
 <div id="js-load-groups-filter-container" data-url="${filterUrl}" data-static>
     <br>
