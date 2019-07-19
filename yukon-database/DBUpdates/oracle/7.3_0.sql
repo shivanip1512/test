@@ -252,7 +252,7 @@ INSERT INTO DBUpdates VALUES ('YUK-20229', '7.3.0', SYSDATE);
 
 /* @start YUK-20281 */
 INSERT INTO YukonListEntry VALUES (
-    (SELECT MAX(YLE.EntryID) + 1 FROM YukonListEntry YLE), 
+    (SELECT MAX(YLE.EntryID) + 1 FROM YukonListEntry YLE WHERE YLE.EntryID < 10000), 
     1005, 0, 'Electric Meter', 1341);
 
 /* @start-block */
@@ -272,7 +272,6 @@ BEGIN
     JOIN YukonListEntry YLE
         ON YSL.ListID = YLE.ListID
     WHERE YSL.EnergyCompanyId != -1
-    AND YSL.Ordering = 'O'
     AND YSL.ListName = 'DeviceType'
     AND YLE.YukonDefinitionID != 1341
     AND YLE.EntryOrder = (SELECT MAX(EntryOrder) FROM YukonListEntry WHERE ListID = YLE.ListID);
