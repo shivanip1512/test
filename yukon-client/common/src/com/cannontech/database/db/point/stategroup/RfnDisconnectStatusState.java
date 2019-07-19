@@ -3,8 +3,11 @@ package com.cannontech.database.db.point.stategroup;
 import java.util.List;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.logging.log4j.Logger;
 
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
+import com.cannontech.clientutils.YukonLogManager;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 /**
@@ -18,18 +21,29 @@ public enum RfnDisconnectStatusState implements PointState {
     UNKNOWN(RfnMeterDisconnectState.UNKNOWN),
     CONNECTED(RfnMeterDisconnectState.CONNECTED),
     DISCONNECTED(RfnMeterDisconnectState.DISCONNECTED),
-    ARMED(RfnMeterDisconnectState.ARMED)
+    ARMED(RfnMeterDisconnectState.ARMED),
+    DISCONNECTED_DEMAND_THRESHOLD_ACTIVE(RfnMeterDisconnectState.DISCONNECTED_DEMAND_THRESHOLD_ACTIVE),
+    CONNECTED_DEMAND_THRESHOLD_ACTIVE(RfnMeterDisconnectState.CONNECTED_DEMAND_THRESHOLD_ACTIVE),
+    DISCONNECTED_CYCLING_ACTIVE(RfnMeterDisconnectState.DISCONNECTED_CYCLING_ACTIVE),
+    CONNECTED_CYCLING_ACTIVE(RfnMeterDisconnectState.CONNECTED_CYCLING_ACTIVE)
     ;
-    
-    private final static List<RfnMeterDisconnectState> otherDisconnectedStates = 
-            ListUtils.unmodifiableList(Lists.newArrayList(
-                RfnMeterDisconnectState.DISCONNECTED_DEMAND_THRESHOLD_ACTIVE, 
-                RfnMeterDisconnectState.CONNECTED_DEMAND_THRESHOLD_ACTIVE, 
-                RfnMeterDisconnectState.DISCONNECTED_CYCLING_ACTIVE,
-                RfnMeterDisconnectState.CONNECTED_CYCLING_ACTIVE));
-    
-
+      
     private final RfnMeterDisconnectState nmReferenceState;
+    private final static Logger log = YukonLogManager.getLogger(RfnDisconnectStatusState.class);
+    private final static ImmutableMap<RfnMeterDisconnectState, RfnDisconnectStatusState> lookupByNmRef;
+    
+    static {
+        try {
+            ImmutableMap.Builder<RfnMeterDisconnectState, RfnDisconnectStatusState> nmRefBuilder = ImmutableMap.builder();
+            for (RfnDisconnectStatusState rfnDisconnect : values()) {
+                nmRefBuilder.put(rfnDisconnect.nmReferenceState, rfnDisconnect);
+            }
+            lookupByNmRef = nmRefBuilder.build();
+        } catch (IllegalArgumentException e) {
+            log.warn("Caught exception while building lookup maps, look for a duplicate abbreviation.", e);
+            throw e;
+        }
+    }
 
     private RfnDisconnectStatusState(RfnMeterDisconnectState nmReferenceState) {
         this.nmReferenceState = nmReferenceState;
@@ -49,15 +63,6 @@ public enum RfnDisconnectStatusState implements PointState {
      *  message state (RfnMeterDisconnectState). 
      */
     public static RfnDisconnectStatusState getForNmState(RfnMeterDisconnectState nmState) {
-        for (RfnDisconnectStatusState state : values()) {
-            if (state.nmReferenceState == nmState) {
-                return state;
-            }
-        }
-        if(otherDisconnectedStates.contains(nmState)) {
-            return DISCONNECTED;
-        }
-        throw new  IllegalArgumentException();
+        return lookupByNmRef.get(nmState);
     }
-
 }

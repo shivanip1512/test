@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
 
@@ -407,35 +408,101 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                 data.add(deviceData);
             }
         });
-        if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {    
-            List<List<DynamicRfnDeviceData>> subSets = Lists.partition(data, ChunkingSqlTemplate.DEFAULT_SIZE/3); 
-            log.debug("Inserting {} rows", data.size());
-            subSets.forEach(part -> {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("WITH NMD_CTE (DeviceId, GatewayId, LastTransferTime) AS (");
-                sql.append("SELECT * FROM (");
-                sql.append("    VALUES ");
-                String params = part.stream()
-                        .map(node -> " (?,?,?)")
-                        .collect(Collectors.joining(","));
-                sql.append(params);
-                sql.append("    ) AS inner_query (DeviceId, GatewayId, LastTransferTime)");
-                sql.append(")");
-                sql.append("MERGE INTO DynamicRfnDeviceData DRDD");
-                sql.append("    USING NMD_CTE CACHE");
-                sql.append("    ON DRDD.DeviceId = CACHE.DeviceId");
-                sql.append("WHEN MATCHED THEN");
-                sql.append("    UPDATE SET DRDD.GatewayId = CACHE.GatewayId, DRDD.LastTransferTime = CACHE.LastTransferTime");
-                sql.append("WHEN NOT MATCHED THEN");
-                sql.append("    INSERT VALUES (CACHE.DeviceId, CACHE.GatewayId, CACHE.LastTransferTime);");
-                Object[] values = part.stream()
-                        .map(value -> Lists.newArrayList(value.deviceId, value.gatewayId, value.transferTime.toString()))
-                        .flatMap(Collection::stream)
-                        .collect(Collectors.toList())
-                        .toArray();
-                template.update(sql.getSql(), values);
-            });
+        List<List<DynamicRfnDeviceData>> subSets = Lists.partition(data, ChunkingSqlTemplate.DEFAULT_SIZE/3); 
+        log.debug("Inserting {} rows", data.size());
+        if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {  
+            saveDynamicRfnDeviceDataSqlServer(subSets);
         }
+        else if (dbVendorResolver.getDatabaseVendor().isOracle()) {  
+            saveDynamicRfnDeviceDataOracle(subSets);
+        }
+    }
+
+    private void saveDynamicRfnDeviceDataOracle(List<List<DynamicRfnDeviceData>> subSets) {
+        /**
+         * MERGE INTO DynamicRfnDeviceData DRDD
+                 USING (  
+                      SELECT 123977 AS DeviceId, 138791 AS GatewayId, SYSDATE AS LastTransferTime FROM DUAL UNION
+                      SELECT 138787, 138791, SYSDATE FROM DUAL UNION
+                      SELECT 132879, 138791, SYSDATE FROM DUAL ) CACHE_DATA
+                 ON ( DRDD.DeviceId = CACHE_DATA.DeviceId )
+            WHEN MATCHED THEN
+                 UPDATE SET DRDD.GatewayId = CACHE_DATA.GatewayId, DRDD.LastTransferTime = CACHE_DATA.LastTransferTime
+            WHEN NOT MATCHED THEN
+                 INSERT VALUES (CACHE_DATA.DeviceId, CACHE_DATA.GatewayId, CACHE_DATA.LastTransferTime);
+         */
+        subSets.forEach(part -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("MERGE INTO DynamicRfnDeviceData DRDD");
+            sql.append("USING (");
+            String params = IntStream.range(0, part.size()).mapToObj(i -> {
+                String param =  "SELECT ? AS DeviceId, ? AS GatewayId, ? AS LastTransferTime FROM DUAL";
+                if(i != 0) {
+                    param =  "SELECT ? , ? , ? FROM DUAL";
+                }
+                return param;
+            }).collect(Collectors.joining(" UNION "));
+            sql.append(params);
+            sql.append(") CACHE_DATA");
+            sql.append("    ON ( DRDD.DeviceId = CACHE_DATA.DeviceId )");
+            sql.append("WHEN MATCHED THEN");
+            sql.append("    UPDATE SET DRDD.GatewayId = CACHE_DATA.GatewayId, DRDD.LastTransferTime = CACHE_DATA.LastTransferTime");
+            sql.append("WHEN NOT MATCHED THEN");
+            sql.append("    UPDATE SET DRDD.GatewayId = CACHE_DATA.GatewayId, DRDD.LastTransferTime = CACHE_DATA.LastTransferTime");
+            sql.append("WHEN NOT MATCHED THEN");
+            sql.append("    INSERT VALUES (CACHE_DATA.DeviceId, CACHE_DATA.GatewayId, CACHE_DATA.LastTransferTime)");
+            Object[] values = part.stream()
+                    .map(value -> Lists.newArrayList(value.deviceId, value.gatewayId, value.transferTime.toString()))
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList())
+                    .toArray();
+            template.update(sql.getSql(), values);
+        });
+    }
+
+    private void saveDynamicRfnDeviceDataSqlServer(List<List<DynamicRfnDeviceData>> subSets) {
+        /**
+         * WITH NMD_CTE (DeviceId, GatewayId, LastTransferTime) AS (
+            SELECT * FROM (
+                VALUES 
+                    (123977, 138791, GETDATE()),
+                    (138787, 138791, GETDATE()),
+                    (132879, 138791, GETDATE())
+                ) AS inner_query (DeviceId, GatewayId, LastTransferTime)
+            )
+            MERGE INTO DynamicRfnDeviceData DRDD
+                 USING NMD_CTE CACHE
+                 ON DRDD.DeviceId = CACHE.DeviceId
+            WHEN MATCHED THEN
+                 UPDATE SET DRDD.GatewayId = CACHE.GatewayId, DRDD.LastTransferTime = CACHE.LastTransferTime
+            WHEN NOT MATCHED THEN
+                 INSERT VALUES (CACHE.DeviceId, CACHE.GatewayId, CACHE.LastTransferTime);
+         */
+        subSets.forEach(part -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("WITH NMD_CTE (DeviceId, GatewayId, LastTransferTime) AS (");
+            sql.append("SELECT * FROM (");
+            sql.append("    VALUES ");
+            String params = part.stream()
+                    .map(node -> " (?,?,?)")
+                    .collect(Collectors.joining(","));
+            sql.append(params);
+            sql.append("    ) AS inner_query (DeviceId, GatewayId, LastTransferTime)");
+            sql.append(")");
+            sql.append("MERGE INTO DynamicRfnDeviceData DRDD");
+            sql.append("    USING NMD_CTE CACHE");
+            sql.append("    ON DRDD.DeviceId = CACHE.DeviceId");
+            sql.append("WHEN MATCHED THEN");
+            sql.append("    UPDATE SET DRDD.GatewayId = CACHE.GatewayId, DRDD.LastTransferTime = CACHE.LastTransferTime");
+            sql.append("WHEN NOT MATCHED THEN");
+            sql.append("    INSERT VALUES (CACHE.DeviceId, CACHE.GatewayId, CACHE.LastTransferTime);");
+            Object[] values = part.stream()
+                    .map(value -> Lists.newArrayList(value.deviceId, value.gatewayId, value.transferTime.toString()))
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList())
+                    .toArray();
+            template.update(sql.getSql(), values);
+        });
     }
 
     @Override

@@ -248,6 +248,10 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
                     errorCode = error.getErrorCode();
                     break;
                 case DISCONNECTED:
+                case DISCONNECTED_DEMAND_THRESHOLD_ACTIVE:
+                case CONNECTED_DEMAND_THRESHOLD_ACTIVE:
+                case DISCONNECTED_CYCLING_ACTIVE:
+                case CONNECTED_CYCLING_ACTIVE:
                     callback.success(DISCONNECT, meter, pointData);
                     break;
                 case ARMED:
