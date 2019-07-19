@@ -1,6 +1,8 @@
 package com.cannontech.common.dr.setup;
 
-public interface LoadGroupSetupBase<T> {
+import com.cannontech.database.data.device.lm.LMGroup;
+
+public interface LoadGroupSetupBase<T extends LMGroup> {
     
     /**
      * Build model object from the passed db persistent load group.
