@@ -21,7 +21,7 @@ public enum RfnDisconnectStatusState implements PointState {
     ARMED(RfnMeterDisconnectState.ARMED)
     ;
     
-    private static List<RfnMeterDisconnectState> otherDisconnectedStates = 
+    private final static List<RfnMeterDisconnectState> otherDisconnectedStates = 
             ListUtils.unmodifiableList(Lists.newArrayList(
                 RfnMeterDisconnectState.DISCONNECTED_DEMAND_THRESHOLD_ACTIVE, 
                 RfnMeterDisconnectState.CONNECTED_DEMAND_THRESHOLD_ACTIVE, 
