@@ -1,6 +1,11 @@
 package com.cannontech.database.db.point.stategroup;
 
+import java.util.List;
+
+import org.apache.commons.collections4.ListUtils;
+
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
+import com.google.common.collect.Lists;
 
 /**
  * This is a little unfortunate, but because we are unable to change anything within the network manager "shared"
@@ -13,7 +18,16 @@ public enum RfnDisconnectStatusState implements PointState {
     UNKNOWN(RfnMeterDisconnectState.UNKNOWN),
     CONNECTED(RfnMeterDisconnectState.CONNECTED),
     DISCONNECTED(RfnMeterDisconnectState.DISCONNECTED),
-    ARMED(RfnMeterDisconnectState.ARMED), ;
+    ARMED(RfnMeterDisconnectState.ARMED)
+    ;
+    
+    private static List<RfnMeterDisconnectState> otherDisconnectedStates = 
+            ListUtils.unmodifiableList(Lists.newArrayList(
+                RfnMeterDisconnectState.DISCONNECTED_DEMAND_THRESHOLD_ACTIVE, 
+                RfnMeterDisconnectState.CONNECTED_DEMAND_THRESHOLD_ACTIVE, 
+                RfnMeterDisconnectState.DISCONNECTED_CYCLING_ACTIVE,
+                RfnMeterDisconnectState.CONNECTED_CYCLING_ACTIVE));
+    
 
     private final RfnMeterDisconnectState nmReferenceState;
 
@@ -39,6 +53,9 @@ public enum RfnDisconnectStatusState implements PointState {
             if (state.nmReferenceState == nmState) {
                 return state;
             }
+        }
+        if(otherDisconnectedStates.contains(nmState)) {
+            return DISCONNECTED;
         }
         throw new  IllegalArgumentException();
     }

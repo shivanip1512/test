@@ -49,6 +49,7 @@ import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReplyType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
 import com.cannontech.dr.rfn.service.RfnExpressComMessageService;
@@ -254,12 +255,12 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
             }
 
             @Override
-            public void receivedSuccess(RfnMeterDisconnectState state, PointValueQualityHolder pointData) {
+            public void receivedSuccess(RfnDisconnectStatusState state, PointValueQualityHolder pointData) {
                 delegateCallback.receivedValue(meter.getPaoIdentifier(), pointData);
             }
 
             @Override
-            public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state,
+            public void receivedError(MessageSourceResolvable message, RfnDisconnectStatusState state,
                     RfnMeterDisconnectConfirmationReplyType replyType) {
                 SpecificDeviceErrorDescription error =
                         getError(DeviceError.FAILURE, replyType, "yukon.common.device.attributeRead.rfn.statusError");

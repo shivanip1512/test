@@ -28,7 +28,6 @@ import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
@@ -48,6 +47,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
@@ -158,13 +158,13 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
         }
 
         @Override
-        public void receivedSuccess(RfnMeterDisconnectState state, PointValueQualityHolder pointData) {
+        public void receivedSuccess(RfnDisconnectStatusState state, PointValueQualityHolder pointData) {
             log.debug("RFN receivedSuccess");
             proccessResult(state, pointData, null, null);
         }
 
         @Override
-        public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state,
+        public void receivedError(MessageSourceResolvable message, RfnDisconnectStatusState state,
                 RfnMeterDisconnectConfirmationReplyType replyType) {
             log.debug("RFN receivedError");
             proccessResult(state, null, message, replyType);
@@ -192,7 +192,7 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
             }
         }
 
-        private void proccessResult(RfnMeterDisconnectState state, PointValueQualityHolder pointData,
+        private void proccessResult(RfnDisconnectStatusState state, PointValueQualityHolder pointData,
                 MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType) {
             if (rfnLogger.isInfoEnabled()) {
                 rfnLogger.info("RFN proccessState:" + meter + " state:" + state);
@@ -248,10 +248,6 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
                     errorCode = error.getErrorCode();
                     break;
                 case DISCONNECTED:
-                case DISCONNECTED_DEMAND_THRESHOLD_ACTIVE:
-                case CONNECTED_DEMAND_THRESHOLD_ACTIVE:
-                case DISCONNECTED_CYCLING_ACTIVE:
-                case CONNECTED_CYCLING_ACTIVE:
                     callback.success(DISCONNECT, meter, pointData);
                     break;
                 case ARMED:

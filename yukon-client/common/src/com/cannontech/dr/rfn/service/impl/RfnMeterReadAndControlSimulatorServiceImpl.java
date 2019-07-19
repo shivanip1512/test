@@ -1,5 +1,6 @@
 package com.cannontech.dr.rfn.service.impl;
 
+import java.util.Date;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
@@ -26,9 +27,18 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadRequest;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
+import com.cannontech.amr.rfn.message.status.RfnStatusArchiveRequest;
+import com.cannontech.amr.rfn.message.status.type.DemandResetStatus;
+import com.cannontech.amr.rfn.message.status.type.DemandResetStatusCode;
+import com.cannontech.amr.rfn.message.status.type.MeterDisconnectStatus;
+import com.cannontech.amr.rfn.message.status.type.MeterInfo;
+import com.cannontech.amr.rfn.message.status.type.MeterInfoStatus;
+import com.cannontech.amr.rfn.message.status.type.RfnMeterDisconnectMeterMode;
+import com.cannontech.amr.rfn.message.status.type.RfnMeterDisconnectStateType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlDisconnectSimulatorSettings;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlReadSimulatorSettings;
 import com.cannontech.dr.rfn.service.RfnMeterDataSimulatorService;
@@ -273,6 +283,10 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
                             
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response1);
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response2);
+                            
+                            
+                            RfnStatusArchiveRequest response = setupStatusAtchiveRequest(response2.getState(), request.getRfnIdentifier());
+                            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_STATUS_ARCHIVE.getQueue().getName(), response);
                         }
                     } catch (Exception e) {
                         log.error("Error occurred in meter disconnect reply.", e);
@@ -283,8 +297,49 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
                 meterDisconnectReplyStopping = false;
                 meterDisconnectReplyActive = false;
             }
-            
-            
+
+            /**
+             * Creates status archive request for disconnect
+             * @param rfnIdentifier 
+             */
+            private RfnStatusArchiveRequest setupStatusAtchiveRequest(RfnMeterDisconnectState state, RfnIdentifier rfnIdentifier) {
+                RfnStatusArchiveRequest response = new RfnStatusArchiveRequest();
+                response.setStatusPointId(1L);
+                MeterInfoStatus status = new MeterInfoStatus();
+                status.setRfnIdentifier(rfnIdentifier);
+                MeterInfo data = new MeterInfo();
+                MeterDisconnectStatus disconnectStatus = new MeterDisconnectStatus();
+                if (state == RfnMeterDisconnectState.ARMED) {
+                    disconnectStatus.setMeterMode(RfnMeterDisconnectMeterMode.ARM);
+                    disconnectStatus.setRelayStatus(RfnMeterDisconnectStateType.ARMED);
+                } else if (state == RfnMeterDisconnectState.CONNECTED) {
+                    disconnectStatus.setMeterMode(RfnMeterDisconnectMeterMode.RESUME);
+                    disconnectStatus.setRelayStatus(RfnMeterDisconnectStateType.RESUMED);
+                } else if (state == RfnMeterDisconnectState.CONNECTED_CYCLING_ACTIVE) {
+                    disconnectStatus.setMeterMode(RfnMeterDisconnectMeterMode.CYCLING_ACTIVATE);
+                    disconnectStatus.setRelayStatus(RfnMeterDisconnectStateType.RESUMED);
+                } else if (state == RfnMeterDisconnectState.CONNECTED_DEMAND_THRESHOLD_ACTIVE) {
+                    disconnectStatus.setMeterMode(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE);
+                    disconnectStatus.setRelayStatus(RfnMeterDisconnectStateType.RESUMED);
+                } else if (state == RfnMeterDisconnectState.DISCONNECTED) {
+                    disconnectStatus.setMeterMode(RfnMeterDisconnectMeterMode.TERMINATE);
+                    disconnectStatus.setRelayStatus(RfnMeterDisconnectStateType.TERMINATED);
+                } else if (state == RfnMeterDisconnectState.DISCONNECTED_CYCLING_ACTIVE) {
+                    disconnectStatus.setMeterMode(RfnMeterDisconnectMeterMode.CYCLING_ACTIVATE);
+                    disconnectStatus.setRelayStatus(RfnMeterDisconnectStateType.TERMINATED);
+                } else if (state == RfnMeterDisconnectState.DISCONNECTED_DEMAND_THRESHOLD_ACTIVE) {
+                    disconnectStatus.setMeterMode(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE);
+                    disconnectStatus.setRelayStatus(RfnMeterDisconnectStateType.TERMINATED);
+                } else if (state == RfnMeterDisconnectState.UNKNOWN) {
+                    disconnectStatus.setMeterMode(RfnMeterDisconnectMeterMode.ON_DEMAND_CONFIGURATION);
+                }
+                data.setMeterDisconnectStatus(disconnectStatus);
+                status.setData(data);
+                status.setTimeStamp(new Date().getTime());
+                response.setStatus(status);
+                return response;
+            }
+
         };
         return meterDisconnectRunner;
     }

@@ -1,9 +1,12 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.jms.ConnectionFactory;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +14,13 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveRequest;
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveResponse;
 import com.cannontech.amr.rfn.message.status.type.DemandResetStatus;
+import com.cannontech.amr.rfn.message.status.type.MeterInfoStatus;
+import com.cannontech.amr.rfn.message.status.type.RfnMeterDisconnectMeterMode;
+import com.cannontech.amr.rfn.message.status.type.RfnMeterDisconnectStateType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -39,41 +46,103 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
     @Autowired private IDatabaseCache dbCache;
     private JmsTemplate jmsTemplate;
     private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
+    /**
+     * Meter Mode                       Relay Status    RfnMeterDisconnectState                                 Comments
+        TERMINATE                       TERMINATED      DISCONNECTED(2)                                         This meter is configured for On-demand disconnect. The mode is reflecting the relay status. If it does not, it is an error.
+        ARM                             ARMED           ARMED(3)                                                This meter is configured for On-demand disconnect. The mode is reflecting the relay status. If it does not, it is an error.
+        RESUME                          RESUMED         CONNECTED(1)                                            This meter is configured for On-demand disconnect. The mode is reflecting the relay status. If it does not, it is an error.
+        ON_DEMAND_CONFIGURATION         TERMINATED      DISCONNECTED(2)                                         This meter is configured for On-demand disconnect. Use the relay status.
+        ON_DEMAND_CONFIGURATION         ARMED           ARMED(3)                                                This meter is configured for On-demand disconnect. Use the relay status.
+        ON_DEMAND_CONFIGURATION         RESUMED         CONNECTED(1)                                            This meter is configured for On-demand disconnect. Use the relay status.
+        ON_DEMAND_CONFIGURATION         UNKNOWN                                                                 This meter is configured for On-demand disconnect, but the relay status is not known. Ignore.
+        DEMAND_THRESHOLD_CONFIGURATION  *                                                                       This meter is configured for Demand Threshold disconnect. We do not know if the mode is active or deactive yet. Ignore.
+        DEMAND_THRESHOLD_ACTIVATE       TERMINATED      DISCONNECTED_DEMAND_THRESHOLD_ACTIVE(4)                 This meter is configured for Demand Threshold disconnect, and the mode is active.
+        DEMAND_THRESHOLD_ACTIVATE       RESUMED         CONNECTED_DEMAND_THRESHOLD_ACTIVE(5)                    This meter is configured for Demand Threshold disconnect, and the mode is active.
+        DEMAND_THRESHOLD_DEACTIVATE     *               CONNECTED(1)                                            This meter is configured for Demand Threshold disconnect, but the mode is not active, and therefore cannot cause the relay to disconnect. Customer needs to send a disconnect command to activate the mode.
+        CYCLING_CONFIGURATION           *                                                                       This meter is configured for Cycling disconnect. We do not know if the mode is active or deactive yet. Ignore.
+        CYCLING_ACTIVATE                TERMINATED       DISCONNECTED_CYCLING_ACTIVE(6)                         This meter is configured for Cycling disconnect, and the mode is active.
+        CYCLING_ACTIVATE                RESUMED          CONNECTED_CYCLING_ACTIVE(7)                            This meter is configured for Cycling disconnect, and the mode is active.
+        CYCLING_DEACTIVATE              *                CONNECTED(1)                                           This meter is configured for Cycling disconnect, but the mode is not active, and therefore cannot cause the relay to disconnect. Customer needs to send a disconnect command to activate the mode.
+
+     */
+    private Map<Pair<RfnMeterDisconnectMeterMode, RfnMeterDisconnectStateType>, RfnMeterDisconnectState> disconnectStates = new HashMap<>();
+    {
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.TERMINATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.ARM, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.ARMED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.RESUME, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.ON_DEMAND_CONFIGURATION, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.ON_DEMAND_CONFIGURATION, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.ARMED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.ON_DEMAND_CONFIGURATION, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED);
+        //skipping ON_DEMAND_CONFIGURATION         UNKNOWN 
+        //skipping DEMAND_THRESHOLD_CONFIGURATION  *
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED_DEMAND_THRESHOLD_ACTIVE);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED_DEMAND_THRESHOLD_ACTIVE);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.CONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.CONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.UNKNOWN), RfnMeterDisconnectState.CONNECTED);
+        //skipping CYCLING_CONFIGURATION           *   
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_ACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED_CYCLING_ACTIVE);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_ACTIVATE, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED_CYCLING_ACTIVE);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.CONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.CONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.UNKNOWN), RfnMeterDisconnectState.CONNECTED);
+    }
 
     @Override
     public void process(Object obj, String processor) {
         processRequest((RfnStatusArchiveRequest) obj, processor);
     }
-    
+
     /**
      * Handles message from NM, logs the message and put in on a queue.
      */
     public void handleArchiveRequest(RfnStatusArchiveRequest request) {
-        if(rfnCommsLog.isEnabled(Level.INFO)) {
+        if (rfnCommsLog.isEnabled(Level.INFO)) {
             rfnCommsLog.log(Level.INFO, "<<< " + request.toString());
         }
         queueHandler.add(this, request);
     }
-    
+
     /**
      * Attempts publish the point data received from NM.
      */
     private void processRequest(RfnStatusArchiveRequest request, String processor) {
         if (!request.getRfnIdentifier().is_Empty_()) {
-            if(request.getStatus() instanceof DemandResetStatus) {
+            if (request.getStatus() instanceof DemandResetStatus) {
                 DemandResetStatus status = (DemandResetStatus) request.getStatus();
                 int value = status.getData().getDemandResetStatusCodeID();
                 publishPointData(value, BuiltInAttribute.RF_DEMAND_RESET_STATUS, request.getRfnIdentifier(),
                     status.getTimeStamp(), processor);
-                sendAcknowledgement(request, processor); 
+            } else if (request.getStatus() instanceof MeterInfoStatus) {
+                MeterInfoStatus status = (MeterInfoStatus) request.getStatus();
+                try {
+                    Pair<RfnMeterDisconnectMeterMode, RfnMeterDisconnectStateType> key =
+                        Pair.of(status.getData().getMeterDisconnectStatus().getMeterMode(),
+                            status.getData().getMeterDisconnectStatus().getRelayStatus());
+                    RfnMeterDisconnectState state = disconnectStates.get(key);
+                    if (state != null) {
+                        publishPointData(state.getRawState(), BuiltInAttribute.DISCONNECT_STATUS,
+                            request.getRfnIdentifier(), status.getTimeStamp(), processor);
+                    } else {
+                        log.info(
+                            "Attempt to publish point data for disconnect status {} failed. Disconnect state doesn't exist for combination {}",
+                            status, key);
+                    }
+                } catch (Exception e) {
+                    // the data doesn't have disconnect status information
+                    log.error("Attempt to publish point data for disconnect status {} failed", status, e);
+                }
             }
-        } else {
-            sendAcknowledgement(request, processor);
+
         }
+        sendAcknowledgement(request, processor);
     }
-    
+
     /**
-     * Attempts to publish point data for the device. If unable to lookup device in cache the exception will be thrown and acknowledgement 
+     * Attempts to publish point data for the device. If unable to lookup device in cache the exception will
+     * be thrown and acknowledgement
      * will not be sent to NM.
      */
     private void publishPointData(int value, BuiltInAttribute attribute, RfnIdentifier rfnIdentifier, long timeStamp,
@@ -89,13 +158,14 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
             pointData.setValue(value);
             pointData.setTime(new Date(timeStamp));
             pointData.setType(point.getPointType());
-            pointData.setTagsPointMustArchive(true); 
+            pointData.setTagsPointMustArchive(true);
 
             asyncDynamicDataSource.putValue(pointData);
 
             log.debug("{} generated {} {} {}", processor, pointData, attribute, rfnIdentifier);
         } catch (IllegalUseOfAttribute e) {
-            log.error("{} generation of point data for {} {} value {} failed", processor, rfnIdentifier, attribute, value, e);
+            log.error("{} generation of point data for {} {} value {} failed", processor, rfnIdentifier, attribute,
+                value, e);
         }
     }
 
@@ -113,7 +183,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
         }
         jmsTemplate.convertAndSend(JmsApiDirectory.RFN_STATUS_ARCHIVE.getResponseQueue().get().getName(), response);
     }
-    
+
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);

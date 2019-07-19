@@ -1925,16 +1925,15 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         RfnMeterDisconnectCallback rfnCallback = new RfnMeterDisconnectCallback() {
 
             @Override
-            public void receivedSuccess(RfnMeterDisconnectState state, PointValueQualityHolder pointData) {
+            public void receivedSuccess(RfnDisconnectStatusState state, PointValueQualityHolder pointData) {
                 log.debug("rfn " + meter + " receivedSuccess for cdEvent " + state);
-                MspLoadActionCode mspLoadActionCode =
-                    MspLoadActionCode.getForRfnState(RfnDisconnectStatusState.getForNmState(state));
+                MspLoadActionCode mspLoadActionCode = MspLoadActionCode.getForRfnState(state);
                 sendCDEventNotification(meter, mspLoadActionCode.getLoadActionCode(), mspVendor, transactionId,
                     responseUrl);
             }
 
             @Override
-            public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state, RfnMeterDisconnectConfirmationReplyType replyType) {
+            public void receivedError(MessageSourceResolvable message, RfnDisconnectStatusState state, RfnMeterDisconnectConfirmationReplyType replyType) {
                 log.warn("rfn " + meter + " receivedError for cdEvent " + getMessageText(message));
                 sendCDEventNotification(meter, LoadActionCodeKind.UNKNOWN, mspVendor, transactionId, responseUrl);
             }

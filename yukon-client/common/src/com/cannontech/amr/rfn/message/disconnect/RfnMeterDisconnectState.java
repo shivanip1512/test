@@ -2,31 +2,29 @@ package com.cannontech.amr.rfn.message.disconnect;
 
 public enum RfnMeterDisconnectState {
 
-    UNKNOWN(0, null), 
-    CONNECTED(1, RfnMeterDisconnectCmdType.RESUME), 
-    DISCONNECTED(2, RfnMeterDisconnectCmdType.TERMINATE), 
-    ARMED(3, RfnMeterDisconnectCmdType.ARM),
-    DISCONNECTED_DEMAND_THRESHOLD_ACTIVE(4, RfnMeterDisconnectCmdType.TERMINATE),
+    UNKNOWN(0), 
+    CONNECTED(1), 
+    DISCONNECTED(2), 
+    ARMED(3),
+    DISCONNECTED_DEMAND_THRESHOLD_ACTIVE(4),
     /**
      * Meter is in disconnected "state" based on Mode, but is technically connected until
      * configuration requirements for disconnect mode are met
      */
-    CONNECTED_DEMAND_THRESHOLD_ACTIVE(5, RfnMeterDisconnectCmdType.TERMINATE),
-    DISCONNECTED_CYCLING_ACTIVE(6, RfnMeterDisconnectCmdType.TERMINATE),
+    CONNECTED_DEMAND_THRESHOLD_ACTIVE(5),
+    DISCONNECTED_CYCLING_ACTIVE(6),
     /**
      * Meter is in disconnected "state" based on Mode, but is technically connected until
      * configuration requirements for disconnect mode are met
      */
-    CONNECTED_CYCLING_ACTIVE(7, RfnMeterDisconnectCmdType.TERMINATE)
+    CONNECTED_CYCLING_ACTIVE(7)
     ;
     
     
     private final int rawState;
-    private final RfnMeterDisconnectCmdType type; 
     
-    private RfnMeterDisconnectState(int rawState, RfnMeterDisconnectCmdType type) {
+    private RfnMeterDisconnectState(int rawState) {
         this.rawState = rawState;
-        this.type = type;
     }
     
     /**
@@ -35,9 +33,5 @@ public enum RfnMeterDisconnectState {
      */
     public int getRawState() {
         return rawState;
-    }
-
-    public RfnMeterDisconnectCmdType getType() {
-        return type;
     }
 }

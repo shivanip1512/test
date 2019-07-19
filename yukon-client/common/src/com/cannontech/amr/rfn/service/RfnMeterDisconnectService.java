@@ -26,6 +26,7 @@ import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.dispatch.message.PointData;
 
@@ -115,10 +116,11 @@ public class RfnMeterDisconnectService {
 
             @Override
             public void handleReply2(RfnMeterDisconnectConfirmationReply confirmationReplyMessage) {
+                RfnDisconnectStatusState state = RfnDisconnectStatusState.getForNmState(confirmationReplyMessage.getState());
                 if (!confirmationReplyMessage.isSuccess()) {
                     /* Request failed */
                     MessageSourceResolvable message = YukonMessageSourceResolvable.createSingleCodeWithArguments(confirmError, confirmationReplyMessage);
-                    callback.receivedError(message, confirmationReplyMessage.getState(), confirmationReplyMessage.getReplyType());
+                    callback.receivedError(message, state, confirmationReplyMessage.getReplyType());
                     if (RfnMeterDisconnectConfirmationReplyType.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT == confirmationReplyMessage.getReplyType()
                         || RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT == confirmationReplyMessage.getReplyType()
                         || RfnMeterDisconnectConfirmationReplyType.FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD == confirmationReplyMessage.getReplyType()) {
@@ -127,7 +129,7 @@ public class RfnMeterDisconnectService {
                 } else {
                     PointValueQualityHolder pointData = publishPointData(confirmationReplyMessage.getState().getRawState(), meter);
                     /* Confirmation response successful, process point data */
-                    callback.receivedSuccess(confirmationReplyMessage.getState(), pointData);
+                    callback.receivedSuccess(state, pointData);
                 }
            }
             

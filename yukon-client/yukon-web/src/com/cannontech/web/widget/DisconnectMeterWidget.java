@@ -68,6 +68,7 @@ import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.UserUtils;
@@ -180,12 +181,12 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
             }
 
             @Override
-            public void receivedSuccess(RfnMeterDisconnectState state, PointValueQualityHolder pointData) {
+            public void receivedSuccess(RfnDisconnectStatusState state, PointValueQualityHolder pointData) {
                 model.addAttribute("success", true);
             }
 
             @Override
-            public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state, RfnMeterDisconnectConfirmationReplyType replyType) {
+            public void receivedError(MessageSourceResolvable message, RfnDisconnectStatusState state, RfnMeterDisconnectConfirmationReplyType replyType) {
                 if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT) {
                     disconnectEventLogService.loadSideVoltageDetectedWhileDisconnected(UserUtils.getYukonUser(), meter.getName());
                     errors.add(new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT),
