@@ -252,15 +252,19 @@ void ApplicationLayer::initForSlaveOutput( void )
 
     for( const auto& ob : _out_object_blocks )
     {
-        if( ob )
-        {
-            ob->serialize(_response.buf + pos);
-            pos += ob->getSerializedLen();
-        }
-        else
+        if( ! ob )
         {
             CTILOG_ERROR(dout, "ob null");
+            continue;
         }
+        if( pos + ob->getSerializedLen() >= BufferSize )
+        {
+            CTILOG_ERROR(dout, "Exceeded application buffer size");
+            break;
+        }
+
+        ob->serialize(_response.buf + pos);
+        pos += ob->getSerializedLen();
     }
 
     _out_object_blocks.clear();
