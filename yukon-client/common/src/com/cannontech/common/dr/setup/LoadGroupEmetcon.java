@@ -1,7 +1,9 @@
 package com.cannontech.common.dr.setup;
 
 import com.cannontech.database.data.device.lm.LMGroupEmetcon;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(value={ "routeName"}, allowGetters= true, ignoreUnknown = true)
 public class LoadGroupEmetcon extends LoadGroupBase<LMGroupEmetcon> implements LoadGroupRoute{
     private Integer goldAddress;
     private Integer silverAddress;

@@ -3,11 +3,13 @@ package com.cannontech.common.dr.setup;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.database.data.device.lm.LMGroupVersacom;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonIgnoreProperties(value={ "routeName"}, allowGetters= true, ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
-public class LoadGroupVersacom extends LoadGroupBase<LMGroupVersacom> implements LoadGroupRoute{
+public class LoadGroupVersacom extends LoadGroupBase<LMGroupVersacom> implements LoadGroupRoute {
     // Communication Route Id
     private Integer routeId;
     private String routeName;

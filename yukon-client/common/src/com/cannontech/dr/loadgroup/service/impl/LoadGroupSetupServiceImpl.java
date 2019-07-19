@@ -92,7 +92,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         LMGroup loadGroup = (LMGroup) dbPersistentDao.retrieveDBPersistent(pao);
         LoadGroupBase loadGroupBase = getModel(loadGroup.getPaoType());
         loadGroupBase.buildModel(loadGroup);
-        if (loadGroup.getPaoType().isLoadGroupSupportRoute()) {
+        if (loadGroup instanceof LoadGroupRoute) {
             setRouteName((LoadGroupRoute)loadGroupBase);
         }
         return loadGroupBase;
