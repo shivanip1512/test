@@ -215,7 +215,7 @@ public enum SiteMapPage implements DisplayableEnum {
     THREAD_DUMP(SiteMapCategory.SUPPORT, "yukon.web.modules.support.threadDump.pageName", "/support/threadDump",
             MatchStyle.all, YukonRole.OPERATOR_ADMINISTRATOR),
     WATER_NODE(SiteMapCategory.SUPPORT, "yukon.web.modules.support.waterNode.pageName", "/support/waterNode/view",
-            MatchStyle.all, YukonRole.OPERATOR_ADMINISTRATOR),
+            MatchStyle.all, YukonRole.METERING),
     ROUTE_USAGE(SiteMapCategory.SUPPORT, "yukon.web.modules.support.routeUsage.pageName", "/support/routeUsage",
             MatchStyle.all),
     DEVICE_DEFINITIONS(SiteMapCategory.SUPPORT, "yukon.web.menu.config.support.information.deviceDef", "/common/deviceDefinition.xml",

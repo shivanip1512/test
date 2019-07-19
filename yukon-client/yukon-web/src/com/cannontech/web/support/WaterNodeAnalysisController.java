@@ -15,12 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
 import com.cannontech.web.support.waterNode.service.WaterNodeService;
 import com.cannontech.web.util.WebFileUtils;
@@ -28,10 +30,11 @@ import com.cannontech.web.util.WebFileUtils;
 
 @Controller
 @RequestMapping("/waterNode/*")
-//@CheckRoleProperty(YukonRoleProperty.) //TODO: finalize permissions for this page
+@CheckRole(YukonRole.METERING)
 public class WaterNodeAnalysisController {
         
         @Autowired private DateFormattingService dateFormattingService;
+        @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
         @Autowired private WaterNodeService waterNodeService; 
         @GetMapping("generateReport")
         public void downloadWaterNodeReport(HttpServletResponse response, YukonUserContext userContext) throws IOException {
@@ -39,26 +42,28 @@ public class WaterNodeAnalysisController {
             Instant intervalEnd = Instant.now().minus(Duration.standardDays(1));//TODO: clarify with David if this is what he meant by 24 hrs previously
             Instant intervalStart =  intervalEnd.minus(Duration.standardDays(6));//interval lasts six days
             
-            String[] headerRow = getReportHeaderRow();
+            String[] headerRow = getReportHeaderRow(userContext);
             List<String[]> dataRows = getReportDataRows(intervalStart,intervalEnd);
             
             writeToCSV(headerRow, dataRows, response, userContext);
         }
         
-        @RequestMapping(value="view", method=RequestMethod.GET)
+        @GetMapping("view")
         public String waterNodePage()  {
             return "waterNode.jsp";
         }
         
-        private String[] getReportHeaderRow() {
-            String[] CSVHeader = {"Serial Number", 
-                "Device Name", 
-                "Meter Number", 
-                "Device Type", 
-                "Device Category",
-                "High Sleeping Current Indicator",
-                "Most Recent Reading"};
-            return CSVHeader;
+        private String[] getReportHeaderRow(YukonUserContext userContext) {
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String[] headerRow = new String[7];
+            headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.serialNumber");
+            headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.deviceName"); 
+            headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.meterNumber");
+            headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.deviceType");
+            headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.deviceCategory");
+            headerRow[5] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.currentIndicator");
+            headerRow[6] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.recentReading");
+            return headerRow;
          }
         
         
@@ -84,8 +89,8 @@ public class WaterNodeAnalysisController {
         private void writeToCSV(String[] headerRow, List<String[]> dataRows, HttpServletResponse response,
                    YukonUserContext userContext) throws IOException {
             String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()),
-                DateFormatEnum.DATE, userContext);
-            String fileName = "Battery_Depletion_" + dateStr + ".csv";//TODO: Finalize report name
+                DateFormatEnum.FILE_TIMESTAMP, userContext);
+            String fileName = "BatteryAnalysis_" + dateStr + ".csv";//TODO: Finalize report name
             WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
         }
 }

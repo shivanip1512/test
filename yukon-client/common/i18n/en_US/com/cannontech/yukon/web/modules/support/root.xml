@@ -240,6 +240,14 @@
     <entry key="yukon.web.modules.support.waterNode.CRITICALLY_LOW">Critically Low</entry>
     <entry key="yukon.web.modules.support.waterNode.UNREPORTED">Unreported</entry>
     
+    <entry key="yukon.web.modules.suppport.waterNode.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.suppport.waterNode.deviceName">Device Name</entry>
+    <entry key="yukon.web.modules.suppport.waterNode.meterNumber">Meter Number</entry>
+    <entry key="yukon.web.modules.suppport.waterNode.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.suppport.waterNode.deviceCategory">Device Category</entry>
+    <entry key="yukon.web.modules.suppport.waterNode.currentIndicator">High Sleeping Current Indicator</entry>
+    <entry key="yukon.web.modules.suppport.waterNode.recentReading">Most Recent Reading</entry>
+    
     <!-- deviceDefinition/deviceDefinitionViewer.jsp -->
     <entry key="yukon.web.modules.support.deviceDef.pageName">Device Definitions</entry>
     <entry key="yukon.web.modules.support.deviceDef.filters.title">Filters</entry>

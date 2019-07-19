@@ -31,8 +31,6 @@ public class WaterNodeDaoImpl implements WaterNodeDao {
         sql.append("WHERE ypo.Type").in(PaoType.getWaterMeterTypes());
         sql.append(  "AND p.PointType").eq_k(PointType.Analog);
         sql.append(  "AND p.PointOffset").eq(5);
-        sql.append(  "AND rph.Timestamp IS NOT NULL");
-        sql.append(  "AND rph.Value IS NOT NULL");
         sql.append(  "AND rph.Timestamp").lte(stopTime);
         sql.append(  "AND rph.Timestamp").gte(startTime);
         sql.append("ORDER BY rph.PointId, rph.Timestamp;");

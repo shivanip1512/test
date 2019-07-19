@@ -1,6 +1,5 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="support" page="waterNode">
