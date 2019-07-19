@@ -414,4 +414,14 @@
     <entry key="yukon.web.modules.support.systemHealth.detail.moreStatusInfo.title">Status Information</entry>
     <entry key="yukon.web.modules.support.systemHealth.detail.moreStatusInfo.text">The following indicators are evaluated periodically to determine the status of this metric.</entry>
     
+    <!-- thirdPartyLibraries.jsp -->
+    <entry key="yukon.web.modules.support.thirdPartyLibraries.pageName">Third Party Libraries</entry>
+    <entry key="yukon.web.modules.support.thirdPartyLibraries.cpp.title">C++ Libraries</entry>
+    <entry key="yukon.web.modules.support.thirdPartyLibraries.java.title">Java Libraries</entry>
+    <entry key="yukon.web.modules.support.thirdPartyLibraries.js.title">JavaScript Libraries</entry>
+    <entry key="yukon.web.modules.support.thirdPartyLibraries.icon.title">Icon Libraries</entry>
+    <entry key="yukon.web.modules.support.thirdPartyLibraries.library">Library</entry>
+    <entry key="yukon.web.modules.support.thirdPartyLibraries.projectUrl">Project Url</entry>
+    <entry key="yukon.web.modules.support.thirdPartyLibraries.license">License</entry>
+    
 </properties>

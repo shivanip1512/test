@@ -21,6 +21,30 @@ public class ThirdPartyLibrary {
     public Date updated;
     public String jira;
     public String notes;
+    
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
+    }
+
+    public String getProjectUrl() {
+        return projectUrl;
+    }
+
+    public void setProjectUrl(String projectUrl) {
+        this.projectUrl = projectUrl;
+    }
+
+    public List<String> getLicenseUrls() {
+        return licenseUrls;
+    }
+
+    public void setLicenseUrls(List<String> licenseUrls) {
+        this.licenseUrls = licenseUrls;
+    }
 
     public void setLicense(String licenseString) {
         licenses = Arrays.stream(licenseString.split(", *"))
