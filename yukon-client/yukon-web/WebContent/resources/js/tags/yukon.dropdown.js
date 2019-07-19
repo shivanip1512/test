@@ -142,8 +142,11 @@ $(function() {
     });
     
     /** Show menu in tables on right click */
-    if (!yg.dev_mode) {
-        $(document).on('contextmenu', '.has-actions tr', function(event) {
+    $(document).on('contextmenu', '.has-actions tr', function(event) {
+        var clickedElement = event.target,
+            parentElement = clickedElement.parentElement;
+        //only display the cog menu if user has not clicked on a link
+        if (clickedElement.nodeName.toLowerCase() != "a" && parentElement.nodeName.toLowerCase() != "a") {
             event.preventDefault();
             var trigger = $(this).find('.dropdown-trigger');
             var menu = trigger.find('.dropdown-menu');
@@ -156,9 +159,9 @@ $(function() {
             menu.removeAttr('style');
             menu.css({top:event.pageY, left:event.pageX});
             menu.toggle();
-            
-        });
-    }
+        }
+        
+    });
     
     /** Handle option selections for criteria buttons */
     $(document).on('click', '.criteria-menu .criteria-option', function(e) {
