@@ -1808,7 +1808,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             mspLoadActionCode.toString(), transactionId, "InitiateConnectDisconnect",
                             mspVendor.getCompanyName());
                         doRfnConnectDisconnect(rfnMeter,
-                            mspLoadActionCode.getRfnMeterDisconnectStatusType(configurationSource), mspVendor,
+                            mspLoadActionCode.getRfnMeterDisconnectCmdType(configurationSource), mspVendor,
                             transactionId, responseUrl);
                         continue;
                     }

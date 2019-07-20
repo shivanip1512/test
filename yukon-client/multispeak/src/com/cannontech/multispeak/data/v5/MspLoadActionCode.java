@@ -1,5 +1,8 @@
 package com.cannontech.multispeak.data.v5;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
@@ -16,20 +19,22 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public enum MspLoadActionCode {
 
-    CONNECT(LoadActionCodeKind.CONNECT, RfnDisconnectStatusState.CONNECTED, Disconnect410State.CONNECTED),
-    DISCONNECT(LoadActionCodeKind.DISCONNECT, RfnDisconnectStatusState.DISCONNECTED, Disconnect410State.CONFIRMED_DISCONNECTED),
+    CONNECT(LoadActionCodeKind.CONNECT, Disconnect410State.CONNECTED, RfnDisconnectStatusState.CONNECTED),
+    DISCONNECT(LoadActionCodeKind.DISCONNECT, Disconnect410State.CONFIRMED_DISCONNECTED, 
+               RfnDisconnectStatusState.DISCONNECTED, RfnDisconnectStatusState.DISCONNECTED_DEMAND_THRESHOLD_ACTIVE, RfnDisconnectStatusState.CONNECTED_DEMAND_THRESHOLD_ACTIVE, 
+               RfnDisconnectStatusState.DISCONNECTED_CYCLING_ACTIVE, RfnDisconnectStatusState.CONNECTED_CYCLING_ACTIVE),
     //TODO DISCONNECT_CONFIRMED is a fake enum to support the possible unconfirmed disconnected PLC lookup
-//    DISCONNECT_CONFIRMED(LoadActionCode.Disconnect, RFNDisconnectStatusState.DISCONNECTED, Disconnect410State.UNCONFIRMED_DISCONNECTED, "control disconnect"),
-//    INITATE_POWER_LIMITATION(LoadActionCode.InitiatePowerLimitation),   //not supported
-//    OPEN(LoadActionCode.Open),                                          //not suupported
-//    CLOSED(LoadActionCode.Closed),                                      //not supported
-    ARM(LoadActionCodeKind.ARM, RfnDisconnectStatusState.ARMED, Disconnect410State.CONNECT_ARMED),
-    UNKNOWN(LoadActionCodeKind.UNKNOWN, RfnDisconnectStatusState.UNKNOWN, Disconnect410State.UNCONFIRMED_DISCONNECTED), // Old CDEvent code mapped PLC unconfirmedDisconnect to LoadActionCode.Disconnect....
+//    DISCONNECT_CONFIRMED(LoadActionCodeKind.Disconnect, RFNDisconnectStatusState.DISCONNECTED, Disconnect410State.UNCONFIRMED_DISCONNECTED, "control disconnect"),
+//    INITATE_POWER_LIMITATION(LoadActionCodeKind.InitiatePowerLimitation),   //not supported
+//    OPEN(LoadActionCodeKind.Open),                                          //not suupported
+//    CLOSED(LoadActionCodeKind.Closed),                                      //not supported
+    ARM(LoadActionCodeKind.ARM, Disconnect410State.CONNECT_ARMED, RfnDisconnectStatusState.ARMED),
+    UNKNOWN(LoadActionCodeKind.UNKNOWN, Disconnect410State.UNCONFIRMED_DISCONNECTED, RfnDisconnectStatusState.UNKNOWN), // Old CDEvent code mapped PLC unconfirmedDisconnect to LoadActionCode.Disconnect....
     ;
 
     private final LoadActionCodeKind loadActionCode;    
-    private final RfnDisconnectStatusState rfnState;
     private final Disconnect410State plcState;
+    private final List<RfnDisconnectStatusState> rfnStates;
     private final static Logger log = YukonLogManager.getLogger(MspLoadActionCode.class);
     
     private final static ImmutableMap<RfnDisconnectStatusState, MspLoadActionCode> lookupByRfnState;
@@ -42,7 +47,11 @@ public enum MspLoadActionCode {
             Builder<Disconnect410State, MspLoadActionCode> plcBuilder = ImmutableMap.builder();
             Builder<LoadActionCodeKind, MspLoadActionCode> mspLACBuilder = ImmutableMap.builder();
             for (MspLoadActionCode mspLoadActionCode : values()) {
-                rfnBuilder.put(mspLoadActionCode.rfnState, mspLoadActionCode);
+                if (!mspLoadActionCode.rfnStates.isEmpty()) {
+                    for (RfnDisconnectStatusState rfnDisconnectStatusState : mspLoadActionCode.rfnStates) {
+                        rfnBuilder.put(rfnDisconnectStatusState, mspLoadActionCode);
+                    }
+                }
                 plcBuilder.put(mspLoadActionCode.plcState, mspLoadActionCode);
                 mspLACBuilder.put(mspLoadActionCode.loadActionCode, mspLoadActionCode);
             }
@@ -55,11 +64,11 @@ public enum MspLoadActionCode {
         }
     }
 
-    private MspLoadActionCode(LoadActionCodeKind loadActionCode, RfnDisconnectStatusState rfnState,
-            Disconnect410State plcState) {
+    private MspLoadActionCode(LoadActionCodeKind loadActionCode, Disconnect410State plcState,
+            RfnDisconnectStatusState... rfnStates) {
         this.loadActionCode = loadActionCode;
-        this.rfnState = rfnState;
         this.plcState = plcState;
+        this.rfnStates = Arrays.asList(rfnStates);
     }
 
     public static MspLoadActionCode getForPlcState(Disconnect410State plcState)  {
@@ -78,22 +87,18 @@ public enum MspLoadActionCode {
         return loadActionCode;
     }
     
-    public RfnDisconnectStatusState getRfnState() {
-        return rfnState;
-    }
-    
     public Disconnect410State getPlcState() {
         return plcState;
     }
 
     /**
-     * Returns a RfnMeterDisconnectStatusType ("command") representative of the load action code requested.
+     * Returns a RfnMeterDisconnectCmdType ("command") representative of the load action code requested.
      * Requires a configSource to determine if ARM is being supported or not.
      * 
      * @param configSource
      * @return
      */
-    public RfnMeterDisconnectCmdType getRfnMeterDisconnectStatusType(ConfigurationSource configSource) {
+    public RfnMeterDisconnectCmdType getRfnMeterDisconnectCmdType(ConfigurationSource configSource) {
         switch (this) {
         case CONNECT:
             return RfnMeterDisconnectCmdType.RESUME;
