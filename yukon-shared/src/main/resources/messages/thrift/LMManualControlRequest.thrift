@@ -15,4 +15,5 @@ struct LMManualControlRequest {
     8: required     i32                             _startPriority;
     9: required     string                          _additionalInfo;
    10: required     i32                             _constraintCmd;
+   11: optional		string							_originSource;
 }
