@@ -96,7 +96,6 @@ public class ControlAreaTrigger {
         } else {
             this.minRestoreOffset = minRestoreOffset;
         }
-        this.minRestoreOffset = minRestoreOffset;
     }
 
     public Integer getPeakPointId() {
