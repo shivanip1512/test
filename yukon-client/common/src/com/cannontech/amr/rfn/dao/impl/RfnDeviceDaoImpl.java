@@ -55,6 +55,7 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import java.util.stream.Stream;
 
 public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
@@ -452,9 +453,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             sql.append("WHEN NOT MATCHED THEN");
             sql.append("    INSERT VALUES (CACHE_DATA.DeviceId, CACHE_DATA.GatewayId, CACHE_DATA.LastTransferTime)");
             Object[] values = part.stream()
-                    .map(value -> Lists.newArrayList(value.deviceId, value.gatewayId, value.transferTime.toString()))
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toList())
+                    .flatMap(value -> Stream.of(value.deviceId, value.gatewayId, value.transferTime.toString()))
                     .toArray();
             template.update(sql.getSql(), values);
         });
@@ -497,9 +496,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             sql.append("WHEN NOT MATCHED THEN");
             sql.append("    INSERT VALUES (CACHE.DeviceId, CACHE.GatewayId, CACHE.LastTransferTime);");
             Object[] values = part.stream()
-                    .map(value -> Lists.newArrayList(value.deviceId, value.gatewayId, value.transferTime.toString()))
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toList())
+                    .flatMap(value -> Stream.of(value.deviceId, value.gatewayId, value.transferTime.toString()))
                     .toArray();
             template.update(sql.getSql(), values);
         });

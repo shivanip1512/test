@@ -139,7 +139,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
         executor.execute(() -> {
             List<NodeComm> deviceToGateway = response.getQueryResults().values().stream()
                     .filter(result -> result.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM))
-                    .map(result -> { return (NodeComm) result.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM); })                  
+                    .map(result -> (NodeComm) result.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM))                 
                     .collect(Collectors.toList());
             if(!deviceToGateway.isEmpty()) {
                 log.debug("Updating device to gateway mapping for {} nodes", deviceToGateway.size());
