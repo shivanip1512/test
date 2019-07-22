@@ -57,7 +57,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     public ControlArea retrieve(int areaId) {
         LiteYukonPAObject liteControlArea = dbCache.getAllLMControlAreas().stream()
                                                                           .filter(controlArea -> controlArea.getLiteID() == areaId)
-                                                                          .findFirst().orElseThrow(() -> new NotFoundException("Control area Id not found" + areaId));
+                                                                          .findFirst().orElseThrow(() -> new NotFoundException("Control area Id not found " + areaId));
 
         LMControlArea lmControlArea = (LMControlArea) dbPersistentDao.retrieveDBPersistent(liteControlArea);
         return buildControlAreaModel(lmControlArea);
@@ -82,7 +82,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     public int update(int controlAreaId, ControlArea controlArea) {
         dbCache.getAllLMControlAreas().stream()
                                       .filter(controlarea -> controlarea.getLiteID() == controlAreaId)
-                                      .findFirst().orElseThrow(() -> new NotFoundException(" Control Area Id not found " + controlAreaId));
+                                      .findFirst().orElseThrow(() -> new NotFoundException(" Control Area Id not found  " + controlAreaId ));
 
         LMControlArea lmControlArea = getDBPersistent(controlAreaId);
         buildLMControlAreaDBPersistent(lmControlArea, controlArea);
@@ -234,8 +234,10 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
 
         lmDbControlArea.setDefOperationalState(controlArea.getDailyDefaultState().name());
 
+        if (controlArea.getAllTriggersActiveFlag() != null) {
         lmDbControlArea.setRequireAllTriggersActiveFlag((Character) controlArea.getAllTriggersActiveFlag().getDatabaseRepresentation());
-
+        }
+        
         if (controlArea.getDailyStartTimeInMinutes() != null) {
             lmDbControlArea.setDefDailyStartTime(controlArea.getDailyStartTimeInMinutes() * 60);
         } else {
@@ -275,37 +277,42 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     }
 
     private void buildTriggerByType(LMControlAreaTrigger lmControlAreaTrigger, ControlAreaTrigger areaTrigger) {
-        
+
         if (areaTrigger.getTriggerType().getTriggerTypeValue().equalsIgnoreCase(IlmDefines.TYPE_STATUS)) {
             lmControlAreaTrigger.setNormalState(areaTrigger.getNormalState());
             lmControlAreaTrigger.setThreshold(0.0);
         } else {
             lmControlAreaTrigger.setNormalState(IlmDefines.INVALID_INT_VALUE);
-            if ((areaTrigger.getTriggerType().getTriggerTypeValue()).equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD_POINT)) {
+            if ((areaTrigger.getTriggerType().getTriggerTypeValue()).equalsIgnoreCase( IlmDefines.TYPE_THRESHOLD_POINT)) {
                 lmControlAreaTrigger.setThreshold(0.0);
                 lmControlAreaTrigger.setThresholdPointID(areaTrigger.getThresholdPointId());
             } else {
                 lmControlAreaTrigger.setThreshold(areaTrigger.getThreshold());
-                lmControlAreaTrigger.setThresholdKickPercent(areaTrigger.getAtku());
-                lmControlAreaTrigger.setProjectionType(areaTrigger.getControlAreaProjection().getProjectionType().getProjectionTypeValue());
+                if (areaTrigger.getMinRestoreOffset() != null) {
+                    lmControlAreaTrigger.setThresholdKickPercent(areaTrigger.getAtku());
+                }
+                lmControlAreaTrigger.setProjectionType(
+                    areaTrigger.getControlAreaProjection().getProjectionType().getProjectionTypeValue());
                 lmControlAreaTrigger.setProjectionPoints(areaTrigger.getControlAreaProjection().getProjectionPoint());
-                lmControlAreaTrigger.setProjectAheadDuration(areaTrigger.getControlAreaProjection().getProjectAheadDuration().getSeconds());
+                lmControlAreaTrigger.setProjectAheadDuration(
+                    areaTrigger.getControlAreaProjection().getProjectAheadDuration().getSeconds());
             }
 
-            lmControlAreaTrigger.setMinRestoreOffset(areaTrigger.getMinRestoreOffset());
+            if (areaTrigger.getMinRestoreOffset() != null) {
+                lmControlAreaTrigger.setMinRestoreOffset(areaTrigger.getMinRestoreOffset());
+            }
 
             if (areaTrigger.getPeakPointId() != null) {
                 lmControlAreaTrigger.setPeakPointID(areaTrigger.getPeakPointId());
             } else {
                 lmControlAreaTrigger.setPeakPointID(IlmDefines.INVALID_INT_VALUE);
             }
-
         }
     }
 
     private void buildAreaProgramAssignmentDBPersistent(LMControlArea lmControlArea, ControlArea controlArea) {
 
-        if (!lmControlArea.getLmControlAreaProgramVector().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(lmControlArea.getLmControlAreaProgramVector())) {
             lmControlArea.getLmControlAreaProgramVector().clear();
         }
         if (CollectionUtils.isNotEmpty(controlArea.getProgramAssignment())) {

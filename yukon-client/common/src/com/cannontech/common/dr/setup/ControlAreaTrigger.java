@@ -1,5 +1,7 @@
 package com.cannontech.common.dr.setup;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -89,6 +91,11 @@ public class ControlAreaTrigger {
     }
 
     public void setMinRestoreOffset(Double minRestoreOffset) {
+        if (minRestoreOffset != null) {
+            this.minRestoreOffset = new BigDecimal(minRestoreOffset).setScale(4, RoundingMode.HALF_DOWN).doubleValue();
+        } else {
+            this.minRestoreOffset = minRestoreOffset;
+        }
         this.minRestoreOffset = minRestoreOffset;
     }
 

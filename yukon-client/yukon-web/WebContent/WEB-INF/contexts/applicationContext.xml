@@ -1398,6 +1398,7 @@
     <bean id="lmCopyValidator" class="com.cannontech.web.api.dr.setup.LMCopyValidator" />
     <bean id="loadProgramCopy" class="com.cannontech.web.api.dr.program.LMProgramCopyValidator" />
     <bean id="loadProgramValidator" class="com.cannontech.web.api.dr.program.LMProgramValidator" />
+    <bean id="controlAreaValidator" class="com.cannontech.web.api.dr.controlArea.ControlAreaSetupValidator" />
     <bean class="com.cannontech.web.api.validation.ApiControllerHelper"/>
     <bean class="com.cannontech.web.api.token.TokenHelper"/>
     <bean class="com.cannontech.web.api.ApiRequestHelper"/>

@@ -8,7 +8,10 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +23,7 @@ import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.dr.area.service.ControlAreaSetupService;
+import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.web.security.annotation.CheckRole;
 
 @RestController
@@ -28,6 +32,8 @@ import com.cannontech.web.security.annotation.CheckRole;
 public class ControlAreaSetupApiController {
 
     @Autowired private ControlAreaSetupService controlAreaService;
+    @Autowired private ControlAreaSetupValidator controlAreaSetupValidator;
+    @Autowired private LMDeleteValidator lmDeleteValidator;
 
     @GetMapping("/{id}")
     public ResponseEntity<ControlArea> retrieve(@PathVariable int id) {
@@ -47,7 +53,7 @@ public class ControlAreaSetupApiController {
         return buildResponse(controlAreaId);
     }
 
-    @PostMapping("/delete/{controlAreaId}")
+    @DeleteMapping("/delete/{controlAreaId}")
     public ResponseEntity<HashMap<String, Integer>> delete(@Valid @RequestBody LMDelete lmDelete,
             @PathVariable int controlAreaId) {
         int areaId = controlAreaService.delete(controlAreaId, lmDelete.getName());
@@ -73,4 +79,15 @@ public class ControlAreaSetupApiController {
         paoIdMap.put("controlAreaId", controlAreaId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
+    
+    @InitBinder("controlArea")
+    public void setupBinder(WebDataBinder binder) {
+        binder.setValidator(controlAreaSetupValidator);
+    }
+
+    @InitBinder("LMDelete")
+    public void setupBinderDelete(WebDataBinder binder) {
+        binder.addValidators(lmDeleteValidator);
+    }
+    
 }
