@@ -231,6 +231,12 @@
 		<constructor-arg value="LMGroupVersacom"/>
 		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
 	</bean>
+    
+    <bean id="messaging.thrift.load.GroupMeterDisconnectSerializer" parent="messaging.thrift.ISerializer"
+        class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupMeterDisconnectSerializer">
+        <constructor-arg value="LMGroupMeterDisconnect"/>
+        <constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+    </bean>
 
 	<bean id="messaging.thrift.load.ProgramControlWindowSerializer"
 		parent="messaging.thrift.ISerializer"
@@ -336,7 +342,8 @@
 				<ref bean="messaging.thrift.load.GroupSA205Serializer"/>
 				<ref bean="messaging.thrift.load.GroupSA305Serializer"/>
 				<ref bean="messaging.thrift.load.GroupSADigitalSerializer"/>				
-				<ref bean="messaging.thrift.load.GroupVersacomSerializer"/>				
+				<ref bean="messaging.thrift.load.GroupVersacomSerializer"/>	
+                <ref bean="messaging.thrift.load.GroupMeterDisconnectSerializer"/>			
 				<ref bean="messaging.thrift.load.ProgramControlWindowSerializer"/>
 				<ref bean="messaging.thrift.load.ProgramCurtailmentSerializer"/>
 				<ref bean="messaging.thrift.load.ProgramDirectGearSerializer"/>
