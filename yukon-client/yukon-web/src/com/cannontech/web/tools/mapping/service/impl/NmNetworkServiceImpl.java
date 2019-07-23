@@ -587,7 +587,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                         Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData =
                             metadataMultiService.getMetadataForGatewayRfnIdentifiers(Sets.newHashSet(entry.getKey()),
                                 Set.of(PRIMARY_FORWARD_NEIGHBOR_DATA));
-                        log.debug("Received neighbor data for gateway {} devices {}", neighborMetaData.size(), entry.getValue().getName());
+                        log.debug("Received neighbor data for gateway {} devices {}", entry.getValue().getName(), neighborMetaData.size());
     
                         loadMapColorCodedByGatewayFilteredByLinkStrength(filter, map, i, entry, neighborMetaData);
                     }
