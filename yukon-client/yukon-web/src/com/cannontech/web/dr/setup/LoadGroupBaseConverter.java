@@ -9,6 +9,7 @@ import com.cannontech.common.dr.setup.LoadGroupDigiSep;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
 import com.cannontech.common.dr.setup.LoadGroupItron;
+import com.cannontech.common.dr.setup.LoadGroupVersacom;
 import com.cannontech.common.pao.PaoType;
 
 /**
@@ -41,6 +42,9 @@ public class LoadGroupBaseConverter implements Converter<String, LoadGroupBase> 
             break;
         case LM_GROUP_EMETCON:
             loadGroup = new LoadGroupEmetcon();
+            break;
+        case LM_GROUP_VERSACOM:
+            loadGroup = new LoadGroupVersacom();
             break;
         case LM_GROUP_ECOBEE:
         case LM_GROUP_HONEYWELL:

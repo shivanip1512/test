@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.setup.LoadGroupVersacom;
+import com.cannontech.common.dr.setup.VersacomAddressUsage;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
 
@@ -31,7 +32,7 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
         lmValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
 
         // Validate addressUsage string contains other that U, S, C and D
-        if (loadGroup.getAddressUsage().contains("U")) {
+        if (loadGroup.getAddressUsage().contains(VersacomAddressUsage.UTILITY)) {
             lmValidatorHelper.checkIfFieldRequired("utilityAddress", errors, loadGroup.getUtilityAddress(), "Utility Address");
             if (!errors.hasFieldErrors("utilityAddress")) {
                 YukonValidationUtils.checkRange(errors, "utilityAddress", loadGroup.getUtilityAddress(), 1, 254, true);
@@ -40,7 +41,7 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
             errors.rejectValue("addressUsage", key + "utilityAddress.doesNotExist");
         }
         
-        if (loadGroup.getAddressUsage().contains("S")) {
+        if (loadGroup.getAddressUsage().contains(VersacomAddressUsage.SECTION)) {
             lmValidatorHelper.checkIfFieldRequired("sectionAddress", errors, loadGroup.getSectionAddress(), "Section Address");
             if (!errors.hasFieldErrors("sectionAddress")) {
                 YukonValidationUtils.checkRange(errors, "sectionAddress", loadGroup.getSectionAddress(), 0, 256, true);
@@ -48,46 +49,33 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
         }
         
         // classAddress (0 to 2^16 -1)
-        if (loadGroup.getAddressUsage().contains("C")) {
-            lmValidatorHelper.checkIfFieldRequired("classAddress", errors, loadGroup.getClassAddress(), "Class Address" );
+        if (loadGroup.getAddressUsage().contains(VersacomAddressUsage.CLASS)) {
+            // Add Check for null and empty.
+            Integer classAddress = StringUtils.convertBinaryToInteger(loadGroup.getClassAddress());
+            lmValidatorHelper.checkIfFieldRequired("classAddress", errors, classAddress, "Class Address" );
             if (!errors.hasFieldErrors("classAddress")) {
-                YukonValidationUtils.checkRange(errors, "classAddress", loadGroup.getClassAddress(), 0, 65535, true);
+                YukonValidationUtils.checkRange(errors, "classAddress", classAddress, 0, 65535, true);
             }
         }
         
         // divisionAddress (0 to 2^16 -1)
-        if (loadGroup.getAddressUsage().contains("D")) {
-            lmValidatorHelper.checkIfFieldRequired("divisionAddress", errors,  loadGroup.getDivisionAddress(), "Division Address");
+        if (loadGroup.getAddressUsage().contains(VersacomAddressUsage.DIVISION)) {
+            // Add Check for null and empty.
+            Integer divisionAddress = StringUtils.convertBinaryToInteger(loadGroup.getDivisionAddress());
+            lmValidatorHelper.checkIfFieldRequired("divisionAddress", errors,  divisionAddress, "Division Address");
             if (!errors.hasFieldErrors("divisionAddress")) {
-                YukonValidationUtils.checkRange(errors, "divisionAddress", loadGroup.getDivisionAddress(), 0, 65535, true);
+                YukonValidationUtils.checkRange(errors, "divisionAddress", divisionAddress, 0, 65535, true);
             }
         }
         
         // serialAddress
         try {
             Integer serialAddress = Integer.valueOf(loadGroup.getSerialAddress());
+            lmValidatorHelper.checkIfFieldRequired("serialAddress", errors, serialAddress, "Serial Address");
             YukonValidationUtils.checkRange(errors, "serialAddress", serialAddress, 0, 99999, true);
         } catch (NumberFormatException e) {
             // Reject value with invalid format message
             errors.rejectValue("serialAddress", key + "invalidValue");
-        }
-        
-        // relayUsage (check all the chars are valid or not. Should not contain other than 1,2,3,4)
-        String relayUsage = loadGroup.getRelayUsage();
-        if (StringUtils.isStringMatchesWithPattern(relayUsage, "1234", false)) {
-            String formattedRelayUsage = StringUtils.formatStringWithPattern(relayUsage, "1234");
-            loadGroup.setRelayUsage(formattedRelayUsage);
-        } else {
-            errors.rejectValue("relayUsage", key + "invalidValue");
-        }
-        
-        // Address Usage (Should not contain other than U, S, C & D)
-        String addressUsage = loadGroup.getAddressUsage();
-        if (StringUtils.isStringMatchesWithPattern(addressUsage, "USCD", false)) {
-            String formattedAddress = StringUtils.formatStringWithPattern(addressUsage, "USCD");
-            loadGroup.setAddressUsage(formattedAddress);
-        } else {
-            errors.rejectValue("addressUsage", key + "invalidValue");
         }
     }
 }

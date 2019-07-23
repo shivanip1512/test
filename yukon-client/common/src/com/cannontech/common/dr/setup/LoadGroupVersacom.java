@@ -1,7 +1,10 @@
 package com.cannontech.common.dr.setup;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.device.lm.LMGroupVersacom;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,15 +17,15 @@ public class LoadGroupVersacom extends LoadGroupBase<LMGroupVersacom> implements
     private Integer routeId;
     private String routeName;
     // Addressing
-    private Integer utilityAddress ;
-    private Integer sectionAddress = 0;
-    private Integer classAddress = 0;
-    private Integer divisionAddress = 0;
-    private String serialAddress = "0";
+    private Integer utilityAddress;
+    private Integer sectionAddress;
+    private String classAddress;
+    private String divisionAddress;
+    private String serialAddress;
 
     // Addressing Usage
-    private String addressUsage = StringUtils.EMPTY;
-    private String relayUsage = "1";
+    private List<VersacomAddressUsage> addressUsage;
+    private List<Relays> relayUsage;
 
     @Override
     public Integer getRouteId() {
@@ -60,35 +63,35 @@ public class LoadGroupVersacom extends LoadGroupBase<LMGroupVersacom> implements
         this.sectionAddress = sectionAddress;
     }
 
-    public Integer getClassAddress() {
+    public String getClassAddress() {
         return classAddress;
     }
 
-    public void setClassAddress(Integer classAddress) {
+    public void setClassAddress(String classAddress) {
         this.classAddress = classAddress;
     }
 
-    public Integer getDivisionAddress() {
+    public String getDivisionAddress() {
         return divisionAddress;
     }
 
-    public void setDivisionAddress(Integer divisionAddress) {
+    public void setDivisionAddress(String divisionAddress) {
         this.divisionAddress = divisionAddress;
     }
 
-    public String getAddressUsage() {
+    public List<VersacomAddressUsage> getAddressUsage() {
         return addressUsage;
     }
 
-    public void setAddressUsage(String addressUsage) {
+    public void setAddressUsage(List<VersacomAddressUsage> addressUsage) {
         this.addressUsage = addressUsage;
     }
 
-    public String getRelayUsage() {
+    public List<Relays> getRelayUsage() {
         return relayUsage;
     }
 
-    public void setRelayUsage(String relayUsage) {
+    public void setRelayUsage(List<Relays> relayUsage) {
         this.relayUsage = relayUsage;
     }
 
@@ -106,10 +109,41 @@ public class LoadGroupVersacom extends LoadGroupBase<LMGroupVersacom> implements
         // Set lmGroupVersacom fields
         com.cannontech.database.db.device.lm.LMGroupVersacom lmGroupVersacom =
                            new com.cannontech.database.db.device.lm.LMGroupVersacom();
-        lmGroupVersacom.setAddressUsage(getAddressUsage());
-        lmGroupVersacom.setClassAddress(getClassAddress());
-        lmGroupVersacom.setDivisionAddress(getDivisionAddress());
-        lmGroupVersacom.setRelayUsage(getRelayUsage());
+        // Build value of address usage
+        /*List<VersacomAddressUsage> addressUsageList = getAddressUsage();
+        StringBuilder addressUsageStr = new StringBuilder();
+        for (VersacomAddressUsage addressusage : addressUsageList) {
+            addressUsageStr.append(addressusage.getAbbreviation());
+        }*/
+        
+        String addressUsageStr = getAddressUsage().stream()
+                                                  .map(e -> e.getAbbreviation())
+                                                  .map(String::valueOf)
+                                                  .collect(Collectors.joining());
+        lmGroupVersacom.setAddressUsage(addressUsageStr);
+        String classAddressString = getClassAddress();
+        if (!classAddressString.isEmpty()) {
+            Integer classAddress = StringUtils.convertBinaryToInteger(classAddressString);
+            lmGroupVersacom.setClassAddress(classAddress);
+        }
+
+        String divisionAddressString = getDivisionAddress();
+        if (!divisionAddressString.isEmpty()) {
+            Integer divisionAddress = StringUtils.convertBinaryToInteger(divisionAddressString);
+            lmGroupVersacom.setDivisionAddress(divisionAddress);
+        }
+        /*List<Relays> relayUsage = getRelayUsage();
+        StringBuilder relayUsageStr = new StringBuilder();
+        for (Relays relay : relayUsage) {
+            // Need to check below code.
+            relayUsageStr.append(relay.getRelayNumber().toString());
+        }*/
+        
+        String relayUsageStr = getRelayUsage().stream()
+                                              .map(e -> e.getRelayNumber())
+                                              .map(String::valueOf)
+                                              .collect(Collectors.joining());
+        lmGroupVersacom.setRelayUsage(relayUsageStr);
         lmGroupVersacom.setRouteID(getRouteId());
         lmGroupVersacom.setSectionAddress(getSectionAddress());
         lmGroupVersacom.setSerialAddress(getSerialAddress());
@@ -127,11 +161,30 @@ public class LoadGroupVersacom extends LoadGroupBase<LMGroupVersacom> implements
                 loadGroup.getLmGroupVersacom();
         setUtilityAddress(lmGroupVersacom.getUtilityAddress());
         setSectionAddress(lmGroupVersacom.getSectionAddress());
-        setClassAddress(lmGroupVersacom.getClassAddress());
-        setDivisionAddress(lmGroupVersacom.getDivisionAddress());
+        // Convert Class and Division Integer value to Binary String.
+        Integer classAddress = lmGroupVersacom.getClassAddress();
+        if (classAddress != null) {
+            setClassAddress(StringUtils.convertIntegerToBinary(classAddress));
+        }
+        Integer divisionAddress = lmGroupVersacom.getDivisionAddress();
+        if (divisionAddress != null) {
+            setDivisionAddress(StringUtils.convertIntegerToBinary(divisionAddress));
+        }
         setSerialAddress(lmGroupVersacom.getSerialAddress());
-        setAddressUsage(lmGroupVersacom.getAddressUsage());
-        setRelayUsage(lmGroupVersacom.getRelayUsage());
+        String addressUsageStr = lmGroupVersacom.getAddressUsage().trim();
+        List<VersacomAddressUsage> addressUsage = new ArrayList<>();
+        for (int i = 0; i < addressUsageStr.length(); i++) {
+            addressUsage.add(VersacomAddressUsage.getDisplayValue(addressUsageStr.charAt(i)));
+        }
+
+        // Set values inside versacomAddressUsage
+        setAddressUsage(addressUsage);
+        String relayUsage = lmGroupVersacom.getRelayUsage().trim();
+        List<Relays> relays = new ArrayList<>();
+        for (int i = 0; i < relayUsage.length(); i++) {
+            relays.add(Relays.getDisplayValue(relayUsage.charAt(i)));
+        }
+        setRelayUsage(relays);
     }
 
 }

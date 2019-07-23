@@ -109,6 +109,25 @@ By including load in your address usage, you are requiring the load to be config
 with the specified program address for it to respond to the request for control.
 Are you sure you want do this?</entry>
 
+<!-- Versacom -->
+<entry key="yukon.web.modules.dr.setup.loadGroup.addressUsage.title">Address Usage</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.utilityAddress">Utility Address</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.sectionAddress">Section Address</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.classAddress">Class Address</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.divisionAddress">Division Address</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.serialAddress">Serial Address</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.addressUsage">Address Usage</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.relayUsage">Relay Usage</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.relayUsage.title">Relay Usage</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.UTILITY">Utility</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.SECTION">Section</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.CLASS">Class</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.DIVISION">Division</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.RELAY_1">Relay 1</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.RELAY_2">Relay 2</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.RELAY_3">Relay 3</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.RELAY_4">Relay 4</entry>
+
 <!-- common Validation -->
 <entry key="yukon.web.modules.dr.setup.error.unique">{0} must be unique.</entry>
 <entry key="yukon.web.modules.dr.setup.error.required">{0} is required.</entry>
@@ -132,7 +151,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.relayUsage.invalidValue">Invalid Relay Usage value.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.addressUsage.invalidValue">Invalid Address Usage value.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.invalidValue">Invalid value.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.utilityAddress.doesNotExist">Address Usage must contain 'U' for Utility Address.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.utilityAddress.doesNotExist">Address Usage must contain Utility Address.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.assignedLoadGroup.required">At least one load group must be assigned.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.type.invalid">Invalid {0} type.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.deviceClassSet.required">At least one device class set must be assigned</entry>

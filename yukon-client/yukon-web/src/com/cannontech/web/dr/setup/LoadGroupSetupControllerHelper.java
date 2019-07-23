@@ -23,7 +23,10 @@ import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupDigiSep;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
+import com.cannontech.common.dr.setup.LoadGroupVersacom;
 import com.cannontech.common.dr.setup.Loads;
+import com.cannontech.common.dr.setup.Relays;
+import com.cannontech.common.dr.setup.VersacomAddressUsage;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.lm.SepDeviceClass;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -35,6 +38,7 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 @Service
 public class LoadGroupSetupControllerHelper {
@@ -47,10 +51,10 @@ public class LoadGroupSetupControllerHelper {
      * Each load group can set its model attributes here.
      */
     public void buildModelMap(PaoType type, ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        PageEditMode mode = (PageEditMode) model.get("mode");
         switch (type) {
         case LM_GROUP_EXPRESSCOMM:
         case LM_GROUP_RFN_EXPRESSCOMM:
-            PageEditMode mode = (PageEditMode) model.get("mode");
             if (mode == PageEditMode.VIEW) {
                 LoadGroupExpresscom loadGroup = (LoadGroupExpresscom) model.get("loadGroup");
 
@@ -95,7 +99,7 @@ public class LoadGroupSetupControllerHelper {
                 }
                 model.addAttribute("protocolPriority", ControlPriority.values());
                 model.addAttribute("addressUsageList", AddressUsage.getGeoAddressUsage());
-                model.addAttribute("feederList", getFeederList());
+                model.addAttribute("feederList", getbitAddressList());
                 model.addAttribute("loadAddressUsageList", AddressUsage.getLoadAddressUsage());
                 model.addAttribute("loadsList", Loads.values());
             }
@@ -105,6 +109,41 @@ public class LoadGroupSetupControllerHelper {
             break;
         case LM_GROUP_DIGI_SEP:
             model.addAttribute("deviceClassList", SepDeviceClass.values());
+            break;
+        case LM_GROUP_VERSACOM:
+            LoadGroupVersacom loadGroup = (LoadGroupVersacom) model.get("loadGroup");
+            if (mode == PageEditMode.VIEW) {
+                List<VersacomAddressUsage> addressUsage = loadGroup.getAddressUsage();
+                // Utility Address
+                if (addressUsage.contains(VersacomAddressUsage.UTILITY)) { 
+                    model.addAttribute("showUtilityAddress", true);
+                }
+                // Section Address
+                if (addressUsage.contains(VersacomAddressUsage.SECTION)) { 
+                    model.addAttribute("showSectionAddress", true);
+                }
+                // Class Address
+                if (addressUsage.contains(VersacomAddressUsage.CLASS)) { 
+                    model.addAttribute("showClassAddress", true);
+                }
+                // Division Address
+                if (addressUsage.contains(VersacomAddressUsage.DIVISION)) { 
+                    model.addAttribute("showDivisionAddress", true);
+                }
+                // Serial Address
+                setVersacomSerialAddressUsage(loadGroup, model);
+                // Relay Usage
+                model.addAttribute("relayUsages", loadGroup.getRelayUsage());
+                model.addAttribute("addressUsages", loadGroup.getAddressUsage());
+            } else {
+                setCommunicationRoute(model, request, userContext);
+                setVersacomSerialAddressUsage(loadGroup, model);
+                model.addAttribute("showUtilityAddress", true);
+                model.addAttribute("classAddressValues", getbitAddressList());
+                model.addAttribute("divisionAddressValues", getbitAddressList());
+                model.addAttribute("addressUsageList",VersacomAddressUsage.getAddressUsage());
+                model.addAttribute("relayUsageList",Relays.getRelays());
+            }
             break;
         case LM_GROUP_EMETCON:
             setCommunicationRoute(model, request, userContext);
@@ -139,6 +178,15 @@ public class LoadGroupSetupControllerHelper {
             expresscomGroup.setServiceProvider(1);
             expresscomGroup.setProtocolPriority(ControlPriority.DEFAULT);
             break;
+        case LM_GROUP_VERSACOM:
+            ((LoadGroupVersacom) group).setSectionAddress(0);
+            ((LoadGroupVersacom) group).setClassAddress("0");
+            ((LoadGroupVersacom) group).setDivisionAddress("0");
+            ((LoadGroupVersacom) group).setSerialAddress("0");
+            ((LoadGroupVersacom) group).setUtilityAddress(1);
+            ((LoadGroupVersacom) group).setAddressUsage(Lists.newArrayList(VersacomAddressUsage.UTILITY));
+            ((LoadGroupVersacom) group).setRelayUsage(Lists.newArrayList(Relays.RELAY_1));
+            break;
         case LM_GROUP_EMETCON:
             ((LoadGroupEmetcon) group).setGoldAddress(1);
             ((LoadGroupEmetcon) group).setSilverAddress(1);
@@ -154,7 +202,7 @@ public class LoadGroupSetupControllerHelper {
         group.setkWCapacity(0.0);
     }
     
-    public static List<Integer> getFeederList() {
+    public static List<Integer> getbitAddressList() {
         return ImmutableList.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
     }
     
@@ -165,6 +213,7 @@ public class LoadGroupSetupControllerHelper {
         switch (type) {
         case LM_GROUP_EXPRESSCOMM:
         case LM_GROUP_RFN_EXPRESSCOMM:
+        case LM_GROUP_VERSACOM:
             if (result.hasFieldErrors("addressUsage")) {
                 flash.setError(result.getFieldError("addressUsage"));
             }
@@ -174,6 +223,18 @@ public class LoadGroupSetupControllerHelper {
             if (result.hasFieldErrors("relayUsage")) {
                 flash.setError(result.getFieldError("relayUsage"));
             }
+        }
+    }
+
+    private void setVersacomSerialAddressUsage(LoadGroupVersacom loadGroup, ModelMap model) {
+        try {
+            Integer serialAddress = Integer.valueOf(loadGroup.getSerialAddress());
+            if (serialAddress > 0) {
+                loadGroup.getAddressUsage().add(VersacomAddressUsage.SERIAL);
+                model.addAttribute("showSerialAddress", true);
+            }
+        } catch (Exception e) {
+            // This will be handle inside validator with proper message.
         }
     }
 }

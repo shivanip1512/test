@@ -65,7 +65,7 @@
                     <%@ include file="itron.jsp" %>
                 </c:if>
                 <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
-                      selectedSwitchType == 'LM_GROUP_EMETCON'}">
+                      selectedSwitchType == 'LM_GROUP_EMETCON' || selectedSwitchType == 'LM_GROUP_VERSACOM'}">
                     <tags:nameValue2 nameKey=".route">
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
                             <tags:selectWithItems items="${routes}" id="route" path="routeId" itemValue="liteID"/>
@@ -82,6 +82,9 @@
             <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
                       selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">
                 <%@ include file="expresscom.jsp" %>
+            </c:if>
+            <c:if test="${selectedSwitchType == 'LM_GROUP_VERSACOM'}">
+                <%@ include file="versacom.jsp" %>
             </c:if>
             <c:if test="${selectedSwitchType == 'LM_GROUP_DIGI_SEP'}">
                 <%@ include file="digisep.jsp" %>
@@ -111,4 +114,5 @@
     </form:form>
    <cti:includeScript link="/resources/js/pages/yukon.dr.setup.loadGroup.js" />
    <cti:includeScript link="/resources/js/pages/yukon.dr.setup.loadGroupExpresscom.js" />
+   <cti:includeScript link="/resources/js/pages/yukon.dr.setup.loadGroupVersacom.js" />
 </cti:msgScope>
