@@ -1,9 +1,6 @@
 package com.cannontech.common.dr.setup;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 /* This POJO is mainly used to pass Id and Name of different LM Objects in case of retrieval */
-@JsonIgnoreProperties(value={ "name"}, allowGetters= true, ignoreUnknown = true)
 public class LMDto {
 
     private Integer id;

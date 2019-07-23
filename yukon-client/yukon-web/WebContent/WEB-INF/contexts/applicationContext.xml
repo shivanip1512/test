@@ -1409,6 +1409,7 @@
     <bean class="com.cannontech.web.api.dr.constraint.ProgramConstraintValidator"/>
     <bean class="com.cannontech.web.api.dr.constraint.ProgramConstraintDeleteValidator"/>
     <bean class="com.cannontech.dr.constraint.service.impl.ProgramConstraintServiceImpl"/>
+    <bean class="com.cannontech.web.dr.setup.ProgramConstraintControllerHelper"/>
 
     <bean id="simpleOnOffGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SimpleOnOffGearFieldsValidator"/>
     <bean id="honeywellCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellCycleGearFieldsValidator"/>
