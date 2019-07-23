@@ -31,8 +31,8 @@ public enum GlobalSettingType implements DisplayableEnum {
 
     // Authentication > Radius (only enabled when DEFAULT_AUTH_TYPE = RADIUS)
     SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1", GlobalSettingTypeValidators.ipHostNameValidator),
-    AUTH_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 1812),
-    ACCT_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 1813),
+    AUTH_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 1812, GlobalSettingTypeValidators.portValidator),
+    ACCT_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 1813, GlobalSettingTypeValidators.portValidator),
     SECRET_KEY(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "cti"),
     AUTH_TIMEOUT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 30),
 
@@ -41,13 +41,13 @@ public enum GlobalSettingType implements DisplayableEnum {
     LDAP_USER_SUFFIX(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "ou=users"),
     LDAP_USER_PREFIX(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "uid="),
     LDAP_SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1", GlobalSettingTypeValidators.ipHostNameValidator),
-    LDAP_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 389),
+    LDAP_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 389, GlobalSettingTypeValidators.portValidator),
     LDAP_SERVER_TIMEOUT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 30),
     LDAP_SSL_ENABLED(GlobalSettingSubCategory.AUTHENTICATION, InputTypeFactory.enumType(LDAPEncryptionType.class), LDAPEncryptionType.NONE),
 
     // Authentication > Active Directory (only enabled when DEFAULT_AUTH_TYPE = AD)
     AD_SERVER_ADDRESS(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "127.0.0.1", GlobalSettingTypeValidators.ipHostNameValidator),
-    AD_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "389", GlobalSettingTypeValidators.portValidator), // stringType because space separated listed of ints is allowed
+    AD_SERVER_PORT(GlobalSettingSubCategory.AUTHENTICATION, stringType(), "389", GlobalSettingTypeValidators.portsValidator), // stringType because space separated listed of ints is allowed
     AD_SERVER_TIMEOUT(GlobalSettingSubCategory.AUTHENTICATION, integerType(), 30),
     AD_NTDOMAIN(GlobalSettingSubCategory.AUTHENTICATION, stringType(), null),
     AD_SSL_ENABLED(GlobalSettingSubCategory.AUTHENTICATION, InputTypeFactory.enumType(LDAPEncryptionType.class), LDAPEncryptionType.NONE),
@@ -90,9 +90,9 @@ public enum GlobalSettingType implements DisplayableEnum {
 
     // Yukon Services
     JMS_BROKER_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "localhost", GlobalSettingTypeValidators.ipHostNameValidator),
-    JMS_BROKER_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), 61616),
+    JMS_BROKER_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), 61616, GlobalSettingTypeValidators.portValidator),
     SMTP_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null, GlobalSettingTypeValidators.ipHostNameValidator),
-    SMTP_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), null),
+    SMTP_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), null, GlobalSettingTypeValidators.portValidator),
     SMTP_USERNAME(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),
     SMTP_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),
     SMTP_ENCRYPTION_TYPE(GlobalSettingSubCategory.YUKON_SERVICES, InputTypeFactory.enumType(SmtpEncryptionType.class), SmtpEncryptionType.NONE),
@@ -128,7 +128,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
     GOOGLE_ANALYTICS_TRACKING_IDS(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),
-    YUKON_EXTERNAL_URL(GlobalSettingSubCategory.WEB_SERVER, stringType(), "http://127.0.0.1:8080"),
+    YUKON_EXTERNAL_URL(GlobalSettingSubCategory.WEB_SERVER, stringType(), "http://127.0.0.1:8080", GlobalSettingTypeValidators.urlValidator),
     YUKON_INTERNAL_URL(GlobalSettingSubCategory.WEB_SERVER, stringType(), null, GlobalSettingTypeValidators.urlValidator),
     
     // Data Import/Export (previously Billing)
@@ -205,7 +205,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     private final Object defaultValue;
     private final GlobalSettingSubCategory category;
     private final Object validationValue;
-    private final TypeValidator validator; 
+    private final TypeValidator<?> validator; 
     private final static ImmutableList<GlobalSettingType> sensitiveSettings;
 
     static {
@@ -241,7 +241,7 @@ public enum GlobalSettingType implements DisplayableEnum {
         this.validationValue = null;
     }
     
-    private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue, TypeValidator validator) {
+    private <T> GlobalSettingType(GlobalSettingSubCategory category, InputType<T> type, Object defaultValue, TypeValidator<T> validator) {
         this.type = type;
         this.category = category;
         this.defaultValue = defaultValue;
@@ -285,7 +285,7 @@ public enum GlobalSettingType implements DisplayableEnum {
         return category;
     }
     
-    public TypeValidator getValidator() {
+    public TypeValidator<?> getValidator() {
         return validator;
     }
     

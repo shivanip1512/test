@@ -36,7 +36,9 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.NETWORK_MANAGER_ADDRESS, "http://127.0.0.1");
         globalSettings.put(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER, "http://127.0.0.1");
         globalSettings.put(GlobalSettingType.JMS_BROKER_HOST, "127.0.0.1");
+        globalSettings.put(GlobalSettingType.JMS_BROKER_PORT, 61616);
         globalSettings.put(GlobalSettingType.SMTP_HOST, "127.0.0.1");
+        globalSettings.put(GlobalSettingType.SMTP_PORT, null);
         globalSettings.put(GlobalSettingType.MAIL_FROM_ADDRESS, "test@eaton.com");
         command.setValues(globalSettings);
 
@@ -49,6 +51,7 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.NETWORK_MANAGER_ADDRESS, "http://localhost");
         globalSettings.put(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER, "http://RFNUpdateServer");
         globalSettings.put(GlobalSettingType.JMS_BROKER_HOST, "BROKERHOST");
+        globalSettings.put(GlobalSettingType.SMTP_PORT, 587);
         globalSettings.put(GlobalSettingType.SMTP_HOST, "SMTPHOST");
         
         command.setValues(globalSettings);
@@ -148,8 +151,12 @@ public class GlobalSettingValidatorTest {
         // Validation for AUTHENTICATION category
         command.setCategory(GlobalSettingSubCategory.AUTHENTICATION);
         globalSettings.put(GlobalSettingType.SERVER_ADDRESS, "");
+        globalSettings.put(GlobalSettingType.AUTH_PORT, 1812);
+        globalSettings.put(GlobalSettingType.ACCT_PORT, 1813);
         globalSettings.put(GlobalSettingType.LDAP_SERVER_ADDRESS, "127.0.0.1");
+        globalSettings.put(GlobalSettingType.LDAP_SERVER_PORT, 389);
         globalSettings.put(GlobalSettingType.AD_SERVER_ADDRESS, "127.0.0.1");
+        globalSettings.put(GlobalSettingType.AD_SERVER_PORT, "1234");
         command.setValues(globalSettings);
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
@@ -254,12 +261,22 @@ public class GlobalSettingValidatorTest {
         
         command = new GlobalSettingsEditorBean();
         command.setCategory(GlobalSettingSubCategory.WEB_SERVER);
+        globalSettings.put(GlobalSettingType.YUKON_EXTERNAL_URL, "http://127.0.0.1:8080");
         globalSettings.put(GlobalSettingType.YUKON_INTERNAL_URL, "http://127.0.0.1");
         command.setValues(globalSettings);
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
         assertFalse(errors.hasErrors());
 
+        command = new GlobalSettingsEditorBean();
+        command.setCategory(GlobalSettingSubCategory.WEB_SERVER);
+        globalSettings.put(GlobalSettingType.YUKON_EXTERNAL_URL, null);
+        globalSettings.put(GlobalSettingType.YUKON_INTERNAL_URL, null);
+        command.setValues(globalSettings);
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+        service.doValidation(command, errors);
+        assertFalse(errors.hasErrors());
+        
         command = new GlobalSettingsEditorBean();
         command.setCategory(GlobalSettingSubCategory.WEB_SERVER);
         globalSettings.put(GlobalSettingType.YUKON_INTERNAL_URL, "http127.0.1");

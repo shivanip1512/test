@@ -17,12 +17,11 @@ import com.cannontech.common.validator.YukonValidationUtils;
 public class GlobalSettingTypeValidators {
     private static String baseKey = "yukon.web.modules.adminSetup.config.error.";
     
-    public static TypeValidator urlValidator = new TypeValidator() {
+    public static TypeValidator<String> urlValidator = new TypeValidator<String>() {
         private final String[] schemes = { "http", "https" };
 
         @Override
-        public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
-            String url = (String) value;
+        public void validate(String url, Errors errors, GlobalSettingType globalSettingType) {
             if (StringUtils.isNotBlank(url)) {
                 UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
                 if (!urlValidator.isValid(url)) {
@@ -32,10 +31,9 @@ public class GlobalSettingTypeValidators {
         }
     };
 
-    public static TypeValidator emailValidator = new TypeValidator() {
+    public static TypeValidator<String> emailValidator = new TypeValidator<String>() {
         @Override
-        public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
-            String email = (String) value;
+        public void validate(String email, Errors errors, GlobalSettingType globalSettingType) {
             if (StringUtils.isNotBlank(email)) {
                 boolean emailValid = EmailValidator.getInstance().isValid(email);
                 if (!emailValid) {
@@ -45,13 +43,12 @@ public class GlobalSettingTypeValidators {
         }
     };
 
-    public static TypeValidator ipHostNameValidator = new TypeValidator() {
+    public static TypeValidator<String> ipHostNameValidator = new TypeValidator<String>() {
         Pattern ipHostNameMatcher =
             Pattern.compile("^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])(\\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]))*$");
 
         @Override
-        public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
-            String ipHost = (String) value;
+        public void validate(String ipHost, Errors errors, GlobalSettingType globalSettingType) {
             if (StringUtils.isNotBlank(ipHost)) {
                 // AD_SERVER_ADDRESS supports  a space separated list of addresses
                 if (globalSettingType == GlobalSettingType.AD_SERVER_ADDRESS) {
@@ -67,44 +64,63 @@ public class GlobalSettingTypeValidators {
                     }
                 }
             }
+            
         }
     };    
 
-    public static TypeValidator portValidator = new TypeValidator() {
+    /**
+     * Validate individual Integer port 
+     */
+    public static TypeValidator<Integer> portValidator = new TypeValidator<Integer>() {
         @Override
-        public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
+        public void validate(Integer port, Errors errors, GlobalSettingType globalSettingType) {
+            if (port != null) {
+                String field = "values[" + globalSettingType + "]";
+                Range<Integer> range = Range.inclusive(0, 65535);
+                YukonValidationUtils.checkRange(errors, field, port, range, true);
+            }
+        }
+    };
+    
+    /**
+     * Validates space separated String of numeric ports 
+     */
+    public static TypeValidator<String> portsValidator = new TypeValidator<String>() {
+        @Override
+        public void validate(String ports, Errors errors, GlobalSettingType globalSettingType) {
             Pattern portMatcher = Pattern.compile("^[0-9]+$");
-            String port = (String) value;
-            if (StringUtils.isNotBlank(port)) {
-                String[] ports = StringUtils.split(port, " ");
-                for (String prt : ports) {
-                    if (!portMatcher.matcher(prt).matches()) {
-                        errors.rejectValue("values[" + globalSettingType + "]", "typeMismatch");
+            String field = "values[" + globalSettingType + "]";
+            if (StringUtils.isNotBlank(ports)) {
+                String[] portsArray = StringUtils.split(ports, " ");
+                for (String port : portsArray) {
+                    if (!portMatcher.matcher(port).matches()) {
+                        errors.rejectValue(field, "typeMismatch");
                     }
+                    // validate each prt separately.
+                    portValidator.validate(Integer.valueOf(port), errors, globalSettingType);
                 }
             }
         }
     };
 
-    public static TypeValidator urlWithPortValidator = new TypeValidator() {
+
+    public static TypeValidator<String> urlWithPortValidator = new TypeValidator<String>() {
         Pattern urlWithPortMatcher = Pattern.compile("\\s*(.*?):(\\d+)\\s*");
         @Override
-        public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
-            String httpProxy = (String) value;
-            YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "values[" + globalSettingType + "]", httpProxy, false, 1000);
+        public void validate(String urlWithPort, Errors errors, GlobalSettingType globalSettingType) {
+            YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "values[" + globalSettingType + "]", urlWithPort, false, 1000);
 
-            if (!StringUtils.isBlank(httpProxy)
-                    && !httpProxy.equals("none")
-                    && !urlWithPortMatcher.matcher(httpProxy).matches()) {
+            if (!StringUtils.isBlank(urlWithPort)
+                    && !urlWithPort.equals("none")
+                    && !urlWithPortMatcher.matcher(urlWithPort).matches()) {
                 errors.rejectValue("values["+globalSettingType+"]", baseKey + "invalidProxy", null,"");
             }
         }
     };
 
-    public static TypeValidator timezoneValidator = new TypeValidator() {
+    public static TypeValidator<String> timezoneValidator = new TypeValidator<String>() {
         @Override
-        public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
-            String timeZoneId = (String) value;
+        public void validate(String timeZoneId, Errors errors, GlobalSettingType globalSettingType) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "values["+globalSettingType+"]", timeZoneId, 1000);
             if (StringUtils.isNotBlank(timeZoneId)) {
                 try {
@@ -119,30 +135,18 @@ public class GlobalSettingTypeValidators {
         }
     };
     
-    public static TypeValidator integerRangeValidator = new TypeValidator() {
+    public static TypeValidator<Integer> integerRangeValidator = new TypeValidator<Integer>() {
         @Override
-        public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
+        public void validate(Integer value, Errors errors, GlobalSettingType globalSettingType) {
             if (globalSettingType.getValidationValue() != null) {
                 String field = "values[" + globalSettingType + "]";
-                try {
-                    Range<Integer> range = (Range<Integer>)globalSettingType.getValidationValue();
-                    Integer valueInt = Integer.class.cast(value);
-                    if (value != null) {
-                        YukonValidationUtils.checkRange(errors, field, valueInt, range, true);
-                    } else {
-                        errors.rejectValue(field, "yukon.web.error.outOfRangeObject", 
-                                           new Object[] { range.isIncludesMinValue() ? 1 : 0, range.getMin(),  
-                                                          range.isIncludesMaxValue() ? 1 : 0, range.getMax() },
-                                                          "Must be " + range.toString() + ".");
-                    }
-                } catch (ClassCastException e) {
-                    errors.rejectValue(field, "typeMismatch");
-                }
+                Range<Integer> range = (Range<Integer>)globalSettingType.getValidationValue();
+                YukonValidationUtils.checkRange(errors, field, value, range, true);
             }
         }
     };
     
-    public interface TypeValidator {
-        public void validate(Object value, Errors errors, GlobalSettingType globalSetting);
+    public interface TypeValidator<T> {
+        public void validate(T value, Errors errors, GlobalSettingType globalSetting);
     }
 }
