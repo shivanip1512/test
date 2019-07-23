@@ -172,6 +172,7 @@ public class OperatorEnrollmentController {
             displayableEnrollmentDao.getProgram(account.getAccountId(), assignedProgramId);
         
         model.addAttribute("isNest", displayable.isNest());
+        model.addAttribute("isMeter", displayable.isMeter());
 
         ProgramEnrollment programEnrollment = new ProgramEnrollment(displayable);
         model.addAttribute("programEnrollment", programEnrollment);

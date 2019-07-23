@@ -62,9 +62,11 @@
                                 <form:select class="js-enroll-relay" path="inventoryEnrollments[${status.index}].relay" 
                                         disabled="${!enrolled}">
                                     <form:option value="0"><cti:msg2 key=".noRelay"/></form:option>
-                                    <c:forEach var="relayNumber" begin="1" end="${inventory.numRelays}">
-                                        <form:option value="${relayNumber}">${relayNumber}</form:option>
-                                    </c:forEach>
+                                    <c:if test="${!isMeter}">
+                                        <c:forEach var="relayNumber" begin="1" end="${inventory.numRelays}">
+                                            <form:option value="${relayNumber}">${relayNumber}</form:option>
+                                        </c:forEach>
+                                    </c:if>
                                 </form:select>
                             </td>
                             

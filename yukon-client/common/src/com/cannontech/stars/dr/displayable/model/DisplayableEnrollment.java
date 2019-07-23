@@ -254,6 +254,10 @@ public final class DisplayableEnrollment {
         public boolean isNest() {
             return program.getPaoType().equals(PaoType.LM_NEST_PROGRAM);
         }
+        
+        public boolean isMeter() {
+            return program.getPaoType().equals(PaoType.LM_METER_DISCONNECT_PROGRAM);
+        }
 
         public String getDescriptionUrl() {
         	return program.getDescriptionUrl();
