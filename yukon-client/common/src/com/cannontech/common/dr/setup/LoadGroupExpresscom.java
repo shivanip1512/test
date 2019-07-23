@@ -257,7 +257,7 @@ public class LoadGroupExpresscom extends LoadGroupBase<LMGroupExpressCom> implem
      * Create addressing for passed addressing type
      */
     private LMGroupExpressComAddress createAddress(Integer address, AddressUsage type) {
-        if (address == null) {
+        if (address == null || address <= 0) {
             return com.cannontech.database.db.device.lm.LMGroupExpressComAddress.NONE_ADDRESS;
         }
         LMGroupExpressComAddress expresscomAddress = new LMGroupExpressComAddress(type.toString());

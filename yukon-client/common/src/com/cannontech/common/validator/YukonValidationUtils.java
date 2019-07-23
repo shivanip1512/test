@@ -308,6 +308,22 @@ public class YukonValidationUtils extends ValidationUtils {
             }
         }
     }
+    
+    /* Validate string for exact length. */
+    public static void checkExactLength(String field, Errors errors, String fieldValue, String fieldName,
+            int stringLength) {
+        if (fieldValue != null && fieldValue.length() != stringLength) {
+            errors.rejectValue(field, "yukon.web.error.invalidStringLength", new Object[] { fieldName, stringLength },
+                "");
+        }
+    }
+
+    /* Validate a required list is empty */
+    public static void checkIfListRequired(String field, Errors errors, List<?> fieldValue, String fieldName) {
+        if (fieldValue == null || fieldValue.isEmpty()) {
+            errors.rejectValue(field, "yukon.web.error.required", new Object[] { fieldName }, "");
+        }
+    }
 }
 
 

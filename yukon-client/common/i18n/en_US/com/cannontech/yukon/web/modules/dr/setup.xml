@@ -133,14 +133,13 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.error.required">{0} is required.</entry>
 <entry key="yukon.web.modules.dr.setup.error.invalid">Invalid {0} value.</entry>
 <entry key="yukon.web.modules.dr.setup.error.routeId.doesNotExist">Route Id does not exist.</entry>
-<entry key="yukon.web.modules.dr.setup.error.stringLength">{0} must be of {1} character.</entry>
 
 <!-- Control Scenario Validation -->
 <entry key="yukon.web.modules.dr.setup.controlScenario.error.oneGear">Only one valid gear is allowed.</entry>
 
 <!-- Control Area Validation -->
 <entry key="yukon.web.modules.dr.setup.controlArea.error.maxTwoTriggers">Maximum two valid triggers are allowed.</entry>
-<entry key="yukon.web.modules.dr.setup.controlArea.error.programId.doesNotExist">Program Id does not exist or already assigned to other Control Area</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.error.programId.doesNotExist">Program Id does not exist or already assigned to other Control Area.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.error.pointId.doesNotExist">{0} does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.error.invalid.normalState">Invalid Normal state.</entry>
 
@@ -154,8 +153,8 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.utilityAddress.doesNotExist">Address Usage must contain Utility Address.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.assignedLoadGroup.required">At least one load group must be assigned.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.type.invalid">Invalid {0} type.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.deviceClassSet.required">At least one device class set must be assigned</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.loadAddress.required">At least usage type should be selected</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.deviceClassSet.required">At least one device class set must be assigned.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.loadAddress.required">At least usage type should be selected.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.notRequired">Address Usage do not have {0}, remove {1}.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.loadRequired">{0} should atleast have LOAD, SPLINTER or PROGRAM</entry>
 
@@ -172,10 +171,10 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.latchNotAllowedWithOtherGears">Latching gear can not exist alongside other gear types.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.maxGearCount">Program is only allowed {0} or less gears to be defined for it.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.notAllowedGroupPoint">LMGroup Point groups are only allowed if a latching gear is present.</entry>
-<entry key="yukon.web.modules.dr.setup.loadProgram.error.notSupportedControlMethod">Control Method {0} is not supported for program type {1}</entry>
-<entry key="yukon.web.modules.dr.setup.loadProgram.error.notSupportedProgramType">Program type {0} is not supported</entry>
-<entry key="yukon.web.modules.dr.setup.loadProgram.error.notSupportedOperationalState">Program type {0} is not supported for operational State {1}</entry>
-<entry key="yukon.web.modules.dr.setup.loadProgram.error.notSupportedControlWindow">Control window one is not supported for operational State {0}</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.notSupportedControlMethod">Control Method {0} is not supported for program type {1}.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.notSupportedProgramType">Program type {0} is not supported.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.notSupportedOperationalState">Program type {0} is not supported for operational State {1}.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.notSupportedControlWindow">Control window one is not supported for operational State {0}.</entry>
 
 <!-- Gear setup -->
 <entry key="yukon.web.modules.dr.setup.gear.ABSOLUTE">Absolutes</entry>

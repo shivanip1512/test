@@ -7,10 +7,10 @@
               selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">
             <tags:nameValue2 nameKey=".controlPriority">
                 <cti:displayForPageEditModes modes="CREATE,EDIT">
-                    <tags:selectWithItems items="${protocolPriority}" id="protocolPriority" path="protocolPriority"/>
+                    <tags:selectWithItems items="${protocolPriority}" path="protocolPriority"/>
                 </cti:displayForPageEditModes>
                 <cti:displayForPageEditModes modes="VIEW">
-                   <i:inline key="${loadGroup.protocolPriority}"/>
+                    <i:inline key="${loadGroup.protocolPriority}"/>
                  </cti:displayForPageEditModes>
             </tags:nameValue2>
         </c:if>

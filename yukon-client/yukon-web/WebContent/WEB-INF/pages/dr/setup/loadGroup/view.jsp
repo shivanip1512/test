@@ -77,7 +77,7 @@
                 </c:if>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
-        <div id='.js-loadgroup-container'>
+        <div id='js-loadgroup-container'>
             <!-- Include jsp for load group type -->
             <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
                       selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">

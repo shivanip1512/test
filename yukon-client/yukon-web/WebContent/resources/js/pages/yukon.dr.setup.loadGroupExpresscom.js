@@ -13,88 +13,64 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
     var
     _initialized = false,
     
-    _handleAddressing = function () {
-        if ($("input[id=GEO_chk]:checked").length !== 0) {
-            $('#js-geoRow').show();	
-        } else {
-            $('#js-geoRow').hide();
-        }
-        if ($("input[id=SUBSTATION_chk]:checked").length !== 0) {
-            $('#js-substationRow').show();	
-        } else {
-            $('#js-substationRow').hide();
-        }
-        if ($("input[id=FEEDER_chk]:checked").length !== 0) {
-            $('#js-feederRow').show();	
-        } else {
-            $('#js-feederRow').hide();
-        }
-        if ($("input[id=ZIP_chk]:checked").length !== 0) {
-            $('#js-zipRow').show();	
-        } else {
-            $('#js-zipRow').hide();
-        }
-        if ($("input[id=USER_chk]:checked").length !== 0) {
-            $('#js-userRow').show();	
-        } else {
-            $('#js-userRow').hide();
-        }
-        if ($("input[id=SERIAL_chk]:checked").length !== 0) {
-            $('#js-serialRow').show();
-            $('#SERIAL_chk').prop("checked", true);
-            
-            // disable other buttons
-            $('#GEO_chk').prop("disabled", true);
-            $('#SUBSTATION_chk').prop("disabled", true);
-            $('#FEEDER_chk').prop("disabled", true);
-            $('#ZIP_chk').prop("disabled", true);
-            $('#USER_chk').prop("disabled", true);
-            
-            // disable other textbox
-            $('#js-geo').attr("disabled", "disabled");
-            $('#js-substation').attr("disabled", "disabled");
-            $('#js-zip').attr("disabled", "disabled");
-            $('#js-user').attr("disabled", "disabled");
-            $('#js-feeder').find('input[type=checkbox]').prop("disabled", true);
-        } else {
-             $('#js-serialRow').hide();
-             // enable other checkbox
-             $('#GEO_chk').prop("disabled", false);
-             $('#SUBSTATION_chk').prop("disabled", false);
-             $('#FEEDER_chk').prop("disabled", false);
-             $('#ZIP_chk').prop("disabled", false);
-             $('#USER_chk').prop("disabled", false);
-             
-             // enable textbox
-             $('#js-geo').removeAttr("disabled");
-             $('#js-substation').removeAttr("disabled");
-             $('#js-feeder').removeAttr("disabled");
-             $('#js-zip').removeAttr("disabled");
-             $('#js-user').removeAttr("disabled");
-             $('#js-feeder').find('input[type=checkbox]').prop("disabled", false);
+    _handleAddressing = function (mode) {
+        if (mode!= 'VIEW') {
+            $('#js-geoRow').toggleClass('dn', !($('#GEO_chk').is(':checked')));
+            $('#js-substationRow').toggleClass('dn', !($('#SUBSTATION_chk').is(':checked')));
+            $('#js-feederRow').toggleClass('dn', !($('#FEEDER_chk').is(':checked')));
+            $('#js-zipRow').toggleClass('dn', !($('#ZIP_chk').is(':checked')));
+            $('#js-userRow').toggleClass('dn', !($('#USER_chk').is(':checked')));
+
+           if($('#SERIAL_chk').is(':checked')) {
+                $('#js-serialRow').show();
+                $('#SERIAL_chk').prop("checked", true);
+                
+                // disable other buttons
+                $('#GEO_chk').prop("disabled", true);
+               $('#SUBSTATION_chk').prop("disabled", true);
+                $('#FEEDER_chk').prop("disabled", true);
+                $('#ZIP_chk').prop("disabled", true);
+                $('#USER_chk').prop("disabled", true);
+                
+                // disable other textbox
+                $('#js-geo').attr("disabled", "disabled");
+                $('#js-substation').attr("disabled", "disabled");
+                $('#js-zip').attr("disabled", "disabled");
+                $('#js-user').attr("disabled", "disabled");
+                $('#js-feeder').find('input[type=checkbox]').prop("disabled", true);
+            } else {
+                 $('#js-serialRow').hide();
+                 // enable other checkbox
+                 $('#GEO_chk').prop("disabled", false);
+                 $('#SUBSTATION_chk').prop("disabled", false);
+                 $('#FEEDER_chk').prop("disabled", false);
+                 $('#ZIP_chk').prop("disabled", false);
+                 $('#USER_chk').prop("disabled", false);
+                 
+                 // enable textbox
+                 $('#js-geo').removeAttr("disabled");
+                 $('#js-substation').removeAttr("disabled");
+                 $('#js-feeder').removeAttr("disabled");
+                 $('#js-zip').removeAttr("disabled");
+                 $('#js-user').removeAttr("disabled");
+                 $('#js-feeder').find('input[type=checkbox]').prop("disabled", false);
+            }
         }
      },
-    _handleLoads = function () {
-        if ($("input[id=PROGRAM_chk]:checked").length !== 0) {
-            $('#js-programRow').show();	
-        } else {
-            $('#js-programRow').hide();
-        }
-        if ($("input[id=SPLINTER_chk]:checked").length !== 0) {
-            $('#js-splinterRow').show();	
-        } else {
-            $('#js-splinterRow').hide();
-        }
-        if ($("input[id=LOAD_chk]:checked").length !== 0) {
+    _handleLoads = function (mode) {
+        $('#js-programRow').toggleClass('dn', $('input[id=PROGRAM_chk]:checked').length == 0);
+        $('#js-splinterRow').toggleClass('dn', $('input[id=SPLINTER_chk]:checked').length == 0);
+        if($('#LOAD_chk').is(':checked')) {
             $('#js-sendControlMessageYes').removeClass('dn');
             $('#js-sendControlMessageNo').addClass('dn');
         } else {
             $('#js-sendControlMessageYes').addClass('dn');
             $('#js-sendControlMessageNo').removeClass('dn');
         }
-        if ($("input[id=LOAD_chk]:checked").length !== 0) {
-            if (($("input[id=LOAD_chk]:checked").length !== 0) && 
-            ($("input[id=PROGRAM_chk]:checked").length !== 0 || $("input[id=SPLINTER_chk]:checked").length !== 0)) {
+    },
+    _showConfirmation = function() {
+        if($('#LOAD_chk').is(':checked')) {
+            if(($('#PROGRAM_chk').is(':checked')) || $('#SPLINTER_chk').is(':checked')) {
             var popup = $('#addressing-popup'),
                 title = popup.data('title'),
                 okButtonText = popup.data('okText'),
@@ -160,29 +136,29 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
         }
     },
     _setValues = function() {
-        if ($("input[id=GEO_chk]:checked").length === 0) {
-            $('#js-geo').val();	
+        if(!($('#GEO_chk').is(':checked'))) {
+            $('#js-geo').val(0);	
         }
-        if ($("input[id=SUBSTATION_chk]:checked").length === 0) {
-            $('#js-substation').val();
+        if (!($('#SUBSTATION_chk').is(':checked'))) {
+            $('#js-substation').val(0);
         }
-        if ($("input[id=FEEDER_chk]:checked").length === 0) {
-            $('#feederValueString').val();	
+        if (!($('#FEEDER_chk').is(':checked'))) {
+            $('#feederValueString').val(0);	
         }
-        if ($("input[id=ZIP_chk]:checked").length === 0) {
-            $('#js-zip').val();
+        if (!($('#ZIP_chk').is(':checked'))) {
+            $('#js-zip').val(0);
         }
-        if ($("input[id=USER_chk]:checked").length === 0) {
-            $('#js-user').val();	
+        if (!($('#USER_chk').is(':checked'))) {
+            $('#js-user').val(0);	
         }
-        if ($("input[id=SERIAL_chk]:checked").length === 0) {
-            $('#js-user').val();	
+        if (!($('#SERIAL_chk').is(':checked'))) {
+            $('#js-serial').val(0);	
         }
-        if ($("input[id=PROGRAM_chk]:checked").length === 0) {
-            $('#js-program').val();	
+        if (!($('#PROGRAM_chk').is(':checked'))) {
+            $('#js-program').val(0);	
         }
-        if ($("input[id=SPLINTER_chk]:checked").length === 0) {
-            $('#js-splinter').val();	
+        if (!($('#SPLINTER_chk').is(':checked'))) {
+            $('#js-splinter').val(0);	
         }
     }
     
@@ -191,7 +167,7 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
         /** Initialize this module. */
         init: function () {
            var _mode = $('.js-page-mode').val();
-           if(_mode !== 'VIEW' && ($(type).val() === 'LM_GROUP_EXPRESSCOMM' ||
+           if (_mode !== 'VIEW' && ($(type).val() === 'LM_GROUP_EXPRESSCOMM' ||
                 $(type).val() === 'LM_GROUP_RFN_EXPRESSCOMM')) {
                 _addressUsage();
                 _handleAddressing();
@@ -200,10 +176,10 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
            }
            
             $(document).on('click', '#js-addressUsage', function (event) {
-                _handleAddressing();
+                _handleAddressing(_mode);
             });
             $(document).on('click', '#js-loadAddressUsage', function (event) {
-                _handleLoads();
+                _handleLoads(_mode);
             });
             $(document).on('click', '#js-feederRow', function (event) {
                _buildFeederValue();
@@ -211,12 +187,16 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
             $(document).on('click', '#save', function (event) {
                 _setValues();
              });
+            $(document).on('click', '.loadaddressing', function (event) {
+                _showConfirmation();
+             });
             $(document).on('yukon:uncheck:load', function (ev) {
                 $('#LOAD_chk').prop("checked", false);
                 $('#js-sendControlMessageYes').addClass('dn');
                 $('#js-sendControlMessageNo').removeClass('dn');
                 $("#addressing-popup").dialog('close');
              });
+         
             
             _initialized = true;
         }

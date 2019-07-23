@@ -73,7 +73,7 @@
            <cti:displayForPageEditModes modes="CREATE,EDIT">
                <div class="button-group stacked">
                    <c:forEach var="loadAddressUsageValue" items="${loadAddressUsageList}">
-                       <tags:check id="${loadAddressUsageValue}_chk" path="addressUsage"  value="${loadAddressUsageValue}" key="${loadAddressUsageValue}"/>
+                       <tags:check id="${loadAddressUsageValue}_chk" path="addressUsage"  value="${loadAddressUsageValue}" key="${loadAddressUsageValue}" classes="loadaddressing"/>
                    </c:forEach>
                </div>
            </cti:displayForPageEditModes>

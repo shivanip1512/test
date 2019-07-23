@@ -33,7 +33,7 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
         }
 
         // Address Usage should have atleast one field
-        lmValidatorHelper.checkIfListRequired("addressUsage", errors, loadGroup.getAddressUsage(), "Address Usage");
+        YukonValidationUtils.checkIfListRequired("addressUsage", errors, loadGroup.getAddressUsage(), "Address Usage");
 
         // Address Usage should have atleast Load, program or splinter
         if (!errors.hasFieldErrors("addressUsage")) {
@@ -71,11 +71,7 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 if (!errors.hasFieldErrors("geo")) {
                     YukonValidationUtils.checkRange(errors, "geo", loadGroup.getGeo(), 1, 65534, true);
                 }
-            } else {
-                if (loadGroup.getGeo() != null) {
-                    errors.rejectValue("geo", key + "notRequired", new Object[] { AddressUsage.GEO, "geo" }, "");
-                }
-            }
+            } 
 
             if (loadGroup.getAddressUsage().contains(AddressUsage.SUBSTATION)) {
                 // Validate substation
@@ -83,22 +79,12 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 if (!errors.hasFieldErrors("substation")) {
                     YukonValidationUtils.checkRange(errors, "substation", loadGroup.getSubstation(), 1, 65534, true);
                 }
-            } else {
-                if (loadGroup.getSubstation() != null) {
-                    errors.rejectValue("substation", key + "notRequired",
-                        new Object[] { AddressUsage.SUBSTATION, "substation" }, "");
-                }
             }
 
             if (loadGroup.getAddressUsage().contains(AddressUsage.FEEDER)) {
                 // validate Feeder
                 lmValidatorHelper.checkIfFieldRequired("feeder", errors, loadGroup.getFeeder(), "Feeder");
-                lmValidatorHelper.checkStringLength("feeder", errors, loadGroup.getFeeder(), "Feeder", 16);
-            } else {
-                if (loadGroup.getFeeder() != null && !loadGroup.getFeeder().isEmpty()) {
-                    errors.rejectValue("feeder", key + "notRequired", new Object[] { AddressUsage.FEEDER, "feeder" },
-                        "");
-                }
+                YukonValidationUtils.checkExactLength("feeder", errors, loadGroup.getFeeder(), "Feeder", 16);
             }
 
             if (loadGroup.getAddressUsage().contains(AddressUsage.ZIP)) {
@@ -107,10 +93,6 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 if (!errors.hasFieldErrors("zip")) {
                     YukonValidationUtils.checkRange(errors, "zip", loadGroup.getZip(), 1, 16777214, true);
                 }
-            } else {
-                if (loadGroup.getZip() != null) {
-                    errors.rejectValue("zip", key + "notRequired", new Object[] { AddressUsage.ZIP, "zip" }, "");
-                }
             }
             if (loadGroup.getAddressUsage().contains(AddressUsage.USER)) {
                 // validate User
@@ -118,22 +100,13 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 if (!errors.hasFieldErrors("user")) {
                     YukonValidationUtils.checkRange(errors, "user", loadGroup.getUser(), 1, 65534, true);
                 }
-            } else {
-                if (loadGroup.getUser() != null) {
-                    errors.rejectValue("user", key + "notRequired", new Object[] { AddressUsage.USER, "user" }, "");
-                }
-            }
+            } 
             if (loadGroup.getAddressUsage().contains(AddressUsage.PROGRAM)) {
                 // validate Program
 
                 lmValidatorHelper.checkIfFieldRequired("program", errors, loadGroup.getProgram(), "Program");
                 if (!errors.hasFieldErrors("program")) {
                     YukonValidationUtils.checkRange(errors, "program", loadGroup.getProgram(), 1, 99, true);
-                }
-            } else {
-                if (loadGroup.getProgram() != null) {
-                    errors.rejectValue("program", key + "notRequired", new Object[] { AddressUsage.PROGRAM, "program" },
-                        "");
                 }
             }
             if (loadGroup.getAddressUsage().contains(AddressUsage.SPLINTER)) {
@@ -142,15 +115,10 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 if (!errors.hasFieldErrors("splinter")) {
                     YukonValidationUtils.checkRange(errors, "splinter", loadGroup.getSplinter(), 1, 99, true);
                 }
-            } else {
-                if (loadGroup.getSplinter() != null) {
-                    errors.rejectValue("splinter", key + "notRequired",
-                        new Object[] { AddressUsage.SPLINTER, "splinter" }, "");
-                }
             }
             if (loadGroup.getAddressUsage().contains(AddressUsage.LOAD)) {
                 // validate Loads
-                lmValidatorHelper.checkIfListRequired("relayUsage", errors, loadGroup.getRelayUsage(), "Relay Usage");
+                YukonValidationUtils.checkIfListRequired("relayUsage", errors, loadGroup.getRelayUsage(), "Relay Usage");
             }
         }
     }
