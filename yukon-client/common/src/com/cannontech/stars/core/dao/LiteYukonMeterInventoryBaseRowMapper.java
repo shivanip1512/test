@@ -22,6 +22,11 @@ public class LiteYukonMeterInventoryBaseRowMapper extends SeparableRowMapper<Lit
         return new LiteInventoryBase();
     }
 
+    /*
+     * This is a new LiteInventoryBase row mapper for Yukon_Meter()
+     * If the device exists in LMHardwareBase with a LMHardwareTypeId then it returns a LiteLMHardwareBase object
+     * If the device doesn't exist then it returns a LiteInventoryBase Object
+     */
     @Override
     protected void mapRow(YukonResultSet rs, LiteInventoryBase t) throws SQLException {
         Integer hardwareId = rs.getNullableInt("LMHardwareTypeId");
