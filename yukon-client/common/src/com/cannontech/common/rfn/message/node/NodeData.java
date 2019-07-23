@@ -23,6 +23,8 @@ public class NodeData implements Serializable {
     private String productNumber;
     
     private String meterConfigID;
+    
+    private WifiSuperMeterData wifiSuperMeterData;
 
     public String getNodeSerialNumber() {
         return nodeSerialNumber;
@@ -95,6 +97,14 @@ public class NodeData implements Serializable {
     public void setMeterConfigID(String meterConfigID) {
         this.meterConfigID = meterConfigID;
     }
+    
+    public WifiSuperMeterData getWifiSuperMeterData() {
+        return wifiSuperMeterData;
+    }
+
+    public void setWifiSuperMeterData(WifiSuperMeterData wifiSuperMeterData) {
+        this.wifiSuperMeterData = wifiSuperMeterData;
+    }
 
     @Override
     public int hashCode() {
@@ -109,6 +119,8 @@ public class NodeData implements Serializable {
         result = prime * result + ((nodeSerialNumber == null) ? 0 : nodeSerialNumber.hashCode());
         result = prime * result + ((nodeType == null) ? 0 : nodeType.hashCode());
         result = prime * result + ((productNumber == null) ? 0 : productNumber.hashCode());
+        result =
+            prime * result + ((wifiSuperMeterData == null) ? 0 : wifiSuperMeterData.hashCode());
         return result;
     }
 
@@ -160,22 +172,22 @@ public class NodeData implements Serializable {
                 return false;
         } else if (!productNumber.equals(other.productNumber))
             return false;
+        if (wifiSuperMeterData == null) {
+            if (other.wifiSuperMeterData != null)
+                return false;
+        } else if (!wifiSuperMeterData.equals(other.wifiSuperMeterData))
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return String
-            .format("NodeData [nodeSerialNumber=%s, nodeType=%s, inNetworkTimestamp=%s, macAddress=%s, networkAddress=%s, hardwareVersion=%s, firmwareVersion=%s, productNumber=%s, meterConfigID=%s]",
-                    nodeSerialNumber,
-                    nodeType,
-                    inNetworkTimestamp,
-                    macAddress,
-                    networkAddress,
-                    hardwareVersion,
-                    firmwareVersion,
-                    productNumber,
-                    meterConfigID);
+        return "NodeData [nodeSerialNumber=" + nodeSerialNumber + ", nodeType=" + nodeType
+            + ", inNetworkTimestamp=" + inNetworkTimestamp + ", macAddress=" + macAddress
+            + ", networkAddress=" + networkAddress + ", hardwareVersion=" + hardwareVersion
+            + ", firmwareVersion=" + firmwareVersion + ", productNumber=" + productNumber
+            + ", meterConfigID=" + meterConfigID + ", wifiSuperMeterData=" + wifiSuperMeterData
+            + "]";
     }
 
 }

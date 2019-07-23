@@ -1,6 +1,7 @@
 package com.cannontech.common.rfn.message.metadata;
 
 import java.io.Serializable;
+import com.cannontech.common.rfn.message.node.WifiSuperMeterData;
 
 public enum RfnMetadata implements Serializable {
     /** Network Manager name in comments */
@@ -24,7 +25,8 @@ public enum RfnMetadata implements Serializable {
     SUB_MODULE_FIRMWARE_VERSION(String.class), // Zigbee Firmware Version
     NUM_ASSOCIATIONS(Integer.class), // Number of associations
     IPV6_ADDRESS(String.class), // IPv6 address
-    HOSTNAME(String.class); // Hostname
+    HOSTNAME(String.class), // Hostname
+    WIFI_SUPER_METER_DATA(WifiSuperMeterData.class); // Wifi super meter related data
     
     private final Class<?> parseType;
     
