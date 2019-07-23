@@ -1,0 +1,10 @@
+{
+    "LM_GROUP_NEST": {
+    	"id": null,
+        "name": "Auto_LM_Group_Nest",
+        "type": "LM_GROUP_NEST",
+        "kWCapacity": 123.0,
+        "disableGroup": false,
+        "disableControl": false
+    }
+}
