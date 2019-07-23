@@ -207,7 +207,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
         if (!isInternal && rfnLogger.isInfoEnabled()) {
             rfnLogger.info("<<< " + request.toString());
         } else if (isInternal && rfnLogger.isDebugEnabled()) {
-            rfnLogger.debug("<<<" + request.toString());
+            rfnLogger.debug("<<< " + request.toString());
         }
         if (log.isTraceEnabled()) {
             log.trace("RequestMultiReplyTemplate execute Start " + request.toString());
