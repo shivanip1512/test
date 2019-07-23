@@ -190,11 +190,14 @@ public class ComprehensiveMapController {
         
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
         DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);
+        
+        log.debug("Devices in a group {}", collection.getDeviceCount());
+        
         Set<RfnIdentifier> rfnIdentifiers = collection.getDeviceList().stream()
                 .map(device -> rfnDeviceDao.getDeviceForId(device.getDeviceId()).getRfnIdentifier())
                 .collect(Collectors.toSet());
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
-        
+        log.debug("Getting data for download for {} devices", rfnIdentifiers.size());
         try {
             metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers, Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, 
                                                                                          RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
@@ -211,6 +214,7 @@ public class ComprehensiveMapController {
                 .collect(Collectors.toMap(l -> l.getPaoIdentifier().getPaoId(), l->l));
         
         List<String[]> dataRows = Lists.newArrayList();
+        log.debug("Got data from NM for {} devices", metaData.keySet().size());
         for (RfnIdentifier device : metaData.keySet()) {
             int paoId = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(Sets.newHashSet(device)).iterator().next();
             String[] dataRow = new String[11];
@@ -247,6 +251,8 @@ public class ComprehensiveMapController {
             }
             dataRows.add(dataRow);
         }
+        
+        log.debug("Generated {} rows for CSV file", dataRows.size());
 
         String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "comprehensiveMapDownload_" + now + ".csv");
