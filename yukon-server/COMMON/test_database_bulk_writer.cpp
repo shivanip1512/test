@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(test_bulk_updater_finalize_sql)
             bu.getFinalizeSql(),
             "MERGE DestinationTableName"
             " USING ("
-                "SELECT Temp_TemporaryTableName.*"
+                "SELECT DISTINCT Temp_TemporaryTableName.*"
                 " FROM Temp_TemporaryTableName"
                 " JOIN ForeignKeyTableName"
                 " ON Temp_TemporaryTableName.ColumnA=ForeignKeyTableName.ColumnA) t"
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(test_bulk_updater_finalize_sql)
             bu.getFinalizeSql(),
             "MERGE INTO DestinationTableName"
             " USING ("
-                "SELECT Temp_TemporaryTableName.*"
+                "SELECT DISTINCT Temp_TemporaryTableName.*"
                 " FROM Temp_TemporaryTableName"
                 " JOIN ForeignKeyTableName"
                 " ON Temp_TemporaryTableName.ColumnA=ForeignKeyTableName.ColumnA) t"
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE(test_2_primary_key_bulk_updater_finalize_sql)
             bu.getFinalizeSql(),
             "MERGE DestinationTableName"
             " USING ("
-                "SELECT Temp_TemporaryTableName.*"
+                "SELECT DISTINCT Temp_TemporaryTableName.*"
                 " FROM Temp_TemporaryTableName"
                 " JOIN ForeignKeyTableName"
                 " ON Temp_TemporaryTableName.ColumnA=ForeignKeyTableName.ColumnA) t"
@@ -281,7 +281,7 @@ BOOST_AUTO_TEST_CASE(test_2_primary_key_bulk_updater_finalize_sql)
             bu.getFinalizeSql(),
             "MERGE INTO DestinationTableName"
             " USING ("
-                "SELECT Temp_TemporaryTableName.*"
+                "SELECT DISTINCT Temp_TemporaryTableName.*"
                 " FROM Temp_TemporaryTableName"
                 " JOIN ForeignKeyTableName"
                 " ON Temp_TemporaryTableName.ColumnA=ForeignKeyTableName.ColumnA) t"

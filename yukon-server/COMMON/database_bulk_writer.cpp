@@ -318,7 +318,7 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql() const
         {
             return
                 "MERGE " + _destTable +
-                " USING (SELECT " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
+                " USING (SELECT DISTINCT " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
                 " ON " + matchConditions +
                 " WHEN MATCHED THEN"
                 " UPDATE SET " + mergeUpdates +
@@ -330,7 +330,7 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql() const
         {
             return
                 "MERGE INTO " + _destTable +
-                " USING (SELECT " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
+                " USING (SELECT DISTINCT " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
                 " ON (" + matchConditions + ")" +
                 " WHEN MATCHED THEN"
                 " UPDATE SET " + mergeUpdates +
