@@ -11,7 +11,7 @@
 
     <cti:url var="dataUrl" value="/dr/program/disconnectStatus?programId=${programId}"/>
     <div id="disconnect-status-table" data-url="${dataUrl}" data-static>
-        <table class="compact-results-table has-actions">
+        <table class="compact-results-table row-highlighting has-actions">
             <thead>
                 <tags:sort column="${device}" />
                 <tags:sort column="${status}" />
