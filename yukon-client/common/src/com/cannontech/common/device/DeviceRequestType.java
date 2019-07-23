@@ -11,6 +11,7 @@ public enum DeviceRequestType {
     LM_HARDWARE_COMMAND("LM Hardware Command", "A command sent to LM hardware.", false),
     INVENTORY_RECONFIG("Inventory Reconfiguration", "A command sent to LM hardware as a result of inventory reconfiguration.", false),
     MOVE_IN_MOVE_OUT_USAGE_READ("Move In/Move Out Usage Reading", "Move In/Move Out Usage Reading", false),
+    OPT_OUT_OPT_IN_CONNECT_DISCONNECT_COMMAND("Opt Out Opt In Connect/Disconnect Command", "A 'control connect' or 'control disconnect' command sent from the OptOut/OptIn Meter Command Strategy", false),
     
     METER_OUTAGES_WIDGET_ATTRIBUTE_READ("Outage Widget Attribute Read", "Reads all meter attributes for display in the Meter Outages Widget.", false),
     METER_READINGS_WIDGET_ATTRIBUTE_READ("Meter Readings Widget Attribute Read", "Reads all meter attributes that are displayed in the Meter Readings Widget.", false),

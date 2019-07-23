@@ -261,7 +261,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
         @Override
         public void complete(StrategyType strategy) {
             isComplete = true;
-            log.debug("Command Completed by" + strategy+ " strategy");
+            log.debug("Command Completed by " + strategy+ " strategy");
             execution.setRequestCount(1);
             completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.COMPLETE);
             disconnectEventLogService.actionCompleted(user, result.getCommand(), result.getMeter().getName(),

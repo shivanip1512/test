@@ -1,10 +1,12 @@
 package com.cannontech.dr.meterDisconnect;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -30,6 +32,8 @@ import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.service.ControlHistoryService;
 import com.cannontech.dr.service.ControlType;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -42,6 +46,8 @@ public class MeterDisconnectMessageListener {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private GroupService groupService;
     @Autowired private DisconnectService disconnectService;
+    @Autowired private OptOutEventDao optOutEventDao;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
 
     public class MeterCollection implements DeviceCollection {
         List<SimpleDevice> collection;
@@ -117,6 +123,7 @@ public class MeterDisconnectMessageListener {
         
     }
     
+    // Disconnect "Control"
     public void handleCyclingControlMessage(Message message) {
         if (message instanceof StreamMessage) {
             try {
@@ -137,7 +144,17 @@ public class MeterDisconnectMessageListener {
                 String groupName = groupService.getGroup(groupId).getName();
                 DeviceGroup deviceGroup = deviceGroupService.findGroupName(groupName);
                 if (deviceGroup != null) {
-                    Set<SimpleDevice> meters = deviceGroupService.getDevices(Collections.singleton(deviceGroup));                    
+                    // Find all the opted out devices that are in the groupId
+                    Set<Integer> optOutInventory = optOutEventDao.getOptedOutInventoryByLoadGroups(Arrays.asList(groupId));
+                    Set<Integer> optOutDeviceIds = inventoryBaseDao.getLMHardwareForIds(optOutInventory).stream()
+                                                                                                        .map(hardware -> hardware.getDeviceID())
+                                                                                                        .collect(Collectors.toSet());
+                    Set<SimpleDevice> meters = deviceGroupService.getDevices(Collections.singleton(deviceGroup));   
+                    // Remove any meter's that are opted out from the list of meters that will be sent control
+                    meters = meters.stream()
+                                   .filter(meterId -> !optOutDeviceIds.contains(meterId.getPaoIdentifier().getPaoId()))
+                                   .collect(Collectors.toSet());
+                    
                     MeterCollection collection = new MeterCollection(Lists.newArrayList(meters));
                     Callback callback = new Callback(); //callback isn't really being used.
                     disconnectService.execute(DisconnectCommand.DISCONNECT, collection, callback, YukonUserContext.system);
@@ -152,6 +169,7 @@ public class MeterDisconnectMessageListener {
         }
     }
     
+    // Connect "End Control"
     public void handleRestoreMessage(Message message) {
         if (message instanceof StreamMessage) {
             try {

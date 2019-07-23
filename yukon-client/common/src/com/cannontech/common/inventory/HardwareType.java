@@ -529,7 +529,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
  
     public boolean isHideHardwareAddressing() {
-        if (isEcobee() || isHoneywell() || isNest()) {
+        if (isEcobee() || isHoneywell() || isNest() || isMeter()) {
             return true;
         }
         return false;

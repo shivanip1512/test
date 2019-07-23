@@ -6,5 +6,6 @@ public enum HardwareStrategyType {
     ZIGBEE,
     ECOBEE,
     HONEYWELL,
-    ITRON
+    ITRON,
+    METER
 }
