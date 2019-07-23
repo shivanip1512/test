@@ -36,6 +36,7 @@
  	<entry key="yukon.web.error.invalidIPHostName">Invalid IP/Host Name.</entry>
  	<entry key="yukon.web.error.invalidPort">Port must be integer between 0 and 65535.</entry>
     <entry key="yukon.web.error.invalidStringLength">{0} must be of {1} character.</entry>
+    <entry key="yukon.web.error.fieldrequired">{0} is required.</entry>
 
     <entry key="yukon.web.error.noJs">For full functionality of this site it is necessary to enable JavaScript. Please contact your administrator to enable JavaScript in your web browser.</entry>
     

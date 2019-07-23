@@ -321,7 +321,7 @@ public class YukonValidationUtils extends ValidationUtils {
     /* Validate a required list is empty */
     public static void checkIfListRequired(String field, Errors errors, List<?> fieldValue, String fieldName) {
         if (fieldValue == null || fieldValue.isEmpty()) {
-            errors.rejectValue(field, "yukon.web.error.required", new Object[] { fieldName }, "");
+            errors.rejectValue(field, "yukon.web.error.fieldrequired", new Object[] { fieldName }, "");
         }
     }
 }

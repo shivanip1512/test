@@ -39,7 +39,7 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
         if (!errors.hasFieldErrors("addressUsage")) {
             boolean loadAddressUsage = loadGroup.getAddressUsage().stream().anyMatch(e -> e.isLoadAddressUsage());
             if (!loadAddressUsage) {
-                errors.rejectValue("addressUsage", key + "loadRequired", new Object[] { "Address Usage" }, "");
+                errors.rejectValue("addressUsage", key + "loadRequired", new Object[] { "Load Address" }, "");
             }
         }
 
