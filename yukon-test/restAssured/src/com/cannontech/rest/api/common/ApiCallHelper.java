@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Properties;
 
+import org.json.simple.JSONObject;
+
 import io.restassured.response.ExtractableResponse;
 import io.restassured.specification.RequestSpecification;
 
@@ -18,7 +20,7 @@ public class ApiCallHelper {
      * 
      */
     public static File getInputFile(String fileName) {
-        return new File(userDirectory + File.separatorChar + "resources" + File.separatorChar + fileName);
+        return new File(userDirectory + File.separatorChar + "resources" + File.separatorChar + "payload" + File.separatorChar + fileName);
     }
 
     /**
@@ -45,7 +47,7 @@ public class ApiCallHelper {
      */
     public static ExtractableResponse<?> get(String key, String param) {
         String uri = getProperty(key);
-        return getHeader().get(uri + param).then().extract();
+        return getHeader().get(uri + param).then().log().all().extract();
 
     }
 
@@ -57,7 +59,7 @@ public class ApiCallHelper {
     public static ExtractableResponse<?> post(String key, String fileName) {
         String uri = getProperty(key);
         File file = getInputFile(fileName);
-        return getHeader().body(file).when().post(uri).then().extract();
+        return getHeader().body(file).when().post(uri).then().log().all().extract();
     }
 
     /**
@@ -68,9 +70,32 @@ public class ApiCallHelper {
     public static ExtractableResponse<?> post(String key, String fileName, String param) {
         String uri = getProperty(key);
         File file = getInputFile(fileName);
-        return getHeader().body(file).when().post(uri + param).then().extract();
+        return getHeader().body(file).when().post(uri + param).then().log().all().extract();
     }
 
+    /**
+     * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP POST method for specified URI
+     * and JSON Object payload
+     * 
+     */
+    public static ExtractableResponse<?> post(String key, JSONObject payload) {
+        String uri = getProperty(key);
+        String body = payload.toJSONString();
+        return getHeader().body(body).when().post(uri).then().log().all().extract();
+    }
+
+    /**
+     * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP POST method for specified URI,
+     * JSON Object payload and path variable.
+     * 
+     */
+    
+    public static ExtractableResponse<?> post(String key, JSONObject payload, String param) {
+        String uri = getProperty(key);
+        String body = payload.toJSONString();
+        return getHeader().body(body).when().post(uri + param).then().log().all().extract();
+    }
+    
     /**
      * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP DELETE method for specified URI
      * and request parameter.
@@ -79,7 +104,7 @@ public class ApiCallHelper {
 
     public static ExtractableResponse<?> delete(String key, String param) {
         String uri = getProperty(key);
-        return getHeader().delete(uri + param).then().extract();
+        return getHeader().delete(uri + param).then().log().all().extract();
     }
 
     /**
@@ -96,6 +121,6 @@ public class ApiCallHelper {
 
     private static RequestSpecification getHeader() {
         return given().accept("application/json").contentType("application/json").header("Authorization",
-            "Bearer " + authToken);
+            "Bearer " + authToken).log().all();
     }
 }
