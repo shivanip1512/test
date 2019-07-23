@@ -49,6 +49,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
+import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -70,6 +71,7 @@ import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.program.model.ProgramState;
+import com.cannontech.dr.program.service.ProgramWidgetService;
 import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.dr.scenario.service.ScenarioService;
@@ -108,6 +110,7 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private PointFormattingService pointFormattingService;
     @Autowired private MeterDao meterDao;
     @Autowired private DisconnectService disconnectService;
+    @Autowired private ProgramWidgetService programWidgetService;
 
     @RequestMapping(value = "/program/list", method = RequestMethod.GET)
     public String list(ModelMap model, YukonUserContext userContext,
@@ -160,7 +163,15 @@ public class ProgramController extends ProgramControllerBase {
         
         return "dr/program/detail.jsp";
     }
-    
+
+    @GetMapping("/program/details")
+    public String details(ModelMap model, YukonUserContext userContext) {
+        Map<String, List<ProgramData>> programsData = programWidgetService.buildProgramDetailsData(userContext);
+        model.addAttribute("programsData", programsData);
+
+        return "dr/program/details.jsp";
+    }
+
     @RequestMapping("/program/assetAvailability")
     public String assetAvailability(ModelMap model, YukonUserContext userContext, int paoId) {
         model.addAttribute("paoId", paoId);

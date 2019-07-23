@@ -464,6 +464,9 @@
                 </page>
             </pages>
           </page>
+          <page name="program.details" type="BASIC">
+            <link>/dr/program/details</link>
+          </page>
           <page name="ecobee.details" type="BASIC">
             <link>/dr/ecobee/details</link>
           </page>          
