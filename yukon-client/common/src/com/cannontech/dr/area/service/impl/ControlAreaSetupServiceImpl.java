@@ -235,7 +235,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
         lmDbControlArea.setDefOperationalState(controlArea.getDailyDefaultState().name());
 
         if (controlArea.getAllTriggersActiveFlag() != null) {
-        lmDbControlArea.setRequireAllTriggersActiveFlag((Character) controlArea.getAllTriggersActiveFlag().getDatabaseRepresentation());
+            lmDbControlArea.setRequireAllTriggersActiveFlag((Character) controlArea.getAllTriggersActiveFlag().getDatabaseRepresentation());
         }
         
         if (controlArea.getDailyStartTimeInMinutes() != null) {

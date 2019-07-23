@@ -14,7 +14,6 @@ import com.cannontech.common.dr.setup.ControlAreaTrigger;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -28,7 +27,6 @@ import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
 
     private final static String key = "yukon.web.modules.dr.setup.controlArea.error.";
-    private final static String invalidIdKey ="yukon.web.modules.dr.setup.controlArea.error.pointId.doesNotExist";
     public static final int MAX_TRIGGER_COUNT = 2;
     @Autowired private LMValidatorHelper lmValidatorHelper;
     @Autowired private PointDao pointdao;
@@ -47,8 +45,8 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
         lmValidatorHelper.checkIfFieldRequired("minResponseTime", errors, controlArea.getMinResponseTime(), "Min Response Time");
         lmValidatorHelper.checkIfFieldRequired("dailyDefaultState", errors, controlArea.getDailyDefaultState(), "Daily Default State");
 
-        YukonValidationUtils.checkRange(errors, "dailyStartTimeInMinutes", controlArea.getDailyStartTimeInMinutes(), 0, 99999, false);
-        YukonValidationUtils.checkRange(errors, "dailyStopTimeInMinutes", controlArea.getDailyStopTimeInMinutes(), 0, 99999, false);
+        YukonValidationUtils.checkRange(errors, "dailyStartTimeInMinutes", controlArea.getDailyStartTimeInMinutes(), 0, 1439, false);
+        YukonValidationUtils.checkRange(errors, "dailyStopTimeInMinutes", controlArea.getDailyStopTimeInMinutes(), 0, 1439, false);
 
         if (CollectionUtils.isNotEmpty(controlArea.getTriggers())) {
             if (controlArea.getTriggers().size() > MAX_TRIGGER_COUNT) {
@@ -60,7 +58,7 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                     lmValidatorHelper.checkIfFieldRequired("triggerType", errors, trigger.getTriggerType(), "Trigger Type");
                     lmValidatorHelper.checkIfFieldRequired("triggerPointId", errors, trigger.getTriggerPointId(), "Trigger Point Id");
                     if (!errors.hasFieldErrors("triggerPointId")) {
-                        validatePointId(errors, "triggerPointId", trigger.getTriggerPointId());
+                        lmValidatorHelper.validatePointId(errors, "triggerPointId", trigger.getTriggerPointId());
                     }
 
                     if (!errors.hasFieldErrors("triggerType") && !errors.hasFieldErrors("triggerPointId")) {
@@ -82,13 +80,13 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                             YukonValidationUtils.checkRange(errors, "minRestoreOffset", trigger.getMinRestoreOffset(), -99999.9999, 99999.9999, false);
 
                             if (trigger.getPeakPointId() != null) {
-                                validatePointId(errors, "peakPointId", trigger.getPeakPointId());
+                                lmValidatorHelper.validatePointId(errors, "peakPointId", trigger.getPeakPointId());
                             }
 
                             if ((trigger.getTriggerType().getTriggerTypeValue()).equalsIgnoreCase( IlmDefines.TYPE_THRESHOLD_POINT)) {
                                 lmValidatorHelper.checkIfFieldRequired("thresholdPointId", errors, trigger.getThresholdPointId(), "Threshold Point Id");
                                 if (!errors.hasFieldErrors("thresholdPointId")) { 
-                                    validatePointId(errors, "thresholdPointId", trigger.getPeakPointId());
+                                    lmValidatorHelper.validatePointId(errors, "thresholdPointId", trigger.getPeakPointId());
                                 }
                             } else {
                                 lmValidatorHelper.checkIfFieldRequired("threshold", errors, trigger.getThreshold(), "Threshold");
@@ -141,14 +139,6 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                 }
                 errors.popNestedPath();
             }
-        }
-    }
-
-    private void validatePointId(Errors errors, String field, Integer pointId) {
-        try {
-            pointdao.getLitePoint(pointId);
-        } catch (NotFoundException ex) {
-            errors.rejectValue(field, invalidIdKey, new Object[] { field }, "");
         }
     }
 }
