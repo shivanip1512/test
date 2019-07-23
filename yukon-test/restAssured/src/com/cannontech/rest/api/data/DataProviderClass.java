@@ -45,4 +45,22 @@ public class DataProviderClass {
             { (float) 100000.0, "Must be between 0 and 99,999.999.", 422 }
         };
 	}
+	
+	/**
+	 * DataProvider provides data to test method in the form of object array
+	 * Data provided - 
+	 * col1 : VirtualRelayIdData
+	 * col2 : Expected field errors code in response
+	 * col3 : Expected response code
+	 */
+	
+	@DataProvider(name = "VirtualRelayIdData")
+	public Object[][] getVirtualRelayIdData() {
+		
+		return new Object[][] {
+            { "", "Virual Relay Id is required.", 422 },
+            { -222, "Must be between 0 and 99,999.999.", 422 },
+            { 100000, "Must be between 0 and 99,999.999.", 422 }
+        };
+	}
 }
