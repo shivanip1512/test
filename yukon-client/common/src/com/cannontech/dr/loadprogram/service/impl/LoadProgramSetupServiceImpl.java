@@ -1,6 +1,7 @@
 package com.cannontech.dr.loadprogram.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,8 +15,8 @@ import com.cannontech.common.dr.gear.setup.OperationalState;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
 import com.cannontech.common.dr.program.setup.model.LoadProgramCopy;
-import com.cannontech.common.dr.program.setup.model.NotificationGroup;
 import com.cannontech.common.dr.program.setup.model.Notification;
+import com.cannontech.common.dr.program.setup.model.NotificationGroup;
 import com.cannontech.common.dr.program.setup.model.ProgramConstraint;
 import com.cannontech.common.dr.program.setup.model.ProgramControlWindow;
 import com.cannontech.common.dr.program.setup.model.ProgramControlWindowFields;
@@ -23,6 +24,7 @@ import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
 import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.dr.setup.ProgramDetails;
+import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.exception.LoadProgramProcessingException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
@@ -54,6 +56,8 @@ import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -66,7 +70,8 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     @Autowired private PointDao pointDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private RolePropertyDao rolePropertyDao;
-
+    @Autowired private ProgramDao programDao;
+   
     @Override
     public int create(LoadProgram loadProgram) {
         LMProgramBase lmProgram = getDBPersistent(loadProgram.getProgramId(), loadProgram.getType());
@@ -111,7 +116,12 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                                                      && program.getPaoName().equalsIgnoreCase(programName))
                                                                   .findFirst()
                                                                   .orElseThrow(() -> new NotFoundException("Id and Name combination not found"));;
-
+        Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
+        if (programDao.getByProgramIds(Collections.singletonList(paoId)).size() > 0) {
+            String message = "You cannot delete the load management program '" + loadProgram.getPaoName()
+                + "' because it is currently in use as a STARS assigned program, Unassign it from all appliance categories and try again.";
+            throw new LMObjectDeletionFailureException(message);
+        }
         YukonPAObject lmProgram = (YukonPAObject) LiteFactory.createDBPersistent(loadProgram);
         dbPersistentDao.performDBChange(lmProgram, TransactionType.DELETE);
 

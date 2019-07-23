@@ -1,15 +1,22 @@
 package com.cannontech.dr.constraint.service.impl;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.dr.setup.ProgramConstraint;
+import com.cannontech.common.exception.LMObjectDeletionFailureException;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DBDeleteResult;
+import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
@@ -17,6 +24,7 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteLMConstraint;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
 import com.cannontech.dr.constraint.service.ProgramConstraintService;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class ProgramConstraintServiceImpl implements ProgramConstraintService {
@@ -24,6 +32,8 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private LMServiceHelper lmServiceHelper;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired DBDeletionDao dbDeletionDao;
+    private static final Logger log = YukonLogManager.getLogger(ProgramConstraintServiceImpl.class);
 
     @Override
     public ProgramConstraint retrieve(int constraintId) {
@@ -80,7 +90,8 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         if (liteLMConstraint.isEmpty()) {
             throw new NotFoundException("Constraint Id and Name combination not found");
         }
-        
+        Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
+        checkIfConstriantIsUsed(liteLMConstraint.get(), paoId);
         LMProgramConstraint constraint = (LMProgramConstraint) LiteFactory.createDBPersistent(liteLMConstraint.get());
         dbPersistentDao.performDBChange(constraint, TransactionType.DELETE);
         return constraint.getConstraintID();
@@ -130,5 +141,21 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     @Override
     public int copy(int id, LMCopy lmCopy) {
         throw new UnsupportedOperationException("Not supported copy operation");
+    }
+
+    private void checkIfConstriantIsUsed(LiteLMConstraint liteLMConstraint, Integer paoId) {
+        LMProgramConstraint constraint = (LMProgramConstraint) LiteFactory.createDBPersistent(liteLMConstraint);
+        DBDeleteResult dbDeleteResult = dbDeletionDao.getDeleteInfo(constraint, constraint.getConstraintName());
+        try {
+            if (LMProgramConstraint.inUseByProgram(dbDeleteResult.getItemID(), CtiUtilities.getDatabaseAlias())) {
+                if (dbDeleteResult.isDeletable()) {
+                    String message = "You cannot delete the Program Constraint '" + constraint.getConstraintName()
+                        + "' because it is used by a program.";
+                    throw new LMObjectDeletionFailureException(message);
+                }
+            }
+        } catch (SQLException e) {
+            log.error("Unable to delete Constraint with name : " + constraint.getConstraintName() + e);
+        }
     }
 }

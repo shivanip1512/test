@@ -1,17 +1,21 @@
 package com.cannontech.dr.loadgroup.service.impl;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupRoute;
+import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -27,6 +31,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
@@ -36,6 +41,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private PointDao pointDao;
     @Autowired private DbChangeManager dbChangeManager;
+    private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupServiceImpl.class);
 
     @Override
     public List<LMPaoDto> retrieveAvailableLoadGroup() {
@@ -107,7 +113,8 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         if (liteLoadGroup.isEmpty() || liteLoadGroup.get().getPaoType() == PaoType.MACRO_GROUP) {
             throw new NotFoundException("Id and Name combination not found");
         }
-
+        Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
+        checkIfGroupIsUsed(liteLoadGroup.get().getPaoName(), paoId);
         YukonPAObject lmGroup = (YukonPAObject) LiteFactory.createDBPersistent(liteLoadGroup.get());
         dbPersistentDao.performDBChange(lmGroup, TransactionType.DELETE);
         return lmGroup.getPAObjectID();
@@ -166,5 +173,18 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         loadGroup.setRouteName(dbCache.getAllRoutesMap().get(routeId).getPaoName());
     }
     
+    
+    private void checkIfGroupIsUsed(String groupname, Integer paoId) {
+        String program;
+        try {
+            if ((program = com.cannontech.database.db.device.lm.LMGroup.isGroupUsed(paoId)) != null) {
+                String message = "You cannot delete the device '" + groupname
+                    + "' because it is utilized by the LM program named '" + program + "'";
+                throw new LMObjectDeletionFailureException(message);
+            }
+        } catch (SQLException e) {
+            log.error("Unable to delete load group with name : " + groupname + e);
+        }
+    }
 
 }
