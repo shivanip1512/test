@@ -312,6 +312,15 @@ AND Value = '1';
 INSERT INTO DBUpdates VALUES ('YUK-20294', '7.3.0', GETDATE());
 /* @end YUK-20294 */
 
+/* @start YUK-19742 */
+UPDATE LMHardwareBase SET RouteId = 0
+WHERE LMHardwareTypeId IN 
+    (SELECT EntryId FROM YukonListEntry WHERE YukonDefinitionId = 1315)
+AND RouteId = !0
+
+INSERT INTO DBUpdates VALUES ('YUK-19742', '7.3.0', GETDATE());
+/* @end YUK-19742 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
