@@ -118,6 +118,7 @@ public class ComprehensiveMapController {
         NetworkMap map = null;
         try {
             map = nmNetworkService.getNetworkMap(filter, accessor);
+            log.debug("Devices in map="+ map.getTotalDevices());
             //create collection action group
             StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
             for(FeatureCollection feature : map.getMappedDevices().values()) {

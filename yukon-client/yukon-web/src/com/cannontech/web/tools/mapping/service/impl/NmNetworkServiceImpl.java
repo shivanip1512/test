@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -564,7 +565,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 
                 log.debug("Received neighbor data from NM for {} devices", neighborMetaData.size());
 
-                loadMapColorCodedByLinkStrength(filter, accessor, map, neighborMetaData);
+                loadMapColorCodedByLinkStrength(filter, Sets.newHashSet(gateways.keySet()), accessor, map, neighborMetaData);
 
                 
             } else if (filter.getColorCodeBy() == GATEWAY) {
@@ -577,7 +578,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     
                     log.debug("Received primary gateway nodes from NM for {} devices", metaData.size());
                     
-                    loadMapColorCodedByGateway(map, metaData);
+                    loadMapColorCodedByGateway(Sets.newHashSet(gateways.keySet()), map, metaData);
                     
                 }else {
                     AtomicInteger i = new AtomicInteger(0);
@@ -586,19 +587,15 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                         Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData =
                             metadataMultiService.getMetadataForGatewayRfnIdentifiers(Sets.newHashSet(entry.getKey()),
                                 Set.of(PRIMARY_FORWARD_NEIGHBOR_DATA));
-                        log.debug("Received neighbor data for {} devices gateway {}", neighborMetaData.size(),
-                            entry.getValue().getName());
+                        log.debug("Received neighbor data for gateway {} devices {}", neighborMetaData.size(), entry.getValue().getName());
     
-                        loadMapColorCodedByGatewayFilteredByLinkStrength(filter, map, i, entry.getValue().getName(), neighborMetaData);
+                        loadMapColorCodedByGatewayFilteredByLinkStrength(filter, map, i, entry, neighborMetaData);
                     }
                 }
             }
         } catch (NmCommunicationException e) {
             throw new NmNetworkException(commsError, e, "commsError");
         }
-
-        //add gateways
-        addDevicesToMap(map, "#ffffff", gateways.keySet());
         
         log.debug("MAP-"+map);
         return map;
@@ -608,7 +605,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      * Adding devices received from NM to map
      */
     private void loadMapColorCodedByGatewayFilteredByLinkStrength(NetworkMapFilter filter, NetworkMap map,
-            AtomicInteger i, String gatewayName, Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData) {
+            AtomicInteger i, Entry<RfnIdentifier, RfnGateway> entry, Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData) {
 
         Set<RfnIdentifier> identifiers = neighborMetaData.entrySet().stream()
             .filter(result-> result.getValue().isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA))
@@ -621,14 +618,18 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             
         if (!identifiers.isEmpty()) {
             Color color = Color.values()[i.getAndIncrement()];
-            addDevicesToMap(map, color, gatewayName, identifiers);
+            addDevicesToMap(map, color, entry.getValue().getName(), identifiers);
+        } else {
+            //add gateway without devices to map
+            addDevicesToMap(map, "#ffffff", Sets.newHashSet(entry.getKey()));
         }
     }
 
     /**
      * Adding devices received from NM to map
+     * @param allFilteredGateways 
      */
-    private void loadMapColorCodedByGateway(NetworkMap map, Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData) {
+    private void loadMapColorCodedByGateway(Set<RfnIdentifier> allFilteredGateways, NetworkMap map, Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData) {
         AtomicInteger i = new AtomicInteger(0);
         log.debug("Loading map filtered by gateway");
         metaData.forEach((gatewayPao, queryResult) -> {
@@ -638,16 +639,25 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 Color color = Color.values()[i.getAndIncrement()];
                 RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(gatewayPao);
                 Set<RfnIdentifier> devices = Sets.newHashSet(gatewayNodes.getNodeComms().keySet());
+                log.debug("Gateway {} devices {}", gateway, devices);
                 devices.add(gatewayPao);
+                //remove gateway that had data
+                allFilteredGateways.remove(gateway.getRfnIdentifier());
                 addDevicesToMap(map, color, gateway.getName(), devices);
+            } else {
+                log.debug("Result {} is not valid for PRIMARY_GATEWAY_NODES", queryResult);
             }
         });
+        //add gateways that have no data
+        addDevicesToMap(map, "#ffffff", allFilteredGateways);
+          
     }
 
     /**
      * Adding devices received from NM to map
+     * @param gateways 
      */
-    private void loadMapColorCodedByLinkStrength(NetworkMapFilter filter, MessageSourceAccessor accessor, NetworkMap map,
+    private void loadMapColorCodedByLinkStrength(NetworkMapFilter filter, Set<RfnIdentifier> gateways, MessageSourceAccessor accessor, NetworkMap map,
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData) {
         log.debug("Loading map filtered by link quality");
         
@@ -665,6 +675,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             String linkQualityFormatted = accessor.getMessage(linkQuality.getFormatKey());
             addDevicesToMap(map, linkQuality.getColor(), linkQualityFormatted, identifiers.get(linkQuality));
         }
+        
+        //add all gateways
+       addDevicesToMap(map, "#ffffff", gateways);
     }
     
     /**
@@ -683,10 +696,13 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             return;
         }
         Set<Integer> paoIds = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(devices);
-        if(paoIds.isEmpty()) {
+        if(CollectionUtils.isEmpty(paoIds)) {
             return;
         }
         Set<PaoLocation> locations = paoLocationDao.getLocations(paoIds);
+        if(CollectionUtils.isEmpty(locations)) {
+            return;
+        }
         FeatureCollection features = paoLocationService.getFeatureCollection(locations);
         map.getMappedDevices().put(hexColor, features);
     }

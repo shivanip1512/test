@@ -145,7 +145,6 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
         try {
             ObjectMessage requestMessage = session.createObjectMessage(request);
             requestMessage.setJMSReplyTo(replyQueue);
-            logSend(request, requestMessage);
             producer.send(requestMessage);
             handleRepliesAndOrTimeouts(replyHandler, replyConsumer);
         } catch (Exception e) {
@@ -202,25 +201,13 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
     }
     
     /**
-     * Log the request immediately before sending.
-     */
-    private void logSend(R request, ObjectMessage requestMessage) {
-        if (log.isTraceEnabled()) {
-            log.trace("Sending requestMessage to producer " + requestMessage.toString());
-        }
-        if (rfnLogger.isInfoEnabled()) {
-            rfnLogger.info("<<< " + request.toString());
-        }
-    }
-    
-    /**
      * Log the request content before sending
      */
     private void logBeforeSend(R request) {
         if (!isInternal && rfnLogger.isInfoEnabled()) {
             rfnLogger.info("<<< " + request.toString());
         } else if (isInternal && rfnLogger.isDebugEnabled()) {
-            rfnLogger.debug("<<< " + request.toString());
+            rfnLogger.debug("<<<" + request.toString());
         }
         if (log.isTraceEnabled()) {
             log.trace("RequestMultiReplyTemplate execute Start " + request.toString());
