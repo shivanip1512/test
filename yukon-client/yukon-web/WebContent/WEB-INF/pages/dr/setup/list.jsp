@@ -27,12 +27,6 @@
                         <a href="${createMacroLoadGroupUrl}"><i:inline key=".macroLoadGroup.title"/></a>
                     </div>
                 </div>
-                <div class="column two nogutter">
-                    <div class="stacked">
-                        <cti:url var="createProgramConstraint" value="/dr/setup/constraint/create"/>
-                        <a href="${createProgramConstraint}"><i:inline key=".constraint.title"/></a>
-                    </div>
-                </div>
             </div>
         </div>
     </cti:msgScope>
@@ -40,11 +34,26 @@
     <!-- Filter Inputs -->
     <hr>
         <div class="filter-section">
-            <i:inline key="yukon.common.filterBy"/>
-            <tags:simpleSelect name="js-filter-by" items="${filterByTypes}" itemLabelKey="formatKey" cssClass="js-filter-by"
-                               selectedItem="${filterByType}"/>
-            <div class="dib vat js-filter-options">
-                <%@ include file="filterForm.jsp" %>
+            <span class="vat"><i:inline key="yukon.common.filterBy"/></span>
+            <div class="dib">
+                <cti:url value="/dr/setup/filter" var="filterUrl"/>
+                <form:form method="get" modelAttribute="lmSetupFilter" action="${filterUrl}">
+                    <cti:msg2 var="namePlaceholder" key="yukon.common.name"/>
+                    <cti:msg2 var="filterLbl" key="yukon.common.filter"/>
+                    <tags:selectWithItems items="${filterByTypes}" path="filterByType" id="js-filter-by-type" inputClass="vat"/>
+                    <tags:input path="name" placeholder="${namePlaceholder}" inputClass="vat"/>
+                    <div class="js-load-group-types-container dib dn">
+                        <cti:msg2 var="selectSwitchTypesLbl" key="yukon.web.modules.dr.setup.loadGroup.filter.selectSwitchTypes"/>
+                        <tags:selectWithItems items="${loadGroupTypes}" path="types" dataPlaceholder="${selectSwitchTypesLbl}" 
+                                              id="js-load-group-types"/>
+                    </div>
+                    <div class="js-load-program-types-container dib dn">
+                        <cti:msg2 var="selectProgramTypesLbl" key="yukon.web.modules.dr.setup.loadGroup.filter.selectProgramTypes"/>
+                        <tags:selectWithItems items="${loadProgramTypes}" path="types" dataPlaceholder="${selectProgramTypesLbl}"
+                                              id="js-load-program-types"/>
+                    </div>
+                    <cti:button label="${filterLbl}" classes="primary action fr" type="submit"/>
+                </form:form>
             </div>
         </div>
     <hr>
@@ -55,12 +64,7 @@
             <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
         </c:when>
         <c:otherwise>
-            <c:if test="${filterByType == 'LOAD_GROUP'}">
-                <%@ include file="filteredLoadGroups.jsp" %>
-            </c:if>
-            <c:if test="${filterByType == 'LOAD_PROGRAM'}">
-                <%@ include file="filteredLoadPrograms.jsp" %>
-            </c:if>
+            <%@ include file="filteredResults.jsp" %>
         </c:otherwise>
     </c:choose>
     

@@ -215,7 +215,7 @@ public class LoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName()));
             return "redirect:/dr/setup/list";
         }
-        return "dr/setup/list/list.jsp";
+        return "dr/setup/list.jsp";
     }
 
     @PostMapping("/{id}/copy")

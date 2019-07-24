@@ -1199,4 +1199,11 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public boolean isLoadGroupSupportedFromWeb() {
         return loadGroupSupportedFromWeb.contains(this);
     }
+
+    /**
+     * @return List of all LM Program types
+     */
+    public static ImmutableSet<PaoType> getAllLMProgramTypes() {
+        return directProgramTypes;
+    }
 }

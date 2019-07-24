@@ -104,6 +104,7 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_7">Load 7</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_8">Load 8</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.filter.selectSwitchTypes">Select Switch Type(s)</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.filter.selectProgramTypes">Select Program Type(s)</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.loadAddressingPopup.title">Load level group addressing vs. load number addressing</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.loadAddressingPopup.message">
 By including load in your address usage, you are requiring the load to be configured
@@ -227,17 +228,16 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.macroLoadGroup.assignedLoadGroups.title">Assigned Load Groups</entry>
 <entry key="yukon.web.modules.dr.setup.macroLoadGroup.copy.title">Copy Macro Load Group</entry>
 
-<!-- Filter By Objects -->
-<!-- TODO: Uncomment these keys while working on the respective setup pages. -->
-<!-- <entry key="yukon.web.modules.dr.setup.CONTROL_AREA">Control Area</entry>
-<entry key="yukon.web.modules.dr.setup.CONTROL_SECNARIO">Control Scenario</entry>
-<entry key="yukon.web.modules.dr.setup.GEAR">GEAR</entry> -->
+<!-- Filter By Objects -->`
+<entry key="yukon.web.modules.dr.setup.CONTROL_AREA">Control Area</entry>
+<entry key="yukon.web.modules.dr.setup.CONTROL_SCENARIO">Control Scenario</entry>
 <entry key="yukon.web.modules.dr.setup.LOAD_GROUP">Load Group</entry>
 <entry key="yukon.web.modules.dr.setup.LOAD_PROGRAM">Load Program</entry>
+<entry key="yukon.web.modules.dr.setup.MACRO_LOAD_GROUP">Macro Load Group</entry>
+<entry key="yukon.web.modules.dr.setup.PROGRAM_CONSTRAINT">Program Constraint</entry>
 
-<entry key="yukon.web.modules.dr.setup.loadGroup.filter.NAME">Name</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.filter.SWITCH_TYPE">Switch Type</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.filter.allSwitchTypes">All Switch Types</entry>
+<entry key="yukon.web.modules.dr.setup.filter.NAME">Name</entry>
+<entry key="yukon.web.modules.dr.setup.filter.TYPE">Type</entry>
 
 <!-- Program Constraint -->
 <entry key="yukon.web.modules.dr.setup.constraint.error.used">{0} because it is in use by a Program.</entry>

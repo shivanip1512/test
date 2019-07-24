@@ -4,13 +4,12 @@ import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum LmSetupFilterType implements DisplayableEnum {
 
-    // TODO: Remove the commented enums later.
-    /*CONTROL_AREA,
-    CONTROL_SECNARIO,
-    GEAR,*/
+    CONTROL_AREA,
+    CONTROL_SCENARIO,
     LOAD_GROUP,
-    LOAD_PROGRAM;
-    /*MACRO_LOAD_GROUP;*/
+    LOAD_PROGRAM,
+    MACRO_LOAD_GROUP,
+    PROGRAM_CONSTRAINT;
 
     @Override
     public String getFormatKey() {

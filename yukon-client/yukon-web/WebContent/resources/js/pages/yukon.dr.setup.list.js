@@ -13,15 +13,6 @@ yukon.dr.setup.list = (function() {
     var
     _initialized = false,
     
-    _initFilterOptions = function () {
-        if ($("#js-switch-types").exists()) {
-            $("form.js-filter-load-groups-form").find('.chosen-container-single').css({
-               "margin-top" : "-3px",
-               "margin-right" : "10px"});
-            $("#js-switch-types").chosen({width: "450px"});
-        }
-    },
-    
     mod = {
         
         /** Initialize this module. */
@@ -29,13 +20,26 @@ yukon.dr.setup.list = (function() {
             
             if (_initialized) return;
             
-            _initFilterOptions();
+            if ($("#js-load-group-types").exists()) {
+                $("#js-load-group-types").chosen({width: "450px"});
+            }
             
-            $(document).on('change', '.js-filter-by', function () {
-                $.get(yukon.url('/dr/setup/loadFilterByOptions/' + $('.js-filter-by').find(":selected").val()), function (data) {
-                    $('.js-filter-options').html(data);
-                    _initFilterOptions();
-                });
+            if ($("#js-load-program-types").exists()) {
+                $("#js-load-program-types").chosen({width: "305px"});
+            }
+            
+            $(document).on('change', '#js-filter-by-type', function () {
+                var selectedFilterByType = $("#js-filter-by-type option:selected").val();
+                
+                $(".js-load-group-types-container").toggleClass("dn", selectedFilterByType !== 'LOAD_GROUP');
+                $(".js-load-program-types-container").toggleClass("dn", selectedFilterByType !== 'LOAD_PROGRAM');
+                
+                if (selectedFilterByType !== 'LOAD_GROUP') {
+                    $("#js-load-group-types").val("").trigger("chosen:updated");
+                }
+                if (selectedFilterByType !== 'LOAD_PROGRAM') {
+                    $("#js-load-program-types").val("").trigger("chosen:updated");
+                }
             });
             
             _initialized = true;
