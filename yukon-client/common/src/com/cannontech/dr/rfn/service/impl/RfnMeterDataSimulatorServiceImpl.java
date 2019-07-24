@@ -327,7 +327,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         RfnMeterReadingData data = new RfnMeterReadingData();
         data.setTimeStamp(time.getMillis());
         data.setRfnIdentifier(device.getRfnIdentifier());
-        data.setRecordInterval(300);
+        data.setRecordInterval(3600);
         data.setChannelDataList(channelDataList);
         data.setDatedChannelDataList(datedChannelDataList);
         log.debug("---readingData= "+data);
