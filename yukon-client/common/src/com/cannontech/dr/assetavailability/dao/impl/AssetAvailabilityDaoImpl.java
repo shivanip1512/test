@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.Instant;
@@ -16,6 +17,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -92,6 +94,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlCommon.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
         sqlCommon.append("LEFT OUTER JOIN DynamicRfnDeviceData drdd ON (inv.DeviceID=drdd.DeviceId)");
         sqlCommon.append("LEFT OUTER JOIN YukonPAObject gatewayPao ON drdd.GatewayId = gatewayPao.PAObjectID");
+        sqlCommon.append("LEFT OUTER JOIN YukonPAObject ypo ON (inv.DeviceId=ypo.PAObjectId)");
         sqlCommon.append("WHERE inv.InventoryID=lmbase.InventoryID AND lmbase.InventoryID=hdconf.InventoryID");
         sqlCommon.append("AND hdconf.ApplianceID=appbase.ApplianceID");
         sqlCommon.append("AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
@@ -164,6 +167,8 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
             AssetAvailabilityCombinedStatus.OPTED_OUT);
         sql.append("WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
         sql.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
+        sql.append("WHEN ypo.Type").in(PaoType.getMctTypes().stream().map(p->p.getDbString()).collect(Collectors.toList()));
+        sql.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
         sql.append("WHEN LastCommunication").gt(communicatingWindowEnd);
         sql.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.INACTIVE);
         sql.append("ELSE").appendArgument_k(AssetAvailabilityCombinedStatus.UNAVAILABLE).append("END");
@@ -173,6 +178,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sql.append(")  AS availability");
         sql.append("FROM LMHardwareBase lmbase, ApplianceBase appbase,LMHardwareConfiguration hdconf,InventoryBase inv");
         sql.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceId=dynlcr.DeviceId) ");
+        sql.append("LEFT OUTER JOIN YukonPAObject ypo ON (inv.DeviceId=ypo.PAObjectId) ");
         sql.append("WHERE inv.InventoryID=lmbase.InventoryID AND lmbase.InventoryID=hdconf.InventoryID ");
         sql.append("AND hdconf.ApplianceID=appbase.ApplianceID");
         sql.append("AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
@@ -259,10 +265,13 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
             OptOutEventState.START_OPT_OUT_SENT);
         sql.append(") THEN 'TRUE' ELSE 'FALSE' END ");
         sql.append(getTable().getSql()).append(")AS optedout,");
-        sql.append("(SELECT CASE WHEN inv.DeviceID=0 THEN 'TRUE' ELSE 'FALSE' END");
+        sql.append("(SELECT CASE WHEN inv.DeviceID=0");
+        sql.append(  "OR ypo.Type").in(PaoType.getMctTypes().stream().map(p->p.getDbString()).collect(Collectors.toList())); 
+        sql.append("THEN 'TRUE' ELSE 'FALSE' END");
         sql.append(getTable().getSql()).append(")AS oneway");
         sql.append("FROM LMHardwareBase lmbase ,LMHardwareConfiguration hdconf, InventoryBase inv");
         sql.append(  "LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
+        sql.append(  "LEFT OUTER JOIN YukonPAObject ypo ON (inv.DeviceId=ypo.PAObjectId)");
         sql.append("WHERE lmbase.inventoryId=hdconf.inventoryId AND hdconf.inventoryId=inv.inventoryId");
         sql.append(  "AND hdconf.applianceId IN");
         sql.append("(SELECT applianceId FROM ApplianceBase WHERE ProgramID IN (");
@@ -343,6 +352,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlCommon.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
         sqlCommon.append("LEFT OUTER JOIN DynamicRfnDeviceData drdd ON (inv.DeviceID=drdd.DeviceId)");
         sqlCommon.append("LEFT OUTER JOIN YukonPAObject gatewayPao ON drdd.GatewayId = gatewayPao.PAObjectID");
+        sqlCommon.append("LEFT OUTER JOIN YukonPAObject ypo ON (inv.DeviceId=ypo.PAObjectId) ");
         sqlCommon.append("WHERE inv.InventoryID=lmbase.InventoryID AND lmbase.InventoryID=hdconf.InventoryID");
         sqlCommon.append("AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
         sqlCommon.append("WHERE AddressingGroupID").in(loadGroupIds);
@@ -414,6 +424,8 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlCommon.append("AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT).append(
             ")THEN").appendArgument_k(AssetAvailabilityCombinedStatus.OPTED_OUT);
         sqlCommon.append("WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
+        sqlCommon.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
+        sqlCommon.append("WHEN ypo.Type").in(PaoType.getMctTypes().stream().map(p->p.getDbString()).collect(Collectors.toList()));
         sqlCommon.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
         sqlCommon.append("WHEN LastCommunication").gt(communicatingWindowEnd);
         sqlCommon.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.INACTIVE);

@@ -75,6 +75,8 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
             // Order is important: we update the producers cache BEFORE we queue the calculator thread so the data
             // will be there before he needs it. This also means since this is currently the only thing that seeds
             // the cache, we will never handle the first interval after startup.
+            //
+            // This is also used to update DynamicLCRCommunications for meters to track Asset Availability.
             if (request.getReadingType() == RfnMeterReadingType.INTERVAL && !toCalculate.isEmpty()) {
                 try {
                     calculatedProducer.updateCache(toCalculate);

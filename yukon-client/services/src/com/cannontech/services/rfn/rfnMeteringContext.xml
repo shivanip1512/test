@@ -95,7 +95,7 @@
       <jms:listener destination="yukon.qr.obj.amr.rfn.LocationResponse" ref="locationArchiveResponseListener" method="handleArchiveRequest"/>
     </jms:listener-container>
     
-    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+    <bean class="com.cannontech.services.calculated.CommunicationTrackingIntervalAndLoadProfileCalculator">
         <property name="basedOn" value="DELIVERED_KWH"/>
         <property name="perInterval" value="DELIVERED_KWH_PER_INTERVAL"/>
         <property name="loadProfile" value="DELIVERED_KW_LOAD_PROFILE"/>
