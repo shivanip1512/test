@@ -87,7 +87,6 @@ public class LMSetupFilterController {
         
         // Build setup model
         String viewUrlPrefix = null;
-        //TODO: check if it is valid to have a switch statement without a default.
         switch (lmSetupFilter.getFilterByType()) {
         case CONTROL_AREA:
             viewUrlPrefix = "/dr/setup/controlArea/";
@@ -96,21 +95,19 @@ public class LMSetupFilterController {
             viewUrlPrefix = "/dr/setup/loadGroup/";
             break;
         case LOAD_PROGRAM:
-            //TODO: check if this is correct
             viewUrlPrefix = "/dr/setup/loadProgram/";
             break;
         case CONTROL_SCENARIO:
-            //TODO: check if this is correct
             viewUrlPrefix = "/dr/setup/controlSecnario/";
             break;
         case MACRO_LOAD_GROUP:
-            //TODO: check if this is correct
             viewUrlPrefix = "/dr/setup/macroLoadGroup/";
             break;
         case PROGRAM_CONSTRAINT:
-            //TODO: check if this is correct
             viewUrlPrefix = "/dr/setup/programContraint/";
             break;
+        default:
+            throw new RuntimeException("viewUrlPrefix is not set for " + lmSetupFilter.getFilterByType());
         }
         model.addAttribute("viewUrlPrefix", viewUrlPrefix);
         model.addAttribute("filteredResults", filteredResults);
