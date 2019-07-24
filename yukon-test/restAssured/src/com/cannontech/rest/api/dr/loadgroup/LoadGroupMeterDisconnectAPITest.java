@@ -14,8 +14,6 @@ import com.cannontech.rest.api.utilities.Log;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 
-
-
 public class LoadGroupMeterDisconnectAPITest {
 	String LGBase = "LM_GROUP_METER_DISCONNECT";
 	String type = "LM_GROUP_METER_DISCONNECT";
@@ -25,7 +23,7 @@ public class LoadGroupMeterDisconnectAPITest {
 	 public void Test01_LmGroupMeterDisconnect_Create(ITestContext context) {
     	Log.startTestCase("LmGroupMeterDisconnect_Create");
     	ExtractableResponse<?> createResponse =
-                ApiCallHelper.post("saveloadgroup", "loadgroup\\lmGroupMeterDisconnectCreate.json");
+                ApiCallHelper.post("saveloadgroup", payloadfile);
     	String groupId = createResponse.path("groupId").toString();
     	context.setAttribute("MeterDisconnectgroupId", groupId);
     	assertTrue("Status code should be 200", createResponse.statusCode() == 200);
