@@ -17,7 +17,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 public class GlobalSettingTypeValidators {
     private static String baseKey = "yukon.web.modules.adminSetup.config.error.";
     
-    public static TypeValidator<String> urlValidator = new TypeValidator<String>() {
+    public static TypeValidator<String> urlValidator = new TypeValidator<>() {
         private final String[] schemes = { "http", "https" };
 
         @Override
@@ -31,7 +31,7 @@ public class GlobalSettingTypeValidators {
         }
     };
 
-    public static TypeValidator<String> emailValidator = new TypeValidator<String>() {
+    public static TypeValidator<String> emailValidator = new TypeValidator<>() {
         @Override
         public void validate(String email, Errors errors, GlobalSettingType globalSettingType) {
             if (StringUtils.isNotBlank(email)) {
@@ -43,7 +43,7 @@ public class GlobalSettingTypeValidators {
         }
     };
 
-    public static TypeValidator<String> ipHostNameValidator = new TypeValidator<String>() {
+    public static TypeValidator<String> ipHostNameValidator = new TypeValidator<>() {
         Pattern ipHostNameMatcher =
             Pattern.compile("^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])(\\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]))*$");
 
@@ -71,7 +71,7 @@ public class GlobalSettingTypeValidators {
     /**
      * Validate individual Integer port 
      */
-    public static TypeValidator<Integer> portValidator = new TypeValidator<Integer>() {
+    public static TypeValidator<Integer> portValidator = new TypeValidator<>() {
         @Override
         public void validate(Integer port, Errors errors, GlobalSettingType globalSettingType) {
             if (port != null) {
@@ -85,7 +85,7 @@ public class GlobalSettingTypeValidators {
     /**
      * Validates space separated String of numeric ports 
      */
-    public static TypeValidator<String> portsValidator = new TypeValidator<String>() {
+    public static TypeValidator<String> portsValidator = new TypeValidator<>() {
         @Override
         public void validate(String ports, Errors errors, GlobalSettingType globalSettingType) {
             Pattern portMatcher = Pattern.compile("^[0-9]+$");
@@ -104,7 +104,7 @@ public class GlobalSettingTypeValidators {
     };
 
 
-    public static TypeValidator<String> urlWithPortValidator = new TypeValidator<String>() {
+    public static TypeValidator<String> urlWithPortValidator = new TypeValidator<>() {
         Pattern urlWithPortMatcher = Pattern.compile("\\s*(.*?):(\\d+)\\s*");
         @Override
         public void validate(String urlWithPort, Errors errors, GlobalSettingType globalSettingType) {
@@ -118,7 +118,7 @@ public class GlobalSettingTypeValidators {
         }
     };
 
-    public static TypeValidator<String> timezoneValidator = new TypeValidator<String>() {
+    public static TypeValidator<String> timezoneValidator = new TypeValidator<>() {
         @Override
         public void validate(String timeZoneId, Errors errors, GlobalSettingType globalSettingType) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "values["+globalSettingType+"]", timeZoneId, 1000);
@@ -135,7 +135,7 @@ public class GlobalSettingTypeValidators {
         }
     };
     
-    public static TypeValidator<Integer> integerRangeValidator = new TypeValidator<Integer>() {
+    public static TypeValidator<Integer> integerRangeValidator = new TypeValidator<>() {
         @Override
         public void validate(Integer value, Errors errors, GlobalSettingType globalSettingType) {
             if (globalSettingType.getValidationValue() != null) {
