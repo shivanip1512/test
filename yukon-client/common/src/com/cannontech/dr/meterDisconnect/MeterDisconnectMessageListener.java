@@ -33,6 +33,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.service.ControlHistoryService;
 import com.cannontech.dr.service.ControlType;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
@@ -147,7 +148,7 @@ public class MeterDisconnectMessageListener {
                     // Find all the opted out devices that are in the groupId
                     Set<Integer> optOutInventory = optOutEventDao.getOptedOutInventoryByLoadGroups(Arrays.asList(groupId));
                     Set<Integer> optOutDeviceIds = inventoryBaseDao.getLMHardwareForIds(optOutInventory).stream()
-                                                                                                        .map(hardware -> hardware.getDeviceID())
+                                                                                                        .map(LiteLmHardwareBase::getDeviceID)
                                                                                                         .collect(Collectors.toSet());
                     Set<SimpleDevice> meters = deviceGroupService.getDevices(Collections.singleton(deviceGroup));   
                     // Remove any meter's that are opted out from the list of meters that will be sent control

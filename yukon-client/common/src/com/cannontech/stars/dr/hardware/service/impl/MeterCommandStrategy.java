@@ -21,6 +21,7 @@ import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
@@ -85,8 +86,8 @@ public class MeterCommandStrategy implements LmHardwareCommandStrategy {
                 log.info("TEMP_OUT_OF_SERVICE");
                 // Is device connected
                 PointValueHolder pVHolder = attributeDynamicDataSource.getPointValue(device, BuiltInAttribute.DISCONNECT_STATUS);
-                // A value of 1 means connected
-                if (pVHolder.getValue() != 1) {
+                // A value of 1 currently means connected
+                if (pVHolder.getValue() != RfnDisconnectStatusState.CONNECTED.getRawState()) {
                     // Since the device is not connected, we will send a CONNECT command to the
                     // device.
                     DisconnectMeterResult result = disconnectService.execute(

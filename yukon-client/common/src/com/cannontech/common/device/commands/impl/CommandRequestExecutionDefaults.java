@@ -56,6 +56,7 @@ public final class CommandRequestExecutionDefaults {
         b.put(DISCONNECT_STATUS_ATTRIBUTE_READ,                   new ExecutionInfo(false, 14, false));
         b.put(DISCONNECT_COLLAR_PUT_CONFIG_COMMAND,               new ExecutionInfo(false, 14, false));
         b.put(GROUP_CONNECT_DISCONNECT,                           new ExecutionInfo(false, 8, false));
+        b.put(OPT_OUT_OPT_IN_CONNECT_DISCONNECT_COMMAND,          new ExecutionInfo(true, 14, false));
         // It is important that GROUP_COMMAND_VERIFY have a lower priority than GROUP_COMMAND.
         // This is used to ensure that a verification gets sent out after the request.
         b.put(GROUP_COMMAND,                                      new ExecutionInfo(false, 8, false));
