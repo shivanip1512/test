@@ -23,7 +23,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -42,12 +41,6 @@ public class InventoryActionsFilterServiceImpl implements InventoryActionsFilter
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
-    
-    private static final DatabaseVendor[] oracleTypes = {
-        DatabaseVendor.ORACLE10G,
-        DatabaseVendor.ORACLE11G,
-        DatabaseVendor.ORACLE12C
-    };
     
     @Override
     public Set<InventoryIdentifier> getInventory(FilterModel filter, DateTimeZone timeZone, LiteYukonUser user) {
@@ -214,7 +207,7 @@ public class InventoryActionsFilterServiceImpl implements InventoryActionsFilter
             long toSn = rule.getSerialNumberTo();
             
             VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-            SqlBuilder oracleSql = builder.buildFor(oracleTypes);
+            SqlBuilder oracleSql = builder.buildForAllOracleDatabases();
             
             oracleSql.append("(CAST (lmhb.ManufacturerSerialNumber AS NUMBER(19))").gte(fromSn).append("AND");
             oracleSql.append("CAST (lmhb.ManufacturerSerialNumber AS NUMBER(19))").lte(toSn).append(")");
