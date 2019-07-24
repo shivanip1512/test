@@ -549,48 +549,38 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         Map<RfnIdentifier, RfnGateway> gateways =
             rfnGatewayService.getGatewaysByPaoIds(filter.getSelectedGatewayIds()).stream().collect(
                 Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
-
+        Set<RfnIdentifier> gatewayIdentifiers = new HashSet<>(gateways.keySet());
         try {
             if (filter.getColorCodeBy() == LINK_QUALITY) {
-                //(Allocate identifiers to new set, because HashMap$KeySet is apparently not serializable)
-                Set<RfnIdentifier> identifiers = new HashSet<>(gateways.keySet());
                 Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData =
-                    metadataMultiService.getMetadataForGatewayRfnIdentifiers(identifiers,
+                    metadataMultiService.getMetadataForGatewayRfnIdentifiers(gatewayIdentifiers,
                         Set.of(PRIMARY_FORWARD_NEIGHBOR_DATA));
                 
-                //if user didn't specify link strength pre-fill with all values
+                //if user didn't specify link quality pre-fill with all values
                 if(filter.getLinkQuality().isEmpty()) {
                     filter.setLinkQuality(Lists.newArrayList(LinkQuality.values()));
                 }
                 
                 log.debug("Received neighbor data from NM for {} devices", neighborMetaData.size());
 
-                loadMapColorCodedByLinkStrength(filter, Sets.newHashSet(gateways.keySet()), accessor, map, neighborMetaData);
-
-                
+                loadMapColorCodedByLinkQuality(filter, Sets.newHashSet(gateways.keySet()), accessor, map, neighborMetaData);       
             } else if (filter.getColorCodeBy() == GATEWAY) {
-                
                 if(filter.getLinkQuality().isEmpty()) {
-                    //(Allocate identifiers to new set, because HashMap$KeySet is apparently not serializable)
-                    Set<RfnIdentifier> identifiers = new HashSet<>(gateways.keySet());
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
-                        metadataMultiService.getMetadataForDeviceRfnIdentifiers(identifiers, Set.of(PRIMARY_GATEWAY_NODES));
+                        metadataMultiService.getMetadataForDeviceRfnIdentifiers(gatewayIdentifiers, Set.of(PRIMARY_GATEWAY_NODES));
                     
                     log.debug("Received primary gateway nodes from NM for {} devices", metaData.size());
-                    
-                    loadMapColorCodedByGateway(Sets.newHashSet(gateways.keySet()), map, metaData);
+                    loadMapColorCodedByLinkQuality(Sets.newHashSet(gateways.keySet()), map, metaData);
                     
                 }else {
                     AtomicInteger i = new AtomicInteger(0);
                     log.debug("Getting data for {} gateways", gateways.size());
-                    for (Map.Entry<RfnIdentifier, RfnGateway> entry : gateways.entrySet()) {
-                        Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData =
-                            metadataMultiService.getMetadataForGatewayRfnIdentifiers(Sets.newHashSet(entry.getKey()),
-                                Set.of(PRIMARY_FORWARD_NEIGHBOR_DATA));
-                        log.debug("Received neighbor data for gateway {} devices {}", entry.getValue().getName(), neighborMetaData.size());
-    
-                        loadMapColorCodedByGatewayFilteredByLinkStrength(filter, map, i, entry, neighborMetaData);
-                    }
+                    Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
+                        metadataMultiService.getMetadataForGatewayRfnIdentifiers(gatewayIdentifiers,
+                            Set.of(PRIMARY_FORWARD_NEIGHBOR_DATA, PRIMARY_GATEWAY_NODE_COMM));
+                    
+                    log.debug("Received neighbor data from NM for {} devices", metaData.size());
+                    loadMapColorCodedByGatewayFilteredByLinkQuality(gateways, filter, map, metaData);
                 }
             }
         } catch (NmCommunicationException e) {
@@ -604,32 +594,39 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     /**
      * Adding devices received from NM to map
      */
-    private void loadMapColorCodedByGatewayFilteredByLinkStrength(NetworkMapFilter filter, NetworkMap map,
-            AtomicInteger i, Entry<RfnIdentifier, RfnGateway> entry, Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData) {
+    private void loadMapColorCodedByGatewayFilteredByLinkQuality(Map<RfnIdentifier, RfnGateway> gateways, NetworkMapFilter filter, NetworkMap map,
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData) {
 
-        Set<RfnIdentifier> identifiers = neighborMetaData.entrySet().stream()
-            .filter(result-> result.getValue().isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA))
-            .filter(result-> {
-                NeighborData neighborData = (NeighborData) result.getValue().getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA); 
-                return filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData));
-            }).map(result-> result.getKey())
-            .collect(Collectors.toSet());
-            
-            
-        if (!identifiers.isEmpty()) {
-            Color color = Color.values()[i.getAndIncrement()];
-            addDevicesToMap(map, color, entry.getValue().getName(), identifiers);
-        } else {
-            //add gateway without devices to map
-            addDevicesToMap(map, "#ffffff", Sets.newHashSet(entry.getKey()));
+        Set<RfnIdentifier> gatewaysWithoutDevices = new HashSet<>();
+        AtomicInteger i = new AtomicInteger(0);
+        for(Map.Entry<RfnIdentifier, RfnGateway> entry: gateways.entrySet()) {
+            Set<RfnIdentifier> identifiers = metaData.entrySet().stream()
+                    .filter(result-> result.getValue().isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA) && result.getValue().isValidResultForMulti(PRIMARY_GATEWAY_NODE_COMM))
+                    .filter(result-> {
+                        NodeComm nodeComm = (NodeComm) result.getValue().getMetadatas().get(PRIMARY_GATEWAY_NODE_COMM); 
+                        if(nodeComm.getGatewayRfnIdentifier().equals(entry.getKey())) {
+                            NeighborData neighborData = (NeighborData) result.getValue().getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA); 
+                            return filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData));
+                        } 
+                        return false;
+                    }).map(result-> result.getKey())
+                    .collect(Collectors.toSet());
+            if (!identifiers.isEmpty()) {
+                Color color = Color.values()[i.getAndIncrement()];
+                //add gateway
+                identifiers.add(entry.getKey());
+                addDevicesToMap(map, color, entry.getValue().getName(), identifiers);
+            } else {
+                gatewaysWithoutDevices.add(entry.getKey());
+            }
         }
+        addDevicesToMap(map, "#ffffff", gatewaysWithoutDevices);
     }
 
     /**
      * Adding devices received from NM to map
-     * @param allFilteredGateways 
      */
-    private void loadMapColorCodedByGateway(Set<RfnIdentifier> allFilteredGateways, NetworkMap map, Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData) {
+    private void loadMapColorCodedByLinkQuality(Set<RfnIdentifier> allFilteredGateways, NetworkMap map, Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData) {
         AtomicInteger i = new AtomicInteger(0);
         log.debug("Loading map filtered by gateway");
         metaData.forEach((gatewayPao, queryResult) -> {
@@ -657,7 +654,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      * Adding devices received from NM to map
      * @param gateways 
      */
-    private void loadMapColorCodedByLinkStrength(NetworkMapFilter filter, Set<RfnIdentifier> gateways, MessageSourceAccessor accessor, NetworkMap map,
+    private void loadMapColorCodedByLinkQuality(NetworkMapFilter filter, Set<RfnIdentifier> gateways, MessageSourceAccessor accessor, NetworkMap map,
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData) {
         log.debug("Loading map filtered by link quality");
         

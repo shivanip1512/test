@@ -398,7 +398,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     public void saveDynamicRfnDeviceData(List<NodeComm> nodes) {
         List<DynamicRfnDeviceData> data = new ArrayList<>();
         nodes.forEach(comm -> {
-            if (!comm.getDeviceRfnIdentifier().is_Empty_() && comm.getGatewayRfnIdentifier() != null
+            if (comm.getDeviceRfnIdentifier() != null && !comm.getDeviceRfnIdentifier().is_Empty_() && comm.getGatewayRfnIdentifier() != null
                 && !comm.getGatewayRfnIdentifier().is_Empty_()) {
                 Integer deviceId = rfnIdentifierCache.getPaoIdFor(comm.getDeviceRfnIdentifier());
                 Integer gatewayId = rfnIdentifierCache.getPaoIdFor(comm.getGatewayRfnIdentifier());
