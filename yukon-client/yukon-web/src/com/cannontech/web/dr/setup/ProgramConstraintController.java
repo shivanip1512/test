@@ -158,10 +158,6 @@ public class ProgramConstraintController {
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
                 return "redirect:/dr/setup/list";
             }
-            if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
-                return "redirect:/dr/setup/list";
-            }
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));

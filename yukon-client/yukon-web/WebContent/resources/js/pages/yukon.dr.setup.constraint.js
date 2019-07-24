@@ -13,20 +13,16 @@ yukon.dr.setup.constraint = (function() {
     var
     _initialized = false,
     
-    _enableHolidayUsage = function(){
+    _enableHolidayUsage = function(onPageLoad){
         var _holidaySchedule = $('#js-holiday-schedule').val()
         if(_holidaySchedule === "0") {
             $("input[name='holidayUsage']").prop('disabled', true);
         }else{
-            $("input[name='holidayUsage']").filter('[value="EXCLUDE"]').attr('checked', true);
+            if(onPageLoad == true){
+                $("input[name='holidayUsage']").filter('[value="EXCLUDE"]').attr('checked', true);
+            }
             $("input[name='holidayUsage']").prop('disabled', false);
         }
-    },
-    _appendSeconds = function(){
-        $("#js-maxActivate-seconds").after('<span> &nbsp;'+ yg.text.seconds +'</span>')
-        $("#js-maxDailyOps-seconds").after('<span> &nbsp;'+ yg.text.seconds +'</span>')
-        $("#js-minActivate-seconds").after('<span> &nbsp;'+ yg.text.seconds +'</span>')
-        $("#js-minRestart-seconds").after('<span> &nbsp;'+ yg.text.seconds +'</span>')
     },
     
     mod = {
@@ -36,8 +32,7 @@ yukon.dr.setup.constraint = (function() {
             
             if (_initialized) return;
             
-            $(document).ready(_enableHolidayUsage);
-            $(document).ready(_appendSeconds);
+            $(document).ready(_enableHolidayUsage(false));
             
             $(document).on('click', '#js-cancel-btn', function (event) {
                 window.history.back();
@@ -49,7 +44,7 @@ yukon.dr.setup.constraint = (function() {
             });
             
             $(document).on('change', '#js-holiday-schedule', function () {
-                _enableHolidayUsage();
+                _enableHolidayUsage(true);
             });
             
             _initialized = true;

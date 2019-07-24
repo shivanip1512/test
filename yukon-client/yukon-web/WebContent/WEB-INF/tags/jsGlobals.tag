@@ -84,8 +84,7 @@ var yg = {
         back: '<cti:msg2 key="yukon.web.components.button.back.label"/>',
         create: '<cti:msg2 key="yukon.web.components.button.create.label"/>',
         noneChoice: '<cti:msg2 key="yukon.common.none.choice"/>',
-        nextRefresh: '<cti:msg2 key="yukon.web.widgets.nextRefresh"/>',
-        seconds: '<cti:msg2 key="yukon.common.units.SECONDS"/>'
+        nextRefresh: '<cti:msg2 key="yukon.web.widgets.nextRefresh"/>'
     },
     
     timezone: '<cti:getUsersTimezone/>',

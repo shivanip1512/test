@@ -38,6 +38,7 @@
     <form:form modelAttribute="programConstraint" action="${action}" method="post">
         <cti:csrfToken />
         <form:hidden path="id"/>
+        <cti:msg2 var="seconds" key="yukon.common.units.SECONDS"/>
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".name">
@@ -59,16 +60,16 @@
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".maxActivate">
-                    <tags:input path="maxActivateSeconds" size="5" maxlength="5" id="js-maxActivate-seconds"/>
+                    <tags:numeric path="maxActivateSeconds" size="5" maxlength="5" units="${seconds}" minValue="0" maxValue="99999"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".maxDailyOps">
-                    <tags:input path="maxDailyOpsSeconds" size="5" maxlength="5" id="js-maxDailyOps-seconds"/>
+                    <tags:numeric path="maxDailyOpsSeconds" size="5" maxlength="5" units="${seconds}" minValue="0" maxValue="99999"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".minActivate">
-                    <tags:input path="minActivateSeconds" size="5" maxlength="5" id="js-minActivate-seconds"/>
+                    <tags:numeric path="minActivateSeconds" size="5" maxlength="5" units="${seconds}" minValue="0" maxValue="99999"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".minRestart">
-                    <tags:input path="minRestartSeconds" size="5" maxlength="5" id="js-minRestart-seconds"/>
+                    <tags:numeric path="minRestartSeconds" size="5" maxlength="5" units="${seconds}" minValue="0" maxValue="99999"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".daySelection">
                 <cti:displayForPageEditModes modes="CREATE,EDIT">
@@ -110,8 +111,8 @@
                 <tags:nameValue2 nameKey=".holidayUsage">
                     <cti:displayForPageEditModes modes="CREATE,EDIT">
                         <div class="button-group">
-                            <tags:radio path="holidayUsage" key=".modules.dr.setup.constraint.exclude" classes="left yes ML0" value="EXCLUDE"/>
-                            <tags:radio path="holidayUsage" key=".modules.dr.setup.constraint.force" classes="right yes ML0" value="FORCE"/>
+                            <tags:radio path="holidayUsage" key=".modules.dr.setup.constraint.EXCLUDE" classes="left yes" value="EXCLUDE"/>
+                            <tags:radio path="holidayUsage" key=".modules.dr.setup.constraint.FORCE" classes="right yes" value="FORCE"/>
                         </div>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
@@ -120,7 +121,7 @@
                                 <i:inline key=".none"/>
                             </c:when>
                             <c:otherwise>
-                                ${fn:escapeXml(programConstraint.holidayUsage)}
+                                <i:inline key="yukon.common.modules.dr.setup.constraint.${programConstraint.holidayUsage}"/>
                             </c:otherwise>
                         </c:choose>
                     </cti:displayForPageEditModes>
@@ -130,16 +131,16 @@
         <tags:sectionContainer2 nameKey=".maxHourAllowance">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".maxHoursDaily">
-                    <tags:input path="maxHoursDaily" size="5" maxlength="5" />
+                    <tags:numeric path="maxHoursDaily" size="5" maxlength="5" minValue="0" maxValue="99999"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".maxHoursMonthly">
-                    <tags:input path="maxHoursMonthly" size="5" maxlength="5"/>
+                    <tags:numeric path="maxHoursMonthly" size="5" maxlength="5" minValue="0" maxValue="99999"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".maxHoursAnnually">
-                    <tags:input path="maxHoursAnnually" size="5" maxlength="5"/>
+                    <tags:numeric path="maxHoursAnnually" size="5" maxlength="5" minValue="0" maxValue="99999"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".maxHoursSeasonal">
-                    <tags:input path="maxHoursSeasonal" size="5" maxlength="5"/>
+                    <tags:numeric path="maxHoursSeasonal" size="5" maxlength="5" minValue="0" maxValue="99999"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
