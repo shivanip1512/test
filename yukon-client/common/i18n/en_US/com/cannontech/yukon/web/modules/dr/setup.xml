@@ -228,7 +228,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.macroLoadGroup.assignedLoadGroups.title">Assigned Load Groups</entry>
 <entry key="yukon.web.modules.dr.setup.macroLoadGroup.copy.title">Copy Macro Load Group</entry>
 
-<!-- Filter By Objects -->`
+<!-- Filter By Objects -->
 <entry key="yukon.web.modules.dr.setup.CONTROL_AREA">Control Area</entry>
 <entry key="yukon.web.modules.dr.setup.CONTROL_SCENARIO">Control Scenario</entry>
 <entry key="yukon.web.modules.dr.setup.LOAD_GROUP">Load Group</entry>
