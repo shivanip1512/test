@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
@@ -221,13 +222,14 @@ public class ComprehensiveMapController {
             String[] dataRow = new String[11];
             LiteYukonPAObject rfnDevice = cache.getAllPaosMap().get(paoId);
             dataRow[0] = rfnDevice.getPaoName();
+            SimpleMeter meter = cache.getAllMeters().get(paoId);
+            if(meter != null) {
+                dataRow[1] = meter.getMeterNumber();
+            }
             dataRow[2] = rfnDevice.getPaoType().getPaoTypeName();
             dataRow[3] = device.getSensorSerialNumber();
             PaoLocation location = locations.get(paoId);
-            if(location == null) {
-                dataRow[4] = "";
-                dataRow[5] = "";
-            } else {
+            if(location != null) {
                 dataRow[4] = String.valueOf(location.getLatitude());
                 dataRow[5] = String.valueOf(location.getLongitude());
             }
