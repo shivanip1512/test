@@ -15,6 +15,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;;
 
 public class TokenHelper {
 
@@ -95,8 +96,8 @@ public class TokenHelper {
     public static boolean checkExpiredJwt(String token) {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-        } catch (ExpiredJwtException expiredEx) {
-            // "JWT Token is expired"
+        } catch (SignatureException | ExpiredJwtException jwtException) {
+            // "JWT Token is expired or Old Sessions stick in reboot"
             return true;
         }
         return false;
