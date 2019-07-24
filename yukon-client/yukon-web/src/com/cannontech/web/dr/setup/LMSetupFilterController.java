@@ -98,13 +98,13 @@ public class LMSetupFilterController {
             viewUrlPrefix = "/dr/setup/loadProgram/";
             break;
         case CONTROL_SCENARIO:
-            viewUrlPrefix = "/dr/setup/controlSecnario/";
+            viewUrlPrefix = "/dr/setup/controlScenario/";
             break;
         case MACRO_LOAD_GROUP:
             viewUrlPrefix = "/dr/setup/macroLoadGroup/";
             break;
         case PROGRAM_CONSTRAINT:
-            viewUrlPrefix = "/dr/setup/programContraint/";
+            viewUrlPrefix = "/dr/setup/contraint/";
             break;
         default:
             throw new RuntimeException("viewUrlPrefix is not set for " + lmSetupFilter.getFilterByType());

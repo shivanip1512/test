@@ -27,6 +27,12 @@
                         <a href="${createMacroLoadGroupUrl}"><i:inline key=".macroLoadGroup.title"/></a>
                     </div>
                 </div>
+                <div class="column two nogutter">
+                    <div class="stacked">
+                        <cti:url var="createProgramConstraint" value="/dr/setup/constraint/create"/>
+                        <a href="${createProgramConstraint}"><i:inline key=".constraint.title"/></a>
+                    </div>
+                </div>
             </div>
         </div>
     </cti:msgScope>
