@@ -29,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.util.CollectionUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReply;
@@ -83,6 +84,8 @@ import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.node.NodeType;
 import com.cannontech.common.rfn.message.node.RfnNodeCommArchiveRequest;
+import com.cannontech.common.rfn.message.node.WifiSecurityType;
+import com.cannontech.common.rfn.message.node.WifiSuperMeterData;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
@@ -157,6 +160,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private Executor executor = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> task;
     String templatePrefix;
+    private Set<PaoType> wiFiSuperMeters = Set.of(PaoType.RFN420CLW, PaoType.RFN420CDW);
     
     @PostConstruct
     public void init() {
@@ -442,27 +446,27 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     }
     
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> getResults(RfnMetadataMultiRequest request) {
-        Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = new HashMap<>();
-        //by gateway identifier
-        for (RfnIdentifier device: request.getPrimaryNodesForGatewayRfnIdentifiers()) {
-            for(RfnMetadataMulti multi: request.getRfnMetadatas()) {
-                 if (multi == RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA) {
-                     RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(device);
-                     List<RfnIdentifier> devices = getDevicesForGateway(gateway);
-                     if(request.getRfnIdentifiers() == null) {
-                         request.setRfnIdentifiers(new HashSet<>());
-                     }
-                     //find nodes and add to the identifiers for lookup
-                     request.getRfnIdentifiers().addAll(devices);
-                }
-            }
-        }
         List<RfnGateway> allGateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        //by node identifiers
-        for (RfnIdentifier device: request.getRfnIdentifiers()) {
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = new HashMap<>();
+        Set<RfnIdentifier> rfnIdentifiers = new HashSet<>();
+        //by gateway identifier
+        if (!CollectionUtils.isEmpty(request.getPrimaryNodesForGatewayRfnIdentifiers())) {
+            //remove all gateways that are not in request
+            allGateways.removeIf(gateway -> !request.getPrimaryNodesForGatewayRfnIdentifiers().contains(gateway.getRfnIdentifier()));
+            for (RfnIdentifier device : request.getPrimaryNodesForGatewayRfnIdentifiers()) {
+                RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(device);
+                // find nodes and add to the identifiers for lookup
+                List<RfnIdentifier> devices = getDevicesForGateway(gateway);
+                rfnIdentifiers.addAll(devices);
+            }
+        } else if (!CollectionUtils.isEmpty(request.getRfnIdentifiers())) {
+            rfnIdentifiers.addAll(request.getRfnIdentifiers());
+        }
+
+        for (RfnIdentifier device: rfnIdentifiers) {
+            RfnDevice rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(device);
             for(RfnMetadataMulti multi: request.getRfnMetadatas()) {
                 if (multi == RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM) {
-                    
                     RfnGateway randomGateway = allGateways.get(new Random().nextInt(allGateways.size()));
                     RfnMetadataMultiQueryResult result = getResult(results, device, multi);
                     // we are returning a random gateway which will cause the gateway to device mapping to
@@ -478,6 +482,15 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     node.setNodeSerialNumber(settings.getRouteData().getSerialNumber());
                     node.setNodeType(NodeType.ELECTRIC_NODE);
                     node.setProductNumber("123456789 (Sim)");
+                    if(wiFiSuperMeters.contains(rfnDevice.getPaoIdentifier().getPaoType())) {
+                        WifiSuperMeterData superMeterData = new WifiSuperMeterData();
+                        superMeterData.setApBssid("12:34:56:78:90:ab");
+                        superMeterData.setApSsid("ExampleUtilityISP");
+                        superMeterData.setChannelNum(8);
+                        superMeterData.setRssi(-64D);
+                        superMeterData.setSecurityType(WifiSecurityType.WPA2);
+                        node.setWifiSuperMeterData(superMeterData);
+                    }
                     RfnMetadataMultiQueryResult result = getResult(results, device, multi);
                     result.getMetadatas().put(multi, node);
                 } else if (multi == RfnMetadataMulti.PRIMARY_GATEWAY_NODES) {
@@ -486,7 +499,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(device);
                     List<RfnIdentifier> devices = getDevicesForGateway(gateway);
                     Map<RfnIdentifier, NodeComm> nodeComms = devices.stream().collect(
-                        Collectors.toMap(Function.identity(), rfnDevice -> getNodeComm(rfnDevice, device)));
+                        Collectors.toMap(Function.identity(), d -> getNodeComm(d, device)));
                     nodes.setGatewayRfnIdentifier(device);
                     nodes.setNodeComms(nodeComms);
                     result.getMetadatas().put(multi, nodes);

@@ -573,7 +573,6 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     loadMapColorCodedByLinkQuality(Sets.newHashSet(gateways.keySet()), map, metaData);
                     
                 }else {
-                    AtomicInteger i = new AtomicInteger(0);
                     log.debug("Getting data for {} gateways", gateways.size());
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
                         metadataMultiService.getMetadataForGatewayRfnIdentifiers(gatewayIdentifiers,
@@ -596,28 +595,26 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      */
     private void loadMapColorCodedByGatewayFilteredByLinkQuality(Map<RfnIdentifier, RfnGateway> gateways, NetworkMapFilter filter, NetworkMap map,
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData) {
-
         Set<RfnIdentifier> gatewaysWithoutDevices = new HashSet<>();
         AtomicInteger i = new AtomicInteger(0);
-        for(Map.Entry<RfnIdentifier, RfnGateway> entry: gateways.entrySet()) {
-            Set<RfnIdentifier> identifiers = metaData.entrySet().stream()
-                    .filter(result-> result.getValue().isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA) && result.getValue().isValidResultForMulti(PRIMARY_GATEWAY_NODE_COMM))
-                    .filter(result-> {
-                        NodeComm nodeComm = (NodeComm) result.getValue().getMetadatas().get(PRIMARY_GATEWAY_NODE_COMM); 
-                        if(nodeComm.getGatewayRfnIdentifier().equals(entry.getKey())) {
-                            NeighborData neighborData = (NeighborData) result.getValue().getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA); 
-                            return filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData));
-                        } 
-                        return false;
-                    }).map(result-> result.getKey())
-                    .collect(Collectors.toSet());
+        for(Map.Entry<RfnIdentifier, RfnGateway> selectedGateways: gateways.entrySet()) {
+            Set<RfnIdentifier> identifiers = new HashSet<>();
+            for(Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data: metaData.entrySet()) {
+                if(data.getValue().isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA) && data.getValue().isValidResultForMulti(PRIMARY_GATEWAY_NODE_COMM)) {
+                    NodeComm nodeComm = (NodeComm) data.getValue().getMetadatas().get(PRIMARY_GATEWAY_NODE_COMM);
+                    NeighborData neighborData = (NeighborData) data.getValue().getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA); 
+                    if(nodeComm.getGatewayRfnIdentifier().equals(selectedGateways.getKey()) && filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData))) {
+                        identifiers.add(data.getKey());
+                    }
+                }
+            }
             if (!identifiers.isEmpty()) {
                 Color color = Color.values()[i.getAndIncrement()];
                 //add gateway
-                identifiers.add(entry.getKey());
-                addDevicesToMap(map, color, entry.getValue().getName(), identifiers);
+                identifiers.add(selectedGateways.getKey());
+                addDevicesToMap(map, color, selectedGateways.getValue().getName(), identifiers);
             } else {
-                gatewaysWithoutDevices.add(entry.getKey());
+                gatewaysWithoutDevices.add(selectedGateways.getKey());
             }
         }
         addDevicesToMap(map, "#ffffff", gatewaysWithoutDevices);
