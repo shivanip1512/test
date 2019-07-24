@@ -1073,13 +1073,13 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.programDetail.parents.noControlAreaPermission">You do not have permission to view this control area.</entry>
 
 <!--  Program Details -->
-<entry key="yukon.web.modules.dr.program.details.pageName">Program Activity Details</entry>
-<entry key="yukon.web.modules.dr.program.details.day">Day</entry>
-<entry key="yukon.web.modules.dr.program.details.programName">Program Name</entry>
-<entry key="yukon.web.modules.dr.program.details.status">Status</entry>
-<entry key="yukon.web.modules.dr.program.details.eventTime">Event Time</entry>
-<entry key="yukon.web.modules.dr.program.details.gearName">Gear Name</entry>
-<entry key="yukon.web.modules.dr.program.details.unKnownStopTime">Stop Time does not exist.</entry>
+<entry key="yukon.web.modules.dr.program.activityDetails.pageName">Program Activity Details</entry>
+<entry key="yukon.web.modules.dr.program.activityDetails.day">Day</entry>
+<entry key="yukon.web.modules.dr.program.activityDetails.programName">Program Name</entry>
+<entry key="yukon.web.modules.dr.program.activityDetails.status">Status</entry>
+<entry key="yukon.web.modules.dr.program.activityDetails.eventTime">Event Time</entry>
+<entry key="yukon.web.modules.dr.program.activityDetails.gearName">Gear Name</entry>
+<entry key="yukon.web.modules.dr.program.activityDetails.unKnownStopTime">Stop Time does not exist.</entry>
 
 <!-- Load Group List -->
 <entry key="yukon.web.modules.dr.loadGroupList.pageTitle">Load Groups</entry>

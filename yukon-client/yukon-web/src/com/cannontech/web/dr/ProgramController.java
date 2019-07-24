@@ -164,12 +164,12 @@ public class ProgramController extends ProgramControllerBase {
         return "dr/program/detail.jsp";
     }
 
-    @GetMapping("/program/details")
-    public String details(ModelMap model, YukonUserContext userContext) {
+    @GetMapping("/program/activityDetails")
+    public String activityDetails(ModelMap model, YukonUserContext userContext) {
         Map<String, List<ProgramData>> programsData = programWidgetService.buildProgramDetailsData(userContext);
         model.addAttribute("programsData", programsData);
 
-        return "dr/program/details.jsp";
+        return "dr/program/activityDetails.jsp";
     }
 
     @RequestMapping("/program/assetAvailability")

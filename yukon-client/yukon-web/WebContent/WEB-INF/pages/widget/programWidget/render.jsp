@@ -84,8 +84,8 @@
                     <br>
                 </c:forEach>
                 <div class="PT20">
-                    <cti:url value="/dr/program/details" var="detailsUrl"/>
-                    <a href="${detailsUrl}" target="_blank"><i:inline key="yukon.common.viewDetails"/></a>
+                    <cti:url value="/dr/program/activityDetails" var="activityDetailsUrl"/>
+                    <a href="${activityDetailsUrl}" target="_blank"><i:inline key="yukon.common.viewDetails"/></a>
                     <span class="fr">
                         <cti:msg2 key="yukon.web.widgets.lastUpdated" var="lastUpdatedMsg"/>
                         <span class="fl js-last-updated" style="font-size:11px" title="${lastUpdatedMsg}"></span>

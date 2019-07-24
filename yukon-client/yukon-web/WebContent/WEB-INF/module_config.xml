@@ -464,8 +464,8 @@
                 </page>
             </pages>
           </page>
-          <page name="program.details" type="BASIC">
-            <link>/dr/program/details</link>
+          <page name="program.activityDetails" type="BASIC">
+            <link>/dr/program/activityDetails</link>
           </page>
           <page name="ecobee.details" type="BASIC">
             <link>/dr/ecobee/details</link>
