@@ -93,7 +93,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
     
     @ExceptionHandler({ LoadProgramProcessingException.class, MacroLoadGroupProcessingException.class,
-        HoneywellProcessingException.class })
+        HoneywellProcessingException.class, LMObjectDeletionFailureException.class })
     public ResponseEntity<Object> hanldeProcessingException(final Exception ex, final WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();
@@ -118,16 +118,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         }
         return new ResponseEntity<Object>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Database error", uniqueKey),
             HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(LMObjectDeletionFailureException.class)
-    public ResponseEntity<Object> handleDeleteException(final Exception ex, final WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-
-        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

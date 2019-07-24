@@ -22,12 +22,13 @@ import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.ProgramConstraint;
 import com.cannontech.dr.constraint.service.ProgramConstraintService;
+import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 
 @RestController
 @RequestMapping("/dr/setup/constraint")
 public class ProgramConstraintApiController {
 
-    @Autowired ProgramConstraintDeleteValidator programConstraintDeleteValidator;
+    @Autowired LMDeleteValidator lmDeleteValidator;
     @Autowired ProgramConstraintService programConstraintService;
     @Autowired ProgramConstraintValidator programConstraintValidator;
 
@@ -74,7 +75,7 @@ public class ProgramConstraintApiController {
 
     @InitBinder("LMDelete")
     public void setupBinderDelete(WebDataBinder binder) {
-        binder.setValidator(programConstraintDeleteValidator);
+        binder.setValidator(lmDeleteValidator);
     }
 
     @InitBinder("programConstraint")

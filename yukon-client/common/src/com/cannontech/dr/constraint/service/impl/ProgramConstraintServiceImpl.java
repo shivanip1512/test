@@ -143,6 +143,9 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         throw new UnsupportedOperationException("Not supported copy operation");
     }
 
+    /**
+     * Checks that if program constraint provided is associated with any load program or not
+     */
     private void checkIfConstriantIsUsed(LiteLMConstraint liteLMConstraint, Integer paoId) {
         LMProgramConstraint constraint = (LMProgramConstraint) LiteFactory.createDBPersistent(liteLMConstraint);
         DBDeleteResult dbDeleteResult = dbDeletionDao.getDeleteInfo(constraint, constraint.getConstraintName());
@@ -155,7 +158,9 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
                 }
             }
         } catch (SQLException e) {
-            log.error("Unable to delete Constraint with name : " + constraint.getConstraintName() + e);
+            String message = "Unable to delete Constraint with name : " + constraint.getConstraintName() + e;
+            log.error(message);
+            throw new LMObjectDeletionFailureException(message);
         }
     }
 }

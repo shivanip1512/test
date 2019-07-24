@@ -1407,7 +1407,6 @@
     <bean id="controlScenarioSetupValidator" class="com.cannontech.web.api.dr.controlscenario.ControlScenarioSetupValidator"/>
     <bean class="com.cannontech.common.dr.setup.LMServiceHelper"/>
     <bean class="com.cannontech.web.api.dr.constraint.ProgramConstraintValidator"/>
-    <bean class="com.cannontech.web.api.dr.constraint.ProgramConstraintDeleteValidator"/>
     <bean class="com.cannontech.dr.constraint.service.impl.ProgramConstraintServiceImpl"/>
     <bean class="com.cannontech.web.dr.setup.ProgramConstraintControllerHelper"/>
 

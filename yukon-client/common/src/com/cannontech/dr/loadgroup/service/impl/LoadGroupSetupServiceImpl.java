@@ -172,19 +172,22 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         Integer routeId = loadGroup.getRouteId();
         loadGroup.setRouteName(dbCache.getAllRoutesMap().get(routeId).getPaoName());
     }
-    
-    
-    private void checkIfGroupIsUsed(String groupname, Integer paoId) {
+
+    /**
+     * Checks that if load group provided is associated with any load program or not
+     */
+    private void checkIfGroupIsUsed(String Groupname, Integer paoId) {
         String program;
         try {
             if ((program = com.cannontech.database.db.device.lm.LMGroup.isGroupUsed(paoId)) != null) {
-                String message = "You cannot delete the device '" + groupname
+                String message = "You cannot delete the device '" + Groupname
                     + "' because it is utilized by the LM program named '" + program + "'";
                 throw new LMObjectDeletionFailureException(message);
             }
         } catch (SQLException e) {
-            log.error("Unable to delete load group with name : " + groupname + e);
+            String message = "Unable to delete load group with name : " + Groupname + e;
+            log.error(message);
+            throw new LMObjectDeletionFailureException(message);
         }
     }
-
 }
