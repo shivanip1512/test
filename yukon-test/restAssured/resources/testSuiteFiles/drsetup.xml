@@ -4,13 +4,9 @@
 <suite name="Demand Response Setup Suite">
 	<test name="DR Setup Test">
 		<classes>		
-			<class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupEmetconAPITest" />
 			<class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupItronAPITest" />
 			<class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupMeterDisconnectAPITest" />
-			<class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupHoneywellAPITest" />
-			<class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupEcobeeAPITest" />
 			<class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupNestAPITest" />
-			<class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupExpressComAPITest" />
 		</classes>
 	</test>
 </suite>
