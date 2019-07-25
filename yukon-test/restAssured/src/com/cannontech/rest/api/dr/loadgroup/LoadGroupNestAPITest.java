@@ -20,26 +20,26 @@ import io.restassured.response.ExtractableResponse;
 public class LoadGroupNestAPITest {
 
     private final static String nestPaoTypeStr = "LM_GROUP_NEST";
-    private final static String nestpayloadfile = "loadgroup\\lmGroupNestCreate.json";
+    private final static String nestPayloadFile = "loadgroup\\lmGroupNestCreate.json";
 
     @Test
-    public void Test01_LmGroupNest_Create(ITestContext context) {
+    public void loadGroupNest_01_Create(ITestContext context) {
 
-        Log.startTestCase("Test01_LmGroupNest_Create");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", nestpayloadfile);
+        Log.startTestCase("loadGroupNest_01_Create");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", nestPayloadFile);
         String groupId = createResponse.path("groupId").toString();
         context.setAttribute("nestgroupId", groupId);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
         assertTrue("GROUP ID should not be Null", groupId != null);
-        Log.endTestCase("Test01_LmGroupNest_Create");
+        Log.endTestCase("loadGroupNest_01_Create");
     }
 
     @Test
-    public void Test02_LmGroupNest_Get(ITestContext context) {
+    public void loadGroupNest_02_Get(ITestContext context) {
 
-        Log.startTestCase("Test02_LmGroupNest_Get");
+        Log.startTestCase("loadGroupNest_02_Get");
         String groupId = context.getAttribute("nestgroupId").toString();
-        JSONObject jo = JsonFileReader.readJsonFileAsJSONObject(nestpayloadfile);
+        JSONObject jo = JsonFileReader.readJsonFileAsJSONObject(nestPayloadFile);
         JsonPath jp = new JsonPath(jo.toJSONString());
         Float kWCapacity = jp.getFloat(nestPaoTypeStr + ".kWCapacity");
         String name = jp.get(nestPaoTypeStr + ".name");
@@ -53,28 +53,28 @@ public class LoadGroupNestAPITest {
         context.setAttribute("Nest_GrpName", jsonPath.get(nestPaoTypeStr + ".name"));
 
         assertTrue("Name Should be : " + name, name.equals((String) jsonPath.get(nestPaoTypeStr + ".name")));
-        assertTrue("nestPaoTypeStr Should be : " + nestPaoTypeStr,
-            nestPaoTypeStr.equals(jsonPath.get(nestPaoTypeStr + ".nestPaoTypeStr")));
+        assertTrue("Type Should be : " + nestPaoTypeStr,
+            nestPaoTypeStr.equals(jsonPath.get(nestPaoTypeStr + ".type")));
         assertTrue("kWCapacity Should be : " + kWCapacity,
             kWCapacity.equals(jsonPath.get(nestPaoTypeStr + ".kWCapacity")));
         boolean disableGroup = (boolean) jsonPath.get(nestPaoTypeStr + ".disableGroup");
         assertTrue("Group Should be disabled : ", !disableGroup);
         boolean disableControl = (boolean) jsonPath.get(nestPaoTypeStr + ".disableControl");
         assertTrue("Control Should be disabled : ", !disableControl);
-        Log.endTestCase("Test02_LmGroupNest_Get");
+        Log.endTestCase("loadGroupNest_02_Get");
     }
 
     @Test
-    public void Test03_LmGroupNest_Update(ITestContext context) {
+    public void loadGroupNest_03_Update(ITestContext context) {
 
-        Log.startTestCase("Test03_LmGroupNest_Update");
+        Log.startTestCase("loadGroupNest_03_Update");
 
         String groupId = context.getAttribute("nestgroupId").toString();
         Float kWCapacity = (float) 888;
         String name = "Auto_LM_Group_Nest_Update";
         context.setAttribute("Nest_GrpName", name);
 
-        JSONObject payload = JsonFileReader.updateLoadGroup(nestpayloadfile, "id", groupId);
+        JSONObject payload = JsonFileReader.updateLoadGroup(nestPayloadFile, "id", groupId);
         payload = JsonFileReader.updateLoadGroup(payload, "kWCapacity", kWCapacity.toString());
         payload = JsonFileReader.updateLoadGroup(payload, "name", name);
         Log.info("Updated payload is :" + payload.toJSONString());
@@ -86,29 +86,29 @@ public class LoadGroupNestAPITest {
 
         JsonPath jsonPath = getupdatedResponse.jsonPath();
         assertTrue("Name Should be : " + name, name.equals(jsonPath.get(nestPaoTypeStr + ".name")));
-        assertTrue("nestPaoTypeStr Should be : " + nestPaoTypeStr,
-            nestPaoTypeStr.equals(jsonPath.get(nestPaoTypeStr + ".nestPaoTypeStr")));
+        assertTrue("Type Should be : " + nestPaoTypeStr,
+            nestPaoTypeStr.equals(jsonPath.get(nestPaoTypeStr + ".type")));
         assertTrue("kWCapacity Should be : " + kWCapacity,
             kWCapacity.equals(jsonPath.get(nestPaoTypeStr + ".kWCapacity")));
-        Log.endTestCase("Test03_LmGroupNest_Update");
+        Log.endTestCase("loadGroupNest_03_Update");
     }
 
     @Test(enabled = false)
-    public void Test04_LmGroupNest_Copy(ITestContext context) {
+    public void loadGroupNest_04_Copy(ITestContext context) {
 
     }
 
     @Test(enabled = false)
-    public void Test05_LmGroupNest_Delete() {
+    public void loadGroupNest_05_Delete() {
 
     }
 
     @Test(dataProvider = "GroupNameData", dataProviderClass = DataProviderClass.class)
-    public void Test06_NestGroupNameValidation(String groupName, String expectedFieldCode, int expectedStatusCode) {
+    public void loadGroupNest_06_GroupNameValidation(String groupName, String expectedFieldCode, int expectedStatusCode) {
 
-        Log.startTestCase("Test06_NestGroupNameValidation");
+        Log.startTestCase("loadGroupNest_06_GroupNameValidation");
 
-        JSONObject payload = JsonFileReader.updateLoadGroup(nestpayloadfile, "name", groupName);
+        JSONObject payload = JsonFileReader.updateLoadGroup(nestPayloadFile, "name", groupName);
         ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", payload);
         assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
 
@@ -117,16 +117,16 @@ public class LoadGroupNestAPITest {
         assertTrue("Expected code in response is not correct",
             expectedFieldCode.equals(jsonPath.get("fieldErrors.code[0]")));
 
-        Log.endTestCase("Test06_NestGroupNameValidation");
+        Log.endTestCase("loadGroupNest_06_GroupNameValidation");
 
     }
 
     @Test(dataProvider = "KwCapacityData", dataProviderClass = DataProviderClass.class)
-    public void Test07_NestKwCapacityValidation(Float kwCapacity, String expectedFieldCode, int expectedStatusCode) {
+    public void loadGroupNest_07_KwCapacityValidation(Float kwCapacity, String expectedFieldCode, int expectedStatusCode) {
 
-        Log.startTestCase("Test07_NestKwCapacityValidation");
+        Log.startTestCase("loadGroupNest_07_KwCapacityValidation");
 
-        JSONObject payload = JsonFileReader.updateLoadGroup(nestpayloadfile, "kWCapacity", kwCapacity.toString());
+        JSONObject payload = JsonFileReader.updateLoadGroup(nestPayloadFile, "kWCapacity", kwCapacity.toString());
         ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", payload);
         assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
 
@@ -135,6 +135,6 @@ public class LoadGroupNestAPITest {
         assertTrue("Expected code in response is not correct",
             expectedFieldCode.equals(jsonPath.get("fieldErrors.code[0]")));
 
-        Log.endTestCase("Test07_NestKwCapacityValidation");
+        Log.endTestCase("loadGroupNest_07_KwCapacityValidation");
     }
 }
