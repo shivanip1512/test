@@ -174,7 +174,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
      */
     private void sendAcknowledgement(RfnStatusArchiveRequest request, String processor) {
         RfnStatusArchiveResponse response = new RfnStatusArchiveResponse();
-        response.setStatusPointId(response.getStatusPointId());
+        response.setStatusPointId(request.getStatusPointId());
         if (request.getRfnIdentifier().is_Empty_()) {
             log.info("{} acknowledged empty rfnIdentifier {} statusPointId={}", processor, request.getRfnIdentifier(),
                 request.getStatusPointId());
