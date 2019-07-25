@@ -340,6 +340,13 @@ AND DCCI.ItemValue = 'DEMAND';
 INSERT INTO DBUpdates VALUES ('YUK-20257', '7.3.0', GETDATE());
 /* @end YUK-20257 */
 
+/* @start YUK-20305 */
+/* Remove this before shipping */
+UPDATE LMProgramDirectGear
+SET ControlMethod = 'MeterDisconnect'
+WHERE ControlMethod = 'SimpleOnOff'
+/* @end YUK-20305 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
