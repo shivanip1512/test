@@ -1,6 +1,7 @@
 package com.cannontech.common.pao.attribute.service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +14,19 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.RichPointData;
+import com.cannontech.core.service.PointFormattingService;
+import com.cannontech.core.service.PointFormattingService.Format;
+import com.cannontech.database.data.lite.LiteHardwarePAObject;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Maps;
 
 public class AttributeDynamicDataSource {
 
     @Autowired public AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired public AttributeService attributeService;
-        
+    @Autowired private PointFormattingService pointFormattingService;
+
     public PointValueHolder getPointValue(YukonPao pao, Attribute attribute) {
         LitePoint litePoint = attributeService.getPointForAttribute(pao, attribute);
         return asyncDynamicDataSource.getPointValue(litePoint.getPointID());
@@ -38,12 +43,16 @@ public class AttributeDynamicDataSource {
         return pointValues;
     }
     
-    public Map<LiteYukonPAObject,PointValueHolder> getPaoPointValues(Collection<? extends LiteYukonPAObject> paos, Attribute attribute) {
-        Map<LiteYukonPAObject,PointValueHolder> pointValues = Maps.newHashMapWithExpectedSize(paos.size());
+    public Map<LiteHardwarePAObject, PointValueHolder> getFilteredPointValues(Collection<? extends LiteHardwarePAObject> paos, 
+                                                                         Attribute attribute, List<String> filteredValues, YukonUserContext userContext) {
+        Map<LiteHardwarePAObject,PointValueHolder> pointValues = Maps.newHashMapWithExpectedSize(paos.size());
         
-        for (LiteYukonPAObject pao : paos) {
-            PointValueHolder value = getPointValue(pao, attribute);
-            pointValues.put(pao, value);
+        for (LiteHardwarePAObject hwObj : paos) {
+            PointValueHolder value = getPointValue(hwObj.getPao(), attribute);
+            String formattedValue = pointFormattingService.getValueString(value, Format.VALUE, userContext);
+            if (filteredValues.isEmpty() || filteredValues.contains(formattedValue)) {
+                pointValues.put(hwObj, value);
+            }
         }
         
         return pointValues;

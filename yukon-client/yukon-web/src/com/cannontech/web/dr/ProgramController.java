@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,7 +38,6 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -47,8 +47,6 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
 import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DatedObject;
@@ -62,15 +60,15 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteHardwarePAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
-import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.program.model.ProgramState;
+import com.cannontech.dr.program.service.DisconnectStatusService;
 import com.cannontech.dr.program.service.ProgramWidgetService;
 import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
@@ -80,8 +78,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
-import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
-import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -90,7 +86,6 @@ import com.cannontech.web.dr.LoadGroupHelper.LoadGroupFilter;
 import com.cannontech.web.dr.ProgramsHelper.ProgramFilter;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.util.WebFileUtils;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -103,14 +98,11 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ScenarioService scenarioService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private AttributeDynamicDataSource attributeDynamicDataSource;
-    @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
-    @Autowired private LoadGroupDao loadGroupDao;
-    @Autowired private IDatabaseCache cache;
     @Autowired private PointFormattingService pointFormattingService;
     @Autowired private MeterDao meterDao;
     @Autowired private DisconnectService disconnectService;
     @Autowired private ProgramWidgetService programWidgetService;
+    @Autowired private DisconnectStatusService disconnectStatusService;
 
     @RequestMapping(value = "/program/list", method = RequestMethod.GET)
     public String list(ModelMap model, YukonUserContext userContext,
@@ -183,34 +175,40 @@ public class ProgramController extends ProgramControllerBase {
     }
     
     @GetMapping("/program/disconnectStatus")
-    public String disconnectStatus(ModelMap model, int programId, @DefaultSort(dir=Direction.asc, sort="device") SortingParameters sorting, 
+    public String disconnectStatus(ModelMap model, int programId, String[] disconnectStatus, 
+                                   @DefaultSort(dir=Direction.asc, sort="device") SortingParameters sorting, 
                                    @DefaultItemsPerPage(value=250) PagingParameters paging, YukonUserContext userContext) {
         DisplayablePao program = programService.getProgram(programId);
         model.addAttribute("program", program);
         model.addAttribute("programId", programId);
-        //get all devices for program
-        List<LoadGroup> loadGroups = loadGroupDao.getByProgramId(programId);
-        List<LiteYukonPAObject> devices = new ArrayList<>();
-        for (LoadGroup group : loadGroups) {
-            Map<Integer, SimpleDevice> inventoryPaoMap = drGroupDeviceMappingDao.getInventoryPaoMapForGrouping(group);
-            for (SimpleDevice device : inventoryPaoMap.values()) {
-                devices.add(cache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()));
-            }
-        }
 
-        //get all disconnect status for devices
-        Map<LiteYukonPAObject, PointValueHolder> disconnectStatus = attributeDynamicDataSource.getPaoPointValues(devices, BuiltInAttribute.DISCONNECT_STATUS);
+        getDisconnectStatusResults(sorting, paging, programId, disconnectStatus, userContext, model);
+
+        return "dr/disconnectStatus/detail.jsp";
+    }
+    
+    @GetMapping("/program/disconnectStatusTable")
+    public String disconnectStatusTable(ModelMap model, int programId, String[] disconnectStatus, 
+                                   @DefaultSort(dir=Direction.asc, sort="device") SortingParameters sorting, 
+                                   @DefaultItemsPerPage(value=250) PagingParameters paging, YukonUserContext userContext) {
+        getDisconnectStatusResults(sorting, paging, programId, disconnectStatus, userContext, model);
+        return "dr/disconnectStatus/filteredResultsTable.jsp";
+    }
+    
+    private void getDisconnectStatusResults(SortingParameters sorting, PagingParameters paging, int programId, 
+                                            String[] disconnectStatus, YukonUserContext userContext, ModelMap model) {
+        Map<LiteHardwarePAObject, PointValueHolder> disconnectStatusMap = disconnectStatusService.getDisconnectStatuses(programId, disconnectStatus, userContext);
         
-        SearchResults<Map.Entry<LiteYukonPAObject, PointValueHolder>> searchResult = new SearchResults<>();
+        SearchResults<Map.Entry<LiteHardwarePAObject, PointValueHolder>> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
         int itemsPerPage = paging.getItemsPerPage();
-        int endIndex = Math.min(startIndex + itemsPerPage, disconnectStatus.size());
+        int endIndex = Math.min(startIndex + itemsPerPage, disconnectStatusMap.size());
         
         DisconnectSortBy sortBy = DisconnectSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         
-        Comparator<Map.Entry<LiteYukonPAObject, PointValueHolder>> comparator = (o1, o2) -> {
-            return o1.getKey().getPaoName().compareTo(o2.getKey().getPaoName());
+        Comparator<Map.Entry<LiteHardwarePAObject, PointValueHolder>> comparator = (o1, o2) -> {
+            return o1.getKey().getPao().getPaoName().compareTo(o2.getKey().getPao().getPaoName());
         };
         if (sortBy == DisconnectSortBy.status) {
             comparator = (o1, o2) -> {
@@ -218,16 +216,20 @@ public class ProgramController extends ProgramControllerBase {
                 String formattedValue2 = pointFormattingService.getValueString(o2.getValue(), Format.VALUE, userContext);
                 return formattedValue1.compareTo(formattedValue2);            
             };
+        } else if (sortBy == DisconnectSortBy.timestamp) {
+            comparator = (o1, o2) -> {
+                return o1.getValue().getPointDataTimeStamp().compareTo(o2.getValue().getPointDataTimeStamp());         
+            };
         }
-        List<Map.Entry<LiteYukonPAObject, PointValueHolder>> list =
-                new LinkedList<Map.Entry<LiteYukonPAObject, PointValueHolder>>(disconnectStatus.entrySet());
+        List<Map.Entry<LiteHardwarePAObject, PointValueHolder>> list =
+                new LinkedList<Map.Entry<LiteHardwarePAObject, PointValueHolder>>(disconnectStatusMap.entrySet());
         if (sorting.getDirection() == Direction.desc) {
             comparator = Collections.reverseOrder(comparator);
         }
         Collections.sort(list, comparator);
         
         list = list.subList(startIndex, endIndex);
-        searchResult.setBounds(startIndex, itemsPerPage, disconnectStatus.size());
+        searchResult.setBounds(startIndex, itemsPerPage, disconnectStatusMap.size());
         searchResult.setResultList(list);
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -241,27 +243,22 @@ public class ProgramController extends ProgramControllerBase {
         }
         
         model.addAttribute("disconnectStatusList", searchResult);
-        return "dr/disconnectStatus.jsp";
+
+        List<String> stateValues = list.stream()
+                .map(p -> pointFormattingService.getValueString(p.getValue(), Format.VALUE, userContext))
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+        model.addAttribute("disconnectStatuses", stateValues);
     }
     
-    @PostMapping("/disconnectStatus/restore")
-    public @ResponseBody Map<String, Object> restore(int deviceId, YukonUserContext userContext) {
+    @PostMapping("/disconnectStatus/change")
+    public @ResponseBody Map<String, Object> changeDisconnectStatus(int deviceId, boolean connect, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         YukonMeter meter = meterDao.getForId(deviceId);
-        DisconnectMeterResult result = disconnectService.execute(DisconnectCommand.CONNECT,
-                                                                 DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
-                                                                 userContext.getYukonUser());
-        addDisconnectResultToModel(json, result, accessor);
-        return json;
-    }
-    
-    @PostMapping("/disconnectStatus/resendShed")
-    public @ResponseBody Map<String, Object> resendShed(int deviceId, YukonUserContext userContext) {
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        Map<String, Object> json = new HashMap<>();
-        YukonMeter meter = meterDao.getForId(deviceId);
-        DisconnectMeterResult result = disconnectService.execute(DisconnectCommand.DISCONNECT,
+        DisconnectCommand command = connect ? DisconnectCommand.CONNECT : DisconnectCommand.DISCONNECT;
+        DisconnectMeterResult result = disconnectService.execute(command,
                                                                  DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
                                                                  userContext.getYukonUser());
         addDisconnectResultToModel(json, result, accessor);
@@ -284,7 +281,8 @@ public class ProgramController extends ProgramControllerBase {
     public enum DisconnectSortBy implements DisplayableEnum {
 
         device,
-        status;
+        status,
+        timestamp;
 
         @Override
         public String getFormatKey() {

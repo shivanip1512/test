@@ -20,12 +20,25 @@ yukon.dr.disconnectStatus = (function () {
             
             if (_initialized) return;
             
-            $(document).on('click', '.js-restore, .js-resend-shed', function () {
+            $('#disconnectStatus').chosen({width: "300px"});
+            
+            $(document).on('click', '.js-filter', function (ev) {
+                var tableContainer = $('#disconnect-status-table'),
+                    form = $('#disconnect-form');
+                form.ajaxSubmit({
+                    success: function(data, status, xhr, $form) {
+                        tableContainer.html(data);
+                        tableContainer.data('url', yukon.url('/dr/program/disconnectStatusTable?' + form.serialize()));
+                    }
+                });
+            });
+            
+            $(document).on('click', '.js-connect, .js-disconnect', function () {
                 yukon.ui.block($('#disconnect-status-table'));
                 var deviceId = $(this).data('deviceId'),
-                    command = $(this).data('command');
+                    connect = $(this).hasClass('js-connect');
                 $.ajax({
-                    url: yukon.url('/dr/disconnectStatus/' + command + '?deviceId=' + deviceId),
+                    url: yukon.url('/dr/disconnectStatus/change?deviceId=' + deviceId + '&connect=' + connect),
                     type: 'POST'
                 }).done(function(data) {
                     if (data.success) {

@@ -66,6 +66,8 @@
     <bean id="drProgramEnabledClassnameField" class="com.cannontech.dr.program.model.ProgramEnabledClassnameField"/>
     <bean id="drProgramShowAction" class="com.cannontech.dr.program.model.ProgramShowActionField"/>
     <bean id="drProgramPriority" class="com.cannontech.dr.program.model.ProgramPriorityField"/>
+    
+    <bean class="com.cannontech.dr.program.service.impl.DisconnectStatusServiceImpl"/>
 
     <bean id="drLoadGroupService" class="com.cannontech.dr.loadgroup.service.impl.LoadGroupServiceImpl"/>
     <bean id="drLoadGroupFieldService" class="com.cannontech.dr.loadgroup.service.impl.LoadGroupFieldServiceImpl"/>
