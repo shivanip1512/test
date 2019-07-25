@@ -95,6 +95,12 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
         List<Pair<RfnMetadata, Object>> metadataPairs = Lists.newArrayList();
         List<Pair<RfnMetadata, Object>> csrMetadataPairs = Lists.newArrayList();
         
+        Object objWifiMetaData = metadata.get(RfnMetadata.WIFI_SUPER_METER_DATA);
+        if(objWifiMetaData != null) {
+            metadata.remove(RfnMetadata.WIFI_SUPER_METER_DATA);
+            model.addAttribute("wifiSuperMeterData", objWifiMetaData);
+        }
+        
         List<RfnMetadata> metadataTypes = Lists.newArrayList(metadata.keySet());
         final Collator collator = Collator.getInstance(context.getLocale());
         Collections.sort(metadataTypes, new Comparator<RfnMetadata>() {

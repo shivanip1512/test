@@ -358,6 +358,10 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                             metadata.put(RfnMetadata.PRODUCT_NUMBER, "123456789 (Sim)");
                             metadata.put(RfnMetadata.SUB_MODULE_FIRMWARE_VERSION, "1.1.1 (Sim)");
                             metadata.put(RfnMetadata.HOSTNAME, "Hostname");
+                            RfnDevice rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(request.getRfnIdentifier());
+                            if(wiFiSuperMeters.contains(rfnDevice.getPaoIdentifier().getPaoType())) {
+                                metadata.put(RfnMetadata.WIFI_SUPER_METER_DATA, getSuperMeterData());
+                            }
                             reply.setMetadata(metadata);
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
                         }
@@ -483,13 +487,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     node.setNodeType(NodeType.ELECTRIC_NODE);
                     node.setProductNumber("123456789 (Sim)");
                     if(wiFiSuperMeters.contains(rfnDevice.getPaoIdentifier().getPaoType())) {
-                        WifiSuperMeterData superMeterData = new WifiSuperMeterData();
-                        superMeterData.setApBssid("12:34:56:78:90:ab");
-                        superMeterData.setApSsid("ExampleUtilityISP");
-                        superMeterData.setChannelNum(8);
-                        superMeterData.setRssi(-64D);
-                        superMeterData.setSecurityType(WifiSecurityType.WPA2);
-                        node.setWifiSuperMeterData(superMeterData);
+                        node.setWifiSuperMeterData(getSuperMeterData());
                     }
                     RfnMetadataMultiQueryResult result = getResult(results, device, multi);
                     result.getMetadatas().put(multi, node);
@@ -521,6 +519,16 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             }
         }
         return results;
+    }
+
+    private WifiSuperMeterData getSuperMeterData() {
+        WifiSuperMeterData superMeterData = new WifiSuperMeterData();
+        superMeterData.setApBssid("12:34:56:78:90:ab");
+        superMeterData.setApSsid("ExampleUtilityISP");
+        superMeterData.setChannelNum(8);
+        superMeterData.setRssi(-64D);
+        superMeterData.setSecurityType(WifiSecurityType.WPA2);
+        return superMeterData;
     }
 
     /**
