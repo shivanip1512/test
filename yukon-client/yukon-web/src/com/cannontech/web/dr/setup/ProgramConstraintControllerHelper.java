@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.dr.setup.HolidayUsage;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.ProgramConstraint;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -16,33 +15,14 @@ public class ProgramConstraintControllerHelper {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     public void setDefaultValues(ProgramConstraint programConstraint) {
-        if (programConstraint.getMaxActivateSeconds() == null) {
             programConstraint.setMaxActivateSeconds(0);
-        }
-        if (programConstraint.getMaxDailyOpsSeconds() == null) {
             programConstraint.setMaxDailyOpsSeconds(0);
-        }
-        if (programConstraint.getMinActivateSeconds() == null) {
             programConstraint.setMinActivateSeconds(0);
-        }
-        if (programConstraint.getMinRestartSeconds() == null) {
             programConstraint.setMinRestartSeconds(0);
-        }
-        if (programConstraint.getMaxHoursDaily() == null) {
             programConstraint.setMaxHoursDaily(0);
-        }
-        if (programConstraint.getMaxHoursMonthly() == null) {
             programConstraint.setMaxHoursMonthly(0);
-        }
-        if (programConstraint.getMaxHoursAnnually() == null) {
             programConstraint.setMaxHoursAnnually(0);
-        }
-        if (programConstraint.getMaxHoursSeasonal() == null) {
             programConstraint.setMaxHoursSeasonal(0);
-        }
-        if (programConstraint.getHolidaySchedule() == null || programConstraint.getHolidaySchedule().getId() == 0) {
-            programConstraint.setHolidayUsage(HolidayUsage.NONE);
-        }
     }
 
     public void setDefaultSeasonSchedule(List<LMDto> seasonSchedules, YukonUserContext userContext) {

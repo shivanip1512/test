@@ -27,6 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.DayOfWeek;
+import com.cannontech.common.dr.setup.HolidayUsage;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.ProgramConstraint;
@@ -58,6 +59,7 @@ public class ProgramConstraintController {
         if (model.containsAttribute("programConstraint")) {
             programConstraint = (ProgramConstraint) model.get("programConstraint");
         }
+        programConstraintControllerHelper.setDefaultValues(programConstraint);
         return setupModel(programConstraint, model, userContext, request);
     }
 
@@ -111,7 +113,9 @@ public class ProgramConstraintController {
         try {
             String url = StringUtils.EMPTY;
             ResponseEntity<? extends Object> response = null;
-            programConstraintControllerHelper.setDefaultValues(programConstraint);
+            if (programConstraint.getHolidaySchedule().getId() == 0) {
+                programConstraint.setHolidayUsage(HolidayUsage.NONE);
+            }
             if (programConstraint.getId() == null) {
                 url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintCreateUrl);
                 response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
@@ -198,8 +202,6 @@ public class ProgramConstraintController {
 
     private String setupModel(ProgramConstraint programConstraint, ModelMap model, YukonUserContext userContext,
             HttpServletRequest request) {
-
-        programConstraintControllerHelper.setDefaultValues(programConstraint);
 
         String seasonScheduleUrl = helper.findWebServerUrl(request, userContext, ApiURL.drSeasonScheduleUrl);
         List<LMDto> seasonSchedules = getSchedules(userContext, request, seasonScheduleUrl);
