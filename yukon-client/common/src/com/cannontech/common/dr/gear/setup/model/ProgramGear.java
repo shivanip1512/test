@@ -14,7 +14,7 @@ import com.cannontech.common.dr.gear.setup.fields.ProgramGearFields;
 import com.cannontech.common.dr.gear.setup.fields.RotationGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SepCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SepTemperatureOffsetGearFields;
-import com.cannontech.common.dr.gear.setup.fields.SimpleOnOffGearFields;
+import com.cannontech.common.dr.gear.setup.fields.MeterDisconnectGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SimpleThermostatRampingGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SmartCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.TargetCycleGearFields;
@@ -60,7 +60,7 @@ public class ProgramGear {
         @JsonSubTypes.Type(value = TrueCycleGearFields.class, name = "TrueCycle"),
         @JsonSubTypes.Type(value = MagnitudeCycleGearFields.class, name = "MagnitudeCycle"),
         @JsonSubTypes.Type(value = TargetCycleGearFields.class, name = "TargetCycle"),
-        @JsonSubTypes.Type(value = SimpleOnOffGearFields.class, name = "SimpleOnOff")})
+        @JsonSubTypes.Type(value = MeterDisconnectGearFields.class, name = "MeterDisconnect")})
     
     private ProgramGearFields fields;
 
