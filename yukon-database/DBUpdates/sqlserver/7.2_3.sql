@@ -16,6 +16,25 @@ AND Value = '1';
 INSERT INTO DBUpdates VALUES ('YUK-20294', '7.2.3', GETDATE());
 /* @end YUK-20294 */
 
+/* @start YUK-20257 */
+UPDATE DCCI
+SET ItemValue = 'DELIVERED_DEMAND'
+FROM DeviceConfigCategoryItem DCCI
+JOIN (
+    SELECT DISTINCT DCC.DeviceConfigCategoryId 
+    FROM DeviceConfigCategory DCC
+    JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId = DCCM.DeviceConfigCategoryId
+    JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId = DC.DeviceConfigurationID
+    JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID = DCDT.DeviceConfigurationId
+    WHERE DCC.CategoryType = 'rfnChannelConfiguration'
+    AND DCDT.PaoType IN ('RFN-410CL', 'RFN-420CL')
+) RFNDC ON DCCI.DeviceConfigCategoryId = RFNDC.DeviceConfigCategoryId
+WHERE DCCI.ItemName LIKE 'enabledChannels%attribute'
+AND DCCI.ItemValue = 'DEMAND';
+
+INSERT INTO DBUpdates VALUES ('YUK-20257', '7.2.3', GETDATE());
+/* @end YUK-20257 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
