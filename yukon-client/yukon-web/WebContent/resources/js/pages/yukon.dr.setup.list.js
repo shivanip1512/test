@@ -13,6 +13,12 @@ yukon.dr.setup.list = (function() {
     var
     _initialized = false,
     
+    _initTypes = function () {
+        var selectedFilterByType = $("#js-filter-by-type option:selected").val();
+        $(".js-load-group-types-container").toggleClass("dn", selectedFilterByType !== 'LOAD_GROUP');
+        $(".js-load-program-types-container").toggleClass("dn", selectedFilterByType !== 'LOAD_PROGRAM');
+    },
+    
     mod = {
         
         /** Initialize this module. */
@@ -28,12 +34,14 @@ yukon.dr.setup.list = (function() {
                 $("#js-load-program-types").chosen({width: "305px"});
             }
             
+            _initTypes();
+            
             $(document).on('change', '#js-filter-by-type', function () {
                 var selectedFilterByType = $("#js-filter-by-type option:selected").val();
                 
                 $(".js-load-group-types-container").toggleClass("dn", selectedFilterByType !== 'LOAD_GROUP');
                 $(".js-load-program-types-container").toggleClass("dn", selectedFilterByType !== 'LOAD_PROGRAM');
-                
+                $("#js-name").val('');
                 if (selectedFilterByType !== 'LOAD_GROUP') {
                     $("#js-load-group-types").val("").trigger("chosen:updated");
                 }

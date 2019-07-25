@@ -47,7 +47,7 @@
                     <cti:msg2 var="namePlaceholder" key="yukon.common.name"/>
                     <cti:msg2 var="filterLbl" key="yukon.common.filter"/>
                     <tags:selectWithItems items="${filterByTypes}" path="filterByType" id="js-filter-by-type" inputClass="vat"/>
-                    <tags:input path="name" placeholder="${namePlaceholder}" inputClass="vat"/>
+                    <tags:input path="name" placeholder="${namePlaceholder}" inputClass="vat" id="js-name"/>
                     <div class="js-load-group-types-container dib dn">
                         <cti:msg2 var="selectSwitchTypesLbl" key="yukon.web.modules.dr.setup.loadGroup.filter.selectSwitchTypes"/>
                         <tags:selectWithItems items="${loadGroupTypes}" path="types" dataPlaceholder="${selectSwitchTypesLbl}" 
