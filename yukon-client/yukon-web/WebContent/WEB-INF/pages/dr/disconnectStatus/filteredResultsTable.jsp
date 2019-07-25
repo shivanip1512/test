@@ -4,11 +4,26 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.dr.disconnectStatus">
+
+    <span class="fwn"><i:inline key="yukon.common.filteredResults"/></span>
+    <span class="badge">${disconnectStatusList.hitCount}</span>&nbsp;<i:inline key="yukon.common.devices"/>
+    
+    <c:if test="${disconnectStatusList.hitCount > 0}">
+        <span class="js-cog-menu">
+            <cm:dropdown icon="icon-cog">
+                <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
+                    <cti:param name="collectionType" value="group"/>
+                    <cti:param name="group.name" value="${group.fullName}"/>
+                </cti:url>
+                <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" classes="js-collection-action" href="${collectionActionUrl}" newTab="true"/> 
+                <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="js-download"/>  
+            </cm:dropdown>
+        </span>
+    </c:if>
 
     <table class="compact-results-table row-highlighting has-actions">
         <thead>
@@ -21,7 +36,7 @@
         </thead>
         <tbody>
             <c:forEach var="disconnectStatus" items="${disconnectStatusList.resultList}">
-                <c:set var="pao" value="${disconnectStatus.key.pao}"/>
+                <c:set var="pao" value="${disconnectStatus.key}"/>
                 <c:set var="pointData" value="${disconnectStatus.value}"/>
                 <c:set var="paoId" value="${pao.paoIdentifier.paoId}"/>
                 <tr>

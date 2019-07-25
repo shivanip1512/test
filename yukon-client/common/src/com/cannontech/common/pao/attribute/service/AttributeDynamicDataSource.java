@@ -48,7 +48,7 @@ public class AttributeDynamicDataSource {
         Map<LiteHardwarePAObject,PointValueHolder> pointValues = Maps.newHashMapWithExpectedSize(paos.size());
         
         for (LiteHardwarePAObject hwObj : paos) {
-            PointValueHolder value = getPointValue(hwObj.getPao(), attribute);
+            PointValueHolder value = getPointValue(hwObj, attribute);
             String formattedValue = pointFormattingService.getValueString(value, Format.VALUE, userContext);
             if (filteredValues.isEmpty() || filteredValues.contains(formattedValue)) {
                 pointValues.put(hwObj, value);

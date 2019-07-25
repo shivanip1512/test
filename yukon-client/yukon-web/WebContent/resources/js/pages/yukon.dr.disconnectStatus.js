@@ -52,6 +52,12 @@ yukon.dr.disconnectStatus = (function () {
                 });
                 
             });
+            
+            $(document).on('click', '.js-download', function () {
+                var form = $('#disconnect-form');
+                var data = form.serialize();
+                window.location = yukon.url('/dr/program/disconnectStatus/download?' + data);
+            });
 
             _initialized = true;
         }

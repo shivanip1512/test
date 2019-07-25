@@ -1,12 +1,13 @@
 package com.cannontech.database.data.lite;
 
-public class LiteHardwarePAObject {
+public class LiteHardwarePAObject extends LiteYukonPAObject {
     
     private Integer inventoryId;
-    private LiteYukonPAObject pao;
 
     public LiteHardwarePAObject(LiteYukonPAObject pao, Integer inventoryId) {
-        this.setPao(pao);
+        this.setPaoName(pao.getPaoName());
+        this.setLiteID(pao.getLiteID());
+        this.setPaoType(pao.getPaoType());
         this.inventoryId = inventoryId;
     }
 
@@ -16,14 +17,6 @@ public class LiteHardwarePAObject {
 
     public void setInventoryId(Integer inventoryId) {
         this.inventoryId = inventoryId;
-    }
-
-    public LiteYukonPAObject getPao() {
-        return pao;
-    }
-
-    public void setPao(LiteYukonPAObject pao) {
-        this.pao = pao;
     }
 
 }

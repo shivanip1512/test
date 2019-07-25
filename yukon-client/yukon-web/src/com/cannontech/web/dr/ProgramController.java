@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +40,9 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -103,6 +108,9 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private DisconnectService disconnectService;
     @Autowired private ProgramWidgetService programWidgetService;
     @Autowired private DisconnectStatusService disconnectStatusService;
+    @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 
     @RequestMapping(value = "/program/list", method = RequestMethod.GET)
     public String list(ModelMap model, YukonUserContext userContext,
@@ -199,6 +207,12 @@ public class ProgramController extends ProgramControllerBase {
                                             String[] disconnectStatus, YukonUserContext userContext, ModelMap model) {
         Map<LiteHardwarePAObject, PointValueHolder> disconnectStatusMap = disconnectStatusService.getDisconnectStatuses(programId, disconnectStatus, userContext);
         
+        //create temp group
+        StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
+        List<LiteHardwarePAObject> devices = new ArrayList<LiteHardwarePAObject>(disconnectStatusMap.keySet());
+        deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
+        model.addAttribute("group", tempGroup);
+        
         SearchResults<Map.Entry<LiteHardwarePAObject, PointValueHolder>> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
         int itemsPerPage = paging.getItemsPerPage();
@@ -208,7 +222,7 @@ public class ProgramController extends ProgramControllerBase {
         Direction dir = sorting.getDirection();
         
         Comparator<Map.Entry<LiteHardwarePAObject, PointValueHolder>> comparator = (o1, o2) -> {
-            return o1.getKey().getPao().getPaoName().compareTo(o2.getKey().getPao().getPaoName());
+            return o1.getKey().getPaoName().compareTo(o2.getKey().getPaoName());
         };
         if (sortBy == DisconnectSortBy.status) {
             comparator = (o1, o2) -> {
@@ -250,6 +264,33 @@ public class ProgramController extends ProgramControllerBase {
                 .sorted()
                 .collect(Collectors.toList());
         model.addAttribute("disconnectStatuses", stateValues);
+    }
+    
+    @GetMapping("/program/disconnectStatus/download")
+    public void download(int programId, String[] disconnectStatus, YukonUserContext userContext, HttpServletResponse response) throws IOException {
+        DisplayablePao program = programService.getProgram(programId);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String[] headerRow = new String[3];
+
+        headerRow[0] = accessor.getMessage(DisconnectSortBy.device);
+        headerRow[1] = accessor.getMessage(DisconnectSortBy.status);
+        headerRow[2] = accessor.getMessage(DisconnectSortBy.timestamp);
+        
+        Map<LiteHardwarePAObject, PointValueHolder> disconnectStatusMap = disconnectStatusService.getDisconnectStatuses(programId, disconnectStatus, userContext);
+
+        List<String[]> dataRows = Lists.newArrayList();
+        for (Entry<LiteHardwarePAObject, PointValueHolder> status : disconnectStatusMap.entrySet()) {
+            String[] dataRow = new String[3];
+            LiteHardwarePAObject obj = status.getKey();
+            PointValueHolder point = status.getValue();
+            dataRow[0] = obj.getPaoName();
+            dataRow[1] = pointFormattingService.getValueString(point, Format.VALUE, userContext);
+            dataRow[2] =  dateFormattingService.format(point.getPointDataTimeStamp(), 
+                                                            DateFormatEnum.BOTH, userContext);
+            dataRows.add(dataRow);
+        }
+        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "disconnectStatus_" + program.getName() + "_" + now + ".csv");
     }
     
     @PostMapping("/disconnectStatus/change")
