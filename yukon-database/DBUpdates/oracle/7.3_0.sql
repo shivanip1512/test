@@ -300,10 +300,27 @@ INSERT INTO DBUpdates VALUES ('YUK-20294', '7.3.0', SYSDATE);
 UPDATE LMHardwareBase SET RouteId = 0
 WHERE LMHardwareTypeId IN 
     (SELECT EntryId FROM YukonListEntry WHERE YukonDefinitionId = 1315)
-AND RouteId = !0
+AND RouteId != 0;
 
 INSERT INTO DBUpdates VALUES ('YUK-19742', '7.3.0', SYSDATE);
 /* @end YUK-19742 */
+
+/* @start YUK-20257 */
+UPDATE DeviceConfigCategoryItem DCCI
+SET ItemValue = 'DELIVERED_DEMAND'
+WHERE DCCI.DeviceConfigCategoryId IN (
+    SELECT DISTINCT DCC.DeviceConfigCategoryId 
+    FROM DeviceConfigCategory DCC
+    JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId = DCCM.DeviceConfigCategoryId
+    JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId = DC.DeviceConfigurationID
+    JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID = DCDT.DeviceConfigurationId
+    WHERE DCC.CategoryType = 'rfnChannelConfiguration'
+    AND DCDT.PaoType IN ('RFN-410CL', 'RFN-420CL') )
+AND DCCI.ItemName LIKE 'enabledChannels%attribute'
+AND DCCI.ItemValue = 'DEMAND';
+
+INSERT INTO DBUpdates VALUES ('YUK-20257', '7.3.0', SYSDATE);
+/* @end YUK-20257 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
