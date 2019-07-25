@@ -1,44 +1,50 @@
 package com.cannontech.system;
 
+import java.util.ArrayList;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonAlias;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ThirdPartyLibraries {
 
-    @JsonAlias("C++")
+    @JsonProperty("C++")
     public List<ThirdPartyCppLibrary> cppLibraries;
-    @JsonAlias("Java")
+    @JsonProperty("Java")
     public List<ThirdPartyJavaLibrary> javaLibraries;
-    @JsonAlias("JavaScript")
+    @JsonProperty("JavaScript")
     public List<ThirdPartyJavaScriptLibrary> jsLibraries;
-    @JsonAlias("Icons")
+    @JsonProperty("Icons")
     public List<ThirdPartyIconLibrary> iconLibraries;
     
-    public List<ThirdPartyCppLibrary> getCppLibraries() {
-        return cppLibraries;
+    public List<ThirdPartyProject> getCppProjects() {
+        return getUniqueProjects(cppLibraries);
     }
-    public void setCppLibraries(List<ThirdPartyCppLibrary> cppLibraries) {
-        this.cppLibraries = cppLibraries;
+    public List<ThirdPartyProject> getJavaProjects() {
+        return getUniqueProjects(javaLibraries);
     }
-    public List<ThirdPartyJavaLibrary> getJavaLibraries() {
-        return javaLibraries;
+    public List<ThirdPartyProject> getJsProjects() {
+        return getUniqueProjects(jsLibraries);
     }
-    public void setJavaLibraries(List<ThirdPartyJavaLibrary> javaLibraries) {
-        this.javaLibraries = javaLibraries;
+    public List<ThirdPartyProject> getIconProjects() {
+        return getUniqueProjects(iconLibraries);
     }
-    public List<ThirdPartyJavaScriptLibrary> getJsLibraries() {
-        return jsLibraries;
+    public List<ThirdPartyProject> getAllProjects() {
+        List<ThirdPartyLibrary> allLibraries = new ArrayList<>();
+        allLibraries.addAll(cppLibraries);
+        allLibraries.addAll(javaLibraries);
+        allLibraries.addAll(jsLibraries);
+        allLibraries.addAll(iconLibraries);
+        return getUniqueProjects(allLibraries);
     }
-    public void setJsLibraries(List<ThirdPartyJavaScriptLibrary> jsLibraries) {
-        this.jsLibraries = jsLibraries;
+    private static <T extends ThirdPartyProject> List<ThirdPartyProject> getUniqueProjects(List<T> libraries) {
+        return libraries.stream()
+                        .map(library -> (ThirdPartyProject)library)
+                        .distinct()
+                        .sorted()
+                        .filter(ThirdPartyProject::isAttributionRequired)
+                        .collect(Collectors.toList());
     }
-    public List<ThirdPartyIconLibrary> getIconLibraries() {
-        return iconLibraries;
-    }
-    public void setIconLibraries(List<ThirdPartyIconLibrary> iconLibraries) {
-        this.iconLibraries = iconLibraries;
-    }
-
 }
 
 

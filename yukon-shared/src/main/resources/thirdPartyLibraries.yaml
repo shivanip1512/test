@@ -880,7 +880,7 @@ Java :
     version : 9.0.12
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
-    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-el-api/9.0.12"
     md5 : 44b8897862390caf96ba3281b04f522c
     sha1 : d365788d1504299a858ac896371cbf3fd42ee0ff
@@ -1188,7 +1188,7 @@ Java :
     version : 9.0.12
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
-    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper-el/9.0.12"
     md5 : 00b10e63792924202645ab3202f9ca3a
     sha1 : cb111b40aa38a2c3498ca9bbbc2d1c811c4c0e96
@@ -1202,7 +1202,7 @@ Java :
     version : 9.0.12
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
-    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper/9.0.12"
     md5 : fc040ccc4adb5293bdc617527c7ce3f0
     sha1 : c275a27658709c391f9a8c165126240e0085378f
@@ -1216,7 +1216,7 @@ Java :
     version : 9.0.12
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
-    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jaspic-api/9.0.12"
     md5 : 556febc689f2b9108015f579e5ce7bdf
     sha1 : 05d6d2aab1b9db1002e8f0355e31b12202c019f9
@@ -1380,7 +1380,7 @@ Java :
   
   - filename : jaxm-runtime.jar
     yukon group : Java API for XML Messaging
-    project : Java API For XML Messaging
+    project : Java API for XML Messaging
     version : 1.1.2
     project URL : "https://github.com/eclipse-ee4j/metro-saaj"
     license : CDDL, GPLv2 with classpath exception
@@ -1390,7 +1390,7 @@ Java :
     sha1 : c7ff6d8fd87e54630b10b05a01dd1030d6ddc61b
     updated : 2005-08-01
     jira : none
-    notes : Java API For XML Messaging Runtime
+    notes : Java API for XML Messaging Runtime
   
   - filename : jaxrpc.jar
     yukon group : AXIS
@@ -2252,7 +2252,7 @@ Java :
     version : 9.0.12
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0, CDDL 1.0
-    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt, http://www.opensource.org/licenses/cddl1.txt"
+    license URLs : "https://opensource.org/licenses/Apache-2.0, http://www.opensource.org/licenses/cddl1.txt"
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api/9.0.12"
     md5 : 4bbd27ab8fcc98983f00927b403c28cc
     sha1 : e5c8b4d9c1bf1e90554164da46740ba0057d7a64
@@ -2878,7 +2878,7 @@ Java :
 
   - filename : validation-api-2.0.1.Final.jar
     yukon group : Common
-    project : Apache Tomcat
+    project : Bean Validation
     version : 2.0.1
     project URL : "http://beanvalidation.org"
     license : Apache 2.0
