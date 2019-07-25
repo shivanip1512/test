@@ -124,7 +124,7 @@ public final static Integer getNextConstraintID(String databaseAlias) throws jav
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  */
-public final static boolean inUseByProgram(int constrID, String databaseAlias) throws java.sql.SQLException 
+public final static boolean inUseByProgram(int constrID, String databaseAlias)
 {
 	SqlStatement stmt =	new SqlStatement(
 		"SELECT * FROM " + LMProgram.TABLE_NAME +

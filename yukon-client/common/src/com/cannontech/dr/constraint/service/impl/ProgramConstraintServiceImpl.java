@@ -149,18 +149,12 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     private void checkIfConstriantIsUsed(LiteLMConstraint liteLMConstraint, Integer paoId) {
         LMProgramConstraint constraint = (LMProgramConstraint) LiteFactory.createDBPersistent(liteLMConstraint);
         DBDeleteResult dbDeleteResult = dbDeletionDao.getDeleteInfo(constraint, constraint.getConstraintName());
-        try {
-            if (LMProgramConstraint.inUseByProgram(dbDeleteResult.getItemID(), CtiUtilities.getDatabaseAlias())) {
-                if (dbDeleteResult.isDeletable()) {
-                    String message = "You cannot delete the Program Constraint '" + constraint.getConstraintName()
-                        + "' because it is used by a program.";
-                    throw new LMObjectDeletionFailureException(message);
-                }
+        if (LMProgramConstraint.inUseByProgram(dbDeleteResult.getItemID(), CtiUtilities.getDatabaseAlias())) {
+            if (dbDeleteResult.isDeletable()) {
+                String message = "You cannot delete the Program Constraint '" + constraint.getConstraintName()
+                    + "' because it is used by a program.";
+                throw new LMObjectDeletionFailureException(message);
             }
-        } catch (SQLException e) {
-            String message = "Unable to delete Constraint with name : " + constraint.getConstraintName() + e;
-            log.error(message);
-            throw new LMObjectDeletionFailureException(message);
         }
     }
 }
