@@ -435,7 +435,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                   .findFirst();
             if (paObject.isPresent()) {
                 ProgramGroup loadGroup = new ProgramGroup();
-                loadGroup.setGroupId(directGroup.getDeviceID());
+                loadGroup.setGroupId(directGroup.getLmGroupDeviceID());
                 loadGroup.setGroupOrder(directGroup.getGroupOrder());
                 loadGroup.setGroupName(paObject.get().getPaoName());
                 loadGroup.setType(paObject.get().getPaoType());

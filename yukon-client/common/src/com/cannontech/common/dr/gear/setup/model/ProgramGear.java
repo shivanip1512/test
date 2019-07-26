@@ -111,6 +111,7 @@ public class ProgramGear {
         LMProgramDirectGear programDirectGear = controlMethod.createNewGear();
 
         programDirectGear.setGearID(getGearId());
+        programDirectGear.setGearNumber(getGearNumber());
         programDirectGear.setGearName(getGearName());
         programDirectGear.setControlMethod(controlMethod);
         if (fields != null) {
