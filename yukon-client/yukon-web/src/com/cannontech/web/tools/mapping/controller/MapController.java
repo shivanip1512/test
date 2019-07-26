@@ -264,10 +264,10 @@ public class MapController {
                             model.addAttribute("macAddress", nodeData.getMacAddress());
                             model.addAttribute("nodeSN", nodeData.getNodeSerialNumber());
                             if (nodeData.getWifiSuperMeterData() != null) {
-                                model.addAttribute("apBssid", nodeData.getWifiSuperMeterData().getApBssid());
-                                model.addAttribute("apSsid", nodeData.getWifiSuperMeterData().getApSsid());
                                 model.addAttribute("channelNum", nodeData.getWifiSuperMeterData().getChannelNum());
                                 model.addAttribute("rssi", nodeData.getWifiSuperMeterData().getRssi());
+                                model.addAttribute("apBssid", nodeData.getWifiSuperMeterData().getApBssid());
+                                model.addAttribute("apSsid", nodeData.getWifiSuperMeterData().getApSsid());
                                 String securityType = accessor.getMessage("yukon.web.modules.operator.mapNetwork.securityType."
                                         + nodeData.getWifiSuperMeterData().getSecurityType());
                                 model.addAttribute("securityType", securityType);

@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
@@ -11,6 +12,21 @@
         <c:forEach var="pair" items="${metadata}">
             <%@ include file="metadataRow.jspf" %>
         </c:forEach>
+        <c:if test="${!empty wifiSuperMeterData}">
+            <cti:msgScope paths="modules.operator.mapNetwork">
+                <cti:msg2 var="label" key=".channelNum"/>
+                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.channelNum)}</tags:nameValue>
+                <cti:msg2 var="label" key=".rssi"/>
+                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.rssi)}</tags:nameValue>
+                <cti:msg2 var="label" key=".apBssid"/>
+                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.apBssid)}</tags:nameValue>
+                <cti:msg2 var="label" key=".apSsid"/>
+                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.apSsid)}</tags:nameValue>
+                <cti:msg2 var="label" key=".securityType"/>
+                <cti:msg2 var="type" key=".securityType.${fn:escapeXml(wifiSuperMeterData.securityType)}"/>
+                <tags:nameValue name="${label}">${type}</tags:nameValue>
+            </cti:msgScope>
+        </c:if>
     </tags:nameValueContainer>
 </div>
 
