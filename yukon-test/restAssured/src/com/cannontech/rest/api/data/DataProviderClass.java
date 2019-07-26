@@ -20,7 +20,7 @@ public class DataProviderClass {
             { "Test\\Nest", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
             { "Test,Nest", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
             { "TestNestMoreThanSixtyCharacter_TestNestMoreThanSixtyCharacters", "Exceeds maximum length of 60.", 422 },
-            { context.getAttribute("Nest_GrpName"), "Group Name must be unique.", 422 } };
+            { context.getAttribute("Itron_GrpName"), "Group Name must be unique.", 422 } };
     }
 
     /**
@@ -51,7 +51,9 @@ public class DataProviderClass {
     @DataProvider(name = "VirtualRelayIdData")
     public Object[][] getVirtualRelayIdData() {
 
-        return new Object[][] { { "", "Virual Relay Id is required.", 422 },
-            { -222, "Must be between 0 and 99,999.999.", 422 }, { 100000, "Must be between 0 and 99,999.999.", 422 } };
+        return new Object[][] { 
+        //{ "", "Virtual RelayId  is required.", 422 },
+        { (int) -2, "Must be between 1 and 8.", 422 }, 
+        { (int) 11, "Must be between 1 and 8.", 422 } };
     }
 }
