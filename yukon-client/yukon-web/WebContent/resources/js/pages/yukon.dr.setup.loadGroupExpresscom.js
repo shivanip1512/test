@@ -104,34 +104,13 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
         $("#feederValueString").val(feederValue);
     }, 
     _addressUsage = function() {
-        var addressUsage = $(allAddressUsage).val();
-        if (addressUsage.indexOf('GEO') > -1) {
-            $('#GEO_chk').prop("checked", true)
-        }
-        if (addressUsage.indexOf('SUBSTATION') > -1) {
-            $('#SUBSTATION_chk').prop("checked", true)
-        }
-        if (addressUsage.indexOf('FEEDER') > -1) {
-            $('#FEEDER_chk').prop("checked", true)
-        }
-        if (addressUsage.indexOf('ZIP') > -1) {
-            $('#ZIP_chk').prop("checked", true)
-        }
-        if (addressUsage.indexOf('USER') > -1) {
-            $('#USER_chk').prop("checked", true)
-        }
-        if (addressUsage.indexOf('SERIAL') > -1) {
-            $('#SERIAL_chk').prop("checked", true)
-        }
-        if (addressUsage.indexOf('LOAD') > -1) {
-            $('#LOAD_chk').prop("checked", true)
-        }
-        if (addressUsage.indexOf('PROGRAM') > -1) {
-            $('#PROGRAM_chk').prop("checked", true)
-        }
-        if (addressUsage.indexOf('SPLINTER') > -1) {
-            $('#SPLINTER_chk').prop("checked", true)
-        }
+        var addressUsage = $("#allAddressUsage").val();
+        $(".js-addressUsage").find("input:checkbox").each(function (index, item) {
+            var itemValue = $(item).val();
+            if(addressUsage.indexOf(itemValue) > -1) {
+                $('#' + itemValue + '_chk').prop("checked", true)
+            }
+        });
     },
     _setValues = function() {
         if (!($('#GEO_chk').is(':checked'))) {
