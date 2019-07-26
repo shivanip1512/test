@@ -22,7 +22,8 @@ public class EcobeeCycleGearFieldsValidator extends ProgramGearFieldsValidator<E
 
     @Override
     protected void doValidation(EcobeeCycleGearFields target, Errors errors) {
-      //TODO validate ecobee fields
+        // TODO validate ecobee fields
+
     }
 
 }

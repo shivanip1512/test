@@ -44,6 +44,7 @@ public enum TimeIntervals {
     HOURS_2(Duration.standardHours(2)),
     HOURS_3(Duration.standardHours(3)),
     HOURS_4(Duration.standardHours(4)),
+    HOURS_5(Duration.standardHours(5)),
     HOURS_6(Duration.standardHours(6)),
     HOURS_8(Duration.standardHours(8)),
     HOURS_12(Duration.standardHours(12)),
@@ -305,7 +306,7 @@ public enum TimeIntervals {
         HOURS_4,
         HOURS_6,
         HOURS_8);
- 
+
     /**
      * Used for RTU Intervals for Class 0,1,2,3
      */
@@ -353,4 +354,27 @@ public enum TimeIntervals {
         return projectionAheadDuration;
     }
 
+
+    private static final Set<TimeIntervals> commandResendRate = ImmutableSet.of(
+        NONE,
+        MINUTES_1,
+        MINUTES_2,
+        MINUTES_5,
+        MINUTES_8,
+        MINUTES_10,
+        MINUTES_15,
+        MINUTES_20,
+        MINUTES_30,
+        MINUTES_45,
+        HOURS_1,
+        HOURS_2,
+        HOURS_6,
+        HOURS_8);
+
+    /**
+     * Used for Command Resend Rate for Gears
+     */
+    public static Set<TimeIntervals> getCommandresendrate() {
+        return commandResendRate;
+    }
 }

@@ -178,6 +178,8 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.notSupportedOperationalState">Program type {0} is not supported for operational State {1}.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.notSupportedControlWindow">Control window one is not supported for operational State {0}.</entry>
 
+<!--  Gear Validation -->
+
 <!-- Gear setup -->
 <entry key="yukon.web.modules.dr.setup.gear.ABSOLUTE">Absolutes</entry>
 <entry key="yukon.web.modules.dr.setup.gear.DELTA">Delta</entry>

@@ -1,5 +1,8 @@
 package com.cannontech.common.dr.gear.setup.fields;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import com.cannontech.database.data.device.lm.TargetCycleGear;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -22,7 +25,11 @@ public class TargetCycleGearFields extends TrueCycleGearFields {
     }
 
     public void setkWReduction(Double kWReduction) {
-        this.kWReduction = kWReduction;
+        if (kWReduction != null) {
+            this.kWReduction = new BigDecimal(kWReduction).setScale(3, RoundingMode.HALF_DOWN).doubleValue();
+        } else {
+            this.kWReduction = kWReduction;
+        }
     }
 
     @Override

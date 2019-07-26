@@ -1413,5 +1413,12 @@
     <bean id="MeterDisconnectGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MeterDisconnectGearFieldsValidator"/>
     <bean id="honeywellCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellCycleGearFieldsValidator"/>
     <bean id="ecobeeCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeeCycleGearFieldsValidator"/>
-    
+    <bean id="smartCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SmartCycleGearFieldsValidator"/>
+    <bean id="trueCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.TrueCycleGearFieldsValidator"/>
+    <bean id="magnitudeCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MagnitudeCycleGearFieldsValidator"/>
+    <bean id="targetCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.TargetCycleGearFieldsValidator"/>
+    <bean id="itronCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.ItronCycleGearFieldsValidator"/>
+    <bean id="noControlGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.NoControlGearFieldsValidator"/>
+    <bean id="nestStandardCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.NestStandardCycleGearFieldsValidator"/>
+
 </beans>
