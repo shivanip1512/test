@@ -86,8 +86,11 @@
                         </c:when>
                         <c:otherwise>
                             <div class="button-group">
-                                <c:forEach var="daySelection" items="${daySelections}">
-                                    <tags:check id="js-${daySelection}" path="daySelection" value="${daySelection}" key="yukon.common.day.${daySelection}.short" classes="M0"/>
+                                <c:forEach var="daySelection" items="${daySelections}" varStatus="status">
+                                    <i:inline key="yukon.common.day.${daySelection}.short"/>
+                                        <c:if test="${!status.last}">
+                                            <i:inline key="yukon.common.comma"/>
+                                        </c:if>
                                 </c:forEach>
                             </div>
                         </c:otherwise>
