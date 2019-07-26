@@ -86,30 +86,7 @@ public class LMSetupFilterController {
         SearchResults<LMPaoDto> filteredResults = mockSearchResults(lmSetupFilter.getFilterByType());
         
         // Build setup model
-        String viewUrlPrefix = null;
-        switch (lmSetupFilter.getFilterByType()) {
-        case CONTROL_AREA:
-            viewUrlPrefix = "/dr/setup/controlArea/";
-            break;
-        case LOAD_GROUP:
-            viewUrlPrefix = "/dr/setup/loadGroup/";
-            break;
-        case LOAD_PROGRAM:
-            viewUrlPrefix = "/dr/setup/loadProgram/";
-            break;
-        case CONTROL_SCENARIO:
-            viewUrlPrefix = "/dr/setup/controlScenario/";
-            break;
-        case MACRO_LOAD_GROUP:
-            viewUrlPrefix = "/dr/setup/macroLoadGroup/";
-            break;
-        case PROGRAM_CONSTRAINT:
-            viewUrlPrefix = "/dr/setup/contraint/";
-            break;
-        default:
-            throw new RuntimeException("viewUrlPrefix is not set for " + lmSetupFilter.getFilterByType());
-        }
-        model.addAttribute("viewUrlPrefix", viewUrlPrefix);
+        model.addAttribute("viewUrlPrefix", lmSetupFilter.getFilterByType().getViewUrl());
         model.addAttribute("filteredResults", filteredResults);
         model.addAttribute("loadGroupTypes", PaoType.getAllLMGroupTypes());
         model.addAttribute("loadProgramTypes", PaoType.getAllLMProgramTypes());
