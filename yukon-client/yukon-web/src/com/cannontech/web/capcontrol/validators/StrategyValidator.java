@@ -60,6 +60,13 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
             validateMinCommunicationPercentageSetting(strategy, errors);
             
         }
+        
+        if (strategy.isIvvc() || strategy.isMultiVolt() || strategy.isMultiVoltVar()) {
+            //check max delta voltage is positive
+            if (strategy.getMaxDeltaVoltage() < 0) {
+                errors.rejectValue("maxDeltaVoltage", "yukon.web.error.isNotPositive");
+            }
+        }
 
     }
 
@@ -233,6 +240,7 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
                         "yukon.web.error.isNotPositiveInt");
                 }
             }
+
         }
     }
     
