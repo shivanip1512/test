@@ -88,9 +88,9 @@
                             <div class="button-group">
                                 <c:forEach var="daySelection" items="${daySelections}" varStatus="status">
                                     <i:inline key="yukon.common.day.${daySelection}.short"/>
-                                        <c:if test="${!status.last}">
-                                            <i:inline key="yukon.common.comma"/>
-                                        </c:if>
+                                    <c:if test="${!status.last}">
+                                        <i:inline key="yukon.common.comma"/>
+                                    </c:if>
                                 </c:forEach>
                             </div>
                         </c:otherwise>
