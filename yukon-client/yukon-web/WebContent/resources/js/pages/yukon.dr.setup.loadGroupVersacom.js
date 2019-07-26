@@ -1,5 +1,11 @@
 yukon.namespace('yukon.dr.setup.loadGroup.versacom');
 
+/**
+ * Module that handles the behavior on the setup Versacom Load Group page.
+ * @module yukon.dr.setup.loadGroup
+ * @requires JQUERY
+ * @requires yukon
+ */
 yukon.dr.setup.loadGroup.versacom = (function() {
 
 'use strict';
@@ -7,41 +13,36 @@ var
 _initialized = false,
 
 _handleAddressUsage = function () {
-    if ($('#UTILITY_chk').is(':checked')) {
-        $('#js-utilityAddress-row').show();
-    } else {
-        $('#js-utilityAddress-row').hide();
-    }
-
-    if ($('#SECTION_chk').is(':checked')) {
-        $('#js-sectionAddress-row').show();
-    } else {
-        $('#js-sectionAddress-row').hide();
-    }
-
-    if ($('#CLASS_chk').is(':checked')) {
-        $('#js-classAddress-row').show();
-    } else {
-        $('#js-classAddress-row').hide();
-    }
-
-    if ($('#DIVISION_chk').is(':checked')) {
-        $('#js-divisionAddress-row').show();
-    } else {
-        $('#js-divisionAddress-row').hide();
-    }
-
+    $('#js-sectionAddress-row').toggleClass('dn', (!$('#SECTION_chk').is(':checked')));
+    $('#js-classAddress-row').toggleClass('dn', (!$('#CLASS_chk').is(':checked')));
+    $('#js-divisionAddress-row').toggleClass('dn', (!$('#DIVISION_chk').is(':checked')));
     if ($('#SERIAL_chk').is(':checked')) {
         $('#js-serialAddress-row').show();
+        $('#SERIAL_chk').prop("checked", true);
+        // disable other buttons
+        $('#SECTION_chk').prop("disabled", true);
+        $('#CLASS_chk').prop("disabled", true);
+        $('#DIVISION_chk').prop("disabled", true);
+        // disable other textbox
+        $('#js-sectionAddress').attr("disabled", "disabled");
+        $('#js-classAddress').find('input[type=checkbox]').prop("disabled", true);
+        $('#js-divisionAddress').find('input[type=checkbox]').prop("disabled", true);
     } else {
-        $('#js-serialAddress-row').hide();
+         $('#js-serialAddress-row').hide();
+         // enable other checkbox
+         $('#SECTION_chk').prop("disabled", false);
+         $('#CLASS_chk').prop("disabled", false);
+         $('#DIVISION_chk').prop("disabled", false);
+         
+         // enable textbox
+         $('#js-sectionAddress').removeAttr("disabled");
+         $('#js-sectionAddress').val('0');
+         $('#js-classAddress').find('input[type=checkbox]').prop("disabled", false);
+         $('#js-divisionAddress').find('input[type=checkbox]').prop("disabled", false);
     }
  },
 
 _setValues = function() {
-    if (!$('#UTILITY_chk').is(':checked')) {
-        $('#js-utilityAddress').val('1');
-    }
     if (!$('#SECTION_chk').is(':checked')) {
         $('#js-sectionAddress').val('0');
     }
@@ -98,49 +99,40 @@ _setDivisionAddressValue = function() {
 },
 
 _setAddressUsage = function() {
-    var addressUsage = $(allVersaAddressUsage).val();
-    if(addressUsage.indexOf('UTILITY') > -1) {
-        $('#UTILITY_chk').prop("checked", true)
-    }
-    if(addressUsage.indexOf('SECTION') > -1) {
-        $('#SECTION_chk').prop("checked", true)
-    }
-    if(addressUsage.indexOf('CLASS') > -1) {
-        $('#CLASS_chk').prop("checked", true)
-    }
-    if(addressUsage.indexOf('DIVISION') > -1) {
-        $('#DIVISION_chk').prop("checked", true)
-    }
-    if(addressUsage.indexOf('SERIAL') > -1) {
-        $('#SERIAL_chk').prop("checked", true)
-    }
+    var addressUsage = $("#allVersaAddressUsage").val();
+    $(".js-verAddressUsage").find("input:checkbox").each(function (index, item) {
+        var itemValue = $(item).val();
+        if(addressUsage.indexOf(itemValue) > -1) {
+            $('#' + itemValue + '_chk').prop("checked", true)
+        }
+    });
 }
+
 mod = {
     
     /** Initialize this module. */
     init: function () {
+       if (_initialized) return;
        var _mode = $('.js-page-mode').val();
-       if(_mode !== 'VIEW' && ($(type).val() === 'LM_GROUP_VERSACOM')) {
+       if(_mode !== 'VIEW' && ($("#type").val() === 'LM_GROUP_VERSACOM')) {
            _handleAddressUsage();
            _setClassAddressValue();
            _setDivisionAddressValue();
            _setAddressUsage();
        }
-       
+
        // Select Address Usage options
-       $(document).on('click', '#js-versaAddressUsage', function (event) {
-           if(_mode !== 'VIEW') {
+       $(document).on('change', '.js-verAddressUsage', function (event) {
                _handleAddressUsage();
-           }
        });
 
         // Select class Address bit bus
-        $(document).on('click', '#js-classAddress-row', function (event) {
+        $(document).on('change', '.js-classAddress', function (event) {
             _buildClassAddressValue();
         });
-        
+
         // Select Division Address bit bus
-        $(document).on('click', '#js-divisionAddress-row', function (event) {
+        $(document).on('click', '.js-divisionAddress', function (event) {
             _buildDivisionAddressValue();
         });
 

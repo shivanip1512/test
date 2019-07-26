@@ -16,8 +16,7 @@ public enum VersacomAddressUsage implements DisplayableEnum {
     private final static ImmutableSet<VersacomAddressUsage> addressUsage;
     private final static ImmutableMap<Character, VersacomAddressUsage> lookupByAbbreviation;
     static {
-        addressUsage = ImmutableSet.of(
-            UTILITY, 
+        addressUsage = ImmutableSet.of( 
             SECTION, 
             CLASS, 
             DIVISION, 

@@ -23,6 +23,15 @@ yukon.dr.setup.loadGroup = (function() {
         if ($('.feederChk').exists()) {
             $('.feederChk').find("input:checkbox").addClass("js-feederChk");
         }
+        if ($('.verAddressUsage').exists()) {
+            $('.verAddressUsage').find("input:checkbox").addClass("js-verAddressUsage");
+        }
+        if ($('.classAddress').exists()) {
+            $('.classAddress').find("input:checkbox").addClass("js-classAddress");
+        }
+        if ($('.divisionAddress').exists()) {
+            $('.divisionAddress').find("input:checkbox").addClass("js-divisionAddress");
+        }
     },
 
     _loadGroup = function() {

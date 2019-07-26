@@ -32,13 +32,9 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
         lmValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
 
         // Validate addressUsage string contains other that U, S, C and D
-        if (loadGroup.getAddressUsage().contains(VersacomAddressUsage.UTILITY)) {
-            lmValidatorHelper.checkIfFieldRequired("utilityAddress", errors, loadGroup.getUtilityAddress(), "Utility Address");
-            if (!errors.hasFieldErrors("utilityAddress")) {
-                YukonValidationUtils.checkRange(errors, "utilityAddress", loadGroup.getUtilityAddress(), 1, 254, true);
-            }
-        } else {
-            errors.rejectValue("addressUsage", key + "utilityAddress.doesNotExist");
+        lmValidatorHelper.checkIfFieldRequired("utilityAddress", errors, loadGroup.getUtilityAddress(), "Utility Address");
+        if (!errors.hasFieldErrors("utilityAddress")) {
+            YukonValidationUtils.checkRange(errors, "utilityAddress", loadGroup.getUtilityAddress(), 1, 254, true);
         }
         
         if (loadGroup.getAddressUsage().contains(VersacomAddressUsage.SECTION)) {
@@ -51,7 +47,10 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
         // classAddress (0 to 2^16 -1)
         if (loadGroup.getAddressUsage().contains(VersacomAddressUsage.CLASS)) {
             // Add Check for null and empty.
-            Integer classAddress = StringUtils.convertBinaryToInteger(loadGroup.getClassAddress());
+            Integer classAddress = null;
+            if (loadGroup.getClassAddress() != null) {
+                classAddress = StringUtils.convertBinaryToInteger(loadGroup.getClassAddress());
+            }
             lmValidatorHelper.checkIfFieldRequired("classAddress", errors, classAddress, "Class Address" );
             if (!errors.hasFieldErrors("classAddress")) {
                 YukonValidationUtils.checkRange(errors, "classAddress", classAddress, 0, 65535, true);
@@ -61,7 +60,10 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
         // divisionAddress (0 to 2^16 -1)
         if (loadGroup.getAddressUsage().contains(VersacomAddressUsage.DIVISION)) {
             // Add Check for null and empty.
-            Integer divisionAddress = StringUtils.convertBinaryToInteger(loadGroup.getDivisionAddress());
+            Integer divisionAddress = null;
+            if (loadGroup.getDivisionAddress() != null) {
+                divisionAddress = StringUtils.convertBinaryToInteger(loadGroup.getDivisionAddress());
+            }
             lmValidatorHelper.checkIfFieldRequired("divisionAddress", errors,  divisionAddress, "Division Address");
             if (!errors.hasFieldErrors("divisionAddress")) {
                 YukonValidationUtils.checkRange(errors, "divisionAddress", divisionAddress, 0, 65535, true);
@@ -69,13 +71,15 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
         }
         
         // serialAddress
-        try {
-            Integer serialAddress = Integer.valueOf(loadGroup.getSerialAddress());
-            lmValidatorHelper.checkIfFieldRequired("serialAddress", errors, serialAddress, "Serial Address");
-            YukonValidationUtils.checkRange(errors, "serialAddress", serialAddress, 0, 99999, true);
-        } catch (NumberFormatException e) {
-            // Reject value with invalid format message
-            errors.rejectValue("serialAddress", key + "invalidValue");
+        if (loadGroup.getAddressUsage().contains(VersacomAddressUsage.SERIAL)) {
+            try {
+                Integer serialAddress = Integer.valueOf(loadGroup.getSerialAddress());
+                lmValidatorHelper.checkIfFieldRequired("serialAddress", errors, serialAddress, "Serial Address");
+                YukonValidationUtils.checkRange(errors, "serialAddress", serialAddress, 1, 99999, true);
+            } catch (NumberFormatException e) {
+                // Reject value with invalid format message
+                errors.rejectValue("serialAddress", key + "invalidValue");
+            }
         }
     }
 }

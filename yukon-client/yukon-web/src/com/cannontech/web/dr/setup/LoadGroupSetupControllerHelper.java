@@ -99,7 +99,7 @@ public class LoadGroupSetupControllerHelper {
                 }
                 model.addAttribute("protocolPriority", ControlPriority.values());
                 model.addAttribute("addressUsageList", AddressUsage.getGeoAddressUsage());
-                model.addAttribute("feederList", getbitAddressList());
+                model.addAttribute("feederList", getBitAddressLevel());
                 model.addAttribute("loadAddressUsageList", AddressUsage.getLoadAddressUsage());
                 model.addAttribute("loadsList", Loads.values());
             }
@@ -139,8 +139,8 @@ public class LoadGroupSetupControllerHelper {
                 setCommunicationRoute(model, request, userContext);
                 setVersacomSerialAddressUsage(loadGroup, model);
                 model.addAttribute("showUtilityAddress", true);
-                model.addAttribute("classAddressValues", getbitAddressList());
-                model.addAttribute("divisionAddressValues", getbitAddressList());
+                model.addAttribute("classAddressValues", getBitAddressLevel());
+                model.addAttribute("divisionAddressValues", getBitAddressLevel());
                 model.addAttribute("addressUsageList",VersacomAddressUsage.getAddressUsage());
                 model.addAttribute("relayUsageList",Relays.getRelays());
             }
@@ -202,7 +202,7 @@ public class LoadGroupSetupControllerHelper {
         group.setkWCapacity(0.0);
     }
     
-    public static List<Integer> getbitAddressList() {
+    public static List<Integer> getBitAddressLevel() {
         return ImmutableList.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
     }
     
@@ -230,7 +230,6 @@ public class LoadGroupSetupControllerHelper {
         try {
             Integer serialAddress = Integer.valueOf(loadGroup.getSerialAddress());
             if (serialAddress > 0) {
-                loadGroup.getAddressUsage().add(VersacomAddressUsage.SERIAL);
                 model.addAttribute("showSerialAddress", true);
             }
         } catch (Exception e) {
