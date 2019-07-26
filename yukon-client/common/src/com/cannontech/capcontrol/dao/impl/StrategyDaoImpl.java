@@ -141,6 +141,7 @@ public class StrategyDaoImpl implements StrategyDao {
             saveVoltageViolationSettings(strategy);
             savePowerFactorCorrectionSetting(strategy);
             saveMinCommunicationPercentageSetting(strategy);
+            saveMaxDeltaVoltageSetting(strategy);
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException("Strategy name already in use.");
         }
@@ -238,6 +239,7 @@ public class StrategyDaoImpl implements StrategyDao {
         strategy.setVoltageViolationSettings(getVoltageViolationSettings(strategy));
         strategy.setPowerFactorCorrectionSetting(getPowerFactorCorrectionSetting(strategy));
         strategy.setMinCommunicationPercentageSetting(getMinCommunicationPercentageSetting(strategy));
+        strategy.setMaxDeltaVoltage(getMaxDeltaVoltageSetting(strategy));
 
         return strategy;
     }
@@ -261,6 +263,7 @@ public class StrategyDaoImpl implements StrategyDao {
             strategy.setVoltageViolationSettings(getVoltageViolationSettings(strategy));
             strategy.setPowerFactorCorrectionSetting(getPowerFactorCorrectionSetting(strategy));
             strategy.setMinCommunicationPercentageSetting(getMinCommunicationPercentageSetting(strategy));
+            strategy.setMaxDeltaVoltage(getMaxDeltaVoltageSetting(strategy));
         }
 
         return strategies;
@@ -350,6 +353,7 @@ public class StrategyDaoImpl implements StrategyDao {
         saveVoltageViolationSettings(strategy);
         savePowerFactorCorrectionSetting(strategy);
         saveMinCommunicationPercentageSetting(strategy);
+        saveMaxDeltaVoltageSetting(strategy);
     }
 
     @Transactional
@@ -570,6 +574,30 @@ public class StrategyDaoImpl implements StrategyDao {
                 CommReportingPercentageSettingType.CONSIDER_PHASE);
         jdbcTemplate.update(sql);
     }
+    
+    @Transactional
+    private void saveMaxDeltaVoltageSetting(CapControlStrategy strategy) {
+        int strategyId = strategy.getId();
+
+        SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+        deleteSql.append("DELETE FROM CCStrategyTargetSettings WHERE strategyId").eq(strategyId);
+        deleteSql.append("AND SettingType").eq(TargetSettingType.MAX_DELTA.name());
+        jdbcTemplate.update(deleteSql);
+
+        if (!strategy.isIvvc() && !strategy.isMultiVolt() && !strategy.isMultiVoltVar())
+        {
+            return; // Don't save these settings if we aren't going to use them
+        }
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append("INSERT INTO CCStrategyTargetSettings");
+        sql.values(strategyId,
+                TargetSettingType.MAX_DELTA.getDbName(),
+                strategy.getMaxDeltaVoltage(),
+                TargetSettingType.MAX_DELTA.name());
+        jdbcTemplate.update(sql);
+    }
 
     private Map<TargetSettingType, PeakTargetSetting> getPeakSettings(CapControlStrategy strategy) {
 
@@ -620,6 +648,20 @@ public class StrategyDaoImpl implements StrategyDao {
             return jdbcTemplate.queryForObject(sql, powerFactorCorrectionSettingMapper);
         } catch (EmptyResultDataAccessException e) {
             return new PowerFactorCorrectionSetting();
+        }
+    }
+    
+    private double getMaxDeltaVoltageSetting(CapControlStrategy strategy) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT max.SettingValue");
+        sql.append("FROM CCStrategyTargetSettings max");
+        sql.append("WHERE max.strategyid").eq(strategy.getId());
+        sql.append("  AND max.SettingType").eq(TargetSettingType.MAX_DELTA.name());
+
+        try {
+            return jdbcTemplate.queryForObject(sql, TypeRowMapper.DOUBLE);
+        } catch (EmptyResultDataAccessException e) {
+            return 0;
         }
     }
 

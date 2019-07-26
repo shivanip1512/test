@@ -37,6 +37,7 @@ public class CapControlStrategy {
     private int integratePeriod = 0;
     private boolean likeDayFallBack = false;
     private EndDaySetting endDaySettings = EndDaySetting.NONE;
+    private double maxDeltaVoltage = 10.0;
     private Map<TargetSettingType, PeakTargetSetting> targetSettings = StrategyPeakSettingsHelper.getAllSettingDefaults();
     private Map<VoltViolationType, VoltageViolationSetting> voltageViolationSettings =
         VoltageViolationSettingsHelper.getVoltageViolationDefaults();
@@ -291,6 +292,14 @@ public class CapControlStrategy {
     public boolean isIvvc() {
         return algorithm == ControlAlgorithm.INTEGRATED_VOLT_VAR;
     }
+    
+    public boolean isMultiVoltVar() {
+        return algorithm == ControlAlgorithm.MULTI_VOLT_VAR;
+    }
+    
+    public boolean isMultiVolt() {
+        return algorithm == ControlAlgorithm.MULTI_VOLT;
+    }
 
     public boolean isTimeOfDay() {
         return controlMethod == ControlMethod.TIME_OF_DAY;
@@ -302,6 +311,14 @@ public class CapControlStrategy {
 
     public void setPeakDays(Map<DayOfWeek, Boolean> peakDays) {
         this.peakDays = peakDays;
+    }
+
+    public double getMaxDeltaVoltage() {
+        return maxDeltaVoltage;
+    }
+
+    public void setMaxDeltaVoltage(double maxDeltaVoltage) {
+        this.maxDeltaVoltage = maxDeltaVoltage;
     }
 
 }

@@ -208,6 +208,15 @@
                         </c:forEach>
                     </tbody>
                 </table>
+                
+                <tags:sectionContainer2 nameKey="maxDeltaVoltage" styleClass="stacked-lg js-max-delta">
+                    <tags:nameValueContainer2 tableClass="natural-width ${tableClass}">
+                        <tags:nameValue2 nameKey=".targetSetting.MAX_DELTA">
+                            <tags:input path="maxDeltaVoltage" size="5" />
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </tags:sectionContainer2>
+                
                 <cti:displayForPageEditModes modes="EDIT,CREATE">
                  <div id="kvarMessage" class="empty-list dn"><i:inline key="yukon.web.modules.capcontrol.strategy.message.KVAR"/></div>
                 </cti:displayForPageEditModes>
