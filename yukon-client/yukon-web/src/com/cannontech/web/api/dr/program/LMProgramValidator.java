@@ -259,7 +259,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
 
     private Optional<ProgramGroup> getProgramGroup(ProgramGroup group, PaoType programType) {
         Optional<ProgramGroup> lmGroup = programSetupService.getAllProgramLoadGroups(programType).stream()
-                                                                                                 .filter(programGroup -> programGroup.getGroupId() == group.getGroupId())
+                                                                                                 .filter(programGroup -> programGroup.getGroupId().intValue() == group.getGroupId())
                                                                                                  .findFirst();
         return lmGroup;
     }
