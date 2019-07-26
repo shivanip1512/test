@@ -21,17 +21,19 @@ yukon.dr.program.activityDetails = (function() {
 
                 $("#js-scroll-details-table").scrollTableBody({rowsToDisplay: 17});
 
-                $(".js-start-time-td").each(function (index, item) {
-                    var startTime = $(item).find(".js-start-time-span").text();
-                    $(item).attr("title", moment(startTime).tz(yg.timezone).format(yg.formats.date.both_with_ampm));
-                });
-
-                $(".js-stop-time-td").each(function (index, item) {
-                    var stopTime = $(item).find(".js-stop-time-span").text();
-                    $(item).attr("title", moment(stopTime).tz(yg.timezone).format(yg.formats.date.both_with_ampm));
-                });
-
                 _initialized = true;
+            },
+
+            setStartTimeTooltip: function (element) {
+                return function (data) {
+                    element.attr("title", moment(data.value).tz(yg.timezone).format(yg.formats.date.both_with_ampm));
+                }
+            },
+
+            setStopTimeTooltip: function (element) {
+                return function (data) {
+                    element.attr("title", moment(data.value).tz(yg.timezone).format(yg.formats.date.both_with_ampm));
+                }
             }
 
         };

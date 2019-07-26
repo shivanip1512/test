@@ -53,14 +53,16 @@
                                 <td>
                                     <table style="margin-left: -5px;">
                                         <tr>
-                                            <td class="js-start-time-td">
+                                            <td id="js-start-time-td-${programData.programId}">
                                                 <cti:dataUpdaterValue identifier="${programData.programId}/START_TIME" type="DR_PROGRAM"/>
-                                                <cti:dataUpdaterValue identifier="${programData.programId}/START" type="DR_PROGRAM" styleClass="js-start-time-span dn"/>
+                                                <cti:dataUpdaterCallback function="yukon.dr.program.activityDetails.setStartTimeTooltip($('#js-start-time-td-${programData.programId}'))"
+                                                                         initialize="true" value="DR_PROGRAM/${programData.programId}/START"/>
                                             </td>
                                             <td>-</td>
-                                            <td class="js-stop-time-td">
+                                            <td id="js-stop-time-td-${programData.programId}">
                                                 <cti:dataUpdaterValue identifier="${programData.programId}/STOP_TIME" type="DR_PROGRAM"/>
-                                                <cti:dataUpdaterValue identifier="${programData.programId}/STOP" type="DR_PROGRAM" styleClass="js-stop-time-span dn"/>
+                                                <cti:dataUpdaterCallback function="yukon.dr.program.activityDetails.setStopTimeTooltip($('#js-stop-time-td-${programData.programId}'))"
+                                                                         initialize="true" value="DR_PROGRAM/${programData.programId}/STOP"/>
                                             </td>
                                         </tr>
                                     </table>
