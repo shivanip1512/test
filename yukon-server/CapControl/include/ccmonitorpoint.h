@@ -31,6 +31,11 @@ public:
     bool getOverrideStrategy() const;
     Cti::CapControl::Phase  getPhase() const;
 
+    std::string getDeviceName() const;
+    std::string getPointName() const;
+
+    std::string getIdentifier() const;
+
     double getValue() const;
     CtiTime getTimeStamp() const;
     bool getScanInProgress() const;
@@ -57,6 +62,9 @@ private:
     long _nInAvg;
     double _upperBW;
     double _lowerBW;
+
+    std::string _deviceName,
+                _pointName;
 
     // dynamic data
     double _value;

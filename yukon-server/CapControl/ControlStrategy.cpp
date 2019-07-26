@@ -634,6 +634,11 @@ double ControlStrategy::getLowerVoltLimit( const bool isPeak ) const
     return 114.0;   // NEMA standard 120V - 5%
 }
 
+double ControlStrategy::getMaximumDeltaVoltage() const
+{
+    return 10.0;    // system default -- overridden in MultiVolt, MultiVoltVar and IVVC
+}
+
 
 const std::string ControlStrategy::NoControlMethod                  = "NONE";
 const std::string ControlStrategy::IndividualFeederControlMethod    = "INDIVIDUAL_FEEDER";

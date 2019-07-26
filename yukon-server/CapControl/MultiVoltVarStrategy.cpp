@@ -4,6 +4,9 @@
 #include <cstdlib>
 
 #include "MultiVoltVarStrategy.h"
+#include "std_helper.h"
+#include "string_util.h"
+#include "logger.h"
 
 
 MultiVoltVarStrategy::MultiVoltVarStrategy()
@@ -15,7 +18,8 @@ MultiVoltVarStrategy::MultiVoltVarStrategy()
     _peakKVarLeading(0.0),
     _offpeakKVarLeading(0.0),
     _peakKVarLagging(0.0),
-    _offpeakKVarLagging(0.0)
+    _offpeakKVarLagging(0.0),
+    _maximumDeltaVoltage(10.0)
 {
     // empty!
 }
@@ -27,53 +31,66 @@ MultiVoltVarStrategy::~MultiVoltVarStrategy()
 }
 
 
+namespace
+{
+
+template<typename T>
+boost::optional<T> findAccessor( const std::map< std::string, std::map< std::string, T > > lookup,
+                                 const std::string & name, const std::string & type )
+{
+    if ( const auto nameSearch = Cti::mapFind( lookup, name ) )
+    {
+        return Cti::mapFind( *nameSearch, type );
+    }
+
+    return boost::none;
+}
+
+}
+
+
 void MultiVoltVarStrategy::restoreParameters(const std::string &name, const std::string &type, const std::string &value)
 {
-    double newValue = std::atof( value.c_str() );
+    static const std::map< std::string, std::map< std::string, double MultiVoltVarStrategy::* > >   directLookup
+    {
+        {   "Upper Volt Limit",             {
+                { "PEAK",               &MultiVoltVarStrategy::_peakUpperVoltLimit              },
+                { "OFFPEAK",            &MultiVoltVarStrategy::_offpeakUpperVoltLimit           }   }
+        },
+        {   "Lower Volt Limit",             {
+                { "PEAK",               &MultiVoltVarStrategy::_peakLowerVoltLimit              },
+                { "OFFPEAK",            &MultiVoltVarStrategy::_offpeakLowerVoltLimit           }   }
+        },
+        {   "KVAR Leading",                 {
+                { "PEAK",               &MultiVoltVarStrategy::_peakKVarLeading                 },
+                { "OFFPEAK",            &MultiVoltVarStrategy::_offpeakKVarLeading              }   }
+        },
+        {   "KVAR Lagging",                 {
+                { "PEAK",               &MultiVoltVarStrategy::_peakKVarLagging                 },
+                { "OFFPEAK",            &MultiVoltVarStrategy::_offpeakKVarLagging              }   }
+        },
+        {   "Maximum Delta Voltage",        {
+                { "MAX_DELTA",          &MultiVoltVarStrategy::_maximumDeltaVoltage             }   }
+        }
+    };
 
-    if (name == "Upper Volt Limit")
+    double  aValue = std::atof( value.c_str() );
+
+    if ( const auto varptr = findAccessor( directLookup, name, type ) )
     {
-        if (type == "PEAK")
-        {
-            _peakUpperVoltLimit = newValue;
-        }
-        else
-        {
-            _offpeakUpperVoltLimit = newValue;
-        }
+        this->*(*varptr) = aValue;
     }
-    else if (name == "Lower Volt Limit")
+    else
     {
-        if (type == "PEAK")
-        {
-            _peakLowerVoltLimit = newValue;
-        }
-        else
-        {
-            _offpeakLowerVoltLimit = newValue;
-        }
-    }
-    else if (name == "KVAR Leading")
-    {
-        if (type == "PEAK")
-        {
-            _peakKVarLeading = newValue;
-        }
-        else
-        {
-            _offpeakKVarLeading = newValue;
-        }
-    }
-    else if (name == "KVAR Lagging")
-    {
-        if (type == "PEAK")
-        {
-            _peakKVarLagging = newValue;
-        }
-        else
-        {
-            _offpeakKVarLagging = newValue;
-        }
+        Cti::FormattedList  error;
+
+        error << "Unknown setting for strategy: " << getStrategyName();
+        error.add("StrategyId")   << getStrategyId();
+        error.add("SettingName")  << name;
+        error.add("SettingValue") << value;
+        error.add("SettingType")  << type;
+
+        CTILOG_ERROR( dout, error );
     }
 }
 
@@ -147,6 +164,12 @@ double MultiVoltVarStrategy::getPeakPFSetPoint() const
 double MultiVoltVarStrategy::getOffPeakPFSetPoint() const
 {
     return getPeakTimeFlag() ? getPeakVARLag() : getOffPeakVARLag();;
+}
+
+
+double MultiVoltVarStrategy::getMaximumDeltaVoltage() const
+{
+    return _maximumDeltaVoltage;
 }
 
 

@@ -85,6 +85,23 @@ Cti::CapControl::Phase  CtiCCMonitorPoint::getPhase() const
     return _phase;
 }
 
+std::string CtiCCMonitorPoint::getDeviceName() const
+{
+    return _deviceName;
+}
+
+std::string CtiCCMonitorPoint::getPointName() const
+{
+    return _pointName;
+}
+
+std::string CtiCCMonitorPoint::getIdentifier() const
+{
+    return
+        _deviceName + " (ID: " + std::to_string(_deviceId) + ") / "
+            + _pointName  + " (ID: " + std::to_string(_pointId) + ")";
+}
+
 /*
     Dynamic data accessors
 */
@@ -152,6 +169,9 @@ void CtiCCMonitorPoint::restore(Cti::RowReader& rdr)
     rdr["OverrideStrategy"] >> scratch;
     CtiToUpper(scratch);
     _overrideStrategy = (scratch == "Y");
+
+    rdr["PAOName"]   >> _deviceName;
+    rdr["POINTNAME"] >> _pointName;
 }
 
 void CtiCCMonitorPoint::setDynamicData(Cti::RowReader& rdr)
@@ -236,5 +256,7 @@ void CtiCCMonitorPoint::updateNonDynamicData( const CtiCCMonitorPoint & rhs )
     _lowerBW            = rhs._lowerBW;
     _phase              = rhs._phase;
     _overrideStrategy   = rhs._overrideStrategy;
+    _deviceName         = rhs._deviceName;
+    _pointName          = rhs._pointName;
 }
 

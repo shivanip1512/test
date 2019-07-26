@@ -65,6 +65,8 @@ public:
 
     const unsigned getMaxConsecutiveCapBankOps(const bool isPeak) const;
 
+    double getMaximumDeltaVoltage() const override;
+
     virtual void registerControllable(const long paoid);
     virtual void unregisterControllable(const long paoid);
 
@@ -136,6 +138,8 @@ private:
     double _capbankCommReportingPercentage;
     double _voltageMonitorCommReportingPercentage;
     bool   _reportCommStatisticsByPhase;
+
+    double _maximumDeltaVoltage;
 
     std::string _controlMethod;
 

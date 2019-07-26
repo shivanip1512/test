@@ -225,7 +225,7 @@ public:
     void addPointResponse(Cti::CapControl::PointResponse pointResponse);
 
     bool handlePointResponseDeltaChange(long pointId, double newDelta, bool staticDelta);
-    bool updatePointResponseDelta(const CtiCCMonitorPoint & point);
+    bool updatePointResponseDelta(const CtiCCMonitorPoint & point, double maxDelta);
     bool updatePointResponsePreOpValue(long pointId, double value);
 
     bool isExpresscom();

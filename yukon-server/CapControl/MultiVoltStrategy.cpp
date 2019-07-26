@@ -4,6 +4,9 @@
 #include <cstdlib>
 
 #include "MultiVoltStrategy.h"
+#include "std_helper.h"
+#include "string_util.h"
+#include "logger.h"
 
 
 MultiVoltStrategy::MultiVoltStrategy()
@@ -11,7 +14,8 @@ MultiVoltStrategy::MultiVoltStrategy()
     _peakUpperVoltLimit(0.0),
     _offpeakUpperVoltLimit(0.0),
     _peakLowerVoltLimit(0.0),
-    _offpeakLowerVoltLimit(0.0)
+    _offpeakLowerVoltLimit(0.0),
+    _maximumDeltaVoltage(10.0)
 {
     // empty!
 }
@@ -23,31 +27,58 @@ MultiVoltStrategy::~MultiVoltStrategy()
 }
 
 
+namespace
+{
+
+template<typename T>
+boost::optional<T> findAccessor( const std::map< std::string, std::map< std::string, T > > lookup,
+                                 const std::string & name, const std::string & type )
+{
+    if ( const auto nameSearch = Cti::mapFind( lookup, name ) )
+    {
+        return Cti::mapFind( *nameSearch, type );
+    }
+
+    return boost::none;
+}
+
+}
+
+
 void MultiVoltStrategy::restoreParameters(const std::string &name, const std::string &type, const std::string &value)
 {
-    double newValue = std::atof( value.c_str() );
+    static const std::map< std::string, std::map< std::string, double MultiVoltStrategy::* > >   directLookup
+    {
+        {   "Upper Volt Limit",             {
+                { "PEAK",               &MultiVoltStrategy::_peakUpperVoltLimit                 },
+                { "OFFPEAK",            &MultiVoltStrategy::_offpeakUpperVoltLimit              }   }
+        },
+        {   "Lower Volt Limit",             {
+                { "PEAK",               &MultiVoltStrategy::_peakLowerVoltLimit                 },
+                { "OFFPEAK",            &MultiVoltStrategy::_offpeakLowerVoltLimit              }   }
+        },
+        {   "Maximum Delta Voltage",        {
+                { "MAX_DELTA",          &MultiVoltStrategy::_maximumDeltaVoltage                }   }
+        }
+    };
 
-    if (name == "Upper Volt Limit")
+    double  aValue = std::atof( value.c_str() );
+
+    if ( const auto varptr = findAccessor( directLookup, name, type ) )
     {
-        if (type == "PEAK")
-        {
-            _peakUpperVoltLimit = newValue;
-        }
-        else
-        {
-            _offpeakUpperVoltLimit = newValue;
-        }
+        this->*(*varptr) = aValue;
     }
-    else if (name == "Lower Volt Limit")
+    else
     {
-        if (type == "PEAK")
-        {
-            _peakLowerVoltLimit = newValue;
-        }
-        else
-        {
-            _offpeakLowerVoltLimit = newValue;
-        }
+        Cti::FormattedList  error;
+
+        error << "Unknown setting for strategy: " << getStrategyName();
+        error.add("StrategyId")   << getStrategyId();
+        error.add("SettingName")  << name;
+        error.add("SettingValue") << value;
+        error.add("SettingType")  << type;
+
+        CTILOG_ERROR( dout, error );
     }
 }
 
@@ -109,6 +140,12 @@ void MultiVoltStrategy::setPeakLead(const double value)
 void MultiVoltStrategy::setOffPeakLead(const double value)
 {
     _offpeakUpperVoltLimit = value;
+}
+
+
+double MultiVoltStrategy::getMaximumDeltaVoltage() const
+{
+    return _maximumDeltaVoltage;
 }
 
 

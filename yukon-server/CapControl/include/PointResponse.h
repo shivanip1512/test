@@ -19,7 +19,9 @@ class PointResponse
 {
 public:
 
-    PointResponse(long pointId, long deviceId, double preOpValue, double delta, bool staticDelta, long busId);
+    PointResponse(long pointId, long deviceId, double preOpValue, double delta, bool staticDelta, long busId,
+                  const std::string & pointName, const std::string & deviceName);
+
     PointResponse(const PointResponse& pr) = default;
 
     long getPointId() const;
@@ -33,7 +35,7 @@ public:
     double getDelta() const;
     void setDelta(double delta);
 
-    void updateDelta(long nInAvg, double value);
+    void updateDelta(long nInAvg, double value, const std::string & identifier, double maxDelta);
     void updatePreOpValue(double preOpValue);
 
     bool isDirty() const;
@@ -42,6 +44,9 @@ public:
     PointResponse& operator=(const PointResponse& right) = default;
     bool operator != (const PointResponse& right) const;
 
+    std::string getPointName() const    { return _pointName;    }
+    std::string getDeviceName() const   { return _deviceName;    }
+
 private:
 
     long _pointId;
@@ -49,6 +54,8 @@ private:
     double _preOpValue;
     double _delta;
     bool _staticDelta;
+
+    std::string _pointName, _deviceName;
 
     long _busId;
 

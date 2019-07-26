@@ -2888,18 +2888,9 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         CtiTime now;
         state->setTimeStamp(now);
 
-        // record preoperation voltage values for the feeder our capbank is on
-        for each (PointValueMap::value_type pointValuePair in pointValues)
-        {
-            try
-            {
-                state->_estimated[operatePaoId].capbank->updatePointResponsePreOpValue(pointValuePair.first,pointValuePair.second.value);
-            }
-            catch (NotFoundException& e)
-            {
-                CTILOG_ERROR(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Error Updating PreOpValue for deltas. PointId not found: " << pointValuePair.first);
-            }
-        }
+        // record preoperation voltage values for the bank we are operating 
+
+        subbus->updatePointResponsePreOpValues( state->_estimated[operatePaoId].capbank );
 
         state->_estimated[operatePaoId].operated = true;
         state->setControlledBankId(operatePaoId);
