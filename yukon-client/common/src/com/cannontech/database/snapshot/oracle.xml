@@ -34918,18 +34918,18 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_POINT_LMCTRLARTRIGPK</i__foreignKeyName>
+            <i__foreignKeyName>FK_POINT_LMCNTLARTRIG</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>PEAKPOINTID</i__columnName>
+            <i__columnName>POINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_POINT_LMCNTLARTRIG</i__foreignKeyName>
+            <i__foreignKeyName>FK_POINT_LMCTRLARTRIGPK</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>POINTID</i__columnName>
+            <i__columnName>PEAKPOINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
