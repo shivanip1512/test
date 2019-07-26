@@ -322,6 +322,31 @@ AND DCCI.ItemValue = 'DEMAND';
 INSERT INTO DBUpdates VALUES ('YUK-20257', '7.3.0', SYSDATE);
 /* @end YUK-20257 */
 
+/* @start YUK-20314 */
+INSERT INTO CCStrategyTargetSettings (StrategyId, SettingName, SettingValue, SettingType)
+SELECT
+    TS.StrategyId,
+    'Maximum Delta Voltage' AS SettingName,
+    '10' AS SettingValue,
+    'MAX_DELTA' AS SettingType
+FROM CCStrategyTargetSettings TS
+JOIN CapControlStrategy CS ON TS.StrategyId = CS.StrategyID
+WHERE CS.ControlUnits IN ('MULTI_VOLT', 'MULTI_VOLT_VAR', 'INTEGRATED_VOLT_VAR')
+AND NOT EXISTS (
+    SELECT 1
+    FROM CCStrategyTargetSettings 
+    WHERE StrategyId = TS.StrategyId 
+    AND SettingType = 'MAX_DELTA' )
+GROUP BY TS.StrategyId;
+
+UPDATE CCStrategyTargetSettings
+SET SettingValue = '10'
+WHERE SettingType = 'MAX_DELTA'
+AND SettingValue = '0';
+
+INSERT INTO DBUpdates VALUES ('YUK-20314', '7.3.0', SYSDATE);
+/* @end YUK-20314 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
