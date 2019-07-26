@@ -57,6 +57,10 @@ void LMManualControlRequest::__set__additionalInfo(const std::string& val) {
 void LMManualControlRequest::__set__constraintCmd(const int32_t val) {
   this->_constraintCmd = val;
 }
+
+void LMManualControlRequest::__set__originSource(const std::string& val) {
+  this->_originSource = val;
+}
 std::ostream& operator<<(std::ostream& out, const LMManualControlRequest& obj)
 {
   obj.printTo(out);
@@ -86,6 +90,7 @@ uint32_t LMManualControlRequest::read(::apache::thrift::protocol::TProtocol* ipr
   bool isset__startPriority = false;
   bool isset__additionalInfo = false;
   bool isset__constraintCmd = false;
+  bool isset__originSource = false;
 
   while (true)
   {
@@ -175,6 +180,14 @@ uint32_t LMManualControlRequest::read(::apache::thrift::protocol::TProtocol* ipr
           xfer += iprot->skip(ftype);
         }
         break;
+      case 11:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->_originSource);
+          isset__originSource = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -203,6 +216,8 @@ uint32_t LMManualControlRequest::read(::apache::thrift::protocol::TProtocol* ipr
   if (!isset__additionalInfo)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__constraintCmd)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset__originSource)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -252,6 +267,10 @@ uint32_t LMManualControlRequest::write(::apache::thrift::protocol::TProtocol* op
   xfer += oprot->writeI32(this->_constraintCmd);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("_originSource", ::apache::thrift::protocol::T_STRING, 11);
+  xfer += oprot->writeString(this->_originSource);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -269,6 +288,7 @@ void swap(LMManualControlRequest &a, LMManualControlRequest &b) {
   swap(a._startPriority, b._startPriority);
   swap(a._additionalInfo, b._additionalInfo);
   swap(a._constraintCmd, b._constraintCmd);
+  swap(a._originSource, b._originSource);
 }
 
 LMManualControlRequest::LMManualControlRequest(const LMManualControlRequest& other0) {
@@ -282,6 +302,7 @@ LMManualControlRequest::LMManualControlRequest(const LMManualControlRequest& oth
   _startPriority = other0._startPriority;
   _additionalInfo = other0._additionalInfo;
   _constraintCmd = other0._constraintCmd;
+  _originSource = other0._originSource;
 }
 LMManualControlRequest& LMManualControlRequest::operator=(const LMManualControlRequest& other1) {
   _baseMessage = other1._baseMessage;
@@ -294,6 +315,7 @@ LMManualControlRequest& LMManualControlRequest::operator=(const LMManualControlR
   _startPriority = other1._startPriority;
   _additionalInfo = other1._additionalInfo;
   _constraintCmd = other1._constraintCmd;
+  _originSource = other1._originSource;
   return *this;
 }
 void LMManualControlRequest::printTo(std::ostream& out) const {
@@ -309,6 +331,7 @@ void LMManualControlRequest::printTo(std::ostream& out) const {
   out << ", " << "_startPriority=" << to_string(_startPriority);
   out << ", " << "_additionalInfo=" << to_string(_additionalInfo);
   out << ", " << "_constraintCmd=" << to_string(_constraintCmd);
+  out << ", " << "_originSource=" << to_string(_originSource);
   out << ")";
 }
 

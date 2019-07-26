@@ -1108,6 +1108,9 @@ void CtiLMManualControlRequestExecutor::Execute()
         return;
     }
 
+    // We copy the source of the message to the program
+    program->setOrigin( _controlMsg->getOrigin() );
+
     // A start gear of 0 is invalid, and what they really mean is they
     // dont care, so we will set it to 1 for them.
     if( _controlMsg->getStartGear() == 0 )

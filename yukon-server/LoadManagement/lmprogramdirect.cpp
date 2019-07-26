@@ -6182,7 +6182,7 @@ bool CtiLMProgramDirect::recordHistory(CtiTableLMProgramHistory::LMHistoryAction
     }
     if( gear != NULL)
     {
-        _PROGRAM_HISTORY_QUEUE.push(CtiTableLMProgramHistory(getCurrentHistLogId(), getPAOId(), gear->getUniqueID(), action, getPAOName(), getAndClearChangeReason(), getLastUser(), gear->getGearName(), time));
+        _PROGRAM_HISTORY_QUEUE.push(CtiTableLMProgramHistory(getCurrentHistLogId(), getPAOId(), gear->getUniqueID(), action, getPAOName(), getAndClearChangeReason(), getLastUser(), gear->getGearName(), time, getOrigin()));
         retVal = true;
     }
 
@@ -6283,6 +6283,11 @@ void CtiLMProgramDirect::setLastUser(const string& user)
     _last_user = user;
 }
 
+void CtiLMProgramDirect::setOrigin(const std::string& origin)
+{
+    _origin = origin;
+}
+
 // Returns the last set change reason and clears out the reason.
 // Each reason can only be used once!
 string CtiLMProgramDirect::getAndClearChangeReason()
@@ -6295,6 +6300,11 @@ string CtiLMProgramDirect::getAndClearChangeReason()
 string CtiLMProgramDirect::getLastUser()
 {
     return _last_user;
+}
+
+std::string CtiLMProgramDirect::getOrigin()
+{
+    return _origin;
 }
 
 bool CtiLMProgramDirect::getHasBeatThePeakGear() const

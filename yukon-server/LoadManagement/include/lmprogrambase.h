@@ -122,6 +122,7 @@ public:
     virtual void setDirty(BOOL b=TRUE);
     virtual void setChangeReason(const std::string& reason);
     virtual void setLastUser(const std::string& user);
+    virtual void setOrigin(const std::string& origin);
 
     CtiLMProgramBase& operator=(const CtiLMProgramBase& right);
 

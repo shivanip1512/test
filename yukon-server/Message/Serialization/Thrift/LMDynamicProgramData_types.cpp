@@ -61,6 +61,10 @@ void LMDynamicProgramData::__set__notifyInactiveTime(const  ::Cti::Messaging::Se
 void LMDynamicProgramData::__set__startedRampingOutTime(const  ::Cti::Messaging::Serialization::Thrift::Timestamp val) {
   this->_startedRampingOutTime = val;
 }
+
+void LMDynamicProgramData::__set__originSource(const std::string& val) {
+  this->_originSource = val;
+}
 std::ostream& operator<<(std::ostream& out, const LMDynamicProgramData& obj)
 {
   obj.printTo(out);
@@ -91,6 +95,7 @@ uint32_t LMDynamicProgramData::read(::apache::thrift::protocol::TProtocol* iprot
   bool isset__notifyActiveTime = false;
   bool isset__notifyInactiveTime = false;
   bool isset__startedRampingOutTime = false;
+  bool isset__originSource = false;
 
   while (true)
   {
@@ -188,6 +193,14 @@ uint32_t LMDynamicProgramData::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->_originSource);
+          isset__originSource = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -218,6 +231,8 @@ uint32_t LMDynamicProgramData::read(::apache::thrift::protocol::TProtocol* iprot
   if (!isset__notifyInactiveTime)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__startedRampingOutTime)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset__originSource)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -271,6 +286,10 @@ uint32_t LMDynamicProgramData::write(::apache::thrift::protocol::TProtocol* opro
   xfer += oprot->writeI64(this->_startedRampingOutTime);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("_originSource", ::apache::thrift::protocol::T_STRING, 12);
+  xfer += oprot->writeString(this->_originSource);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -289,6 +308,7 @@ void swap(LMDynamicProgramData &a, LMDynamicProgramData &b) {
   swap(a._notifyActiveTime, b._notifyActiveTime);
   swap(a._notifyInactiveTime, b._notifyInactiveTime);
   swap(a._startedRampingOutTime, b._startedRampingOutTime);
+  swap(a._originSource, b._originSource);
 }
 
 LMDynamicProgramData::LMDynamicProgramData(const LMDynamicProgramData& other0) {
@@ -303,6 +323,7 @@ LMDynamicProgramData::LMDynamicProgramData(const LMDynamicProgramData& other0) {
   _notifyActiveTime = other0._notifyActiveTime;
   _notifyInactiveTime = other0._notifyInactiveTime;
   _startedRampingOutTime = other0._startedRampingOutTime;
+  _originSource = other0._originSource;
 }
 LMDynamicProgramData& LMDynamicProgramData::operator=(const LMDynamicProgramData& other1) {
   _paoId = other1._paoId;
@@ -316,6 +337,7 @@ LMDynamicProgramData& LMDynamicProgramData::operator=(const LMDynamicProgramData
   _notifyActiveTime = other1._notifyActiveTime;
   _notifyInactiveTime = other1._notifyInactiveTime;
   _startedRampingOutTime = other1._startedRampingOutTime;
+  _originSource = other1._originSource;
   return *this;
 }
 void LMDynamicProgramData::printTo(std::ostream& out) const {
@@ -332,6 +354,7 @@ void LMDynamicProgramData::printTo(std::ostream& out) const {
   out << ", " << "_notifyActiveTime=" << to_string(_notifyActiveTime);
   out << ", " << "_notifyInactiveTime=" << to_string(_notifyInactiveTime);
   out << ", " << "_startedRampingOutTime=" << to_string(_startedRampingOutTime);
+  out << ", " << "_originSource=" << to_string(_originSource);
   out << ")";
 }
 

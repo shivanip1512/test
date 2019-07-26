@@ -147,7 +147,8 @@ CtiLMManualControlRequest::CtiLMManualControlRequest(LONG cmd,
                                                      LONG start_gear,
                                                      LONG start_priority,
                                                      const string& addl_info,
-                                                     LONG constraint_cmd) :
+                                                     LONG constraint_cmd,
+                                                     const string& origin) :
 _command(cmd),
 _paoid(pao_id),
 _notifytime(notify_time),
@@ -156,7 +157,8 @@ _stoptime(stop_time),
 _startgear(start_gear),
 _startpriority(start_priority),
 _additionalinfo(addl_info),
-_constraint_cmd(constraint_cmd)
+_constraint_cmd(constraint_cmd),
+_origin(origin)
 {
 }
 
@@ -187,6 +189,7 @@ std::string CtiLMManualControlRequest::toString() const
     list.add("Start Priority")  << _startpriority;
     list.add("Additional Info") << _additionalinfo;
     list.add("Constraint")      << _constraint_cmd;
+    list.add("Origin")          << _origin;
 
     return Inherited::toString() += list.toString();
 }
@@ -294,6 +297,16 @@ LONG CtiLMManualControlRequest::getConstraintCmd() const
 }
 
 /*---------------------------------------------------------------------------
+    getOrigin
+
+    Returns the origin of the request.
+---------------------------------------------------------------------------*/
+const std::string & CtiLMManualControlRequest::getOrigin() const
+{
+    return _origin;
+}
+
+/*---------------------------------------------------------------------------
     replicateMessage
 ---------------------------------------------------------------------------*/
 CtiMessage* CtiLMManualControlRequest::replicateMessage() const
@@ -317,6 +330,7 @@ CtiLMManualControlRequest& CtiLMManualControlRequest::operator=(const CtiLMManua
         _startpriority = right._startpriority;
         _additionalinfo = right._additionalinfo;
         _constraint_cmd = right._constraint_cmd;
+        _origin = right._origin;
     }
 
     return *this;
@@ -1046,6 +1060,7 @@ CtiLMDynamicProgramDataMsg::CtiLMDynamicProgramDataMsg(CtiLMProgramDirectSPtr pr
         _notify_active_time = program->getNotifyActiveTime();
         _notify_inactive_time = program->getNotifyInactiveTime();
         _startedrampingouttime = program->getStartedRampingOutTime();
+        _origin = program->getOrigin();
     }
 }
 
@@ -1124,6 +1139,7 @@ std::string CtiLMDynamicProgramDataMsg::toString() const
     itemList.add("Notify Active Time")          << _notify_active_time;
     itemList.add("Notify Inactive Time")        << _notify_inactive_time;
     itemList.add("Started Ramping Out Time")    << _startedrampingouttime;
+    itemList.add("origin")                      << _origin;
 
     return (Inherited::toString() += itemList.toString());
 }
@@ -1206,6 +1222,7 @@ CtiMessage* CtiLMDynamicProgramDataMsg::replicateMessage() const
     msg->_notify_active_time = _notify_active_time;
     msg->_notify_inactive_time = _notify_inactive_time;
     msg->_startedrampingouttime = _startedrampingouttime;
+    msg->_origin = _origin;
     return msg;
 }
 

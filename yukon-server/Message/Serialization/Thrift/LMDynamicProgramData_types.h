@@ -29,7 +29,7 @@ class LMDynamicProgramData : public virtual ::apache::thrift::TBase {
 
   LMDynamicProgramData(const LMDynamicProgramData&);
   LMDynamicProgramData& operator=(const LMDynamicProgramData&);
-  LMDynamicProgramData() : _paoId(0), _disableFlag(0), _currentGearNumber(0), _lastGroupControlled(0), _programState(0), _reductionTotal(0), _directStartTime(0), _directStopTime(0), _notifyActiveTime(0), _notifyInactiveTime(0), _startedRampingOutTime(0) {
+  LMDynamicProgramData() : _paoId(0), _disableFlag(0), _currentGearNumber(0), _lastGroupControlled(0), _programState(0), _reductionTotal(0), _directStartTime(0), _directStopTime(0), _notifyActiveTime(0), _notifyInactiveTime(0), _startedRampingOutTime(0), _originSource() {
   }
 
   virtual ~LMDynamicProgramData() throw();
@@ -44,6 +44,7 @@ class LMDynamicProgramData : public virtual ::apache::thrift::TBase {
    ::Cti::Messaging::Serialization::Thrift::Timestamp _notifyActiveTime;
    ::Cti::Messaging::Serialization::Thrift::Timestamp _notifyInactiveTime;
    ::Cti::Messaging::Serialization::Thrift::Timestamp _startedRampingOutTime;
+  std::string _originSource;
 
   void __set__paoId(const int32_t val);
 
@@ -66,6 +67,8 @@ class LMDynamicProgramData : public virtual ::apache::thrift::TBase {
   void __set__notifyInactiveTime(const  ::Cti::Messaging::Serialization::Thrift::Timestamp val);
 
   void __set__startedRampingOutTime(const  ::Cti::Messaging::Serialization::Thrift::Timestamp val);
+
+  void __set__originSource(const std::string& val);
 
   bool operator == (const LMDynamicProgramData & rhs) const
   {
@@ -90,6 +93,8 @@ class LMDynamicProgramData : public virtual ::apache::thrift::TBase {
     if (!(_notifyInactiveTime == rhs._notifyInactiveTime))
       return false;
     if (!(_startedRampingOutTime == rhs._startedRampingOutTime))
+      return false;
+    if (!(_originSource == rhs._originSource))
       return false;
     return true;
   }

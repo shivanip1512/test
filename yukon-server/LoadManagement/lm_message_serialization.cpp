@@ -118,6 +118,7 @@ MessagePtr<Thrift::LMManualControlRequest>::type populateThrift( const ::CtiLMMa
     omsg->__set__startPriority                  ( imsg.getStartPriority() );
     omsg->__set__additionalInfo                 ( imsg.getAdditionalInfo() );
     omsg->__set__constraintCmd                  ( imsg.getConstraintCmd() );
+    omsg->__set__originSource                   ( imsg.getOrigin() );
 
     return omsg;
 }
@@ -133,7 +134,8 @@ MessagePtr<::CtiLMManualControlRequest>::type populateMessage( const Thrift::LMM
                                                   imsg._startGear,
                                                   imsg._startPriority,
                                                   imsg._additionalInfo,
-                                                  imsg._constraintCmd ));
+                                                  imsg._constraintCmd,
+                                                  imsg._originSource));
 
     static_cast<::CtiLMMessage&>(*omsg)         = *populateMessage( imsg._baseMessage );
 
@@ -436,6 +438,7 @@ MessagePtr<Thrift::LMDynamicProgramData>::type populateThrift( const ::CtiLMDyna
     omsg->__set__notifyActiveTime               ( CtiTimeToMilliseconds( imsg.getNotifyActiveTime() ));
     omsg->__set__notifyInactiveTime             ( CtiTimeToMilliseconds( imsg.getNotifyInactiveTime() ));
     omsg->__set__startedRampingOutTime          ( CtiTimeToMilliseconds( imsg.getStartedRampingOutTime() ));
+    omsg->__set__originSource                   ( imsg.getOrigin() );
 
     return omsg;
 }

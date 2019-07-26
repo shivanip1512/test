@@ -30,7 +30,7 @@ class LMManualControlRequest : public virtual ::apache::thrift::TBase {
 
   LMManualControlRequest(const LMManualControlRequest&);
   LMManualControlRequest& operator=(const LMManualControlRequest&);
-  LMManualControlRequest() : _command(0), _paoId(0), _notifyTime(0), _startTime(0), _stopTime(0), _startGear(0), _startPriority(0), _additionalInfo(), _constraintCmd(0) {
+  LMManualControlRequest() : _command(0), _paoId(0), _notifyTime(0), _startTime(0), _stopTime(0), _startGear(0), _startPriority(0), _additionalInfo(), _constraintCmd(0), _originSource() {
   }
 
   virtual ~LMManualControlRequest() throw();
@@ -44,6 +44,7 @@ class LMManualControlRequest : public virtual ::apache::thrift::TBase {
   int32_t _startPriority;
   std::string _additionalInfo;
   int32_t _constraintCmd;
+  std::string _originSource;
 
   void __set__baseMessage(const  ::Cti::Messaging::Serialization::Thrift::LMMessage& val);
 
@@ -64,6 +65,8 @@ class LMManualControlRequest : public virtual ::apache::thrift::TBase {
   void __set__additionalInfo(const std::string& val);
 
   void __set__constraintCmd(const int32_t val);
+
+  void __set__originSource(const std::string& val);
 
   bool operator == (const LMManualControlRequest & rhs) const
   {
@@ -86,6 +89,8 @@ class LMManualControlRequest : public virtual ::apache::thrift::TBase {
     if (!(_additionalInfo == rhs._additionalInfo))
       return false;
     if (!(_constraintCmd == rhs._constraintCmd))
+      return false;
+    if (!(_originSource == rhs._originSource))
       return false;
     return true;
   }

@@ -105,6 +105,7 @@ struct TestCase<CtiLMManualControlRequest> : public TestCase<CtiLMMessage>
         GenerateRandom( imsg._startpriority );
         GenerateRandom( imsg._additionalinfo );
         GenerateRandom( imsg._constraint_cmd );
+        GenerateRandom( imsg._origin );
     }
 };
 
@@ -1209,6 +1210,7 @@ struct TestCase<CtiLMDynamicProgramDataMsg> : public TestCase<CtiMessage>
         GenerateRandom( imsg._notify_active_time );
         GenerateRandom( imsg._notify_inactive_time );
         GenerateRandom( imsg._startedrampingouttime );
+        GenerateRandom( imsg._origin );
     }
 };
 

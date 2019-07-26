@@ -128,8 +128,8 @@ public:
                   LONG start_gear,
                   LONG start_priority,
                   const std::string& addl_info,
-                  LONG constraint_cmd
-
+                  LONG constraint_cmd,
+                  const std::string& origin
                   );
     CtiLMManualControlRequest(const CtiLMManualControlRequest& req);
 
@@ -145,6 +145,7 @@ public:
     LONG getStartPriority() const;
     const std::string& getAdditionalInfo() const;
     LONG getConstraintCmd() const;
+    const std::string & getOrigin() const;
     std::string toString() const override;
 
     virtual CtiMessage* replicateMessage() const;
@@ -163,6 +164,7 @@ private:
     LONG _startpriority;
     std::string _additionalinfo;
     LONG _constraint_cmd;
+    std::string _origin;
 };
 
 class CtiLMManualControlResponse : public CtiLMMessage
@@ -442,6 +444,7 @@ public:
     const CtiTime& getNotifyActiveTime() const      { return _notify_active_time; };
     const CtiTime& getNotifyInactiveTime() const    { return _notify_inactive_time; };
     const CtiTime& getStartedRampingOutTime() const { return _startedrampingouttime; };
+    std::string getOrigin() const                   { return _origin; }
 
 private:
     typedef CtiMessage Inherited;
@@ -457,6 +460,7 @@ private:
     CtiTime _notify_active_time;
     CtiTime _notify_inactive_time;
     CtiTime _startedrampingouttime;
+    std::string _origin;
 };
 
 class CtiLMDynamicTriggerDataMsg : public CtiMessage

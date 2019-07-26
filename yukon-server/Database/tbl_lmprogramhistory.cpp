@@ -19,7 +19,7 @@ static long CurrentLMGearHistoryId    = 0;
 
 CtiTableLMProgramHistory::CtiTableLMProgramHistory(long progHistID, long program, long gear, LMHistoryActions action,
                                                    string programName, string reason, string user, string gearName,
-                                                   CtiTime time) :
+                                                   CtiTime time, std::string origin) :
 _lmProgramHistID(progHistID),
 _programID(program),
 _gearID(gear),
@@ -28,7 +28,8 @@ _programName(programName),
 _reason(reason),
 _user(user),
 _gearName(gearName),
-_time(time)
+_time(time),
+_origin(origin)
 {
 }
 
@@ -50,6 +51,7 @@ CtiTableLMProgramHistory& CtiTableLMProgramHistory::operator=(const CtiTableLMPr
         _user             = aRef._user;
         _gearName         = aRef._gearName;
         _time             = aRef._time;
+        _origin           = aRef._origin;
     }
 
     return *this;
@@ -61,8 +63,12 @@ bool CtiTableLMProgramHistory::Insert()
 
     validateData();
 
+    std::string origin = "(none)";  // we only care about this for Start actions
+
     if( _action == Start )
     {
+        origin = _origin;   // we care about this for Start actions
+
         static const std::string sql_program_history = "insert into LMProgramHistory values (?, ?, ?)";
 
         Cti::Database::DatabaseWriter   inserter(conn, sql_program_history);
@@ -82,7 +88,7 @@ bool CtiTableLMProgramHistory::Insert()
 
     long gearHistId = getNextGearHistId();
 
-    static const std::string sql_program_gear_history = "insert into LMProgramGearHistory values (?, ?, ?, ?, ?, ?, ?, ?)";
+    static const std::string sql_program_gear_history = "insert into LMProgramGearHistory values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     Cti::Database::DatabaseWriter   inserter(conn, sql_program_gear_history);
 
@@ -94,7 +100,8 @@ bool CtiTableLMProgramHistory::Insert()
         << _user
         << _gearName
         << _gearID
-        << _reason;
+        << _reason
+        << origin;
 
     if( ! Cti::Database::executeCommand( inserter, CALLSITE ))
     {
@@ -220,5 +227,9 @@ void CtiTableLMProgramHistory::validateData()
     if( _gearName.size() > 30 )
     {
         _gearName.resize(30);
+    }
+    if( _origin.size() == 0 )
+    {
+        _origin = "(none)";
     }
 }

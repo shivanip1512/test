@@ -15,4 +15,5 @@ struct LMDynamicProgramData {
     9: required     Types.Timestamp                 _notifyActiveTime;
    10: required     Types.Timestamp                 _notifyInactiveTime;
    11: required     Types.Timestamp                 _startedRampingOutTime;
+   12: required     string                          _originSource;
 }

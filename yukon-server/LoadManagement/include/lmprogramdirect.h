@@ -143,6 +143,9 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     virtual void setLastUser(const std::string& user);
     virtual void setChangeReason(const std::string& reason);
 
+    void setOrigin(const std::string& origin) override;
+    std::string getOrigin();
+
     virtual bool getHasBeatThePeakGear() const;
 
     CtiLMProgramDirect& operator=(const CtiLMProgramDirect& right);
@@ -172,6 +175,8 @@ private:
     std::string _additionalinfo;
     std::string _last_user;
     std::string _change_reason;
+    std::string _origin;
+
     LONG _trigger_offset;
     LONG _trigger_restore_offset;
 

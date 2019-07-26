@@ -20,6 +20,7 @@ private:
     std::string  _user;
     std::string  _gearName;
     CtiTime _time;
+    std::string  _origin;
 
     CtiTableLMProgramHistory() {};
 
@@ -39,7 +40,7 @@ public:
 
     CtiTableLMProgramHistory(long progHistID, long program, long gear, LMHistoryActions action,
                              std::string programName, std::string reason, std::string user, std::string gearName,
-                             CtiTime time);
+                             CtiTime time, std::string origin);
     
     CtiTableLMProgramHistory(const CtiTableLMProgramHistory &aRef);
 

@@ -1239,6 +1239,11 @@ void CtiLMProgramBase::setLastUser(const string& user)
 {
 }
 
+// Sets the origin of the change, only used by LMProgramDirect
+void CtiLMProgramBase::setOrigin(const std::string& origin)
+{
+}
+
 // Static Members
 const string CtiLMProgramBase::AutomaticType = "Automatic";
 const string CtiLMProgramBase::ManualOnlyType = "ManualOnly";
