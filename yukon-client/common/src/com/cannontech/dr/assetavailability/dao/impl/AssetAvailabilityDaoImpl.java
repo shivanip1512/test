@@ -35,12 +35,15 @@ import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.dao.AssetAvailabilityDao;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private DeviceGroupService deviceGroupService;
+    
+    private static final Iterable<String> mctDbStrings = Iterables.transform(PaoType.getMctTypes(), PaoType::getDbString);
 
     @Override
     public SearchResults<ApplianceAssetAvailabilityDetails> getAssetAvailabilityDetailsWithAppliance(Iterable<Integer> loadGroupIds,
@@ -167,7 +170,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
             AssetAvailabilityCombinedStatus.OPTED_OUT);
         sql.append("WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
         sql.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
-        sql.append("WHEN ypo.Type").in(PaoType.getMctTypes().stream().map(p->p.getDbString()).collect(Collectors.toList()));
+        sql.append("WHEN ypo.Type").in(mctDbStrings);
         sql.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
         sql.append("WHEN LastCommunication").gt(communicatingWindowEnd);
         sql.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.INACTIVE);
@@ -266,7 +269,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sql.append(") THEN 'TRUE' ELSE 'FALSE' END ");
         sql.append(getTable().getSql()).append(")AS optedout,");
         sql.append("(SELECT CASE WHEN inv.DeviceID=0");
-        sql.append(  "OR ypo.Type").in(PaoType.getMctTypes().stream().map(p->p.getDbString()).collect(Collectors.toList())); 
+        sql.append(  "OR ypo.Type").in(mctDbStrings); 
         sql.append("THEN 'TRUE' ELSE 'FALSE' END");
         sql.append(getTable().getSql()).append(")AS oneway");
         sql.append("FROM LMHardwareBase lmbase ,LMHardwareConfiguration hdconf, InventoryBase inv");
@@ -425,7 +428,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
             ")THEN").appendArgument_k(AssetAvailabilityCombinedStatus.OPTED_OUT);
         sqlCommon.append("WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
         sqlCommon.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
-        sqlCommon.append("WHEN ypo.Type").in(PaoType.getMctTypes().stream().map(p->p.getDbString()).collect(Collectors.toList()));
+        sqlCommon.append("WHEN ypo.Type").in(mctDbStrings);
         sqlCommon.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
         sqlCommon.append("WHEN LastCommunication").gt(communicatingWindowEnd);
         sqlCommon.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.INACTIVE);

@@ -64,7 +64,7 @@ public final class LMDaoImpl implements LMDao {
     }
 
     @Override
-    public Set<LiteYukonPAObject> getAllLMDirectPrograms() {
+    public Set<LiteYukonPAObject> getAllProgramsForCommercialCurtailment() {
     	List<LiteYukonPAObject> directPrograms = paoDao.getLiteYukonPAObjectByType(PaoType.LM_DIRECT_PROGRAM);
     	List<LiteYukonPAObject> sepPrograms = paoDao.getLiteYukonPAObjectByType(PaoType.LM_SEP_PROGRAM);
 

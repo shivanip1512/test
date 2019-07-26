@@ -26,7 +26,7 @@ public class CustomerLMProgramService {
         Set<LiteYukonPAObject> programPaosForCustomer = 
             lmDirectCustomerListDao.getLMProgramPaosForCustomer(customer.getId());
         Set<LiteYukonPAObject> allPrograms = 
-            lmDao.getAllLMDirectPrograms();
+            lmDao.getAllProgramsForCommercialCurtailment();
         allPrograms.removeAll(programPaosForCustomer);
 
         return allPrograms;

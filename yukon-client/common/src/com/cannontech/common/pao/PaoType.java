@@ -1203,7 +1203,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     /**
      * @return List of all LM Program types
      */
-    public static ImmutableSet<PaoType> getAllLMProgramTypes() {
+    public static ImmutableSet<PaoType> getDirectLMProgramTypes() {
         return directProgramTypes;
     }
 }

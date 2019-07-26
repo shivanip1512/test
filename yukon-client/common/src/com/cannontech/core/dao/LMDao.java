@@ -10,7 +10,8 @@ public interface LMDao {
 
     LiteLMProgScenario[] getLMScenarioProgs(int scenarioID);
 
-    Set<LiteYukonPAObject> getAllLMDirectPrograms();
+    // I renamed this because I am not brave enough to change it and I don't want anyone to ever use it.
+    Set<LiteYukonPAObject> getAllProgramsForCommercialCurtailment();
 
     int getStartingGearForScenarioAndProgram(int programId, int scenarioId);
 }

@@ -576,11 +576,7 @@ public class EstimatedLoadController {
         Iterable<LiteYukonPAObject> programs = Iterables.filter(cache.getAllLMPrograms(), new Predicate<LiteYukonPAObject>() {
             @Override
             public boolean apply(LiteYukonPAObject input) {
-                return input.getPaoType() == PaoType.LM_DIRECT_PROGRAM || 
-                        input.getPaoType() == PaoType.LM_METER_DISCONNECT_PROGRAM ||
-                        input.getPaoType() == PaoType.LM_ECOBEE_PROGRAM ||
-                        input.getPaoType() == PaoType.LM_HONEYWELL_PROGRAM ||
-                        input.getPaoType() == PaoType.LM_ITRON_PROGRAM;
+                return PaoType.getDirectLMProgramTypes().contains(input.getPaoType());
             }
         });
         

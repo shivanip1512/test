@@ -56,7 +56,7 @@ public class CalculatedPointDataProducer {
      * The primary method used to pass each {@link CalculationData} on to it's corresponding
      * {@link PointCalculator}.  Any resulting {@link PointData} messages are to be added to {@code toArchive}
      */
-    public void calculate(Collection<? extends CalculationData> calculatorFrom, List<? super PointData> toArchive) {
+    public void calculate(Collection<? extends CalculationData> calculatorFrom, List<PointData> toArchive) {
         for (CalculationData data : calculatorFrom) {
             PaoTypePointIdentifier ptpi = data.getPaoPointValue().getPaoPointIdentifier().getPaoTypePointIdentifier();
             PointCalculator calculator = calculatorMappings.get(ptpi);

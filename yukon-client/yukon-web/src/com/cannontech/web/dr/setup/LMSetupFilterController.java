@@ -89,7 +89,7 @@ public class LMSetupFilterController {
         model.addAttribute("viewUrlPrefix", lmSetupFilter.getFilterByType().getViewUrl());
         model.addAttribute("filteredResults", filteredResults);
         model.addAttribute("loadGroupTypes", PaoType.getAllLMGroupTypes());
-        model.addAttribute("loadProgramTypes", PaoType.getAllLMProgramTypes());
+        model.addAttribute("loadProgramTypes", PaoType.getDirectLMProgramTypes());
         model.addAttribute("filterByTypes", LmSetupFilterType.values());
         model.addAttribute("lmSetupFilter", lmSetupFilter);
         return "dr/setup/list.jsp";

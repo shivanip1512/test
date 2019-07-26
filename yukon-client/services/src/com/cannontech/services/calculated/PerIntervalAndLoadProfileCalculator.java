@@ -98,7 +98,7 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
      * @param pointData the list of point data update messages sent to dispatch.
      */
     @Override
-    public void calculate(Cache<CacheKey, CacheValue> recentReadings, CalculationData data, List<? super PointData> pointData) {
+    public void calculate(Cache<CacheKey, CacheValue> recentReadings, CalculationData data, List<PointData> pointData) {
         
         PaoIdentifier pao = data.getPaoPointValue().getPaoIdentifier();
         PointValueQualityHolder pvqh = data.getPaoPointValue().getPointValueQualityHolder();
