@@ -9,7 +9,7 @@
     <tags:nameValueContainer2>
         <tags:nameValue2 id='js-addressUsage' nameKey=".addressUsage">
              <cti:displayForPageEditModes modes="CREATE,EDIT">
-                <div class="button-group stacked">
+                <div class="button-group stacked addressUsage">
                     <c:forEach var="addressUsageValue" items="${addressUsageList}">
                         <tags:check id="${addressUsageValue}_chk" path="addressUsage" value="${addressUsageValue}"
                                     key="${addressUsageValue}"/>
@@ -21,7 +21,7 @@
                      <c:set var="geoCounter" value="0"/>
                      <c:forEach var="geoAddress" items="${geoAddressUsage}">
                          <c:if test="${geoCounter != 0}">
-                             <i:inline key="yukon.common.comma"/>
+                             <i:inline key="yukon.common.comma"/>&nbsp;
                          </c:if>
                          <i:inline key="${geoAddress}"/>
                          <c:set var="geoCounter" value="${geoCounter + 1}"/>
@@ -45,7 +45,7 @@
       <tags:nameValue2 id="js-feederRow" nameKey=".feeder" rowClass="${displayFeeder == true ? '' : 'dn'}">
           <cti:displayForPageEditModes modes="CREATE,EDIT">
               <form:hidden id="feederValueString" path="feeder"/>
-              <div id="js-feeder" class="button-group">
+              <div id="js-feeder" class="button-group feederChk">
                   <c:forEach var="feederValue" items="${feederList}" varStatus="status">
                       <tags:check id="${feederValue}_chk" value="0" key="${feederValue}" classes="${status.first ? 'ML0' : ''}"/>
                    </c:forEach>
@@ -71,9 +71,9 @@
     <tags:nameValueContainer2>
        <tags:nameValue2 id='js-loadAddressUsage'  nameKey=".loadAddressUsage">
            <cti:displayForPageEditModes modes="CREATE,EDIT">
-               <div class="button-group stacked">
+               <div class="button-group stacked loadaddressing">
                    <c:forEach var="loadAddressUsageValue" items="${loadAddressUsageList}">
-                       <tags:check id="${loadAddressUsageValue}_chk" path="addressUsage"  value="${loadAddressUsageValue}" key="${loadAddressUsageValue}" classes="loadaddressing"/>
+                       <tags:check id="${loadAddressUsageValue}_chk" path="addressUsage"  value="${loadAddressUsageValue}" key="${loadAddressUsageValue}"/>
                    </c:forEach>
                </div>
            </cti:displayForPageEditModes>
@@ -82,7 +82,7 @@
                    <c:set var="loadCounter" value="0"/>
                    <c:forEach var="loadAddress" items="${loadAddressUsage}">
                        <c:if test="${loadCounter != 0}">
-                           <i:inline key="yukon.common.comma"/>
+                           <i:inline key="yukon.common.comma"/>&nbsp;
                        </c:if>
                        <i:inline key="${loadAddress}"/>
                        <c:set var="loadCounter" value="${loadCounter + 1}"/>
@@ -127,7 +127,7 @@
                     <c:set var="loadNumberCounter" value="0"/>
                     <c:forEach var="load" items="${loadGroup.relayUsage}">
                         <c:if test="${loadNumberCounter != 0}">
-                            <i:inline key="yukon.common.comma"/>
+                            <i:inline key="yukon.common.comma"/>&nbsp;
                         </c:if>
                         <i:inline key="${load}"/>
                         <c:set var="loadNumberCounter" value="${loadNumberCounter + 1}"/>

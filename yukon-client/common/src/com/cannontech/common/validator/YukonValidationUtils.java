@@ -313,8 +313,7 @@ public class YukonValidationUtils extends ValidationUtils {
     public static void checkExactLength(String field, Errors errors, String fieldValue, String fieldName,
             int stringLength) {
         if (fieldValue != null && fieldValue.length() != stringLength) {
-            errors.rejectValue(field, "yukon.web.error.invalidStringLength", new Object[] { fieldName, stringLength },
-                "");
+            errors.rejectValue(field, "yukon.web.error.invalidStringLength", new Object[] { fieldName, stringLength },"");
         }
     }
 

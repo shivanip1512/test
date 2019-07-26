@@ -61,23 +61,25 @@
                         <form:hidden path="type" value="${loadGroup.type}"/>
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
-                <c:if test="${selectedSwitchType == 'LM_GROUP_ITRON'}">
-                    <%@ include file="itron.jsp" %>
-                </c:if>
-                <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
-                      selectedSwitchType == 'LM_GROUP_EMETCON' || selectedSwitchType == 'LM_GROUP_VERSACOM'}">
-                    <tags:nameValue2 nameKey=".route">
-                        <cti:displayForPageEditModes modes="CREATE,EDIT">
-                            <tags:selectWithItems items="${routes}" id="route" path="routeId" itemValue="liteID"/>
-                        </cti:displayForPageEditModes>
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <cti:deviceName deviceId="${loadGroup.routeId}"/>
-                        </cti:displayForPageEditModes>
-                    </tags:nameValue2>
-                </c:if>
+                
+                    <c:if test="${selectedSwitchType == 'LM_GROUP_ITRON'}">
+                        <%@ include file="itron.jsp" %>
+                    </c:if>
+                    <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
+                        selectedSwitchType == 'LM_GROUP_EMETCON' || selectedSwitchType == 'LM_GROUP_VERSACOM'}">
+                        <tags:nameValue2 nameKey=".route" rowClass="noswitchtype">
+                            <cti:displayForPageEditModes modes="CREATE,EDIT">
+                                <tags:selectWithItems items="${routes}" id="route" path="routeId" itemValue="liteID"/>
+                            </cti:displayForPageEditModes>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <cti:deviceName deviceId="${loadGroup.routeId}"/>
+                            </cti:displayForPageEditModes>
+                        </tags:nameValue2>
+                    </c:if>
+                
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
-        <div id='js-loadgroup-container'>
+        <div id='js-loadgroup-container' class='noswitchtype'>
             <!-- Include jsp for load group type -->
             <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
                       selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">
@@ -112,7 +114,7 @@
             </cti:displayForPageEditModes>
         </div>
     </form:form>
-   <cti:includeScript link="/resources/js/pages/yukon.dr.setup.loadGroup.js" />
-   <cti:includeScript link="/resources/js/pages/yukon.dr.setup.loadGroupExpresscom.js" />
-   <cti:includeScript link="/resources/js/pages/yukon.dr.setup.loadGroupVersacom.js" />
+    <cti:includeScript link="/resources/js/pages/yukon.dr.setup.loadGroup.js" />
+    <cti:includeScript link="/resources/js/pages/yukon.dr.setup.loadGroupExpresscom.js" />
+    <cti:includeScript link="/resources/js/pages/yukon.dr.setup.loadGroupVersacom.js" />
 </cti:msgScope>

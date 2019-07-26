@@ -12,6 +12,18 @@ yukon.dr.setup.loadGroup = (function() {
     
     var
     _initialized = false,
+    
+    _initCheckboxes = function () {
+        if ($('.loadaddressing').exists()) {
+            $('.loadaddressing').find("input:checkbox").addClass("js-loadaddress");
+        }
+        if ($('.addressUsage').exists()) {
+            $('.addressUsage').find("input:checkbox").addClass("js-addressUsage");
+        }
+        if ($('.feederChk').exists()) {
+            $('.feederChk').find("input:checkbox").addClass("js-feederChk");
+        }
+    },
 
     _loadGroup = function() {
         var type = $('#type').val(); 
@@ -25,8 +37,11 @@ yukon.dr.setup.loadGroup = (function() {
                data: {name: name}
             }).done(function(data) {
                  $('#loadGroup').html(data);
+                 _initCheckboxes();
                  yukon.ui.unblock($('js-loadgroup-container'));
            });
+        } else {
+            $('.noswitchtype').html('');
         }
     }, 
     
@@ -36,8 +51,9 @@ yukon.dr.setup.loadGroup = (function() {
         init: function () {
             
             if (_initialized) return;
-             
             
+            _initCheckboxes();
+             
             $(document).on('click', '#js-cancel-btn', function (event) {
                 window.history.back();
             });

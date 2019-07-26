@@ -13,8 +13,7 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
     var
     _initialized = false,
     
-    _handleAddressing = function (mode) {
-        if (mode!= 'VIEW') {
+    _handleAddressing = function () {
             $('#js-geoRow').toggleClass('dn', !($('#GEO_chk').is(':checked')));
             $('#js-substationRow').toggleClass('dn', !($('#SUBSTATION_chk').is(':checked')));
             $('#js-feederRow').toggleClass('dn', !($('#FEEDER_chk').is(':checked')));
@@ -27,7 +26,7 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
                 
                 // disable other buttons
                 $('#GEO_chk').prop("disabled", true);
-               $('#SUBSTATION_chk').prop("disabled", true);
+                $('#SUBSTATION_chk').prop("disabled", true);
                 $('#FEEDER_chk').prop("disabled", true);
                 $('#ZIP_chk').prop("disabled", true);
                 $('#USER_chk').prop("disabled", true);
@@ -55,7 +54,6 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
                  $('#js-user').removeAttr("disabled");
                  $('#js-feeder').find('input[type=checkbox]').prop("disabled", false);
             }
-        }
      },
     _handleLoads = function (mode) {
         $('#js-programRow').toggleClass('dn', $('input[id=PROGRAM_chk]:checked').length == 0);
@@ -107,37 +105,37 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
     }, 
     _addressUsage = function() {
         var addressUsage = $(allAddressUsage).val();
-        if(addressUsage.indexOf('GEO') > -1) {
+        if (addressUsage.indexOf('GEO') > -1) {
             $('#GEO_chk').prop("checked", true)
         }
-        if(addressUsage.indexOf('SUBSTATION') > -1) {
+        if (addressUsage.indexOf('SUBSTATION') > -1) {
             $('#SUBSTATION_chk').prop("checked", true)
         }
-        if(addressUsage.indexOf('FEEDER') > -1) {
+        if (addressUsage.indexOf('FEEDER') > -1) {
             $('#FEEDER_chk').prop("checked", true)
         }
-        if(addressUsage.indexOf('ZIP') > -1) {
+        if (addressUsage.indexOf('ZIP') > -1) {
             $('#ZIP_chk').prop("checked", true)
         }
-        if(addressUsage.indexOf('USER') > -1) {
+        if (addressUsage.indexOf('USER') > -1) {
             $('#USER_chk').prop("checked", true)
         }
-        if(addressUsage.indexOf('SERIAL') > -1) {
+        if (addressUsage.indexOf('SERIAL') > -1) {
             $('#SERIAL_chk').prop("checked", true)
         }
-        if(addressUsage.indexOf('LOAD') > -1) {
+        if (addressUsage.indexOf('LOAD') > -1) {
             $('#LOAD_chk').prop("checked", true)
         }
-        if(addressUsage.indexOf('PROGRAM') > -1) {
+        if (addressUsage.indexOf('PROGRAM') > -1) {
             $('#PROGRAM_chk').prop("checked", true)
         }
-        if(addressUsage.indexOf('SPLINTER') > -1) {
+        if (addressUsage.indexOf('SPLINTER') > -1) {
             $('#SPLINTER_chk').prop("checked", true)
         }
     },
     _setValues = function() {
-        if(!($('#GEO_chk').is(':checked'))) {
-            $('#js-geo').val(0);	
+        if (!($('#GEO_chk').is(':checked'))) {
+            $('#js-geo').val(0);
         }
         if (!($('#SUBSTATION_chk').is(':checked'))) {
             $('#js-substation').val(0);
@@ -149,16 +147,16 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
             $('#js-zip').val(0);
         }
         if (!($('#USER_chk').is(':checked'))) {
-            $('#js-user').val(0);	
+            $('#js-user').val(0);
         }
         if (!($('#SERIAL_chk').is(':checked'))) {
-            $('#js-serial').val(0);	
+            $('#js-serial').val(0);
         }
         if (!($('#PROGRAM_chk').is(':checked'))) {
-            $('#js-program').val(0);	
+            $('#js-program').val(0);
         }
         if (!($('#SPLINTER_chk').is(':checked'))) {
-            $('#js-splinter').val(0);	
+            $('#js-splinter').val(0);
         }
     }
     
@@ -166,29 +164,31 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
         
         /** Initialize this module. */
         init: function () {
+           if (_initialized) return;
+
            var _mode = $('.js-page-mode').val();
-           if (_mode !== 'VIEW' && ($(type).val() === 'LM_GROUP_EXPRESSCOMM' ||
-                $(type).val() === 'LM_GROUP_RFN_EXPRESSCOMM')) {
-                _addressUsage();
-                _handleAddressing();
-                _setFeederValue();
-                _handleLoads();
+           if (_mode !== 'VIEW' && ($("#type").val() === 'LM_GROUP_EXPRESSCOMM' ||
+               $("#type").val() === 'LM_GROUP_RFN_EXPRESSCOMM')) {
+               _addressUsage();
+               _handleAddressing();
+               _setFeederValue();
+               _handleLoads();
            }
            
-            $(document).on('click', '#js-addressUsage', function (event) {
-                _handleAddressing(_mode);
+            $(document).on('change', '.js-addressUsage', function (event) {
+                _handleAddressing();
             });
-            $(document).on('click', '#js-loadAddressUsage', function (event) {
-                _handleLoads(_mode);
-            });
-            $(document).on('click', '#js-feederRow', function (event) {
+            $(document).on('change', '.js-feederChk', function (event) {
                _buildFeederValue();
             });
             $(document).on('click', '#save', function (event) {
                 _setValues();
              });
-            $(document).on('click', '.loadaddressing', function (event) {
-                _showConfirmation();
+            $(document).on('change', '.js-loadaddress', function (event) {
+                _handleLoads();
+                if (this.checked) {
+                    _showConfirmation();
+               }
              });
             $(document).on('yukon:uncheck:load', function (ev) {
                 $('#LOAD_chk').prop("checked", false);

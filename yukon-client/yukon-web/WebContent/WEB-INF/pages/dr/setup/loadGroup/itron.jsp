@@ -1,7 +1,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<tags:nameValueContainer2>
+<tags:nameValueContainer2 tableClass="noswitchtype">
     <tags:nameValue2 nameKey=".virtualRelayId">
         <cti:displayForPageEditModes modes="EDIT,CREATE">
             <tags:selectWithItems items="${relayIds}" path="virtualRelayId"/>

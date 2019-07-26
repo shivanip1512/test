@@ -3,17 +3,19 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <tags:sectionContainer2 nameKey="optional">
     <tags:nameValueContainer2>
-        <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
-              selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">
-            <tags:nameValue2 nameKey=".controlPriority">
-                <cti:displayForPageEditModes modes="CREATE,EDIT">
-                    <tags:selectWithItems items="${protocolPriority}" path="protocolPriority"/>
-                </cti:displayForPageEditModes>
-                <cti:displayForPageEditModes modes="VIEW">
-                    <i:inline key="${loadGroup.protocolPriority}"/>
-                 </cti:displayForPageEditModes>
-            </tags:nameValue2>
-        </c:if>
+        <div class='noswitchtype'>
+            <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
+                selectedSwitchType == 'LM_GROUP_RFN_EXPRESSCOMM'}">
+                <tags:nameValue2 nameKey=".controlPriority">
+                    <cti:displayForPageEditModes modes="CREATE,EDIT">
+                        <tags:selectWithItems items="${protocolPriority}" path="protocolPriority"/>
+                    </cti:displayForPageEditModes>
+                    <cti:displayForPageEditModes modes="VIEW">
+                        <i:inline key="${loadGroup.protocolPriority}"/>
+                    </cti:displayForPageEditModes>
+                </tags:nameValue2>
+           </c:if>
+        </div>
         <tags:nameValue2 nameKey=".kWCapacity">
             <tags:input path="kWCapacity"/>
         </tags:nameValue2>
