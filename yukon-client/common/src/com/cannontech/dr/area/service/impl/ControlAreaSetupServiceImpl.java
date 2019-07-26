@@ -288,14 +288,19 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                 lmControlAreaTrigger.setThresholdPointID(areaTrigger.getThresholdPointId());
             } else {
                 lmControlAreaTrigger.setThreshold(areaTrigger.getThreshold());
-                if (areaTrigger.getMinRestoreOffset() != null) {
+                if (areaTrigger.getAtku() != null) {
                     lmControlAreaTrigger.setThresholdKickPercent(areaTrigger.getAtku());
                 }
-                lmControlAreaTrigger.setProjectionType(
-                    areaTrigger.getControlAreaProjection().getProjectionType().getProjectionTypeValue());
-                lmControlAreaTrigger.setProjectionPoints(areaTrigger.getControlAreaProjection().getProjectionPoint());
-                lmControlAreaTrigger.setProjectAheadDuration(
-                    areaTrigger.getControlAreaProjection().getProjectAheadDuration().getSeconds());
+                String projectionType=areaTrigger.getControlAreaProjection().getProjectionType().getProjectionTypeValue();
+                lmControlAreaTrigger.setProjectionType(projectionType);
+                if(projectionType.equals(ControlAreaProjectionType.NONE.getDatabaseRepresentation())) {
+                     lmControlAreaTrigger.setProjectionPoints(5);
+                     lmControlAreaTrigger.setProjectAheadDuration(TimeIntervals.MINUTES_5.getSeconds());
+                }else {
+                     lmControlAreaTrigger.setProjectionPoints(areaTrigger.getControlAreaProjection().getProjectionPoint());
+                     lmControlAreaTrigger.setProjectAheadDuration(
+                         areaTrigger.getControlAreaProjection().getProjectAheadDuration().getSeconds());
+                }
             }
 
             if (areaTrigger.getMinRestoreOffset() != null) {

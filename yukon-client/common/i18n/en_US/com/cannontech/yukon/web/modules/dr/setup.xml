@@ -135,6 +135,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.error.required">{0} is required.</entry>
 <entry key="yukon.web.modules.dr.setup.error.invalid">Invalid {0} value.</entry>
 <entry key="yukon.web.modules.dr.setup.error.routeId.doesNotExist">Route Id does not exist.</entry>
+<entry key="yukon.web.modules.dr.setup.error.pointId.doesNotExist">{0} does not exist.</entry>
 
 <!-- Control Scenario Validation -->
 <entry key="yukon.web.modules.dr.setup.controlScenario.error.oneGear">Only one valid gear is allowed.</entry>
@@ -142,8 +143,9 @@ Are you sure you want do this?</entry>
 <!-- Control Area Validation -->
 <entry key="yukon.web.modules.dr.setup.controlArea.error.maxTwoTriggers">Maximum two valid triggers are allowed.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.error.programId.doesNotExist">Program Id does not exist or already assigned to other Control Area.</entry>
-<entry key="yukon.web.modules.dr.setup.controlArea.error.pointId.doesNotExist">{0} does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.error.invalid.normalState">Invalid Normal state.</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.error.invalid.intervalValue">Invalid {0} value.</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.error.invalid.startStopTimeRange">The Start time must be before the Stop time.</entry>
 
 <!-- Load Group Validation -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.utilityEnrollmentGroup.rangeCheck">Utility Enrollment Group must be between 1 and 255; (use 0 to specify all devices in the group).</entry>

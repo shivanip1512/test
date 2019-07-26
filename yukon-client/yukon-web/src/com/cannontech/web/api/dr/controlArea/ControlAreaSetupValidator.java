@@ -10,8 +10,10 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.setup.ControlArea;
 import com.cannontech.common.dr.setup.ControlAreaProgramAssignment;
+import com.cannontech.common.dr.setup.ControlAreaProjectionType;
 import com.cannontech.common.dr.setup.ControlAreaTrigger;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PointDao;
@@ -21,7 +23,6 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMProgram;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
 public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
@@ -42,11 +43,27 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
         lmValidatorHelper.validateNewPaoName(controlArea.getName(), PaoType.LM_CONTROL_AREA, errors, "Control Area Name");
 
         lmValidatorHelper.checkIfFieldRequired("controlInterval", errors, controlArea.getControlInterval(), "Control Interval");
+        if (!errors.hasFieldErrors("controlInterval")) {
+            if (!TimeIntervals.getControlAreaInterval().contains(controlArea.getControlInterval())) {
+                errors.rejectValue("controlInterval", key + "invalid.intervalValue", new Object[] { "Control Interval" }, "");
+            }
+        }
         lmValidatorHelper.checkIfFieldRequired("minResponseTime", errors, controlArea.getMinResponseTime(), "Min Response Time");
+        if (!errors.hasFieldErrors("minResponseTime")) {
+            if (!TimeIntervals.getControlAreaInterval().contains(controlArea.getMinResponseTime())) {
+                errors.rejectValue("minResponseTime", key + "invalid.intervalValue", new Object[] { "Min Response Time" }, "");
+            }
+        }
         lmValidatorHelper.checkIfFieldRequired("dailyDefaultState", errors, controlArea.getDailyDefaultState(), "Daily Default State");
 
         YukonValidationUtils.checkRange(errors, "dailyStartTimeInMinutes", controlArea.getDailyStartTimeInMinutes(), 0, 1439, false);
         YukonValidationUtils.checkRange(errors, "dailyStopTimeInMinutes", controlArea.getDailyStopTimeInMinutes(), 0, 1439, false);
+
+        if (!errors.hasFieldErrors("dailyStartTimeInMinutes") && !errors.hasFieldErrors("dailyStopTimeInMinutes")) {
+            if (controlArea.getDailyStartTimeInMinutes() > controlArea.getDailyStopTimeInMinutes()) {
+                errors.reject(key + "invalid.startStopTimeRange");
+            }
+        }
 
         if (CollectionUtils.isNotEmpty(controlArea.getTriggers())) {
             if (controlArea.getTriggers().size() > MAX_TRIGGER_COUNT) {
@@ -86,7 +103,7 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                             if ((trigger.getTriggerType().getTriggerTypeValue()).equalsIgnoreCase( IlmDefines.TYPE_THRESHOLD_POINT)) {
                                 lmValidatorHelper.checkIfFieldRequired("thresholdPointId", errors, trigger.getThresholdPointId(), "Threshold Point Id");
                                 if (!errors.hasFieldErrors("thresholdPointId")) { 
-                                    lmValidatorHelper.validatePointId(errors, "thresholdPointId", trigger.getPeakPointId());
+                                    lmValidatorHelper.validatePointId(errors, "thresholdPointId", trigger.getThresholdPointId());
                                 }
                             } else {
                                 lmValidatorHelper.checkIfFieldRequired("threshold", errors, trigger.getThreshold(), "Threshold");
@@ -102,12 +119,20 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                                 lmValidatorHelper.checkIfFieldRequired("controlAreaProjection", errors, trigger.getControlAreaProjection(), "Control Area Projection");
                                 if (!errors.hasFieldErrors("controlAreaProjection")) {
                                     lmValidatorHelper.checkIfFieldRequired("controlAreaProjection.projectionType", errors, trigger.getControlAreaProjection().getProjectionType(), "Projection Type");
+
+                                    if(trigger.getControlAreaProjection().getProjectionType() != ControlAreaProjectionType.NONE ) {
                                     lmValidatorHelper.checkIfFieldRequired("controlAreaProjection.projectionPoint", errors, trigger.getControlAreaProjection().getProjectionPoint(), "Projection Point");
                                     if (!errors.hasFieldErrors("controlAreaProjection.projectionPoint")) {
                                         YukonValidationUtils.checkRange(errors, "controlAreaProjection.projectionPoint", trigger.getControlAreaProjection().getProjectionPoint(), 2, 12, false);
                                     }
                                     lmValidatorHelper.checkIfFieldRequired("controlAreaProjection.projectAheadDuration", errors, trigger.getControlAreaProjection().getProjectAheadDuration(), "Projection Ahead Duration");
-                                }
+                                    if (!errors.hasFieldErrors("controlAreaProjection.projectAheadDuration")) { 
+                                        if(!TimeIntervals.getProjectionAheadDuration().contains(trigger.getControlAreaProjection().getProjectAheadDuration())) {
+                                            errors.rejectValue("controlAreaProjection.projectAheadDuration", key + "invalid.intervalValue", new Object[] { "Project Ahead Duration" }, "");
+                                        }
+                                    }
+                                  }
+                               }
                             }
                         }
                     }
@@ -121,8 +146,7 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                 errors.pushNestedPath("programAssignment[" + i + "]");
                 ControlAreaProgramAssignment programAssignment = controlArea.getProgramAssignment().get(i);
                 lmValidatorHelper.checkIfFieldRequired("programId", errors, programAssignment.getProgramId(), "Program Id");
-                String ControlAreaId = ServletUtils.getPathVariable("id");
-                if (!errors.hasFieldErrors("programId") && ControlAreaId == null) {
+                if (!errors.hasFieldErrors("programId")) {
                     Set<Integer> Program = new LinkedHashSet<>(LMProgram.getUnassignedPrograms());
                     if (!Program.contains(programAssignment.getProgramId())) {
                         errors.rejectValue("programId", key + "programId.doesNotExist");
