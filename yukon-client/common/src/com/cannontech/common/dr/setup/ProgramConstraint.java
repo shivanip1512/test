@@ -93,7 +93,11 @@ public class ProgramConstraint {
     }
 
     public HolidayUsage getHolidayUsage() {
-        return holidayUsage;
+        if (getHolidaySchedule() != null && getHolidaySchedule().getId() != null && getHolidaySchedule().getId() == 0) {
+            return HolidayUsage.NONE;
+        } else {
+            return holidayUsage;
+        }
     }
 
     public void setHolidayUsage(HolidayUsage holidayUsage) {
@@ -159,11 +163,7 @@ public class ProgramConstraint {
     public void buildDBPersistent(LMProgramConstraint lMProgramConstraint) {
         lMProgramConstraint.setConstraintID(getId());
         lMProgramConstraint.setConstraintName(getName());
-        Character holidayUsage = HolidayUsage.NONE.getHolidayUsage();
-        // When No schedule is selected, ID will be 0 otherwise >0 
-        if (getHolidaySchedule() != null && getHolidaySchedule().getId() > 0) {
-            holidayUsage = getHolidayUsage().getHolidayUsage();
-        }
+        Character holidayUsage = getHolidayUsage().getHolidayUsage();
         lMProgramConstraint.setAvailableWeekdays(DayOfWeek.buildDBPersistent(getDaySelection()) + holidayUsage);
         lMProgramConstraint.setMaxHoursDaily(getMaxHoursDaily());
         lMProgramConstraint.setMaxHoursMonthly(getMaxHoursMonthly());

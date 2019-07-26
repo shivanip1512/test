@@ -87,8 +87,9 @@
                         <c:otherwise>
                             <div class="button-group">
                                 <c:forEach var="daySelection" items="${daySelections}">
-                                <tags:check id="js-${daySelection}" path="daySelection" value="${daySelection}" key="yukon.common.day.${daySelection}.short" classes="M0"/>
-                            </c:forEach>
+                                    <tags:check id="js-${daySelection}" path="daySelection" value="${daySelection}" key="yukon.common.day.${daySelection}.short" classes="M0"/>
+                                </c:forEach>
+                            </div>
                         </c:otherwise>
                     </c:choose>
                 </cti:displayForPageEditModes>
@@ -111,8 +112,8 @@
                 <tags:nameValue2 nameKey=".holidayUsage">
                     <cti:displayForPageEditModes modes="CREATE,EDIT">
                         <div class="button-group">
-                            <tags:radio path="holidayUsage" key=".modules.dr.setup.constraint.EXCLUDE" classes="left yes" value="EXCLUDE"/>
-                            <tags:radio path="holidayUsage" key=".modules.dr.setup.constraint.FORCE" classes="right yes" value="FORCE"/>
+                            <tags:radio path="holidayUsage" key=".modules.dr.setup.constraint.EXCLUDE" classes="left yes ML0" value="EXCLUDE"/>
+                            <tags:radio path="holidayUsage" key=".modules.dr.setup.constraint.FORCE" classes="right yes ML0" value="FORCE"/>
                         </div>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
