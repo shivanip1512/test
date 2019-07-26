@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -38,11 +39,10 @@ import com.cannontech.amr.disconnect.model.DisconnectMeterResult;
 import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -109,8 +109,7 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private ProgramWidgetService programWidgetService;
     @Autowired private DisconnectStatusService disconnectStatusService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
-    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
 
     @RequestMapping(value = "/program/list", method = RequestMethod.GET)
     public String list(ModelMap model, YukonUserContext userContext,
@@ -207,11 +206,11 @@ public class ProgramController extends ProgramControllerBase {
                                             String[] disconnectStatus, YukonUserContext userContext, ModelMap model) {
         Map<LiteHardwarePAObject, PointValueHolder> disconnectStatusMap = disconnectStatusService.getDisconnectStatuses(programId, disconnectStatus, userContext);
         
-        //create temp group
-        StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
-        List<LiteHardwarePAObject> devices = new ArrayList<LiteHardwarePAObject>(disconnectStatusMap.keySet());
-        deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
-        model.addAttribute("group", tempGroup);
+        //create device collection
+        List<Integer> deviceIds = new ArrayList<>();
+        disconnectStatusMap.keySet().forEach(device -> deviceIds.add(device.getPaoIdentifier().getPaoId()));
+        DeviceCollection deviceCollection = dcProducer.createDeviceCollection(deviceIds, null);
+        model.addAttribute("deviceCollection", deviceCollection);
         
         SearchResults<Map.Entry<LiteHardwarePAObject, PointValueHolder>> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();

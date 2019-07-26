@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.program.service.DisconnectStatusService;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
+import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -28,10 +30,15 @@ public class DisconnectStatusServiceImpl implements DisconnectStatusService {
     @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
     @Autowired private LoadGroupDao loadGroupDao;
     @Autowired private IDatabaseCache cache;
+    @Autowired private OptOutEventDao optOutEventDao;
     
     public Map<LiteHardwarePAObject, PointValueHolder> getDisconnectStatuses(int programId, String[] disconnectStatus, YukonUserContext userContext) {
         //get all devices for program
         List<LoadGroup> loadGroups = loadGroupDao.getByProgramId(programId);
+        List<Integer> loadGroupIds = new ArrayList<>();
+        loadGroups.forEach(group -> loadGroupIds.add(group.getLoadGroupId()));
+        Set<Integer> optOutInventory = optOutEventDao.getOptedOutInventoryByLoadGroups(loadGroupIds);
+
         List<LiteHardwarePAObject> devices = new ArrayList<>();
         for (LoadGroup group : loadGroups) {
             Map<Integer, SimpleDevice> inventoryPaoMap = drGroupDeviceMappingDao.getInventoryPaoMapForGrouping(group);
@@ -39,6 +46,9 @@ public class DisconnectStatusServiceImpl implements DisconnectStatusService {
                 Integer inventoryId = device.getKey();
                 LiteYukonPAObject obj = cache.getAllPaosMap().get(device.getValue().getPaoIdentifier().getPaoId());
                 LiteHardwarePAObject hwObj = new LiteHardwarePAObject(obj, inventoryId);
+                if (optOutInventory.contains(inventoryId)) {
+                    hwObj.setOptedOut(true);
+                }
                 devices.add(hwObj);
             }
         }

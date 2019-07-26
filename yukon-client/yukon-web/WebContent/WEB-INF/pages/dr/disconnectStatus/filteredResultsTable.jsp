@@ -16,8 +16,7 @@
         <span class="js-cog-menu">
             <cm:dropdown icon="icon-cog">
                 <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
-                    <cti:param name="collectionType" value="group"/>
-                    <cti:param name="group.name" value="${group.fullName}"/>
+                    <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                 </cti:url>
                 <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" classes="js-collection-action" href="${collectionActionUrl}" newTab="true"/> 
                 <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="js-download"/>  
@@ -57,8 +56,18 @@
                             <cm:dropdown icon="icon-cog">
                                 <cm:dropdownOption key=".connect" classes="js-connect" icon="icon-connect" 
                                     data-device-id="${paoId}"/>
-                                <cm:dropdownOption key=".disconnect" classes="js-disconnect" icon="icon-disconnect" 
-                                    data-device-id="${paoId}"/>
+                                <c:choose>
+                                    <c:when test="${pao.optedOut}">
+                                        <cti:msg2 var="disconnectNotAllowed" key=".disconnectNotAllowed"/>
+                                        <span title="${disconnectNotAllowed}">
+                                            <cm:dropdownOption key=".disconnect" icon="icon-disconnect" disabled="true"/>
+                                        </span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cm:dropdownOption key=".disconnect" classes="js-disconnect" icon="icon-disconnect" data-device-id="${paoId}"/>
+                                    </c:otherwise>
+                                </c:choose>
+
                                 <cti:paoDetailUrl var="meterDetailLink" yukonPao="${pao}"/>
                                 <cm:dropdownOption key=".meterDetail" href="${meterDetailLink}" newTab="true" icon="icon-control-equalizer-blue"/>
                             </cm:dropdown>
