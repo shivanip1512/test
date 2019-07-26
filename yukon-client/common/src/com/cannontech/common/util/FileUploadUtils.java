@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -98,23 +100,50 @@ public class FileUploadUtils {
      * @throws IOException
      */
     private static void validateUploadFileType(File file) throws ImportFileFormatException, IOException {
-        try (Reader reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
-             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
-             //csvReader will skip first line while reading CSV file and it will return null if we try to read file other than text or CSV file.
-             Reader fileReader = new FileReader(file.getAbsoluteFile());) {
+        try (Reader fileReader = new FileReader(file.getAbsoluteFile());) {
             CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
             CSVReader csvReaderWithDelimeter = new CSVReaderBuilder(fileReader).withCSVParser(parser).build();
             String[] csvData = csvReaderWithDelimeter.readNext();
-            String[] csvRecord = csvReader.readNext();
+            String[] csvRecord = getCsvRecord(file, null);
             if (csvData != null && csvRecord == null) {
-                if (csvReaderWithDelimeter.readNext() != null)
+                csvRecord = getCsvRecord(file, StandardCharsets.ISO_8859_1);
+                if (csvRecord == null && csvReaderWithDelimeter.readNext() != null)
                     throw new ImportFileFormatException("yukon.common.validDataFileRequired.error");
             }
         }
     }
 
     /**
-     * Validate file type and empty file return true if it is valid CSV non empty file 
+     * Get CSV record by skiping first line of CSV file with particular charset,when null is passed default
+     * charset is UTF-8
+     * @throws ImportFileFormatException
+     * @throws IOException
+     */
+    private static String[] getCsvRecord(File file, Charset charset) throws ImportFileFormatException, IOException {
+        Reader reader = null;
+        CSVReader csvReader = null;
+        try {
+            if (charset == null) {
+                reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
+            } else {
+                reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()), charset);
+            }
+            // csvReader will skip first line while reading CSV file and it will return null if we try to read
+            // file other than text or CSV file.
+            csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
+            String[] csvRecord = csvReader.readNext();
+            return csvRecord;
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new ImportFileFormatException(e.getMessage());
+        } finally {
+            reader.close();
+            csvReader.close();
+        }
+    }
+
+    /**
+     * Validate file type and empty file return true if it is valid CSV non empty file
      */
     public static boolean validateCsvFileContentType(Path path) {
 
