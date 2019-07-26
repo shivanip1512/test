@@ -71,7 +71,9 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 if (!errors.hasFieldErrors("geo")) {
                     YukonValidationUtils.checkRange(errors, "geo", loadGroup.getGeo(), 1, 65534, true);
                 }
-            } 
+            } else {
+                loadGroup.setGeo(0);
+            }
 
             if (loadGroup.getAddressUsage().contains(AddressUsage.SUBSTATION)) {
                 // Validate substation
@@ -79,12 +81,16 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 if (!errors.hasFieldErrors("substation")) {
                     YukonValidationUtils.checkRange(errors, "substation", loadGroup.getSubstation(), 1, 65534, true);
                 }
+            } else {
+                loadGroup.setSubstation(0);
             }
 
             if (loadGroup.getAddressUsage().contains(AddressUsage.FEEDER)) {
                 // validate Feeder
                 lmValidatorHelper.checkIfFieldRequired("feeder", errors, loadGroup.getFeeder(), "Feeder");
                 YukonValidationUtils.checkExactLength("feeder", errors, loadGroup.getFeeder(), "Feeder", 16);
+            } else {
+                loadGroup.setFeeder("0");
             }
 
             if (loadGroup.getAddressUsage().contains(AddressUsage.ZIP)) {
@@ -93,6 +99,8 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 if (!errors.hasFieldErrors("zip")) {
                     YukonValidationUtils.checkRange(errors, "zip", loadGroup.getZip(), 1, 16777214, true);
                 }
+            } else {
+                loadGroup.setZip(0);
             }
             if (loadGroup.getAddressUsage().contains(AddressUsage.USER)) {
                 // validate User
@@ -100,6 +108,8 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 if (!errors.hasFieldErrors("user")) {
                     YukonValidationUtils.checkRange(errors, "user", loadGroup.getUser(), 1, 65534, true);
                 }
+            }  else {
+                loadGroup.setUser(0);
             } 
             if (loadGroup.getAddressUsage().contains(AddressUsage.PROGRAM)) {
                 // validate Program
@@ -108,14 +118,18 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 if (!errors.hasFieldErrors("program")) {
                     YukonValidationUtils.checkRange(errors, "program", loadGroup.getProgram(), 1, 99, true);
                 }
-            }
+            } else {
+                loadGroup.setProgram(0);
+            } 
             if (loadGroup.getAddressUsage().contains(AddressUsage.SPLINTER)) {
                 // validate Splinter
                 lmValidatorHelper.checkIfFieldRequired("splinter", errors, loadGroup.getSplinter(), "Splinter");
                 if (!errors.hasFieldErrors("splinter")) {
                     YukonValidationUtils.checkRange(errors, "splinter", loadGroup.getSplinter(), 1, 99, true);
                 }
-            }
+            } else {
+                loadGroup.setSplinter(0);
+            } 
             if (loadGroup.getAddressUsage().contains(AddressUsage.LOAD)) {
                 // validate Loads
                 YukonValidationUtils.checkIfListRequired("relayUsage", errors, loadGroup.getRelayUsage(), "Relay Usage");
