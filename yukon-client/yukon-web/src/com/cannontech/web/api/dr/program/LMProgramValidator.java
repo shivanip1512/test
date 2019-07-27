@@ -182,17 +182,17 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
 
         }
 
+        if (loadProgram.getOperationalState() == OperationalState.Timed && (loadProgram.getControlWindow() == null
+            || loadProgram.getControlWindow().getControlWindowOne() == null)) {
+            errors.reject(key + "timedSupportedControlWindow");
+        }
+
         if (loadProgram.getControlWindow() != null) {
             ProgramControlWindow window = loadProgram.getControlWindow();
             if (window.getControlWindowOne() != null) {
-                
-                if(loadProgram.getOperationalState() == OperationalState.Timed) {
-                    errors.reject(key + "notSupportedControlWindow", new Object[] { loadProgram.getOperationalState() }, "");
-                } else {
-                    Integer availableStartTimeInMinutes = window.getControlWindowOne().getAvailableStartTimeInMinutes();
-                    Integer availableStopTimeInMinutes = window.getControlWindowOne().getAvailableStopTimeInMinutes();
-                    validateControlWindowTime("controlWindow.controlWindowOne", errors, availableStartTimeInMinutes, availableStopTimeInMinutes);
-                }
+                Integer availableStartTimeInMinutes = window.getControlWindowOne().getAvailableStartTimeInMinutes();
+                Integer availableStopTimeInMinutes = window.getControlWindowOne().getAvailableStopTimeInMinutes();
+                validateControlWindowTime("controlWindow.controlWindowOne", errors, availableStartTimeInMinutes, availableStopTimeInMinutes);
             }
 
             if (window.getControlWindowTwo() != null) {

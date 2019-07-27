@@ -92,7 +92,8 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         // Validate programId
         getProgramFromCache(programId);
 
-        LMProgramBase lmProgramBase = getDBPersistent(loadProgram.getProgramId(), loadProgram.getType());
+        LMProgramBase lmProgramBase = getDBPersistent(programId, loadProgram.getType());
+        loadProgram.setProgramId(programId);
         buildLMProgramBaseDBPersistent(lmProgramBase, loadProgram);
 
         buildLMMemberControlDBPersistent(lmProgramBase, loadProgram);
@@ -216,9 +217,15 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
      */
     private void buildGearsDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram) {
         LMProgramDirectBase prog = (LMProgramDirectBase) lmProgram;
+
+        if (CollectionUtils.isNotEmpty(prog.getLmProgramDirectGearVector())) {
+            prog.getLmProgramDirectGearVector().clear();
+        }
+
         if (loadProgram.getGears() != null) {
             loadProgram.getGears().forEach(gear -> {
                 LMProgramDirectGear directGear = gear.buildDBPersistent();
+                directGear.setDeviceID(loadProgram.getProgramId());
                 prog.getLmProgramDirectGearVector().add(directGear);
             });
 
@@ -231,6 +238,10 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
     private void buildNotificationDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram) {
         LMProgramDirectBase prog = (LMProgramDirectBase) lmProgram;
+
+        if (CollectionUtils.isNotEmpty(prog.getLmProgramDirectNotifyGroupVector())) {
+            prog.getLmProgramDirectNotifyGroupVector().clear();
+        }
 
         if (loadProgram.getNotification() != null && loadProgram.getNotification().getAssignedNotificationGroups() != null) {
 
@@ -281,6 +292,11 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
      */
 
     private void buildGroupsDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram) {
+        
+        if (CollectionUtils.isNotEmpty(lmProgram.getLmProgramStorageVector())) {
+            lmProgram.getLmProgramStorageVector().clear();
+        }
+
         if (loadProgram.getAssignedGroups() != null) {
 
             int groupsListSize = loadProgram.getAssignedGroups().size();
@@ -305,10 +321,16 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
      */
 
     private void buildProgramControlWindowDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram) {
+
+        if (CollectionUtils.isNotEmpty(lmProgram.getLmProgramControlWindowVector())) {
+            lmProgram.getLmProgramControlWindowVector().clear();
+        }
+
         if (loadProgram.getControlWindow() != null) {
 
             ProgramControlWindowFields controlWindowOne = loadProgram.getControlWindow().getControlWindowOne();
             ProgramControlWindowFields controlWindowTwo = loadProgram.getControlWindow().getControlWindowTwo();
+            lmProgram.setPAObjectID(loadProgram.getProgramId());
             if (controlWindowOne != null && (loadProgram.getOperationalState() == OperationalState.Automatic
                 || loadProgram.getOperationalState() == OperationalState.ManualOnly)) {
                 LMProgramControlWindow lmControlWindowOne =
@@ -356,6 +378,10 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         if (rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, user)
             || user.getUserID() == UserUtils.USER_ADMIN_ID) {
             LMProgramDirectBase program = (LMProgramDirectBase) lmProgram;
+
+            if (CollectionUtils.isNotEmpty(program.getPAOExclusionVector())) {
+                program.getPAOExclusionVector().clear();
+            }
 
             if (loadProgram.getMemberControl() != null) {
 
