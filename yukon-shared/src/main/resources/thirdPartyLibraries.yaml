@@ -916,20 +916,6 @@ Java :
     jira : YUK-11337
     notes : Geronimo J2EE Management 1.1
   
-  - filename : geronimo-jms_1.1_spec-1.1.1.jar
-    yukon group : ActiveMQ
-    project : Geronimo
-    version : 1.1.1
-    project URL : "http://geronimo.apache.org/"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.geronimo.specs/geronimo-jms_1.1_spec/1.1.1"
-    md5 : d80ce71285696d36c1add1989b94f084
-    sha1 : c872b46c601d8dc03633288b81269f9e42762cea
-    updated : 2009-09-04
-    jira : YUK-7356
-    notes : Geronimo JMS 1.1
-  
   - filename : groovy-all-2.4.11.jar
     yukon group : Yet Another Java Service Wrapper
     project : Apache Groovy
