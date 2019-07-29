@@ -8,7 +8,8 @@ public enum ProgramOriginSource implements DatabaseRepresentationSource{
     AUTOMATIC("Automatic"),
     EIM("EIM"),
     MULTISPEAK("Multispeak"),
-    OPENADR("OpenADR");
+    OPENADR("OpenADR"),
+    NONE("(none)");
 
     private final String originSource;
 
