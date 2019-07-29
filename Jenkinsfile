@@ -188,27 +188,16 @@ pipeline {
 								depthOption: 'infinity',
 								ignoreExternalsOption: true,
 								local: 'yukon-build',
-								remote: "${env.SVN_URL}" + '/yukon-build']],
-							quietOperation: true, workspaceUpdater: [$class: 'UpdateWithCleanUpdater']])
-								
-						bat './yukon-build/go.bat build-install'
-						
-						checkout([$class: 'SubversionSCM',
-							additionalCredentials: [],
-							excludedCommitMessages: '',
-							excludedRegions: '',
-							excludedRevprop: '',
-							excludedUsers: '',
-							filterChangelog: false,
-							ignoreDirPropChanges: false,
-							includedRegions: '',
-							locations: [[cancelProcessOnExternalsFail: true,
+								remote: "${env.SVN_URL}" + '/yukon-build'],
+								[cancelProcessOnExternalsFail: true,
 								credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
 								depthOption: 'infinity',
 								ignoreExternalsOption: true,
 								local: 'yukon-database',
 								remote: "${env.SVN_URL}" + '/yukon-database']],
-							quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+							quietOperation: true, workspaceUpdater: [$class: 'UpdateWithCleanUpdater']])
+								
+						bat './yukon-build/go.bat build-install'
 							
 							if (params.RELEASE_MODE) {
                                  bat 'net use p: \\\\pspl0003.eaton.ad.etn.com\\Public /user:eaton\\psplsoftwarebuild 13aq4xHAB'
