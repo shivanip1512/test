@@ -9,7 +9,7 @@ public enum LmSetupFilterType implements DisplayableEnum {
     LOAD_GROUP("/dr/setup/loadGroup/"),
     LOAD_PROGRAM("/dr/setup/loadProgram/"),
     MACRO_LOAD_GROUP("/dr/setup/macroLoadGroup/"),
-    PROGRAM_CONSTRAINT("/dr/setup/contraint/");
+    PROGRAM_CONSTRAINT("/dr/setup/constraint/");
 
     private String viewUrl;
 

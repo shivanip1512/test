@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.common.model.PagingParameters;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 public class SearchResults<T> {
     private int hitCount;           //total count (possibly estimate) of results available
@@ -27,6 +28,7 @@ public class SearchResults<T> {
     }
 
     @SuppressWarnings("unchecked")
+    @JsonCreator
     public static <T> SearchResults<T> emptyResult() {
         return (SearchResults<T>) emptyResult;
     }

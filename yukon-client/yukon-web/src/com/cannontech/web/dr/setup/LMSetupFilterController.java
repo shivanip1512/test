@@ -1,15 +1,17 @@
 package com.cannontech.web.dr.setup;
 
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.LMPaoDto;
@@ -25,21 +27,30 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.FilterCriteria;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.api.ApiRequestHelper;
+import com.cannontech.web.api.ApiURL;
+import com.cannontech.web.api.dr.setup.dao.LMSetupDao.SortBy;
+import com.cannontech.web.api.validation.ApiCommunicationException;
+import com.cannontech.web.api.validation.ApiControllerHelper;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/setup")
 public class LMSetupFilterController {
 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private ApiRequestHelper apiRequestHelper;
+    @Autowired private ApiControllerHelper helper;
     
     private static final Logger log = YukonLogManager.getLogger(LMSetupFilterController.class);
+    private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     
     @GetMapping("/list")
-    public String list(ModelMap model, YukonUserContext userContext) {
+    public String list(ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flash) {
         LMSetupFilter lmSetupFilter = null;
         if (!model.containsAttribute("lmSetupFilter")) {
             lmSetupFilter = new LMSetupFilter();
@@ -47,44 +58,55 @@ public class LMSetupFilterController {
         } else {
             lmSetupFilter = (LMSetupFilter) model.get("lmSetupFilter");
         }
-        filter(lmSetupFilter, SortingParameters.of("NAME", Direction.desc), PagingParameters.EVERYTHING, model,
-            userContext);
+        filter(lmSetupFilter, SortingParameters.of("NAME", Direction.asc), PagingParameters.EVERYTHING, model,
+            userContext, request, flash);
         return "dr/setup/list.jsp";
     }
     
     @GetMapping("/filter")
-    public String filter(@ModelAttribute LMSetupFilter lmSetupFilter, @DefaultSort(dir = Direction.desc, sort = "NAME") SortingParameters sorting,
-            @DefaultItemsPerPage(value = 250) PagingParameters paging, ModelMap model, YukonUserContext userContext) {
-        FilterCriteria<LMSetupFilter> filterCriteria =
+    public String filter(@ModelAttribute LMSetupFilter lmSetupFilter, @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting,
+            @DefaultItemsPerPage(value = 250) PagingParameters paging, ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flash) {
+       FilterCriteria<LMSetupFilter> filterCriteria =
                 new FilterCriteria<LMSetupFilter>(lmSetupFilter, sorting, paging);
-        
-        //TODO add a call to api
-        log.info("Filter By:" + lmSetupFilter.getFilterByType());
-        log.info("Name:" + lmSetupFilter.getName());
-        log.info("Types: ");
-        List<PaoType> types = ((LMSetupFilter)filterCriteria.getFilteringParameter()).getTypes();
-        CollectionUtils.emptyIfNull(types).stream().forEach(type -> log.info(type));
-        log.info("Paging: " + filterCriteria.getPagingParameters());
-        log.info("Sorting: " + filterCriteria.getSortingParameters());
-        
+
+       SortBy sortByValue = LMFilterSortBy.valueOf(sorting.getSort()).getValue();
+       filterCriteria.setSortingParameters(SortingParameters.of(sortByValue.getDbString(), filterCriteria.getSortingParameters().getDirection()));
+       
+       SearchResults<LMPaoDto> filteredResults = null;
+       ResponseEntity<? extends Object> response= null;
+       // Make API call to get filtered result.
+       String url = helper.findWebServerUrl(request, userContext, ApiURL.drSetupFilterUrl);
+       try {
+           response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, url,
+               HttpMethod.POST, LMPaoDto.class, filterCriteria);
+       } catch (ApiCommunicationException e) {
+           log.error(e.getMessage());
+           flash.setError(new YukonMessageSourceResolvable(communicationKey));
+           return "redirect:/dr/setup/list";
+       } catch (RestClientException ex) {
+           log.error("Error retrieving details: " + ex.getMessage());
+           flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.setup.filter.error"));
+           return "redirect:/dr/setup/list";
+       }
+       filteredResults = (SearchResults<LMPaoDto>) response.getBody();
+       
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        SortBy sortBy = SortBy.valueOf(sorting.getSort());
+        LMFilterSortBy sortBy = LMFilterSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         if (lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_GROUP
             || lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_PROGRAM) {
-            for (SortBy column : SortBy.values()) {
+            for (LMFilterSortBy column : LMFilterSortBy.values()) {
                 String text = accessor.getMessage(column);
                 SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
                 model.addAttribute(column.name(), col);
             }
         } else {
-            String text = accessor.getMessage(SortBy.NAME);
-            SortableColumn col = SortableColumn.of(dir, SortBy.NAME == sortBy, text, SortBy.NAME.name());
+            String text = accessor.getMessage(LMFilterSortBy.NAME);
+            SortableColumn col =
+                SortableColumn.of(dir, LMFilterSortBy.NAME == sortBy, text, LMFilterSortBy.NAME.name());
             model.addAttribute(SortBy.NAME.name(), col);
         }
-        
-        SearchResults<LMPaoDto> filteredResults = mockSearchResults(lmSetupFilter.getFilterByType());
-        
+
         // Build setup model
         model.addAttribute("viewUrlPrefix", lmSetupFilter.getFilterByType().getViewUrl());
         model.addAttribute("filteredResults", filteredResults);
@@ -95,43 +117,26 @@ public class LMSetupFilterController {
         return "dr/setup/list.jsp";
     }
     
-    private enum SortBy implements DisplayableEnum {
+    
+    public enum LMFilterSortBy implements DisplayableEnum {
 
-        NAME, TYPE;
+        NAME(SortBy.NAME),
+        TYPE(SortBy.TYPE);
+        
+        private final SortBy value;
+
+        private LMFilterSortBy(SortBy value) {
+            this.value = value;
+        }
+
+        public SortBy getValue() {
+            return value;
+        }
 
         @Override
         public String getFormatKey() {
             return "yukon.web.modules.dr.setup.filter." + name();
+
         }
-
-    }
-    
-    
-    // TODO: remove this after adding api call.
-    private SearchResults<LMPaoDto> mockSearchResults(LmSetupFilterType filterByType) {
-        SearchResults<LMPaoDto> searchResults = new SearchResults<>();
-        searchResults.setResultList(Lists.newArrayList());
-
-        if (filterByType == LmSetupFilterType.LOAD_GROUP) {
-            LMPaoDto pao1 = new LMPaoDto(123, "Load Group 1", PaoType.LM_GROUP_ECOBEE);
-            LMPaoDto pao2 = new LMPaoDto(123, "Load Group 2", PaoType.LM_GROUP_HONEYWELL);
-            searchResults.getResultList().add(pao1);
-            searchResults.getResultList().add(pao2);
-            searchResults.setBounds(0, 3, 1);
-        } else if (filterByType == LmSetupFilterType.LOAD_PROGRAM) {
-            LMPaoDto pao1 = new LMPaoDto(123, "Load Program 1", PaoType.LM_ECOBEE_PROGRAM);
-            LMPaoDto pao2 = new LMPaoDto(123, "Load Program 2", PaoType.LM_HONEYWELL_PROGRAM);
-            searchResults.getResultList().add(pao1);
-            searchResults.getResultList().add(pao2);
-            searchResults.setBounds(0, 3, 1);
-        } else {
-            for (int i = 0; i < 10; i++) {
-                LMPaoDto dto = new LMPaoDto(i, "Search Result " + i, null);
-                searchResults.getResultList().add(dto);
-            }
-            searchResults.setBounds(0, 10, 1);
-        }
-
-        return searchResults;
     }
 }

@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.cannontech.common.dr.setup.LMPaoDto;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.token.TokenHelper;
@@ -29,6 +31,13 @@ public class ApiRequestHelper {
     public final static HashMap<Class, ParameterizedTypeReference> paramTypeRefMap = new HashMap<>();
     static {
         paramTypeRefMap.put(LiteYukonPAObject.class, new ParameterizedTypeReference<List<LiteYukonPAObject>>() {
+        });
+    }
+    
+    @SuppressWarnings("rawtypes")
+    public final static HashMap<Class, ParameterizedTypeReference> paramTypeObjectRefMap = new HashMap<>();
+    static {
+        paramTypeObjectRefMap.put(LMPaoDto.class, new ParameterizedTypeReference<SearchResults<LMPaoDto>>() {
         });
     }
     
@@ -49,6 +58,27 @@ public class ApiRequestHelper {
             throws RestClientException {
         HttpEntity<Object> requestEntity = getRequestEntity(userContext, request, requestObject);
         ResponseEntity<? extends Object> response = apiRestTemplate.exchange(url, method, requestEntity, responseType);
+        return response;
+    }
+    
+    /**
+     * This method will send a API request to the passed url and return the parameterized reference object.
+     * 
+     * @param userContext - Yukon user context
+     * @param request - HttpRequest
+     * @param url - URL for the request
+     * @param method - HttpMethod type for the request
+     * @param responseType - Type of response required
+     * @param requestObject - Optional parameter for request object.
+     * @return - ResponseEntity having the object send via responseType
+     * @throws RestClientException - Any exception from API call have to be handled by the caller.
+     */
+    public ResponseEntity<? extends Object> callAPIForParameterizedTypeObject(YukonUserContext userContext,
+            HttpServletRequest request, String url, HttpMethod method, Class<? extends Object> responseType,
+            Object... requestObject) throws RestClientException {
+        HttpEntity<Object> requestEntity = getRequestEntity(userContext, request, requestObject);
+        ResponseEntity<? extends Object> response =
+            apiRestTemplate.exchange(url, method, requestEntity, paramTypeObjectRefMap.get(responseType));
         return response;
     }
 

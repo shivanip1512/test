@@ -1409,6 +1409,8 @@
     <bean class="com.cannontech.web.api.dr.constraint.ProgramConstraintValidator"/>
     <bean class="com.cannontech.dr.constraint.service.impl.ProgramConstraintServiceImpl"/>
     <bean class="com.cannontech.web.dr.setup.ProgramConstraintControllerHelper"/>
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMSetupFilterServiceImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMSetupDaoImpl"/>
 
     <bean id="MeterDisconnectGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MeterDisconnectGearFieldsValidator"/>
     <bean id="honeywellCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellCycleGearFieldsValidator"/>

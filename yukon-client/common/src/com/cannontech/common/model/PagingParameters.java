@@ -1,6 +1,9 @@
 package com.cannontech.common.model;
 import static com.google.common.base.Preconditions.*;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public final class PagingParameters {
     
     public final static PagingParameters EVERYTHING = new PagingParameters(Integer.MAX_VALUE, 1);
@@ -54,7 +57,9 @@ public final class PagingParameters {
                         page, itemsPerPage, startIndex, endIndex);
     }
     
-    public static PagingParameters of(int itemsPerPage, int page) {
+
+    @JsonCreator
+    public static PagingParameters of(@JsonProperty("itemsPerPage") int itemsPerPage,@JsonProperty("page") int page) {
         return new PagingParameters(itemsPerPage, page);
     }
     

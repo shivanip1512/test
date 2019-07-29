@@ -132,7 +132,7 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
             } 
             if (loadGroup.getAddressUsage().contains(AddressUsage.LOAD)) {
                 // validate Loads
-                YukonValidationUtils.checkIfListRequired("relayUsage", errors, loadGroup.getRelayUsage(), "Relay Usage");
+                YukonValidationUtils.checkIfListRequired("relayUsage", errors, loadGroup.getRelayUsage(), "Load Address");
             }
         }
     }
