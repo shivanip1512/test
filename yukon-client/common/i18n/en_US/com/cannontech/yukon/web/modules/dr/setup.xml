@@ -268,7 +268,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.common.modules.dr.setup.constraint.EXCLUDE">Exclude</entry>
 <entry key="yukon.common.modules.dr.setup.constraint.FORCE">Force</entry>
 <entry key="yukon.web.modules.dr.setup.constraint.none">None</entry>
-<entry key="yukon.web.modules.dr.setup.constraint.maxHourAllowance">Max Hour Allowance</entry>
+<entry key="yukon.web.modules.dr.setup.constraint.maxHourAllowance.title">Max Hour Allowance</entry>
 <entry key="yukon.web.modules.dr.setup.constraint.maxHoursDaily">Daily</entry>
 <entry key="yukon.web.modules.dr.setup.constraint.maxHoursMonthly">Monthly</entry>
 <entry key="yukon.web.modules.dr.setup.constraint.maxHoursAnnually">Annually</entry>

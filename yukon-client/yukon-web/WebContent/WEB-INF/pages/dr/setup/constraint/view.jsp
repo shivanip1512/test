@@ -132,7 +132,7 @@
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
-        <tags:sectionContainer2 nameKey=".maxHourAllowance">
+        <tags:sectionContainer2 nameKey="maxHourAllowance">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".maxHoursDaily">
                     <tags:numeric path="maxHoursDaily" size="5" maxlength="5" minValue="0" maxValue="99999"/>
