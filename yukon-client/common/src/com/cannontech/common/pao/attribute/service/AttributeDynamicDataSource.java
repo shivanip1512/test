@@ -47,11 +47,11 @@ public class AttributeDynamicDataSource {
                                                                          Attribute attribute, List<String> filteredValues, YukonUserContext userContext) {
         Map<LiteHardwarePAObject,PointValueHolder> pointValues = Maps.newHashMapWithExpectedSize(paos.size());
         
-        for (LiteHardwarePAObject hwObj : paos) {
-            PointValueHolder value = getPointValue(hwObj, attribute);
+        for (LiteHardwarePAObject hwPao : paos) {
+            PointValueHolder value = getPointValue(hwPao, attribute);
             String formattedValue = pointFormattingService.getValueString(value, Format.VALUE, userContext);
             if (filteredValues.isEmpty() || filteredValues.contains(formattedValue)) {
-                pointValues.put(hwObj, value);
+                pointValues.put(hwPao, value);
             }
         }
         
