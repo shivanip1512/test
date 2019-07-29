@@ -2,14 +2,17 @@ package com.cannontech.development.model;
 
 import org.joda.time.Instant;
 
+import com.cannontech.amr.rfn.message.event.DetailedConfigurationStatusCode;
 import com.cannontech.amr.rfn.message.event.Direction;
+import com.cannontech.amr.rfn.message.event.MeterConfigurationStatus;
+import com.cannontech.amr.rfn.message.event.MeterStatusCode;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
 
 public class RfnTestEvent {
     private int serialFrom = 1000;
-    private int serialTo = 1000;
-    private String manufacturer;
-    private String model;
+    private Integer serialTo;
+    private RfnManufacturerModel manufacturerModel;
     private RfnConditionType rfnConditionType;
     private Boolean cleared;
     private Long count;
@@ -22,6 +25,8 @@ public class RfnTestEvent {
     private int numEventPerMeter = 1;
     private int numAlarmPerMeter = 0;
     private Instant timestamp = new Instant();
+    private String meterConfigurationId;
+    private MeterConfigurationStatus meterConfigurationStatus;
     
     public int getSerialFrom() {
         return serialFrom;
@@ -29,23 +34,17 @@ public class RfnTestEvent {
     public void setSerialFrom(int serialFrom) {
         this.serialFrom = serialFrom;
     }
-    public int getSerialTo() {
+    public Integer getSerialTo() {
         return serialTo;
     }
-    public void setSerialTo(int serialTo) {
+    public void setSerialTo(Integer serialTo) {
         this.serialTo = serialTo;
     }
-    public String getManufacturer() {
-        return manufacturer;
+    public RfnManufacturerModel getManufacturerModel() {
+        return manufacturerModel;
     }
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-    public String getModel() {
-        return model;
-    }
-    public void setModel(String model) {
-        this.model = model;
+    public void setManufacturerModel(RfnManufacturerModel manufacturerModel) {
+        this.manufacturerModel = manufacturerModel;
     }
     public RfnConditionType getRfnConditionType() {
         return rfnConditionType;
@@ -122,5 +121,30 @@ public class RfnTestEvent {
     public Long getTimestampAsMillis() {
         return timestamp.getMillis();
     }
-
+    public void setMeterConfigurationId(String meterConfigurationId) {
+        this.meterConfigurationId = meterConfigurationId; 
+    }
+    public String getMeterConfigurationId() {
+        return meterConfigurationId;
+    }
+    public void setMeterConfigurationStatusCode(Integer meterStatusCode) {
+        getMeterConfigurationStatus().setMeterStatusCode(new MeterStatusCode(meterStatusCode.shortValue())); 
+    }
+    public Integer getMeterConfigurationStatusCode() {
+        return (int) getMeterConfigurationStatus().getMeterStatusCode().getCode();
+    }
+    public void setMeterConfigurationStatusDetail(Integer detail) {
+        getMeterConfigurationStatus().setDetailedConfigurationStatusCode(new DetailedConfigurationStatusCode(detail.shortValue()));
+    }
+    public Integer getMeterConfigurationStatusDetail() {
+        return (int) getMeterConfigurationStatus().getDetailedConfigurationStatusCode().getCode();
+    }
+    public MeterConfigurationStatus getMeterConfigurationStatus() {
+        if (meterConfigurationStatus == null) {
+            meterConfigurationStatus = new MeterConfigurationStatus();
+            meterConfigurationStatus.setMeterStatusCode(new MeterStatusCode((short)0));
+            meterConfigurationStatus.setDetailedConfigurationStatusCode(new DetailedConfigurationStatusCode((short)0));
+        }
+        return meterConfigurationStatus;
+    }
 }

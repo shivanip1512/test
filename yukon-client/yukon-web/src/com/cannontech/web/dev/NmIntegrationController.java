@@ -1,15 +1,14 @@
 package com.cannontech.web.dev;
 
 import java.beans.PropertyEditor;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import javax.jms.ConnectionFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,7 +18,6 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -35,6 +33,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
+import com.cannontech.amr.rfn.message.event.DetailedConfigurationStatusCode;
+import com.cannontech.amr.rfn.message.event.MeterStatusCode;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
@@ -134,7 +134,6 @@ public class NmIntegrationController {
     @Autowired private NmSyncService nmSyncService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     
-    private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
 
     @RequestMapping("viewBase")
@@ -447,7 +446,7 @@ public class NmIntegrationController {
     }
     
     @RequestMapping("viewMeterReadArchiveRequest")
-    public String viewMeterReadArchiveRequest(@ModelAttribute RfnTestMeterReading meterReading, ModelMap model, FlashScope flashScope) {
+    public String viewMeterReadArchiveRequest(ModelMap model, FlashScope flashScope) {
 
         model.addAttribute("rfnTypeGroups", rfnEventTestingService.getGroupedRfnTypes());
 
@@ -461,7 +460,7 @@ public class NmIntegrationController {
     }
     
     @RequestMapping("viewConfigNotification")
-    public String viewConfigNotification(@ModelAttribute RfnTestMeterReading meterReading, ModelMap model, FlashScope flashScope) {
+    public String viewConfigNotification(ModelMap model, FlashScope flashScope) {
         model.addAttribute("rfnTypeGroups", rfnEventTestingService.getGroupedRfnTypes());
 
         Integer numberSent = (Integer) model.get("numberSent");
@@ -765,9 +764,18 @@ public class NmIntegrationController {
 
 
     private String setupEventAlarmAttributes(ModelMap model, RfnTestEvent event) {
-        List<RfnConditionType> rfnConditionTypes = Lists.newArrayList(RfnConditionType.values());
+        var rfnConditionTypes = Lists.newArrayList(RfnConditionType.values());
+        var meterStatusCodes = IntStream.range(0, 5)
+                                        .mapToObj(i -> new MeterStatusCode((short)i))
+                                        .collect(Collectors.toList());
+        var meterStatusDetails = IntStream.range(0, 50)
+                                          .mapToObj(i -> new DetailedConfigurationStatusCode((short)i))
+                                          .collect(Collectors.toList());
+        var dataTypes = Lists.newArrayList(RfnConditionDataType.values());
         model.addAttribute("rfnConditionTypes", rfnConditionTypes);
-        ArrayList<RfnConditionDataType> dataTypes = Lists.newArrayList(RfnConditionDataType.values());
+        model.addAttribute("rfnTypeGroups", rfnEventTestingService.getGroupedRfnTypes());
+        model.addAttribute("meterStatusCodes", meterStatusCodes);
+        model.addAttribute("meterStatusDetails", meterStatusDetails);
         model.addAttribute("dataTypes", dataTypes);
         model.addAttribute("event", event);
         return "rfn/viewEventArchive.jsp";
@@ -1013,13 +1021,6 @@ public class NmIntegrationController {
         binder.registerCustomEditor(Instant.class, instantEditor);
     }
 
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
-
     private static class LcrSimStatusResponseOrError {
         public final RfnLcrSimulatorStatusResponse response;
         public final Map<String, Object> errorJson;
@@ -1087,7 +1088,7 @@ public class NmIntegrationController {
         model.addAttribute("deviceArchiveParameters", new DeviceArchiveRequestParameters());
         model.addAttribute("meterModels", rfnEventTestingService.getGroupedRfnTypes());
         model.addAttribute("rfnLcrModels", RfnManufacturerModel.getRfnLcrModels());
-        model.addAttribute("rfDaModels", new ArrayList<String>(Arrays.asList("CBC-8000", "RECL-F4D", "VR-CL7")));
+        model.addAttribute("rfDaModels", List.of("CBC-8000", "RECL-F4D", "VR-CL7"));
         return "rfn/deviceArchive.jsp";
     }
     

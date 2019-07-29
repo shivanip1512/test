@@ -39,6 +39,7 @@ import com.cannontech.amr.rfn.message.alarm.RfnAlarm;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveRequest;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
+import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.event.RfnEvent;
 import com.cannontech.amr.rfn.message.event.RfnEventArchiveRequest;
 import com.cannontech.amr.rfn.message.event.RfnUomModifierSet;
@@ -75,7 +76,6 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ResourceLoader loader;
-    protected JmsTemplate jmsTemplate;
         
     private static final String meterReadingArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
     private static final String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
@@ -212,18 +212,14 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
 
     @Override
     public int sendEventsAndAlarms(RfnTestEvent event) {
-        int numEventsSent = 0;
-        for (int i = event.getSerialFrom(); i <= event.getSerialTo(); i++) {
-            for (int j=0; j < event.getNumEventPerMeter(); j++) {
-                buildAndSendEvent(event, i);
-                numEventsSent++;
-            }
-            for (int j=0; j < event.getNumAlarmPerMeter(); j++) {
-                buildAndSendAlarm(event, i);
-                numEventsSent++;
-            }
+        int[] serials = Optional.ofNullable(event.getSerialTo())
+                                .map(to -> IntStream.rangeClosed(event.getSerialFrom(), to).toArray())
+                                .orElse(new int[] {event.getSerialFrom()});
+        for (int serial : serials) {
+            IntStream.range(0, event.getNumEventPerMeter()).forEach(unused -> buildAndSendEvent(event, serial));
+            IntStream.range(0, event.getNumAlarmPerMeter()).forEach(unused -> buildAndSendAlarm(event, serial));
         }
-        return numEventsSent;
+        return serials.length * (event.getNumEventPerMeter() + event.getNumAlarmPerMeter());
     }
     
     @Override
@@ -284,14 +280,11 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         
         RfnMeterReadingType type = reading.getType();
         
-        List<Integer> serials = 
-                Optional.ofNullable(reading.getSerialTo())
-                    .map(to -> IntStream.rangeClosed(reading.getSerialFrom(), to))
-                    .orElseGet(() -> IntStream.of(reading.getSerialFrom()))
-                    .boxed()
-                    .collect(Collectors.toList());
+        int[] serials = Optional.ofNullable(reading.getSerialTo())
+                                .map(to -> IntStream.rangeClosed(reading.getSerialFrom(), to).toArray())
+                                .orElse(new int[] {reading.getSerialFrom()});
         
-        serials.forEach(serial -> {
+        for (int serial : serials) {
             RfnMeterReadingArchiveRequest message = new RfnMeterReadingArchiveRequest();
             
             RfnMeterReadingData data = new RfnMeterReadingData();
@@ -349,8 +342,8 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             channelData.setUnitOfMeasureModifiers(modifiers);
             
             sendArchiveRequest(meterReadingArchiveRequestQueueName, message);
-        });
-        return serials.size();
+        }
+        return serials.length;
     }
     
     @Override
@@ -402,7 +395,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             locationResponse.setRfnIdentifier(rfnIdentifier);
             locationResponse.setLatitude(latitude);
             locationResponse.setLongitude(longitude);
-            locationResponse.setLocationId(99 + i);
+            locationResponse.setLocationId(99L + i);
             locationResponse.setOrigin(Origin.RF_NODE);
             locationResponse.setLastChangedDate(new Instant().getMillis());
             sendArchiveRequest(locationResponseQueueName, locationResponse);
@@ -430,7 +423,9 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     private <T extends RfnEvent> T buildEvent(RfnTestEvent testEvent, T rfnEvent, int serialNum) {
         rfnEvent.setType(testEvent.getRfnConditionType());
         RfnIdentifier meterIdentifier =
-            new RfnIdentifier(Integer.toString(serialNum), testEvent.getManufacturer(), testEvent.getModel());
+            new RfnIdentifier(Integer.toString(serialNum), 
+                              testEvent.getManufacturerModel().getManufacturer(), 
+                              testEvent.getManufacturerModel().getModel());
         rfnEvent.setRfnIdentifier(meterIdentifier);
         
         long timestamp;
@@ -469,7 +464,10 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         rfnEventMap.put(RfnConditionDataType.EVENT_START_TIME, testEvent.getOutageStartTime());
         rfnEventMap.put(RfnConditionDataType.THRESHOLD_VALUE, testEvent.getThresholdValue());
         rfnEventMap.put(RfnConditionDataType.UOM, testEvent.getUom());
-        
+        if (RfnConditionType.REMOTE_METER_CONFIGURATION_FAILURE.equals(testEvent.getRfnConditionType())) {
+            rfnEventMap.put(RfnConditionDataType.METER_CONFIGURATION_ID, testEvent.getMeterConfigurationId());
+            rfnEventMap.put(RfnConditionDataType.METER_CONFIGURATION_STATUS, testEvent.getMeterConfigurationStatus());
+        }
         if (testEvent.getUomModifiers() != null) {
             Set<String> stringSet = Sets.newHashSet(StringUtils.split(testEvent.getUomModifiers(), ","));
             RfnUomModifierSet rfnUomModifierSet = new RfnUomModifierSet();
@@ -497,12 +495,9 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         thriftRfnIdentifier.setSensorManufacturer(reading.getManufacturerModel().getManufacturer());
         thriftRfnIdentifier.setSensorModel(reading.getManufacturerModel().getModel());
     
-        List<Integer> serials = 
-                Optional.ofNullable(reading.getSerialTo())
-                    .map(to -> IntStream.rangeClosed(reading.getSerialFrom(), to))
-                    .orElseGet(() -> IntStream.of(reading.getSerialFrom()))
-                    .boxed()
-                    .collect(Collectors.toList());
+        int[] serials = Optional.ofNullable(reading.getSerialTo())
+                                .map(to -> IntStream.rangeClosed(reading.getSerialFrom(), to).toArray())
+                                .orElse(new int[] {reading.getSerialFrom()});
 
         dataIndication.setE2eProtocol(RfnE2eProtocol.findByValue(0));
         dataIndication.setApplicationServiceId((byte)0xFE);
@@ -575,23 +570,19 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         SimpleThriftSerializer serializer = new SimpleThriftSerializer() {};
         int messagesSent = 0;
         
-        try {
-            Connection connection = connectionFactory.createConnection();
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        try (Connection connection = connectionFactory.createConnection();
+             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)) {
             Destination dest = session.createQueue(dataIndicationQueueName);
-            MessageProducer producer = session.createProducer(dest);
-
-            for (Integer serial : serials) {
-                BytesMessage outBytesMsg = session.createBytesMessage();
-                thriftRfnIdentifier.setSensorSerialNumber(Integer.toString(serial));
-                dataIndication.setRfnIdentifier(thriftRfnIdentifier);
-                outBytesMsg.writeBytes(serializer.serialize(dataIndication));
-                producer.send(outBytesMsg);
-                messagesSent++;
-            };
-            
-            session.close();
-            connection.close();
+            try (MessageProducer producer = session.createProducer(dest)) {
+                for (Integer serial : serials) {
+                    BytesMessage outBytesMsg = session.createBytesMessage();
+                    thriftRfnIdentifier.setSensorSerialNumber(Integer.toString(serial));
+                    dataIndication.setRfnIdentifier(thriftRfnIdentifier);
+                    outBytesMsg.writeBytes(serializer.serialize(dataIndication));
+                    producer.send(outBytesMsg);
+                    messagesSent++;
+                }
+            }
         } catch (Exception e) {
             log.error("Error sending config notification to porter: " + e);
         }

@@ -262,6 +262,9 @@
     <entry key="yukon.web.modules.dev.rfnTest.dataType.THRESHOLD_VALUE">Threshold Value</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataType.UOM">UOM</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataType.UOM_MODIFIERS">UOM Modifiers</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataType.METER_CONFIGURATION_ID">Meter Configuration ID</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataType.METER_STATUS_CODE">Meter Configuration Status Code</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataType.METER_STATUS_DETAIL">Meter Configuration Status Detail</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.title">LCR Data Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.title">RFN Meter Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.rfnMeterType">RFN Meter Type</entry>

@@ -17,6 +17,7 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.TimeUtil;
@@ -124,8 +125,7 @@ public class DevBuildDatabasePopulationService {
                 rfnTestEvent.setTimestamp(temp);
                 rfnTestEvent.setSerialFrom(RFN_SERIAL_FROM);
                 rfnTestEvent.setSerialTo(RFN_SERIAL_TO);
-                rfnTestEvent.setManufacturer("LGYR");
-                rfnTestEvent.setModel("FocuskWh");
+                rfnTestEvent.setManufacturerModel(RfnManufacturerModel.RFN_420FL);
                 rfnTestEvent.setRfnConditionType(eventType.getKey());
                 eventType.setValue(eventType.getValue() + 1); //add one to the event counter
                 rfnTestEvent.setCount(Long.valueOf(eventType.getValue()));

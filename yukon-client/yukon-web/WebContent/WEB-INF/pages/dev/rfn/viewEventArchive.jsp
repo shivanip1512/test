@@ -7,11 +7,12 @@
 
 <cti:standardPage module="dev" page="rfnTest">
 
-    <script>
+    <script type="text/javascript">
         $(document).ready(function() {
             $('.js-sendEventArchive').click(function() {
                 $('#eventForm').submit();
             });
+            $(".optional").prop("placeholder", "optional");
         });
     </script>
 
@@ -20,55 +21,20 @@
             <cti:csrfToken/>
             <tags:nameValueContainer>
                 <tags:nameValue name="Serial Number">
-                    <form:input path="serialFrom" /> to <form:input path="serialTo"/>
+                    <form:input path="serialFrom" size="5" />
+                    to 
+                    <form:input path="serialTo" size="5" cssClass="optional"/>
                 </tags:nameValue>
                 
-                <tags:nameValue name="Manufacturer">
-                    <form:select path="manufacturer">
-                        <form:option value="EATON">EATON</form:option>
-                        <form:option value="EE">EE</form:option>
-                        <form:option value="Eka">Eka</form:option>
-                        <form:option value="ELO">ELO</form:option>
-                        <form:option value="GE">GE</form:option>
-                        <form:option value="ITRN">ITRN</form:option>
-                        <form:option value="LGYR">LGYR</form:option>
-                        <form:option value="SCH">SCH</form:option>
-                    </form:select>
-                </tags:nameValue>
-                
-                <tags:nameValue name="Model">
-                    <form:select path="model">
-                        <!-- EE -->
-                        <form:option value="A3R">A3R</form:option>
-                        <form:option value="A3D">A3D</form:option>
-                        <form:option value="A3T">A3T</form:option>
-                        <!--  Eka -->
-                        <form:option value="Centron">Centron</form:option>
-                        <form:option value="water_sensor">water_sensor</form:option>
-                        <form:option value="water_node">water_node</form:option>
-                        <!-- ELO -->
-                        <form:option value="2131T">2131T</form:option>
-                        <form:option value="2131xT">2131xT</form:option>
-                        <!-- GE -->
-                        <form:option value="kV2">kV2</form:option>
-                        <!-- ITRN -->
-                        <form:option value="C1SX">C1SX</form:option>
-                        <form:option value="C2SX">C2SX</form:option>
-                        <form:option value="C2SX-SD">C2SX-SD</form:option>
-                        <!--  LGYR -->
-                        <form:option value="FocuskWh">FocuskWh</form:option>
-                        <form:option value="FocusAXD">FocusAXD</form:option>
-                        <form:option value="FocusAXD-SD">FocusAXD-SD</form:option>
-                        <form:option value="FocusAXR">FocusAXR</form:option>
-                        <form:option value="FocusAXR-SD">FocusAXR-SD</form:option>
-                        <!-- RF Relay -->
-                        <form:option value="RFRelay">RFRelay</form:option>
-                        <!-- SCH -->
-                        <form:option value="SENTINEL-L0">SENTINEL-L0</form:option>
-                        <form:option value="SENTINEL-L1">SENTINEL-L1</form:option>
-                        <form:option value="SENTINEL-L2">SENTINEL-L2</form:option>
-                        <form:option value="SENTINEL-L3">SENTINEL-L3</form:option>
-                        <form:option value="SENTINEL-L4">SENTINEL-L4</form:option>
+                <tags:nameValue name="Manufacturer and Model">
+                    <form:select path="manufacturerModel">
+                    <c:forEach var="group" items="${rfnTypeGroups}">
+                        <optgroup label="${group.key}">
+                        <c:forEach var="mm" items="${group.value}">
+                            <form:option value="${mm}"><cti:msg2 key="${mm.type}" /> (${mm.manufacturer} ${mm.model})</form:option>
+                        </c:forEach>
+                        </optgroup>
+                    </c:forEach>
                     </form:select>
                 </tags:nameValue>
                 
@@ -89,22 +55,43 @@
                 </tags:nameValue>
             </tags:nameValueContainer>
 
-            <tags:nameValueContainer2>
-                <strong><u>Condition Data Types (meta data)</u></strong>
-                <tags:nameValue2 nameKey=".dataType.CLEARED">
-                    <form:select path="cleared">
-                        <form:option value="true">True</form:option>
-                        <form:option value="false">False</form:option>
-                    </form:select>
-                </tags:nameValue2>
-                <tags:inputNameValue nameKey=".dataType.COUNT" path="count" />
-                <tags:inputNameValue nameKey=".dataType.DIRECTION" path="direction" />
-                <tags:inputNameValue nameKey=".dataType.MEASURED_VALUE" path="measuredValue" />
-                <tags:inputNameValue nameKey=".dataType.EVENT_START_TIME" path="outageStartTime" />
-                <tags:inputNameValue nameKey=".dataType.THRESHOLD_VALUE" path="thresholdValue" />
-                <tags:inputNameValue nameKey=".dataType.UOM" path="uom" />
-                <tags:inputNameValue nameKey=".dataType.UOM_MODIFIERS" path="uomModifiers" />
-            </tags:nameValueContainer2>
+            <tags:sectionContainer title="Condition Data Types (meta data)">
+                <tags:nameValueContainer2>
+                    <tags:nameValue2 nameKey=".dataType.CLEARED">
+                        <form:select path="cleared">
+                            <form:option value="true">True</form:option>
+                            <form:option value="false">False</form:option>
+                        </form:select>
+                    </tags:nameValue2>
+                    <tags:inputNameValue nameKey=".dataType.COUNT" path="count" />
+                    <tags:inputNameValue nameKey=".dataType.DIRECTION" path="direction" />
+                    <tags:inputNameValue nameKey=".dataType.MEASURED_VALUE" path="measuredValue" />
+                    <tags:inputNameValue nameKey=".dataType.EVENT_START_TIME" path="outageStartTime" />
+                    <tags:inputNameValue nameKey=".dataType.THRESHOLD_VALUE" path="thresholdValue" />
+                    <tags:inputNameValue nameKey=".dataType.UOM" path="uom" />
+                    <tags:inputNameValue nameKey=".dataType.UOM_MODIFIERS" path="uomModifiers" />
+                </tags:nameValueContainer2>
+            </tags:sectionContainer>
+
+            <tags:sectionContainer title="Included only for REMOTE_METER_CONFIGURATION_FAILED">
+                <tags:nameValueContainer2>
+                    <tags:inputNameValue nameKey=".dataType.METER_CONFIGURATION_ID" path="meterConfigurationId" />
+                    <tags:nameValue2 nameKey=".dataType.METER_STATUS_CODE">
+                        <form:select path="meterConfigurationStatusCode">
+                            <c:forEach var="statusCode" items="${meterStatusCodes}">
+                                <form:option value="${statusCode.code}" label="${statusCode.code} - ${statusCode.status}"/>
+                            </c:forEach>
+                        </form:select>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".dataType.METER_STATUS_DETAIL">
+                        <form:select path="meterConfigurationStatusDetail">
+                            <c:forEach var="detail" items="${meterStatusDetails}">
+                                <form:option value="${detail.code}" label="${detail.code} - ${detail.status}"/>
+                            </c:forEach>
+                        </form:select>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+            </tags:sectionContainer>
             <br>
             <div>Outage Start Time helper info:</div>
             <ul>
