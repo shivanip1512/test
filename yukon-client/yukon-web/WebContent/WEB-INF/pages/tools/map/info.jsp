@@ -52,21 +52,23 @@
     <c:if test="${!empty nodeSN}">
         <tags:nameValue2 nameKey=".nodeSN">${fn:escapeXml(nodeSN)}</tags:nameValue2>
     </c:if>
+    <cti:msgScope paths="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData">
         <c:if test="${!empty channelNum}">
-        <tags:nameValue2 nameKey=".channelNum">${fn:escapeXml(channelNum)}</tags:nameValue2>
-    </c:if>
-    <c:if test="${!empty rssi}">
-        <tags:nameValue2 nameKey=".rssi">${fn:escapeXml(rssi)}</tags:nameValue2>
-    </c:if>
-    <c:if test="${!empty apBssid}">
-        <tags:nameValue2 nameKey=".apBssid">${fn:escapeXml(apBssid)}</tags:nameValue2>
-    </c:if>
-    <c:if test="${!empty apSsid}">
-        <tags:nameValue2 nameKey=".apSsid">${fn:escapeXml(apSsid)}</tags:nameValue2>
-    </c:if>
-    <c:if test="${!empty securityType}">
-        <tags:nameValue2 nameKey=".securityType">${fn:escapeXml(securityType)}</tags:nameValue2>
-    </c:if>
+            <tags:nameValue2 nameKey=".channelNum">${fn:escapeXml(channelNum)}</tags:nameValue2>
+        </c:if>
+        <c:if test="${!empty rssi}">
+            <tags:nameValue2 nameKey=".rssi">${fn:escapeXml(rssi)}</tags:nameValue2>
+        </c:if>
+        <c:if test="${!empty apBssid}">
+            <tags:nameValue2 nameKey=".apBssid">${fn:escapeXml(apBssid)}</tags:nameValue2>
+        </c:if>
+        <c:if test="${!empty apSsid}">
+            <tags:nameValue2 nameKey=".apSsid">${fn:escapeXml(apSsid)}</tags:nameValue2>
+        </c:if>
+        <c:if test="${!empty securityType}">
+            <tags:nameValue2 nameKey=".securityType">${fn:escapeXml(securityType)}</tags:nameValue2>
+        </c:if>
+    </cti:msgScope>
     <c:if test="${!empty deviceStatus}">
         <tags:nameValue2 nameKey=".status" valueClass="js-status">${fn:escapeXml(deviceStatus)}</tags:nameValue2>
     </c:if>

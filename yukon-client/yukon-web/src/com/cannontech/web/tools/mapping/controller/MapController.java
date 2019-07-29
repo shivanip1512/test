@@ -59,7 +59,6 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.metadatamulti.EntityType;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
@@ -269,7 +268,7 @@ public class MapController {
                                 model.addAttribute("rssi", nodeData.getWifiSuperMeterData().getRssi() + " " + dBm);
                                 model.addAttribute("apBssid", nodeData.getWifiSuperMeterData().getApBssid());
                                 model.addAttribute("apSsid", nodeData.getWifiSuperMeterData().getApSsid());
-                                String securityType = accessor.getMessage("yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData."
+                                String securityType = accessor.getMessage("yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.securityType."
                                         + nodeData.getWifiSuperMeterData().getSecurityType());
                                 model.addAttribute("securityType", securityType);
                             }
