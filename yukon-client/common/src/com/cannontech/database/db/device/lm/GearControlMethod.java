@@ -29,7 +29,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
     TimeRefresh(TimeRefreshGear.class, "Time Refresh", PaoType.LM_DIRECT_PROGRAM),
     SmartCycle(SmartCycleGear.class, "Smart Cycle", PaoType.LM_DIRECT_PROGRAM),
     SepCycle(SepCycleGear.class, "SEP Cycle", PaoType.LM_SEP_PROGRAM),
-    EcobeeCycle(EcobeeCycleGear.class, "ecobee Cycle", PaoType.LM_HONEYWELL_PROGRAM),
+    EcobeeCycle(EcobeeCycleGear.class, "ecobee Cycle", PaoType.LM_ECOBEE_PROGRAM),
     HoneywellCycle(HoneywellCycleGear.class, "Honeywell Cycle", PaoType.LM_HONEYWELL_PROGRAM),
     ItronCycle(ItronCycleGear.class, "Itron Cycle", PaoType.LM_ITRON_PROGRAM),
     NestCriticalCycle(NestCriticalCycleGear.class, "Nest Critical Cycle", PaoType.LM_NEST_PROGRAM),
