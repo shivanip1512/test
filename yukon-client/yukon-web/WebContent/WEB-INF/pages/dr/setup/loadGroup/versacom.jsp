@@ -37,8 +37,8 @@
             <tags:input id="js-sectionAddress" path="sectionAddress" size="15" maxlength="60"/>
         </tags:nameValue2>
         <tags:nameValue2 id="js-classAddress-row" nameKey=".classAddress" rowClass="${showClassAddress == true ? '' : 'dn'}">
-            <div id="js-classAddress" class="button-group stacked classAddress">
-                <form:hidden id="classAddressString" path="classAddress"/>
+            <form:hidden id="classAddressString" path="classAddress"/>
+            <div id="js-classAddress" class="button-group stacked classAddress">             
                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                     <c:forEach var="classAddressValue" items="${classAddressValues}" varStatus="status">
                         <tags:check id="${classAddressValue}_chk" value="0" key="${classAddressValue}" classes="${status.first ? 'ML0' : ''}"/>
@@ -50,8 +50,8 @@
             </div>
         </tags:nameValue2>
         <tags:nameValue2 id="js-divisionAddress-row" nameKey=".divisionAddress" rowClass="${showDivisionAddress == true ? '' : 'dn'}">
+            <form:hidden id="divisionAddressString" path="divisionAddress"/>
             <div id="js-divisionAddress" class="button-group stacked divisionAddress">
-                <form:hidden id="divisionAddressString" path="divisionAddress"/>
                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                     <c:forEach var="divisionAddressValue" items="${divisionAddressValues}" varStatus="status">
                         <tags:check id="${divisionAddressValue}_chk" value="0" key="${divisionAddressValue}" classes="${status.first ? 'ML0' : ''}"/>
