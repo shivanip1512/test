@@ -79,30 +79,30 @@
                                                     -
                                                 </td>
                                                 <c:choose>
-                                                    <c:when test="${empty gearData.stopDateTime}">
-                                                        <cti:msg key="yukon.web.modules.dr.program.activityDetails.unKnownStopTime" var="eventStopTime"/> 
+                                                    <c:when test="${empty gearData.stopDateTime && gearData.knownGoodStopDateTime == false}">
+                                                        <cti:msg key="yukon.web.modules.dr.program.activityDetails.unKnownStopTime" var="eventStopTime"/>
+                                                        <td title="${eventStopTime}">
+                                                            <span style="font-style: italic"><i:inline key="yukon.common.unknown"/></span>
+                                                        </td>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <cti:formatDate type="DATEHMS_12" value="${gearData.stopDateTime}" var="eventStopTime"/>
+                                                        <c:choose>
+                                                            <c:when test="${empty gearData.stopDateTime}">
+                                                                <td id="js-stop-time-td-${programData.programId}">
+                                                                    <cti:dataUpdaterValue identifier="${programData.programId}/STOP_TIME" type="DR_PROGRAM"/>
+                                                                    <cti:dataUpdaterCallback function="yukon.dr.program.activityDetails.setStopTimeTooltip($('#js-stop-time-td-${programData.programId}'))"
+                                                                            initialize="true" value="DR_PROGRAM/${programData.programId}/STOP"/>
+                                                                </td>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <cti:formatDate type="DATEHMS_12" value="${gearData.stopDateTime}" var="eventStopTime"/>
+                                                                <td title="${eventStopTime}">
+                                                                    <cti:formatDate type="TIME24H" value="${gearData.stopDateTime}"/>
+                                                                </td>
+                                                            </c:otherwise>
+                                                        </c:choose>
                                                     </c:otherwise>
                                                 </c:choose>
-                                                <td title="${eventStopTime}">
-                                                    <c:choose>
-                                                        <c:when test="${empty gearData.stopDateTime && gearData.knownGoodStopDateTime == false}">
-                                                            <span style="font-style: italic"><i:inline key="yukon.common.unknown"/></span>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <c:choose>
-                                                                <c:when test="${empty gearData.stopDateTime}">
-                                                                    <cti:dataUpdaterValue identifier="${programData.programId}/STOP_TIME" type="DR_PROGRAM"/>
-                                                                </c:when>
-                                                                <c:otherwise>
-                                                                    <cti:formatDate type="TIME24H" value="${gearData.stopDateTime}"/>
-                                                                </c:otherwise>
-                                                            </c:choose>
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                </td>
                                             </tr>
                                         </c:forEach>
                                     </table>
