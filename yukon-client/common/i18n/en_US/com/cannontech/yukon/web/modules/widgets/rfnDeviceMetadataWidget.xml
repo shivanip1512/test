@@ -42,7 +42,7 @@
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.apBssid">Wi-Fi AP BSSID</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.apSsid">Wi-Fi AP SSID</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.channelNum">Wi-Fi Channel Number</entry>
-<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.rssi">RSSI</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.rssi">Recent RSSI</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.rssi.dBm">dBm</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.securityType">Wi-Fi Security Type</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.UNSECURED">Unsecured</entry>
