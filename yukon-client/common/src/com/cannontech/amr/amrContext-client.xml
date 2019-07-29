@@ -76,15 +76,16 @@
     <bean id="rfnChannelDataConverter" class="com.cannontech.amr.rfn.service.RfnChannelDataConverter"/>
     
     <!-- RFN Event Processors to handle certain events in special ways -->
-    <bean id="rfnOutageEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnOutageEventArchiveRequestProcessor"/>
-    <bean id="rfnOutageBlinkEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnOutageBlinkEventArchiveRequestProcessor"/>
-    <bean id="rfnRestoreEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnRestoreEventArchiveRequestProcessor"/>
-    <bean id="rfnRestoreBlinkEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnRestoreBlinkEventArchiveRequestProcessor"/>
-    <bean id="rfnTamperDetectEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnTamperDetectEventArchiveRequestProcessor"/>
-    <bean id="rfnPowerFailureEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnPowerFailureEventArchiveRequestProcessor"/>
-    <bean id="rfnReverseRotationEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnReverseRotationEventArchiveRequestProcessor"/>
-    <bean id="rfnOverVoltageEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnOverVoltageEventArchiveRequestProcessor"/>
-    <bean id="rfnUnderVoltageEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnUnderVoltageEventArchiveRequestProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnOutageEventArchiveRequestProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnOutageBlinkEventArchiveRequestProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnRestoreEventArchiveRequestProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnRestoreBlinkEventArchiveRequestProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnTamperDetectEventArchiveRequestProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnPowerFailureEventArchiveRequestProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnReverseRotationEventArchiveRequestProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnOverVoltageEventArchiveRequestProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnUnderVoltageEventArchiveRequestProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor"/>
 
     <!-- RFDA Event Processors -->
     <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnDNP3AddressChangedEventArchiveRequestProcessor"/>
