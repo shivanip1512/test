@@ -246,7 +246,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         sql.append("SELECT *");
         sql.append("FROM (SELECT ph.programId, ph.programName, gh.lmProgramGearHistoryId,");
         sql.append(           "gh.lmProgramHistoryId, gh.eventTime, gh.action,");
-        sql.append(           "gh.username, gh.gearName, gh.gearId, gh.reason,");
+        sql.append(           "gh.username, gh.gearName, gh.gearId, gh.reason, gh.origin,");
         sql.append(           "row_number() OVER (ORDER BY gh.eventTime DESC) AS rowNumber");
         sql.append(      "FROM lmProgramGearHistory gh");
         sql.append(          "JOIN lmProgramHistory ph ON gh.lmProgramHistoryId = ph.lmProgramHistoryId");
@@ -269,7 +269,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         sql.append("SELECT *");
         sql.append("FROM (SELECT ph.programId, ph.programName, gh.lmProgramGearHistoryId,");
         sql.append(           "gh.lmProgramHistoryId, gh.eventTime, gh.action,");
-        sql.append(           "gh.username, gh.gearName, gh.gearId, gh.reason,");
+        sql.append(           "gh.username, gh.gearName, gh.gearId, gh.reason, gh.origin,");
         sql.append(           "row_number() OVER (ORDER BY gh.eventTime ASC) AS rowNumber");
         sql.append(      "FROM lmProgramGearHistory gh");
         sql.append(          "JOIN lmProgramHistory ph ON gh.lmProgramHistoryId = ph.lmProgramHistoryId");
