@@ -32,6 +32,7 @@ import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.IlmDefines;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -297,7 +298,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
                                             isStopStartNowSelected(),
                                             getMode() == MODE_STOP,
                                             getStartTime(), getStopTime(),
-                                            program, gearNum, constID );
+                                            program, gearNum, constID, ProgramOriginSource.MANUAL);
             
             if(canSpecifyStopGear && !getJCheckBoxStartStopNow().isSelected()) {
                 cmd.setStartGear(((LMProgramDirectGear)getSelectedStopGear()).getGearNumber());
@@ -323,7 +324,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
                         return LCUtils.createStartMessage(isStopStartNowSelected(),
                                                           getStartTime(), getStopTime(),
                                                           program, gearNum, constID, 
-                                                          additionalInfo );
+                                                          additionalInfo, ProgramOriginSource.MANUAL );
                     }
                 }
             }
@@ -332,7 +333,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
         return LCUtils.createStartMessage(
                                        isStopStartNowSelected(),
                                      getStartTime(), getStopTime(),
-                                       program, gearNum, constID, null );
+                                       program, gearNum, constID, null, ProgramOriginSource.MANUAL );
             
        
     

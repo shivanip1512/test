@@ -6,6 +6,8 @@ package com.cannontech.loadcontrol.data;
  */
 import java.util.Vector;
 
+import com.cannontech.dr.model.ProgramOriginSource;
+
 public class LMProgramEnergyExchange extends LMProgramBase
 {
 	private Integer minNotifyTime = null;
@@ -31,26 +33,27 @@ public LMProgramEnergyExchange() {
  * Creation date: (7/19/2001 8:50:05 AM)
  */
 public com.cannontech.loadcontrol.messages.LMManualControlRequest createScheduledStartMsg( java.util.Date start, java.util.Date stop,
-	int gearNumber, java.util.Date notifyTime, String additionalInfo, int constraintFalg )
+        int gearNumber, java.util.Date notifyTime, String additionalInfo, int constraintFalg, ProgramOriginSource programOriginSource )
 {
-	return null;
+    return null;
 }
 /**
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
-public com.cannontech.loadcontrol.messages.LMManualControlRequest createScheduledStopMsg( java.util.Date start, java.util.Date stop, int gearNumber, String additionalInfo )
+public com.cannontech.loadcontrol.messages.LMManualControlRequest createScheduledStopMsg( java.util.Date start, java.util.Date stop, int gearNumber, String additionalInfo,
+                                                                                            ProgramOriginSource programOriginSource)
 {
-	return null;
+    return null;
 }
 /**
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
 public com.cannontech.loadcontrol.messages.LMManualControlRequest createStartStopNowMsg( java.util.Date stopTime, int gearNumber,
-		String additionalInfo, boolean isStart, int constraintFlag )
+        String additionalInfo, boolean isStart, int constraintFlag, ProgramOriginSource programOriginSource )
 {
-	return null;
+    return null;
 }
 /**
  * Creation date: (5/28/2001 2:31:46 PM)

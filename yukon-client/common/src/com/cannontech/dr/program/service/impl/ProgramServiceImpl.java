@@ -48,6 +48,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.filter.ForLoadGroupFilter;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.program.service.ConstraintContainer;
@@ -201,7 +202,7 @@ public class ProgramServiceImpl implements ProgramService {
     }
     
     @Override
-    public List<ConstraintViolations> getConstraintViolationForStartScenario(int scenarioId, Date startDate, Date stopDate) {
+    public List<ConstraintViolations> getConstraintViolationForStartScenario(int scenarioId, Date startDate, Date stopDate, ProgramOriginSource programOriginSource) {
         List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
         List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         Map<Integer, ScenarioProgram> scenarioPrograms =  scenarioDao.findScenarioProgramsForScenario(scenarioId);
@@ -220,7 +221,8 @@ public class ProgramServiceImpl implements ProgramService {
                     scenarioProgram.getStartOffset(), 
                     stopDate, 
                     scenarioProgram.getStopOffset(), 
-                    null);
+                    null,
+                    programOriginSource);
             
             programViolations.add(violations);
         }
@@ -229,7 +231,7 @@ public class ProgramServiceImpl implements ProgramService {
     }
     
     @Override
-    public List<ConstraintViolations> getConstraintViolationForStopScenario(int scenarioId, Date stopDate) {
+    public List<ConstraintViolations> getConstraintViolationForStopScenario(int scenarioId, Date stopDate, ProgramOriginSource programOriginSource) {
         List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
         List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         List<ConstraintViolations> programViolations = new ArrayList<>();
@@ -239,7 +241,7 @@ public class ProgramServiceImpl implements ProgramService {
             final int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
 
             ConstraintViolations violations = 
-                getConstraintViolationsForStopProgram(programId, startingGearNumber, stopDate);
+                getConstraintViolationsForStopProgram(programId, startingGearNumber, stopDate, programOriginSource);
 
             programViolations.add(violations);
         }
@@ -250,14 +252,16 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public ConstraintViolations getConstraintViolationForStartProgram(int programId, int gearNumber, Date startDate,
                                                                       Duration startOffset, Date stopDate, Duration stopOffset, 
-                                                                      List<GearAdjustment> gearAdjustments) {
+                                                                      List<GearAdjustment> gearAdjustments, ProgramOriginSource programOriginSource) {
         Date programStartDate = datePlusOffset(startDate, startOffset);
         Date programStopDate = datePlusOffset(stopDate, stopOffset);
 
         LMManualControlRequest controlRequest =
             getManualControlMessage(programId, gearNumber,
                                     programStartDate, programStopDate,
-                                    LMManualControlRequest.CONSTRAINTS_FLAG_CHECK);
+                                    LMManualControlRequest.CONSTRAINTS_FLAG_CHECK,
+                                    programOriginSource
+                                    );
 
         // better be a program for this Request Message!
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
@@ -285,7 +289,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public ProgramStatus startProgram(int programId, Date startTime, Date stopTime, String gearName,
-            boolean overrideConstraints, boolean observeConstraints, LiteYukonUser liteYukonUser)
+            boolean overrideConstraints, boolean observeConstraints, LiteYukonUser liteYukonUser, ProgramOriginSource programOriginSource)
                     throws NotFoundException, TimeoutException, UserNotInRoleException, ConnectionException {
 
         boolean stopScheduled = stopTime != null && rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT, liteYukonUser);
@@ -305,7 +309,7 @@ public class ProgramServiceImpl implements ProgramService {
         }
 
         if (!overrideConstraints) {
-            ConstraintViolations checkViolations = getConstraintViolationForStartProgram(programId, gearNumber, startTime, Duration.ZERO, stopTime, Duration.ZERO, null);
+            ConstraintViolations checkViolations = getConstraintViolationForStartProgram(programId, gearNumber, startTime, Duration.ZERO, stopTime, Duration.ZERO, null, programOriginSource);
             if (checkViolations.isViolated()) {
                 for (ConstraintContainer violation : checkViolations.getConstraintContainers()) {
                     log.info("Constraint Violation: " + violation.toString() + " for request");
@@ -316,7 +320,7 @@ public class ProgramServiceImpl implements ProgramService {
 
         if (observeConstraints || overrideConstraints) {
             log.info("No constraint violations for request.");
-            programStatus = startProgramBlocking(programId, gearNumber, startTime, Duration.ZERO, stopScheduled, stopTime, Duration.ZERO, observeConstraints, null);
+            programStatus = startProgramBlocking(programId, gearNumber, startTime, Duration.ZERO, stopScheduled, stopTime, Duration.ZERO, observeConstraints, null, programOriginSource);
         }
         return programStatus;
     }
@@ -324,20 +328,20 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public ProgramStatus startProgramBlocking(int programId, int gearNumber, Date startDate, Duration startOffset,
                                               boolean stopScheduled, Date stopDate, Duration stopOffset, boolean overrideConstraints,
-                                              List<GearAdjustment> gearAdjustments) throws TimeoutException {
+                                              List<GearAdjustment> gearAdjustments, ProgramOriginSource programOriginSource) throws TimeoutException {
         return startProgramBlocking(programId, gearNumber, startDate, startOffset, stopScheduled, stopDate, stopOffset,
-                                    overrideConstraints, gearAdjustments, true);
+                                    overrideConstraints, gearAdjustments, true, programOriginSource);
     }
 
     @Override
     public void startProgram(int programId, int gearNumber, Date startDate,
                              Duration startOffset, boolean stopScheduled, Date stopDate,
                              Duration stopOffset, boolean overrideConstraints,
-                             List<GearAdjustment> gearAdjustments) {
+                             List<GearAdjustment> gearAdjustments, ProgramOriginSource programOriginSource) {
         try {
             startProgramBlocking(programId, gearNumber, startDate, startOffset, 
                                  stopScheduled, stopDate, stopOffset, overrideConstraints, 
-                                 gearAdjustments, false);
+                                 gearAdjustments, false, programOriginSource);
         } catch (TimeoutException e) {
             // This isn't actually thrown since we're passing false for block.
         }
@@ -346,7 +350,7 @@ public class ProgramServiceImpl implements ProgramService {
     private ProgramStatus startProgramBlocking(int programId, int gearNumber, Date startDate,
                                                Duration startOffset, boolean stopScheduled, Date stopDate,
                                                Duration stopOffset, boolean overrideConstraints,
-                                               List<GearAdjustment> gearAdjustments, boolean block) throws TimeoutException {
+                                               List<GearAdjustment> gearAdjustments, boolean block, ProgramOriginSource programOriginSource) throws TimeoutException {
 
         Date programStartDate = datePlusOffset(startDate, startOffset);
         Date programStopDate = stopScheduled ? datePlusOffset(stopDate, stopOffset)
@@ -359,7 +363,7 @@ public class ProgramServiceImpl implements ProgramService {
         }
 
         LMManualControlRequest controlRequest = getStartProgramRequest(programId, gearNumber, programStartDate,
-                                                                       stopScheduled, programStopDate, overrideConstraints, gearAdjustments);
+                                                                       stopScheduled, programStopDate, overrideConstraints, gearAdjustments, programOriginSource);
 
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         ProgramStatus programStatus = null;
@@ -389,7 +393,7 @@ public class ProgramServiceImpl implements ProgramService {
     
     @Override
     public List<ProgramStatus> startScenarioBlocking(int scenarioId, Date startTime, Date stopTime, 
-            boolean overrideConstraints, boolean observeConstraints, LiteYukonUser user)
+            boolean overrideConstraints, boolean observeConstraints, LiteYukonUser user, ProgramOriginSource programOriginSource)
             throws NotFoundException, TimeoutException, NotAuthorizedException, ConnectionException {
 
         if (!loadControlClientConnection.isValid()) {
@@ -414,7 +418,7 @@ public class ProgramServiceImpl implements ProgramService {
 
             String gearName = getGearNameForProgram(program, startingGearNumber);
             ProgramStatus programStatus = startProgram(program.getYukonID(), programStartDate, programStopDate, gearName,
-                          overrideConstraints, observeConstraints, user);
+                          overrideConstraints, observeConstraints, user, programOriginSource);
             
             programStatuses.add(programStatus);
         }
@@ -424,14 +428,15 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public void startScenario(final int scenarioId,final  Date startTime,final  Date stopTime,
-                                          final boolean overrideConstraints,final boolean observeConstraints,final  LiteYukonUser user)
+                                          final boolean overrideConstraints,final boolean observeConstraints,final  LiteYukonUser user,
+                                          ProgramOriginSource programOriginSource)
                                                   throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException,
                                                   ConnectionException {
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    startScenarioBlocking(scenarioId, startTime, stopTime, overrideConstraints, observeConstraints, user);
+                    startScenarioBlocking(scenarioId, startTime, stopTime, overrideConstraints, observeConstraints, user, programOriginSource);
                 } catch (Exception e) {
                     log.debug("Error while running scenario start asynchronously. scenarioId = " + scenarioId, e);
                 }
@@ -441,15 +446,14 @@ public class ProgramServiceImpl implements ProgramService {
 
     private LMManualControlRequest getStartProgramRequest(int programId, int gearNumber, Date programStartDate,
                                                           boolean stopScheduled, Date programStopDate, boolean overrideConstraints,
-                                                          List<GearAdjustment> gearAdjustments) {
+                                                          List<GearAdjustment> gearAdjustments, ProgramOriginSource programOriginSource) {
 
         int constraintId = overrideConstraints
                 ? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
                         : LMManualControlRequest.CONSTRAINTS_FLAG_USE;
         LMManualControlRequest controlRequest =
                 getManualControlMessage(programId, gearNumber, programStartDate,
-                                        programStopDate, constraintId);
-
+                                        programStopDate, constraintId, programOriginSource);
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         String additionalInfo =
                 additionalInfoFromGearAdjustments(gearAdjustments, programStartDate,
@@ -510,12 +514,12 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public void stopProgram(int programId) {
+    public void stopProgram(int programId, ProgramOriginSource programOriginSource) {
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         Date stopDate = new Date();
         LMManualControlRequest controlRequest =
             program.createStartStopNowMsg(stopDate, 1, null, false,
-                                          LMManualControlRequest.CONSTRAINTS_FLAG_USE);
+                                          LMManualControlRequest.CONSTRAINTS_FLAG_USE, programOriginSource);
         loadControlClientConnection.write(controlRequest);
 
         demandResponseEventLogService.programStopped(program.getYukonName(),
@@ -523,22 +527,24 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public ProgramStatus stopProgramBlocking(int programId, Date stopDate, Duration stopOffset) 
+    public ProgramStatus stopProgramBlocking(int programId, Date stopDate, Duration stopOffset,
+                                                ProgramOriginSource programOriginSource) 
             throws TimeoutException, BadServerResponseException {
-        return stopProgramBlocking(programId, stopDate, stopOffset, true);
+        return stopProgramBlocking(programId, stopDate, stopOffset, true, programOriginSource);
     }
 
     @Override
-    public void stopProgram(int programId, Date stopDate, Duration stopOffset) throws BadServerResponseException {
+    public void stopProgram(int programId, Date stopDate, Duration stopOffset, ProgramOriginSource programOriginSource) throws BadServerResponseException {
         try {
-            stopProgramBlocking(programId, stopDate, stopOffset, false);
+            stopProgramBlocking(programId, stopDate, stopOffset, false, programOriginSource);
         } catch (TimeoutException e) {
             // This isn't actually thrown since we're passing false for block.
         }
     }
 
     @Override
-    public ProgramStatus stopProgram(int programId, Date stopTime, boolean force, boolean observeConstraints)
+    public ProgramStatus stopProgram(int programId, Date stopTime, boolean force, boolean observeConstraints,
+                                        ProgramOriginSource programOriginSource)
             throws TimeoutException, BadServerResponseException {
         
         if (stopTime == null) {
@@ -553,7 +559,7 @@ public class ProgramServiceImpl implements ProgramService {
         ConstraintViolations checkViolations = null;
 
         if (!force) {
-            checkViolations = getConstraintViolationsForStopProgram(programId, gearNumber, stopTime);
+            checkViolations = getConstraintViolationsForStopProgram(programId, gearNumber, stopTime, programOriginSource);
 
             if (checkViolations.isViolated()) {
                 for (ConstraintContainer violation : checkViolations.getConstraintContainers()) {
@@ -567,18 +573,18 @@ public class ProgramServiceImpl implements ProgramService {
         }
 
         if (force || observeConstraints) {
-            programStatus = stopProgramBlocking(programId, stopTime, Duration.ZERO);
+            programStatus = stopProgramBlocking(programId, stopTime, Duration.ZERO, programOriginSource);
         }
         return programStatus;
     }
 
-    private ProgramStatus stopProgramBlocking(int programId, Date stopDate, Duration stopOffset, boolean block)
+    private ProgramStatus stopProgramBlocking(int programId, Date stopDate, Duration stopOffset, boolean block, ProgramOriginSource programOriginSource)
             throws TimeoutException, BadServerResponseException {
         
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         Date programStopDate = datePlusOffset(stopDate, stopOffset);
         Date startDate = CtiUtilities.get1990GregCalendar().getTime();
-        LMManualControlRequest controlRequest = program.createScheduledStopMsg(startDate, programStopDate, 1, null);
+        LMManualControlRequest controlRequest = program.createScheduledStopMsg(startDate, programStopDate, 1, null, programOriginSource);
         
         ProgramStatus programStatus = null;
         if (block) {
@@ -604,12 +610,13 @@ public class ProgramServiceImpl implements ProgramService {
     public void stopScenario(final int scenarioId, final  Date stopTime,
                                          final boolean overrideConstraints,
                                          final boolean observeConstraints,
-                                         final LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
+                                         final LiteYukonUser user,
+                                         final ProgramOriginSource programOriginSource) throws NotFoundException, NotAuthorizedException {
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    stopScenarioBlocking(scenarioId,  stopTime, overrideConstraints, observeConstraints, user);
+                    stopScenarioBlocking(scenarioId,  stopTime, overrideConstraints, observeConstraints, user, programOriginSource);
                 } catch (Exception e) {
                     log.debug("Error while running scenario start asynchronously. scenarioId = " + scenarioId, e);
                 }
@@ -619,7 +626,8 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public List<ProgramStatus> stopScenarioBlocking(int scenarioId,  Date stopTime, boolean overrideConstraints,
-                                                     boolean observeConstraints, LiteYukonUser user)
+                                                     boolean observeConstraints, LiteYukonUser user,
+                                                     ProgramOriginSource programOriginSource)
                          throws NotFoundException, TimeoutException, NotAuthorizedException, ConnectionException, BadServerResponseException {
 
         if (!loadControlClientConnection.isValid()) {
@@ -639,7 +647,7 @@ public class ProgramServiceImpl implements ProgramService {
             ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonID());
 
             Date programStopDate = datePlusOffset(stopTime, scenarioProgram.getStopOffset());
-            ProgramStatus programStatus = stopProgram(program.getYukonID(), programStopDate, overrideConstraints, observeConstraints);
+            ProgramStatus programStatus = stopProgram(program.getYukonID(), programStopDate, overrideConstraints, observeConstraints, programOriginSource);
 
             programStatuses.add(programStatus);
         }
@@ -649,14 +657,14 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public ConstraintViolations getConstraintViolationsForStopProgram(int programId, int gearNumber, 
-                                                                      Date stopDate) {
+                                                                      Date stopDate, ProgramOriginSource programOriginSource) {
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         Date startDate = CtiUtilities.get1990GregCalendar().getTime();
         LMManualControlRequest changeGearRequest = 
             program.createScheduledStopMsg(
                     startDate, 
                     stopDate,
-                    gearNumber, null);
+                    gearNumber, null, programOriginSource);
         changeGearRequest.setConstraintFlag(LMManualControlRequest.CONSTRAINTS_FLAG_CHECK);
         changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
 
@@ -665,7 +673,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public void stopProgramWithGear(int programId, int gearNumber, Date stopDate, 
-                                    boolean overrideConstraints) {
+                                    boolean overrideConstraints, ProgramOriginSource programOriginSource) {
         int constraintId = overrideConstraints
             ? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
             : LMManualControlRequest.CONSTRAINTS_FLAG_USE;
@@ -676,10 +684,9 @@ public class ProgramServiceImpl implements ProgramService {
             program.createScheduledStopMsg(
                     startDate, 
                     stopDate,
-                    gearNumber, null);
+                    gearNumber, null, programOriginSource);
         changeGearRequest.setConstraintFlag(constraintId);
         changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
-
         ServerRequest serverRequest = new ServerRequestImpl();
         serverRequest.makeServerRequest(loadControlClientConnection, changeGearRequest);
 
@@ -706,7 +713,7 @@ public class ProgramServiceImpl implements ProgramService {
     }
     
     @Override
-    public void changeGear(int programId, int gearNumber) {
+    public void changeGear(int programId, int gearNumber, ProgramOriginSource programOriginSource) {
         
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         Date stopDate = program.getStopTime().getTime();
@@ -723,10 +730,10 @@ public class ProgramServiceImpl implements ProgramService {
                                           gearNumber, 
                                           null, 
                                           true, 
-                                          LMManualControlRequest.CONSTRAINTS_FLAG_USE) ;
+                                          LMManualControlRequest.CONSTRAINTS_FLAG_USE,
+                                          programOriginSource) ;
         changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
         changeGearRequest.setStartTime(program.getStartTime());
-
         ServerRequest serverRequest = new ServerRequestImpl();
         serverRequest.makeServerRequest(loadControlClientConnection, changeGearRequest);
         
@@ -761,7 +768,7 @@ public class ProgramServiceImpl implements ProgramService {
     }
     
     private LMManualControlRequest getManualControlMessage(
-            int programId, int gearNumber, Date startDate, Date stopDate, int constraintId) {
+            int programId, int gearNumber, Date startDate, Date stopDate, int constraintId, ProgramOriginSource programOriginSource) {
         if (stopDate == null) {
             throw new IllegalArgumentException("stopDate cannot be null");
         }
@@ -772,10 +779,10 @@ public class ProgramServiceImpl implements ProgramService {
         if (startDate == null) {
             return program.createStartStopNowMsg(stopDate, gearNumber,
                                                  additionalInfo, true,
-                                                 constraintId);
+                                                 constraintId, programOriginSource);
         }
 
         return program.createScheduledStartMsg(startDate, stopDate, gearNumber,
-                                               null, additionalInfo, constraintId);
+                                               null, additionalInfo, constraintId, programOriginSource);
     }
 }

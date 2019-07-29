@@ -3,6 +3,7 @@ package com.cannontech.loadcontrol;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.util.ServerRequest;
 
@@ -26,7 +27,7 @@ public class LoadManagementProxy implements LoadManagementService {
 
         msg.setStartTime(startCal);
         msg.setStopTime(stopCal);
-        
+        msg.setOriginSource(ProgramOriginSource.MANUAL.getDatabaseRepresentation());
         serverRequest.makeServerRequest(getLoadControlClientConnection(), msg);
     }
 
@@ -46,7 +47,7 @@ public class LoadManagementProxy implements LoadManagementService {
 
         msg.setStartTime(stopCal);
         msg.setStopTime(stopCal);
-        
+        msg.setOriginSource(ProgramOriginSource.MANUAL.getDatabaseRepresentation());
         serverRequest.makeServerRequest(getLoadControlClientConnection(), msg);
     }
     
@@ -61,7 +62,7 @@ public class LoadManagementProxy implements LoadManagementService {
 
         msg.setStartTime(stopCal);
         msg.setStopTime(stopCal);
-        
+        msg.setOriginSource(ProgramOriginSource.MANUAL.getDatabaseRepresentation());
         serverRequest.makeServerRequest(getLoadControlClientConnection(), msg);
     }
 

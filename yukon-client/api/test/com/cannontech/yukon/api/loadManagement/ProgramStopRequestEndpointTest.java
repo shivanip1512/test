@@ -21,6 +21,7 @@ import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
@@ -104,13 +105,14 @@ public class ProgramStopRequestEndpointTest {
         private Date stopTime;
         
         @Override
-        public ConstraintViolations getConstraintViolationsForStopProgram(int programId, int gearNumber, Date stopDate) {
+        public ConstraintViolations getConstraintViolationsForStopProgram(int programId, int gearNumber, Date stopDate, ProgramOriginSource programOriginSource) {
             return new ConstraintViolations(new ArrayList<ConstraintContainer>());
         }
 
         @Override
         public ProgramStatus stopProgram(int programId, Date stopTime,
-                                                              boolean force, boolean observeConstraints) throws TimeoutException {
+                                                              boolean force, boolean observeConstraints,
+                                                              ProgramOriginSource programOriginSource) throws TimeoutException {
             if (programId == PROG_TIMEOUT_ID) {
                 throw new TimeoutException();
             }else if (programId == PROG_NOT_FOUND_ID) {

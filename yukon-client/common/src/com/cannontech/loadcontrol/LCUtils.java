@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.loadcontrol.data.ILMGroup;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -188,7 +189,7 @@ public class LCUtils {
      * @param
      */
     public static synchronized LMManualControlRequest createProgMessage(boolean doItNow, boolean isStop,
-            Date startTime, Date stopTime, LMProgramBase program, Integer gearNum, int constraintFlag) {
+            Date startTime, Date stopTime, LMProgramBase program, Integer gearNum, int constraintFlag, ProgramOriginSource programOriginSource) {
         LMManualControlRequest msg = null;
 
         // create the new message
@@ -196,32 +197,32 @@ public class LCUtils {
             if (doItNow) {
                 msg =
                     program.createStartStopNowMsg(stopTime, (gearNum == null ? 0 : gearNum.intValue()), null, false,
-                        constraintFlag);
+                        constraintFlag, programOriginSource);
             } else {
                 msg =
                     program.createScheduledStopMsg(startTime, stopTime, (gearNum == null ? 0 : gearNum.intValue()),
-                        null);
+                        null, programOriginSource);
             }
         } else {
-            msg = createStartMessage(doItNow, startTime, stopTime, program, gearNum, constraintFlag, null);
+            msg = createStartMessage(doItNow, startTime, stopTime, program, gearNum, constraintFlag, null, programOriginSource);
         }
-
         // return the message created
         return msg;
     }
 
     public static LMManualControlRequest createStartMessage(boolean doItNow, Date startTime, Date stopTime,
-            LMProgramBase program, Integer gearNum, int constraintFlag, String addtionalInfo) {
+            LMProgramBase program, Integer gearNum, int constraintFlag, String addtionalInfo, ProgramOriginSource programOriginSource) {
         LMManualControlRequest msg;
         if (doItNow) {
             msg =
                 program.createStartStopNowMsg(stopTime, (gearNum == null ? 0 : gearNum.intValue()), addtionalInfo,
-                    true, constraintFlag);
+                    true, constraintFlag, programOriginSource);
         } else {
             msg =
                 program.createScheduledStartMsg(startTime, stopTime, (gearNum == null ? 0 : gearNum.intValue()), null,
-                    addtionalInfo, constraintFlag);
+                    addtionalInfo, constraintFlag, programOriginSource);
         }
+
         return msg;
     }
 
@@ -260,7 +261,7 @@ public class LCUtils {
 
         LMManualControlRequest msg =
             LCUtils.createProgMessage(doItNow, isStop, startGC.getTime(), stopGC.getTime(), program, (isStop ? null
-                : new Integer(gearNum)), constraintFlag);
+                : new Integer(gearNum)), constraintFlag, ProgramOriginSource.MANUAL);
 
         return msg;
     }

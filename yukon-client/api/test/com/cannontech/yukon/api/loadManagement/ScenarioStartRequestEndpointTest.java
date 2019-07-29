@@ -20,6 +20,7 @@ import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
@@ -106,7 +107,7 @@ public class ScenarioStartRequestEndpointTest {
         @Override
         public List<ProgramStatus> startScenarioBlocking(int scenarioId, Date startTime, Date stopTime,
                                                                boolean forceStart, boolean observeConstraintsAndExecute,
-                                                               LiteYukonUser user)
+                                                               LiteYukonUser user, ProgramOriginSource programOriginSource)
                                                throws NotFoundException, TimeoutException, NotAuthorizedException {
             
         	this.isAsync = false;
@@ -127,7 +128,8 @@ public class ScenarioStartRequestEndpointTest {
 
         @Override
         public void startScenario(int scenarioId, Date startTime, Date stopTime,
-                                        boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
+                                        boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user, 
+                                        ProgramOriginSource programOriginSource)
                                                 throws NotFoundException, NotAuthorizedException {
 
         	this.isAsync = true;

@@ -5,6 +5,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 
 public class LMProgramDirect extends LMProgramBase implements IGearProgram
@@ -56,7 +57,7 @@ public class LMProgramDirect extends LMProgramBase implements IGearProgram
 
     public LMManualControlRequest createScheduledStartMsg(Date start,
             Date stop, int gearNumber, Date notifyTime, String additionalInfo,
-            int constraintFlag) {
+            int constraintFlag, ProgramOriginSource programOriginSource) {
         LMManualControlRequest msg = new LMManualControlRequest();
         java.util.GregorianCalendar cStart = new java.util.GregorianCalendar();
         java.util.GregorianCalendar cStop = new java.util.GregorianCalendar();
@@ -75,12 +76,12 @@ public class LMProgramDirect extends LMProgramBase implements IGearProgram
 
         msg.setCommand(LMManualControlRequest.SCHEDULED_START);
         msg.setConstraintFlag(constraintFlag);
-
+        msg.setOriginSource(programOriginSource.getDatabaseRepresentation());
         return msg;
     }
 
     public LMManualControlRequest createScheduledStopMsg(Date start, Date stop,
-            int gearNumber, String additionalInfo) {
+            int gearNumber, String additionalInfo, ProgramOriginSource programOriginSource) {
         LMManualControlRequest msg = new LMManualControlRequest();
         java.util.GregorianCalendar cStart = new java.util.GregorianCalendar();
         java.util.GregorianCalendar cStop = new java.util.GregorianCalendar();
@@ -98,13 +99,13 @@ public class LMProgramDirect extends LMProgramBase implements IGearProgram
         msg.setStartPriority(getStartPriority().intValue());
 
         msg.setCommand(LMManualControlRequest.SCHEDULED_STOP);
-
+        msg.setOriginSource(programOriginSource.getDatabaseRepresentation());
         return msg;
     }
 
     public LMManualControlRequest createStartStopNowMsg(Date stopTime,
             int gearNumber, String additionalInfo, boolean isStart,
-            int constraintFlag) {
+            int constraintFlag, ProgramOriginSource programOriginSource) {
         LMManualControlRequest msg = new LMManualControlRequest();
         java.util.GregorianCalendar cStop = new java.util.GregorianCalendar();
         cStop.setTime(stopTime);
@@ -125,7 +126,7 @@ public class LMProgramDirect extends LMProgramBase implements IGearProgram
             msg.setConstraintFlag(constraintFlag);
         } else
             msg.setCommand(LMManualControlRequest.STOP_NOW);
-
+        msg.setOriginSource(programOriginSource.getDatabaseRepresentation());
         return msg;
     }
 

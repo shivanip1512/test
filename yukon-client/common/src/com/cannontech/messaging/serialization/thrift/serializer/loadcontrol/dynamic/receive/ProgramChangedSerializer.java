@@ -41,6 +41,7 @@ public class ProgramChangedSerializer extends ThriftSerializer<LMProgramChanged,
         msg.setNotifyActiveTime(ConverterHelper.millisecToCalendar(entity.get_notifyActiveTime()));
         msg.setNotifyInactiveTime(ConverterHelper.millisecToCalendar(entity.get_notifyInactiveTime()));
         msg.setStartedRampingOutTime(ConverterHelper.millisecToCalendar(entity.get_startedRampingOutTime()));
+        msg.setOriginSource(entity.get_originSource());
     }
 
     @Override
@@ -57,5 +58,6 @@ public class ProgramChangedSerializer extends ThriftSerializer<LMProgramChanged,
         entity.set_notifyActiveTime(ConverterHelper.calendarToMillisec(msg.getNotifyActiveTime()));
         entity.set_notifyInactiveTime(ConverterHelper.calendarToMillisec(msg.getNotifyInactiveTime()));
         entity.set_startedRampingOutTime(ConverterHelper.calendarToMillisec(msg.getStartedRampingOutTime()));
+        entity.set_originSource(msg.getOriginSource());
     }
 }

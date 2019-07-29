@@ -50,6 +50,7 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 	private java.util.GregorianCalendar startedControlling = null;
 	private java.util.GregorianCalendar lastControlSent = null;
 	private Boolean manualControlReceivedFlag = null;
+	private String originSource;
 
 	private java.util.Vector controlWindowVector = null;
 
@@ -361,6 +362,14 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 	public void setYukonType(PaoType newYukonType) {
 		yukonType = newYukonType;
 	}
+
+    public String getOriginSource() {
+        return originSource;
+    }
+
+    public void setOriginSource(String originSource) {
+        this.originSource = originSource;
+    }
 
 	public String toString() {
 		return getYukonName();

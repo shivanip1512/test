@@ -35,6 +35,7 @@ import com.cannontech.core.roleproperties.RolePropertyTypeHelper;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.nest.model.v3.SchedulabilityError;
 import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
@@ -196,7 +197,8 @@ public class StartProgramController extends ProgramControllerBase {
                                                                  backingBean.getGearNumber(),
                                                                  backingBean.getStartDate(), null,
                                                                  backingBean.getActualStopDate(), null,
-                                                                 gearAdjustments);
+                                                                 gearAdjustments,
+                                                                 ProgramOriginSource.MANUAL);
         model.addAttribute("violations", violations);
 
         return "dr/program/startProgramConstraints.jsp";
@@ -249,7 +251,7 @@ public class StartProgramController extends ProgramControllerBase {
         programService.startProgram(programId, gearNumber, startDate, null,
                                     scheduleStop, backingBean.getActualStopDate(), null,
                                     overrideConstraints != null && overrideConstraints,
-                                    gearAdjustments);
+                                    gearAdjustments, ProgramOriginSource.MANUAL);
 
         demandResponseEventLogService.threeTierProgramScheduled(userContext.getYukonUser(),
                                                                 program.getName(),
@@ -507,7 +509,8 @@ public class StartProgramController extends ProgramControllerBase {
                                                                      startOffset,
                                                                      backingBean.getActualStopDate(),
                                                                      stopOffset,
-                                                                     gearAdjustments);
+                                                                     gearAdjustments,
+                                                                     ProgramOriginSource.MANUAL);
             if (violations != null && violations.isViolated() ) {
                 violationsByProgramId.put(programId, violations);
                 constraintsViolated = true;
@@ -615,7 +618,8 @@ public class StartProgramController extends ProgramControllerBase {
                                         backingBean.isScheduleStop(),
                                         backingBean.getActualStopDate(), stopOffset,
                                         programStartInfo.isOverrideConstraints(),
-                                        gearAdjustments);
+                                        gearAdjustments,
+                                        ProgramOriginSource.MANUAL);
         }
         if(backingBean.getScenarioId() != null){
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.startMultiplePrograms.scenarioStartRequested"));

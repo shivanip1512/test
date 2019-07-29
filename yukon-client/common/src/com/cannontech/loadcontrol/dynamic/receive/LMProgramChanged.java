@@ -22,7 +22,8 @@ public class LMProgramChanged extends Message {
     private GregorianCalendar notifyActiveTime = null;
     private GregorianCalendar notifyInactiveTime = null;
     private GregorianCalendar startedRampingOutTime = null;
-    
+    private String originSource;
+
     public LMProgramChanged() {
         super();
     }
@@ -121,5 +122,13 @@ public class LMProgramChanged extends Message {
 
     public void setStartedRampingOutTime(GregorianCalendar startedRampingOutTime) {
         this.startedRampingOutTime = startedRampingOutTime;
+    }
+
+    public String getOriginSource() {
+        return originSource;
+    }
+
+    public void setOriginSource(String originSource) {
+        this.originSource = originSource;
     }
 }

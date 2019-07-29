@@ -53,6 +53,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
@@ -567,15 +568,15 @@ public class OpenAdrService {
         try {
             if (isTestEvent) {
                 if (eventStatus == EventStatusEnumeratedType.CANCELLED) {
-                    violations = programService.getConstraintViolationsForStopProgram(programId, DEFAULT_GEAR_INDEX, stop);
+                    violations = programService.getConstraintViolationsForStopProgram(programId, DEFAULT_GEAR_INDEX, stop, ProgramOriginSource.OPENADR);
                 } else {
-                    violations = programService.getConstraintViolationForStartProgram(programId, DEFAULT_GEAR_INDEX, start, null, stop, null, null);
+                    violations = programService.getConstraintViolationForStartProgram(programId, DEFAULT_GEAR_INDEX, start, null, stop, null, null, ProgramOriginSource.OPENADR);
                 }
             } else {
                 ProgramStatus programStatus = null;
                 
                 if (eventStatus == EventStatusEnumeratedType.CANCELLED) {
-                    programStatus = programService.stopProgram(programId, stop, OVERRIDE_CONSTRAINTS_NO, OBSERVE_CONSTRAINTS_YES);
+                    programStatus = programService.stopProgram(programId, stop, OVERRIDE_CONSTRAINTS_NO, OBSERVE_CONSTRAINTS_YES, ProgramOriginSource.OPENADR);
                 } else {
                     programStatus = programService.startProgram(
                         programId, 
@@ -584,7 +585,7 @@ public class OpenAdrService {
                         DEFAULT_GEAR_NAME, 
                         OVERRIDE_CONSTRAINTS_NO, 
                         OBSERVE_CONSTRAINTS_YES, 
-                        configService.getOadrUser());
+                        configService.getOadrUser(), ProgramOriginSource.OPENADR);
                 }
                 
                 violations = new ConstraintViolations(programStatus.getConstraintViolations());
@@ -634,14 +635,14 @@ public class OpenAdrService {
         try {
             if (isTestEvent) {
                 if (eventStatus == EventStatusEnumeratedType.CANCELLED) {
-                    programViolations = programService.getConstraintViolationForStopScenario(scenarioId, stop);
+                    programViolations = programService.getConstraintViolationForStopScenario(scenarioId, stop, ProgramOriginSource.OPENADR);
                 } else {
-                    programViolations = programService.getConstraintViolationForStartScenario(scenarioId, start, stop);
+                    programViolations = programService.getConstraintViolationForStartScenario(scenarioId, start, stop, ProgramOriginSource.OPENADR);
                 }
             } else {
                 List<ProgramStatus> statuses = new ArrayList<>();
                 if (eventStatus == EventStatusEnumeratedType.CANCELLED) {
-                    boolean controlAllowed = programService.getConstraintViolationForStopScenario(scenarioId, stop).isEmpty();
+                    boolean controlAllowed = programService.getConstraintViolationForStopScenario(scenarioId, stop, ProgramOriginSource.OPENADR).isEmpty();
                     
                     if (controlAllowed) {
                         statuses = programService.stopScenarioBlocking(
@@ -649,12 +650,13 @@ public class OpenAdrService {
                              stop, 
                              OVERRIDE_CONSTRAINTS_NO, 
                              OBSERVE_CONSTRAINTS_YES, 
-                             configService.getOadrUser());
+                             configService.getOadrUser(),
+                             ProgramOriginSource.OPENADR);
                     } else {
                         responseCode = OadrResponseCode.NOT_ALLOWED;
                     }
                 } else {
-                    boolean controlAllowed = programService.getConstraintViolationForStartScenario(scenarioId, start, stop).isEmpty();
+                    boolean controlAllowed = programService.getConstraintViolationForStartScenario(scenarioId, start, stop, ProgramOriginSource.OPENADR).isEmpty();
                     
                     if (controlAllowed) {
                         statuses = programService.startScenarioBlocking(
@@ -663,7 +665,7 @@ public class OpenAdrService {
                              stop, 
                              OVERRIDE_CONSTRAINTS_NO, 
                              OBSERVE_CONSTRAINTS_YES, 
-                             configService.getOadrUser());
+                             configService.getOadrUser(), ProgramOriginSource.OPENADR);
                     } else {
                         responseCode = OadrResponseCode.NOT_ALLOWED;
                     }

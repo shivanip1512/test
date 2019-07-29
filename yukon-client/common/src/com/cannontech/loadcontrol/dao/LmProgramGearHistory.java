@@ -21,6 +21,7 @@ public class LmProgramGearHistory {
     private String gearName;
     private int gearId;
     private String reason;
+    private String originSource;
 
 public enum GearAction implements DatabaseRepresentationSource {
 
@@ -136,5 +137,12 @@ public enum GearAction implements DatabaseRepresentationSource {
     public void setReason(String reason) {
         this.reason = reason;
     }
-    
+
+    public String getOriginSource() {
+        return originSource;
+    }
+
+    public void setOriginSource(String originSource) {
+        this.originSource = originSource;
+    }
 }

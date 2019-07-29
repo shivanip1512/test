@@ -5,6 +5,7 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
@@ -77,7 +78,7 @@ public class DirectChangeGearJPanel extends JPanel implements java.awt.event.Act
 	public synchronized LMManualControlRequest createMessage( LMProgramDirect program, Integer gearNum ) 
 	{
         return LCUtils.createStartMessage( true, program.getStartTime().getTime(), program.getStopTime().getTime(),
-                                       program, gearNum, LMManualControlRequest.CONSTRAINTS_FLAG_CHECK, null );
+                                       program, gearNum, LMManualControlRequest.CONSTRAINTS_FLAG_CHECK, null, ProgramOriginSource.MANUAL );
     }
 
 	public void exit() {}

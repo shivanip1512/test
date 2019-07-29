@@ -15,6 +15,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
@@ -57,13 +58,15 @@ public class ProgramServiceAdapter implements ProgramService {
     @Override
     public List<ConstraintViolations> getConstraintViolationForStartScenario(int scenarioId,
                                                                              Date startDate,
-                                                                             Date stopDate) {
+                                                                             Date stopDate,
+                                                                             ProgramOriginSource programOriginSource) {
         throw new UnsupportedOperationException("Not Implemented");
     }
     
     @Override
     public List<ConstraintViolations> getConstraintViolationForStopScenario(int scenarioId,
-                                                                            Date stopDate) {
+                                                                            Date stopDate,
+                                                                            ProgramOriginSource programOriginSource) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
@@ -89,41 +92,44 @@ public class ProgramServiceAdapter implements ProgramService {
                                                                       Duration startOffset,
                                                                       Date stopDate,
                                                                       Duration stopOffset,
-                                                                      List<GearAdjustment> gearAdjustments) {
+                                                                      List<GearAdjustment> gearAdjustments,
+                                                                      ProgramOriginSource programOriginSource) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
     public void startProgram(int programId, int gearNumber, Date startDate, Duration startOffset,
                                       boolean stopScheduled, Date stopDate, Duration stopOffset,
-                                      boolean overrideConstraints, List<GearAdjustment> gearAdjustments) {
+                                      boolean overrideConstraints, List<GearAdjustment> gearAdjustments,
+                                      ProgramOriginSource programOriginSource) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
-    public void stopProgram(int programId, Date stopDate, Duration stopOffset) {
+    public void stopProgram(int programId, Date stopDate, Duration stopOffset, ProgramOriginSource programOriginSource) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
-    public void stopProgram(int programId) {
+    public void stopProgram(int programId, ProgramOriginSource programOriginSource) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
     public ConstraintViolations getConstraintViolationsForStopProgram(int programId,
-                                                                      int gearNumber, Date stopDate) {
+                                                                      int gearNumber, Date stopDate,
+                                                                      ProgramOriginSource programOriginSource) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
     public void stopProgramWithGear(int programId, int gearNumber, Date stopDate,
-                                    boolean overrideConstraints) {
+                                    boolean overrideConstraints, ProgramOriginSource programOriginSource) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
-    public void changeGear(int programId, int gearNumber) {
+    public void changeGear(int programId, int gearNumber, ProgramOriginSource programOriginSource) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
@@ -140,19 +146,21 @@ public class ProgramServiceAdapter implements ProgramService {
     @Override
     public ProgramStatus startProgramBlocking(int programId, int gearNumber, Date startDate, Duration startOffset,
                              boolean stopScheduled, Date stopDate, Duration stopOffset,
-                             boolean overrideConstraints, List<GearAdjustment> gearAdjustments) throws TimeoutException {
+                             boolean overrideConstraints, List<GearAdjustment> gearAdjustments,
+                             ProgramOriginSource programOriginSource) throws TimeoutException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
     public ProgramStatus stopProgramBlocking(int programId, Date stopDate,
-                                                     Duration stopOffset) throws TimeoutException {
+                                                     Duration stopOffset, ProgramOriginSource programOriginSource) throws TimeoutException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
     public ProgramStatus stopProgram(int programid, Date stopTime,
-                                                          boolean force, boolean observeConstraints)
+                                                          boolean force, boolean observeConstraints,
+                                                          ProgramOriginSource programOriginSource)
             throws TimeoutException {
         throw new UnsupportedOperationException("Not Implemented");
     }
@@ -160,7 +168,8 @@ public class ProgramServiceAdapter implements ProgramService {
     @Override
     public ProgramStatus startProgram(int programId, Date startTime, Date stopTime,
                                             String gearName, boolean force,
-                                            boolean observeConstraints, LiteYukonUser liteYukonUser)
+                                            boolean observeConstraints, LiteYukonUser liteYukonUser,
+                                            ProgramOriginSource programOriginSource)
             throws NotAuthorizedException, NotFoundException, TimeoutException,
             BadServerResponseException {
         throw new UnsupportedOperationException("Not Implemented");
@@ -170,7 +179,7 @@ public class ProgramServiceAdapter implements ProgramService {
     public List<ProgramStatus> startScenarioBlocking(int scenarioId, Date startTime,
                                                       Date stopTime, boolean forceStart,
                                                       boolean observeConstraintsAndExecute,
-                                                      LiteYukonUser user) throws NotFoundException,
+                                                      LiteYukonUser user, ProgramOriginSource programOriginSource) throws NotFoundException,
             TimeoutException, NotAuthorizedException, BadServerResponseException,
             ConnectionException {
         throw new UnsupportedOperationException("Not Implemented");
@@ -179,7 +188,7 @@ public class ProgramServiceAdapter implements ProgramService {
     @Override
     public void startScenario(int scenarioId, Date startTime, Date stopTime,
                                           boolean overrideConstraints, boolean observeConstraints,
-                                          LiteYukonUser user) throws NotFoundException,
+                                          LiteYukonUser user, ProgramOriginSource programOriginSource) throws NotFoundException,
             TimeoutException, NotAuthorizedException, BadServerResponseException,
             ConnectionException {
         throw new UnsupportedOperationException("Not Implemented");
@@ -187,7 +196,8 @@ public class ProgramServiceAdapter implements ProgramService {
 
     @Override
     public void stopScenario(int scenarioId, Date stopTime, boolean forceStop,
-                                         boolean observeConstraintsAndExecute, LiteYukonUser user)
+                                         boolean observeConstraintsAndExecute, LiteYukonUser user,
+                                         ProgramOriginSource programOriginSource)
             throws NotFoundException, NotAuthorizedException {
         throw new UnsupportedOperationException("Not Implemented");
     }
@@ -196,7 +206,7 @@ public class ProgramServiceAdapter implements ProgramService {
     public List<ProgramStatus> stopScenarioBlocking(int scenarioId, Date stopTime,
                                                      boolean forceStop,
                                                      boolean observeConstraintsAndExecute,
-                                                     LiteYukonUser user) throws NotFoundException,
+                                                     LiteYukonUser user, ProgramOriginSource programOriginSource) throws NotFoundException,
             TimeoutException, NotAuthorizedException, BadServerResponseException {
         throw new UnsupportedOperationException("Not Implemented");
     }

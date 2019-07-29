@@ -24,6 +24,7 @@ public class ManualControlRequestValidator extends AutoInitializedClassValidator
         ctrlObj.setStartGear(generator.generateInt());
         ctrlObj.setStartPriority(generator.generateInt());
         ctrlObj.setAddditionalInfo(generator.generateString());
+        ctrlObj.setOriginSource(generator.generateString());
         ctrlObj.setConstraintFlag(generator.generateInt());
     }
 }

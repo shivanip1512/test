@@ -2,6 +2,7 @@ package com.cannontech.dr.program.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -272,6 +273,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
                              .setProgramName(lmProgramBase.getYukonName())
                              .setStartDateTime(new DateTime(lmProgramBase.getStartTime()
                                                                          .getTimeInMillis()))
+                             .setOriginSource(lmProgramBase.getOriginSource())
                              .build();
     }
 
@@ -326,13 +328,13 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
         //single date on which the Program is started.The program at zero index will give that.
         ProgramControlHistory programHistory = programsHistoryDetail.get(0);
         List<GearData> gears = programsHistoryDetail.stream()
-                                                    .map(program -> buildGearData(program))
+                                                    .map(program -> buildGearData(program, programHistory.getStartDateTime()))
                                                     .collect(Collectors.toList());
 
         ProgramData programData = new ProgramData.ProgramDataBuilder(programHistory.getProgramId())
                                                  .setStartDateTime(new DateTime(programHistory.getStartDateTime()))
                                                  .setGears(gears)
-                                                 .setStatus("Completed")
+                                                 .setOriginSource(programHistory.getOriginSource())
                                                  .setProgramName(programHistory.getProgramName())
                                                  .build();
         return programData;
@@ -343,7 +345,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
      * Stop Action with start & stop time are already handled inside getAllProgramControlHistory
      * method, So Use that to create GearData.
      */
-    private GearData buildGearData(ProgramControlHistory programHistory) {
+    private GearData buildGearData(ProgramControlHistory programHistory, Date programStartDate) {
         GearData gearData = new GearData();
         DateTime gearStartTime = new DateTime(programHistory.getStartDateTime());
         DateTime gearStopTime = null;
@@ -353,8 +355,8 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
         gearData.setGearName(programHistory.getGearName());
         gearData.setStartDateTime(gearStartTime);
         gearData.setStopDateTime(gearStopTime);
-        if (gearStartTime != null && gearStopTime != null) {
-            gearData.setStoppedOnSameDay(DateUtils.isSameDay(gearStartTime.toDate(), gearStopTime.toDate()));
+        if (programStartDate != null && gearStopTime != null) {
+            gearData.setStoppedOnSameDay(DateUtils.isSameDay(programStartDate, gearStopTime.toDate()));
         }
         gearData.setKnownGoodStopDateTime(programHistory.isKnownGoodStopDateTime());
         return gearData;

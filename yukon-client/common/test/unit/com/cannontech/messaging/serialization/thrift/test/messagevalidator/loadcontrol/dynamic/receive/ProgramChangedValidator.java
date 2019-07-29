@@ -25,6 +25,7 @@ public class ProgramChangedValidator extends AutoInitializedClassValidator<LMPro
         ctrlObj.setNotifyActiveTime(generator.generateCalendar());
         ctrlObj.setNotifyInactiveTime(generator.generateCalendar());
         ctrlObj.setStartedRampingOutTime(generator.generateCalendar());
+        ctrlObj.setOriginSource(generator.generateString());
     }
     
     @Override

@@ -19,6 +19,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.service.LoadControlService;
@@ -107,7 +108,7 @@ public class LoadControlServiceInputsTestController {
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
         
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
-        List<ProgramStatus> programStatuses = programService.startScenarioBlocking(scenarioId, startTime, stopTime, force, observeConstraintsAndExecute, userContext.getYukonUser());
+        List<ProgramStatus> programStatuses = programService.startScenarioBlocking(scenarioId, startTime, stopTime, force, observeConstraintsAndExecute, userContext.getYukonUser(), ProgramOriginSource.MANUAL);
         ScenarioStatus scenarioStatus = new ScenarioStatus(scenarioName, programStatuses);
         
         for (ProgramStatus programStatus : scenarioStatus.getProgramStatuses()) {
@@ -145,7 +146,7 @@ public class LoadControlServiceInputsTestController {
         } catch (NotFoundException e) {
             throw new ProgramNotFoundException(e.getMessage(), e);
         }
-        ProgramStatus programStatus = programService.startProgram(programId, startTime, stopTime, gearName, force, observeConstraintsAndExecute, userContext.getYukonUser());
+        ProgramStatus programStatus = programService.startProgram(programId, startTime, stopTime, gearName, force, observeConstraintsAndExecute, userContext.getYukonUser(), ProgramOriginSource.MANUAL);
 
         results.add(programStatus.toString());
 
@@ -172,7 +173,7 @@ public class LoadControlServiceInputsTestController {
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
         
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
-        List<ProgramStatus> programStatuses = programService.stopScenarioBlocking(scenarioId, stopTime, force, observeConstraintsAndExecute, userContext.getYukonUser());
+        List<ProgramStatus> programStatuses = programService.stopScenarioBlocking(scenarioId, stopTime, force, observeConstraintsAndExecute, userContext.getYukonUser(), ProgramOriginSource.MANUAL);
         ScenarioStatus scenarioStatus = new ScenarioStatus(scenarioName, programStatuses);
         
         for (ProgramStatus programStatus : scenarioStatus.getProgramStatuses()) {
@@ -208,7 +209,7 @@ public class LoadControlServiceInputsTestController {
         } catch (NotFoundException e) {
             throw new ProgramNotFoundException(e.getMessage(), e);
         }
-        ProgramStatus programStatus = programService.stopProgram(programId, stopTime, force, observeConstraintsAndExecute);
+        ProgramStatus programStatus = programService.stopProgram(programId, stopTime, force, observeConstraintsAndExecute, ProgramOriginSource.MANUAL);
 
         results.add(programStatus.toString());
         

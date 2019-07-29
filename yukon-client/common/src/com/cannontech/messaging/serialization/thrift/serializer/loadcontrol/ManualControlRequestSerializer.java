@@ -54,6 +54,7 @@ public class ManualControlRequestSerializer
         msg.setStartPriority(entity.get_startPriority());
         msg.setAddditionalInfo(entity.get_additionalInfo());
         msg.setConstraintFlag(entity.get_constraintCmd());
+        msg.setOriginSource(entity.get_originSource());
     }
 
     @Override
@@ -71,5 +72,6 @@ public class ManualControlRequestSerializer
         entity.set_startPriority(msg.getStartPriority());
         entity.set_additionalInfo(msg.getAddditionalInfo());
         entity.set_constraintCmd(msg.getConstraintFlag());
+        entity.set_originSource(msg.getOriginSource());
     }
 }

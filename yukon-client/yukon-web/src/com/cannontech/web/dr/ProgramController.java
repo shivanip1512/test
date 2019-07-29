@@ -70,6 +70,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.program.model.ProgramState;
@@ -402,7 +403,7 @@ public class ProgramController extends ProgramControllerBase {
                                                      Permission.LM_VISIBLE, 
                                                      Permission.CONTROL_COMMAND);
         
-        programService.changeGear(programId, gearNumber);
+        programService.changeGear(programId, gearNumber, ProgramOriginSource.MANUAL);
         
         demandResponseEventLogService.threeTierProgramChangeGear(yukonUser, program.getName());
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.getChangeGearValue.gearChanged"));
@@ -513,7 +514,7 @@ public class ProgramController extends ProgramControllerBase {
                 DisplayablePao program = programService.getProgram(gearChangeInfo.getProgramId());
     
                 LiteYukonUser yukonUser = userContext.getYukonUser();
-                programService.changeGear(gearChangeInfo.getProgramId(), gearChangeInfo.getGearNumber());
+                programService.changeGear(gearChangeInfo.getProgramId(), gearChangeInfo.getGearNumber(), ProgramOriginSource.MANUAL);
                 demandResponseEventLogService.threeTierProgramChangeGear(yukonUser, program.getName());
 
             }

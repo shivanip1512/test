@@ -22,6 +22,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.message.util.BadServerResponseException;
@@ -51,9 +52,9 @@ public class ProgramStartRequestEndpoint {
 
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="programStartRequest")
     public Element invoke(Element programStartRequest, LiteYukonUser user) throws Exception {
-        
-    	XmlVersionUtils.verifyYukonMessageVersion(programStartRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-    	
+
+        XmlVersionUtils.verifyYukonMessageVersion(programStartRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+
         // create template and parse data
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(programStartRequest);
         
@@ -70,17 +71,17 @@ public class ProgramStartRequestEndpoint {
         try {
             // Check authorization
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
-        	boolean overrideConstraints = false;
-        	boolean observeConstaints = true;
+            boolean overrideConstraints = false;
+            boolean observeConstaints = true;
             int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
-        	programService.startProgram(programId, startTime, stopTime, gearName, overrideConstraints, observeConstaints, user);
+            programService.startProgram(programId, startTime, stopTime, gearName, overrideConstraints, observeConstaints, user, ProgramOriginSource.EIM);
         } catch (GearNotFoundException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "InvalidGearName", "No gear named: " + gearName);
+            Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "InvalidGearName", "No gear named: " + gearName);
             resp.addContent(fe);
             return resp;
         } catch (NotFoundException e) {
-        	// the startControlByProgramName() without gearName simply throws a NotFoundException when program is not found
-        	Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "InvalidProgramName", "No program named: " + programName);
+            // the startControlByProgramName() without gearName simply throws a NotFoundException when program is not found
+            Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "InvalidProgramName", "No program named: " + programName);
             resp.addContent(fe);
             return resp;
         } catch (TimeoutException e) {

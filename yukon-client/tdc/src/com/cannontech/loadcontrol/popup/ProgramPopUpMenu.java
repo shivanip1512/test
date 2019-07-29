@@ -11,6 +11,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import com.cannontech.common.util.SwingUtil;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -303,7 +304,7 @@ private void showCurtailManualEntry()
 		LoadControlClientConnection.getInstance().write( 
 				((LMProgramCurtailment)getLoadControlProgram()).createStartStopNowMsg(
 					com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime(), 
-					0, null, false, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
+					0, null, false, LMManualControlRequest.CONSTRAINTS_FLAG_USE, ProgramOriginSource.MANUAL) );
 					//com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime(), 
 					//0, null) );
 	}

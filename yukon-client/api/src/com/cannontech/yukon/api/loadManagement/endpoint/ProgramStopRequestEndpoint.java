@@ -22,6 +22,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.message.util.BadServerResponseException;
@@ -50,7 +51,7 @@ public class ProgramStopRequestEndpoint {
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="programStopRequest")
     public Element invoke(Element programStopRequest, LiteYukonUser user) throws Exception {
 
-    	XmlVersionUtils.verifyYukonMessageVersion(programStopRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        XmlVersionUtils.verifyYukonMessageVersion(programStopRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
         // create template and parse data
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(programStopRequest);
@@ -72,7 +73,7 @@ public class ProgramStopRequestEndpoint {
             boolean overrideConstraints = false;
             boolean observeConstraints = true;
             int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
-            programService.stopProgram(programId, stopTime, overrideConstraints, observeConstraints);
+            programService.stopProgram(programId, stopTime, overrideConstraints, observeConstraints, ProgramOriginSource.EIM);
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "InvalidProgramName", "No program named: " + programName);
             resp.addContent(fe);

@@ -33,6 +33,7 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.nest.model.NestStopEventResult;
 import com.cannontech.dr.nest.service.NestService;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
@@ -122,7 +123,8 @@ public class StopProgramController extends ProgramControllerBase {
         ConstraintViolations violations =
             programService.getConstraintViolationsForStopProgram(backingBean.getProgramId(),
                                                                  backingBean.getGearNumber(),
-                                                                 backingBean.getStopDate());
+                                                                 backingBean.getStopDate(),
+                                                                 ProgramOriginSource.MANUAL);
         model.addAttribute("violations", violations);
 
         return "dr/program/stopProgramConstraints.jsp";
@@ -154,7 +156,8 @@ public class StopProgramController extends ProgramControllerBase {
             programService.stopProgramWithGear(backingBean.getProgramId(),
                                                gearNumber,
                                                stopDate,
-                                               overrideConstraints != null && overrideConstraints);
+                                               overrideConstraints != null && overrideConstraints,
+                                               ProgramOriginSource.MANUAL);
 
             demandResponseEventLogService.threeTierProgramStopped(yukonUser,
                                                                   program.getName(),
@@ -171,13 +174,13 @@ public class StopProgramController extends ProgramControllerBase {
                     return details(model, true, backingBean, bindingResult, userContext, flashScope);
                 }
             }
-            programService.stopProgram(backingBean.getProgramId());
+            programService.stopProgram(backingBean.getProgramId(), ProgramOriginSource.MANUAL);
             demandResponseEventLogService.threeTierProgramStopped(yukonUser,
                                                                   program.getName(),
                                                                   new Date());
         } else {
             programService.stopProgram(backingBean.getProgramId(),
-                                               stopDate, null);
+                                               stopDate, null, ProgramOriginSource.MANUAL);
             demandResponseEventLogService.threeTierProgramStopScheduled(yukonUser,
                                                                         program.getName(),
                                                                         stopDate);
@@ -334,12 +337,13 @@ public class StopProgramController extends ProgramControllerBase {
                     }
                 }
                 if (backingBean.isStopNow() && stopOffset == null) {
-                    programService.stopProgram(programStopInfo.getProgramId());
+                    programService.stopProgram(programStopInfo.getProgramId(), ProgramOriginSource.MANUAL);
                 } else if (stopGearAllowed && programStopInfo.isUseStopGear()) {
                     programService.stopProgramWithGear(programStopInfo.getProgramId(), 
                                                        programStopInfo.getGearNumber(), 
                                                        stopDate, 
-                                                       programStopInfo.isOverrideConstraints());
+                                                       programStopInfo.isOverrideConstraints(),
+                                                       ProgramOriginSource.MANUAL);
                     
                     DisplayablePao program = programService.getProgram(programStopInfo.getProgramId());
                     LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -347,7 +351,7 @@ public class StopProgramController extends ProgramControllerBase {
 
                 } else {
                     programService.stopProgram(programStopInfo.getProgramId(),
-                                                       stopDate, stopOffset);
+                                                       stopDate, stopOffset, ProgramOriginSource.MANUAL);
                 }
             }
         }
@@ -420,7 +424,7 @@ public class StopProgramController extends ProgramControllerBase {
                 ConstraintViolations violations =
                     programService.getConstraintViolationsForStopProgram(programId,
                                                                          programStopInfo.getGearNumber(),
-                                                                         backingBean.getStopDate());
+                                                                         backingBean.getStopDate(), ProgramOriginSource.MANUAL);
                 if (violations != null && violations.isViolated() ) {
                     violationsByProgramId.put(programId, violations);
                     constraintsViolated = true;

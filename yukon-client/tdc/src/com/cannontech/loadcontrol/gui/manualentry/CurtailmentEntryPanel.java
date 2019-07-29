@@ -1,5 +1,6 @@
 package com.cannontech.loadcontrol.gui.manualentry;
 
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 
 /**
@@ -1844,7 +1845,8 @@ public void jButtonStart_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 					stopCalendar.getTime(), 
 					0, 
 					notifyCalendar.getTime(), 
-					msg, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
+					msg, LMManualControlRequest.CONSTRAINTS_FLAG_USE,
+					ProgramOriginSource.MANUAL) );
 
 		
 		//close the Dialog

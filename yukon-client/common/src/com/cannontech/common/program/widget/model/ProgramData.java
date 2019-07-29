@@ -9,14 +9,15 @@ public class ProgramData {
     private int programId;
     private String programName;
     private DateTime startDateTime;
-    private String status;
+    private String originSource;
+
     private List<GearData> gears;
 
     private ProgramData(ProgramDataBuilder programDataBuilder) {
         this.programId = programDataBuilder.programId;
         this.programName = programDataBuilder.programName;
         this.startDateTime = programDataBuilder.startDateTime;
-        this.status = programDataBuilder.status;
+        this.originSource = programDataBuilder.originSource;
         this.gears = programDataBuilder.gears;
     }
 
@@ -32,12 +33,12 @@ public class ProgramData {
         return startDateTime;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
     public List<GearData> getGears() {
         return gears;
+    }
+
+    public String getOriginSource() {
+        return originSource;
     }
 
     /**
@@ -52,7 +53,8 @@ public class ProgramData {
         private int programId;
         private String programName;
         private DateTime startDateTime;
-        private String status;
+        private String originSource;
+
         private List<GearData> gears;
 
         public ProgramDataBuilder(int programId) {
@@ -78,8 +80,8 @@ public class ProgramData {
             return this;
         }
 
-        public ProgramDataBuilder setStatus(String status) {
-            this.status = status;
+        public ProgramDataBuilder setOriginSource(String originSource) {
+            this.originSource = originSource;
             return this;
         }
 

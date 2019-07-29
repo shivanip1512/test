@@ -11,6 +11,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -40,7 +41,7 @@ public abstract class MultispeakLMServiceBase {
         } catch (NotFoundException e) {
             throw new ProgramNotFoundException(e.getMessage(), e);
         }
-        return programService.startProgram(programId, startTime, stopTime, null, false, true, liteYukonUser);
+        return programService.startProgram(programId, startTime, stopTime, null, false, true, liteYukonUser, ProgramOriginSource.MULTISPEAK);
     }
 
     public ProgramStatus stopControlByProgramName(String programName, Date stopTime, LiteYukonUser liteYukonUser)
@@ -51,7 +52,7 @@ public abstract class MultispeakLMServiceBase {
         } catch (NotFoundException e) {
             throw new ProgramNotFoundException(e.getMessage(), e);
         }
-        return programService.stopProgram(programId, stopTime, false, true);
+        return programService.stopProgram(programId, stopTime, false, true, ProgramOriginSource.MULTISPEAK);
     }
 
     public ScenarioStatus startControlByControlScenario(String scenarioName, Date startTime, Date stopTime,
@@ -59,7 +60,7 @@ public abstract class MultispeakLMServiceBase {
             BadServerResponseException {
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
         List<ProgramStatus> programStatuses =
-            programService.startScenarioBlocking(scenarioId, startTime, stopTime, false, true, liteYukonUser);
+            programService.startScenarioBlocking(scenarioId, startTime, stopTime, false, true, liteYukonUser, ProgramOriginSource.MULTISPEAK);
         ScenarioStatus scenarioStatus = new ScenarioStatus(scenarioName, programStatuses);
 
         return scenarioStatus;
@@ -69,7 +70,7 @@ public abstract class MultispeakLMServiceBase {
             throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException {
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
         List<ProgramStatus> programStatuses =
-            programService.stopScenarioBlocking(scenarioId, stopTime, false, true, liteYukonUser);
+            programService.stopScenarioBlocking(scenarioId, stopTime, false, true, liteYukonUser, ProgramOriginSource.MULTISPEAK);
         ScenarioStatus scenarioStatus = new ScenarioStatus(scenarioName, programStatuses);
 
         return scenarioStatus;

@@ -16,6 +16,7 @@ import com.cannontech.common.util.DatedObject;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -68,7 +69,7 @@ public interface ProgramService {
     public ConstraintViolations getConstraintViolationForStartProgram(
             int programId, int gearNumber, Date startDate,
             Duration startOffset, Date stopDate, Duration stopOffset,
-            List<GearAdjustment> gearAdjustments);
+            List<GearAdjustment> gearAdjustments, ProgramOriginSource programOriginSource);
     
     /**
      * Check to see if any constraints would be violated by starting the scenario
@@ -78,7 +79,7 @@ public interface ProgramService {
      * @param stopDate - the time chosen to stop the scenario
      */
     public List<ConstraintViolations> getConstraintViolationForStartScenario(
-            int scenarioId, Date startDate, Date stopDate);
+            int scenarioId, Date startDate, Date stopDate, ProgramOriginSource programOriginSource);
     
     /**
      * Check to see if any constraints would be violated by stopping the scenario
@@ -87,7 +88,7 @@ public interface ProgramService {
      * @param stopDate - the time chosen to stop the scenario
      */
     public List<ConstraintViolations> getConstraintViolationForStopScenario(
-            int scenarioId, Date stopDate);
+            int scenarioId, Date stopDate, ProgramOriginSource programOriginSource);
 
     /**
      * Start the given program with the given gear number, start and end time.
@@ -102,7 +103,7 @@ public interface ProgramService {
     public ProgramStatus startProgramBlocking(int programId, int gearNumber, Date startDate,
             Duration startOffset, boolean stopScheduled, Date stopDate,
             Duration stopOffset, boolean overrideConstraints,
-            List<GearAdjustment> gearAdjustments) throws TimeoutException;
+            List<GearAdjustment> gearAdjustments, ProgramOriginSource programOriginSource) throws TimeoutException;
 
     /**
      * Starts control for all programs belonging to a given scenario. Returns a
@@ -129,7 +130,7 @@ public interface ProgramService {
     public List<ProgramStatus> startScenarioBlocking(int scenarioId, Date startTime,
                                  Date stopTime, boolean overrideConstraints,
                                  boolean observeConstraintsAndExecute,
-                                 LiteYukonUser user)
+                                 LiteYukonUser user, ProgramOriginSource programOriginSource)
              throws NotFoundException, TimeoutException, NotAuthorizedException, ConnectionException;
 
     /**
@@ -144,7 +145,7 @@ public interface ProgramService {
     public void startProgram(int programId, int gearNumber, Date startDate,
                              Duration startOffset, boolean stopScheduled, Date stopDate,
                              Duration stopOffset, boolean overrideConstraints,
-                             List<GearAdjustment> gearAdjustments);
+                             List<GearAdjustment> gearAdjustments, ProgramOriginSource programOriginSource);
 
     /**
      * Starts a program. Blocks on Program Start Scheduled. Looks up program by programName.
@@ -161,7 +162,8 @@ public interface ProgramService {
      * @throws ConnectionException
      */
     public ProgramStatus startProgram(int programId, Date startTime, Date stopTime, String gearName, 
-                                      boolean overrideConstraints, boolean observeConstraints, LiteYukonUser liteYukonUser)
+                                      boolean overrideConstraints, boolean observeConstraints, LiteYukonUser liteYukonUser,
+                                      ProgramOriginSource programOriginSource)
                        throws NotFoundException, TimeoutException, UserNotInRoleException, ConnectionException;
 
     /**
@@ -181,7 +183,8 @@ public interface ProgramService {
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
     public void startScenario(int scenarioId, Date startTime, Date stopTime, boolean overrideConstraints, 
-                              boolean observeConstraints, LiteYukonUser user) 
+                              boolean observeConstraints, LiteYukonUser user,
+                              ProgramOriginSource programOriginSource) 
                       throws NotFoundException, TimeoutException, NotAuthorizedException, 
                              BadServerResponseException, ConnectionException;
 
@@ -190,7 +193,7 @@ public interface ProgramService {
      * @throws BadServerResponseException 
      * @throws TimeoutException 
      */
-    public ProgramStatus stopProgramBlocking(int programId, Date stopDate, Duration stopOffset) throws TimeoutException;
+    public ProgramStatus stopProgramBlocking(int programId, Date stopDate, Duration stopOffset, ProgramOriginSource programOriginSource) throws TimeoutException;
 
     /**
      * Schedules the program stop. Non-blocking
@@ -198,7 +201,7 @@ public interface ProgramService {
 
      * @throws TimeoutException 
      */
-    public void stopProgram(int programId, Date stopDate, Duration stopOffset);
+    public void stopProgram(int programId, Date stopDate, Duration stopOffset, ProgramOriginSource programOriginSource);
 
     /**
      * Schedules a stop program. Blocks on Program Stop Scheduled. Looks up program by programName.
@@ -213,10 +216,11 @@ public interface ProgramService {
      * @return
      * @throws TimeoutException
      */
-    public ProgramStatus stopProgram(int programId, Date stopTime, boolean overrideConstraints, boolean observeConstraints)
+    public ProgramStatus stopProgram(int programId, Date stopTime, boolean overrideConstraints, boolean observeConstraints,
+                                            ProgramOriginSource programOriginSource)
                                                           throws TimeoutException, BadServerResponseException;
 
-    public void stopProgram(int programId);
+    public void stopProgram(int programId, ProgramOriginSource programOriginSource);
 
     /**
      * Stop control for all programs belonging to a given scenario.
@@ -234,7 +238,8 @@ public interface ProgramService {
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
     public void stopScenario(int scenarioId, Date stopTime, boolean forceStop,
-                             boolean observeConstraintsAndExecute, LiteYukonUser user)
+                             boolean observeConstraintsAndExecute, LiteYukonUser user,
+                             ProgramOriginSource programOriginSource)
                              throws NotFoundException, NotAuthorizedException;
 
     /**
@@ -258,16 +263,17 @@ public interface ProgramService {
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
     public List<ProgramStatus> stopScenarioBlocking(int scenarioid, Date stopTime, boolean forceStop,
-                                                    boolean observeConstraintsAndExecute, LiteYukonUser user) 
+                                                    boolean observeConstraintsAndExecute, LiteYukonUser user,
+                                                    ProgramOriginSource programOriginSource) 
                     throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException;
     
     public ConstraintViolations getConstraintViolationsForStopProgram(int programId, int gearNumber,
-                                                                      Date stopDate);
+                                                                      Date stopDate, ProgramOriginSource programOriginSource);
 
     public void stopProgramWithGear(int programId, int gearNumber, Date stopDate, 
-                                    boolean overrideConstraints);
+                                    boolean overrideConstraints, ProgramOriginSource programOriginSource);
     
-    public void changeGear(int programId, int gearNumber);
+    public void changeGear(int programId, int gearNumber, ProgramOriginSource programOriginSource);
     
     /**
      * Sends an enable or disable program command to the load management service

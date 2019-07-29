@@ -20,6 +20,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.message.util.BadServerResponseException;
@@ -50,7 +51,7 @@ public class ScenarioStartRequestEndpoint {
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="scenarioStartRequest")
     public Element invoke(Element scenarioStartRequest, LiteYukonUser user) throws Exception {
         
-    	XmlVersionUtils.verifyYukonMessageVersion(scenarioStartRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        XmlVersionUtils.verifyYukonMessageVersion(scenarioStartRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
         // create template and parse data
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(scenarioStartRequest);
@@ -71,13 +72,13 @@ public class ScenarioStartRequestEndpoint {
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
             int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
             
-        	if (waitForResponse) {
-        		programService.startScenarioBlocking(scenarioId, startTime, stopTime, false, true, user);
-        	} else {
-        	    programService.startScenario(scenarioId, startTime, stopTime, false, true, user);
-        	}
+            if (waitForResponse) {
+                programService.startScenarioBlocking(scenarioId, startTime, stopTime, false, true, user, ProgramOriginSource.EIM);
+            } else {
+                programService.startScenario(scenarioId, startTime, stopTime, false, true, user, ProgramOriginSource.EIM);
+            }
             // build response
-        	resp.addContent(new Element("success", ns));
+            resp.addContent(new Element("success", ns));
             
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "InvalidScenarioName", "No scenario named: " + scenarioName);

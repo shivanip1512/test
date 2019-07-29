@@ -8,6 +8,7 @@ import java.util.List;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.LMDao;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.ILMData;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -264,13 +265,13 @@ public final class LMCmdMsgFactory
 						multi.getVector().add( prg.createStartStopNowMsg(
 									stopdate,
 									dblarray2[i].intValue(), 
-									null, true, constID) );
+									null, true, constID, ProgramOriginSource.MANUAL) );
 					else
 						multi.getVector().add( prg.createScheduledStartMsg(
 									startdate,
 									stopdate,
 									dblarray2[i].intValue(),
-									null, null, constID) );					
+									null, null, constID, ProgramOriginSource.MANUAL) );					
 				}
 
 				if( multi.getVector().size() > 0 )
@@ -304,13 +305,13 @@ public final class LMCmdMsgFactory
 							prg.createStartStopNowMsg(
 									stopdate,
 									1, null,
-									false, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
+									false, LMManualControlRequest.CONSTRAINTS_FLAG_USE, ProgramOriginSource.MANUAL) );
 					else					
 						multi.getVector().add(
 							prg.createScheduledStopMsg(
 									startdate, 
 									stopdate,
-									1, null) );
+									1, null, ProgramOriginSource.MANUAL) );
 				}
 
 				if( multi.getVector().size() > 0 )
@@ -474,7 +475,7 @@ public final class LMCmdMsgFactory
                         cmdMsg.setGenLCMsg( prg.createStartStopNowMsg(
                                                                     stopdate,
                                                                     gearnum.intValue(),
-                                                                    null, true, constID) );
+                                                                    null, true, constID, ProgramOriginSource.MANUAL) );
                                                                     
                     }
                 
@@ -493,7 +494,7 @@ public final class LMCmdMsgFactory
                                                                         startdate,
                                                                         stopdate,
                                                                         gearnum.intValue(),
-                                                                        null, null, constID) );
+                                                                        null, null, constID, ProgramOriginSource.MANUAL) );
                     }
                 }
             }
@@ -512,7 +513,7 @@ public final class LMCmdMsgFactory
 						prg.createStartStopNowMsg(
 								stopdate,
 								1, null, false,
-								LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
+								LMManualControlRequest.CONSTRAINTS_FLAG_USE, ProgramOriginSource.MANUAL) );
 				else {
 				    /*Gear change requested for stop purposes*/
                     if(optionalProps.get("allowStopGear") != null && optionalProps.get("stopgearnum") != null) {
@@ -521,7 +522,7 @@ public final class LMCmdMsgFactory
                                         prg.createScheduledStopMsg(
                                                 startdate, 
                                                 stopdate,
-                                                gearNumForStop, null);
+                                                gearNumForStop, null, ProgramOriginSource.MANUAL);
                         changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
                         cmdMsg.setGenLCMsg(changeGearRequest);
                         /*Remove this if we don't want to do this as a 
@@ -534,14 +535,14 @@ public final class LMCmdMsgFactory
     						prg.createScheduledStopMsg(
     								startdate, 
     								stopdate,
-    								1, null) );
+    								1, null, ProgramOriginSource.MANUAL) );
                 }
 			}
 		}
         /*Normal change gear request*/
         else if( ILCCmds.PROG_CHANGE_GEAR.equals(cmdMsg.getCmd()) && prg.getProgramStatus() == LMProgramBase.STATUS_MANUAL_ACTIVE) {
             if( optionalProps != null ) {
-                LMManualControlRequest changeGearRequest = prg.createStartStopNowMsg( prg.getStopTime().getTime(), gearnum.intValue(), null, true, 0) ;
+                LMManualControlRequest changeGearRequest = prg.createStartStopNowMsg( prg.getStopTime().getTime(), gearnum.intValue(), null, true, 0, ProgramOriginSource.MANUAL) ;
                 changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
                 changeGearRequest.setStartTime(prg.getStartTime());
                 cmdMsg.setGenLCMsg(changeGearRequest);
@@ -555,7 +556,7 @@ public final class LMCmdMsgFactory
                                                         stopdate,
                                                         gearnum.intValue(),
                                                         null, ((LMProgramDirect)prg).getAddtionalInfo(), 
-                                                        constID) );
+                                                        constID, ProgramOriginSource.MANUAL) );
     }
 
     private static void createStartStopForTargetCycle(final WebCmdMsg cmdMsg, LMProgramBase prg, int constID) {
@@ -563,7 +564,7 @@ public final class LMCmdMsgFactory
                                                       stopdate,
                                                       gearnum.intValue(), 
                                                       ((LMProgramDirect)prg).getAddtionalInfo(), 
-                                                      true, constID) );
+                                                      true, constID, ProgramOriginSource.MANUAL) );
     }
 
 	private static void handleGroup( final WebCmdMsg cmdMsg, final Hashtable optionalProps )

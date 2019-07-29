@@ -25,14 +25,7 @@
                                             <c:param name="programId" value="${programId}"/>
                                         </c:url>
                                         <td><a href="${programURL}">${fn:escapeXml(program.programName)}</a></td>
-                                        <c:choose>
-                                            <c:when test="${empty program.status}">
-                                                <td class="tar"><dr:programState programId="${programId}"/></td>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <td class="tar">${fn:escapeXml(program.status)}</td>
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <td class="tar">${fn:escapeXml(program.originSource)}</td>
                                     </tr>
                                     <c:choose>
                                         <c:when test="${empty program.gears}">

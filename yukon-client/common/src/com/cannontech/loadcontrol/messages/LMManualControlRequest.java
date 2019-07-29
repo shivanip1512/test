@@ -23,7 +23,7 @@ public class LMManualControlRequest extends LMMessage
 	private int startPriority = 0;
 	private String addditionalInfo = new String();
 	private int constraintFlag = CONSTRAINTS_FLAG_USE;
-
+    private String originSource;
 
 	//The following are the different commands that
 	//can be applied to control area, trigger, or program and map into the C++ side
@@ -224,7 +224,15 @@ public void setYukonID(int newYukonID) {
 	public void setConstraintFlag(int i) {
 		constraintFlag = i;
 	}
-	
+
+    public String getOriginSource() {
+        return originSource;
+    }
+
+    public void setOriginSource(String originSource) {
+        this.originSource = originSource;
+    }
+
 	public String toString() {
 	    ToStringCreator tsc = new ToStringCreator(this);
 	    tsc.append("command", getCommandString(getCommand()));
@@ -236,6 +244,7 @@ public void setYukonID(int newYukonID) {
 	    tsc.append("startPriority", getStartPriority());
 	    tsc.append("addditionalInfo", getAddditionalInfo());
 	    tsc.append("constraintFlag", CONSTRAINT_FLAG_STRS[getConstraintFlag()]);
+	    tsc.append("originSource", getOriginSource());
 	    return tsc.toString(); 
 	}
 
