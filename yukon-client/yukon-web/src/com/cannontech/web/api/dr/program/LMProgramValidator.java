@@ -87,8 +87,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
             errors.popNestedPath();
         }
 
-        YukonValidationUtils.checkRange(errors, "restoreOffset", loadProgram.getRestoreOffset(), 0.0, 99999.9999, false);
-        YukonValidationUtils.checkRange(errors, "triggerOffset", loadProgram.getTriggerOffset(), -9999.9999, 99999.9999, false);
+        YukonValidationUtils.checkRange(errors, "triggerOffset", loadProgram.getRestoreOffset(), 0.0, 99999.9999, false);
+        YukonValidationUtils.checkRange(errors, "restoreOffset", loadProgram.getTriggerOffset(), -9999.9999, 99999.9999, false);
 
         if (!errors.hasFieldErrors("type")) {
             if (CollectionUtils.isEmpty(loadProgram.getAssignedGroups())) {
@@ -113,11 +113,12 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                             if (PaoType.LM_GROUP_NEST == programGroup.get().getType() && i > 0) {
                                 errors.reject(key + "nestGroup", new Object[] { programGroup.get().getGroupName() }, "");
                             }
-
-                            Boolean isLatchGear = loadProgram.getGears().stream()
-                                                                        .allMatch(gear -> gear.getControlMethod() == GearControlMethod.Latching);
-                            if (PaoType.LM_GROUP_POINT == programGroup.get().getType() && !isLatchGear) {
-                                errors.reject(key + "notAllowedGroupPoint");
+                            if (CollectionUtils.isNotEmpty(loadProgram.getGears())) {
+                                Boolean isLatchGear = loadProgram.getGears().stream()
+                                                                            .allMatch(gear -> gear.getControlMethod() == GearControlMethod.Latching);
+                                if (PaoType.LM_GROUP_POINT == programGroup.get().getType() && !isLatchGear) {
+                                    errors.reject(key + "notAllowedGroupPoint");
+                                }
                             }
                         }
                     }
