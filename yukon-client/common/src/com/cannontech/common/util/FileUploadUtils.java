@@ -104,9 +104,8 @@ public class FileUploadUtils {
             CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
             CSVReader csvReaderWithDelimeter = new CSVReaderBuilder(fileReader).withCSVParser(parser).build();
             String[] csvData = csvReaderWithDelimeter.readNext();
-            String[] csvRecord = getCsvRecord(file, null);
+            String[] csvRecord = getCsvRecord(file);
             if (csvData != null && csvRecord == null) {
-                csvRecord = getCsvRecord(file, StandardCharsets.ISO_8859_1);
                 if (csvRecord == null && csvReaderWithDelimeter.readNext() != null)
                     throw new ImportFileFormatException("yukon.common.validDataFileRequired.error");
             }
@@ -114,24 +113,29 @@ public class FileUploadUtils {
     }
 
     /**
-     * Get CSV record by skiping first line of CSV file with particular charset,when null is passed default
-     * charset is UTF-8
+     * Get CSV record by skiping first line of CSV file and return CSV record
+     * 
      * @throws ImportFileFormatException
      * @throws IOException
      */
-    private static String[] getCsvRecord(File file, Charset charset) throws ImportFileFormatException, IOException {
+    private static String[] getCsvRecord(File file) throws ImportFileFormatException, IOException {
         Reader reader = null;
         CSVReader csvReader = null;
+        CSVReader csvReaderIso = null;
         try {
-            if (charset == null) {
-                reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
-            } else {
-                reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()), charset);
-            }
+
+            reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
             // csvReader will skip first line while reading CSV file and it will return null if we try to read
             // file other than text or CSV file.
             csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
             String[] csvRecord = csvReader.readNext();
+            if (csvRecord == null) {
+                reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()), StandardCharsets.ISO_8859_1);
+            } else {
+                return csvRecord;
+            }
+            csvReaderIso = new CSVReaderBuilder(reader).withSkipLines(1).build();
+            csvRecord = csvReaderIso.readNext();
             return csvRecord;
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -139,6 +143,7 @@ public class FileUploadUtils {
         } finally {
             reader.close();
             csvReader.close();
+            csvReaderIso.close();
         }
     }
 
