@@ -52,6 +52,7 @@
     <entry key="yukon.web.modules.operator.mapNetwork.apSsid">Wi-Fi AP SSID</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.channelNum">Wi-Fi Channel Number</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.rssi">RSSI</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.rssi.dBm">dBm</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.securityType">Wi-Fi Security Type</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.securityType.UNSECURED">Unsecured</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.securityType.WPA2">WPA2</entry>

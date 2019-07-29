@@ -16,8 +16,9 @@
             <cti:msgScope paths="modules.operator.mapNetwork">
                 <cti:msg2 var="label" key=".channelNum"/>
                 <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.channelNum)}</tags:nameValue>
+                <cti:msg2 var="dBm" key=".rssi.dBm"/>
                 <cti:msg2 var="label" key=".rssi"/>
-                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.rssi)}</tags:nameValue>
+                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.rssi)} ${dBm}</tags:nameValue>
                 <cti:msg2 var="label" key=".apBssid"/>
                 <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.apBssid)}</tags:nameValue>
                 <cti:msg2 var="label" key=".apSsid"/>
