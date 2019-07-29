@@ -50,7 +50,6 @@
         <include name="ecs-1.4.2.jar"/>
         <include name="nagasena.jar"/>
         <include name="geronimo-j2ee-management_1.1_spec-1.0.1.jar"/>
-        <include name="geronimo-jms_1.1_spec-1.1.1.jar"/>
         <include name="guava-18.0.jar"/>
         <include name="hawtbuf-1.11.jar"/>
         <include name="i18n-en_US.jar"/>
