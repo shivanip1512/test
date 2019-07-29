@@ -92,6 +92,10 @@ public class GroupEditorController {
         
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
         DeviceGroup group = null;
+        String errorMessage = ServletRequestUtils.getStringParameter(request, "errorMessage", null);
+        if (errorMessage != null) {
+            model.addAttribute("errorMessage", errorMessage);
+        }
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
         model.addAttribute("rootGroup", rootGroup);
         
