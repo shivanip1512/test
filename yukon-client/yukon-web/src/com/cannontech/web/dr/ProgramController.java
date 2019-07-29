@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -84,6 +85,9 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
+import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
+import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
+import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -111,6 +115,8 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private DisconnectStatusService disconnectStatusService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
+    @Autowired private LoadGroupDao loadGroupDao;
+    @Autowired private OptOutEventDao optOutEventDao;
 
     @RequestMapping(value = "/program/list", method = RequestMethod.GET)
     public String list(ModelMap model, YukonUserContext userContext,
@@ -189,6 +195,13 @@ public class ProgramController extends ProgramControllerBase {
         DisplayablePao program = programService.getProgram(programId);
         model.addAttribute("program", program);
         model.addAttribute("programId", programId);
+        
+        //get opted out devices
+        List<LoadGroup> loadGroups = loadGroupDao.getByProgramId(programId);
+        List<Integer> loadGroupIds = new ArrayList<>();
+        loadGroups.forEach(group -> loadGroupIds.add(group.getLoadGroupId()));
+        Set<Integer> optOutInventory = optOutEventDao.getOptedOutInventoryByLoadGroups(loadGroupIds);
+        model.addAttribute("optedOutDevices", optOutInventory);
 
         getDisconnectStatusResults(sorting, paging, programId, disconnectStatus, userContext, model);
 
@@ -206,7 +219,7 @@ public class ProgramController extends ProgramControllerBase {
     private void getDisconnectStatusResults(SortingParameters sorting, PagingParameters paging, int programId, 
                                             String[] disconnectStatus, YukonUserContext userContext, ModelMap model) {
         Map<LiteHardwarePAObject, PointValueHolder> disconnectStatusMap = disconnectStatusService.getDisconnectStatuses(programId, disconnectStatus, userContext);
-        
+
         //create device collection
         List<Integer> deviceIds = new ArrayList<>();
         disconnectStatusMap.keySet().forEach(device -> deviceIds.add(device.getPaoIdentifier().getPaoId()));

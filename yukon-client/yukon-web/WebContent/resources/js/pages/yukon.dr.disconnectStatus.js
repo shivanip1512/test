@@ -43,8 +43,8 @@ yukon.dr.disconnectStatus = (function () {
                 }).done(function(data) {
                     if (data.success) {
                         var timeText = moment(data.time.millis).tz(yg.timezone).format(yg.formats.date.both);
-                        $('.js-status-' + deviceId).html(data.status);
-                        $('.js-time-' + deviceId).html(timeText);
+                        $('.js-status-' + deviceId).html(data.status).flash();
+                        $('.js-time-' + deviceId).html(timeText).flash();
                     } else {
                         yukon.ui.alertError(data.errors);
                     }

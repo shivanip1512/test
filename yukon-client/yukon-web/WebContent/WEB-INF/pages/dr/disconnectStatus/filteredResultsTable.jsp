@@ -41,11 +41,11 @@
                 <tr>
                     <td>
                         <cti:url var="inventoryViewUrl" value="/stars/operator/inventory/view">
-                            <cti:param name="inventoryId" value="${disconnectStatus.key.inventoryId}"/>
+                            <cti:param name="inventoryId" value="${pao.inventoryId}"/>
                         </cti:url>
                         <a href="${inventoryViewUrl}" target="_blank">${fn:escapeXml(pao.paoName)}</a>
                     </td>
-                    <td>                    
+                    <td>
                         <span class="js-status-${paoId}"><cti:pointValueFormatter format="VALUE" value="${pointData}" /></span>&nbsp;
                     </td>
                     <td>
@@ -57,7 +57,7 @@
                                 <cm:dropdownOption key=".connect" classes="js-connect" icon="icon-connect" 
                                     data-device-id="${paoId}"/>
                                 <c:choose>
-                                    <c:when test="${pao.optedOut}">
+                                    <c:when test="${fn:contains(optedOutDevices, pao.inventoryId)}">
                                         <cti:msg2 var="disconnectNotAllowed" key=".disconnectNotAllowed"/>
                                         <span title="${disconnectNotAllowed}">
                                             <cm:dropdownOption key=".disconnect" icon="icon-disconnect" disabled="true"/>
