@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/18/2019 1:47:11 PM                         */
+/* Created on:     7/22/2019 12:59:03 AM                        */
 /*==============================================================*/
 
 
@@ -6969,6 +6969,7 @@ create table LMProgramGearHistory  (
    GearName             VARCHAR2(30)                    not null,
    GearId               NUMBER                          not null,
    Reason               VARCHAR2(50)                    not null,
+   Origin               VARCHAR2(30)                    not null,
    constraint PK_LMPROGRAMGEARHISTORY primary key (LMProgramGearHistoryId)
 );
 

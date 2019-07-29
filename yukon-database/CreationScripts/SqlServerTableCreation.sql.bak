@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/22/2019 12:57:02 AM                        */
+/* Created on:     7/18/2019 1:49:23 PM                         */
 /*==============================================================*/
 
 
@@ -7387,7 +7387,6 @@ create table LMProgramGearHistory (
    GearName             varchar(30)          not null,
    GearId               numeric              not null,
    Reason               varchar(50)          not null,
-   Origin               varchar(30)          not null,
    constraint PK_LMPROGRAMGEARHISTORY primary key nonclustered (LMProgramGearHistoryId)
 )
 go

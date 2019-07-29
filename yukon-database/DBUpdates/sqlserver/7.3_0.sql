@@ -373,6 +373,21 @@ AND SettingValue = '0';
 INSERT INTO DBUpdates VALUES ('YUK-20314', '7.3.0', GETDATE());
 /* @end YUK-20314 */
 
+/* @start YUK-20267 */
+ALTER TABLE LMProgramGearHistory
+ADD Origin VARCHAR(30);
+GO
+
+UPDATE LMProgramGearHistory
+SET Origin = '(none)';
+GO
+
+ALTER TABLE LMProgramGearHistory
+ALTER COLUMN Origin VARCHAR(30) NOT NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-20267', '7.3.0', GETDATE());
+/* @end YUK-20267 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
