@@ -36,7 +36,6 @@ _handleAddressUsage = function () {
          
          // enable textbox
          $('#js-sectionAddress').removeAttr("disabled");
-         $('#js-sectionAddress').val('0');
          $('#js-classAddress').find('input[type=checkbox]').prop("disabled", false);
          $('#js-divisionAddress').find('input[type=checkbox]').prop("disabled", false);
     }
