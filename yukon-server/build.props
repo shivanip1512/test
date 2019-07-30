@@ -14,7 +14,7 @@
     <THRIFT>$(CPP_LIBRARIES)\apache\thrift\0.11.0-vc141</THRIFT>
     <JSON>$(CPP_LIBRARIES)\nlohmann\3.1.2</JSON>
     <LOG4CXX>$(CPP_LIBRARIES)\apache\log4cxx\0.10.0-vc141</LOG4CXX>
-    <OPENSSL>$(CPP_LIBRARIES)\openssl\1.1.1b-vc141-1</OPENSSL>
+    <OPENSSL>$(CPP_LIBRARIES)\openssl\1.1.1c-vc141-1</OPENSSL>
     <LIBCOAP>$(CPP_LIBRARIES)\libcoap\4.1.2-vc141-1</LIBCOAP>
     <MICROSOFT>$(CPP_LIBRARIES)\microsoft</MICROSOFT>
     <MICROSOFT_SQL>$(MICROSOFT)\sql-server-client-dll\2000.80.194.0</MICROSOFT_SQL>
