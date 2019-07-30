@@ -68,7 +68,7 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
         if (!errors.hasFieldErrors("maxHoursMonthly")) {
             YukonValidationUtils.checkRange(errors, "maxHoursMonthly", programConstraint.getMaxHoursMonthly(), 0, 99999, false);
         }
-        lmValidatorHelper.checkIfFieldRequired("maxHoursAnnually", errors, programConstraint.getMaxHoursAnnually(), "Anually");
+        lmValidatorHelper.checkIfFieldRequired("maxHoursAnnually", errors, programConstraint.getMaxHoursAnnually(), "Annually");
         if (!errors.hasFieldErrors("maxHoursAnnually")) {
             YukonValidationUtils.checkRange(errors, "maxHoursAnnually", programConstraint.getMaxHoursAnnually(), 0, 99999, false);
         }

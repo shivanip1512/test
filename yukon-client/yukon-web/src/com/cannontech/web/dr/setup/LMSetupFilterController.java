@@ -75,8 +75,8 @@ public class LMSetupFilterController {
        SearchResults<LMPaoDto> filteredResults = null;
        ResponseEntity<? extends Object> response= null;
        // Make API call to get filtered result.
-       String url = helper.findWebServerUrl(request, userContext, ApiURL.drSetupFilterUrl);
        try {
+           String url = helper.findWebServerUrl(request, userContext, ApiURL.drSetupFilterUrl);
            response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, url,
                HttpMethod.POST, LMPaoDto.class, filterCriteria);
        } catch (ApiCommunicationException e) {

@@ -1,5 +1,7 @@
 package com.cannontech.web.api.validation;
 
+import static com.cannontech.web.SSLSettingsInitializer.isHttpsSettingInitialized;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,6 +24,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.SSLSettingsInitializer;
 import com.cannontech.web.api.ApiRequestHelper;
 
 /**
@@ -101,6 +104,10 @@ public class ApiControllerHelper {
             if (responseCode != HttpStatus.OK) {
                 if (!getYukonInternalUrl().isEmpty()) {
                     webUrl = getYukonInternalUrl();
+                    boolean isHttps = StringUtils.containsIgnoreCase(webUrl, "https");
+                    if (isHttps && !isHttpsSettingInitialized) {
+                        SSLSettingsInitializer.initializeHttpsSetting();
+                    }
                     responseCode = checkUrl(userContext, request, webUrl);
                 }
             }

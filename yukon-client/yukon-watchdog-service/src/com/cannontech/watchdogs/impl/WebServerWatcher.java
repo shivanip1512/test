@@ -1,16 +1,13 @@
 package com.cannontech.watchdogs.impl;
 
+import static com.cannontech.web.SSLSettingsInitializer.isHttpsSettingInitialized;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.List;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +21,7 @@ import com.cannontech.common.util.WebserverUrlResolver;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
+import com.cannontech.web.SSLSettingsInitializer;
 
 @Service
 public class WebServerWatcher extends ServiceStatusWatchdogImpl {
@@ -35,7 +33,6 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
 
     @Autowired private WebserverUrlResolver webserverUrlResolver;
     @Autowired private ConfigurationSource configurationSource;
-    private volatile boolean isHttpsSettingInitialized = false;
     
     @Override
     public List<WatchdogWarnings> watch() {
@@ -118,7 +115,7 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
         HttpURLConnection conn;
         
         if (isHttps && !isHttpsSettingInitialized) {
-            initializeHttpsSetting();
+            SSLSettingsInitializer.initializeHttpsSetting();
         }
 
         if (useProxy) {
@@ -132,31 +129,6 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
         return conn.getResponseCode();
     }
     
-    // Initialize settings for a https connection.
-    private void initializeHttpsSetting() {
-        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-
-            public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-            }
-
-            public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-            }
-        } };
-
-        HttpsURLConnection.setDefaultHostnameVerifier((hostname, sslSession) -> true);
-
-        try {
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            isHttpsSettingInitialized = true;
-        } catch (Exception e) {
-            log.debug("Could not initialze HTTPS settings " + e);
-        }
-    }
 
     @Override
     public YukonServices getServiceName() {
