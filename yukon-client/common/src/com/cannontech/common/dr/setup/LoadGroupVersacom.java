@@ -177,18 +177,25 @@ public class LoadGroupVersacom extends LoadGroupBase<LMGroupVersacom> implements
         for (int i = 0; i < addressUsageStr.length(); i++) {
             addressUsage.add(VersacomAddressUsage.getDisplayValue(addressUsageStr.charAt(i)));
         }
-        setSectionAddress(lmGroupVersacom.getSectionAddress());
+        if (addressUsage.contains(VersacomAddressUsage.SECTION)) {
+            setSectionAddress(lmGroupVersacom.getSectionAddress());
+        }
         // Convert Class and Division Integer value to Binary String.
-        Integer classAddress = lmGroupVersacom.getClassAddress();
-        if (classAddress != null) {
-            setClassAddress(StringUtils.convertIntegerToBinary(classAddress));
+        if (addressUsage.contains(VersacomAddressUsage.CLASS)) {
+            Integer classAddress = lmGroupVersacom.getClassAddress();
+            if (classAddress != null) {
+                setClassAddress(StringUtils.convertIntegerToBinary(classAddress));
+            }
         }
-        Integer divisionAddress = lmGroupVersacom.getDivisionAddress();
-        if (divisionAddress != null) {
-            setDivisionAddress(StringUtils.convertIntegerToBinary(divisionAddress));
+        if (addressUsage.contains(VersacomAddressUsage.DIVISION)) {
+            Integer divisionAddress = lmGroupVersacom.getDivisionAddress();
+            if (divisionAddress != null) {
+                setDivisionAddress(StringUtils.convertIntegerToBinary(divisionAddress));
+            }
         }
-        setSerialAddress(lmGroupVersacom.getSerialAddress());
-        if (Integer.valueOf(getSerialAddress()) > 0) {
+        Integer serialAddress = Integer.valueOf(lmGroupVersacom.getSerialAddress());
+        if (serialAddress > 0) {
+            setSerialAddress(lmGroupVersacom.getSerialAddress());
             addressUsage.add(VersacomAddressUsage.SERIAL);
         }
         // Set values inside versacomAddressUsage
@@ -198,7 +205,7 @@ public class LoadGroupVersacom extends LoadGroupBase<LMGroupVersacom> implements
         for (int i = 0; i < relayUsage.length(); i++) {
             relays.add(Relays.getDisplayValue(relayUsage.charAt(i)));
         }
-        setRelayUsage(relays);
+        setRelayUsage(relays.isEmpty() ? null : relays);
     }
 
 }
