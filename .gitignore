@@ -6,6 +6,8 @@ yukon-client/.sonarlint
 yukon-client/FDEmulator/bin
 yukon-client/api-web/bin
 yukon-client/api-web/build
+yukon-client/api-web/test/build
+yukon-client/api-web/test/testResults
 yukon-client/api/bin
 yukon-client/api/build
 yukon-client/billing/.cvsignore
