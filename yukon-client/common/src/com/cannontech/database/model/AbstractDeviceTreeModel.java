@@ -70,7 +70,7 @@ public abstract class AbstractDeviceTreeModel extends DBTreeModel {
             }
         }
 
-        node.add(getNewObjectNode(lp));
+        node.add(getNewNode(lp));
         // updateTreeNodeStructure( node );
 
         return node;
@@ -276,7 +276,7 @@ public abstract class AbstractDeviceTreeModel extends DBTreeModel {
 
         parentNode.removeAllChildren();
         for (int i = 0; i < liteObjects.size(); i++) {
-            parentNode.add(getNewObjectNode(liteObjects.get(i)));
+            parentNode.add(getNewNode(liteObjects.get(i)));
         }
 
         updateTreeNodeStructure(parentNode);
