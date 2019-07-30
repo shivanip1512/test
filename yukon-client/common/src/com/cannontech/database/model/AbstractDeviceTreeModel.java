@@ -29,7 +29,7 @@ public abstract class AbstractDeviceTreeModel extends DBTreeModel {
     private boolean showPoints = true;
 
     // a Vector only needed to store temporary things
-    private List<LitePoint> pointTempList = new java.util.Vector<LitePoint>(20);
+    private List<LitePoint> pointTempList = new java.util.Vector<>(20);
 
     // a mutable lite point used for comparisons
     private static final LitePoint DUMMY_LITE_POINT = new LitePoint(Integer.MIN_VALUE, "**DUMMY**", 0, 0, 0, 0);
@@ -41,6 +41,10 @@ public abstract class AbstractDeviceTreeModel extends DBTreeModel {
     public AbstractDeviceTreeModel(boolean showPointNodes, DBTreeNode rootNode_) {
         super(rootNode_);
         showPoints = showPointNodes;
+    }
+
+    protected DBTreeNode getNewDeviceNode(LiteYukonPAObject pao) {
+        return getNewNode(pao);
     }
 
     protected DBTreeNode getNewNode(Object obj) {
@@ -66,7 +70,7 @@ public abstract class AbstractDeviceTreeModel extends DBTreeModel {
             }
         }
 
-        node.add(getNewNode(lp));
+        node.add(getNewObjectNode(lp));
         // updateTreeNodeStructure( node );
 
         return node;
@@ -172,7 +176,7 @@ public abstract class AbstractDeviceTreeModel extends DBTreeModel {
             LiteYukonPAObject liteYuk = (LiteYukonPAObject) lb;
 
             if (isDeviceValid(liteYuk.getPaoType().getPaoCategory(), liteYuk.getPaoType().getPaoClass(), liteYuk.getPaoType())) {
-                DBTreeNode node = getNewNode(lb);
+                DBTreeNode node = getNewDeviceNode(liteYuk);
                 node.setWillHaveChildren(true);
                 // add all new tree nodes to the top, for now
                 int[] indexes = { 0 };
@@ -237,7 +241,7 @@ public abstract class AbstractDeviceTreeModel extends DBTreeModel {
                 if (isDeviceValid(((LiteYukonPAObject) devices.get(i)).getPaoType().getPaoCategory(),
                                   ((LiteYukonPAObject) devices.get(i)).getPaoType().getPaoClass(),
                                   ((LiteYukonPAObject) devices.get(i)).getPaoType())) {
-                    DBTreeNode deviceNode = getNewNode(devices.get(i));
+                    DBTreeNode deviceNode = getNewDeviceNode((LiteYukonPAObject) devices.get(i));
                     rootNode.add(deviceNode);
 
                     if (showPoints) {
@@ -272,7 +276,7 @@ public abstract class AbstractDeviceTreeModel extends DBTreeModel {
 
         parentNode.removeAllChildren();
         for (int i = 0; i < liteObjects.size(); i++) {
-            parentNode.add(getNewNode(liteObjects.get(i)));
+            parentNode.add(getNewObjectNode(liteObjects.get(i)));
         }
 
         updateTreeNodeStructure(parentNode);

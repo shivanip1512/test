@@ -120,6 +120,7 @@ import com.cannontech.database.model.DummyTreeNode;
 import com.cannontech.database.model.FrameAware;
 import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.TreeModelEnum;
+import com.cannontech.database.model.WebOnlyEditWarning;
 import com.cannontech.dbeditor.defines.CommonDefines;
 import com.cannontech.dbeditor.menu.CoreCreateMenu;
 import com.cannontech.dbeditor.menu.EditMenu;
@@ -876,6 +877,13 @@ public class DatabaseEditor implements PropertyPanelListener, WizardPanelListene
                     }
 
                     if (nodes[i].getUserObject() instanceof String) {
+                        continue;
+                    }
+                    if (nodes[i].getUserObject() instanceof WebOnlyEditWarning) {
+                        javax.swing.JOptionPane.showMessageDialog( owner, 
+                                                                   ((WebOnlyEditWarning)nodes[i].getUserObject()).getWarning(), 
+                                                                   "Web-only type", 
+                                                                   javax.swing.JOptionPane.WARNING_MESSAGE );
                         continue;
                     }
 

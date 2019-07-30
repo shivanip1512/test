@@ -33,4 +33,15 @@ public class LMGroupsModel extends AbstractDeviceTreeModel {
 
         return (paoClass == PaoClass.GROUP && paoCategory == PaoCategory.DEVICE);
     }
+
+    @Override
+    protected DBTreeNode getNewDeviceNode(LiteYukonPAObject pao) {
+        if (pao.getPaoType() == PaoType.LM_GROUP_METER_DISCONNECT) {
+            // Meter Disconnect programs can only be edited on the web 
+            DBTreeNode warningNode = new DBTreeNode(new WebOnlyEditWarning(pao));
+            warningNode.setIsSystemReserved(true);
+            return warningNode;
+        }
+        return super.getNewDeviceNode(pao);
+    }
 }

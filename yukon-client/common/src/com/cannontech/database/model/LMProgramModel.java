@@ -23,4 +23,15 @@ public class LMProgramModel extends AbstractDeviceTreeModel {
     public boolean isDeviceValid(PaoCategory paoCategory, PaoClass paoClass, PaoType paoType) {
         return paoType.isLmProgram();
     }
+
+    @Override
+    protected DBTreeNode getNewDeviceNode(LiteYukonPAObject pao) {
+        if (pao.getPaoType() == PaoType.LM_METER_DISCONNECT_PROGRAM) {
+            // Meter Disconnect programs can only be edited on the web 
+            DBTreeNode warningNode = new DBTreeNode(new WebOnlyEditWarning(pao));
+            warningNode.setIsSystemReserved(true);
+            return warningNode;
+        }
+        return super.getNewDeviceNode(pao);
+    }
 }
