@@ -71,8 +71,13 @@ public class MeterEventStatusTypeGroupings {
     private static void buildHardwareTypes() {
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
         //RFN
-        builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_HARDWARE_EVENT));
-        
+        for (BuiltInAttribute hardwareEvent : BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_HARDWARE_EVENT)) {
+            if (hardwareEvent == BuiltInAttribute.TAMPER_CABLE_CUT) {
+                //skip...these are added in buildTamperTypes()
+            } else {
+                builder.add(hardwareEvent);
+            }
+        }        
         hardware = builder.build();
     }
     
@@ -91,6 +96,9 @@ public class MeterEventStatusTypeGroupings {
         builder.add(BuiltInAttribute.TAMPER_LARGE_INCREASE_AFTER_OUTAGE);
         builder.add(BuiltInAttribute.TAMPER_LARGE_DECREASE_AFTER_OUTAGE);
         builder.add(BuiltInAttribute.VIBRATION_TILT_TAMPER_DETECTED);
+        
+        // RFN Gen2 Water/Gas
+        builder.add(BuiltInAttribute.TAMPER_CABLE_CUT);
         tamper = builder.build();
     }
     
