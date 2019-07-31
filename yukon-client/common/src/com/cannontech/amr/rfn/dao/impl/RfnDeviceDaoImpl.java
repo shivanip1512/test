@@ -1,9 +1,14 @@
 package com.cannontech.amr.rfn.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
@@ -34,28 +40,32 @@ import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.util.stream.Stream;
 
 public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
@@ -69,6 +79,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private DatabaseVendorResolver dbVendorResolver;
     private RfnAddressCache rfnIdentifierCache;
+    private static SimpleDateFormat oracleLastTransferTimeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     
     private final static YukonRowMapper<RfnDevice> rfnDeviceRowMapper = new YukonRowMapper<RfnDevice>() {
         @Override
@@ -409,7 +420,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                 data.add(deviceData);
             }
         });
-        List<List<DynamicRfnDeviceData>> subSets = Lists.partition(data, ChunkingSqlTemplate.DEFAULT_SIZE/3); 
+        List<List<DynamicRfnDeviceData>> subSets = Lists.partition(data, 3); 
         log.debug("Inserting {} rows", data.size());
         if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {  
             saveDynamicRfnDeviceDataSqlServer(subSets);
@@ -432,14 +443,15 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             WHEN NOT MATCHED THEN
                  INSERT VALUES (CACHE_DATA.DeviceId, CACHE_DATA.GatewayId, CACHE_DATA.LastTransferTime);
          */
+
         subSets.forEach(part -> {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("MERGE INTO DynamicRfnDeviceData DRDD");
             sql.append("USING (");
             String params = IntStream.range(0, part.size()).mapToObj(i -> {
-                String param =  "SELECT ? AS DeviceId, ? AS GatewayId, ? AS LastTransferTime FROM DUAL";
+                String param =  "SELECT ? AS DeviceId, ? AS GatewayId, TO_DATE(?, 'YYYY-MM-DD HH24:MI:SS') AS LastTransferTime FROM DUAL";
                 if(i != 0) {
-                    param =  "SELECT ? , ? , ? FROM DUAL";
+                    param =  "SELECT ? , ? , TO_DATE(?, 'YYYY-MM-DD HH24:MI:SS') FROM DUAL";
                 }
                 return param;
             }).collect(Collectors.joining(" UNION "));
@@ -449,16 +461,15 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             sql.append("WHEN MATCHED THEN");
             sql.append("    UPDATE SET DRDD.GatewayId = CACHE_DATA.GatewayId, DRDD.LastTransferTime = CACHE_DATA.LastTransferTime");
             sql.append("WHEN NOT MATCHED THEN");
-            sql.append("    UPDATE SET DRDD.GatewayId = CACHE_DATA.GatewayId, DRDD.LastTransferTime = CACHE_DATA.LastTransferTime");
-            sql.append("WHEN NOT MATCHED THEN");
             sql.append("    INSERT VALUES (CACHE_DATA.DeviceId, CACHE_DATA.GatewayId, CACHE_DATA.LastTransferTime)");
             Object[] values = part.stream()
-                    .flatMap(value -> Stream.of(value.deviceId, value.gatewayId, value.transferTime.toString()))
+                   // .peek(value -> log.debug(value.deviceId+" "+ value.gatewayId+" "+ oracleLastTransferTimeFormat.format(value.transferTime.toDate())))
+                    .flatMap(value -> Stream.of(value.deviceId, value.gatewayId, oracleLastTransferTimeFormat.format(value.transferTime.toDate())))
                     .toArray();
             template.update(sql.getSql(), values);
         });
     }
-
+    
     private void saveDynamicRfnDeviceDataSqlServer(List<List<DynamicRfnDeviceData>> subSets) {
         /**
          * WITH NMD_CTE (DeviceId, GatewayId, LastTransferTime) AS (
