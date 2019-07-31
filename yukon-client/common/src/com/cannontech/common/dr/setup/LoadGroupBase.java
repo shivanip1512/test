@@ -18,10 +18,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = LoadGroupDigiSep.class, name = "LM_GROUP_DIGI_SEP"),
     @JsonSubTypes.Type(value = LoadGroupEmetcon.class, name = "LM_GROUP_EMETCON"),
     @JsonSubTypes.Type(value = LoadGroupVersacom.class, name = "LM_GROUP_VERSACOM"),
-    @JsonSubTypes.Type(value = LoadGroupBase.class, name = "LM_GROUP_ECOBEE"),
-    @JsonSubTypes.Type(value = LoadGroupBase.class, name = "LM_GROUP_HONEYWELL"),
-    @JsonSubTypes.Type(value = LoadGroupBase.class, name = "LM_GROUP_NEST"),
-    @JsonSubTypes.Type(value = LoadGroupBase.class, name = "LM_GROUP_METER_DISCONNECT")
+    @JsonSubTypes.Type(value = LoadGroupEcobee.class, name = "LM_GROUP_ECOBEE"),
+    @JsonSubTypes.Type(value = LoadGroupHoneywell.class, name = "LM_GROUP_HONEYWELL"),
+    @JsonSubTypes.Type(value = LoadGroupNest.class, name = "LM_GROUP_NEST"),
+    @JsonSubTypes.Type(value = LoadGroupDisconnect.class, name = "LM_GROUP_METER_DISCONNECT")
     })
 @JsonIgnoreProperties(value={"id"}, allowGetters= true, ignoreUnknown = true)
 public class LoadGroupBase<T extends LMGroup> implements LoadGroupSetupBase<T> {

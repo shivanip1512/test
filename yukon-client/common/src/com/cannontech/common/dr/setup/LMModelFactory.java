@@ -31,10 +31,16 @@ public class LMModelFactory {
 
         switch (paoType) {
         case LM_GROUP_METER_DISCONNECT:
+            loadGroup = new LoadGroupDisconnect();
+            break;
         case LM_GROUP_HONEYWELL:
+            loadGroup = new LoadGroupHoneywell();
+            break;
         case LM_GROUP_ECOBEE:
+            loadGroup = new LoadGroupEcobee();
+            break;
         case LM_GROUP_NEST:
-            loadGroup = new LoadGroupBase();
+            loadGroup = new LoadGroupNest();
             break;
         case LM_GROUP_EXPRESSCOMM:
         case LM_GROUP_RFN_EXPRESSCOMM:

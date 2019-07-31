@@ -6,9 +6,13 @@ import org.springframework.core.convert.converter.Converter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupDigiSep;
+import com.cannontech.common.dr.setup.LoadGroupDisconnect;
+import com.cannontech.common.dr.setup.LoadGroupEcobee;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
+import com.cannontech.common.dr.setup.LoadGroupHoneywell;
 import com.cannontech.common.dr.setup.LoadGroupItron;
+import com.cannontech.common.dr.setup.LoadGroupNest;
 import com.cannontech.common.dr.setup.LoadGroupVersacom;
 import com.cannontech.common.pao.PaoType;
 
@@ -47,13 +51,18 @@ public class LoadGroupBaseConverter implements Converter<String, LoadGroupBase> 
             loadGroup = new LoadGroupVersacom();
             break;
         case LM_GROUP_ECOBEE:
+            loadGroup = new LoadGroupEcobee();
+            break;
         case LM_GROUP_HONEYWELL:
+            loadGroup = new LoadGroupHoneywell();
+            break;
         case LM_GROUP_METER_DISCONNECT:
+            loadGroup = new LoadGroupDisconnect();
+            break;
         case LM_GROUP_NEST:
-            loadGroup = new LoadGroupBase();
+            loadGroup = new LoadGroupNest();
             break;
         }
         return loadGroup;
-    }
-
+        }
 }
