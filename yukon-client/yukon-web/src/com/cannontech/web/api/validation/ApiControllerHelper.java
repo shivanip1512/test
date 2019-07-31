@@ -104,7 +104,7 @@ public class ApiControllerHelper {
             if (responseCode != HttpStatus.OK) {
                 if (!getYukonInternalUrl().isEmpty()) {
                     webUrl = getYukonInternalUrl();
-                    boolean isHttps = StringUtils.containsIgnoreCase(webUrl, "https");
+                    boolean isHttps = StringUtils.startsWithIgnoreCase(webUrl, "https");
                     if (isHttps && !isHttpsSettingInitialized) {
                         SSLSettingsInitializer.initializeHttpsSetting();
                     }
