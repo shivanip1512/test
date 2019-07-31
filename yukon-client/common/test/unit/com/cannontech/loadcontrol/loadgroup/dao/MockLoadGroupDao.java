@@ -50,4 +50,9 @@ public class MockLoadGroupDao implements LoadGroupDao {
         throw new MethodNotImplementedException();
     }
 
+    @Override
+    public int getProgramIdByGroupId(int lmGroupId) {
+        throw new MethodNotImplementedException();
+    }
+
 }

@@ -438,5 +438,11 @@
       <sequence name="RfnMetadataMultiRequest">
         <table name="RfnMetadataMultiRequest" identitycolumn="requestIdentifier"/>
       </sequence>
+      <sequence name="DrDisconnectEvent">
+        <table name="DrDisconnectEvent" identitycolumn="EventId" initsequence="true"/>
+      </sequence>
+      <sequence name="DrDisconnectDeviceStatus">
+        <table name="DrDisconnectDeviceStatus" identitycolumn="EntryId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

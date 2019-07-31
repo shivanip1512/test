@@ -1,9 +1,6 @@
 package com.cannontech.amr.disconnect.service.impl;
 
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.FAILURE;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.NOT_CONFIGURED;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.getDisconnectDetail;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
@@ -22,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectDeviceState;
 import com.cannontech.amr.disconnect.model.DisconnectMeterResult;
+import com.cannontech.amr.disconnect.model.DrDisconnectStatusCallback;
 import com.cannontech.amr.disconnect.model.FilteredDevices;
 import com.cannontech.amr.disconnect.service.DisconnectCallback;
 import com.cannontech.amr.disconnect.service.DisconnectService;
@@ -65,8 +64,12 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
 
     @Override
     public CollectionActionResult execute(DisconnectCommand command, DeviceCollection deviceCollection,
-            SimpleCallback<CollectionActionResult> alertCallback, YukonUserContext context) {
+            SimpleCallback<CollectionActionResult> alertCallback, DrDisconnectStatusCallback optionalStatusCallback, 
+            YukonUserContext context) {
 
+        // Status callback is optional, wrap it and only call it if present
+        Optional<DrDisconnectStatusCallback> statusCallback = Optional.ofNullable(optionalStatusCallback);
+        
         disconnectEventLogService.groupDisconnectAttempted(context.getYukonUser(), command);
         CollectionActionResult result = collectionActionService.createResult(command.getCollectionAction(), null,
             deviceCollection, CommandRequestType.DEVICE, DeviceRequestType.GROUP_CONNECT_DISCONNECT, context);
@@ -94,7 +97,10 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
 
         collectionActionService.addUnsupportedToResult(UNSUPPORTED, result, unsupportedDevices);
         collectionActionService.addUnsupportedToResult(NOT_CONFIGURED, result, notConfiguredDevices);
-
+        
+        statusCallback.ifPresent(c -> c.handleUnsupported(unsupportedDevices));
+        statusCallback.ifPresent(c -> c.handleNotConfigured(notConfiguredDevices));
+        
         if (!unsupportedDevices.isEmpty() || !notConfiguredDevices.isEmpty()) {
             log.debug("Updated result with unsupported and not configured devices:");
             result.log();
@@ -111,6 +117,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
                 CollectionActionLogDetail detail = new CollectionActionLogDetail(device, getDisconnectDetail(command));
                 detail.setValue(value);
                 result.addDeviceToGroup(getDisconnectDetail(command), device, detail);
+                statusCallback.ifPresent(c -> c.handleResult(getDisconnectDetail(command), device));
             }
 
             @Override
@@ -118,11 +125,14 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
                 CollectionActionLogDetail detail = new CollectionActionLogDetail(device, FAILURE);
                 detail.setDeviceErrorText(accessor.getMessage(error.getDetail()));
                 result.addDeviceToGroup(FAILURE, device, detail);
+                statusCallback.ifPresent(c -> c.handleResult(FAILURE, device));
             }
 
             @Override
             public void complete(StrategyType strategy) {
-                if (!result.isComplete()) {
+                if (result.isComplete()) {
+                    statusCallback.ifPresent(DrDisconnectStatusCallback::handleComplete);
+                } else {
                     pendingStrategies.remove(strategy);
                     log.debug("Completing " + strategy + " strategy. Remaining strategies:" + pendingStrategies);
                     if (pendingStrategies.isEmpty()) {

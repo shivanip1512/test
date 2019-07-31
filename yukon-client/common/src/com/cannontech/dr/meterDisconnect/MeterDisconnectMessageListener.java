@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,9 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
+import com.cannontech.amr.disconnect.model.DrDisconnectStatusCallback;
 import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.cc.service.GroupService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -30,8 +33,10 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.dr.meterDisconnect.service.DrMeterDisconnectStatusService;
 import com.cannontech.dr.service.ControlHistoryService;
 import com.cannontech.dr.service.ControlType;
+import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
@@ -49,8 +54,118 @@ public class MeterDisconnectMessageListener {
     @Autowired private DisconnectService disconnectService;
     @Autowired private OptOutEventDao optOutEventDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private DrMeterDisconnectStatusService drStatusService;
+    @Autowired private LoadGroupDao loadGroupDao;
+    
+    // Disconnect "Control"
+    public void handleCyclingControlMessage(Message message) {
+        if (message instanceof StreamMessage) {
+            try {
+                log.debug("Received message on yukon.notif.stream.dr.MeterDisconnectControlMessage queue.");
+                StreamMessage msg = (StreamMessage) message;
+                int groupId = msg.readInt();
+                long utcStartTimeSeconds = msg.readLong();
+                long utcEndTimeSeconds = msg.readLong();
+                Instant startTime = new Instant(utcStartTimeSeconds * 1000);
+                Instant endTime = new Instant(utcEndTimeSeconds * 1000);
+                Duration controlDuration = new Duration(startTime, endTime);
+                int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
+                Instant startTimeUtc = new Instant(DateTimeZone.getDefault().convertLocalToUTC(startTime.getMillis(), false));
+                
+                log.debug("Parsed message - Group Id: " + groupId + ", startTime: " + startTime + ", endTime: " + endTime);
+                
+                String groupName = groupService.getGroup(groupId).getName();
+                DeviceGroup deviceGroup = deviceGroupService.findGroupName(groupName);
+                if (deviceGroup != null) {
+                    // Find all the opted out devices that are in the groupId
+                    Set<Integer> optOutInventory = optOutEventDao.getOptedOutInventoryByLoadGroups(Arrays.asList(groupId));
+                    Set<Integer> optOutDeviceIds = inventoryBaseDao.getLMHardwareForIds(optOutInventory).stream()
+                                                                                                        .map(LiteLmHardwareBase::getDeviceID)
+                                                                                                        .collect(Collectors.toSet());
+                    
+                    Set<SimpleDevice> meters = deviceGroupService.getDevices(Collections.singleton(deviceGroup));
+                    
+                    int programId = loadGroupDao.getProgramIdByGroupId(groupId);
+                    
+                    // Initialize the event for the status report (or add the meters to an existing event)
+                    int eventId = drStatusService.initializeEvent(startTime, endTime, programId, meters);
+                    
+                    // Log the status of opted-out devices
+                    Instant now = Instant.now();
+                    drStatusService.updateControlStatus(eventId, DrMeterControlStatus.NO_CONTROL_OPTED_OUT, now, 
+                                                        optOutDeviceIds);
+                    
+                    // Remove any meters that are opted out from the list of meters that will be sent control
+                    meters = meters.stream()
+                            .filter(meterId -> !optOutDeviceIds.contains(meterId.getPaoIdentifier().getPaoId()))
+                            .collect(Collectors.toSet());
+                    
+                    List<Integer> meterIds = meters.stream()
+                                                   .map(SimpleDevice::getDeviceId)
+                                                   .collect(Collectors.toList());
+                    
+                    // Log the status of meters that will be controlled
+                    drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_SENT, now, meterIds);
+                    
+                    MeterCollection collection = new MeterCollection(Lists.newArrayList(meters));
+                    SimpleCallback<CollectionActionResult> doNothingCallback = result -> {};
+                    DrDisconnectStatusCallback statusCallback = new DrDisconnectStatusCallback(true, eventId, drStatusService);
+                    disconnectService.execute(DisconnectCommand.DISCONNECT, collection, doNothingCallback, 
+                                              statusCallback, YukonUserContext.system);
+                }
 
-    public class MeterCollection implements DeviceCollection {
+                controlHistoryService.sendControlHistoryShedMessage(groupId, startTimeUtc, ControlType.METER_DISCONNECT, null,
+                    controlDurationSeconds, 100);
+            } catch (JMSException e) {
+                log.error("Error parsing Meter Disconnect control message from LM", e);
+            }
+        }
+    }
+    
+    // Connect "End Control"
+    public void handleRestoreMessage(Message message) {
+        if (message instanceof StreamMessage) {
+            try {
+                log.debug("Received message on yukon.notif.stream.dr.MeterDisconnectRestoreMessage queue.");
+                StreamMessage msg = (StreamMessage) message;
+                int groupId = msg.readInt();
+                long restoreTime = msg.readLong();
+                
+                log.debug("Parsed: Group Id: " + groupId + ", Restore Time: " + restoreTime);
+                
+                LiteYukonPAObject group = dbCache.getAllLMGroups().stream()
+                        .filter(g -> g.getLiteID() == groupId).findAny().orElse(null);
+                if (group == null) {
+                    log.error("Group with id " + groupId + " is not found");
+                    return;
+                }
+
+                int programId = loadGroupDao.getProgramIdByGroupId(groupId);
+                Optional<Integer> eventId = drStatusService.findActiveEventForProgram(programId);
+                eventId.ifPresentOrElse(id -> drStatusService.restoreSent(new Instant(restoreTime), id),
+                                        () -> log.error("No active dr disconnect event found for program ID " + programId));
+                
+                String groupName = groupService.getGroup(groupId).getName();
+                DeviceGroup deviceGroup = deviceGroupService.findGroupName(groupName);
+                if (deviceGroup != null) {
+                    Set<SimpleDevice> meters = deviceGroupService.getDevices(Collections.singleton(deviceGroup));                    
+                    MeterCollection collection = new MeterCollection(Lists.newArrayList(meters));
+                    SimpleCallback<CollectionActionResult> doNothingCallback = result -> {};
+                    DrDisconnectStatusCallback statusCallback = null;
+                    if (eventId.isPresent()) {
+                        statusCallback = new DrDisconnectStatusCallback(false, eventId.get(), drStatusService);
+                    }
+                    disconnectService.execute(DisconnectCommand.CONNECT, collection, doNothingCallback, 
+                                              statusCallback, YukonUserContext.system);
+                }
+                controlHistoryService.sendControlHistoryRestoreMessage(groupId, Instant.now());
+            } catch (JMSException e) {
+                log.error("Error parsing Meter Disconnect restore message from LM", e);
+            }
+        }
+    }
+    
+    public static class MeterCollection implements DeviceCollection {
         List<SimpleDevice> collection;
         public MeterCollection(List<SimpleDevice> collection) {
             this.collection = collection;
@@ -112,95 +227,6 @@ public class MeterDisconnectMessageListener {
         @Override
         public String getHeader() {
             return null;
-        }
-        
-    }
-    
-    public class Callback implements SimpleCallback {
-
-        @Override
-        public void handle(Object item) throws Exception {
-        }
-        
-    }
-    
-    // Disconnect "Control"
-    public void handleCyclingControlMessage(Message message) {
-        if (message instanceof StreamMessage) {
-            try {
-                log.debug("Received message on yukon.notif.stream.dr.MeterDisconnectControlMessage queue.");
-                StreamMessage msg = (StreamMessage) message;
-                int groupId = msg.readInt();
-                long utcStartTimeSeconds = msg.readLong();
-                long utcEndTimeSeconds = msg.readLong();
-                Instant startTime = new Instant(utcStartTimeSeconds * 1000);
-                Instant endTime = new Instant(utcEndTimeSeconds * 1000);
-                Duration controlDuration = new Duration(startTime, endTime);
-                int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
-                Instant startTimeUtc = new Instant(DateTimeZone.getDefault().convertLocalToUTC(startTime.getMillis(), false));
-                
-                
-                log.debug("Parsed message - Group Id: " + groupId + ", startTime: " + startTime + ", endTime: " + endTime);
-                                
-                String groupName = groupService.getGroup(groupId).getName();
-                DeviceGroup deviceGroup = deviceGroupService.findGroupName(groupName);
-                if (deviceGroup != null) {
-                    // Find all the opted out devices that are in the groupId
-                    Set<Integer> optOutInventory = optOutEventDao.getOptedOutInventoryByLoadGroups(Arrays.asList(groupId));
-                    Set<Integer> optOutDeviceIds = inventoryBaseDao.getLMHardwareForIds(optOutInventory).stream()
-                                                                                                        .map(LiteLmHardwareBase::getDeviceID)
-                                                                                                        .collect(Collectors.toSet());
-                    Set<SimpleDevice> meters = deviceGroupService.getDevices(Collections.singleton(deviceGroup));   
-                    // Remove any meter's that are opted out from the list of meters that will be sent control
-                    meters = meters.stream()
-                                   .filter(meterId -> !optOutDeviceIds.contains(meterId.getPaoIdentifier().getPaoId()))
-                                   .collect(Collectors.toSet());
-                    
-                    MeterCollection collection = new MeterCollection(Lists.newArrayList(meters));
-                    Callback callback = new Callback(); //callback isn't really being used.
-                    disconnectService.execute(DisconnectCommand.DISCONNECT, collection, callback, YukonUserContext.system);
-                }
-                
-
-                controlHistoryService.sendControlHistoryShedMessage(groupId, startTimeUtc, ControlType.METER_DISCONNECT, null,
-                    controlDurationSeconds, 100);
-            } catch (JMSException e) {
-                log.error("Error parsing Meter Disconnect control message from LM", e);
-            }
-        }
-    }
-    
-    // Connect "End Control"
-    public void handleRestoreMessage(Message message) {
-        if (message instanceof StreamMessage) {
-            try {
-                log.debug("Received message on yukon.notif.stream.dr.MeterDisconnectRestoreMessage queue.");
-                StreamMessage msg = (StreamMessage) message;
-                int groupId = msg.readInt();
-                long restoreTime = msg.readLong();
-                
-                log.debug("Parsed: Group Id: " + groupId + ", Restore Time: " + restoreTime);
-                
-                LiteYukonPAObject group = dbCache.getAllLMGroups().stream()
-                        .filter(g -> g.getLiteID() == groupId).findAny().orElse(null);
-                if (group == null) {
-                    log.error("Group with id " + groupId + " is not found");
-                    return;
-                }
-
-                String groupName = groupService.getGroup(groupId).getName();
-                DeviceGroup deviceGroup = deviceGroupService.findGroupName(groupName);
-                if (deviceGroup != null) {
-                    Set<SimpleDevice> meters = deviceGroupService.getDevices(Collections.singleton(deviceGroup));                    
-                    MeterCollection collection = new MeterCollection(Lists.newArrayList(meters));
-                    Callback callback = new Callback();
-                    disconnectService.execute(DisconnectCommand.CONNECT, collection, callback, YukonUserContext.system);
-                }
-                controlHistoryService.sendControlHistoryRestoreMessage(groupId, Instant.now());
-            } catch (JMSException e) {
-                log.error("Error parsing Meter Disconnect restore message from LM", e);
-                return;
-            }
         }
     }
 

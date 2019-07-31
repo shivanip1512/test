@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectMeterResult;
+import com.cannontech.amr.disconnect.model.DrDisconnectStatusCallback;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -59,7 +60,7 @@ public interface DisconnectService {
             LiteYukonUser user);
 
     CollectionActionResult execute(DisconnectCommand command, DeviceCollection deviceCollection,
-            SimpleCallback<CollectionActionResult> callback, YukonUserContext context);
+            SimpleCallback<CollectionActionResult> callback, DrDisconnectStatusCallback optionalStatusCallback, 
+            YukonUserContext context);
 
-    
 }

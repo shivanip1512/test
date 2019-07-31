@@ -54,7 +54,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     @Override
     public List<LoadGroup> getByIds(Iterable<Integer> loadGroupIds) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -146,7 +146,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     
     @Override
     public SetMultimap<PaoIdentifier, PaoIdentifier> getMacroGroupToGroupMappings(Collection<PaoIdentifier> groups) {
-        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -158,7 +158,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
             }
         };
         YukonRowMapper<Map.Entry<Integer, PaoIdentifier>> rowMapper =
-            new YukonRowMapper<Map.Entry<Integer, PaoIdentifier>>() {
+            new YukonRowMapper<>() {
                 @Override
                 public Entry<Integer, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
                     Integer macroGroupId = rs.getInt("OwnerID");
@@ -190,7 +190,18 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         return jdbcTemplate.query(sql, loadGroupRowMapper);
     }
 
-    private final YukonRowMapper<LoadGroup> loadGroupRowMapper = new YukonRowMapper<LoadGroup>() {
+    @Override
+    public int getProgramIdByGroupId(int lmGroupId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId");
+        sql.append("FROM LmProgramDirectGroup");
+        sql.append("WHERE LmGroupDeviceId").eq(lmGroupId);
+        
+        return jdbcTemplate.queryForInt(sql);
+    }
+    
+    private final YukonRowMapper<LoadGroup> loadGroupRowMapper = new YukonRowMapper<>() {
         @Override
         public LoadGroup mapRow(YukonResultSet rs) throws SQLException {
             String loadGroupName = rs.getString("loadGroupName");

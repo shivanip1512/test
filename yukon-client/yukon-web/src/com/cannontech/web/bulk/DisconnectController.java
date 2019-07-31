@@ -59,7 +59,7 @@ public class DisconnectController {
             CollectionActionAlertHelper.createAlert(AlertType.DISCONNECT_COMPLETION, alertService,
                 messageResolver.getMessageSourceAccessor(userContext), request);
         CollectionActionResult result =
-            disconnectService.execute(command, deviceCollection, alertCallback, userContext);
+            disconnectService.execute(command, deviceCollection, alertCallback, null, userContext);
         return "redirect:/collectionActions/progressReport/detail?key=" + result.getCacheKey();
     }
 }

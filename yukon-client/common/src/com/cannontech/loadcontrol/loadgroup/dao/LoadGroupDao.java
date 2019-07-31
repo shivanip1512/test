@@ -54,4 +54,9 @@ public interface LoadGroupDao {
      * @return
      */
     public List<LoadGroup> getByProgramId(int programId);
+    
+    /**
+     * @return the ID of the program that contains the specified group.
+     */
+    public int getProgramIdByGroupId(int lmGroupId);
 }
