@@ -1,5 +1,8 @@
 package com.cannontech.common.dr.gear.setup.fields;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.dr.gear.setup.Mode;
 import com.cannontech.common.dr.gear.setup.TemperatureMeasureUnit;
@@ -44,7 +47,11 @@ public class SepTemperatureOffsetGearFields implements ProgramGearFields {
     }
 
     public void setOffset(Double offset) {
-        this.offset = offset;
+        if (offset != null) {
+            this.offset = new BigDecimal(offset).setScale(1, RoundingMode.HALF_DOWN).doubleValue();
+        } else {
+            this.offset = offset;
+        }
     }
 
     public Integer getCriticality() {
@@ -98,7 +105,7 @@ public class SepTemperatureOffsetGearFields implements ProgramGearFields {
     @Override
     public void buildModel(LMProgramDirectGear programDirectGear) {
         SepTemperatureOffsetGear sepTemperatureOffsetGear = (SepTemperatureOffsetGear) programDirectGear;
-      
+
         sepTemperatureOffsetGear.setFrontRampEnabled(sepTemperatureOffsetGear.isFrontRampEnabled());
         sepTemperatureOffsetGear.setFrontRampEnabled(sepTemperatureOffsetGear.isBackRampEnabled());
 
@@ -131,7 +138,7 @@ public class SepTemperatureOffsetGearFields implements ProgramGearFields {
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
         whenToChangeFields.buildModel(programDirectGear);
         setWhenToChangeFields(whenToChangeFields);
-        
+
     }
 
     @Override
@@ -139,7 +146,8 @@ public class SepTemperatureOffsetGearFields implements ProgramGearFields {
         SepTemperatureOffsetGear temperatureOffsetGear = (SepTemperatureOffsetGear) programDirectGear;
 
         temperatureOffsetGear.setMethodStopType(getHowToStopControl().name());
-        temperatureOffsetGear.getSettings().setCharAt(1, getCelsiusOrFahrenheit() == TemperatureMeasureUnit.FAHRENHEIT ? 'F' : 'C');
+        temperatureOffsetGear.getSettings().setCharAt(1,
+            getCelsiusOrFahrenheit() == TemperatureMeasureUnit.FAHRENHEIT ? 'F' : 'C');
 
         temperatureOffsetGear.setFrontRampEnabled(getRampIn());
         temperatureOffsetGear.setBackRampEnabled(getRampOut());

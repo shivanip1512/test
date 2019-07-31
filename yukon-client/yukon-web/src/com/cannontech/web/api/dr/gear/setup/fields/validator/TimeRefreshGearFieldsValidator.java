@@ -1,0 +1,78 @@
+package com.cannontech.web.api.dr.gear.setup.fields.validator;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.Errors;
+
+import com.cannontech.common.dr.gear.setup.CycleCountSendType;
+import com.cannontech.common.dr.gear.setup.fields.TimeRefreshGearFields;
+import com.cannontech.database.db.device.lm.GearControlMethod;
+import com.cannontech.web.api.dr.setup.LMValidatorHelper;
+
+public class TimeRefreshGearFieldsValidator extends ProgramGearFieldsValidator<TimeRefreshGearFields> {
+
+    @Autowired private LMValidatorHelper lmValidatorHelper;
+    @Autowired private GearValidatorHelper gearValidatorHelper;
+    private final static String invalidKey = "yukon.web.modules.dr.setup.error.invalid";
+
+    public TimeRefreshGearFieldsValidator() {
+        super(TimeRefreshGearFields.class);
+    }
+
+    public TimeRefreshGearFieldsValidator(Class<TimeRefreshGearFields> objectType) {
+        super(objectType);
+    }
+
+    @Override
+    public GearControlMethod getControlMethod() {
+        return GearControlMethod.TimeRefresh;
+    }
+
+    @Override
+    protected void doValidation(TimeRefreshGearFields timeRefreshCycleGear, Errors errors) {
+        // Check Refresh Shed Time
+        lmValidatorHelper.checkIfFieldRequired("refreshShedTime", errors, timeRefreshCycleGear.getRefreshShedTime(),
+            "Refresh Shed Time");
+        if (!errors.hasFieldErrors("refreshShedTime")) {
+            if (timeRefreshCycleGear.getRefreshShedTime() != CycleCountSendType.FixedShedTime
+                || timeRefreshCycleGear.getRefreshShedTime() != CycleCountSendType.DynamicShedTime) {
+                errors.rejectValue("refreshShedTime", invalidKey, new Object[] { "Refresh Shed Time" }, "");
+            }
+        }
+
+        // Check Shed Time
+        if (!errors.hasFieldErrors("refreshShedTime")) {
+            // Write Validation Here
+        }
+
+        // Check No. of groups Each Time
+        gearValidatorHelper.checkNumberOfGroups(timeRefreshCycleGear.getNumberOfGroups(), errors);
+
+        // Check Command Resend Rate
+        gearValidatorHelper.checkCommandResendRate(timeRefreshCycleGear.getSendRate(), errors);
+
+        // Check Group Selection Method
+        gearValidatorHelper.checkGroupSelectionMethod(timeRefreshCycleGear.getGroupSelectionMethod(), errors);
+
+        // Check Ramp In Percent and Interval
+        if (timeRefreshCycleGear.getRampInPercent() != null
+            || timeRefreshCycleGear.getRampInIntervalInSeconds() != null) {
+            gearValidatorHelper.checkRampInPercentAndInterval(timeRefreshCycleGear.getRampInPercent(),
+                timeRefreshCycleGear.getRampInIntervalInSeconds(), errors);
+        }
+
+        // Check How to Stop Control
+        gearValidatorHelper.checkHowToStopControl(timeRefreshCycleGear.getHowToStopControl(), getControlMethod(),
+            errors);
+
+        // Check Stop Command Repeat
+        gearValidatorHelper.checkStopCommandRepeat(timeRefreshCycleGear.getStopCommandRepeat(), getControlMethod(),
+            errors);
+
+        // Check Group Capacity Reduction
+        gearValidatorHelper.checkGroupCapacityReduction(timeRefreshCycleGear.getCapacityReduction(), errors);
+
+        // Check for When To Change
+        gearValidatorHelper.checkWhenToChange(timeRefreshCycleGear.getWhenToChangeFields(), errors);
+    }
+
+}

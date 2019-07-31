@@ -1,11 +1,14 @@
 package com.cannontech.web.api.dr.gear.setup.fields.validator;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.gear.setup.fields.NoControlGearFields;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 
 public class NoControlGearFieldsValidator extends ProgramGearFieldsValidator<NoControlGearFields> {
+
+    @Autowired private GearValidatorHelper gearValidatorHelper;
 
     public NoControlGearFieldsValidator() {
         super(NoControlGearFields.class);
@@ -21,9 +24,10 @@ public class NoControlGearFieldsValidator extends ProgramGearFieldsValidator<NoC
     }
 
     @Override
-    protected void doValidation(NoControlGearFields target, Errors errors) {
-        // TODO validate no cycle fields
+    protected void doValidation(NoControlGearFields noControlCycleGear, Errors errors) {
 
+        // Check When to change
+        gearValidatorHelper.checkWhenToChange(noControlCycleGear.getWhenToChangeFields(), errors);
     }
 
 }

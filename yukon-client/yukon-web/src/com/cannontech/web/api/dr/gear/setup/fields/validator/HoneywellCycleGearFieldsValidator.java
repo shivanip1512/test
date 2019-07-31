@@ -10,7 +10,9 @@ import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 public class HoneywellCycleGearFieldsValidator extends ProgramGearFieldsValidator<HoneywellCycleGearFields> {
 
     @Autowired private LMValidatorHelper lmValidatorHelper;
-    
+    @Autowired private GearValidatorHelper gearValidatorHelper;
+    private final static String invalidKey = "yukon.web.modules.dr.setup.error.invalid";
+
     public HoneywellCycleGearFieldsValidator() {
         super(HoneywellCycleGearFields.class);
     }
@@ -25,9 +27,30 @@ public class HoneywellCycleGearFieldsValidator extends ProgramGearFieldsValidato
     }
 
     @Override
-    protected void doValidation(HoneywellCycleGearFields target, Errors errors) {
-        lmValidatorHelper.checkIfFieldRequired("howToStopControl", errors, target.getHowToStopControl(), "How To Stop Control");
-        //TODO validate honeywell fields
+    protected void doValidation(HoneywellCycleGearFields honeywellCycleGear, Errors errors) {
+        // Check Ramp In/Out
+        gearValidatorHelper.checkRampIn(honeywellCycleGear.getRampInOut(), errors);
+
+        // Check Control Percent
+        gearValidatorHelper.checkControlPercent(honeywellCycleGear.getControlPercent(), errors);
+
+        // Check Cycle Period
+        lmValidatorHelper.checkIfFieldRequired("cyclePeriodInMinutes", errors,
+            honeywellCycleGear.getCyclePeriodInMinutes(), "Cycle Period");
+        if (!errors.hasFieldErrors("cyclePeriodInMinutes")) {
+            if (honeywellCycleGear.getCyclePeriodInMinutes() != 30) {
+                errors.rejectValue("cyclePeriodInMinutes", invalidKey, new Object[] { "Cycle Period" }, "");
+            }
+        }
+
+        // Check How to Stop Control
+        gearValidatorHelper.checkHowToStopControl(honeywellCycleGear.getHowToStopControl(), getControlMethod(), errors);
+
+        // Check for Group Capacity Reduction
+        gearValidatorHelper.checkGroupCapacityReduction(honeywellCycleGear.getCapacityReduction(), errors);
+
+        // Check for When To Change
+        gearValidatorHelper.checkWhenToChange(honeywellCycleGear.getWhenToChangeFields(), errors);
     }
 
 }

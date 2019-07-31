@@ -16,7 +16,7 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
 
     public Boolean isHeatMode;
     public Boolean isCoolMode;
-    
+
     private Integer minValue;
     private Integer maxValue;
     private Integer valueB;
@@ -27,10 +27,10 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
     private Integer valueTa;
     private Integer valueTb;
     private Integer valueTc;
-    private Integer valueTd;     
+    private Integer valueTd;
     private Integer valueTe;
     private Integer valueTf;
-    
+
     private HowToStopControl howToStopControl;
     private Integer capacityReduction;
 

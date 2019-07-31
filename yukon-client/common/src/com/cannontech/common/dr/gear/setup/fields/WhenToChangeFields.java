@@ -1,5 +1,8 @@
 package com.cannontech.common.dr.gear.setup.fields;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import com.cannontech.common.dr.gear.setup.WhenToChange;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -51,7 +54,11 @@ public class WhenToChangeFields {
     }
 
     public void setTriggerOffset(Double triggerOffset) {
-        this.triggerOffset = triggerOffset;
+        if (triggerOffset != null) {
+            this.triggerOffset = new BigDecimal(triggerOffset).setScale(4, RoundingMode.HALF_DOWN).doubleValue();
+        } else {
+            this.triggerOffset = triggerOffset;
+        }
     }
 
     public void buildModel(LMProgramDirectGear directGear) {

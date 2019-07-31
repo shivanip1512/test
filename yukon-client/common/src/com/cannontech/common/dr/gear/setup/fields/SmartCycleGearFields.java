@@ -7,6 +7,7 @@ import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.database.data.device.lm.SmartCycleGear;
+import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -154,7 +155,14 @@ public class SmartCycleGearFields implements ProgramGearFields {
 
         smartCycleGear.setMethodStopType(getHowToStopControl().name());
         smartCycleGear.setPercentReduction(getCapacityReduction());
-        smartCycleGear.setStopCommandRepeat(getStopCommandRepeat());
+
+        if ((lmProgramDirectGear.getControlMethod() == GearControlMethod.SmartCycle)
+            || (lmProgramDirectGear.getControlMethod() == GearControlMethod.TrueCycle)) {
+            smartCycleGear.setStopCommandRepeat(getStopCommandRepeat());
+        } else {
+            smartCycleGear.setStopCommandRepeat(0);
+        }
+
         smartCycleGear.setControlPercent(getControlPercent());
         smartCycleGear.setCyclePeriodLength(getCyclePeriodInMinutes() * 60);
         smartCycleGear.setStartingPeriodCnt(getStartingPeriodCount());

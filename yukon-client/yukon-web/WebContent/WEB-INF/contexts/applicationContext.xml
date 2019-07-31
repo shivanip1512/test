@@ -1412,6 +1412,7 @@
     <bean class="com.cannontech.web.api.dr.setup.service.impl.LMSetupFilterServiceImpl"/>
     <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMSetupDaoImpl"/>
 
+    <bean class="com.cannontech.web.api.dr.gear.setup.fields.validator.GearValidatorHelper"/>
     <bean id="MeterDisconnectGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MeterDisconnectGearFieldsValidator"/>
     <bean id="honeywellCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellCycleGearFieldsValidator"/>
     <bean id="ecobeeCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeeCycleGearFieldsValidator"/>
@@ -1422,5 +1423,14 @@
     <bean id="itronCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.ItronCycleGearFieldsValidator"/>
     <bean id="noControlGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.NoControlGearFieldsValidator"/>
     <bean id="nestStandardCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.NestStandardCycleGearFieldsValidator"/>
+    <bean id="timeRefreshGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.TimeRefreshGearFieldsValidator"/>
+    <bean id="beatThePeakGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.BeatThePeakGearFieldsValidator"/>
+    <bean id="masterCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MasterCycleGearFieldsValidator"/>
+    <bean id="rotationGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.RotationGearFieldsValidator"/>
+    <bean id="latchingGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.LatchingGearFieldsValidator"/>
+    <bean id="thermostatSetbackGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.ThermostatSetbackGearFieldsValidator"/>
+    <bean id="simpleThermostatRampingGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SimpleThermostatRampingGearFieldsValidator"/>
+    <bean id="sepCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SepCycleGearFieldsValidator"/>
+    <bean id="sepTemperatureOffsetGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SepTemperatureOffsetGearFieldsValidator"/>
 
 </beans>

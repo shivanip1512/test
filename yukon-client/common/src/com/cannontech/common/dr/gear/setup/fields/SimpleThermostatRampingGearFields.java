@@ -1,5 +1,8 @@
 package com.cannontech.common.dr.gear.setup.fields;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.dr.gear.setup.Mode;
 import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
@@ -40,7 +43,12 @@ public class SimpleThermostatRampingGearFields implements ProgramGearFields {
     }
 
     public void setRampPerHour(Float rampPerHour) {
-        this.rampPerHour = rampPerHour;
+        if (rampPerHour != null) {
+            this.rampPerHour =
+                new BigDecimal(rampPerHour.doubleValue()).setScale(1, RoundingMode.HALF_DOWN).floatValue();
+        } else {
+            this.rampPerHour = rampPerHour;
+        }
     }
 
     public Integer getMax() {
@@ -175,8 +183,7 @@ public class SimpleThermostatRampingGearFields implements ProgramGearFields {
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
         whenToChangeFields.buildModel(gear);
         setWhenToChangeFields(whenToChangeFields);
-        
-        
+
     }
 
     @Override
@@ -200,10 +207,10 @@ public class SimpleThermostatRampingGearFields implements ProgramGearFields {
         lmThermostatGear.setValueD(getMax());
         lmThermostatGear.setValueTf(getRampOutTimeInMinutes() * 60);
         lmThermostatGear.setValueTa(getMaxRuntimeInMinutes() * 60);
-        lmThermostatGear.setMethodRate(0); 
+        lmThermostatGear.setMethodRate(0);
 
         whenToChangeFields.buildDBPersistent(programDirectGear);
-        
+
     }
 
 }
