@@ -466,16 +466,17 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         } else if (!CollectionUtils.isEmpty(request.getRfnIdentifiers())) {
             rfnIdentifiers.addAll(request.getRfnIdentifiers());
         }
+        
+        Map<RfnIdentifier, RfnGateway> devicesToGateways = new HashMap<>();
 
         for (RfnIdentifier device: rfnIdentifiers) {
             RfnDevice rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(device);
             for(RfnMetadataMulti multi: request.getRfnMetadatas()) {
                 if (multi == RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM) {
-                    RfnGateway randomGateway = allGateways.get(new Random().nextInt(allGateways.size()));
+                    populateDeviceToGatewayMapping(allGateways, devicesToGateways);
                     RfnMetadataMultiQueryResult result = getResult(results, device, multi);
-                    // we are returning a random gateway which will cause the gateway to device mapping to
-                    // update
-                    result.getMetadatas().put(multi, getNodeComm(device, randomGateway.getRfnIdentifier()));
+                    result.getMetadatas().put(multi,
+                        getNodeComm(device, devicesToGateways.get(device).getRfnIdentifier()));
                 } else if (multi == RfnMetadataMulti.NODE_DATA) {
                     NodeData node = new NodeData();
                     node.setFirmwareVersion("Simulated Firmware Version");
@@ -519,6 +520,16 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             }
         }
         return results;
+    }
+
+    private void populateDeviceToGatewayMapping(List<RfnGateway> allGateways,
+            Map<RfnIdentifier, RfnGateway> devicesToGateways) {
+        if(devicesToGateways.isEmpty()) {
+            allGateways.forEach(gateway -> {
+                List<RfnDevice> devices = rfnDeviceDao.getDevicesForGateway(gateway.getId());
+                devices.forEach(device -> devicesToGateways.put(device.getRfnIdentifier(), gateway));
+            });
+        }
     }
 
     private WifiSuperMeterData getSuperMeterData() {
