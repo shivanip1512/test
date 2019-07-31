@@ -420,7 +420,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                 data.add(deviceData);
             }
         });
-        List<List<DynamicRfnDeviceData>> subSets = Lists.partition(data, 3); 
+        List<List<DynamicRfnDeviceData>> subSets = Lists.partition(data, ChunkingSqlTemplate.DEFAULT_SIZE/3);
         log.debug("Inserting {} rows", data.size());
         if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {  
             saveDynamicRfnDeviceDataSqlServer(subSets);
