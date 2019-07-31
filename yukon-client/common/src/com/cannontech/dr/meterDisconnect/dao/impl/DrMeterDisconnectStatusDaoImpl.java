@@ -72,12 +72,12 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
         sql.append("  WHERE EventId").eq(eventId);
         sql.append(")");
         sql.append("SELECT DeviceId");
-        sql.append("FROM DrDisconnectDeviceStatus S1");
-        sql.append("WHERE S1.DeviceId IN (SELECT * FROM DevicesInEvent)");
-        sql.append("AND S1.ControlStatusTime = (");
-        sql.append("  SELECT MAX(S2.ControlStatusTime)");
-        sql.append("  FROM DrDisconnectDeviceStatus S2");
-        sql.append("  WHERE S2.DeviceId = S1.DeviceId");
+        sql.append("FROM DrDisconnectDeviceStatus ddds1");
+        sql.append("WHERE ddds1.DeviceId IN (SELECT * FROM DevicesInEvent)");
+        sql.append("AND ddds1.ControlStatusTime = (");
+        sql.append("  SELECT MAX(ddds2.ControlStatusTime)");
+        sql.append("  FROM DrDisconnectDeviceStatus ddds2");
+        sql.append("  WHERE ddds2.DeviceId = ddds1.DeviceId");
         sql.append(")");
         sql.append("AND ControlStatus").eq_k(currentStatus);
         sql.append("GROUP BY DeviceId");
@@ -144,17 +144,31 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
         sql.append("    WHERE ProgramId").eq(programId);
         sql.append("  )");
         sql.append(")");
-        sql.append("SELECT EntryId, EventId, S1.DeviceId, ib.InventoryId, ControlStatus, ControlStatusTime, ypo.PaoName");
-        sql.append("FROM DrDisconnectDeviceStatus S1");
-        sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = S1.DeviceId");
-        sql.append("JOIN InventoryBase ib ON ib.DeviceId = S1.DeviceId");
-        sql.append("WHERE S1.DeviceId IN (SELECT * FROM DevicesInEvent)");
-        sql.append("AND S1.ControlStatusTime = (");
-        sql.append("  SELECT MAX(S2.ControlStatusTime)");
-        sql.append("  FROM DrDisconnectDeviceStatus S2");
-        sql.append("  WHERE S2.DeviceId = S1.DeviceId");
+        sql.append("SELECT EntryId, EventId, ddds1.DeviceId, ib.InventoryId, ControlStatus, ControlStatusTime, ypo.PaoName");
+        sql.append("FROM DrDisconnectDeviceStatus ddds1");
+        sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = ddds1.DeviceId");
+        sql.append("JOIN InventoryBase ib ON ib.DeviceId = ddds1.DeviceId");
+        sql.append("WHERE ddds1.DeviceId IN (SELECT * FROM DevicesInEvent)");
+        sql.append("AND ddds1.ControlStatusTime = (");
+        sql.append("  SELECT MAX(ddds2.ControlStatusTime)");
+        sql.append("  FROM DrDisconnectDeviceStatus ddds2");
+        sql.append("  WHERE ddds2.DeviceId = ddds1.DeviceId");
         sql.append(")");
-        sql.append("GROUP BY S1.DeviceId, ib.InventoryId, ypo.PaoName, ControlStatus, ControlStatusTime, EventId, EntryId");
+        sql.append("GROUP BY ddds1.DeviceId, ib.InventoryId, ypo.PaoName, ControlStatus, ControlStatusTime, EventId, EntryId");
+        
+        return jdbcTemplate.query(sql, eventStatusRowMapper);
+    }
+
+    @Override
+    public List<DrMeterEventStatus> getAllStatusForEvent(int eventId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EntryId, EventId, ddds.DeviceId, ib.InventoryId, ControlStatus, ControlStatusTime, ypo.PaoName");
+        sql.append("FROM DrDisconnectDeviceStatus ddds");
+        sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = ddds.DeviceId");
+        sql.append("JOIN InventoryBase ib ON ib.DeviceId = ddds.DeviceId");
+        sql.append("WHERE EventId").eq(eventId);
+        sql.append("ORDER BY ControlStatusTime DESC");
         
         return jdbcTemplate.query(sql, eventStatusRowMapper);
     }
@@ -169,19 +183,4 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
         status.setControlStatusTime(rs.getInstant("ControlStatusTime"));
         return status;
     };
-
-    @Override
-    public List<DrMeterEventStatus> getAllStatusForEvent(int eventId) {
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EntryId, EventId, S1.DeviceId, ib.InventoryId, ControlStatus, ControlStatusTime, ypo.PaoName");
-        sql.append("FROM DrDisconnectDeviceStatus S1");
-        sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = S1.DeviceId");
-        sql.append("JOIN InventoryBase ib ON ib.DeviceId = S1.DeviceId");
-        sql.append("WHERE EventId").eq(eventId);
-        sql.append("ORDER BY ControlStatusTime DESC");
-        
-        return jdbcTemplate.query(sql, eventStatusRowMapper);
-    }
-
 }
