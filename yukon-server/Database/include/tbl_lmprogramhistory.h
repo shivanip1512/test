@@ -1,16 +1,11 @@
 #pragma once
 
-#include "row_reader.h"
-
-
+#include "dlldefs.h"
 #include "dbmemobject.h"
-#include "dbaccess.h"
-#include "yukon.h"
 #include "CtiTime.h"
 
 class IM_EX_CTIYUKONDB CtiTableLMProgramHistory : public CtiMemDBObject
 {
-private:
     long    _lmProgramHistID;
     long    _programID;
     long    _gearID;
@@ -24,11 +19,13 @@ private:
 
     CtiTableLMProgramHistory() {};
 
+    void validateEntry( std::string & entry, std::size_t maxLength );
     void validateData();
 
     std::string getStrFromAction(long action);
 
     static long getNextGearHistId();
+
 public:
 
     enum LMHistoryActions
@@ -41,10 +38,30 @@ public:
     CtiTableLMProgramHistory(long progHistID, long program, long gear, LMHistoryActions action,
                              std::string programName, std::string reason, std::string user, std::string gearName,
                              CtiTime time, std::string origin);
-    
-    CtiTableLMProgramHistory(const CtiTableLMProgramHistory &aRef);
 
-    CtiTableLMProgramHistory& operator=(const CtiTableLMProgramHistory &aRef);
+    static CtiTableLMProgramHistory createStartHistory( long progHistID,
+                                                        long program,
+                                                        long gear,
+                                                        LMHistoryActions action,
+                                                        const std::string & programName,
+                                                        const std::string & reason,
+                                                        const std::string & user,
+                                                        const std::string & gearName,
+                                                        const CtiTime time,
+                                                        const std::string & origin );
+    
+    static CtiTableLMProgramHistory createGenericHistory( long progHistID,
+                                                          long program,
+                                                          long gear,
+                                                          LMHistoryActions action,
+                                                          const std::string & programName,
+                                                          const std::string & reason,
+                                                          const std::string & user,
+                                                          const std::string & gearName,
+                                                          const CtiTime time );
+    
+    CtiTableLMProgramHistory(const CtiTableLMProgramHistory &aRef) = default;
+    CtiTableLMProgramHistory& operator=(const CtiTableLMProgramHistory &aRef) = default;
 
     bool Insert();
 

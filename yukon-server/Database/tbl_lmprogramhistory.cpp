@@ -1,24 +1,16 @@
 #include "precompiled.h"
 
-#include "row_reader.h"
 #include "tbl_lmprogramhistory.h"
-#include "dbmemobject.h"
-#include "dbaccess.h"
 #include "logger.h"
 #include "database_connection.h"
 #include "database_reader.h"
-#include "database_writer.h"
 #include "database_util.h"
-
-using std::transform;
-using std::string;
-using std::endl;
 
 static long CurrentLMProgramHistoryId = 0;
 static long CurrentLMGearHistoryId    = 0;
 
 CtiTableLMProgramHistory::CtiTableLMProgramHistory(long progHistID, long program, long gear, LMHistoryActions action,
-                                                   string programName, string reason, string user, string gearName,
+                                                   std::string programName, std::string reason, std::string user, std::string gearName,
                                                    CtiTime time, std::string origin) :
 _lmProgramHistID(progHistID),
 _programID(program),
@@ -33,28 +25,39 @@ _origin(origin)
 {
 }
 
-CtiTableLMProgramHistory::CtiTableLMProgramHistory(const CtiTableLMProgramHistory &aRef)
+CtiTableLMProgramHistory CtiTableLMProgramHistory::createStartHistory(
+    long progHistID,
+    long program,
+    long gear,
+    LMHistoryActions action,
+    const std::string & programName,
+    const std::string & reason,
+    const std::string & user,
+    const std::string & gearName,
+    const CtiTime time,
+    const std::string & origin )
 {
-    *this = aRef;
+    return
+    { 
+        progHistID, program, gear, action, programName, reason, user, gearName, time, origin
+    };
 }
 
-CtiTableLMProgramHistory& CtiTableLMProgramHistory::operator=(const CtiTableLMProgramHistory &aRef)
+CtiTableLMProgramHistory CtiTableLMProgramHistory::createGenericHistory(
+    long progHistID,
+    long program,
+    long gear,
+    LMHistoryActions action,
+    const std::string & programName,
+    const std::string & reason,
+    const std::string & user,
+    const std::string & gearName,
+    const CtiTime time )
 {
-    if(this != &aRef)
-    {
-        _lmProgramHistID  = aRef._lmProgramHistID;
-        _programID        = aRef._programID;
-        _gearID           = aRef._gearID;
-        _action           = aRef._action;
-        _programName      = aRef._programName;
-        _reason           = aRef._reason;
-        _user             = aRef._user;
-        _gearName         = aRef._gearName;
-        _time             = aRef._time;
-        _origin           = aRef._origin;
-    }
-
-    return *this;
+    return
+    { 
+        progHistID, program, gear, action, programName, reason, user, gearName, time, "(none)"
+    };
 }
 
 bool CtiTableLMProgramHistory::Insert()
@@ -63,12 +66,8 @@ bool CtiTableLMProgramHistory::Insert()
 
     validateData();
 
-    std::string origin = "(none)";  // we only care about this for Start actions
-
     if( _action == Start )
     {
-        origin = _origin;   // we care about this for Start actions
-
         static const std::string sql_program_history = "insert into LMProgramHistory values (?, ?, ?)";
 
         Cti::Database::DatabaseWriter   inserter(conn, sql_program_history);
@@ -101,7 +100,7 @@ bool CtiTableLMProgramHistory::Insert()
         << _gearName
         << _gearID
         << _reason
-        << origin;
+        << _origin;
 
     if( ! Cti::Database::executeCommand( inserter, CALLSITE ))
     {
@@ -127,8 +126,8 @@ long CtiTableLMProgramHistory::getNextProgramHistId()
     {
         // Not yet initialized. Default to 1 and try to load from database.
         CurrentLMProgramHistoryId = 1;
-        static const string sql = "SELECT MAX (PH.LMProgramHistoryId) "
-                                  "FROM LMProgramHistory PH";
+        static const std::string sql = "SELECT MAX (PH.LMProgramHistoryId) "
+                                       "FROM LMProgramHistory PH";
 
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection, sql);
@@ -157,8 +156,8 @@ long CtiTableLMProgramHistory::getNextGearHistId()
         // Not yet initialized. Default to 1 and try to load from database.
         CurrentLMGearHistoryId = 1;
 
-        static const string sql = "SELECT MAX (PGH.LMProgramGearHistoryId) "
-                                  "FROM LMProgramGearHistory PGH";
+        static const std::string sql = "SELECT MAX (PGH.LMProgramGearHistoryId) "
+                                       "FROM LMProgramGearHistory PGH";
 
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection, sql);
@@ -175,7 +174,7 @@ long CtiTableLMProgramHistory::getNextGearHistId()
 }
 
 // Note the action field is a varchar(50)
-string CtiTableLMProgramHistory::getStrFromAction(long action)
+std::string CtiTableLMProgramHistory::getStrFromAction(long action)
 {
     switch( action )
     {
@@ -195,41 +194,23 @@ string CtiTableLMProgramHistory::getStrFromAction(long action)
 void CtiTableLMProgramHistory::validateData()
 {
     //Inserting a blank name causes problems in oracle.
-    if( _programName.size() == 0 )
-    {
-        _programName = "(none)";
-    }
-    if( _reason.size() == 0 )
-    {
-        _reason = "(none)";
-    }
-    if( _user.size() == 0 )
-    {
-        _user = "(none)";
-    }
-    if( _gearName.size() == 0 )
-    {
-        _gearName = "(none)";
-    }
 
-    if( _programName.size() > 60 )
+    validateEntry( _programName, 60 );
+    validateEntry( _reason,      50 );
+    validateEntry( _user,        64 );
+    validateEntry( _gearName,    30 );
+    validateEntry( _origin,      30 );
+}
+
+void CtiTableLMProgramHistory::validateEntry( std::string & entry, std::size_t maxLength )
+{
+    if ( entry.empty() )
     {
-        _programName.resize(60);
+        entry = "(none)";
     }
-    if( _reason.size() > 50 )
+    else if ( entry.length() > maxLength )
     {
-        _reason.resize(50);
-    }
-    if( _user.size() > 64 )
-    {
-        _user.resize(64);
-    }
-    if( _gearName.size() > 30 )
-    {
-        _gearName.resize(30);
-    }
-    if( _origin.size() == 0 )
-    {
-        _origin = "(none)";
+        entry.resize( maxLength );
     }
 }
+

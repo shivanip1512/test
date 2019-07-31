@@ -1661,7 +1661,7 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
                                                                                                         CtiLMProgramDirect::defaultLMStartPriority,
                                                                                                         "Server Manual Start",
                                                                                                         CtiLMManualControlRequest::USE_CONSTRAINTS,
-                                                                                                        "Manual");
+                                                                                                        "Automatic");
                             CtiLMExecutorFactory factory;
                             CtiLMExecutor* executor = factory.createExecutor(manual_req);
                             executor->Execute();
@@ -1754,7 +1754,7 @@ void CtiLMControlArea::manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay
                                                                                                     CtiLMProgramDirect::defaultLMStartPriority,
                                                                                                     "Server Manual Stop",
                                                                                                     CtiLMManualControlRequest::USE_CONSTRAINTS,
-                                                                                                    "Manual");
+                                                                                                    "Automatic");
                         CtiLMExecutorFactory factory;
                         CtiLMExecutor* executor = factory.createExecutor(manual_req);
                         executor->Execute();

@@ -1108,9 +1108,6 @@ void CtiLMManualControlRequestExecutor::Execute()
         return;
     }
 
-    // We copy the source of the message to the program
-    program->setOrigin( _controlMsg->getOrigin() );
-
     // A start gear of 0 is invalid, and what they really mean is they
     // dont care, so we will set it to 1 for them.
     if( _controlMsg->getStartGear() == 0 )
@@ -1187,6 +1184,7 @@ void CtiLMManualControlRequestExecutor::Execute()
             controlReason = "Manual Start Command";
             program->setChangeReason(controlReason);
             program->setLastUser(_controlMsg->getUser());
+            program->setOrigin( _controlMsg->getOrigin() );
 
             if( response != NULL )
             {
@@ -1206,6 +1204,7 @@ void CtiLMManualControlRequestExecutor::Execute()
                 controlReason = "Manual Start Command";
                 program->setChangeReason(controlReason);
                 program->setLastUser(_controlMsg->getUser());
+                program->setOrigin( _controlMsg->getOrigin() );
 
                 if( response != NULL )
                 {
@@ -1325,6 +1324,7 @@ void CtiLMManualControlRequestExecutor::Execute()
                     controlReason = "Manual Gear Change Command";
                     program->setChangeReason(controlReason);
                     program->setLastUser(_controlMsg->getUser());
+                    program->setOrigin( _controlMsg->getOrigin() );
 
                     if( response != NULL )
                     {

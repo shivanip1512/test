@@ -6172,21 +6172,27 @@ bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* cur
  */
 bool CtiLMProgramDirect::recordHistory(CtiTableLMProgramHistory::LMHistoryActions action, CtiTime &time)
 {
-    bool retVal  = false;
-
-    CtiLMProgramDirectGear* gear = getCurrentGearObject();
-
-    if( action == CtiTableLMProgramHistory::Start )
+    if ( CtiLMProgramDirectGear* gear = getCurrentGearObject() )
     {
-        setCurrentHistLogId(CtiTableLMProgramHistory::getNextProgramHistId()); // SynchronizedIdGen("LMProgramHistoryID", 1);
-    }
-    if( gear != NULL)
-    {
-        _PROGRAM_HISTORY_QUEUE.push(CtiTableLMProgramHistory(getCurrentHistLogId(), getPAOId(), gear->getUniqueID(), action, getPAOName(), getAndClearChangeReason(), getLastUser(), gear->getGearName(), time, getOrigin()));
-        retVal = true;
+        if ( action == CtiTableLMProgramHistory::Start )
+        {
+            setCurrentHistLogId(CtiTableLMProgramHistory::getNextProgramHistId()); // SynchronizedIdGen("LMProgramHistoryID", 1);
+
+            _PROGRAM_HISTORY_QUEUE.emplace( CtiTableLMProgramHistory::createStartHistory(
+                getCurrentHistLogId(), getPAOId(), gear->getUniqueID(), action, getPAOName(), getAndClearChangeReason(),
+                getLastUser(), gear->getGearName(), time, getOrigin() ) );
+        }
+        else
+        {
+            _PROGRAM_HISTORY_QUEUE.emplace( CtiTableLMProgramHistory::createGenericHistory(
+                getCurrentHistLogId(), getPAOId(), gear->getUniqueID(), action, getPAOName(), getAndClearChangeReason(),
+                getLastUser(), gear->getGearName(), time ) );
+        }
+
+        return true;
     }
 
-    return retVal;
+    return false;
 }
 
 /*---------------------------------------------------------------------------
