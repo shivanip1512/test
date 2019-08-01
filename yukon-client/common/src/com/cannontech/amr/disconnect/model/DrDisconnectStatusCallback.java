@@ -32,16 +32,26 @@ public class DrDisconnectStatusCallback {
      * Log devices that Yukon attempted to control, but had no valid disconnect strategy. 
      */
     public void handleUnsupported(List<SimpleDevice> unsupportedDevices) {
-        drStatusService.updateControlStatus(eventId, DrMeterControlStatus.FAILED_UNSUPPORTED, Instant.now(), 
-                                            getDeviceIds(unsupportedDevices));
+        if (isConnect) {
+            drStatusService.updateControlStatus(eventId, DrMeterControlStatus.RESTORE_FAILED_UNSUPPORTED, Instant.now(), 
+                                                getDeviceIds(unsupportedDevices));
+        } else {
+            drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_FAILED_UNSUPPORTED, Instant.now(), 
+                                                getDeviceIds(unsupportedDevices));
+        }
     }
     
     /**
      * Log devices that Yukon attempted to control, but were not properly configured for disconnect.
      */
     public void handleNotConfigured(List<SimpleDevice> notConfiguredDevices) {
-        drStatusService.updateControlStatus(eventId, DrMeterControlStatus.FAILED_NOT_CONFIGURED, Instant.now(), 
-                                            getDeviceIds(notConfiguredDevices));
+        if (isConnect) {
+            drStatusService.updateControlStatus(eventId, DrMeterControlStatus.RESTORE_FAILED_NOT_CONFIGURED, Instant.now(), 
+                                                getDeviceIds(notConfiguredDevices));
+        } else {
+            drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_FAILED_NOT_CONFIGURED, Instant.now(), 
+                                                getDeviceIds(notConfiguredDevices));
+        }
     }
     
     /**
