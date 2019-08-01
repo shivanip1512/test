@@ -27,7 +27,6 @@ public class LMServiceHelper {
                 LiteGear selectGear = new LiteGear();
                 selectGear.setGearID(assignedProgram.getGears().get(0).getId());
                 selectGear.setOwnerID(assignedProgram.getProgramId());
-                allGears.contains(selectGear);
                 int index = allGears.indexOf(selectGear);
                 if (index != -1) {
                     LiteGear gear = allGears.get(index);
