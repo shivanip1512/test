@@ -28,6 +28,9 @@ public class LMSetupFilterServiceImpl implements LMSetupFilterService {
         return filteredResults;
     }
 
+    /**
+     * Build the list of PaoTypes based on Filter type option. 
+     */
     private List<PaoType> getTypes(LMSetupFilter setupFilter) {
         List<PaoType> types = new ArrayList<>();
         switch (setupFilter.getFilterByType()) {
