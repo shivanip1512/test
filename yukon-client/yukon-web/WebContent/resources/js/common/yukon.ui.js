@@ -1247,7 +1247,19 @@ yukon.ui = (function () {
             
             table = $(table);
             var rows = table.find('tbody tr');
-                
+            yukon.ui.reindexRows(rows, rowCallback);
+        },
+        
+        
+        /** 
+         * Reindex the name of every input in the given array to support spring binding.
+         * Will also enable/disable any move up/move down buttons properly.
+         * 
+         * @param {jQuery, string} rows - Element or css selector for the array/rows.
+         * @param {function} [rowCallback] - Optional function to fire after processing each row.
+         *                                   Takes the row element as an arg.
+         */
+        reindexRows: function (rows, rowCallback) {
             rows.each(function (idx, row) {
                 row = $(row);
                 var inputs = row.find('input, select, textarea, button');

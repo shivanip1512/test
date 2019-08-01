@@ -26,7 +26,6 @@ import com.cannontech.database.db.device.lm.LMProgram;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.api.dr.setup.LMValidatorHelper;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
 
@@ -35,7 +34,6 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
     @Autowired private LMValidatorHelper lmValidatorHelper;
     @Autowired private PointDao pointdao;
     @Autowired private StateGroupDao stateGroupDao;
-    @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private ControlAreaDao controlAreaDao;
 
     public ControlAreaSetupValidator() {
@@ -49,13 +47,15 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
         lmValidatorHelper.checkIfFieldRequired("allTriggersActiveFlag", errors, controlArea.getAllTriggersActiveFlag(), "All Triggers Active Flag");
         lmValidatorHelper.checkIfFieldRequired("controlInterval", errors, controlArea.getControlInterval(), "Control Interval");
         if (!errors.hasFieldErrors("controlInterval")) {
-            if (!TimeIntervals.getControlAreaInterval().contains(controlArea.getControlInterval())) {
+            TimeIntervals controlInterval = TimeIntervals.fromSeconds(controlArea.getControlInterval());
+            if (!TimeIntervals.getControlAreaInterval().contains(controlInterval)) {
                 errors.rejectValue("controlInterval", key + "invalid.intervalValue", new Object[] { "Control Interval" }, "");
             }
         }
         lmValidatorHelper.checkIfFieldRequired("minResponseTime", errors, controlArea.getMinResponseTime(), "Min Response Time");
         if (!errors.hasFieldErrors("minResponseTime")) {
-            if (!TimeIntervals.getControlAreaInterval().contains(controlArea.getMinResponseTime())) {
+            TimeIntervals minResponse = TimeIntervals.fromSeconds(controlArea.getMinResponseTime());
+            if (!TimeIntervals.getControlAreaInterval().contains(minResponse)) {
                 errors.rejectValue("minResponseTime", key + "invalid.intervalValue", new Object[] { "Min Response Time" }, "");
             }
         }

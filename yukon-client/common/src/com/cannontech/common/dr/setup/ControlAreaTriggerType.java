@@ -41,7 +41,7 @@ public enum ControlAreaTriggerType implements DisplayableEnum, DatabaseRepresent
 
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.dr.setup.controlArea." + name();
+        return "yukon.web.modules.dr.setup.controlArea.triggerType." + name();
     }
 
     @Override

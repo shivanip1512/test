@@ -13,26 +13,32 @@
             <cm:dropdownOption icon="icon-plus-green" key=".button.create.label" id="js-create-option" data-popup="#js-create-dr-objects-popup"/>
         </div>
         
-        <div id="js-create-dr-objects-popup" class="dn" data-title="<i:inline key=".createObject.title"/>" data-width="300">
-            <table>
+        <div id="js-create-dr-objects-popup" class="dn" data-title="<i:inline key=".createObject.title"/>" data-width="400">
+            <table style="width:100%">
+                <tr>
+                    <td>
+                        <cti:url var="createControlAreaUrl" value="/dr/setup/controlArea/create"/>
+                        <a href="${createControlAreaUrl}"><i:inline key=".controlArea.title"/></a>
+                    </td>
+                    <td>
+                        <cti:url var="createControlScenario" value="/dr/setup/controlScenario/create"/>
+                        <a href="${createControlScenario}"><i:inline key=".controlScenario.title"/></a>
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         <cti:url var="createLoadGroupUrl" value="/dr/setup/loadGroup/create"/>
                         <a href="${createLoadGroupUrl}"><i:inline key=".loadGroup.title"/></a>
                     </td>
                     <td>
-                        <cti:url var="createProgramConstraint" value="/dr/setup/constraint/create"/>
-                        <a href="${createProgramConstraint}"><i:inline key=".constraint.title"/></a>
+                        <cti:url var="createMacroLoadGroupUrl" value="/dr/setup/macroLoadGroup/create"/>
+                        <a href="${createMacroLoadGroupUrl}"><i:inline key=".macroLoadGroup.title"/></a>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <cti:url var="createMacroLoadGroupUrl" value="/dr/setup/macroLoadGroup/create"/>
-                        <a href="${createMacroLoadGroupUrl}"><i:inline key=".macroLoadGroup.title"/></a>
-                    </td>
-                    <td>
-                        <cti:url var="createControlScenario" value="/dr/setup/controlScenario/create"/>
-                        <a href="${createControlScenario}"><i:inline key=".controlScenario.title"/></a>
+                        <cti:url var="createProgramConstraint" value="/dr/setup/constraint/create"/>
+                        <a href="${createProgramConstraint}"><i:inline key=".constraint.title"/></a>
                     </td>
                 </tr>
             </table>

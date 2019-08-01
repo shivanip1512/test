@@ -678,6 +678,27 @@
   </tag>
   
   <tag>
+    <name>triggerName</name>
+    <tag-class>com.cannontech.web.taglib.TriggerNameTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>pointId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>type</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>capBankStateColor</name>
     <tag-class>com.cannontech.web.taglib.CapBankStateColorTag</tag-class>
     <body-content>empty</body-content>

@@ -294,4 +294,42 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.constraint.maxHoursAnnually">Annually</entry>
 <entry key="yukon.web.modules.dr.setup.constraint.maxHoursSeasonal">Seasonal</entry>
 <entry key="yukon.web.modules.dr.setup.constraint.retrieve.error">Program Constraint could not be retrieved.</entry>
+
+<!-- Control Area -->
+<entry key="yukon.web.modules.dr.setup.controlArea.CREATE.pageName">Create Control Area</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.CREATE.pageDescription">Create Control Area</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.EDIT.pageHeading">Edit Control Area: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.EDIT.crumbTitle">Edit</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.EDIT.pageTitle">Control Area: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.VIEW.pageHeading">Control Area: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.VIEW.crumbTitle">{0}</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.VIEW.pageTitle">Control Area: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.title">Control Area</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.general.title">General</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.name">Name</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.controlInterval">Control Interval</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.newDataOnly">On New Data Only</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.minResponseTime">Min Response Time</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.dailyDefaultState">Daily Default State</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.dailyDefaultState.None">No Change</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.dailyDefaultState.Enabled">Enable / ReEnable</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.dailyDefaultState.Disabled">Disable / Waived</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.requireAllTriggers">Require All Triggers Active</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.programAssignments.title">Program Assignments</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.trigger.title">Trigger</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.triggerCreate.title">Create Trigger</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.noTriggersAssigned">No triggers were found for this Control Area.</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.noProgramsAssigned">No programs were found for this Control Area.</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.controlWindow.title">Optional Control Window</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.useControlWindow">Use Optional Control Window</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.controlWindow.note">Note: Control Window changes take effect at midnight.</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.startTime">Start Time (HH:mm)</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.stopTime">Stop Time (HH:mm)</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.startPriority">Start Priority</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.stopPriority">Stop Priority</entry>
+
+<entry key="yukon.web.modules.dr.setup.controlArea.triggerType.THRESHOLD">Threshold</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.triggerType.THRESHOLD_POINT">Threshold Point</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.triggerType.STATUS">Status</entry>
+
 </properties>

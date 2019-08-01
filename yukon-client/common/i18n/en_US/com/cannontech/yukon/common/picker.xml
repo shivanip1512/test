@@ -47,6 +47,7 @@
 <entry key="yukon.web.picker.availableVoltageRegulatorPhasePicker.dialogTitle">Select Phase Operated Regulator</entry>
 <entry key="yukon.web.picker.regulatorPicker.dialogTitle">Select A Regulator</entry>
 <entry key="yukon.web.picker.waterMeterPicker.dialogTitle">Select Water Meter(s)</entry>
+<entry key="yukon.web.picker.unassignedProgramPicker.dialogTitle">Select Program</entry>
 
 <entry key="yukon.web.picker.applianceCategoryProgramPicker.dialogTitle">Select Program</entry>
 <entry key="yukon.web.picker.programForEnrollmentPicker.dialogTitle">Select Program</entry>

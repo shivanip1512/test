@@ -176,13 +176,9 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
         controlArea.setControlAreaId(lmControlArea.getPAObjectID());
         controlArea.setName(lmControlArea.getPAOName());
 
-        if (lmcontrolarea.getControlInterval().intValue() != 0) {
-            controlArea.setControlInterval(TimeIntervals.fromSeconds(lmcontrolarea.getControlInterval()));
-        }
+        controlArea.setControlInterval(lmcontrolarea.getControlInterval());
 
-        if (lmcontrolarea.getMinResponseTime().intValue() != 0) {
-            controlArea.setMinResponseTime(TimeIntervals.fromSeconds(lmcontrolarea.getMinResponseTime()));
-        }
+        controlArea.setMinResponseTime(lmcontrolarea.getMinResponseTime());
 
         controlArea.setDailyDefaultState(DailyDefaultState.valueOf(lmcontrolarea.getDefOperationalState()));
 
@@ -195,9 +191,9 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                 ? null : lmcontrolarea.getDefDailyStopTime() / 60);
 
         if (lmcontrolarea.getRequireAllTriggersActiveFlag().equals(TFBoolean.TRUE.getDatabaseRepresentation())) {
-            controlArea.setAllTriggersActiveFlag(TFBoolean.TRUE);
+            controlArea.setAllTriggersActiveFlag(true);
         } else {
-            controlArea.setAllTriggersActiveFlag(TFBoolean.FALSE);
+            controlArea.setAllTriggersActiveFlag(false);
         }
         buildTriggerModel(lmControlArea, controlArea);
         buildProgramAssignmentModel(lmControlArea, controlArea);
@@ -223,19 +219,14 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     private LMControlArea buildLMControlAreaDBPersistent(LMControlArea lmControlArea, ControlArea controlArea) {
         lmControlArea.setPAOName(controlArea.getName());
         com.cannontech.database.db.device.lm.LMControlArea lmDbControlArea = lmControlArea.getControlArea();
-
-        if (controlArea.getControlInterval() != null) {
-            lmDbControlArea.setControlInterval(controlArea.getControlInterval().getSeconds());
-        }
-
-        if (controlArea.getMinResponseTime() != null) {
-            lmDbControlArea.setMinResponseTime(controlArea.getMinResponseTime().getSeconds());
-        }
+        lmDbControlArea.setControlInterval(controlArea.getControlInterval());
+        lmDbControlArea.setMinResponseTime(controlArea.getMinResponseTime());
 
         lmDbControlArea.setDefOperationalState(controlArea.getDailyDefaultState().name());
 
         if (controlArea.getAllTriggersActiveFlag() != null) {
-            lmDbControlArea.setRequireAllTriggersActiveFlag((Character) controlArea.getAllTriggersActiveFlag().getDatabaseRepresentation());
+            TFBoolean triggersActive = TFBoolean.valueOf(controlArea.getAllTriggersActiveFlag());
+            lmDbControlArea.setRequireAllTriggersActiveFlag((Character) triggersActive.getDatabaseRepresentation());
         }
         
         if (controlArea.getDailyStartTimeInMinutes() != null) {

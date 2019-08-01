@@ -565,6 +565,14 @@
                 <page name="setup.constraint.EDIT" type="BASIC" hideFavorite="true">
                     <labelArgument>${programConstraint.name}</labelArgument>
                 </page>
+                <page name="setup.controlArea.CREATE" type="BASIC"/>
+                <page name="setup.controlArea.VIEW" type="DETAIL">
+                    <link>/dr/setup/controlArea/{id}</link>
+                    <labelArgument>${controlArea.name}</labelArgument>
+                </page>
+                <page name="setup.controlArea.EDIT" type="BASIC" hideFavorite="true">
+                    <labelArgument>${controlArea.name}</labelArgument>
+                </page>
                 <page name="setup.controlScenario.CREATE" type="BASIC"/>
                 <page name="setup.controlScenario.VIEW" type="DETAIL">
                     <link>/dr/setup/controlScenario/{id}</link>

@@ -2,8 +2,6 @@ package com.cannontech.common.dr.setup;
 
 import java.util.List;
 
-import com.cannontech.common.util.TimeIntervals;
-import com.cannontech.database.TFBoolean;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -14,12 +12,12 @@ public class ControlArea {
 
     private Integer controlAreaId;
     private String name;
-    private TimeIntervals controlInterval;
-    private TimeIntervals minResponseTime;
+    private Integer controlInterval;
+    private Integer minResponseTime;
     private DailyDefaultState dailyDefaultState;
     private Integer dailyStartTimeInMinutes;
     private Integer dailyStopTimeInMinutes;
-    private TFBoolean allTriggersActiveFlag;
+    private Boolean allTriggersActiveFlag;
 
     private List<ControlAreaTrigger> triggers;
     private List<ControlAreaProgramAssignment> programAssignment;
@@ -40,19 +38,19 @@ public class ControlArea {
         this.name = name;
     }
 
-    public TimeIntervals getControlInterval() {
+    public Integer getControlInterval() {
         return controlInterval;
     }
 
-    public void setControlInterval(TimeIntervals controlInterval) {
+    public void setControlInterval(Integer controlInterval) {
         this.controlInterval = controlInterval;
     }
 
-    public TimeIntervals getMinResponseTime() {
+    public Integer getMinResponseTime() {
         return minResponseTime;
     }
 
-    public void setMinResponseTime(TimeIntervals minResponseTime) {
+    public void setMinResponseTime(Integer minResponseTime) {
         this.minResponseTime = minResponseTime;
     }
 
@@ -80,11 +78,11 @@ public class ControlArea {
         this.dailyStopTimeInMinutes = dailyStopTimeInMinutes;
     }
 
-    public TFBoolean getAllTriggersActiveFlag() {
+    public Boolean getAllTriggersActiveFlag() {
         return allTriggersActiveFlag;
     }
 
-    public void setAllTriggersActiveFlag(TFBoolean allTriggersActiveFlag) {
+    public void setAllTriggersActiveFlag(Boolean allTriggersActiveFlag) {
         this.allTriggersActiveFlag = allTriggersActiveFlag;
     }
 
