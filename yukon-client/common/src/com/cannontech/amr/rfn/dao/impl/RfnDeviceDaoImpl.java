@@ -421,7 +421,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             }
         });
         List<List<DynamicRfnDeviceData>> subSets = Lists.partition(data, ChunkingSqlTemplate.DEFAULT_SIZE/3);
-        log.debug("Inserting {} rows", data.size());
+        log.debug("Batch of {} rows", data.size());
         if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {  
             saveDynamicRfnDeviceDataSqlServer(subSets);
         }
@@ -489,6 +489,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                  INSERT VALUES (CACHE.DeviceId, CACHE.GatewayId, CACHE.LastTransferTime);
          */
         subSets.forEach(part -> {
+            log.debug("Inserting {} rows", part.size());
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("WITH NMD_CTE (DeviceId, GatewayId, LastTransferTime) AS (");
             sql.append("SELECT * FROM (");
@@ -510,6 +511,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                     .flatMap(value -> Stream.of(value.deviceId, value.gatewayId, value.transferTime.toString()))
                     .toArray();
             template.update(sql.getSql(), values);
+            log.debug("Inserting {} rows complete", part.size());
         });
     }
 
