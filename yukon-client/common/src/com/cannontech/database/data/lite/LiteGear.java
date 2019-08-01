@@ -1,5 +1,6 @@
 package com.cannontech.database.data.lite;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class LiteGear extends LiteBase {
     private String gearName;
@@ -72,5 +73,20 @@ public class LiteGear extends LiteBase {
     @Override
     public String toString() {
         return getGearName();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(getGearID()).append(ownerID).toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof LiteGear))
+            return false;
+        LiteGear other = (LiteGear) obj;
+        return getGearID() == other.getGearID() && ownerID == other.ownerID;
     }
 }

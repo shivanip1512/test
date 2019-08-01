@@ -117,6 +117,10 @@
 
 <entry key="yukon.web.picker.assignedProgramPicker.dialogTitle">Select Program</entry>
 
+<!-- Available programs in Control Scenario Picker -->
+<entry key="yukon.web.picker.availableProgram.programName">Program Name</entry>
+<entry key="yukon.web.picker.availableLoadProgramPicker.dialogTitle">Select Programs</entry>
+
 <!-- Unassigned Appliance Category Picker -->
 
 <entry key="yukon.web.picker.unassignedGearPicker.gearName">Gear Name</entry>

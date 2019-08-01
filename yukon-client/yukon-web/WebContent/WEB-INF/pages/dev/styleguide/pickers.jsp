@@ -30,6 +30,10 @@
         <c:set var="itemIdProperty" value="assignedProgramId"/>
         <c:set var="itemNameProperty" value="displayName"/>
     </c:when>
+    <c:when test="${pickerType == 'availableLoadProgramPicker'}">
+        <c:set var="itemIdProperty" value="programId"/>
+        <c:set var="itemNameProperty" value="programName"/>
+    </c:when>
     <c:when test="${pickerType == 'customerAccountPicker'}">
         <c:set var="itemIdProperty" value="accountId"/>
         <c:set var="itemNameProperty" value="accountNumber"/>
@@ -207,6 +211,7 @@ or in a popup.
                 <option value="pointPicker"<c:if test="${pickerType == 'pointPicker'}"> selected</c:if>>Point Picker</option>
                 <option value="paoPicker"<c:if test="${pickerType == 'paoPicker'}"> selected</c:if>>PAO Picker (Lucene)</option>
                 <option value="assignedProgramPicker"<c:if test="${pickerType == 'assignedProgramPicker'}"> selected</c:if>>Assigned Program Picker (Database)</option>
+                <option value="availableLoadProgramPicker"<c:if test="${pickerType == 'availableLoadProgramPicker'}"> selected</c:if>>Available Program Picker for Scenario (Database)</option>
                 <option value="customerAccountPicker"<c:if test="${pickerType == 'customerAccountPicker'}"> selected</c:if>>Customer Account Picker (Lucene)</option>
                 <option value="userPicker"<c:if test="${pickerType == 'userPicker'}"> selected</c:if>>User Picker (Lucene)</option>
                 <option value="userGroupPicker"<c:if test="${pickerType == 'userGroupPicker'}"> selected</c:if>>User Group Picker (Lucene)</option>

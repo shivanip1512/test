@@ -162,7 +162,15 @@
     <bean class="com.cannontech.dr.pxwhite.service.impl.PxWhiteCommunicationServiceImpl"/>
     
     <bean class="com.cannontech.dr.itron.dao.impl.ItronDaoImpl"/>
-    
+
+    <bean class="com.cannontech.common.dr.setup.LMServiceHelper"/>
+    <bean class="com.cannontech.dr.constraint.service.impl.ProgramConstraintServiceImpl"/>
+    <bean class="com.cannontech.dr.controlscenario.service.impl.ControlScenarioServiceImpl"/>
+    <bean class="com.cannontech.dr.loadgroup.service.impl.LoadGroupSetupServiceImpl"/>
+    <bean class="com.cannontech.dr.loadprogram.service.impl.LoadProgramSetupServiceImpl"/>
+    <bean class="com.cannontech.dr.macro.service.impl.MacroLoadGroupSetupServiceImpl"/>
+    <bean class="com.cannontech.dr.area.service.impl.ControlAreaSetupServiceImpl"/>
+
     <bean class="com.cannontech.dr.meterDisconnect.dao.impl.DrMeterDisconnectStatusDaoImpl"/>
     <bean class="com.cannontech.dr.meterDisconnect.service.impl.DrMeterDisconnectStatusServiceImpl"/>
 </beans>

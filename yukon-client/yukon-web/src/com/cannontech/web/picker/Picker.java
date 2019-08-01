@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
     @JsonSubTypes.Type(value = AvailableMctPicker.class, name = "AVAILABLE_MCT_PICKER"),
     @JsonSubTypes.Type(value = AvailableVoltageRegulatorGangPicker.class, name = "AVAILABLE_VOLTAGE_REGULATOR_GANG_PICKER"),
     @JsonSubTypes.Type(value = AvailableVoltageRegulatorPhasePicker.class, name = "AVAILABLE_VOLTAGE_REGULATOR_PHASE_PICKER"),
+    @JsonSubTypes.Type(value = AvailableLoadProgramPicker.class, name = "AVAILABLE_LOAD_PROGRAM_PICKER"),
     @JsonSubTypes.Type(value = BasePicker.class, name = "BASE_PICKER"),
     @JsonSubTypes.Type(value = CapControlCBCOrphanPicker.class, name = "CAPCONTROL_CBC_ORPHAN_PICKER"),
     @JsonSubTypes.Type(value = CapControlSubstationBusPicker.class, name = "CAPCONTROL_SUBSTATION_BUS_PICKER"),

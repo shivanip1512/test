@@ -220,6 +220,7 @@
     </bean>
 
     <bean name="assignedProgramPicker" class="com.cannontech.web.picker.AssignedProgramPicker"/>
+    <bean name="availableLoadProgramPicker" class="com.cannontech.web.picker.AvailableLoadProgramPicker"/>
     <bean name="unassignedApplianceCategoryPicker" class="com.cannontech.web.picker.UnassignedApplianceCategoryPicker"/>
     <bean name="unassignedGearPicker" class="com.cannontech.web.picker.UnassignedGearPicker"/>
     <bean name="appCatFormulaPicker" class="com.cannontech.web.picker.AppCatFormulaPicker"/>

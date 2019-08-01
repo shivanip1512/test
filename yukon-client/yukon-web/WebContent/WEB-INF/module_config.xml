@@ -565,6 +565,14 @@
                 <page name="setup.constraint.EDIT" type="BASIC" hideFavorite="true">
                     <labelArgument>${programConstraint.name}</labelArgument>
                 </page>
+                <page name="setup.controlScenario.CREATE" type="BASIC"/>
+                <page name="setup.controlScenario.VIEW" type="DETAIL">
+                    <link>/dr/setup/controlScenario/{id}</link>
+                    <labelArgument>${controlScenario.name}</labelArgument>
+                </page>
+                <page name="setup.controlScenario.EDIT" type="BASIC" hideFavorite="true">
+                    <labelArgument>${controlScenario.name}</labelArgument>
+                </page>
             </pages>
           </page>
           <page name="assetAvailability.detail" type="BASIC"/>

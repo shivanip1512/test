@@ -307,7 +307,7 @@ yukon.ui.dateTimePickers = function () {
                         maxErrorField.removeClass('dn');
                     }
                 }
-                $('input[name=' + valueFieldName + ']').val(minutes);
+                $('input[name=' + $.escapeSelector(valueFieldName) + ']').val(minutes);
             });
             
             _initialized = true;

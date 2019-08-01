@@ -1,0 +1,42 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+
+<cti:msgScope paths="yukon.web.modules.dr.setup.controlScenario">
+    <tags:sectionContainer2 nameKey="assignedPrograms" styleClass="select-box">
+        <table id="js-assigned-programs-table" class="compact-results-table dashed">
+            <thead>
+                <tr>
+                    <th width="5%"/>
+                    <th width="30%"><i:inline key=".name"/></th>
+                    <th width="20%"><i:inline key=".startOffset"/></th>
+                    <th width="20%"><i:inline key=".stopOffset"/></th>
+                    <th width="25%"><i:inline key=".startGear"/></th>
+                </tr>
+            </thead>
+            <tbody>
+                <form:form modelAttribute="controlScenario">
+                    <c:forEach var="program" items="${controlScenario.allPrograms}" varStatus="status">
+                        <tr id ="js-assigned-program-${program.programId}" data-id="${program.programId}">
+                            <tags:hidden path="allPrograms[${status.count-1}].programId"/>
+                            <td width="10%"><cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove"/></td>
+                            <td class="wbba" width="30%">
+                                <cti:deviceName deviceId="${program.programId}"/>
+                            </td>
+                            <td width="20%"><dt:timeOffset path="allPrograms[${status.count-1}].startOffsetInMinutes"/></td>
+                            <td width="20%"><dt:timeOffset path="allPrograms[${status.count-1}].stopOffsetInMinutes"/></td>
+                            <td class="wbba" width="20%">
+                                <tags:selectWithItems items="${program.gears}" path="allPrograms[${status.count-1}].gears[0].id"
+                                                      itemLabel="name" itemValue="id" />
+                            </td>
+                        </tr>
+                    </c:forEach>
+               </form:form>
+            </tbody>
+        </table>
+    </tags:sectionContainer2>
+</cti:msgScope>

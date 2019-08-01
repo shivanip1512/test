@@ -139,7 +139,26 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.error.pointId.doesNotExist">{0} does not exist.</entry>
 
 <!-- Control Scenario Validation -->
+<entry key="yukon.web.modules.dr.setup.controlScenario.general.title">General</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.addOrRemovePrograms.title">Add/Remove Load Programs</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.CREATE.pageName">Create Scenario</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.CREATE.pageDescription">Create Scenario</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.EDIT.pageHeading">Edit Scenario: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.EDIT.crumbTitle">Edit</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.EDIT.pageTitle">Scenario: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.VIEW.pageHeading">Scenario: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.VIEW.crumbTitle">{0}</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.VIEW.pageTitle">Scenario: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.availablePrograms.title">Available Programs(must belong to a Control area to be listed)</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.assignedPrograms.title">Assigned Programs</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.name">Name</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.startOffset">Start Offset(HH:mm) </entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.stopOffset">Stop Offset(HH:mm)</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.startGear">Start Gear</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.programCategory">Program Category</entry>
 <entry key="yukon.web.modules.dr.setup.controlScenario.error.oneGear">Only one valid gear is allowed.</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.title">Scenario</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.retrieve.error">Scenario could not be retrieved.</entry>
 
 <!-- Control Area Validation -->
 <entry key="yukon.web.modules.dr.setup.controlArea.error.maxTwoTriggers">Maximum two valid triggers are allowed.</entry>
@@ -235,7 +254,7 @@ Are you sure you want do this?</entry>
 
 <!-- Filter By Objects -->
 <entry key="yukon.web.modules.dr.setup.CONTROL_AREA">Control Area</entry>
-<entry key="yukon.web.modules.dr.setup.CONTROL_SCENARIO">Control Scenario</entry>
+<entry key="yukon.web.modules.dr.setup.CONTROL_SCENARIO">Scenario</entry>
 <entry key="yukon.web.modules.dr.setup.LOAD_GROUP">Load Group</entry>
 <entry key="yukon.web.modules.dr.setup.LOAD_PROGRAM">Load Program</entry>
 <entry key="yukon.web.modules.dr.setup.MACRO_LOAD_GROUP">Macro Load Group</entry>

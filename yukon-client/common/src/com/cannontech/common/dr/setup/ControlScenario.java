@@ -66,6 +66,7 @@ public class ControlScenario {
         // Setting Control Scenario details
         controlScenario.setScenarioID(getId());
         controlScenario.setScenarioName(getName());
+        controlScenario.getAllThePrograms().removeAllElements();
 
         // Setting Programs list
         if (CollectionUtils.isNotEmpty(getAllPrograms())) {

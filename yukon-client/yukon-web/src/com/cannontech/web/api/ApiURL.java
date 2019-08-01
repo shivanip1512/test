@@ -25,4 +25,12 @@ public class ApiURL {
     public static final String drProgramConstraintDeleteUrl = "/dr/setup/constraint/delete/";
     public static final String drHolidayScheduleUrl = "/dr/setup/constraint/getHolidaySchedules";
     public static final String drSeasonScheduleUrl = "/dr/setup/constraint/getSeasonSchedules";
+    
+    public static final String drControlScenarioRetrieveUrl = "/dr/setup/controlScenario/";
+    public static final String drControlScenarioCreateUrl = "/dr/setup/controlScenario/create";
+    public static final String drControlScenarioUpdateUrl = "/dr/setup/controlScenario/update/";
+    public static final String drControlScenarioDeleteUrl = "/dr/setup/controlScenario/delete/";
+    
+    public static final String drLoadProgramAvailableProgramsUrl = "dr/setup/loadProgram/availablePrograms";
+
 }
