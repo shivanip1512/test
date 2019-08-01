@@ -14,6 +14,10 @@ class CapControlCBCOrphanRowMapper extends AbstractRowMapperWithBaseQuery<Map<St
 
     private CbcHelperService cbcHelperService;
 
+    public CapControlCBCOrphanRowMapper() {
+        super();
+    }
+    
     public CapControlCBCOrphanRowMapper(CbcHelperService cbcHelperService) {
         this.cbcHelperService = cbcHelperService;
     }

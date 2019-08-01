@@ -27,6 +27,10 @@ public class CapControlCBCOrphanPicker extends DatabasePicker<Map<String, Object
 
         outputColumns = Collections.unmodifiableList(columns);
     }
+    
+    protected CapControlCBCOrphanPicker() {
+        super(new CapControlCBCOrphanRowMapper(), searchColumnNames);
+    }
 
     @Autowired
     public CapControlCBCOrphanPicker(CbcHelperService cbcHelperService) {
