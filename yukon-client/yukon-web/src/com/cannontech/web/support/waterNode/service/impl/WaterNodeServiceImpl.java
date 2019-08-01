@@ -16,6 +16,7 @@ import com.cannontech.web.support.waterNode.batteryLevel.WaterNodeBatteryLevel;
 import com.cannontech.web.support.waterNode.dao.WaterNodeDao;
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
 import com.cannontech.web.support.waterNode.service.WaterNodeService;
+import com.cannontech.web.support.waterNode.voltageDetails.VoltageDetails;
 
 public class WaterNodeServiceImpl implements WaterNodeService {
     private static final Logger log = YukonLogManager.getLogger(WaterNodeServiceImpl.class);
@@ -27,56 +28,53 @@ public class WaterNodeServiceImpl implements WaterNodeService {
 
     @Override
     public List<WaterNodeDetails> getAnalyzedNodes(Instant intervalStart, Instant intervalEnd) {
-        List<WaterNodeDetails> fullNodeData = waterNodeDao.getWaterNodeDetails(intervalStart, intervalEnd);
-        log.info("Battery analysis initiated: " + fullNodeData.size() + " water nodes found");
-        List<WaterNodeDetails> prunedResults = pruneResultsList(fullNodeData);
-        List<WaterNodeDetails> analyzedRows = analyzeBatteryData(prunedResults, intervalStart, intervalEnd);
+        List<WaterNodeDetails> nodeData = waterNodeDao.getWaterNodeDetails(intervalStart, intervalEnd);
+        log.info("Battery analysis initiated: " + nodeData.size() + " water nodes found");
+        nodeData.forEach(details -> {
+            pruneResultsList(details.getVoltages(), details.getTimestamps());
+        });
+        List<WaterNodeDetails> analyzedRows = analyzeBatteryData(nodeData, intervalStart, intervalEnd);
         return analyzedRows;
     }
 
     @Override
-    public List<String[]> getDetailedReportRows(Instant intervalStart, Instant intervalEnd) {
-        return null; //This will be the detailed voltage data report
+    public List<VoltageDetails> getVoltageDetails(Instant intervalStart, Instant intervalEnd) {
+        List<VoltageDetails> voltageData = waterNodeDao.getVoltageData(intervalStart, intervalEnd);
+        voltageData.forEach(voltageDetails -> {
+            pruneResultsList(voltageDetails.getVoltages(), voltageDetails.getTimestamps());
+        });
+        return voltageData;
     }
 
     /*
-     * Given a list of nodes, each having a set of voltage and timestamp data, this method 
-     * returns the same list of nodes with a pruned subset of data where, for each node, all 
+     * Given parallel lists of voltage and timestamp data, this method 
+     * returns the same lists ith a pruned subset of data where all 
      * voltage-timestamp pairs are spaced at least 55 minutes later than the previous pair.
      */
-    private List<WaterNodeDetails> pruneResultsList(List<WaterNodeDetails> resultsList) {
-        ArrayList<Double> voltages;
-        ArrayList<Instant> timestamps;
+    private void pruneResultsList(ArrayList<Double> voltages, ArrayList<Instant> timestamps) {
+        ListIterator<Instant> timestampIterator = timestamps.listIterator();
+        Instant currentTimestamp;
+        Instant prevTimestamp = timestampIterator.next();
 
-        for (WaterNodeDetails waterNodeDetails : resultsList) {
-            voltages = waterNodeDetails.getVoltages();
-            timestamps = waterNodeDetails.getTimestamps();
+        while (timestampIterator.hasNext()) {
+            currentTimestamp = timestampIterator.next();
+            while (currentTimestamp.minus(Duration.standardMinutes(55)).isBefore(prevTimestamp)
+                   && timestampIterator.hasNext()) {
 
-            ListIterator<Instant> timestampIterator = timestamps.listIterator();
-            Instant currentTimestamp;
-            Instant prevTimestamp = timestampIterator.next();
-
-            while (timestampIterator.hasNext()) {
+                voltages.remove(timestampIterator.nextIndex() - 1);
+                timestampIterator.remove();
                 currentTimestamp = timestampIterator.next();
-
-                while (currentTimestamp.minus(Duration.standardMinutes(55)).isBefore(prevTimestamp)
-                       && timestampIterator.hasNext()) {
-
-                    voltages.remove(timestampIterator.nextIndex() - 1);
-                    timestampIterator.remove();
-                    currentTimestamp = timestampIterator.next();
-                }
-                
-                //examine final element in the list
-                if (currentTimestamp.minus(Duration.standardMinutes(55)).isBefore(prevTimestamp)) {
-                    voltages.remove(timestampIterator.nextIndex() - 1);
-                    timestampIterator.remove();
-                }
-                prevTimestamp = currentTimestamp;
             }
+
+            // examine final element in the list
+            if (currentTimestamp.minus(Duration.standardMinutes(55)).isBefore(prevTimestamp)) {
+                voltages.remove(timestampIterator.nextIndex() - 1);
+                timestampIterator.remove();
+            }
+            prevTimestamp = currentTimestamp;
         }
-        return resultsList;
     }
+        
 
     /*
      * Given a list of water nodes and their voltage/timestamp data, this method returns a list

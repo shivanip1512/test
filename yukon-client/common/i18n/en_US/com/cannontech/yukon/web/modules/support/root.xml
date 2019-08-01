@@ -224,7 +224,7 @@
     
     <!-- waterNode.jsp -->
     <entry key="yukon.web.modules.support.waterNode.pageName">Water Node Battery Analysis</entry>
-    <entry key="yukon.web.modules.support.waterNode.title">Water Node Analysis</entry>
+    <entry key="yukon.web.modules.support.waterNode.batteryAnalysis.title">Battery Analysis Report</entry>
     <entry key="yukon.web.modules.support.waterNode.description">
         The battery depletion report documents the condition of all active water nodes.
         Clicking "generate report" will generate a report with the serial number, meter number, 
@@ -235,6 +235,19 @@
         each node.
     </entry>
     <entry key="yukon.web.modules.support.waterNode.generateReport.label">Generate Report</entry>
+
+    <entry key="yukon.web.modules.support.waterNode.voltageData.title">Voltage Data Details</entry>
+    <entry key="yukon.web.modules.support.waterNode.generateDetailedReport.label">Generate Detailed Data</entry>
+    <entry key="yukon.web.modules.support.waterNode.voltageData.description">
+        The voltage data report contains all interval data points used to analyze a
+        test interval. To view the voltage data used in the analysis of an already downloaded battery
+        analysis report, select the end date of the battery analysis report.
+        Clicking "Generate Detailed Report" will generate a report that contains the meter serial number, the date of
+        the interval, the time of the interval, and the voltage for each value in the interval.
+    </entry>
+    
+    <entry key="yukon.web.modules.support.waterNode.intervalEnd">Interval End: </entry>
+    <entry key="yukon.web.modules.support.waterNode.lastGenerated">End Date of Analysis Report: </entry>
     <entry key="yukon.web.modules.support.waterNode.NORMAL">Normal</entry>
     <entry key="yukon.web.modules.support.waterNode.LOW">Low</entry>
     <entry key="yukon.web.modules.support.waterNode.CRITICALLY_LOW">Critically Low</entry>
@@ -247,6 +260,10 @@
     <entry key="yukon.web.modules.suppport.waterNode.deviceCategory">Device Category</entry>
     <entry key="yukon.web.modules.suppport.waterNode.currentIndicator">High Sleeping Current Indicator</entry>
     <entry key="yukon.web.modules.suppport.waterNode.recentReading">Most Recent Reading</entry>
+    
+    <entry key="yukon.web.modules.suppport.waterNode.date">Date</entry>
+    <entry key="yukon.web.modules.suppport.waterNode.time">Time</entry>
+    <entry key="yukon.web.modules.suppport.waterNode.voltage">Voltage</entry>
     
     <!-- deviceDefinition/deviceDefinitionViewer.jsp -->
     <entry key="yukon.web.modules.support.deviceDef.pageName">Device Definitions</entry>

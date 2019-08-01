@@ -16,6 +16,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityServiceImpl;
 import com.cannontech.web.support.waterNode.dao.WaterNodeDao;
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
+import com.cannontech.web.support.waterNode.voltageDetails.VoltageDetails;
 import com.opencsv.CSVReader;
 
 public class WaterNodeCSVDaoImpl implements WaterNodeDao {
@@ -74,6 +75,11 @@ public class WaterNodeCSVDaoImpl implements WaterNodeDao {
             log.error("Unable to read CSV file input", e);
         }
         return resultsList;
+    }
+
+    @Override
+    public List<VoltageDetails> getVoltageData(Instant startTime, Instant stopTime) {
+        return null;
     }
 
 }
