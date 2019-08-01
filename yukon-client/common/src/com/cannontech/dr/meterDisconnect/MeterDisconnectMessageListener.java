@@ -79,11 +79,11 @@ public class MeterDisconnectMessageListener {
                 // Remove any meters that are opted out from the list of meters that will be sent control
                 inventory.removeAll(optOutInventory);
                 // Turn all the inventory to SimpleDevices
-                Set <SimpleDevice> meters  = inventoryBaseDao.getLMHardwareForIds(inventory).stream()
-                                                                                            .map(LiteLmHardwareBase::getDeviceID)
-                                                                                            .map(paoId -> dbCache.getAllPaosMap().get(paoId))
-                                                                                            .map(pao -> new SimpleDevice(pao))
-                                                                                            .collect(Collectors.toSet());
+                Set <SimpleDevice> meters = inventoryBaseDao.getLMHardwareForIds(inventory).stream()
+                                                                                           .map(LiteLmHardwareBase::getDeviceID)
+                                                                                           .map(paoId -> dbCache.getAllPaosMap().get(paoId))
+                                                                                           .map(pao -> new SimpleDevice(pao))
+                                                                                           .collect(Collectors.toSet());
                 
                 int programId = loadGroupDao.getProgramIdByGroupId(groupId);
                 

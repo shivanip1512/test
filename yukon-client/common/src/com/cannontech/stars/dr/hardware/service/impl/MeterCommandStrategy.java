@@ -19,10 +19,8 @@ import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
@@ -54,7 +52,6 @@ public class MeterCommandStrategy implements LmHardwareCommandStrategy {
     @Autowired private DisconnectService disconnectService;
     @Autowired private DrMeterDisconnectStatusService drStatusService;
     @Autowired private MeterDao meterDao;
-    @Autowired private PaoDao paoDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private LMHardwareControlGroupDao lMHardwareControlGroupDao;
     @Autowired private LoadGroupService loadGroupService;
@@ -89,11 +86,10 @@ public class MeterCommandStrategy implements LmHardwareCommandStrategy {
     public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
 
         int deviceId = command.getDevice().getDeviceID();
-        YukonPao device = paoDao.getYukonPao(deviceId);
         YukonMeter meter = meterDao.getForId(deviceId);
         // Checks if device is connected
         // A value of 1 currently means connected
-        PointValueHolder pVHolder = attributeDynamicDataSource.getPointValue(device, BuiltInAttribute.DISCONNECT_STATUS);
+        PointValueHolder pVHolder = attributeDynamicDataSource.getPointValue(meter, BuiltInAttribute.DISCONNECT_STATUS);
 
         try {
             switch (command.getType()) {
@@ -116,7 +112,7 @@ public class MeterCommandStrategy implements LmHardwareCommandStrategy {
                     
                     // Send the connect command
                     DisconnectMeterResult result = disconnectService.execute(DisconnectCommand.CONNECT,
-                                                                             DeviceRequestType.METER_COMMAND_STRATEGY_CONNECT_DISCONNECT_COMMAND,
+                                                                             DeviceRequestType.METER_DR_CONNECT_DISCONNECT_COMMAND,
                                                                              meter,
                                                                              YukonUserContext.system.getYukonUser());
                     
@@ -154,7 +150,7 @@ public class MeterCommandStrategy implements LmHardwareCommandStrategy {
                         // send connect if device was enrolled and not connected
                         DisconnectMeterResult result = disconnectService.execute(
                                                                                  DisconnectCommand.CONNECT,
-                                                                                 DeviceRequestType.METER_COMMAND_STRATEGY_CONNECT_DISCONNECT_COMMAND,
+                                                                                 DeviceRequestType.METER_DR_CONNECT_DISCONNECT_COMMAND,
                                                                                  meter,
                                                                                  YukonUserContext.system.getYukonUser()
                                                                                  );
