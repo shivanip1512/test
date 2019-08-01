@@ -192,8 +192,8 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
         execution.setUserName(user.getUsername());
         execution.setCommandRequestType(commandType);
         execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.STARTED);
-        // If the DeviceRequestType is the new OPT_OUT_OPT_IN_CONNECT_DISCONNECT_COMMAND used only by the MeterCommandStradegy opt out connect, don't do this, it locks the db tables.
-        if(deviceType != DeviceRequestType.OPT_OUT_OPT_IN_CONNECT_DISCONNECT_COMMAND) {
+        // If the DeviceRequestType is the new METER_COMMAND_STRATEGY_CONNECT_DISCONNECT_COMMAND used only by the MeterCommandStradegy opt out connect and unenrollment connect, don't do this, it locks the db tables.
+        if(deviceType != DeviceRequestType.METER_COMMAND_STRATEGY_CONNECT_DISCONNECT_COMMAND) {
             saveOrUpdate(execution);
         }
         return execution;

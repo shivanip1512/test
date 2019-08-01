@@ -48,7 +48,7 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
                                                    .collect(Collectors.toList());
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlBatchUpdater updater = sql.batchInsertInto("DynamicDrDisconnectDeviceStatus");
+        SqlBatchUpdater updater = sql.batchInsertInto("DrDisconnectDeviceStatus");
         updater.columns("EntryId", "EventId", "DeviceId", "ControlStatus", "ControlStatusTime");
         updater.values(insertValues);
         jdbcTemplate.yukonBatchUpdate(sql);
