@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -28,6 +29,8 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationExce
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.device.groups.DeviceGroupInUse;
+import com.cannontech.common.device.groups.DeviceGroupInUseException;
 import com.cannontech.common.device.groups.composed.dao.DeviceGroupComposedDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
@@ -51,10 +54,13 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.JsTreeBuilderUtil;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsTreeNode;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -647,7 +653,7 @@ public class GroupEditorController {
     }
     
     @RequestMapping(value="removeGroup", method=RequestMethod.POST)
-    public ModelAndView removeGroup(HttpServletRequest request, HttpServletResponse response)
+    public ModelAndView removeGroup(HttpServletRequest request, HttpServletResponse response, FlashScope flashScope)
             throws ServletException {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -663,9 +669,20 @@ public class GroupEditorController {
 
         // Make sure we can remove the group
         if (removeGroup.isEditable()) {
-            deviceGroupEditorDao.removeGroup(removeGroup);
+            try {
+                deviceGroupEditorDao.removeGroup(removeGroup);
+            } catch (DeviceGroupInUseException e) {
+                List<MessageSourceResolvable> messages = new ArrayList<>();
+                messages.add(new WebMessageSourceResolvable("yukon.exception.deviceGroupInUseException.summary", removeGroup.getFullName()));
+                for (DeviceGroupInUse deviceGroupInUse : e.getReferences()) {
+                    MessageSourceResolvable message = new WebMessageSourceResolvable(e.getMessageKey(), deviceGroupInUse.getGroupName(), deviceGroupInUse.getReferenceType(), 
+                                                                                       deviceGroupInUse.getName(), deviceGroupInUse.getOwner());
+                    messages.add(message);
+                }
+                flashScope.setError(messages, FlashScopeListType.NONE);
+            }
         } else {
-            mav.addObject("errorMessage", "Cannot remove Group: " + removeGroup.getFullName());
+            mav.addObject("errorMessage", "Cannot delete Group: " + removeGroup.getFullName());
         }
 
         return mav;

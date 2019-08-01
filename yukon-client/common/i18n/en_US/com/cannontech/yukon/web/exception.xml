@@ -103,4 +103,7 @@
 <entry key="yukon.exception.objectMappingException.invalidValue">Contains invalid value {0}</entry>
 
 <entry key="yukon.exception.apiCommunicationException.communicationError">Error while communicating with Api.</entry>
+
+<entry key="yukon.exception.deviceGroupInUseException.summary"><![CDATA[Cannot delete Device Group ''{0}''.<BR/>]]></entry>
+<entry key="yukon.exception.deviceGroupInUseException"><![CDATA[Device Group ''{0}'' is used in {1} ''{2}'', owned by {3}.<BR/>]]></entry>
 </properties>

@@ -14,6 +14,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +28,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.groups.DeviceGroupInUse;
+import com.cannontech.common.device.groups.DeviceGroupInUseException;
 import com.cannontech.common.device.groups.IllegalGroupNameException;
 import com.cannontech.common.device.groups.TemporaryDeviceGroupNotFoundException;
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
@@ -56,11 +59,13 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.message.DbChangeManager;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -546,6 +551,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         }
         
         log.trace("Deleting device group with id " + group.getId());
+        
+        checkIfGroupInUse(group);   // throws DeviceGroupInUseException
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM DeviceGroup");
         sql.append("WHERE DeviceGroupId").eq(group.getId());
@@ -553,6 +560,76 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         jdbcTemplate.update(sql);
     }
 
+    /**
+     * Checks database tables that reference full groupname
+     * @throws DeviceGroupInUseException with list of all references to full groupname found. 
+     */
+    private void checkIfGroupInUse(StoredDeviceGroup group) throws DeviceGroupInUseException {
+        
+        // Check if referenced by any widgets
+        SqlStatementBuilder referencesQuery = new SqlStatementBuilder();
+        referencesQuery.append("SELECT d.Name, Username FROM WidgetSettings ws JOIN Widget w on ws.WidgetId = w.WidgetId")
+                             .append("JOIN Dashboard d on d.DashboardId = w.DashboardId")
+                             .append("JOIN YukonUser yu on yu.userId = OwnerId")
+                             .append("WHERE ws.Name = 'deviceGroup'")
+                             .append("AND Value").eq(group.getFullName());
+
+        List<DeviceGroupInUse> references = jdbcTemplate.query(referencesQuery, new YukonRowMapper<DeviceGroupInUse>() {
+            @Override
+            public DeviceGroupInUse mapRow(YukonResultSet rs) throws SQLException {
+                return new DeviceGroupInUse(group.getFullName(), "dashboard", rs.getString("Name"), rs.getString("UserName"));
+            }
+        });
+        
+        // Check if referenced by any jobs
+        referencesQuery = new SqlStatementBuilder();
+        referencesQuery.append("SELECT yu.Username, BeanName, Value FROM Job j JOIN JobProperty jp on j.JobId = jp.JobId")
+                          .append("JOIN YukonUser yu on yu.UserId = j.userId")
+                          .append("WHERE j.JobId IN (")
+                          .append("SELECT JobId FROM JobProperty jp")
+                          .append("WHERE (Value").eq(group.getFullName()).append("AND Name = 'deviceGroup')")
+                          .append("OR (Value").contains(group.getFullName()).append("AND Name = 'deviceGroupNames'))")
+                          .append("AND Name = 'name'")
+                          .append("AND j.Disabled").neq_k(JobDisabledStatus.D);
+
+        references.addAll(jdbcTemplate.query(referencesQuery, new YukonRowMapper<DeviceGroupInUse>() {
+            @Override
+            public DeviceGroupInUse mapRow(YukonResultSet rs) throws SQLException {
+                return new DeviceGroupInUse(group.getFullName(), rs.getString("BeanName"), rs.getString("Value"), rs.getString("UserName"));
+            }
+        }));
+        
+        // Check if referenced by any monitors or composed groups
+        // TODO - may want to pull DeviceGroupComposedGroup out of here so that we can get the full groupname of the parent group.
+        // TODO - i18n the ReferenceType strings
+        referencesQuery = new SqlStatementBuilder();
+        referencesQuery.append("SELECT 'Device Data Monitor' AS ReferenceType, Name FROM DeviceDataMonitor")
+                  .append("WHERE GroupName").eq(group.getFullName())
+                  .append("UNION SELECT 'Outage Monitor' AS ReferenceType, OutageMonitorName as Name FROM OutageMonitor")
+                  .append("WHERE GroupName").eq(group.getFullName())
+                  .append("UNION SELECT 'Tamper Flag Monitor' AS ReferenceType, TamperFlagMonitorName as Name FROM TamperFlagMonitor")
+                  .append("WHERE GroupName").eq(group.getFullName())
+                  .append("UNION SELECT 'Status Point Monitor' AS ReferenceType, StatusPointMonitorName as Name FROM StatusPointMonitor")
+                  .append("WHERE GroupName").eq(group.getFullName())
+                  .append("UNION SELECT 'Porter Response Monitor' AS ReferenceType, Name as Name FROM PorterResponseMonitor")
+                  .append("WHERE GroupName").eq(group.getFullName())
+                  .append("UNION SELECT 'Validation Monitor' AS ReferenceType, ValidationMonitorName as Name FROM ValidationMonitor")
+                  .append("WHERE GroupName").eq(group.getFullName())
+                  .append("UNION SELECT 'Composed Device Group' AS ReferenceType, dg.GroupName as Name FROM DeviceGroupComposedGroup dgcg")
+                  .append("JOIN DeviceGroupComposed dgc ON dgcg.DeviceGroupComposedId = dgc.DeviceGroupComposedId")
+                  .append("JOIN DeviceGroup dg on dgc.DeviceGroupId = dg.DeviceGroupId")
+                  .append("WHERE dgcg.GroupName").eq(group.getFullName());
+        references.addAll(jdbcTemplate.query(referencesQuery, new YukonRowMapper<DeviceGroupInUse>() {
+            @Override
+            public DeviceGroupInUse mapRow(YukonResultSet rs) throws SQLException {
+                return new DeviceGroupInUse(group.getFullName(), rs.getString("ReferenceTYpe"), rs.getString("Name"), "system");
+            }
+        }));
+
+        if (CollectionUtils.isNotEmpty(references)) {
+            throw new DeviceGroupInUseException("Device Group '" + group.getFullName() + "' in use.", references);
+        }
+    }
     @Override
     public int removeDevices(StoredDeviceGroup group, YukonPao... yukonPao) {
         List<YukonPao> yukonPaos = Arrays.asList(yukonPao);
