@@ -23,7 +23,10 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMProgram;
+import com.cannontech.dr.controlarea.dao.ControlAreaDao;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.api.dr.setup.LMValidatorHelper;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
 
@@ -32,6 +35,8 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
     @Autowired private LMValidatorHelper lmValidatorHelper;
     @Autowired private PointDao pointdao;
     @Autowired private StateGroupDao stateGroupDao;
+    @Autowired private IDatabaseCache serverDatabaseCache;
+    @Autowired private ControlAreaDao controlAreaDao;
 
     public ControlAreaSetupValidator() {
         super(ControlArea.class);
@@ -41,7 +46,7 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
     protected void doValidation(ControlArea controlArea, Errors errors) {
 
         lmValidatorHelper.validateNewPaoName(controlArea.getName(), PaoType.LM_CONTROL_AREA, errors, "Control Area Name");
-
+        lmValidatorHelper.checkIfFieldRequired("allTriggersActiveFlag", errors, controlArea.getAllTriggersActiveFlag(), "All Triggers Active Flag");
         lmValidatorHelper.checkIfFieldRequired("controlInterval", errors, controlArea.getControlInterval(), "Control Interval");
         if (!errors.hasFieldErrors("controlInterval")) {
             if (!TimeIntervals.getControlAreaInterval().contains(controlArea.getControlInterval())) {
@@ -148,10 +153,21 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                 errors.pushNestedPath("programAssignment[" + i + "]");
                 ControlAreaProgramAssignment programAssignment = controlArea.getProgramAssignment().get(i);
                 lmValidatorHelper.checkIfFieldRequired("programId", errors, programAssignment.getProgramId(), "Program Id");
+                Integer areaId = null;
                 if (!errors.hasFieldErrors("programId")) {
-                    Set<Integer> Program = new LinkedHashSet<>(LMProgram.getUnassignedPrograms());
-                    if (!Program.contains(programAssignment.getProgramId())) {
-                        errors.rejectValue("programId", key + "programId.doesNotExist");
+                    Set<Integer> unassignedPrograms = new LinkedHashSet<>(LMProgram.getUnassignedPrograms());
+                    if (ServletUtils.getPathVariable("id") != null) {
+                        areaId = Integer.valueOf(ServletUtils.getPathVariable("id"));
+                        Set<Integer> assignedProgramIds = controlAreaDao.getProgramIdsForControlArea(areaId);
+                        if (!assignedProgramIds.contains(programAssignment.getProgramId())) {
+                            if (!unassignedPrograms.contains(programAssignment.getProgramId())) {
+                                errors.rejectValue("programId", key + "programId.doesNotExist");
+                            }
+                        }
+                    } else {
+                        if (!unassignedPrograms.contains(programAssignment.getProgramId())) {
+                            errors.rejectValue("programId", key + "programId.doesNotExist");
+                        }
                     }
                 }
 
