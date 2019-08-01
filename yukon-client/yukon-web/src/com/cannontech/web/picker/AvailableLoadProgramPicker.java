@@ -3,19 +3,14 @@ package com.cannontech.web.picker;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.dr.setup.LMDto;
-import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class AvailableLoadProgramPicker extends DatabasePicker<LMDto> {
-
-    @Autowired LMServiceHelper lmServiceHelper;
 
     private final static String[] searchColumnNames = new String[] { "pao.PAOName" };
     private final static List<OutputColumn> outputColumns;

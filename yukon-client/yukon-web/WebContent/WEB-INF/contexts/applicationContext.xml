@@ -1384,6 +1384,14 @@
         <property name="errorHandler" ref="customDefaultResponseErrorHandler"></property>
      </bean>
 
+    <bean class="com.cannontech.dr.loadgroup.service.impl.LoadGroupSetupServiceImpl"/>
+
+    <bean class="com.cannontech.dr.loadprogram.service.impl.LoadProgramSetupServiceImpl"/>
+
+    <bean class="com.cannontech.dr.macro.service.impl.MacroLoadGroupSetupServiceImpl"/>
+
+    <bean class="com.cannontech.dr.area.service.impl.ControlAreaSetupServiceImpl"/>
+
     <bean id="loadGroupSetupValidator" class="com.cannontech.web.api.dr.setup.LoadGroupSetupValidator" />
     <bean id="macroLoadGroupValidator" class="com.cannontech.web.api.dr.macro.MacroLoadGroupValidator" />
     <bean id="lmDeleteValidator" class="com.cannontech.web.api.dr.setup.LMDeleteValidator" />
@@ -1395,8 +1403,11 @@
     <bean class="com.cannontech.web.api.token.TokenHelper"/>
     <bean class="com.cannontech.web.api.ApiRequestHelper"/>
     <bean class="com.cannontech.web.api.dr.setup.LMValidatorHelper"/>
+    <bean class="com.cannontech.dr.controlscenario.service.impl.ControlScenarioServiceImpl"/>
     <bean id="controlScenarioSetupValidator" class="com.cannontech.web.api.dr.controlscenario.ControlScenarioSetupValidator"/>
+    <bean class="com.cannontech.common.dr.setup.LMServiceHelper"/>
     <bean class="com.cannontech.web.api.dr.constraint.ProgramConstraintValidator"/>
+    <bean class="com.cannontech.dr.constraint.service.impl.ProgramConstraintServiceImpl"/>
     <bean class="com.cannontech.web.dr.setup.ProgramConstraintControllerHelper"/>
     <bean class="com.cannontech.web.api.dr.setup.service.impl.LMSetupFilterServiceImpl"/>
     <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMSetupDaoImpl"/>
