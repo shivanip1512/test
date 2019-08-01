@@ -1,7 +1,5 @@
 package com.cannontech.web.api.dr.setup.dao.impl;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,6 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.web.api.dr.setup.dao.LMSetupDao;
 
 public class LMSetupDaoImpl implements LMSetupDao {
@@ -67,17 +64,12 @@ public class LMSetupDaoImpl implements LMSetupDao {
 
         int totalHitCount = jdbcTemplate.queryForInt(sqlTotalCountQuery);
 
-        final List<LMPaoDto> resultList = new ArrayList<>();
-
-        jdbcTemplate.query(sqlPaginationQuery, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                LMPaoDto lmPaoDto = new LMPaoDto();
-                lmPaoDto.setId(rs.getInt("PAObjectID"));
-                lmPaoDto.setName(rs.getString("PAOName"));
-                lmPaoDto.setType(rs.getEnum("Type", PaoType.class));
-                resultList.add(lmPaoDto);
-            }
+        final List<LMPaoDto> resultList = jdbcTemplate.query(sqlPaginationQuery, (YukonResultSet rs) -> {
+            LMPaoDto lmPaoDto = new LMPaoDto();
+            lmPaoDto.setId(rs.getInt("PAObjectID"));
+            lmPaoDto.setName(rs.getString("PAOName"));
+            lmPaoDto.setType(rs.getEnum("Type", PaoType.class));
+            return lmPaoDto;
         });
         SearchResults<LMPaoDto> searchResults =
             SearchResults.pageBasedForSublist(resultList, criteria.getPagingParameters(), totalHitCount);
@@ -124,16 +116,11 @@ public class LMSetupDaoImpl implements LMSetupDao {
 
         int totalHitCount = jdbcTemplate.queryForInt(sqlTotalCountQuery);
 
-        final List<LMPaoDto> resultList = new ArrayList<>();
-
-        jdbcTemplate.query(sqlPaginationQuery, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                LMPaoDto lmPaoDto = new LMPaoDto();
-                lmPaoDto.setId(rs.getInt("ConstraintID"));
-                lmPaoDto.setName(rs.getString("ConstraintName"));
-                resultList.add(lmPaoDto);
-            }
+        final List<LMPaoDto> resultList = jdbcTemplate.query(sqlPaginationQuery, (YukonResultSet rs) -> {
+            LMPaoDto lmPaoDto = new LMPaoDto();
+            lmPaoDto.setId(rs.getInt("ConstraintID"));
+            lmPaoDto.setName(rs.getString("ConstraintName"));
+            return lmPaoDto;
         });
         SearchResults<LMPaoDto> searchResults =
             SearchResults.pageBasedForSublist(resultList, criteria.getPagingParameters(), totalHitCount);
