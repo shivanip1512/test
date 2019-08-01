@@ -1337,6 +1337,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                         {
                             lmProgramDirect->setLastUser("(yukon system)");
                             lmProgramDirect->setChangeReason("Automatic Threshold Trigger");
+                            lmProgramDirect->setOrigin("Automatic");
                             expectedLoadReduced = lmProgramDirect->reduceProgramLoad(loadReductionNeeded, getCurrentStartPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, currentTime, multiPilMsg, multiDispatchMsg, multiNotifMsg, isTriggerCheckNeeded(currentTime));
 
                             if( lmProgramDirect->getProgramState() != CtiLMProgramBase::InactiveState )   // reduceProgram load might not have been able to do anything,

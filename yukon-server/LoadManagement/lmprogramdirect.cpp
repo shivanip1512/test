@@ -5058,6 +5058,7 @@ bool CtiLMProgramDirect::startTimedProgram(CtiTime currentTime, long secondsFrom
         multiDispatchMsg->insert(signal);
         CTILOG_INFO(dout, text << ", " << additional);
         setChangeReason("Timed Start");
+        setOrigin("Automatic");
         manualReduceProgramLoad(currentTime, multiPilMsg,multiDispatchMsg);
         setProgramState(CtiLMProgramBase::TimedActiveState);
 
