@@ -388,6 +388,13 @@ ALTER COLUMN Origin VARCHAR(30) NOT NULL;
 INSERT INTO DBUpdates VALUES ('YUK-20267', '7.3.0', GETDATE());
 /* @end YUK-20267 */
 
+/* @start YUK-20350 */
+INSERT INTO YukonRoleProperty 
+VALUES (-90049,-900,'DR Setup Permission', 'UPDATE', 'Controls the ability to create, edit, or delete demand response setup and configuration i.e Load Groups, Programs, Control Areas. Demand Response Role controls view access.');
+
+INSERT INTO DBUpdates VALUES ('YUK-20350', '7.3.0', GETDATE());
+/* @end YUK-20350 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
