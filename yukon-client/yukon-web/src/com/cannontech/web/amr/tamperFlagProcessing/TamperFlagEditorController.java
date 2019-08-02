@@ -1,5 +1,6 @@
 package com.cannontech.web.amr.tamperFlagProcessing;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -21,6 +22,8 @@ import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
 import com.cannontech.amr.tamperFlagProcessing.dao.TamperFlagMonitorDao;
 import com.cannontech.amr.tamperFlagProcessing.service.TamperFlagMonitorService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.groups.DeviceGroupInUse;
+import com.cannontech.common.device.groups.DeviceGroupInUseException;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -29,10 +32,12 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.monitor.validators.TamperFlagMonitorValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -174,6 +179,16 @@ public class TamperFlagEditorController {
         } catch (TamperFlagMonitorNotFoundException e) {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".monitorNotFound"));
             return "redirect:" + tamperFlagMonitor.getTamperFlagMonitorId() + "/edit";
+        } catch (DeviceGroupInUseException e) {
+            log.error("Could not delete tamper flag monitor : ", e);
+            List<MessageSourceResolvable> messages = new ArrayList<>();
+            messages.add(new WebMessageSourceResolvable(baseKey + ".delete.error", tamperFlagMonitor.getName()));
+            for (DeviceGroupInUse deviceGroupInUse : e.getReferences()) {
+                MessageSourceResolvable message = new WebMessageSourceResolvable(e.getMessageKey(), deviceGroupInUse.getGroupName(), deviceGroupInUse.getReferenceType(), 
+                                                                                   deviceGroupInUse.getName(), deviceGroupInUse.getOwner());
+                messages.add(message);
+            }
+            flashScope.setError(messages, FlashScopeListType.NONE);
         }
         return "redirect:/meter/start";
     }

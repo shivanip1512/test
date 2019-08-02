@@ -154,6 +154,7 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.updatedEnabledfalse">Monitor Disabled</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.updated">Device Data Monitor Updated: {0}</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.deleted">Device Data Monitor Deleted: {0}</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.delete.error"><![CDATA[Could not delete device data monitor : {0}.<BR/>]]></entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.violationsFound">Found {0} violating devices</entry>
     
     <!-- Processor Types -->

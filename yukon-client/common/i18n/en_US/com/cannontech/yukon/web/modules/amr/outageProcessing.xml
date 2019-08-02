@@ -95,6 +95,7 @@
     <entry key="yukon.web.modules.amr.outageMonitorConfig.invalidTimePeriod">Time period must be greater than or equal to 0.</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.scheduleName.blank">Schedule name cannot be empty.</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.invalidSchedule">Schedule is not valid.</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.delete.error"><![CDATA[Could not delete outage monitor : {0}.<BR/>]]></entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.deleted">Outage Monitor deleted : {0}.</entry>
     
     

@@ -40,6 +40,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceMemoryCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.device.groups.DeviceGroupInUse;
+import com.cannontech.common.device.groups.DeviceGroupInUseException;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -61,12 +63,14 @@ import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.monitor.validators.DeviceDataMonitorValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.common.pao.PaoPopupHelper;
 import com.cannontech.web.input.StateIdPairingPropertyEditor;
@@ -206,9 +210,21 @@ public class DeviceDataMonitorController {
     public String delete(int monitorId, YukonUserContext userContext, FlashScope flash) {
         
         DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
-        monitorService.delete(monitor, userContext);
-        MessageSourceResolvable deleteMessage = new YukonMessageSourceResolvable(baseKey + ".deleted", monitor.getName());
-        flash.setConfirm(deleteMessage);
+        try {
+            monitorService.delete(monitor, userContext);
+            MessageSourceResolvable deleteMessage = new YukonMessageSourceResolvable(baseKey + ".deleted", monitor.getName());
+            flash.setConfirm(deleteMessage);
+        } catch (DeviceGroupInUseException e) {
+            log.error("Could not delete device data monitor : ", e);
+            List<MessageSourceResolvable> messages = new ArrayList<>();
+            messages.add(new WebMessageSourceResolvable(baseKey + ".delete.error", monitor.getName()));
+            for (DeviceGroupInUse deviceGroupInUse : e.getReferences()) {
+                MessageSourceResolvable message = new WebMessageSourceResolvable(e.getMessageKey(), deviceGroupInUse.getGroupName(), deviceGroupInUse.getReferenceType(), 
+                                                                                   deviceGroupInUse.getName(), deviceGroupInUse.getOwner());
+                messages.add(message);
+            }
+            flash.setError(messages, FlashScopeListType.NONE);
+        }
         return "redirect:/meter/start";
     }
     

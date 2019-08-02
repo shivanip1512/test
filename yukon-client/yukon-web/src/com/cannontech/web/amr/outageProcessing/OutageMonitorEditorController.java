@@ -1,5 +1,6 @@
 package com.cannontech.web.amr.outageProcessing;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +26,8 @@ import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupR
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.RetryStrategy;
+import com.cannontech.common.device.groups.DeviceGroupInUse;
+import com.cannontech.common.device.groups.DeviceGroupInUseException;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -36,6 +39,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -43,6 +47,7 @@ import com.cannontech.web.amr.monitor.validators.OutageMonitorValidator;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -199,6 +204,16 @@ public class OutageMonitorEditorController {
         } catch (OutageMonitorNotFoundException e) {
             log.error("Could not delete outage monitor : ", e);
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".notFound"));
+        } catch (DeviceGroupInUseException e) {
+            log.error("Could not delete outage monitor : ", e);
+            List<MessageSourceResolvable> messages = new ArrayList<>();
+            messages.add(new WebMessageSourceResolvable(baseKey + ".delete.error", outageMonitor.getName()));
+            for (DeviceGroupInUse deviceGroupInUse : e.getReferences()) {
+                MessageSourceResolvable message = new WebMessageSourceResolvable(e.getMessageKey(), deviceGroupInUse.getGroupName(), deviceGroupInUse.getReferenceType(), 
+                                                                                   deviceGroupInUse.getName(), deviceGroupInUse.getOwner());
+                messages.add(message);
+            }
+            flashScope.setError(messages, FlashScopeListType.NONE);
         }
         return "redirect:/meter/start";
     }

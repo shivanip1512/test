@@ -110,5 +110,6 @@
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.otherActions">Other Actions</entry>
 
     <entry key="yukon.web.modules.amr.tamperFlagEditor.monitorNotFound">Tamper Flag Monitor Does Not Exist.</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.delete.error"><![CDATA[Could not delete tamper flag monitor : {0}.<BR/>]]></entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.monitorDeleted">Tamper Flag Monitor deleted : {0}.</entry>
 </properties>

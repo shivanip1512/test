@@ -49,6 +49,7 @@ import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
+import com.cannontech.common.device.groups.DeviceGroupInUseException;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -2428,10 +2429,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
             deviceGroupEditorDao.removeGroup(storedGroup);
         } catch (NotFoundException e) {
-            errorObject =
-                mspObjectDao.getNotFoundErrorObject(groupName, "meterGroupId", "meterGroupID", "deleteGroup",
-                    mspVendor.getCompanyName());
-            return errorObject;
+            return mspObjectDao.getNotFoundErrorObject(groupName, "meterGroupId", "meterGroupID", "deleteGroup", mspVendor.getCompanyName());
+        } catch (DeviceGroupInUseException e) {
+            return mspObjectDao.getErrorObject(groupName, "Cannot delete group, it is currently in use.", "MeterGroup", "deleteGroup", mspVendor.getCompanyName());
         }
         return errorObject;
     }
