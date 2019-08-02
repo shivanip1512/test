@@ -30,6 +30,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.LMGearDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -39,6 +40,7 @@ import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMProgramDirectBase;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteLMConstraint;
 import com.cannontech.database.data.lite.LiteLMPAOExclusion;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
@@ -71,6 +73,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ProgramDao programDao;
+    @Autowired private LMGearDao lmGearDao;
    
     @Override
     public int create(LoadProgram loadProgram) {
@@ -812,5 +815,10 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                                 .findFirst()
                                                                 .orElseThrow(() -> new NotFoundException("Id not found"));
         return lmProgram;
+    }
+
+    @Override
+    public List<LiteGear> getGearsForProgram(int programId) {
+        return lmGearDao.getAllLiteGears(programId);
     }
 }

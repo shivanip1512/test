@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dao.LMGearDao;
@@ -19,26 +18,6 @@ public class LMServiceHelper {
     @Autowired private LMGearDao lmGearDao;
     @Autowired private LoadProgramSetupService loadProgramService;
     @Autowired private ProgramConstraintService programConstraintService;
-
-    public void populateGears(List<ProgramDetails> assignedPrograms) {
-        CollectionUtils.emptyIfNull(assignedPrograms).stream().forEach(assignedProgram -> {
-            List<LiteGear> allGears = lmGearDao.getAllLiteGears(assignedProgram.getProgramId());
-            if (CollectionUtils.isNotEmpty(assignedProgram.getGears())) {
-                LiteGear selectGear = new LiteGear();
-                selectGear.setGearID(assignedProgram.getGears().get(0).getId());
-                selectGear.setOwnerID(assignedProgram.getProgramId());
-                int index = allGears.indexOf(selectGear);
-                if (index != -1) {
-                    LiteGear gear = allGears.get(index);
-                    allGears.remove(selectGear);
-                    allGears.add(0, gear);
-                }
-            }
-            assignedProgram.setGears(allGears.stream()
-                                             .map(liteGear -> buildGear(liteGear))
-                                             .collect(Collectors.toList()));
-        });
-    }
 
     public List<LMDto> getGearsforModel(Integer programId, List<LMDto> gears) {
         List<LiteGear> allGears = Lists.newArrayList();

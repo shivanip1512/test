@@ -29,7 +29,7 @@ public class AvailableLoadProgramPicker extends DatabasePicker<LMDto> {
     protected void updateFilters(List<SqlFilter> sqlFilters, List<PostProcessingFilter<LMDto>> postProcessingFilters,
             String extraArgs, YukonUserContext userContext) {
         List<Integer> programIds = LMControlAreaProgram.getAllProgramsInControlAreas();
-        sqlFilters.add(new AvaiableProgramFilter(programIds));
+        sqlFilters.add(new AvailableProgramFilter(programIds));
     }
 
     @Override

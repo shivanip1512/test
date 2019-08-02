@@ -29,6 +29,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
 import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
@@ -132,7 +133,12 @@ public class LoadProgramSetupApiController {
     public ResponseEntity<List<ProgramDetails>> getAvailablePrograms() {
         return new ResponseEntity<>(loadProgramService.getAvailablePrograms(), HttpStatus.OK);
     }
-    
+
+    @GetMapping("/getGearsForProgram/{programId}")
+    public ResponseEntity<List<LiteGear>> getGearsForProgram(@PathVariable int programId) {
+        return new ResponseEntity<>(loadProgramService.getGearsForProgram(programId), HttpStatus.OK);
+    }
+
     @InitBinder("LMDelete")
     public void setupBinderDelete(WebDataBinder binder) {
         binder.addValidators(lmDeleteValidator);

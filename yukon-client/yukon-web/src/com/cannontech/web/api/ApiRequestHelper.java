@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.token.TokenHelper;
@@ -31,6 +32,8 @@ public class ApiRequestHelper {
     public final static HashMap<Class, ParameterizedTypeReference> paramTypeRefMap = new HashMap<>();
     static {
         paramTypeRefMap.put(LiteYukonPAObject.class, new ParameterizedTypeReference<List<LiteYukonPAObject>>() {
+        });
+        paramTypeRefMap.put(LiteGear.class, new ParameterizedTypeReference<List<LiteGear>>() {
         });
     }
     

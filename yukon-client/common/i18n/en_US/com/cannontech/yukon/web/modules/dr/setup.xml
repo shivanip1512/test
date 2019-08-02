@@ -149,8 +149,9 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.controlScenario.VIEW.pageHeading">Scenario: {0}</entry>
 <entry key="yukon.web.modules.dr.setup.controlScenario.VIEW.crumbTitle">{0}</entry>
 <entry key="yukon.web.modules.dr.setup.controlScenario.VIEW.pageTitle">Scenario: {0}</entry>
-<entry key="yukon.web.modules.dr.setup.controlScenario.availablePrograms.title">Available Programs(must belong to a Control area to be listed)</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.availablePrograms.title">Available Programs</entry>
 <entry key="yukon.web.modules.dr.setup.controlScenario.assignedPrograms.title">Assigned Programs</entry>
+<entry key="yukon.web.modules.dr.setup.controlScenario.availablePrograms.description">(must belong to a Control Area to be listed)</entry>
 <entry key="yukon.web.modules.dr.setup.controlScenario.name">Name</entry>
 <entry key="yukon.web.modules.dr.setup.controlScenario.startOffset">Start Offset(HH:mm) </entry>
 <entry key="yukon.web.modules.dr.setup.controlScenario.stopOffset">Stop Offset(HH:mm)</entry>

@@ -18,8 +18,9 @@ public class AvailableProgramRowMapper extends AbstractRowMapperWithBaseQuery<LM
     public SqlFragmentSource getBaseQuery() {
 
         SqlStatementBuilder retVal = new SqlStatementBuilder();
-        retVal.append("SELECT pao.PAOName, pao.PAObjectID FROM LMControlAreaProgram program, YukonPAObject pao WHERE program.LMPROGRAMDEVICEID = pao.PAObjectID");
-        retVal.append("AND Type").in(PaoType.getDirectLMProgramTypes());
+        retVal.append("SELECT pao.PAOName, pao.PAObjectID");
+        retVal.append("FROM LMControlAreaProgram program JOIN YukonPAObject pao ON program.LMPROGRAMDEVICEID = pao.PAObjectID");
+        retVal.append("WHERE Type").in(PaoType.getDirectLMProgramTypes());
         return retVal;
     }
 

@@ -1,5 +1,6 @@
 package com.cannontech.web.dr.setup;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,8 +31,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.ControlScenario;
 import com.cannontech.common.dr.setup.LMDelete;
-import com.cannontech.common.dr.setup.LMServiceHelper;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.ProgramDetails;
+import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
@@ -49,7 +51,6 @@ public class ControlScenarioSetupController {
 
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
-    @Autowired private LMServiceHelper lmServiceHelper;
     @Autowired private IDatabaseCache dbCache;
 
     private static final String baseKey = "yukon.web.modules.dr.setup.";
@@ -65,7 +66,7 @@ public class ControlScenarioSetupController {
         } else {
             controlScenario = new ControlScenario();
         }
-        lmServiceHelper.populateGears(controlScenario.getAllPrograms());
+        populateGears(controlScenario.getAllPrograms(), userContext, request);
         model.addAttribute("controlScenario", controlScenario);
         model.addAttribute("selectedProgramIds", getSelectedProgramIds(controlScenario.getAllPrograms()));
         return "dr/setup/controlScenario/view.jsp";
@@ -116,7 +117,7 @@ public class ControlScenarioSetupController {
                     return "redirect:/dr/setup/list";
                 }
             }
-            lmServiceHelper.populateGears(controlScenario.getAllPrograms());
+            populateGears(controlScenario.getAllPrograms(), userContext, request);
             model.addAttribute("selectedProgramIds", getSelectedProgramIds(controlScenario.getAllPrograms()));
             model.addAttribute("controlScenario", controlScenario);
             return "dr/setup/controlScenario/view.jsp";
@@ -198,13 +199,13 @@ public class ControlScenarioSetupController {
 
     @PostMapping("/renderAssignedPrograms")
     public String renderAssignedPrograms(ControlScenario controlScenario, @RequestParam List<Integer> programIds,
-            ModelMap model) {
+            ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         if (CollectionUtils.isEmpty(controlScenario.getAllPrograms())) {
             controlScenario.setAllPrograms(Lists.newArrayList());
         }
         controlScenario.getAllPrograms().addAll(
             programIds.stream().map(programId -> getProgramDetails(programId)).collect(Collectors.toList()));
-        lmServiceHelper.populateGears(controlScenario.getAllPrograms());
+        populateGears(controlScenario.getAllPrograms(), userContext, request);
         model.addAttribute("controlScenario", controlScenario);
         return "dr/setup/controlScenario/assignedPrograms.jsp";
     }
@@ -245,5 +246,43 @@ public class ControlScenarioSetupController {
             return "redirect:/dr/setup/controlScenario/create";
         }
         return "redirect:/dr/setup/controlScenario/" + controlScenario.getId() + "/edit";
+    }
+
+    private void populateGears(List<ProgramDetails> allPrograms, YukonUserContext userContext, HttpServletRequest request) {
+        CollectionUtils.emptyIfNull(allPrograms).stream().forEach(assignedProgram -> {
+            List<LiteGear> allGears = reteriveGears(assignedProgram.getProgramId(), userContext, request);
+            if (CollectionUtils.isNotEmpty(assignedProgram.getGears())) {
+                LiteGear selectGear = new LiteGear();
+                selectGear.setGearID(assignedProgram.getGears().get(0).getId());
+                selectGear.setOwnerID(assignedProgram.getProgramId());
+                int index = allGears.indexOf(selectGear);
+                if (index != -1) {
+                    LiteGear gear = allGears.get(index);
+                    allGears.remove(selectGear);
+                    allGears.add(0, gear);
+                }
+            }
+            assignedProgram.setGears(allGears.stream()
+                                             .map(liteGear -> buildGear(liteGear))
+                                             .collect(Collectors.toList()));
+        });
+    }
+
+    private List<LiteGear> reteriveGears(Integer programId, YukonUserContext userContext, HttpServletRequest request) {
+        List<LiteGear> liteGears = new ArrayList<>();
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drGetGearsForLoadProgram + programId);
+        try {
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext, request, url,
+                LiteGear.class, HttpMethod.GET, LiteGear.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                liteGears = (List<LiteGear>) response.getBody();
+            }
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+        }
+        return liteGears;
+    }
+    private LMDto buildGear(LiteGear liteGear) {
+        return new LMDto(liteGear.getGearID(), liteGear.getGearName());
     }
 }

@@ -60,6 +60,7 @@
                     <!-- Available programs -->
                     <div class="column one bordered-div">
                         <h3><i:inline key=".availablePrograms.title"/></h3>
+                        <span class="empty-list"><i:inline key=".availablePrograms.description"/></span><br/><br/>
                         <div id="js-inline-picker-container" style="height:470px;" class="oa"></div>
                         <tags:pickerDialog type="availableLoadProgramPicker" id="js-available-programs-picker" 
                                            container="js-inline-picker-container" multiSelectMode="true" 
@@ -91,13 +92,13 @@
                         <c:forEach var="program" items="${controlScenario.allPrograms}">
                             <tr>
                                 <td>
-                                    <cti:url var="viewProgramUrl" value='/dr/program/detail?programId=${program.programId}'/>
+                                    <cti:url var="viewProgramUrl" value='/dr/setup/loadProgram/${program.programId}'/>
                                     <a href="${viewProgramUrl}">
                                         <cti:deviceName deviceId="${program.programId}"/>
                                     </a>
                                 </td>
-                                <td><dt:timeOffset value ="${fn:escapeXml(program.startOffsetInMinutes)}" id="js-start-offset-lbl"/></td>
-                                <td><dt:timeOffset value ="${fn:escapeXml(program.stopOffsetInMinutes)}" id="js-stop-offset-lbl"/></td>
+                                <td><dt:timeOffset value="${fn:escapeXml(program.startOffsetInMinutes)}"/></td>
+                                <td><dt:timeOffset value="${fn:escapeXml(program.stopOffsetInMinutes)}"/></td>
                                 <td>${fn:escapeXml(program.gears[0].name)}</td>
                             </tr>
                         </c:forEach>

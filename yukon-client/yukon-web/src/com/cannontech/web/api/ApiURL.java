@@ -36,6 +36,7 @@ public class ApiURL {
     public static final String drControlScenarioUpdateUrl = "/dr/setup/controlScenario/update/";
     public static final String drControlScenarioDeleteUrl = "/dr/setup/controlScenario/delete/";
     
-    public static final String drLoadProgramAvailableProgramsUrl = "dr/setup/loadProgram/availablePrograms";
+    public static final String drLoadProgramAvailableProgramsUrl = "/dr/setup/loadProgram/availablePrograms";
+    public static final String drGetGearsForLoadProgram = "/dr/setup/loadProgram/getGearsForProgram/";
 
 }

@@ -9,6 +9,7 @@ import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
 import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.setup.service.LMSetupService;
 
 public interface LoadProgramSetupService extends LMSetupService<LoadProgram, LoadProgramCopy> {
@@ -55,4 +56,9 @@ public interface LoadProgramSetupService extends LMSetupService<LoadProgram, Loa
      * Return all the Load Groups associated with programType.
      */
     List<ProgramGroup> getAllProgramLoadGroups(PaoType programType);
+
+    /**
+     * Return all the Gears associated with programId.
+     */
+    List<LiteGear> getGearsForProgram(int programId);
 }
