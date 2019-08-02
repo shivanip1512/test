@@ -1,3 +1,5 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -86,7 +88,9 @@
                             <tags:hidden path="triggers[${status.index}].triggerPointId"/>
                             <tags:hidden path="triggers[${status.index}].normalState"/>
                             <tags:hidden path="triggers[${status.index}].threshold"/>
-                            <tags:hidden path="triggers[${status.index}].controlAreaProjection"/>
+                            <tags:hidden path="triggers[${status.index}].controlAreaProjection.projectionType"/>
+                            <tags:hidden path="triggers[${status.index}].controlAreaProjection.projectionPoint"/>
+                            <tags:hidden path="triggers[${status.index}].controlAreaProjection.projectAheadDuration"/>
                             <tags:hidden path="triggers[${status.index}].atku"/>
                             <tags:hidden path="triggers[${status.index}].minRestoreOffset"/>
                             <tags:hidden path="triggers[${status.index}].peakPointId"/>
@@ -152,32 +156,51 @@
                         <!-- Assigned Programs -->
                         <div class="column two nogutter">
                             <h3 class="dib"><i:inline key="yukon.common.assigned"/></h3>
-                            <span class="fr fwb MR10" style="font-size:12px;"><i:inline key=".startPriority"/>&nbsp;&nbsp;<i:inline key=".stopPriority"/></span>
-                            <div style="height:515px;" class="bordered-div oa">
-                                <div id="js-assigned-programs" class="select-box-selected" style="min-height:150px;" data-item-selector=".select-box-item">
+                            <table id="program-assignments" class="compact-results-table dashed">
+                                <thead>
+                                    <th width="10%"></th>
+                                    <th width="50%"></th>
+                                    <th><i:inline key=".startPriority"/></th>
+                                    <th><i:inline key=".stopPriority"/></th>
+                                </thead>
+                                <tbody>
                                     <c:forEach var="program" items="${controlArea.programAssignment}" varStatus="status">
-                                        <div class="select-box-item js-assigned-program" data-id="${program.programId}" style="padding-right:10px;">
+                                        <tr>
                                             <tags:hidden path="programAssignment[${status.index}].programId"/>
-                                            <cti:deviceName deviceId="${program.programId}"/>
-                                            <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
-                                            <span class="fr vat">
-                                                <tags:input path="programAssignment[${status.index}].startPriority" size="2"/>&nbsp;&nbsp;
-                                                <tags:input path="programAssignment[${status.index}].stopPriority" size="2"/>
-                                            </span>
-                                        </div>
+                                            <td>                                            
+                                                <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" data-id="${program.programId}"/>
+                                            </td>
+                                            <td>
+                                                <cti:deviceName deviceId="${program.programId}"/>
+                                            </td>
+                                            <td>
+                                                <tags:numeric path="programAssignment[${status.index}].startPriority" size="4" minValue="1" maxValue="2147483647"/>
+                                            </td>
+                                            <td>
+                                                <tags:numeric path="programAssignment[${status.index}].stopPriority" size="4" minValue="1" maxValue="2147483647"/>
+                                            </td>
+                                        </tr>
                                     </c:forEach>
-                                </div>
-                                
-                                <div class="select-box-item js-assigned-program js-template-row dn" data-id="0" style="padding-right:10px;">
-                                    <input class="js-program-id" type="hidden" name="programAssignment[?].programId" disabled="disabled"/>
-                                    <span class="js-program-name"></span>
-                                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
-                                    <span class="fr vat">
-                                         <input class="js-start-priority" name="programAssignment[?].startPriority" type="text" size="2" value="1" disabled="disabled"/>&nbsp;&nbsp;
-                                         <input class="js-stop-priority" name="programAssignment[?].stopPriority" type="text" size="2" value="1" disabled="disabled"/>
-                                    </span>
-                                </div>
-                            </div>
+
+                                </tbody>
+                            
+                            </table>
+                            
+                            <table>                                          
+                                <tr class="js-template-row dn">
+                                    <input type="hidden" class="js-program-id" name="programAssignment[0].programId" disabled="disabled"/>
+                                    <td>                                            
+                                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" data-id="0"/>
+                                    </td>
+                                    <td class="js-program-name"></td>
+                                    <td>
+                                        <input type="text" name="programAssignment[0].startPriority" size="4" data-min-value="1" data-max-value="2147483647" disabled="true" class="js-start-priority"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="programAssignment[0].stopPriority" size="4" data-min-value="1" data-max-value="2147483647" disabled="true" class="js-stop-priority"/>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
                 </cti:displayForPageEditModes>

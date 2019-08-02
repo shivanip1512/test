@@ -36,19 +36,18 @@ yukon.ui.numeric= (function () {
                     id = $(this).attr('id'),
                     minValue = $(this).data('minValue'),
                     maxValue = $(this).data('maxValue'),
-                    stepValue = $(this).data('stepValue'),
-                    pattern = $(this).data('pattern');
+                    stepValue = $(this).data('stepValue');
                 $(this).removeClass('error');
                 $('.js-' + id + '-min-value-error').addClass('dn');
                 $('.js-' + id + '-max-value-error').addClass('dn');
                 //verify the number is in between range
-                if (minValue) {
+                if (minValue != null) {
                     if (value < minValue) {
                         $(this).addClass('error');
                         $('.js-' + id + '-min-value-error').removeClass('dn');
                     }
                 }
-                if (maxValue) {
+                if (maxValue != null) {
                     if (value > maxValue) {
                         $(this).addClass('error');
                         $('.js-' + id + '-max-value-error').removeClass('dn');

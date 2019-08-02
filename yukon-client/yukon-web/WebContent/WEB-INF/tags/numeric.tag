@@ -29,15 +29,17 @@
 
 <cti:default var="autocomplete" value="on"/>
 
-<c:if test="${empty id}">
-    <c:set var="id" value="${path}"/>
+<c:set var="id" value="${pageScope.id}"/>
+<c:if test="${empty pageScope.id}">
+    <cti:uniqueIdentifier var="uniqueId"/>
+    <c:set var="id" value="${uniqueId}"/>
 </c:if>
 
 <spring:bind path="${path}">
 
     <%-- VIEW MODE --%>
     <cti:displayForPageEditModes modes="VIEW">
-        <span id="${pageScope.id}" class="${pageScope.inputClass}" data-toggle-group="${pageScope.toggleGroup}">
+        <span id="${id}" class="${pageScope.inputClass}" data-toggle-group="${pageScope.toggleGroup}">
             ${fn:escapeXml(status.value)}
         </span>
         <form:hidden path="${path}" cssClass="${pageScope.inputClass}"/>
@@ -54,7 +56,7 @@
         </c:if>
         
         <form:input path="${path}"
-            id="${pageScope.id}"
+            id="${id}"
             disabled="${pageScope.disabled}" 
             readonly="${pageScope.readonly}"
             size="${pageScope.size}" 
@@ -80,14 +82,18 @@
             </c:if>
             <form:errors path="${path}" cssClass="error"/>
         </c:if>
+
+        <c:choose>
+            <c:when test="${displayValidationToRight}">
+                <span class="error dn js-${id}-min-value-error ML15"><cti:msg2 key="yukon.common.numericMinError" argument="${minValue}"/></span>
+                <span class="error dn js-${id}-max-value-error ML15"><cti:msg2 key="yukon.common.numericMaxError" argument="${maxValue}"/></span>
+            </c:when>
+            <c:otherwise>
+                <div class="error dn js-${id}-min-value-error"><cti:msg2 key="yukon.common.numericMinError" argument="${minValue}"/></div>
+                <div class="error dn js-${id}-max-value-error ${errorClass}"><cti:msg2 key="yukon.common.numericMaxError" argument="${maxValue}"/></div>
+            </c:otherwise>
+        </c:choose>
         
-        &nbsp;
-        <c:if test="${!displayValidationToRight}">
-            <br>
-        </c:if>
-        <span class="error dn js-${id}-min-value-error"><cti:msg2 key="yukon.common.numericMinError" argument="${minValue}"/></span>
-        <span class="error dn js-${id}-max-value-error"><cti:msg2 key="yukon.common.numericMaxError" argument="${maxValue}"/></span>
-    
     </cti:displayForPageEditModes>
 
 </spring:bind>

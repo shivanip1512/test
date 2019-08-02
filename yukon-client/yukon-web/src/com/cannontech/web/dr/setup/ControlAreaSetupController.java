@@ -46,7 +46,7 @@ public class ControlAreaSetupController {
     @Autowired private ControlAreaSetupControllerHelper controllerHelper;
 
     @GetMapping("/create")
-    public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
+    public String create(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
         ControlArea controlArea = new ControlArea();
         if (model.containsAttribute("controlArea")) {
