@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/2/2019 5:34:01 AM                          */
+/* Created on:     8/2/2019 9:48:52 AM                          */
 /*==============================================================*/
 
 
@@ -4916,6 +4916,31 @@ create table DmvTestExecution (
    StopTime             datetime             null,
    TestStatus           varchar(30)          null,
    constraint PK_DmvTestExecution primary key (ExecutionId)
+)
+go
+
+/*==============================================================*/
+/* Table: DrDisconnectDeviceStatus                              */
+/*==============================================================*/
+create table DrDisconnectDeviceStatus (
+   EntryId              numeric              not null,
+   EventId              numeric              not null,
+   DeviceId             numeric              not null,
+   ControlStatus        varchar(30)          not null,
+   ControlStatusTime    datetime             not null,
+   constraint PK_DrDisconnectDeviceStatus primary key (EntryId)
+)
+go
+
+/*==============================================================*/
+/* Table: DrDisconnectEvent                                     */
+/*==============================================================*/
+create table DrDisconnectEvent (
+   EventId              numeric              not null,
+   ProgramId            numeric              not null,
+   StartTime            datetime             not null,
+   EndTime              datetime             not null,
+   constraint PK_DrDisconnectEvent primary key (EventId)
 )
 go
 
@@ -13236,6 +13261,24 @@ go
 alter table DmvTestExecution
    add constraint FK_DmvTestExec_DmvTest foreign key (DmvTestId)
       references DmvTest (DmvTestId)
+         on delete cascade
+go
+
+alter table DrDisconnectDeviceStatus
+   add constraint FK_DrDiscDevStat_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+         on delete cascade
+go
+
+alter table DrDisconnectDeviceStatus
+   add constraint FK_DrDiscDevStat_DrDiscEvent foreign key (EventId)
+      references DrDisconnectEvent (EventId)
+         on delete cascade
+go
+
+alter table DrDisconnectEvent
+   add constraint FK_DrDiscEvent_LMProgram foreign key (ProgramId)
+      references LMPROGRAM (DeviceID)
          on delete cascade
 go
 

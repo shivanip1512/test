@@ -395,6 +395,47 @@ VALUES (-90049,-900,'DR Setup Permission','UPDATE','Controls the ability to crea
 INSERT INTO DBUpdates VALUES ('YUK-20350', '7.3.0', GETDATE());
 /* @end YUK-20350 */
 
+/* @start YUK-20335 */
+CREATE TABLE DrDisconnectEvent (
+    EventId         NUMERIC         NOT NULL,
+    ProgramId       NUMERIC         NOT NULL,
+    StartTime       DATETIME        NOT NULL,
+    EndTime         DATETIME        NOT NULL,
+    CONSTRAINT PK_DrDisconnectEvent PRIMARY KEY (EventId)
+);
+GO
+
+ALTER TABLE DrDisconnectEvent
+    ADD CONSTRAINT FK_DrDiscEvent_LMProgram FOREIGN KEY (ProgramId)
+    REFERENCES LMPROGRAM (DeviceID)
+    ON DELETE CASCADE;
+GO
+
+CREATE TABLE DrDisconnectDeviceStatus (
+    EntryId                 NUMERIC         NOT NULL,
+    EventId                 NUMERIC         NOT NULL,
+    DeviceId                NUMERIC         NOT NULL,
+    ControlStatus           VARCHAR(30)     NOT NULL,
+    ControlStatusTime       DATETIME        NOT NULL,
+    CONSTRAINT PK_DrDisconnectDeviceStatus PRIMARY KEY (EntryId)
+);
+GO
+
+ALTER TABLE DrDisconnectDeviceStatus
+    ADD CONSTRAINT FK_DrDiscDevStat_DrDiscEvent FOREIGN KEY (EventId)
+    REFERENCES DrDisconnectEvent (EventId)
+    ON DELETE CASCADE;
+GO
+
+ALTER TABLE DrDisconnectDeviceStatus
+    ADD CONSTRAINT FK_DrDiscDevStat_Device FOREIGN KEY (DeviceId)
+    REFERENCES DEVICE (DEVICEID)
+    ON DELETE CASCADE;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-20335', '7.3.0', GETDATE());
+/* @end YUK-20335 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

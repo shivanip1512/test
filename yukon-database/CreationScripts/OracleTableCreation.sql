@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/2/2019 5:39:19 AM                          */
+/* Created on:     8/2/2019 9:48:03 AM                          */
 /*==============================================================*/
 
 
@@ -4682,6 +4682,29 @@ create table DmvTestExecution  (
    StopTime             DATE,
    TestStatus           VARCHAR2(30),
    constraint PK_DmvTestExecution primary key (ExecutionId)
+);
+
+/*==============================================================*/
+/* Table: DrDisconnectDeviceStatus                              */
+/*==============================================================*/
+create table DrDisconnectDeviceStatus  (
+   EntryId              NUMBER                          not null,
+   EventId              NUMBER                          not null,
+   DeviceId             NUMBER                          not null,
+   ControlStatus        VARCHAR2(30)                    not null,
+   ControlStatusTime    DATE                            not null,
+   constraint PK_DrDisconnectDeviceStatus primary key (EntryId)
+);
+
+/*==============================================================*/
+/* Table: DrDisconnectEvent                                     */
+/*==============================================================*/
+create table DrDisconnectEvent  (
+   EventId              NUMBER                          not null,
+   ProgramId            NUMBER                          not null,
+   StartTime            DATE                            not null,
+   EndTime              DATE                            not null,
+   constraint PK_DrDisconnectEvent primary key (EventId)
 );
 
 /*==============================================================*/
@@ -12314,6 +12337,21 @@ alter table DmvMeasurementData
 alter table DmvTestExecution
    add constraint FK_DmvTestExec_DmvTest foreign key (DmvTestId)
       references DmvTest (DmvTestId)
+      on delete cascade;
+
+alter table DrDisconnectDeviceStatus
+   add constraint FK_DrDiscDevStat_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
+
+alter table DrDisconnectDeviceStatus
+   add constraint FK_DrDiscDevStat_DrDiscEvent foreign key (EventId)
+      references DrDisconnectEvent (EventId)
+      on delete cascade;
+
+alter table DrDisconnectEvent
+   add constraint FK_DrDiscEvent_LMProgram foreign key (ProgramId)
+      references LMPROGRAM (DeviceID)
       on delete cascade;
 
 alter table DynamicCCCapBank
