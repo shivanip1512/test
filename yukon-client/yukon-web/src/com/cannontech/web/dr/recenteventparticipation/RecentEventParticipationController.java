@@ -125,7 +125,7 @@ public class RecentEventParticipationController {
         List<String> columnNames = getColumnNames(userContext);
         List<List<String>> dataGrid = getGrid(recentEventParticipationDetails);
         String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
-        WebFileUtils.writeToCSV(response, columnNames, dataGrid, "RecentEventParticipationReport_" + eventId + "+" + now +".csv");
+        WebFileUtils.writeToCSV(response, columnNames, dataGrid, "RecentEventParticipationReport_" + eventId + "_" + now +".csv");
     }
 
     private List<String> getColumnNames(YukonUserContext userContext) {
