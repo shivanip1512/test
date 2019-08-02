@@ -21,8 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.ProgramConstraint;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.constraint.service.ProgramConstraintService;
 import com.cannontech.web.api.dr.setup.LMDeleteValidator;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
 @RequestMapping("/dr/setup/constraint")
@@ -38,6 +41,7 @@ public class ProgramConstraintApiController {
     }
 
     @PostMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<HashMap<String, Integer>> create(@Valid @RequestBody ProgramConstraint programConstraint) {
         Integer constraintId = programConstraintService.create(programConstraint);
         HashMap<String, Integer> constraintIdMap = new HashMap<>();
@@ -46,6 +50,7 @@ public class ProgramConstraintApiController {
     }
 
     @PostMapping("/update/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<HashMap<String, Integer>> update(@Valid @RequestBody ProgramConstraint programConstraint,
             @PathVariable int id) {
         Integer constraintId = programConstraintService.update(id, programConstraint);
@@ -55,6 +60,7 @@ public class ProgramConstraintApiController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public ResponseEntity<HashMap<String, Integer>> delete(@Valid @RequestBody LMDelete lmDelete,
             @PathVariable int id) {
         Integer constraintId = programConstraintService.delete(id, lmDelete.getName());

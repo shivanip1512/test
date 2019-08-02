@@ -14,23 +14,28 @@
     <cti:displayForPageEditModes modes="VIEW">
         <div id="page-actions" class="dn">
             <!-- Create -->
-            <cti:url var="createUrl" value="/dr/setup/constraint/create" />
-            <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" href="${createUrl}"/>
+            <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="CREATE">
+                <cti:url var="createUrl" value="/dr/setup/constraint/create" />
+                <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" href="${createUrl}"/>
+            </cti:checkRolesAndProperties>
             <!-- Edit -->
-            <cti:url var="editUrl" value="/dr/setup/constraint/${programConstraint.id}/edit"/>
-            <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
-            
-            <li class="divider"></li>
-            
+            <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="UPDATE">
+                <cti:url var="editUrl" value="/dr/setup/constraint/${programConstraint.id}/edit"/>
+                <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
+            </cti:checkRolesAndProperties>
             <!-- Delete -->
-            <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
+            <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="OWNER">
+                <li class="divider"></li>
+                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
                                id="delete-option" data-ok-event="yukon:constraint:delete"/>
-            <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${programConstraint.name}" />
-            <cti:url var="deleteUrl" value="/dr/setup/constraint/${programConstraint.id}/delete"/>
-            <form:form id="delete-constraint-form" action="${deleteUrl}" method="delete" modelAttribute="programConstraint">
-                <tags:hidden path="name"/>
-                <cti:csrfToken/>
-            </form:form>
+            
+                <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${programConstraint.name}" />
+                <cti:url var="deleteUrl" value="/dr/setup/constraint/${programConstraint.id}/delete"/>
+                <form:form id="delete-constraint-form" action="${deleteUrl}" method="delete" modelAttribute="programConstraint">
+                    <tags:hidden path="name"/>
+                    <cti:csrfToken/>
+                </form:form>
+            </cti:checkRolesAndProperties>
         </div>
     </cti:displayForPageEditModes>
     

@@ -19,8 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.dr.setup.ControlScenario;
 import com.cannontech.common.dr.setup.LMDelete;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.controlscenario.service.impl.ControlScenarioServiceImpl;
 import com.cannontech.web.api.dr.setup.LMDeleteValidator;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
 @RequestMapping("/dr/setup/controlScenario")
@@ -36,6 +39,7 @@ public class ControlScenarioSetupApiController {
     }
 
     @PostMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<HashMap<String, Integer>> create(
             @Valid @RequestBody ControlScenario controlScenario) {
         int paoId = controlScenarioService.create(controlScenario);
@@ -45,6 +49,7 @@ public class ControlScenarioSetupApiController {
     }
 
     @PostMapping("/update/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<HashMap<String, Integer>> update(@Valid @RequestBody ControlScenario controlScenario,
             @PathVariable int id) {
         int paoId = controlScenarioService.update(id, controlScenario);
@@ -54,6 +59,7 @@ public class ControlScenarioSetupApiController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public ResponseEntity<HashMap<String, Integer>> delete(@Valid @RequestBody LMDelete lmDelete,
             @PathVariable int id) {
         int paoId = controlScenarioService.delete(id, lmDelete.getName());

@@ -13,21 +13,26 @@
     <!-- Actions drop-down -->
     <cti:displayForPageEditModes modes="VIEW">
         <div id="page-actions" class="dn">
-            <cti:url var="createUrl" value="/dr/setup/controlArea/create" />
-            <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" href="${createUrl}"/>
-            <cti:url var="editUrl" value="/dr/setup/controlArea/${controlArea.controlAreaId}/edit"/>
-            <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
-
-            <li class="divider"></li>
-
-            <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="delete-option" data-ok-event="yukon:controlArea:delete"/>
-            <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${controlArea.name}" />
-            <cti:url var="deleteUrl" value="/dr/setup/controlArea/${controlArea.controlAreaId}/delete"/>
-            <form:form id="delete-controlArea-form" action="${deleteUrl}" method="delete" modelAttribute="controlArea">
-                <tags:hidden path="controlAreaId"/>
-                <tags:hidden path="name"/>
-                <cti:csrfToken/>
-            </form:form>
+            <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="CREATE">
+                <cti:url var="createUrl" value="/dr/setup/controlArea/create" />
+                <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" href="${createUrl}"/>
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="UPDATE">
+                <cti:url var="editUrl" value="/dr/setup/controlArea/${controlArea.controlAreaId}/edit"/>
+                <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="OWNER">
+                <li class="divider"></li>
+                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="delete-option" data-ok-event="yukon:controlArea:delete"/>
+            
+                <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${controlArea.name}" />
+                <cti:url var="deleteUrl" value="/dr/setup/controlArea/${controlArea.controlAreaId}/delete"/>
+                <form:form id="delete-controlArea-form" action="${deleteUrl}" method="delete" modelAttribute="controlArea">
+                    <tags:hidden path="controlAreaId"/>
+                    <tags:hidden path="name"/>
+                    <cti:csrfToken/>
+                </form:form>
+            </cti:checkRolesAndProperties>
         </div>
     </cti:displayForPageEditModes>
     

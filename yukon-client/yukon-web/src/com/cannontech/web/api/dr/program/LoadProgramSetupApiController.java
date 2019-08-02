@@ -26,10 +26,12 @@ import com.cannontech.common.dr.program.setup.model.ProgramGroup;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
 import com.cannontech.web.api.dr.setup.LMDeleteValidator;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -49,6 +51,7 @@ public class LoadProgramSetupApiController {
     }
 
     @PostMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody LoadProgram loadProgram) {
         int paoId = loadProgramService.create(loadProgram);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
@@ -57,6 +60,7 @@ public class LoadProgramSetupApiController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public ResponseEntity<Object> delete(@RequestBody LMDelete lmDelete, @PathVariable int id) {
         int paoId = loadProgramService.delete(id, lmDelete.getName());
         HashMap<String, Integer> paoIdMap = new HashMap<>();
@@ -65,6 +69,7 @@ public class LoadProgramSetupApiController {
     }
 
     @PostMapping("/copy/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> copy(@Valid @RequestBody LoadProgramCopy loadProgramCopy, @PathVariable int id) {
         int paoId = loadProgramService.copy(id, loadProgramCopy);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
@@ -73,6 +78,7 @@ public class LoadProgramSetupApiController {
     }
 
     @PostMapping("/update/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<Object> update(@Valid @RequestBody LoadProgram loadProgram, @PathVariable int id) {
         int paoId = loadProgramService.update(id, loadProgram);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
@@ -86,8 +92,8 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(notificationGroups, HttpStatus.OK);
     }
 
-    @CheckRoleProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS)
     @GetMapping("/allAvailableDirectMemberControls")
+    @CheckRoleProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS)
     public ResponseEntity<Object> getAllAvailableDirectMemberControls() {
         List<ProgramDirectMemberControl> directMemberControls =
             loadProgramService.getAllAvailableDirectMemberControls();
@@ -113,8 +119,9 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(notificationGroups, HttpStatus.OK);
     }
 
-    @CheckRoleProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS)
+    
     @GetMapping("/availableDirectMemberControls/{id}")
+    @CheckRoleProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS)
     public ResponseEntity<Object> getAvailableDirectMemberControls(@PathVariable int id) {
         List<ProgramDirectMemberControl> directMemberControls =
             loadProgramService.getAvailableDirectMemberControls(id);

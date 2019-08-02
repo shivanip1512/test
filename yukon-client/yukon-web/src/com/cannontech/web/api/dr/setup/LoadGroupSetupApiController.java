@@ -22,8 +22,11 @@ import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
 
 @RestController
@@ -43,6 +46,7 @@ public class LoadGroupSetupApiController {
     }
 
     @PostMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody LoadGroupBase loadGroup) {
         int paoId = loadGroupService.create(loadGroup);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
@@ -51,6 +55,7 @@ public class LoadGroupSetupApiController {
     }
     
     @PostMapping("/update/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<Object> update(@Valid @RequestBody LoadGroupBase loadGroup, @PathVariable int id) {
         int paoId = loadGroupService.update(id, loadGroup);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
@@ -59,6 +64,7 @@ public class LoadGroupSetupApiController {
     }
 
     @PostMapping("/copy/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> copy(@Valid @RequestBody LMCopy lmCopy, @PathVariable int id) {
         int paoId = loadGroupService.copy(id, lmCopy);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
@@ -67,6 +73,7 @@ public class LoadGroupSetupApiController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public ResponseEntity<Object> delete(@Valid @RequestBody LMDelete lmDelete, @PathVariable int id) {
         int paoId = loadGroupService.delete(id, lmDelete.getName());
         HashMap<String, Integer> paoIdMap = new HashMap<>();

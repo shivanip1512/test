@@ -15,24 +15,30 @@
     <cti:displayForPageEditModes modes="VIEW">
         <div id="page-actions" class="dn">
             <!-- Create -->
-            <cti:url var="createUrl" value="/dr/setup/controlScenario/create" />
-            <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" href="${createUrl}"/>
+            <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="CREATE">
+                <cti:url var="createUrl" value="/dr/setup/controlScenario/create" />
+                <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" href="${createUrl}"/>
+            </cti:checkRolesAndProperties>
 
             <!-- Edit -->
-            <cti:url var="editUrl" value="/dr/setup/controlScenario/${controlScenario.id}/edit"/>
-            <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
-            <li class="divider"></li>
-
+            <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="UPDATE">
+                <cti:url var="editUrl" value="/dr/setup/controlScenario/${controlScenario.id}/edit"/>
+                <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
+            </cti:checkRolesAndProperties>
             <!-- Delete -->
-            <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
+            <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="OWNER">
+                <li class="divider"></li>
+                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
                                id="js-delete-option" data-ok-event="yukon:control-scenario:delete"/>
-            <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${controlScenario.name}" />
-            <cti:url var="deleteUrl" value="/dr/setup/controlScenario/${controlScenario.id}/delete"/>
-            <form:form id="js-delete-control-scenario-form" action="${deleteUrl}" method="delete" modelAttribute="controlScenario">
-                <tags:hidden path="id"/>
-                <tags:hidden path="name"/>
-                <cti:csrfToken/>
-            </form:form> 
+            
+                <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${controlScenario.name}" />
+                <cti:url var="deleteUrl" value="/dr/setup/controlScenario/${controlScenario.id}/delete"/>
+                <form:form id="js-delete-control-scenario-form" action="${deleteUrl}" method="delete" modelAttribute="controlScenario">
+                    <tags:hidden path="id"/>
+                    <tags:hidden path="name"/>
+                    <cti:csrfToken/>
+                </form:form>
+            </cti:checkRolesAndProperties> 
         </div>
     </cti:displayForPageEditModes>
     

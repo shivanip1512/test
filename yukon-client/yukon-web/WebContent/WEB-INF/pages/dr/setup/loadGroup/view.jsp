@@ -12,25 +12,31 @@
     <!-- Actions drop-down -->
     <cti:displayForPageEditModes modes="VIEW">
         <div id="page-actions" class="dn">
-            <cti:url var="createUrl" value="/dr/setup/loadGroup/create" />
-            <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" href="${createUrl}"/>
-            <cti:url var="editUrl" value="/dr/setup/loadGroup/${loadGroup.id}/edit"/>
-            <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
-            <li class="divider"></li>
-
-            <cm:dropdownOption key="yukon.web.components.button.copy.label" icon="icon-disk-multiple"
+            <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="CREATE">
+                <cti:url var="createUrl" value="/dr/setup/loadGroup/create" />
+                <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" href="${createUrl}"/>
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="UPDATE">
+                <cti:url var="editUrl" value="/dr/setup/loadGroup/${loadGroup.id}/edit"/>
+                <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="CREATE">
+                <li class="divider"></li>
+                <cm:dropdownOption key="yukon.web.components.button.copy.label" icon="icon-disk-multiple"
                                id="copy-option" data-popup="#copy-loadGroup-popup"/>
-
-            <li class="divider"></li>
-
-            <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="delete-option" data-ok-event="yukon:loadGroup:delete"/>
-            <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${loadGroup.name}" />
-            <cti:url var="deleteUrl" value="/dr/setup/loadGroup/${loadGroup.id}/delete"/>
-            <form:form id="delete-loadGroup-form" action="${deleteUrl}" method="delete" modelAttribute="loadGroup">
-                <tags:hidden path="id"/>
-                <tags:hidden path="name"/>
-                <cti:csrfToken/>
-            </form:form>
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="OWNER">
+                <li class="divider"></li>
+                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="delete-option" data-ok-event="yukon:loadGroup:delete"/>
+            
+                <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${loadGroup.name}" />
+                <cti:url var="deleteUrl" value="/dr/setup/loadGroup/${loadGroup.id}/delete"/>
+                <form:form id="delete-loadGroup-form" action="${deleteUrl}" method="delete" modelAttribute="loadGroup">
+                    <tags:hidden path="id"/>
+                    <tags:hidden path="name"/>
+                    <cti:csrfToken/>
+                </form:form>
+            </cti:checkRolesAndProperties>
         </div>
 
         <!-- Copy loadGroup dialog -->

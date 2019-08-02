@@ -20,9 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.MacroLoadGroup;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.macro.service.impl.MacroLoadGroupSetupServiceImpl;
 import com.cannontech.web.api.dr.setup.LMCopyValidator;
 import com.cannontech.web.api.dr.setup.LMDeleteValidator;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
 @RequestMapping("/dr/setup/macroLoadGroup")
@@ -40,6 +43,7 @@ public class MacroLoadGroupSetupApiController {
     }
 
     @PostMapping("/update/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<Object> update(@Valid @RequestBody MacroLoadGroup loadGroup, @PathVariable int id) {
         int paoId = macroLoadGroupService.update(id, loadGroup);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
@@ -48,6 +52,7 @@ public class MacroLoadGroupSetupApiController {
     }
 
     @PostMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody MacroLoadGroup loadGroup) {
         int paoId = macroLoadGroupService.create(loadGroup);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
@@ -56,6 +61,7 @@ public class MacroLoadGroupSetupApiController {
     }
 
     @PostMapping("/copy/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> copy(@Valid @RequestBody LMCopy lmCopy, @PathVariable int id) {
         int paoId = macroLoadGroupService.copy(id, lmCopy);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
@@ -64,6 +70,7 @@ public class MacroLoadGroupSetupApiController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public ResponseEntity<Object> delete(@Valid @RequestBody LMDelete lmDelete, @PathVariable int id) {
         int paoId = macroLoadGroupService.delete(id, lmDelete.getName());
         HashMap<String, Integer> paoIdMap = new HashMap<>();

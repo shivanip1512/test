@@ -285,6 +285,9 @@
 <entry key="yukon.common.roleProperty.ALLOW_CHANGE_GEARS.description">Controls access to change gears for Scenarios, Control Areas, and Programs. Requires Allow DR Control.</entry>
 <entry key="yukon.common.roleProperty.ENABLE_DISABLE_PROGRAM">DR Enable/Disable</entry>
 <entry key="yukon.common.roleProperty.ENABLE_DISABLE_PROGRAM.description">Controls access to enable or disable Control Areas, Programs and Load Groups. Requires Allow DR Control.</entry>
+<entry key="yukon.common.roleProperty.DR_SETUP_PERMISSION">DR Setup Permission</entry>
+<entry key="yukon.common.roleProperty.DR_SETUP_PERMISSION.description">Controls the ability to create, edit, or delete demand response setup and configuration i.e Load Groups, Programs, Control Areas. Demand Response Role controls view access.</entry>
+
 
 <entry key="yukon.common.roleProperty.ALLOW_LOAD_GROUP_CONTROL">Load Group Control</entry>
 <entry key="yukon.common.roleProperty.ALLOW_LOAD_GROUP_CONTROL.description">Controls access to shed and restore at Load Group level. Requires Allow DR Control.</entry>

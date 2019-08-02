@@ -10,7 +10,9 @@
     <cti:msgScope paths="components, modules.dr.setup">
         <!-- Actions dropdown -->
         <div id="page-actions" class="dn">
-            <cm:dropdownOption icon="icon-plus-green" key=".button.create.label" id="js-create-option" data-popup="#js-create-dr-objects-popup"/>
+            <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="CREATE">
+                <cm:dropdownOption icon="icon-plus-green" key=".button.create.label" id="js-create-option" data-popup="#js-create-dr-objects-popup"/>
+            </cti:checkRolesAndProperties>
         </div>
         
         <div id="js-create-dr-objects-popup" class="dn" data-title="<i:inline key=".createObject.title"/>" data-width="400">
