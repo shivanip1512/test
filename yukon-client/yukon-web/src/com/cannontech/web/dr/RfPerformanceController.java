@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -487,9 +486,8 @@ public class RfPerformanceController {
     
     private void writeToCSV(String[] headerRow, List<String[]> dataRows, long eventId, HttpServletResponse response,
             YukonUserContext userContext) throws IOException {
-        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()),
-            DateFormatEnum.FILE_TIMESTAMP, userContext);
-        String fileName = "rfEventDetail" + "_" + eventId + "_" + dateStr + ".csv";
+        String dateStr = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        String fileName = "RFEventDetail" + "_" + eventId + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
     }
 

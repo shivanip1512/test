@@ -299,7 +299,8 @@ public class HistoricalReadingsController {
         String deviceName = databaseCache.getAllPaosMap().get(paoPointIdentifier.getPaoIdentifier().getPaoId()).getPaoName();
         String pointName = pointDao.getPointName(pointId);
         
-        String fileName = deviceName + "_" + pointName + ".csv";
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, context);
+        String fileName = deviceName + "_" + pointName + "_" + now + ".csv";
         queueLimitedPointData(duration,
                               context,
                               Order.REVERSE,

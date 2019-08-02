@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -32,6 +33,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -53,7 +55,8 @@ import com.google.common.collect.Ordering;
 public class EventLogCategoryController {
 
     private final int maxCsvRows = 65535; // The total number of rows possible in excel minus one row for the header row.
-    
+
+    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private EventLogCategoryValidator eventLogCategoryValidator;
     @Autowired private EventLogDao eventLogDao;
@@ -134,7 +137,8 @@ public class EventLogCategoryController {
         
         // Build and write csv report
         String categoryCsvFileName = accessor.getMessage("yukon.web.modules.support.eventViewer.byCategory.csvExport.fileName");
-        WebFileUtils.writeToCSV(response, columnNames, dataGrid, categoryCsvFileName + ".csv");
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, columnNames, dataGrid, categoryCsvFileName + "_" + now + ".csv");
     }
     
     @ModelAttribute("filter")

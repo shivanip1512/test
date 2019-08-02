@@ -47,6 +47,8 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -92,11 +94,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class AccountImportService {
-    
+
     @Autowired private AccountEventLogService accountLog;
     @Autowired private AccountService accountService;
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private ContactDao contactDao;
+    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private EmailService emailService;
     @Autowired private EnergyCompanyService ecService;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
@@ -175,7 +178,7 @@ public class AccountImportService {
 
         if (archiveCustFilename != null) {
             if (preScan) {
-                logFileName = "Prescan-" + archiveCustFilename;
+                logFileName = "Prescan_" + archiveCustFilename;
             } else {
                 logFileName = archiveCustFilename;
             }
@@ -184,7 +187,7 @@ public class AccountImportService {
         String archiveHardFilename = getFilename(startTime, result.getHardwareFile(), ".log");
         if (archiveHardFilename != null) {
             if (preScan) {
-                logFileName = "Prescan-" + archiveHardFilename;
+                logFileName = "Prescan_" + archiveHardFilename;
             } else {
                 logFileName = archiveHardFilename;
             }
@@ -201,9 +204,8 @@ public class AccountImportService {
         if (fileToProcess != null) {
             String fileName = fileToProcess.getName();
             //Removed .tmp extension from tempFile
-            String archiveFileName =
-                fileName.substring(0, fileName.length() - 4) + "-" + StarsUtils.starsDateFormat.format(startTime) + "_"
-                    + StarsUtils.starsTimeFormat.format(startTime) + ext;
+            String now = dateFormattingService.format(new Instant(), DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
+            String archiveFileName = fileName.substring(0, fileName.length() - 4) + "_" + now + ext;
             return archiveFileName;
         }
         return null;

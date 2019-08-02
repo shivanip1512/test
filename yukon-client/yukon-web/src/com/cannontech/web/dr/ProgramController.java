@@ -4,20 +4,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
@@ -63,9 +62,9 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteHardwarePAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
@@ -302,8 +301,8 @@ public class ProgramController extends ProgramControllerBase {
                                                             DateFormatEnum.BOTH, userContext);
             dataRows.add(dataRow);
         }
-        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "disconnectStatus_" + program.getName() + "_" + now + ".csv");
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "DisconnectStatus_" + program.getName() + "_" + now + ".csv");
     }
     
     @PostMapping("/disconnectStatus/change")
@@ -384,9 +383,8 @@ public class ProgramController extends ProgramControllerBase {
         // get the data rows
         List<String[]> dataRows = getDownloadDataRows(program, filters, userContext);
         
-        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
-                DateFormatEnum.BOTH, userContext);
-        String fileName = "program_" + program.getName() + "_" + dateStr + ".csv";
+        String dateStr = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        String fileName = "Program_" + program.getName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
     }
 

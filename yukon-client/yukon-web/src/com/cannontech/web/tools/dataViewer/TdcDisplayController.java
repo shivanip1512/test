@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -646,7 +647,8 @@ public class TdcDisplayController {
                                   userContext);
         List<String> columnNames = helper.getColumnNames();
         List<List<String>> dataGrid = helper.getDataGrid();
-        WebFileUtils.writeToCSV(response, columnNames, dataGrid, display.getName() + ".csv");
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
+        WebFileUtils.writeToCSV(response, columnNames, dataGrid, display.getName() + "_" + now + ".csv");
         return null;
     }
     

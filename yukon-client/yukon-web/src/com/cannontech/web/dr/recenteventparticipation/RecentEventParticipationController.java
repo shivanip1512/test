@@ -112,7 +112,8 @@ public class RecentEventParticipationController {
             recentEventParticipationService.getRecentEventParticipationDetails(Range.inclusiveExclusive(from, toFullDay));
         List<String> columnNames = getColumnNames(userContext);
         List<List<String>> dataGrid = getGrid(recentEventParticipationDetails);
-        WebFileUtils.writeToCSV(response, columnNames, dataGrid, "RecentEventParticipationReport" + ".csv");
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, columnNames, dataGrid, "RecentEventParticipationReport" + "_" + now + ".csv");
     }
 
     @RequestMapping("/recenteventparticipation/download")
@@ -123,7 +124,8 @@ public class RecentEventParticipationController {
             recentEventParticipationService.getRecentEventParticipationDetail(eventId);
         List<String> columnNames = getColumnNames(userContext);
         List<List<String>> dataGrid = getGrid(recentEventParticipationDetails);
-        WebFileUtils.writeToCSV(response, columnNames, dataGrid, "RecentEventParticipationReport_" + eventId + ".csv");
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, columnNames, dataGrid, "RecentEventParticipationReport_" + eventId + "+" + now +".csv");
     }
 
     private List<String> getColumnNames(YukonUserContext userContext) {

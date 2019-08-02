@@ -15,11 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.graph.Graph;
 import com.cannontech.graph.model.TrendProperties;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -29,7 +30,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 @Controller
 @CheckRole(YukonRole.TRENDING)
 public class TrendsHomeController {
-    
+
+    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private GraphDao graphDao;
     
@@ -86,11 +88,9 @@ public class TrendsHomeController {
         props.setOptionsMaskSettings(GraphRenderers.BASIC_MASK);
         graph.setTrendProperties(props);
         graph.update(start, stop);
-        
-        
-        String fileName = graph.getTrendModel().getChartName().toString();
-        fileName += new java.text.SimpleDateFormat("yyyyMMdd").format(graph.getTrendModel().getStartDate());
-        fileName += ".csv";
+
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
+        String fileName = graph.getTrendModel().getChartName().toString() + "_" + now +  ".csv";
 
         ServletOutputStream out = resp.getOutputStream();
         resp.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");

@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +17,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.geojson.FeatureCollection;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -387,8 +387,8 @@ public class MapController {
         String[] headerRow = getHeaderRows(userContext);
         List<String[]> dataRows = getDataRows(paoLocationDetails, userContext);
 
-        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "mapLocations_" + now + ".csv");
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "MapLocations_" + now + ".csv");
     }
     
     private String[] getHeaderRows(YukonUserContext userContext) {

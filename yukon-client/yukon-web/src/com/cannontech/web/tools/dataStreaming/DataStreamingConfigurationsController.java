@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -55,6 +56,8 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -74,6 +77,7 @@ import com.google.common.collect.Lists;
 @CheckCparm(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED)
 public class DataStreamingConfigurationsController {
 
+    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DataStreamingService dataStreamingService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private RfnGatewayService rfnGatewayService;
@@ -345,7 +349,8 @@ public class DataStreamingConfigurationsController {
         List<List<String>> dataGrid = getGrid(results, accessor);
 
         String csvFileName = accessor.getMessage(baseKey + "summary.results.exportFileName");
-        WebFileUtils.writeToCSV(response, columnNames, dataGrid, csvFileName + ".csv");
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
+        WebFileUtils.writeToCSV(response, columnNames, dataGrid, csvFileName + "_" + now + ".csv");
     }
 
     private List<List<String>> getGrid(List<SummarySearchResult> results, MessageSourceAccessor accessor){

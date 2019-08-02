@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -330,9 +330,8 @@ public class ControlAreaController extends DemandResponseControllerBase {
         // get the data rows
         List<String[]> dataRows = getDownloadDataRows(controlArea, filters, userContext);
         
-        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
-                DateFormatEnum.BOTH, userContext);
-        String fileName = "controlArea_" + controlArea.getName() + "_" + dateStr + ".csv";
+        String dateStr = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        String fileName = "ControlArea_" + controlArea.getName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
     }
     

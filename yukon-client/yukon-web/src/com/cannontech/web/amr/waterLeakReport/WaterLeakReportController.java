@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.joda.time.Duration;
 import org.joda.time.Hours;
 import org.joda.time.Instant;
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -445,7 +444,7 @@ public class WaterLeakReportController {
             dataRow[3] = String.valueOf(waterLeak.getLeakRate());
             dataRows.add(dataRow);
         }
-        String dateStr = dateFormattingService.format(new LocalDate(userContext.getJodaTimeZone()), DateFormatEnum.DATE, userContext);
+        String dateStr = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "WaterLeakReport_" + dateStr + ".csv");
 
         return "";
@@ -488,7 +487,7 @@ public class WaterLeakReportController {
             dataRows.add(dataRow);
         }
 
-        String dateStr = dateFormattingService.format(new LocalDate(userContext.getJodaTimeZone()), DateFormatEnum.DATE, userContext);
+        String dateStr = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "WaterLeakReportIntervalData_" + dateStr + ".csv");
 
         return "";

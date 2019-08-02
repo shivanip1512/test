@@ -9,7 +9,6 @@ import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -20,12 +19,15 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.YukonHttpProxy;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.nest.model.NestException;
 import com.cannontech.dr.nest.model.NestExisting;
@@ -41,16 +43,19 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.user.YukonUserContext;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 
 public class NestSimulatorServiceImpl implements NestSimulatorService {
-
+    
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private AccountService accountService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private NestCommunicationService nestCommunicationService;
+    @Autowired private DateFormattingService dateFormattingService;
+    
     private GlobalSettingDao settingDao;
     private Proxy proxy;
 
@@ -291,10 +296,9 @@ public class NestSimulatorServiceImpl implements NestSimulatorService {
         return Optional.empty();
     }
     
-    public static final SimpleDateFormat FILE_NAME_DATE_FORMATTER = new SimpleDateFormat("YYYYMMddHHmm");
-
     private File createFile(String path, String name) {
-        String fileName = FILE_NAME_DATE_FORMATTER.format(new Date()) + "_" + name + ".csv";
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
+        String fileName = name + "_" + now + ".csv";
         File directory = new File(path);
         if (!directory.exists()) {
             directory.mkdirs();

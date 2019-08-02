@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -214,8 +213,8 @@ public class InfrastructureWarningsController {
         String[] headerRow = getHeaderRows(userContext);
         List<String[]> dataRows = getDataRows(warnings, userContext);
 
-        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "infrastructureWarnings_" + now + ".csv");
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "InfrastructureWarnings_" + now + ".csv");
         return null;
       }
     
@@ -226,8 +225,8 @@ public class InfrastructureWarningsController {
         String[] headerRow = getHeaderRows(userContext);
         List<String[]> dataRows = getDataRows(warnings, userContext);
 
-        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "infrastructureWarnings_" + now + ".csv");
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "InfrastructureWarnings_" + now + ".csv");
         return null;
       }
     

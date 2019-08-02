@@ -26,7 +26,7 @@ public class BulkFileUploadUtils {
 
             try {
                 FileUploadUtils.validateDataUploadFileType(dataFile);
-                File file = WebFileUtils.convertToTempFile(dataFile, "bulkImport", "");
+                File file = WebFileUtils.convertToTempFile(dataFile, dataFile.getOriginalFilename(), "");
                 bulkFileUpload.setName(dataFile.getOriginalFilename());
                 bulkFileUpload.setFile(file);
             } catch (IOException e) {

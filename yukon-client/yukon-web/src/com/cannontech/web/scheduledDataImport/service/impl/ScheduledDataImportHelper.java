@@ -17,9 +17,12 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.scheduledFileImport.ScheduleImportHistoryEntry;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileUtil;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.scheduledDataImport.dao.ScheduledDataImportDao;
 import com.google.common.collect.Multimap;
 import com.opencsv.CSVWriter;
@@ -28,6 +31,7 @@ public class ScheduledDataImportHelper {
     
     private static final Logger log = YukonLogManager.getLogger(ScheduledDataImportHelper.class);
     
+    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ScheduledDataImportDao scheduledDataImportDao;
 
@@ -80,7 +84,7 @@ public class ScheduledDataImportHelper {
         String errorFileName = null;
         if (CollectionUtils.isNotEmpty(errorList)) {
             FileUtil.verifyDirectory(errorFileOutputPath);
-            errorFileName = getErrorFileName(startTime.toDate(), file, "_ErrorResults_", ".csv");
+            errorFileName = getErrorFileName(startTime.toDate(), file, "ErrorResults", ".csv");
             File errorFile = new File(errorFileOutputPath, errorFileName);
             try (FileWriter writer = new FileWriter(errorFile);
                  CSVWriter csvWriter = new CSVWriter(writer);) {
@@ -96,12 +100,12 @@ public class ScheduledDataImportHelper {
 
     /**
      * Get error file name (File_ErrorResults_YYYYMMDD_HHMM or
-     * File_ErrorResults_IN_Header_YYYYMMDD_HHMM)based on startTime, file and ext.
+     * File_ErrorResults_IN_Header_YYYYMMddHHmm)based on startTime, file and ext.
      */
-    public String getErrorFileName(Date startTime, File file, String fileNameExtension, String ext) {
+    public String getErrorFileName(Date startTime, File file, String fileNameExtraInfo, String ext) {
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
         String fileName = file.getName().substring(0, file.getName().length() - 4);
-        String errorFileName = fileName + fileNameExtension + StarsUtils.starsDateFormat.format(startTime) + "_"
-            + StarsUtils.starsTimeFormat.format(startTime) + ".csv";
+        String errorFileName = fileName + "_" + fileNameExtraInfo + "_" + now + ".csv";
         return errorFileName;
 
     }

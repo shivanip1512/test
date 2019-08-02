@@ -2,7 +2,6 @@ package com.cannontech.web.stars.comprehensiveMap;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Logger;
 import org.geojson.FeatureCollection;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -257,8 +257,8 @@ public class ComprehensiveMapController {
         
         log.debug("Generated {} rows for CSV file", dataRows.size());
 
-        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "comprehensiveMapDownload_" + now + ".csv");
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "ComprehensiveMapDownload_" + now + ".csv");
 
       }
     

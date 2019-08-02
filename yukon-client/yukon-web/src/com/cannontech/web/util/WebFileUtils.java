@@ -58,7 +58,7 @@ public class WebFileUtils {
         File tempFile = new File("");
         try {
             FileUploadUtils.validateDataUploadFileType(dataFile);
-            tempFile = convertToTempFile(dataFile, "bulkImport", "");
+            tempFile = convertToTempFile(dataFile, dataFile.getOriginalFilename(), "");
         } catch (FileImportException e) {
             throw new FileImportException(e.getMessage());
         } catch (IOException e) {

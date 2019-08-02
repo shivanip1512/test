@@ -185,7 +185,7 @@ public class AssetScheduledImportServiceImpl implements ScheduledImportService {
         String fileName = null;
         try {
             FileUtil.verifyDirectory(errorFileOutputPath);
-            fileName = dataImportHelper.getErrorFileName(startTime.toDate(), filetoProcess, "_ErrorResults_IN_Header_", ".csv");
+            fileName = dataImportHelper.getErrorFileName(startTime.toDate(), filetoProcess, "ErrorResults_IN_Header", ".csv");
             FileUtils.copyFile(filetoProcess, new File(errorFileOutputPath, fileName));
             // Move to archive directory
             if (!archiveFile.exists()) {

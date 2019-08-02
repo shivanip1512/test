@@ -39,6 +39,7 @@ import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -67,6 +68,7 @@ public class ControlAuditController {
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
     @Autowired private ControlAuditService controlAuditService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private DateFormattingService dateFormattingService;
     
     @Autowired @Qualifier("inventoryTasks") private RecentResultsCache<AbstractInventoryTask> resultsCache;
     
@@ -198,7 +200,9 @@ public class ControlAuditController {
         }
         
         //write out the file
-        WebFileUtils.writeToCSV(resp, headerRow, dataRows, "LmControlAudit_" + type + ".csv");
+        
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(resp, headerRow, dataRows, "LmControlAudit_" + type + "_" + now + ".csv");
     }
     
     @RequestMapping("new-action")

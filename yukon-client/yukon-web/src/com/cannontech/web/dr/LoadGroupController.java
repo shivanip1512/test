@@ -9,7 +9,7 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.joda.time.LocalDateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -194,9 +194,8 @@ public class LoadGroupController extends DemandResponseControllerBase {
         // get the data rows
         List<String[]> dataRows = getDownloadDataRows(loadGroup, filters, userContext);
         
-        String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
-                DateFormatEnum.BOTH, userContext);
-        String fileName = "loadGroup_" + loadGroup.getName() + "_" + dateStr + ".csv";
+        String dateStr = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        String fileName = "LoadGroup_" + loadGroup.getName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
     }
 

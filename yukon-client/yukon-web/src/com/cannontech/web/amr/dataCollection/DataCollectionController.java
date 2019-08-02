@@ -2,7 +2,6 @@ package com.cannontech.web.amr.dataCollection;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -281,8 +280,8 @@ public class DataCollectionController {
             }
             dataRows.add(dataRow);
         }
-        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "recentReadings_" + group.getName() + "_" + now + ".csv");
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "RecentReadings_" + group.getName() + "_" + now + ".csv");
         return null;
       }
 
