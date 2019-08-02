@@ -10,6 +10,10 @@ import org.springframework.jms.listener.SimpleMessageListenerContainer;
 public class ContextLoggingMessageListenerContainer extends SimpleMessageListenerContainer {
     private static final String JMS_MESSAGE_ID = "JmsMessageId";
 
+    ContextLoggingMessageListenerContainer() {
+        setAcceptMessagesWhileStopping(true);
+    }
+    
     @Override
     protected void invokeListener(Session session, Message message) throws JMSException {
         ThreadContext.put(JMS_MESSAGE_ID, message.getJMSMessageID());
