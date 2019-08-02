@@ -1,19 +1,15 @@
 package com.cannontech.web.support;
 
-import org.apache.commons.compress.utils.Lists;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Duration;
-import org.joda.time.Instant;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.compress.utils.Lists;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
@@ -59,7 +55,7 @@ public class WaterNodeAnalysisController {
             String[] headerRow = getReportHeaderRow(userContext);
             List<String[]> dataRows = getReportDataRows(intervalStart,intervalEnd);
             
-            writeToCSV(headerRow, dataRows, response, userContext, intervalEnd, "BatteryAnalysis_");
+            writeToCSV(headerRow, dataRows, response, userContext, intervalEnd, "BatteryAnalysis");
             batteryAnalysisModel.setLastCreatedReport(intervalEnd);
             model.addAttribute("batteryModel", batteryAnalysisModel);
         }
@@ -75,7 +71,7 @@ public class WaterNodeAnalysisController {
             String[] headerRow = getVoltageHeaderRow(userContext);
             List<String[]> dataRows = getVoltageDataRows(intervalStart,intervalEnd, userContext);
             
-            writeToCSV(headerRow, dataRows, response, userContext, intervalEnd, "BatteryVoltagesDetail_");
+            writeToCSV(headerRow, dataRows, response, userContext, intervalEnd, "BatteryVoltagesDetail");
         }
         
         @GetMapping("generateCSVReport")
@@ -158,9 +154,8 @@ public class WaterNodeAnalysisController {
         
         private void writeToCSV(String[] headerRow, List<String[]> dataRows, HttpServletResponse response,
                    YukonUserContext userContext, Instant reportDate, String reportName) throws IOException {
-            String dateStr = dateFormattingService.format(new DateTime(reportDate).toLocalDateTime(),
-                DateFormatEnum.FILE_TIMESTAMP, userContext);
-            String fileName = reportName + dateStr + ".csv";
+            String dateStr = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+            String fileName = reportName + "_" + dateStr + ".csv";
             WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
         }
 }
