@@ -5,6 +5,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,19 +50,18 @@ public class WaterNodeAnalysisController {
             BatteryAnalysisModel batteryAnalysisModel = new BatteryAnalysisModel();
             DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
             DateTimeZone timeZone = userContext.getJodaTimeZone();
-            Instant intervalEnd = formatter.parseDateTime(analysisEnd).withTimeAtStartOfDay().withZone(timeZone).toInstant();
-            intervalEnd.plus(Duration.standardDays(1));
-            batteryAnalysisModel.setAnalysisEnd(intervalEnd);
-            Instant intervalStart =  intervalEnd.minus(Duration.standardDays(6));//interval lasts six days
             
+            Instant intervalEnd = formatter.parseDateTime(analysisEnd).withTimeAtStartOfDay().withZone(timeZone).toInstant();
+            intervalEnd = intervalEnd.plus(Duration.standardDays(1));
+            batteryAnalysisModel.setAnalysisEnd(intervalEnd);
+            
+            Instant intervalStart =  intervalEnd.minus(Duration.standardDays(6)).plus(Duration.standardSeconds(1));//interval lasts six days and starts at 00:00:01
             String[] headerRow = getReportHeaderRow(userContext);
             List<String[]> dataRows = getReportDataRows(intervalStart,intervalEnd);
             
-            writeToCSV(headerRow, dataRows, response, userContext, intervalEnd);
+            writeToCSV(headerRow, dataRows, response, userContext, intervalEnd, "BatteryAnalysis_");
             batteryAnalysisModel.setLastCreatedReport(intervalEnd);
             model.addAttribute("batteryModel", batteryAnalysisModel);
-            //TODO: figure out if I need to add the model anywhere else
-            //TODO: round off date correctly
         }
         
         @GetMapping("generateVoltageReport")
@@ -68,13 +69,18 @@ public class WaterNodeAnalysisController {
             DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
             DateTimeZone timeZone = userContext.getJodaTimeZone();
             Instant intervalEnd = formatter.parseDateTime(lastReport).withTimeAtStartOfDay().withZone(timeZone).toInstant();
-            intervalEnd.plus(Duration.standardDays(1));
-            Instant intervalStart =  intervalEnd.minus(Duration.standardDays(6));//interval lasts six days
+            intervalEnd = intervalEnd.plus(Duration.standardDays(1));
+            Instant intervalStart =  intervalEnd.minus(Duration.standardDays(6)).plus(Duration.standardSeconds(1));//interval lasts six days and starts at 00:00:01
             
             String[] headerRow = getVoltageHeaderRow(userContext);
             List<String[]> dataRows = getVoltageDataRows(intervalStart,intervalEnd, userContext);
             
-            writeToCSV(headerRow, dataRows, response, userContext, intervalEnd);
+            writeToCSV(headerRow, dataRows, response, userContext, intervalEnd, "BatteryVoltagesDetail_");
+        }
+        
+        @GetMapping("generateCSVReport")
+        public void testCSVData(ModelMap model, HttpServletResponse response, YukonUserContext userContext) throws IOException {
+            
         }
         
         @GetMapping("view")
@@ -129,38 +135,32 @@ public class WaterNodeAnalysisController {
             return headerRow;
          }
         
-    private List<String[]> getVoltageDataRows(Instant intervalStart, Instant intervalEnd, YukonUserContext userContext) {
-        List<VoltageDetails> voltageDetails =  waterNodeService.getVoltageDetails(intervalStart, intervalEnd);
-        List<String[]> dataRows = Lists.newArrayList();
-
-        voltageDetails.forEach(details -> {
-                ArrayList<Double> voltages = details.getVoltages();
-                ArrayList<Instant> timestamps = details.getTimestamps();
-                String serialNumber = details.getSerialNumber();
-                int numValues = voltages.size();
-            for (int currentIndex = 0; currentIndex < numValues; currentIndex++) {
-                String[] dataRow = new String[4];
-                dataRow[0] = serialNumber;
-                dataRow[1] = dateFormattingService.format(timestamps.get(currentIndex), DateFormatEnum.DATE, userContext);
-                dataRow[2] = dateFormattingService.format(timestamps.get(currentIndex), DateFormatEnum.TIME24H, userContext);//TODO: decide if this should be 24 hour time
-                dataRow[3] = voltages.get(currentIndex).toString();
-                dataRows.add(dataRow);
-            }
-        });
-        return dataRows;
-    }
+        private List<String[]> getVoltageDataRows(Instant intervalStart, Instant intervalEnd, YukonUserContext userContext) {
+            List<VoltageDetails> voltageDetails =  waterNodeService.getVoltageDetails(intervalStart, intervalEnd);
+            List<String[]> dataRows = Lists.newArrayList();
+    
+            voltageDetails.forEach(details -> {
+                    ArrayList<Double> voltages = details.getVoltages();
+                    ArrayList<Instant> timestamps = details.getTimestamps();
+                    String serialNumber = details.getSerialNumber();
+                    int numValues = voltages.size();
+                for (int currentIndex = 0; currentIndex < numValues; currentIndex++) {
+                    String[] dataRow = new String[4];
+                    dataRow[0] = serialNumber;
+                    dataRow[1] = dateFormattingService.format(timestamps.get(currentIndex), DateFormatEnum.DATE, userContext);
+                    dataRow[2] = dateFormattingService.format(timestamps.get(currentIndex), DateFormatEnum.TIME24H, userContext);
+                    dataRow[3] = voltages.get(currentIndex).toString();
+                    dataRows.add(dataRow);
+                }
+            });
+            return dataRows;
+        }
         
         private void writeToCSV(String[] headerRow, List<String[]> dataRows, HttpServletResponse response,
-                   YukonUserContext userContext, Instant reportDate) throws IOException {
+                   YukonUserContext userContext, Instant reportDate, String reportName) throws IOException {
             String dateStr = dateFormattingService.format(new DateTime(reportDate).toLocalDateTime(),
                 DateFormatEnum.FILE_TIMESTAMP, userContext);
-            
-            String fileName;
-            if (headerRow.length == 4) {
-                fileName = "BatteryVoltagesDetail_" + dateStr + ".csv";
-            } else {
-                fileName = "BatteryAnalysis_" + dateStr + ".csv";
-            }
+            String fileName = reportName + dateStr + ".csv";
             WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
         }
 }
