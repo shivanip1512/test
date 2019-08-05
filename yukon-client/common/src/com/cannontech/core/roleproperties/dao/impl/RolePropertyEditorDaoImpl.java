@@ -83,6 +83,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         for (YukonRoleProperty roleProperty : YukonRoleProperty.values()) {
+            try {
             String keyName = accessor.getMessage("yukon.common.roleProperty." + roleProperty.name());
             String description = accessor.getMessage("yukon.common.roleProperty." + roleProperty.name() + ".description");
             MessageSourceResolvable keyNameMsr = 
@@ -94,6 +95,9 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
             DescriptiveRoleProperty descriptiveRoleProperty = new DescriptiveRoleProperty(roleProperty,
                 defaultValueLookup.get(roleProperty), keyNameMsr, descriptionMsr);
             descriptiveRolePropertyLookup.put(roleProperty, descriptiveRoleProperty);
+            }catch(Exception e) {
+                
+            }
         }
         
         // now build a new map in a stable order

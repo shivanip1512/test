@@ -14,4 +14,9 @@ public interface SmartNotificationEventCreationService {
      * Send multiple events.
      */
     void send(SmartNotificationEventType type, List<SmartNotificationEvent> events);
+
+    /**
+     * Send an event.
+     */
+    void send(SmartNotificationEventType type, SmartNotificationEvent event);
 }

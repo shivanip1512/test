@@ -95,7 +95,7 @@ public class SmartNotificationEmailMessageParametersHandler implements SmartNoti
             
             String sender = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
             EmailMessage message = EmailMessage.newMessageBccOnly(subject, body, sender, recipients);
-            
+
             notifClientConnection.sendEmail(message);
         } catch (Exception e) {
             log.debug(parametersMulti);

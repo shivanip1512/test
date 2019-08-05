@@ -28,6 +28,7 @@ import com.cannontech.common.bulk.collection.device.model.CollectionActionResult
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.meterDisconnect.service.DrMeterDisconnectStatusService;
@@ -53,6 +54,7 @@ public class MeterDisconnectMessageListener {
     @Autowired private DrMeterDisconnectStatusService drStatusService;
     @Autowired private LoadGroupDao loadGroupDao;
     @Autowired private EnrollmentDao enrollmentDao;
+    @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
     
     // Disconnect "Control"
     public void handleCyclingControlMessage(Message message) {
@@ -107,7 +109,8 @@ public class MeterDisconnectMessageListener {
                 
                 MeterCollection collection = new MeterCollection(Lists.newArrayList(meters));
                 SimpleCallback<CollectionActionResult> doNothingCallback = result -> {};
-                DrDisconnectStatusCallback statusCallback = new DrDisconnectStatusCallback(true, eventId, drStatusService);
+                DrDisconnectStatusCallback statusCallback = new DrDisconnectStatusCallback(true, eventId,
+                    drStatusService, smartNotificationEventCreationService, getProgramName(programId));
                 disconnectService.execute(DisconnectCommand.DISCONNECT, collection, doNothingCallback,
                                           statusCallback, YukonUserContext.system);
 
@@ -117,6 +120,15 @@ public class MeterDisconnectMessageListener {
                 log.error("Error parsing Meter Disconnect control message from LM", e);
             }
         }
+    }
+
+    private String getProgramName(int programId) {
+        String programName = dbCache.getAllLMPrograms().stream()
+                    .filter(p -> p.getLiteID() ==  programId)
+                    .map(LiteYukonPAObject::getPaoName)
+                    .findFirst()
+                    .get();
+        return programName;
     }
     
     // Connect "End Control"
@@ -155,7 +167,7 @@ public class MeterDisconnectMessageListener {
                 SimpleCallback<CollectionActionResult> doNothingCallback = result -> {};
                 DrDisconnectStatusCallback statusCallback = null;
                 if (eventId.isPresent()) {
-                    statusCallback = new DrDisconnectStatusCallback(false, eventId.get(), drStatusService);
+                    statusCallback = new DrDisconnectStatusCallback(false, eventId.get(), drStatusService, smartNotificationEventCreationService, getProgramName(programId));
 
                 disconnectService.execute(DisconnectCommand.CONNECT, collection, doNothingCallback,
                                           statusCallback, YukonUserContext.system);

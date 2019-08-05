@@ -19,6 +19,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 public class SmartNotificationEventCreationServiceImpl implements SmartNotificationEventCreationService {
     private static final Logger log = YukonLogManager.getLogger(SmartNotificationEventCreationServiceImpl.class);
@@ -33,7 +34,10 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
         JmsApiDirectory.SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT.getQueue().getName(),
         
         SmartNotificationEventType.ASSET_IMPORT,
-        JmsApiDirectory.SMART_NOTIFICATION_DATA_IMPORT_EVENT.getQueue().getName()
+        JmsApiDirectory.SMART_NOTIFICATION_DATA_IMPORT_EVENT.getQueue().getName(),
+        
+        SmartNotificationEventType.METER_DR,
+        JmsApiDirectory.METER_DR_EVENT.getQueue().getName()
     );
     
     private Executor executor = Executors.newCachedThreadPool();
@@ -63,6 +67,11 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
                 }
             });
         }
+    }
+    
+    @Override
+    public void send(SmartNotificationEventType type, SmartNotificationEvent event) {
+        send(type, Lists.newArrayList(event));
     }
     
     private void sendEvents(SmartNotificationEventType type, List<SmartNotificationEvent> events) {

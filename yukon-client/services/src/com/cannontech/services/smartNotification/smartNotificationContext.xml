@@ -12,6 +12,7 @@
     <bean id="deviceDataMonitorNotifListener" class="com.cannontech.services.smartNotification.service.impl.SmartNotifDeviceDataMonitorDecider"/>
     <bean id="watchdogNotifListener" class="com.cannontech.services.smartNotification.service.impl.SmartNotificationWatchdogDecider"/>
     <bean id="dataImportNotifListener" class="com.cannontech.services.smartNotification.service.impl.SmartNotificationDataImportDecider"/>
+    <bean id="meterDrListener" class="com.cannontech.services.smartNotification.service.impl.MeterDrDecider"/>
     
     
     
@@ -44,6 +45,13 @@
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="messageListener" ref="dataImportNotifListener" />
     </bean>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.notif.obj.smartNotifEvent.event.meterDr" />
+        <property name="pubSubDomain" value="false" />
+        <property name="concurrentConsumers" value="1" />
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="meterDrListener" />
+    </bean>
     <!-- Message Assembler -->
     <bean id="smartNotificationMessageAssembler" class="com.cannontech.services.smartNotification.service.impl.SmartNotificationMessageAssembler"/>
     
@@ -75,4 +83,5 @@
     <bean class="com.cannontech.services.smartNotification.service.impl.email.WatchdogEmailBuilder"/>
     <bean class="com.cannontech.services.smartNotification.service.impl.email.ServiceStatusWatchdogEmailFormatHandler"/>
     <bean class="com.cannontech.services.smartNotification.service.impl.email.DataImportEmailBuilder"/>
+    <bean class="com.cannontech.services.smartNotification.service.impl.email.MeterDrEmailBuilder"/>
 </beans>

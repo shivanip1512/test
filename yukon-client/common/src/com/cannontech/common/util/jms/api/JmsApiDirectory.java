@@ -894,6 +894,17 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
+    public static final JmsApi<SmartNotificationEventMulti,?,?> METER_DR_EVENT= 
+            JmsApi.builder(SmartNotificationEventMulti.class)
+                  .name("Smart Notifications Meter Demand Response Event")
+                  .description("Sent by the MeterDisconnectMessageListener when event event was recieved to notify user of the results.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event.meterDr"))
+                  .requestMessage(SmartNotificationEventMulti.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
     public static final JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_DATA_IMPORT_EVENT= 
             JmsApi.builder(SmartNotificationEventMulti.class)
                   .name("Smart Notifications Data Import Event")

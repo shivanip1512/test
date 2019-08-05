@@ -9,7 +9,8 @@ public enum SmartNotificationEventType implements DisplayableEnum {
     DEVICE_DATA_MONITOR("deviceDataMonitor"),
     INFRASTRUCTURE_WARNING("infrastructureWarnings"),
     YUKON_WATCHDOG("watchdogWarnings"),
-    ASSET_IMPORT("assetImport")
+    ASSET_IMPORT("assetImport"),
+    METER_DR("meterDr") 
     ;
     
     private String urlPath;

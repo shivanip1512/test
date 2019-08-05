@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +30,7 @@ import com.cannontech.common.smartNotification.dao.SmartNotificationSubscription
 import com.cannontech.common.smartNotification.model.DailyDigestTestParams;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler;
 import com.cannontech.common.smartNotification.model.InfrastructureWarningsEventAssembler;
+import com.cannontech.common.smartNotification.model.MeterDrEventAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
@@ -38,6 +41,7 @@ import com.cannontech.common.smartNotification.simulation.service.SmartNotificat
 import com.cannontech.infrastructure.simulation.service.*;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.dr.meterDisconnect.DrMeterControlStatus;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.infrastructure.model.SmartNotificationSimulatorSettings;
@@ -47,6 +51,7 @@ import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class SmartNotificationSimulatorServiceImpl implements SmartNotificationSimulatorService {
     private static final Logger log = YukonLogManager.getLogger(SmartNotificationSimulatorServiceImpl.class);
@@ -87,43 +92,47 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
     @Override
     public SimulatorResponseBase createEvents(int waitTime, int eventsPerMessage, int numberOfMessages) {
         Map<SmartNotificationEventType, List<SmartNotificationSubscription>> subscriptionsByType =
-                subscriptionDao.getAllSubscriptions().stream().collect(Collectors.groupingBy(e -> e.getType()));
-            
-            // send total "numberOfMessages" with "eventsPerMessage" waiting "waitTime"
-            // between sending each set of events
-            
-            ArrayList<Integer> deviceIds = new ArrayList<>(cache.getAllMeters().keySet());
-            
-            Set<SmartNotificationEventType> done = Collections.synchronizedSet(new HashSet<>());
-            
-            Random random = new Random();
-            Arrays.asList(SmartNotificationEventType.values()).forEach(type -> {
-                executor.execute(() -> {
-                    log.info("Simulating events for " + type);
-                    List<SmartNotificationSubscription> subscriptions = subscriptionsByType.get(type);
-                    if (subscriptions != null) {
-                        List<SmartNotificationEvent> events = new ArrayList<>();
+            subscriptionDao.getAllSubscriptions().stream().collect(Collectors.groupingBy(e -> e.getType()));
 
+        // send total "numberOfMessages" with "eventsPerMessage" waiting "waitTime"
+        // between sending each set of events
+
+        ArrayList<Integer> deviceIds = new ArrayList<>(cache.getAllMeters().keySet());
+
+        Set<SmartNotificationEventType> done = Collections.synchronizedSet(new HashSet<>());
+
+        Random random = new Random();
+        Arrays.asList(SmartNotificationEventType.values()).forEach(type -> {
+            executor.execute(() -> {
+                log.info("Simulating events for " + type);
+                List<SmartNotificationSubscription> subscriptions = subscriptionsByType.get(type);
+                if (subscriptions != null) {
+                    List<SmartNotificationEvent> events = new ArrayList<>();
+                    if (type == SmartNotificationEventType.METER_DR) {
+                        createMeterDrEvents(type, events);
+                        eventCreationService.send(type, events);
+                    } else {
                         int nextIndex = -1;
                         for (int i = 0; i < numberOfMessages; i++) {
                             int index = random.nextInt(deviceIds.size());
                             nextIndex = getNextSubscriptionIndex(subscriptions, nextIndex);
-                            
-                            if(type == SmartNotificationEventType.INFRASTRUCTURE_WARNING){
-                                List<InfrastructureWarningType> types = Lists.newArrayList(InfrastructureWarningType.values());
+
+                            if (type == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
+                                List<InfrastructureWarningType> types =
+                                    Lists.newArrayList(InfrastructureWarningType.values());
                                 Collections.shuffle(types);
-                                InfrastructureWarning warning = infrastructureWarningsGeneratorService.generate(types.get(0));
+                                InfrastructureWarning warning =
+                                    infrastructureWarningsGeneratorService.generate(types.get(0));
                                 events.add(InfrastructureWarningsEventAssembler.assemble(Instant.now(), warning));
                             } else if (type == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
                                 int monitorId = DeviceDataMonitorEventAssembler.getMonitorId(
                                     subscriptions.get(nextIndex).getParameters());
                                 String monitorName = monitorCacheService.getDeviceDataMonitors().stream().filter(
                                     m -> m.getId() == monitorId).findFirst().get().getName();
-                                events.add(DeviceDataMonitorEventAssembler.assemble(Instant.now(), monitorId, monitorName,
-                                    MonitorState.IN_VIOLATION, deviceIds.get(index)));
+                                events.add(DeviceDataMonitorEventAssembler.assemble(Instant.now(), monitorId,
+                                    monitorName, MonitorState.IN_VIOLATION, deviceIds.get(index)));
                             }
                         }
-
                         log.info("Created events " + events.size() + " " + type);
 
                         for (List<SmartNotificationEvent> part : Lists.partition(events, eventsPerMessage)) {
@@ -136,17 +145,32 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
                             }
                         }
                     }
-                    done.add(type);
-                });
-
+                }
+                done.add(type);
             });
 
-            while (done.size() != subscriptionsByType.size()) {
-                //wait to report success until all events are generated.
-                continue;
-            }
-            
+        });
+
+        while (done.size() != subscriptionsByType.size()) {
+            // wait to report success until all events are generated.
+            continue;
+        }
+
         return new SimulatorResponseBase(true);
+    }
+
+    private void createMeterDrEvents(SmartNotificationEventType type, List<SmartNotificationEvent> events) {
+        ConcurrentMap<String, Integer> statistics = new ConcurrentHashMap<String, Integer>();
+        List<String> statuses = Lists.newArrayList(DrMeterControlStatus.FAILED_ARMED.name(),
+            DrMeterControlStatus.CONTROL_CONFIRMED.name(), DrMeterControlStatus.CONTROL_FAILED.name(),
+            DrMeterControlStatus.CONTROL_FAILED.name(), DrMeterControlStatus.CONTROL_UNKNOWN.name());
+        for (int i = 0; i < 10; i++) {
+            Random rand = new Random();
+            String randomElement = statuses.get(rand.nextInt(statuses.size()));
+            statistics.compute(randomElement, (key, value) -> value == null ? 1 : value + 1);
+        }
+        events.add(MeterDrEventAssembler.assemble(statistics, "Test Program"));
+        log.info("Created events " + events.size() + " " + type);
     }
     
     @Override
