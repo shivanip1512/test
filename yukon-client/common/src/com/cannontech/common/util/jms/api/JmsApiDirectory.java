@@ -894,7 +894,7 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    public static final JmsApi<SmartNotificationEventMulti,?,?> METER_DR_EVENT= 
+    public static final JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_METER_DR_EVENT= 
             JmsApi.builder(SmartNotificationEventMulti.class)
                   .name("Smart Notifications Meter Demand Response Event")
                   .description("Sent by the MeterDisconnectMessageListener when event event was recieved to notify user of the results.")
@@ -1125,7 +1125,8 @@ public final class JmsApiDirectory {
                 SMART_NOTIFICATION_MESSAGE_PARAMETERS,
                 SMART_NOTIFICATION_DAILY_DIGEST_TEST,
                 SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT,
-                SMART_NOTIFICATION_DATA_IMPORT_EVENT);
+                SMART_NOTIFICATION_DATA_IMPORT_EVENT,
+                SMART_NOTIFICATION_METER_DR_EVENT);
         
         addApis(jmsApis, WIDGET_REFRESH,
                 DATA_COLLECTION,

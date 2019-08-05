@@ -37,7 +37,7 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
         JmsApiDirectory.SMART_NOTIFICATION_DATA_IMPORT_EVENT.getQueue().getName(),
         
         SmartNotificationEventType.METER_DR,
-        JmsApiDirectory.METER_DR_EVENT.getQueue().getName()
+        JmsApiDirectory.SMART_NOTIFICATION_METER_DR_EVENT.getQueue().getName()
     );
     
     private Executor executor = Executors.newCachedThreadPool();
