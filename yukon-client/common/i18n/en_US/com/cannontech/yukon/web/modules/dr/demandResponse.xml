@@ -492,7 +492,7 @@
 <entry key="yukon.web.modules.dr.ecobee.details.dataDownloads.title">Data Downloads (5 most recent)</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.dataDownloads.helpText">
     Click "Request Runtime Report" button to request runtime details from ecobee. Select up to a 7 day period and one or more Load Groups for requested runtime details.
-    This process may take several minutes to complete. Once all data is received, the report will be available and the download button next to the individual request will enabled. Click the button next to the requested item to download the file.
+    This process may take several minutes to complete. Once all data is received, the report will be available and the download button next to the individual request will be enabled. Click the button next to the requested item to download the file.
 </entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.title">Download (maximum 7-day date range)</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.loadGroupPicker">Select a Load Group</entry>
