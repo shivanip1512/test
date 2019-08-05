@@ -19,7 +19,7 @@ std::atomic_bool BaseConnection::_stopping { false };
 
 BaseConnection::BaseConnection()
 {
-    CtiLockGuard<CtiMutex> guard(g_mux);
+    CTILOCKGUARD(CtiMutex, guard, g_mux);
 
     g_connections.insert(this);
 }
@@ -28,7 +28,7 @@ BaseConnection::~BaseConnection()
 {
     CTILOG_DEBUG( dout, "BaseConnection::~BaseConnection()" );
 
-    CtiLockGuard<CtiMutex> guard(g_mux);
+    CTILOCKGUARD(CtiMutex, guard, g_mux);
 
     g_connections.erase(this);
 }
@@ -39,7 +39,7 @@ void BaseConnection::close()
 
 void BaseConnection::closeAll()
 {
-    CtiLockGuard<CtiMutex> guard(g_mux);
+    CTILOCKGUARD(CtiMutex, guard, g_mux);
 
     for( auto connection : g_connections )
     {

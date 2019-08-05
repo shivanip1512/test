@@ -115,7 +115,7 @@ bool CtiClientConnection::establishConnection()
             try
             {
                 {
-                    CtiLockGuard<CtiMutex> lock(_abortConnMux);
+                    CTILOCKGUARD(CtiMutex, lock, _abortConnMux);
 
                     if( ! canReconnect() )
                     {
@@ -290,7 +290,7 @@ void CtiClientConnection::abortConnection()
 {
     try
     {
-        CtiLockGuard<CtiMutex> lock(_abortConnMux);
+        CTILOCKGUARD(CtiMutex, lock, _abortConnMux);
 
         _dontReconnect = true;
 

@@ -51,7 +51,7 @@ IM_EX_CTIBASE GlobalSettings::GlobalSettings() {
 /** Private static singleton constructor.  Reads settings from database. */
 IM_EX_CTIBASE GlobalSettings& GlobalSettings::getSingleton()
 {
-    CtiLockGuard<CtiMutex> guard( g_mux );
+    CTILOCKGUARD(CtiMutex, guard, g_mux);
 
     if( ! gGlobalSettings )
     {
@@ -154,6 +154,6 @@ IM_EX_CTIBASE void GlobalSettings::reloadImpl()
         _tempMap[name] = value;
     }
 
-    CtiLockGuard<CtiMutex> guard(g_mux);
+    CTILOCKGUARD(CtiMutex, guard, g_mux);
     _settingMap.swap(_tempMap);
 }

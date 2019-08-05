@@ -48,7 +48,7 @@ CtiLockGuard<T>::CtiLockGuard( T& resource, char *resourceName, Cti::CallSite ca
 
     while (acquireLock(900000), _acquired == 0)  //  try to acquire for up to 15 minutes
     {
-        CTILOG_WARN(dout, "guard is unable to lock " << (_resourceName!=0?_resourceName:"resource") 
+        CTILOG_WARN(dout, "guard is unable to lock " << (_resourceName?_resourceName:"resource") << " @ " << std::hex << &_res
             << " FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID());
         CTILOG_WARN(dout, "Acquiring lock from " << _callSite);
 

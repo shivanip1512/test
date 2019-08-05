@@ -86,7 +86,7 @@ void CtiThread::join()
    while( isSet( STARTING) )
       Sleep(10);
 
-   CtiLockGuard<CtiMutex> guard(_running_mux);
+   CTILOCKGUARD(CtiMutex, guard, _running_mux);
 }
 
 /*-----------------------------------------------------------------------------
@@ -103,7 +103,7 @@ bool CtiThread::sleep(unsigned long millis)
 
 bool CtiThread::isSet(int id)
 {
-   CtiLockGuard<CtiMutex> guard(_event_mux);
+   CTILOCKGUARD(CtiMutex, guard, _event_mux);
 
    if( _event_map.find(id) != _event_map.end() )
    {
@@ -118,7 +118,7 @@ bool CtiThread::isSet(int id)
 // Sets the state and returns true if the state was changed
 bool CtiThread::set(int id, bool state)
 {
-   CtiLockGuard<CtiMutex> guard(_event_mux);
+   CTILOCKGUARD(CtiMutex, guard, _event_mux);
    if(_event_map[id] != state)
    {
       _event_map[id] = state;
@@ -150,7 +150,7 @@ unsigned WINAPI CtiThread::ThreadProc(LPVOID lpData )
    CtiThread* thr = (CtiThread*) lpData;
 
    // This order is very important!
-   CtiLockGuard<CtiMutex> guard(thr->_running_mux);
+   CTILOCKGUARD(CtiMutex, guard, thr->_running_mux);
    thr->set(STARTING, false );
    thr->run();
 
