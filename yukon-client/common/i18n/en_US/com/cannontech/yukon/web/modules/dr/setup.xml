@@ -263,7 +263,7 @@ Are you sure you want do this?</entry>
 
 <entry key="yukon.web.modules.dr.setup.filter.NAME">Name</entry>
 <entry key="yukon.web.modules.dr.setup.filter.TYPE">Type</entry>
-<entry key="yukon.web.modules.dr.setup.filter.error">Error filtering records.</entry>
+<entry key="yukon.web.modules.dr.setup.filter.error">Error filtering records: {0}.</entry>
 
 <!-- Program Constraint -->
 <entry key="yukon.web.modules.dr.setup.constraint.error.used">{0} because it is in use by a Program.</entry>

@@ -109,7 +109,7 @@ public class LMSetupFilterController {
             return "redirect:/dr/setup/list";
         } catch (RestClientException ex) {
             log.error("Error retrieving details: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.setup.filter.error"));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.setup.filter.error", ex.getMessage()));
             return "redirect:/dr/setup/list";
         }
         filteredResults = (SearchResults<LMPaoDto>) response.getBody();

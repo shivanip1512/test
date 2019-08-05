@@ -40,6 +40,7 @@ public class LoadGroupSetupApiController {
     private List<LoadGroupSetupValidator<? extends LoadGroupBase>> validators;
     
     @GetMapping("/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<Object> retrieve(@PathVariable int id) {
         LoadGroupBase loadGroup = loadGroupService.retrieve(id);
         return new ResponseEntity<>(loadGroup, HttpStatus.OK);
@@ -82,6 +83,7 @@ public class LoadGroupSetupApiController {
     }
 
     @GetMapping("/availableLoadGroup")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<Object> retrieveAvailableLoadGroup() {
         List<LMPaoDto> availableLoadGroups = loadGroupService.retrieveAvailableLoadGroup();
         HashMap<String, List<LMPaoDto>> paoIdMap = new HashMap<>();

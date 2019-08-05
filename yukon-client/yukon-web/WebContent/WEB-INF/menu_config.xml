@@ -109,7 +109,10 @@
       </option>
       <option name="setup">
         <permissions>
-            <role name="DEMAND_RESPONSE" />
+            <and>
+                <role name="DEMAND_RESPONSE" />
+                <roleProperty name="DR_SETUP_PERMISSION" />
+            </and>
         </permissions>
         <link>/dr/setup/list</link>
       </option>

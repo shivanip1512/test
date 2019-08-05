@@ -36,6 +36,7 @@ public class ProgramConstraintApiController {
     @Autowired ProgramConstraintValidator programConstraintValidator;
 
     @GetMapping("/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<ProgramConstraint> retrieve(@PathVariable int id) {
         return new ResponseEntity<>(programConstraintService.retrieve(id), HttpStatus.OK);
     }
@@ -70,11 +71,13 @@ public class ProgramConstraintApiController {
     }
 
     @GetMapping("/getSeasonSchedules")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<List<LMDto>> getSeasonSchedules() {
         return new ResponseEntity<>(programConstraintService.getSeasonSchedules(), HttpStatus.OK);
     }
 
     @GetMapping("/getHolidaySchedules")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<List<LMDto>> getHolidaySchedules() {
         return new ResponseEntity<>(programConstraintService.getHolidaySchedules(), HttpStatus.OK);
     }

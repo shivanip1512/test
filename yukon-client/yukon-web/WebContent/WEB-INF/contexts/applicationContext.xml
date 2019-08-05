@@ -1381,6 +1381,9 @@
                 <ref bean="jacksonHttpMessageConverter"/>
             </list>
         </property>
+        <property name="requestFactory">
+            <bean class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory" />
+        </property>
         <property name="errorHandler" ref="customDefaultResponseErrorHandler"></property>
      </bean>
 

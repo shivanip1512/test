@@ -46,6 +46,7 @@ public class LoadProgramSetupApiController {
     @Autowired LMProgramValidator lmProgramValidator;
 
     @GetMapping("/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<Object> retrieve(@PathVariable int id) {
         LoadProgram loadProgram = loadProgramService.retrieve(id);
         return new ResponseEntity<>(loadProgram, HttpStatus.OK);
@@ -88,6 +89,7 @@ public class LoadProgramSetupApiController {
     }
 
     @GetMapping("/allAvailableNotificationGroups")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<Object> getAllAvailableProgramNotificationGroups() {
         List<NotificationGroup> notificationGroups = loadProgramService.getAllAvailableProgramNotificationGroups();
         return new ResponseEntity<>(notificationGroups, HttpStatus.OK);
@@ -95,6 +97,7 @@ public class LoadProgramSetupApiController {
 
     @GetMapping("/allAvailableDirectMemberControls")
     @CheckRoleProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS)
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<Object> getAllAvailableDirectMemberControls() {
         List<ProgramDirectMemberControl> directMemberControls =
             loadProgramService.getAllAvailableDirectMemberControls();
@@ -102,18 +105,21 @@ public class LoadProgramSetupApiController {
     }
 
     @GetMapping("/allAvailableLoadGroups/{programType}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<Object> getAllAvailableProgramLoadGroups(@PathVariable PaoType programType) {
         List<ProgramGroup> programGroups = loadProgramService.getAllAvailableProgramLoadGroups(programType);
         return new ResponseEntity<>(programGroups, HttpStatus.OK);
     }
 
     @GetMapping("/availableLoadGroups/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<Object> getAvailableProgramLoadGroups(@PathVariable int id) {
         List<ProgramGroup> programGroups = loadProgramService.getAvailableProgramLoadGroups(id);
         return new ResponseEntity<>(programGroups, HttpStatus.OK);
     }
 
     @GetMapping("/availableNotificationGroups/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<Object> getAvailableProgramNotificationGroups(@PathVariable int id) {
         List<NotificationGroup> notificationGroups =
             loadProgramService.getAvailableProgramNotificationGroups(id);
@@ -123,6 +129,7 @@ public class LoadProgramSetupApiController {
     
     @GetMapping("/availableDirectMemberControls/{id}")
     @CheckRoleProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS)
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<Object> getAvailableDirectMemberControls(@PathVariable int id) {
         List<ProgramDirectMemberControl> directMemberControls =
             loadProgramService.getAvailableDirectMemberControls(id);
@@ -130,6 +137,7 @@ public class LoadProgramSetupApiController {
     }
 
     @GetMapping("/availablePrograms")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<List<ProgramDetails>> getAvailablePrograms() {
         return new ResponseEntity<>(loadProgramService.getAvailablePrograms(), HttpStatus.OK);
     }

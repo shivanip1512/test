@@ -22,6 +22,7 @@ import org.springframework.core.io.Resource;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -213,7 +214,12 @@ public class StandardMenuRenderer {
                 return true;
             }
         } else if (type == Permission.roleProperty) {
-            if (rpDao.checkProperty(YukonRoleProperty.valueOf(permission.getAttributeValue("name")), user)) {
+            YukonRoleProperty roleProperty = YukonRoleProperty.valueOf(permission.getAttributeValue("name"));
+            if (roleProperty == YukonRoleProperty.DR_SETUP_PERMISSION) {
+                if (rpDao.checkLevel(roleProperty, HierarchyPermissionLevel.LIMITED, user)) {
+                    return true;
+                }
+            } else if (rpDao.checkProperty(roleProperty, user)) {
                 return true;
             }
         } else if (type == Permission.ecOperator) {
