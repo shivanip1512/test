@@ -544,6 +544,19 @@ void CtiLoadManager::controlLoop()
                         CtiMultiMsg *multi = CTIDBG_new CtiMultiMsg();
                         int tempCount = 0;
 
+                        while( !_PROGRAM_HISTORY_QUEUE.empty() )
+                        {
+                            tempCount ++;
+                            _PROGRAM_HISTORY_QUEUE.front().Insert();
+                            _PROGRAM_HISTORY_QUEUE.pop();
+                        }
+
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE && tempCount > 0 )
+                        {
+                            CTILOG_DEBUG(dout, "Inserted " << tempCount << " history rows");
+                        }
+                        tempCount = 0;
+
                         for( ChangeListIter changeIter = _CHANGED_GROUP_LIST.begin(); changeIter != _CHANGED_GROUP_LIST.end(); changeIter++ )
                         {
                             CtiLMGroupPtr tempGroup = store->getLMGroup(*changeIter);
@@ -619,19 +632,6 @@ void CtiLoadManager::controlLoop()
                         {
                             delete multi;
                             multi = 0;
-                        }
-
-                        tempCount = 0;
-                        while( !_PROGRAM_HISTORY_QUEUE.empty() )
-                        {
-                            tempCount ++;
-                            _PROGRAM_HISTORY_QUEUE.front().Insert();
-                            _PROGRAM_HISTORY_QUEUE.pop();
-                        }
-
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE && tempCount > 0 )
-                        {
-                            CTILOG_DEBUG(dout, "Inserted " << tempCount << " history rows");
                         }
 
                         _CHANGED_CONTROL_AREA_LIST.clear();
