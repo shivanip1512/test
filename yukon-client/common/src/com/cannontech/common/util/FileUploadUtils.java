@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -112,38 +113,37 @@ public class FileUploadUtils {
     }
 
     /**
-     * Get CSV record by skiping first line of CSV file and return CSV record
+     * Get CSV record by skipping first line of CSV file and return CSV record
      * 
      * @throws ImportFileFormatException
      * @throws IOException
      */
     private static String[] getCsvRecord(File file) throws ImportFileFormatException, IOException {
+        String[] csvRecord = readCsv(file, StandardCharsets.UTF_8); //same charset as default.
+        if (csvRecord == null) {
+            csvRecord = readCsv(file, StandardCharsets.ISO_8859_1);
+        }
+        return csvRecord;
+    }
+    
+    private static String[] readCsv(File file, Charset charset) throws ImportFileFormatException, IOException {
         Reader reader = null;
         CSVReader csvReader = null;
-        CSVReader csvReaderIso = null;
         try {
-
-            reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
+            reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()), charset);
             // csvReader will skip first line while reading CSV file and it will return null if we try to read
             // file other than text or CSV file.
             csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
             String[] csvRecord = csvReader.readNext();
-            if (csvRecord == null) {
-                reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()), StandardCharsets.ISO_8859_1);
-            } else {
-                return csvRecord;
-            }
-            csvReaderIso = new CSVReaderBuilder(reader).withSkipLines(1).build();
-            csvRecord = csvReaderIso.readNext();
             return csvRecord;
         } catch (IOException e) {
             log.error(e.getMessage());
             throw new ImportFileFormatException(e.getMessage());
         } finally {
-            reader.close();
-            csvReader.close();
-            if (csvReaderIso != null) {
-                csvReaderIso.close();
+            if (csvReader != null) {
+                csvReader.close();
+            } else if (reader != null) {
+                reader.close();
             }
         }
     }
