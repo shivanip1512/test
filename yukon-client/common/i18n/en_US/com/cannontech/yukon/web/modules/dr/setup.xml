@@ -202,6 +202,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.timedSupportedControlWindow">A timed program requires a non zero control time to be specified under the control window tab.</entry>
 
 <!--  Gear Validation -->
+<entry key="yukon.web.modules.dr.setup.gear.error.uniqueGearNumber">Gear Number {0} must be unique for a program.</entry>
 
 <!-- Gear setup -->
 <entry key="yukon.web.modules.dr.setup.gear.ABSOLUTE">Absolutes</entry>
