@@ -403,6 +403,14 @@ ALTER TABLE DrDisconnectDeviceStatus
 INSERT INTO DBUpdates VALUES ('YUK-20335', '7.3.0', SYSDATE);
 /* @end YUK-20335 */
 
+/* @start YUK-20350-1 if YUK-20350 */
+UPDATE YukonRoleProperty
+SET DefaultValue = 'RESTRICTED' 
+WHERE RolePropertyID = -90049;
+
+INSERT INTO DBUpdates VALUES ('YUK-20350-1', '7.3.0', SYSDATE);
+/* @end YUK-20350-1 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
