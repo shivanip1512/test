@@ -60,6 +60,7 @@
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".frequency">
                 <tags:selectWithItems path="frequency" items="${frequencies}" inputClass="js-frequency"/>
+                <input type="hidden" name="frequency" value="IMMEDIATE" class="js-frequency-hidden" disabled="disabled"/>
             </tags:nameValue2>
             <c:set var="disableDaily" value="${subscription.frequency != 'DAILY_DIGEST'}"/>
             <c:set var="dailyClass" value="${disableDaily ? 'dn' : ''}"/>

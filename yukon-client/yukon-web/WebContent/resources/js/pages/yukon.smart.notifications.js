@@ -17,14 +17,24 @@ yukon.smart.notifications = (function () {
     updateTypeFields = function (popup) {
         var type = popup.find('.js-type').val(),
             deviceDataMonitor = type === $(".js-event-type-ddm").val(),
-            assetImport = type === $(".js-event-type-asset-import").val();
+            assetImport = type === $(".js-event-type-asset-import").val(),
+            meterDisconnect = type === 'METER_DR';
         popup.find('.js-monitor').toggleClass('dn', !deviceDataMonitor);
         popup.find('.js-import-result').toggleClass('dn', !assetImport);
-        
+        popup.find('.js-frequency').val('IMMEDIATE').prop('disabled', meterDisconnect);
+        popup.find('.js-frequency-hidden').prop('disabled', !meterDisconnect);
+        updateFrequencyFields(popup);
         /* We need to disable these fields even if it is hidden to prevent this value for 
          * being passed to the controller as a subscription parameter to be saved to the DB.*/
         popup.find('#js-asset-import-result-type').prop("disabled", !assetImport);
         popup.find('#device-data-monitor').prop("disabled", !deviceDataMonitor);
+   },
+   
+   updateFrequencyFields = function (popup) {
+       var freq = popup.find('.js-frequency').val(),
+           dailySelected = freq == 'DAILY_DIGEST';
+       popup.find('.js-daily').toggleClass('dn', !dailySelected);
+       popup.find('#notifications-send-time').prop("disabled", !dailySelected);
    },
     
     initializeSmartNotificationsTable = function () {
@@ -190,11 +200,8 @@ yukon.smart.notifications = (function () {
             });
             
             $(document).on('change', '.js-frequency', function (ev) {
-                var freq = $(this).val(),
-                    form = $(this).closest('#notification-details'),
-                    dailySelected = freq == 'DAILY_DIGEST';
-                form.find('.js-daily').toggleClass('dn', !dailySelected);
-                form.find('#notifications-send-time').prop("disabled", !dailySelected);
+                var popup = $(this).closest('#notification-details');
+                updateFrequencyFields(popup);
             });
             
             $(document).on('change', '.js-type', function (ev) {
