@@ -2,6 +2,7 @@ package com.cannontech.web.dr;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -70,6 +71,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
+import com.cannontech.dr.meterDisconnect.DrMeterControlStatus;
+import com.cannontech.dr.meterDisconnect.DrMeterEventStatus;
+import com.cannontech.dr.meterDisconnect.service.DrMeterDisconnectStatusService;
 import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
@@ -116,6 +120,7 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     @Autowired private LoadGroupDao loadGroupDao;
     @Autowired private OptOutEventDao optOutEventDao;
+    @Autowired private DrMeterDisconnectStatusService meterDisconnectService;
 
     @RequestMapping(value = "/program/list", method = RequestMethod.GET)
     public String list(ModelMap model, YukonUserContext userContext,
@@ -341,6 +346,16 @@ public class ProgramController extends ProgramControllerBase {
         public String getFormatKey() {
             return "yukon.web.modules.dr.disconnectStatus." + name();
         }
+    }
+    
+    @GetMapping("/program/controlStatus")
+    public String controlStatus(ModelMap model, int programId) {
+        DisplayablePao program = programService.getProgram(programId);
+        model.addAttribute("program", program);
+        model.addAttribute("programId", programId);
+        List<DrMeterEventStatus> statuses = meterDisconnectService.getAllCurrentStatusForLatestProgramEvent(programId, Arrays.asList(DrMeterControlStatus.values()));
+        model.addAttribute("statuses", statuses);
+        return "dr/controlStatus/detail.jsp";
     }
 
     @ResponseBody

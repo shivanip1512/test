@@ -196,6 +196,10 @@
                         <cti:param name="programId" value="${programId}"/>
                     </cti:url>
                     <cm:dropdownOption icon="icon-disconnect" key=".actions.disconnectStatus" href="${url}"/>
+                    <cti:url var="url" value="/dr/program/controlStatus">
+                        <cti:param name="programId" value="${programId}"/>
+                    </cti:url>
+                    <cm:dropdownOption icon="icon-read" key=".actions.controlStatus" href="${url}"/>
                 </c:if>
 			</div>
 		</div>

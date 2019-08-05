@@ -1058,6 +1058,7 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.programDetail.actions.noChangeGear">You do not have permission to change gears.</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.noEnableDisable">You do not have permission to control this Program.</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.disconnectStatus">Disconnect Status</entry>
+<entry key="yukon.web.modules.dr.programDetail.actions.controlStatus">Control Status</entry>
 
 <entry key="yukon.web.modules.dr.programDetail.heading.loadGroups">Load Groups</entry>
 
@@ -1159,5 +1160,37 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.disconnectStatus.disconnect">Disconnect</entry>
 <entry key="yukon.web.modules.dr.disconnectStatus.meterDetail">Meter Detail</entry>
 <entry key="yukon.web.modules.dr.disconnectStatus.disconnectNotAllowed">Disconnect is not available for opted out devices.</entry>
+
+<!-- Control Status -->
+<entry key="yukon.web.modules.dr.controlStatus.pageTitle">Control Status: {0}</entry>
+<entry key="yukon.web.modules.dr.controlStatus.pageHeading">Control Status</entry>
+<entry key="yukon.web.modules.dr.controlStatus.crumbTitle">Control Status</entry>
+<entry key="yukon.web.modules.dr.controlStatus.meterDetail">Meter Detail</entry>
+
+
+<!-- Control Status Types -->
+<entry key="yukon.web.modules.dr.controlStatus.NOT_SENT">Disconnect command not sent yet</entry>
+<entry key="yukon.web.modules.dr.controlStatus.CONTROL_SENT">Command sent, waiting for response</entry>
+<entry key="yukon.web.modules.dr.controlStatus.CONTROL_CONFIRMED">Successful disconnect</entry>
+<entry key="yukon.web.modules.dr.controlStatus.CONTROL_FAILED_UNSUPPORTED">Command not supported</entry>
+<entry key="yukon.web.modules.dr.controlStatus.CONTROL_FAILED_NOT_CONFIGURED">Device not configured</entry>
+<entry key="yukon.web.modules.dr.controlStatus.FAILED_ARMED">Device misconfigured to arm</entry>
+<entry key="yukon.web.modules.dr.controlStatus.CONTROL_FAILED">Failed</entry>
+<entry key="yukon.web.modules.dr.controlStatus.CONTROL_UNKNOWN">Disconnect status unknown</entry>
+<entry key="yukon.web.modules.dr.controlStatus.CONTROL_TIMEOUT">Timeout, no response received</entry>
+<entry key="yukon.web.modules.dr.controlStatus.NO_CONTROL_OPTED_OUT">Opt-out prevented disconnect</entry>
+<entry key="yukon.web.modules.dr.controlStatus.MANUAL_CONTROL_SENT">Manual control sent, waiting for response</entry>
+
+<entry key="yukon.web.modules.dr.controlStatus.RESTORE_SENT">Restore sent, waiting for response</entry>
+<entry key="yukon.web.modules.dr.controlStatus.RESTORE_CONFIRMED">Successful re-connect</entry>
+<entry key="yukon.web.modules.dr.controlStatus.RESTORE_FAILED_UNSUPPORTED">Re-connect failed, command unsupported</entry>
+<entry key="yukon.web.modules.dr.controlStatus.RESTORE_FAILED_NOT_CONFIGURED">Re-connect failed, device not configured</entry>
+<entry key="yukon.web.modules.dr.controlStatus.RESTORE_FAILED">Re-connect failed</entry>
+<entry key="yukon.web.modules.dr.controlStatus.RESTORE_TIMEOUT">Re-connect failed, timeout</entry>
+<entry key="yukon.web.modules.dr.controlStatus.RESTORE_UNKNOWN">Re-connect status unknown</entry>
+<entry key="yukon.web.modules.dr.controlStatus.RESTORE_OPT_OUT_SENT">Opt-out interrupted control, re-connect sent</entry>
+<entry key="yukon.web.modules.dr.controlStatus.RESTORE_OPT_OUT_CONFIRMED">Opt-out interrupted control</entry>
+<entry key="yukon.web.modules.dr.controlStatus.MANUAL_RESTORE_SENT">Manual restore sent</entry>
+
 
 </properties>

@@ -1,6 +1,8 @@
 package com.cannontech.dr.meterDisconnect;
 
-public enum DrMeterControlStatus {
+import com.cannontech.common.i18n.DisplayableEnum;
+
+public enum DrMeterControlStatus implements DisplayableEnum {
     NOT_SENT,                       // Event started, disconnect command not sent yet
     CONTROL_SENT,                   // Disconnect command sent, waiting for response
     CONTROL_CONFIRMED,              // Device confirmed successful disconnect
@@ -25,4 +27,9 @@ public enum DrMeterControlStatus {
     RESTORE_OPT_OUT_CONFIRMED,      // Opt-out interrupted control
     MANUAL_RESTORE_SENT,            // Re-connect command sent from report page, waiting for response
     ;
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.web.modules.dr.controlStatus." + name();
+    }
 }

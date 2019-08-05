@@ -29,9 +29,7 @@
             <tags:sort column="${device}" />
             <tags:sort column="${status}" />
             <tags:sort column="${timestamp}" />
-            <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL">
-                <th class="action-column"><cti:icon icon="icon-cog" classes="M0" /></th>
-            </cti:checkRolesAndProperties>
+            <th class="action-column"><cti:icon icon="icon-cog" classes="M0" /></th>
         </thead>
         <tbody>
             <c:forEach var="disconnectStatus" items="${disconnectStatusList.resultList}">
@@ -51,9 +49,9 @@
                     <td>
                         <span class="js-time-${paoId}"><cti:formatDate type="BOTH" value="${pointData.pointDataTimeStamp}"/></span>
                     </td>
-                    <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL">
-                        <td>
-                            <cm:dropdown icon="icon-cog">
+                    <td>
+                        <cm:dropdown icon="icon-cog">
+                            <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL">
                                 <cm:dropdownOption key=".connect" classes="js-connect" icon="icon-connect" 
                                     data-device-id="${paoId}"/>
                                 <c:choose>
@@ -67,12 +65,12 @@
                                         <cm:dropdownOption key=".disconnect" classes="js-disconnect" icon="icon-disconnect" data-device-id="${paoId}"/>
                                     </c:otherwise>
                                 </c:choose>
+                            </cti:checkRolesAndProperties>
 
-                                <cti:paoDetailUrl var="meterDetailLink" yukonPao="${pao}"/>
-                                <cm:dropdownOption key=".meterDetail" href="${meterDetailLink}" newTab="true" icon="icon-control-equalizer-blue"/>
-                            </cm:dropdown>
-                        </td>
-                    </cti:checkRolesAndProperties>
+                            <cti:paoDetailUrl var="meterDetailLink" yukonPao="${pao}"/>
+                            <cm:dropdownOption key=".meterDetail" href="${meterDetailLink}" newTab="true" icon="icon-control-equalizer-blue"/>
+                        </cm:dropdown>
+                    </td>
                 </tr>
             </c:forEach>
         </tbody>
