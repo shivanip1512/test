@@ -250,7 +250,7 @@ public class ControlScenarioSetupController {
 
     private void populateGears(List<ProgramDetails> allPrograms, YukonUserContext userContext, HttpServletRequest request) {
         CollectionUtils.emptyIfNull(allPrograms).stream().forEach(assignedProgram -> {
-            List<LiteGear> allGears = reteriveGears(assignedProgram.getProgramId(), userContext, request);
+            List<LiteGear> allGears = retrieveGears(assignedProgram.getProgramId(), userContext, request);
             if (CollectionUtils.isNotEmpty(assignedProgram.getGears())) {
                 LiteGear selectGear = new LiteGear();
                 selectGear.setGearID(assignedProgram.getGears().get(0).getId());
@@ -268,7 +268,7 @@ public class ControlScenarioSetupController {
         });
     }
 
-    private List<LiteGear> reteriveGears(Integer programId, YukonUserContext userContext, HttpServletRequest request) {
+    private List<LiteGear> retrieveGears(Integer programId, YukonUserContext userContext, HttpServletRequest request) {
         List<LiteGear> liteGears = new ArrayList<>();
         String url = helper.findWebServerUrl(request, userContext, ApiURL.drGetGearsForLoadProgram + programId);
         try {
