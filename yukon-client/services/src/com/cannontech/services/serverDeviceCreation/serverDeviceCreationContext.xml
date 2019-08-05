@@ -16,6 +16,7 @@
         <property name="concurrentConsumers" value="1"/>
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="messageListener" ref="serverDeviceCreationMsgListener"/>
+        <property name="acceptMessagesWhileStopping" value="true"/>
     </bean>
     
     <bean class="com.cannontech.messaging.serialization.thrift.serializer.porter.RfnDeviceCreationRequestSerializer"/>
