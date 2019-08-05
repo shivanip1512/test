@@ -695,7 +695,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         }
         Set<PaoLocation> locations = paoLocationDao.getLocations(paoIds);
         if(CollectionUtils.isEmpty(locations)) {
-            log.debug("Failed to add Devices {} to map, locations empty", devices.size());
+            log.debug("Failed to add devices {} to map, locations empty", devices.size());
             return;
         }
         log.debug("Attempting to add devices {} to map locations found {}. Only devices, with locations will be added.", devices.size(), locations.size() );
