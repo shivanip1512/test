@@ -3,9 +3,7 @@ package com.cannontech.web.api.dr.gear.setup.fields.validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
-import com.cannontech.common.dr.gear.setup.GroupSelectionMethod;
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
-import com.cannontech.common.dr.gear.setup.Mode;
 import com.cannontech.common.dr.gear.setup.WhenToChange;
 import com.cannontech.common.dr.gear.setup.fields.WhenToChangeFields;
 import com.cannontech.common.util.TimeIntervals;
@@ -25,23 +23,36 @@ public class GearValidatorHelper {
      * Check for How To Stop Control
      */
     public void checkHowToStopControl(HowToStopControl howToStopControl, GearControlMethod gearType, Errors errors) {
-        lmValidatorHelper.checkIfFieldRequired("howToStopControl", errors, howToStopControl, "How To Stop Control");
-        if (!errors.hasFieldErrors("howToStopControl")) {
-            if (gearType == GearControlMethod.TimeRefresh || gearType == GearControlMethod.MasterCycle) {
-                if (howToStopControl == HowToStopControl.StopCycle) {
-                    errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
-                }
-            } else if (gearType == GearControlMethod.SmartCycle || gearType == GearControlMethod.TrueCycle
-                || gearType == GearControlMethod.MagnitudeCycle || gearType == GearControlMethod.TargetCycle
-                || gearType == GearControlMethod.SimpleThermostatRamping) {
-                if (howToStopControl != HowToStopControl.StopCycle || howToStopControl != HowToStopControl.Restore) {
-                    errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
-                }
-            } else {
-                if (howToStopControl != HowToStopControl.TimeIn || howToStopControl != HowToStopControl.Restore) {
-                    errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
-                }
+        if (gearType == GearControlMethod.TimeRefresh || gearType == GearControlMethod.MasterCycle) {
+            if (howToStopControl == HowToStopControl.StopCycle) {
+                errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
             }
+        } else if (gearType == GearControlMethod.SmartCycle || gearType == GearControlMethod.TrueCycle
+            || gearType == GearControlMethod.MagnitudeCycle || gearType == GearControlMethod.TargetCycle) {
+            if (howToStopControl != HowToStopControl.StopCycle && howToStopControl != HowToStopControl.Restore) {
+                errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
+            }
+        } else {
+            if (howToStopControl != HowToStopControl.TimeIn && howToStopControl != HowToStopControl.Restore) {
+                errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
+            }
+        }
+    }
+
+    /**
+     * Check for Ramp Out Percent and Ramp Our Interval
+     */
+    public void checkRampOutPercentAndInterval(Integer rampOutPercent, Integer rampOutIntervalInSeconds,
+            Errors errors) {
+        lmValidatorHelper.checkIfFieldRequired("rampOutPercent", errors, rampOutPercent, "Ramp Out Percent");
+        if (!errors.hasFieldErrors("rampOutPercent")) {
+            YukonValidationUtils.checkRange(errors, "rampOutPercent", rampOutPercent, 0, 100, false);
+        }
+        lmValidatorHelper.checkIfFieldRequired("rampOutIntervalInSeconds", errors, rampOutIntervalInSeconds,
+            "Ramp Out Interval");
+        if (!errors.hasFieldErrors("rampOutIntervalInSeconds")) {
+            YukonValidationUtils.checkRange(errors, "rampOutIntervalInSeconds", rampOutIntervalInSeconds, -99999, 99999,
+                false);
         }
     }
 
@@ -65,7 +76,7 @@ public class GearValidatorHelper {
         lmValidatorHelper.checkIfFieldRequired("whenToChangeFields", errors, whenToChange.getWhenToChange(),
             "When To Change");
         if (!errors.hasFieldErrors("whenToChangeFields")) {
-
+            errors.pushNestedPath("whenToChangeFields");
             // Check for Fields for Trigger
             if (whenToChange.getWhenToChange() == WhenToChange.TriggerOffset) {
 
@@ -110,6 +121,7 @@ public class GearValidatorHelper {
                         whenToChange.getChangeDurationInMinutes(), 0, 99999, false);
                 }
             }
+            errors.popNestedPath();
 
         }
     }
@@ -138,11 +150,8 @@ public class GearValidatorHelper {
      * Check for Command Resend Rate
      */
     public void checkCommandResendRate(TimeIntervals sendRate, Errors errors) {
-        lmValidatorHelper.checkIfFieldRequired("sendRate", errors, sendRate, "Command Resend Rate");
-        if (!errors.hasFieldErrors("sendRate")) {
-            if (!TimeIntervals.getCommandresendrate().contains(sendRate)) {
-                errors.rejectValue("sendRate", invalidKey, new Object[] { "Command Resend Rate" }, "");
-            }
+        if (!TimeIntervals.getCommandResendRate().contains(sendRate)) {
+            errors.rejectValue("sendRate", invalidKey, new Object[] { "Command Resend Rate" }, "");
         }
     }
 
@@ -205,39 +214,12 @@ public class GearValidatorHelper {
     }
 
     /**
-     * Check for Group Selection Method
-     */
-    public void checkGroupSelectionMethod(GroupSelectionMethod groupSelectionMethod, Errors errors) {
-        lmValidatorHelper.checkIfFieldRequired("groupSelectionMethod", errors, groupSelectionMethod,
-            "Group Selection Method");
-    }
-
-    /**
      * Check for No. of Groups
      */
-    public void checkNumberOfGroups(String numberOfGroups, Errors errors) {
+    public void checkNumberOfGroups(Integer numberOfGroups, Errors errors) {
         lmValidatorHelper.checkIfFieldRequired("numberOfGroups", errors, numberOfGroups, "Number Of Groups");
+        if (!errors.hasFieldErrors("numberOfGroups")) {
+            YukonValidationUtils.checkRange(errors, "numberOfGroups", numberOfGroups, 0, 25, false);
+        }
     }
-
-    /**
-     * Check for Heating Mode
-     */
-    public void checkHeatingMode(Boolean isHeatMode, Errors errors) {
-        lmValidatorHelper.checkIfFieldRequired("isHeatMode", errors, isHeatMode, "Heating Mode");
-    }
-
-    /**
-     * Check for Cooling Mode
-     */
-    public void checkCoolingMode(Boolean isCoolMode, Errors errors) {
-        lmValidatorHelper.checkIfFieldRequired("isCoolMode", errors, isCoolMode, "Cooling Mode");
-    }
-
-    /**
-     * Check for Temperature Measure Unit
-     */
-    public void checkTemperatureMode(Mode mode, Errors errors) {
-        lmValidatorHelper.checkIfFieldRequired("mode", errors, mode, "Mode");
-    }
-
 }

@@ -161,7 +161,7 @@ public class SimpleThermostatRampingGearFields implements ProgramGearFields {
         }
 
         Float rampRate = rampingGear.getRampRate();
-        if (rampRate != null && rampRate.intValue() != 0) {
+        if (rampRate != null) {
             setRampPerHour(rampRate);
         }
 

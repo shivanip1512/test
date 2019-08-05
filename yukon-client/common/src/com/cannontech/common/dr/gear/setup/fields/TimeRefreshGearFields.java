@@ -15,7 +15,7 @@ public class TimeRefreshGearFields implements ProgramGearFields {
 
     private CycleCountSendType refreshShedTime;
     private TimeIntervals shedTime;
-    private String numberOfGroups;
+    private Integer numberOfGroups;
     private TimeIntervals sendRate;
 
     private GroupSelectionMethod groupSelectionMethod;
@@ -42,11 +42,11 @@ public class TimeRefreshGearFields implements ProgramGearFields {
         this.shedTime = shedTime;
     }
 
-    public String getNumberOfGroups() {
+    public Integer getNumberOfGroups() {
         return numberOfGroups;
     }
 
-    public void setNumberOfGroups(String numberOfGroups) {
+    public void setNumberOfGroups(Integer numberOfGroups) {
         this.numberOfGroups = numberOfGroups;
     }
 
@@ -183,7 +183,7 @@ public class TimeRefreshGearFields implements ProgramGearFields {
         setCapacityReduction(timeRefreshGear.getPercentReduction());
         setStopCommandRepeat(timeRefreshGear.getStopCommandRepeat());
         setShedTime(TimeIntervals.fromSeconds(timeRefreshGear.getShedTime()));
-        setNumberOfGroups(String.valueOf(timeRefreshGear.getNumberOfGroups()));
+        setNumberOfGroups(timeRefreshGear.getNumberOfGroups());
 
         if (timeRefreshGear.getMethodOptionType().compareTo(LMProgramDirectGear.OPTION_COUNT_DOWN) == 0) {
             setRefreshShedTime(CycleCountSendType.valueOf(LMProgramDirectGear.OPTION_DYNAMIC_SHED));

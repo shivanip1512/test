@@ -52,14 +52,17 @@ public class ItronCycleGearFieldsValidator extends ProgramGearFieldsValidator<It
             itronCycleGear.getDutyCyclePeriodInMinutes(), "Duty Cycle Period");
         if (!errors.hasFieldErrors("dutyCyclePeriodInMinutes")) {
             if (itronCycleGear.getDutyCyclePeriodInMinutes() != 30
-                || itronCycleGear.getDutyCyclePeriodInMinutes() != 60) {
+                && itronCycleGear.getDutyCyclePeriodInMinutes() != 60) {
                 errors.rejectValue("dutyCyclePeriodInMinutes", invalidKey,
                     new Object[] { "Duty Cycle Period In Minutes" }, "");
             }
         }
 
         // Check Criticality
-        gearValidatorHelper.checkCriticality(itronCycleGear.getCriticality(), errors);
+        lmValidatorHelper.checkIfFieldRequired("criticality", errors, itronCycleGear.getCriticality(), "Criticality");
+        if (!errors.hasFieldErrors("criticality")) {
+            YukonValidationUtils.checkRange(errors, "criticality", itronCycleGear.getCriticality(), 0, 255, false);
+        }
 
         // Check Group Capacity Reduction
         gearValidatorHelper.checkGroupCapacityReduction(itronCycleGear.getCapacityReduction(), errors);

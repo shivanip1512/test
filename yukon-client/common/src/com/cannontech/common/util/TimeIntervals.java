@@ -46,8 +46,14 @@ public enum TimeIntervals {
     HOURS_4(Duration.standardHours(4)),
     HOURS_5(Duration.standardHours(5)),
     HOURS_6(Duration.standardHours(6)),
+    HOURS_7(Duration.standardHours(7)),
     HOURS_8(Duration.standardHours(8)),
+    HOURS_10(Duration.standardHours(10)),
     HOURS_12(Duration.standardHours(12)),
+    HOURS_15(Duration.standardHours(15)),
+    HOURS_20(Duration.standardHours(20)),
+    HOURS_30(Duration.standardHours(30)),
+    HOURS_45(Duration.standardHours(45)),
     DAYS_1(Duration.standardDays(1)), 
     DAYS_7(Duration.standardDays(7)),
     DAYS_30(Duration.standardDays(30)),
@@ -354,7 +360,6 @@ public enum TimeIntervals {
         return projectionAheadDuration;
     }
 
-
     private static final Set<TimeIntervals> commandResendRate = ImmutableSet.of(
         NONE,
         MINUTES_1,
@@ -368,13 +373,54 @@ public enum TimeIntervals {
         MINUTES_45,
         HOURS_1,
         HOURS_2,
-        HOURS_6,
-        HOURS_8);
+        HOURS_5,
+        HOURS_8,
+        HOURS_10,
+        HOURS_15,
+        HOURS_20,
+        HOURS_30,
+        HOURS_45);
 
     /**
      * Used for Command Resend Rate for Gears
      */
-    public static Set<TimeIntervals> getCommandresendrate() {
+    public static Set<TimeIntervals> getCommandResendRate() {
         return commandResendRate;
     }
+
+    private static final Set<TimeIntervals> shedTime = ImmutableSet.of(
+        MINUTES_1,
+        MINUTES_2,
+        MINUTES_3,
+        MINUTES_4,
+        MINUTES_5,
+        MINUTES_6,
+        MINUTES_7,
+        MINUTES_8,
+        MINUTES_10,
+        MINUTES_15,
+        MINUTES_20,
+        MINUTES_30,
+        MINUTES_45,
+        HOURS_1,
+        HOURS_2,
+        HOURS_3,
+        HOURS_4,
+        HOURS_5,
+        HOURS_6,
+        HOURS_7,
+        HOURS_8,
+        HOURS_10,
+        HOURS_15,
+        HOURS_20,
+        HOURS_30,
+        HOURS_45);
+
+    /**
+     * Used for Shed Time for Gears
+     */
+    public static Set<TimeIntervals> getShedtime() {
+        return shedTime;
+    }
+
 }

@@ -150,31 +150,49 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                     errors.reject(key + "latchNotAllowedWithOtherGears");
                 }
 
-                for (int i = 0; i < loadProgram.getGears().size(); i++) {
+                Set<Integer> duplicatedGearNumbers =
+                    loadProgram.getGears().stream()
+                                          .filter(gear -> loadProgram.getGears().stream()
+                                                                                .filter(x -> x.getGearNumber() == gear.getGearNumber())
+                                                                                .count() > 1)
+                                          .map(gear -> gear.getGearNumber())
+                                          .collect(Collectors.toSet());
 
-                    ProgramGear gear = loadProgram.getGears().get(i);
-                    lmValidatorHelper.checkIfFieldRequired("gears[" + i + "].controlMethod", errors, gear.getControlMethod(), "Control Method");
-                    if (!errors.hasFieldErrors("gears[" + i + "].controlMethod")) {
-                        ImmutableSet<PaoType> supportedProgramTypesForGearType = gear.getControlMethod().getProgramTypes();
+                if (!duplicatedGearNumbers.isEmpty()) {
+                    errors.reject("yukon.web.modules.dr.setup.gear.error.uniqueGearNumber",
+                        new Object[] { duplicatedGearNumbers }, "");
+                } else {
+                    for (int i = 0; i < loadProgram.getGears().size(); i++) {
 
-                        if (supportedProgramTypesForGearType.contains(loadProgram.getType())) {
-                            errors.pushNestedPath("gears[" + i + "]");
-                            if (gear.getGearName() == null || !StringUtils.hasText(gear.getGearName().toString())) {
-                                errors.rejectValue("gearName", "yukon.web.modules.dr.setup.error.required", new Object[] { "Gear Name" }, "");
-                            }
+                        ProgramGear gear = loadProgram.getGears().get(i);
+                        lmValidatorHelper.checkIfFieldRequired("gears[" + i + "].controlMethod", errors,
+                            gear.getControlMethod(), "Control Method");
+                        if (!errors.hasFieldErrors("gears[" + i + "].controlMethod")) {
+                            ImmutableSet<PaoType> supportedProgramTypesForGearType =
+                                gear.getControlMethod().getProgramTypes();
 
-                            lmValidatorHelper.checkIfFieldRequired("gearNumber", errors, gear.getGearNumber(), "Gear Number");
-                            errors.popNestedPath();
+                            if (supportedProgramTypesForGearType.contains(loadProgram.getType())) {
+                                errors.pushNestedPath("gears[" + i + "]");
+                                if (gear.getGearName() == null || !StringUtils.hasText(gear.getGearName().toString())) {
+                                    errors.rejectValue("gearName", "yukon.web.modules.dr.setup.error.required",
+                                        new Object[] { "Gear Name" }, "");
+                                }
 
-                            // Validate Gear Fields
-                            ProgramGearFields fields = gear.getFields();
-                            if (fields != null) {
-                                errors.pushNestedPath("gears[" + i + "].fields");
-                                gearFieldsValidatorMap.get(gear.getControlMethod()).validate(fields, errors);
+                                lmValidatorHelper.checkIfFieldRequired("gearNumber", errors, gear.getGearNumber(),
+                                    "Gear Number");
                                 errors.popNestedPath();
+
+                                // Validate Gear Fields
+                                ProgramGearFields fields = gear.getFields();
+                                if (fields != null) {
+                                    errors.pushNestedPath("gears[" + i + "].fields");
+                                    gearFieldsValidatorMap.get(gear.getControlMethod()).validate(fields, errors);
+                                    errors.popNestedPath();
+                                }
+                            } else {
+                                errors.reject(key + "notSupportedControlMethod",
+                                    new Object[] { gear.getControlMethod().name(), loadProgram.getType() }, "");
                             }
-                        } else {
-                            errors.reject(key + "notSupportedControlMethod", new Object[] { gear.getControlMethod().name(), loadProgram.getType() }, "");
                         }
                     }
                 }

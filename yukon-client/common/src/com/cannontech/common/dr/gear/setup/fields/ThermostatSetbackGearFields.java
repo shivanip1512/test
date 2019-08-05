@@ -21,6 +21,7 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
     private Integer maxValue;
     private Integer valueB;
     private Integer valueD;
+
     private Integer valueF;
     private Integer random;
 
@@ -42,22 +43,6 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
 
     public void setAbsoluteOrDelta(AbsoluteOrDelta absoluteOrDelta) {
         this.absoluteOrDelta = absoluteOrDelta;
-    }
-
-    public Boolean isHeatMode() {
-        return isHeatMode;
-    }
-
-    public void setHeatMode(Boolean isHeatMode) {
-        this.isHeatMode = isHeatMode;
-    }
-
-    public Boolean isCoolMode() {
-        return isCoolMode;
-    }
-
-    public void setCoolMode(Boolean isCoolMode) {
-        this.isCoolMode = isCoolMode;
     }
 
     public Integer getMinValue() {
@@ -156,6 +141,22 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
         this.valueTf = valueTf;
     }
 
+    public Boolean getIsHeatMode() {
+        return isHeatMode;
+    }
+
+    public void setIsHeatMode(Boolean isHeatMode) {
+        this.isHeatMode = isHeatMode;
+    }
+
+    public Boolean getIsCoolMode() {
+        return isCoolMode;
+    }
+
+    public void setIsCoolMode(Boolean isCoolMode) {
+        this.isCoolMode = isCoolMode;
+    }
+
     public HowToStopControl getHowToStopControl() {
         return howToStopControl;
     }
@@ -196,7 +197,7 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
         setCapacityReduction(thermostatSetbackGear.getPercentReduction());
 
         if (thermostatSetbackGear.getValueB().intValue() != 0) {
-            setValueTb(thermostatSetbackGear.getValueB());
+            setValueB(thermostatSetbackGear.getValueB());
         }
 
         if (thermostatSetbackGear.getValueD().intValue() != 0) {
@@ -255,11 +256,11 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
         }
 
         if (thermostatSetbackGear.getSettings().charAt(3) == 'I') {
-            setCoolMode(true);
+            setIsCoolMode(true);
         }
 
-        if (thermostatSetbackGear.getSettings().charAt(3) == 'H') {
-            setHeatMode(true);
+        if (thermostatSetbackGear.getSettings().charAt(2) == 'H') {
+            setIsHeatMode(true);
         }
 
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
@@ -324,13 +325,13 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
             thermostatSetbackGear.getSettings().setCharAt(1, 'F');
         }
 
-        if (isHeatMode()) {
+        if (getIsHeatMode()) {
             thermostatSetbackGear.getSettings().setCharAt(2, 'H');
         } else {
             thermostatSetbackGear.getSettings().setCharAt(2, '-');
         }
 
-        if (isCoolMode()) {
+        if (getIsCoolMode()) {
             // I for "icy goodness"
             thermostatSetbackGear.getSettings().setCharAt(3, 'I');
         } else {

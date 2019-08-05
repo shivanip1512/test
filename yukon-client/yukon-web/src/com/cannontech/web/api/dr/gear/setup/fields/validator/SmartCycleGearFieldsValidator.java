@@ -40,13 +40,9 @@ public class SmartCycleGearFieldsValidator extends ProgramGearFieldsValidator<Sm
         gearValidatorHelper.checkCyclePeriod(smartCycleGear.getCyclePeriodInMinutes(), errors);
 
         // Check for Cycle Count Send Type
-        lmValidatorHelper.checkIfFieldRequired("cycleCountSendType", errors, smartCycleGear.getCycleCountSendType(),
-            "Cycle Count Send Type");
-        if (!errors.hasFieldErrors("cycleCountSendType")) {
-            if (smartCycleGear.getCycleCountSendType() == CycleCountSendType.FixedShedTime
-                || smartCycleGear.getCycleCountSendType() == CycleCountSendType.DynamicShedTime) {
-                errors.rejectValue("cycleCountSendType", invalidKey, new Object[] { "Cycle Count Send Type" }, "");
-            }
+        if (smartCycleGear.getCycleCountSendType() == CycleCountSendType.FixedShedTime
+            || smartCycleGear.getCycleCountSendType() == CycleCountSendType.DynamicShedTime) {
+            errors.rejectValue("cycleCountSendType", invalidKey, new Object[] { "Cycle Count Send Type" }, "");
         }
 
         // Check for Max Cycle Count

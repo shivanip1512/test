@@ -29,8 +29,7 @@ public class SimpleThermostatRampingGearFieldsValidator
 
     @Override
     protected void doValidation(SimpleThermostatRampingGearFields simpleThermostatRampingCycleGear, Errors errors) {
-        // Check Heat Mode or Cool Mode
-        gearValidatorHelper.checkTemperatureMode(simpleThermostatRampingCycleGear.getMode(), errors);
+        // Heat Mode or Cool Mode
 
         // Check Random Start Time
         lmValidatorHelper.checkIfFieldRequired("randomStartTimeInMinutes", errors,
@@ -49,9 +48,9 @@ public class SimpleThermostatRampingGearFieldsValidator
         }
 
         // Check Pre-op (Cool or Heat) Time
-        lmValidatorHelper.checkIfFieldRequired("preOpTimeInMinutes", errors,
+        lmValidatorHelper.checkIfFieldRequired("preOpTemp", errors,
             simpleThermostatRampingCycleGear.getPreOpTimeInMinutes(), "Pre-op Time");
-        if (!errors.hasFieldErrors("preOpTimeInMinutes")) {
+        if (!errors.hasFieldErrors("preOpTemp")) {
             YukonValidationUtils.checkRange(errors, "preOpTimeInMinutes",
                 simpleThermostatRampingCycleGear.getPreOpTimeInMinutes(), 0, 5, false);
         }
@@ -66,7 +65,7 @@ public class SimpleThermostatRampingGearFieldsValidator
 
         // Check Ramp degree F/Hour
         lmValidatorHelper.checkIfFieldRequired("rampPerHour", errors, simpleThermostatRampingCycleGear.getRampPerHour(),
-            "Pre-op Hold");
+            "Ramp Per Hour");
         if (!errors.hasFieldErrors("rampPerHour")) {
             YukonValidationUtils.checkRange(errors, "rampPerHour", simpleThermostatRampingCycleGear.getRampPerHour(),
                 (float) -9.9, (float) 9.9, false);
@@ -74,14 +73,14 @@ public class SimpleThermostatRampingGearFieldsValidator
 
         // Check Max degree delta
         lmValidatorHelper.checkIfFieldRequired("max", errors, simpleThermostatRampingCycleGear.getMax(),
-            "Max degree Delta");
+            "Max degree delta");
         if (!errors.hasFieldErrors("max")) {
             YukonValidationUtils.checkRange(errors, "max", simpleThermostatRampingCycleGear.getMax(), 0, 20, false);
         }
 
         // Check Ramp out Time
         lmValidatorHelper.checkIfFieldRequired("rampOutTimeInMinutes", errors,
-            simpleThermostatRampingCycleGear.getRampOutTimeInMinutes(), "Ramp Out Time");
+            simpleThermostatRampingCycleGear.getRampOutTimeInMinutes(), "Ramp out Time");
         if (!errors.hasFieldErrors("rampOutTimeInMinutes")) {
             YukonValidationUtils.checkRange(errors, "rampOutTimeInMinutes",
                 simpleThermostatRampingCycleGear.getRampOutTimeInMinutes(), 0, 5, false);

@@ -3,6 +3,7 @@ package com.cannontech.web.api.dr.gear.setup.fields.validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.dr.gear.setup.fields.MasterCycleGearFields;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 
@@ -30,8 +31,7 @@ public class MasterCycleGearFieldsValidator extends ProgramGearFieldsValidator<M
         // Check Cycle Period
         gearValidatorHelper.checkCyclePeriod(masterCycleGear.getCyclePeriodInMinutes(), errors);
 
-        // Check Group Selection Method
-        gearValidatorHelper.checkGroupSelectionMethod(masterCycleGear.getGroupSelectionMethod(), errors);
+        // Group Selection Method
 
         // Check Ramp In
         if (masterCycleGear.getRampInPercent() != null || masterCycleGear.getRampInIntervalInSeconds() != null) {
@@ -41,6 +41,14 @@ public class MasterCycleGearFieldsValidator extends ProgramGearFieldsValidator<M
 
         // Check How to Stop Control
         gearValidatorHelper.checkHowToStopControl(masterCycleGear.getHowToStopControl(), getControlMethod(), errors);
+
+        // Check for Ramp Out and Ramp Out Interval
+        if (!errors.hasFieldErrors("howToStopControl")
+            && (masterCycleGear.getHowToStopControl() == HowToStopControl.RampOutRestore
+                || masterCycleGear.getHowToStopControl() == HowToStopControl.RampOutTimeIn)) {
+            gearValidatorHelper.checkRampOutPercentAndInterval(masterCycleGear.getRampOutPercent(),
+                masterCycleGear.getRampOutIntervalInSeconds(), errors);
+        }
 
         // Check Group Capacity Reduction
         gearValidatorHelper.checkGroupCapacityReduction(masterCycleGear.getCapacityReduction(), errors);

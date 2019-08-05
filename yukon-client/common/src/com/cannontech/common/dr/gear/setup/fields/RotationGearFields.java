@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class RotationGearFields implements ProgramGearFields {
 
     private TimeIntervals shedTime;
-    private String numberOfGroups;
+    private Integer numberOfGroups;
     private TimeIntervals sendRate;
     private GroupSelectionMethod groupSelectionMethod;
     private HowToStopControl howToStopControl;
@@ -44,11 +44,11 @@ public class RotationGearFields implements ProgramGearFields {
         this.shedTime = shedTime;
     }
 
-    public String getNumberOfGroups() {
+    public Integer getNumberOfGroups() {
         return numberOfGroups;
     }
 
-    public void setNumberOfGroups(String numberOfGroups) {
+    public void setNumberOfGroups(Integer numberOfGroups) {
         this.numberOfGroups = numberOfGroups;
     }
 
@@ -83,7 +83,7 @@ public class RotationGearFields implements ProgramGearFields {
         setHowToStopControl(HowToStopControl.valueOf(rotationGear.getMethodStopType()));
         setCapacityReduction(rotationGear.getPercentReduction());
         setShedTime(TimeIntervals.fromSeconds(rotationGear.getShedTime()));
-        setNumberOfGroups(String.valueOf(rotationGear.getNumberOfGroups()));
+        setNumberOfGroups(rotationGear.getNumberOfGroups());
         setSendRate(TimeIntervals.fromSeconds(rotationGear.getSendRate()));
         setGroupSelectionMethod(GroupSelectionMethod.valueOf(rotationGear.getGroupSelectionMethod()));
 

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
@@ -32,7 +33,12 @@ public class HoneywellCycleGearFieldsValidator extends ProgramGearFieldsValidato
         gearValidatorHelper.checkRampIn(honeywellCycleGear.getRampInOut(), errors);
 
         // Check Control Percent
-        gearValidatorHelper.checkControlPercent(honeywellCycleGear.getControlPercent(), errors);
+        lmValidatorHelper.checkIfFieldRequired("controlPercent", errors, honeywellCycleGear.getControlPercent(),
+            "Control Percent");
+        if (!errors.hasFieldErrors("controlPercent")) {
+            YukonValidationUtils.checkRange(errors, "controlPercent", honeywellCycleGear.getControlPercent(), 0, 100,
+                false);
+        }
 
         // Check Cycle Period
         lmValidatorHelper.checkIfFieldRequired("cyclePeriodInMinutes", errors,
