@@ -88,8 +88,8 @@ public interface AuthenticationService {
 
     /**
      * Encrypts the password according to the specified authentication category and updates the
-     * database. This should only be used when a specific authentication category (other than the
-     * default) is desired. The normal case is to call {@link #setPassword(LiteYukonUser, String)}.
+     * database. This should be used when a specific authentication category (other than the
+     * default) is desired.
      * 
      * @throws UnsupportedOperationException If the specified authentication category does not
      *             support password sets via Yukon.
@@ -97,14 +97,19 @@ public interface AuthenticationService {
     void setPassword(LiteYukonUser user, AuthenticationCategory authenticationCategory, String newPassword, LiteYukonUser changedByUser);
 
     /**
-     * Encrypts the password according to the specified authentication category and updates the database.
-     * 
-     * This method uses the GlobalSettingType.DEFAULT_AUTH_TYPE to determine the authentication method.
-     * 
+     * Encrypts the password according to the user's authentication category and updates the database.
      * @throws UnsupportedOperationException If the authentication category specified by the global setting does not
      *             support password sets via Yukon.
      */
     void setPassword(LiteYukonUser user, String newPassword, LiteYukonUser createdBy);
+
+    /**
+     * Encrypts the password according to the specified authentication category and updates the database.
+     * This method uses the GlobalSettingType.DEFAULT_AUTH_TYPE to determine the authentication method.
+     * @throws UnsupportedOperationException If the authentication category specified by the global setting does not
+     *             support password sets via Yukon.
+     */
+    void setPasswordWithDefaultAuthCat(LiteYukonUser user, String newPassword, LiteYukonUser createdBy);
 
     /**
      * Get AuthenticationThrottleDto data for the username.

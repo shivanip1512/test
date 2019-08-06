@@ -9,6 +9,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.cannontech.common.events.loggers.UsersEventLogService;
+import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
@@ -76,7 +77,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                     if (StringUtils.isBlank(password)) {
                         throw new RuntimeException("password required for authentication category " + authenticationCategory);
                     }
-                    authenticationService.setPassword(newUser, loginBackingBean.getPassword1(), user);
+                    authenticationService.setPasswordWithDefaultAuthCat(newUser, loginBackingBean.getPassword1(), user);
                 } else {
                     authenticationService.setAuthenticationCategory(newUser, authenticationCategory);
                 }
@@ -152,8 +153,8 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                     
                     // Security checks for password change.
                     rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD, userContext.getYukonUser());
-                    AuthType currentAuthType = authenticationService.getDefaultAuthType();
-                    boolean passwordSetSupported = authenticationService.supportsPasswordSet(currentAuthType);
+                    UserAuthenticationInfo authenticationInfo = yukonUserDao.getUserAuthenticationInfo(residentialUser.getUserID());
+                    boolean passwordSetSupported = authenticationService.supportsPasswordSet(authenticationInfo.getAuthenticationCategory());
                     if (!passwordSetSupported) {
                         throw new IllegalArgumentException("You cannot set the password on this style of account.");
                     }

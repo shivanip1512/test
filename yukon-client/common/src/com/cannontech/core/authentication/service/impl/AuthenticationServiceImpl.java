@@ -114,7 +114,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         AuthType supportingAuthType = AuthenticationCategory.getByAuthType(authType).getSupportingAuthType();
         if (authType != supportingAuthType) {
             isPasswordMatchedWithOldAuthType = verifyPasswordWithOldAuthType(user, password, authType);
-            checkExpirationAndAuthentication(isPasswordMatchedWithOldAuthType, user, username, authType);
+            checkExpirationAndAuthentication(isPasswordMatchedWithOldAuthType, user, username);
         }
         AuthenticationProvider provider = providerMap.get(supportingAuthType);
         if (provider == null) {
@@ -128,7 +128,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             usersEventLogService.passwordUpdated(user, user); 
         } else {
             isPasswordMatched = provider.login(user, password);
-            checkExpirationAndAuthentication(isPasswordMatched, user, username, supportingAuthType);
+            checkExpirationAndAuthentication(isPasswordMatched, user, username);
         }
         return user;
     }
@@ -139,7 +139,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @throws BadAuthenticationException - This exception will be thrown if authentication fails.
      * @throws PasswordExpiredException - This exception will be thrown if password has expired.
      */
-    private void checkExpirationAndAuthentication(boolean isPasswordMatched, LiteYukonUser user, String username, AuthType supportingAuthType)
+    private void checkExpirationAndAuthentication(boolean isPasswordMatched, LiteYukonUser user, String username)
             throws BadAuthenticationException, PasswordExpiredException {
         if (!isPasswordMatched) {
             // login must have failed
@@ -149,16 +149,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             log.debug("Authentication succeeded: username=" + username);
             authenticationThrottleService.loginSucceeded(username);
             // Check to see if the user's password is expired.
-            boolean passwordExpired;
-            // If the account doesn't support setting passwords, password expiration is not a thing so don't check it
-            if (!supportsPasswordSet(supportingAuthType)) {
-                log.debug("Password Expiration not supported for " + supportingAuthType + " authentication method");
-                passwordExpired = false;
-            }
-            else {
-              passwordExpired = isPasswordExpired(user);
-            }
-            
+            boolean passwordExpired = isPasswordExpired(user);
             if (passwordExpired) {
                 throw new PasswordExpiredException("The user's password is expired.  Please login to the web "
                         + "interface to reset it. (" + user.getUsername() + ")");
@@ -169,14 +160,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public boolean isPasswordExpired(LiteYukonUser user) {
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
-        PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user);
-        if (user.isForceReset() || 
-            (passwordPolicy != null &&
-             passwordPolicy.getMaxPasswordAge() != Duration.ZERO && 
-             passwordPolicy.getMaxPasswordAge().isShorterThan(passwordPolicy.getPasswordAge(userAuthenticationInfo)))) {
-            return true;
+        AuthType supportingAuthType = userAuthenticationInfo.getAuthenticationCategory().getSupportingAuthType();
+        // If the user's authtype doesn't support setting passwords, password expiration is not a thing so don't check it
+        if (supportsPasswordSet(supportingAuthType)) {
+            PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user);
+            if (user.isForceReset() || 
+                (passwordPolicy != null &&
+                 passwordPolicy.getMaxPasswordAge() != Duration.ZERO && 
+                 passwordPolicy.getMaxPasswordAge().isShorterThan(passwordPolicy.getPasswordAge(userAuthenticationInfo)))) {
+                return true;
+            }
         }
-
+        else {
+            log.debug("Password Expiration not supported for " + supportingAuthType + " authentication method");
+        }
         return false;
     }
 
@@ -212,9 +209,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public void setPassword(LiteYukonUser user, AuthenticationCategory authenticationCategory, String newPassword, LiteYukonUser changedByUser) {
-        // TODO YUK-20119 This line might be usable after this YUK is done and default authentication type stops being passed all over.
-//        AuthType authType = authenticationCategory.getSupportingAuthType();
-        AuthType authType = yukonUserDao.getUserAuthenticationInfo(user.getUserID()).getAuthType();
+        AuthType authType = authenticationCategory.getSupportingAuthType();
         boolean supportsSetPassword = supportsPasswordSet(authType);
         if (!supportsSetPassword) {
             throw new UnsupportedOperationException("setPassword not supported for type: " + authType);
@@ -226,6 +221,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public void setPassword(LiteYukonUser user, String newPassword, LiteYukonUser changedByUser) {
+        UserAuthenticationInfo authenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
+        setPassword(user, authenticationInfo.getAuthenticationCategory(), newPassword, changedByUser);
+    }
+    
+    @Override
+    public void setPasswordWithDefaultAuthCat(LiteYukonUser user, String newPassword, LiteYukonUser changedByUser) {
         // Update to the current authentication type when password is changed.
         AuthenticationCategory authenticationCategory = getDefaultAuthenticationCategory();
         setPassword(user, authenticationCategory, newPassword, changedByUser);

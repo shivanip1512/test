@@ -753,7 +753,7 @@ public class StarsAdminUtil {
             if (StringUtils.isBlank(password)) {
                 throw new IllegalArgumentException("password cannot be blank");
             }
-            authenticationService.setPassword(liteUser, password, user);
+            authenticationService.setPasswordWithDefaultAuthCat(liteUser, password, user);
         }
 
         return liteUser;

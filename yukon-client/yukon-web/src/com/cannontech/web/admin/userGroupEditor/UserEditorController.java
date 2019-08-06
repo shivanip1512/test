@@ -207,7 +207,7 @@ public class UserEditorController {
         
         
         if (requiresPasswordChanged) {
-            authService.setPassword(yukonUser, user.getAuthCategory(), user.getPassword().getPassword(), userContext.getYukonUser());
+            authService.setPassword(yukonUser, user.getPassword().getPassword(), userContext.getYukonUser());
         } else if (user.isAuthenticationChanged()) {
             authService.setAuthenticationCategory(yukonUser, user.getAuthCategory());
         }
