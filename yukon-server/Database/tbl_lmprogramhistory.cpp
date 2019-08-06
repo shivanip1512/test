@@ -180,6 +180,8 @@ std::string CtiTableLMProgramHistory::getStrFromAction(long action)
     {
         case Start:
             return "Start";
+        case Update:
+            return "Update";
         case Stop:
             return "Stop";
         case GearChange:

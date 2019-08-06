@@ -31,6 +31,7 @@ public:
     enum LMHistoryActions
     {
         Start,
+        Update,         // Re-Start
         GearChange,
         Stop
     };

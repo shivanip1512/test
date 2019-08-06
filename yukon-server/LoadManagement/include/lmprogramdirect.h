@@ -209,6 +209,8 @@ private:
 
     unsigned long _curLogID;
 
+    bool _restart;  // this is to try to log a start vs a restart/update
+
     //don't stream/don't save
     BOOL _insertDynamicDataFlag;
     bool _announced_program_constraint_violation; // used for timed schedules so we don't spam the logs with constraint violations

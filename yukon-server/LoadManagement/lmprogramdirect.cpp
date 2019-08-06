@@ -5348,6 +5348,8 @@ void CtiLMProgramDirect::restore(Cti::RowReader &rdr)
         _adjustment_notification_enabled = (notifyAdjust == 1);
     }
 
+    _restart = isControlling();     // if we are currently active any new start will be a restart/update
+
     if( !rdr["currentgearnumber"].isNull() )
     {
         rdr["currentgearnumber"] >> _currentgearnumber;
@@ -6212,8 +6214,17 @@ CtiLMProgramBase& CtiLMProgramDirect::setProgramState(LONG newState)
     {
         if( isAControlState(newState) && !isAControlState(currentState) )
         {
-            //It is a start
-            recordHistory(CtiTableLMProgramHistory::Start, CtiTime::now());
+            if( ! _restart )
+            {
+                //It is a start
+                recordHistory(CtiTableLMProgramHistory::Start, CtiTime::now());
+                _restart = true;
+            }
+            else
+            {
+                // It is a restart/update
+                recordHistory(CtiTableLMProgramHistory::Update, CtiTime::now());
+            }
         }
         else if( isAStopState(newState) && currentState != CtiLMProgramBase::ScheduledState )
         {
@@ -6224,6 +6235,7 @@ CtiLMProgramBase& CtiLMProgramDirect::setProgramState(LONG newState)
                 recordTime = recordTime.now();
             }
             recordHistory(CtiTableLMProgramHistory::Stop, recordTime);
+            _restart = false;   // clear so the next start is a start and not an update
         }
     }
 
