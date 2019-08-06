@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%@ attribute name="widget" required="true" type="java.lang.Object"%>
 <%@ attribute name="path" %>
@@ -19,7 +20,7 @@
                 <jsp:param name="parameterName" value="${parameter.name}"/>
                 <jsp:param name="parameterKey" value="${parameter.key}"/>
                 <jsp:param name="path" value="${path}"/>
-                <jsp:param name="parameterValue" value="${widget.parameters[parameter.name]}"/>
+                <jsp:param name="parameterValue" value="${fn:escapeXml(widget.parameters[parameter.name])}"/>
             </jsp:include>
             <br/>
     </c:forEach>
