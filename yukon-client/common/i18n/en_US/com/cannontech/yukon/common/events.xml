@@ -386,7 +386,7 @@
     <entry key="yukon.common.events.hardware.assigningHardwareAttempted">User {1} attempted to assign hardware {3} to account {2}. Source: {4}</entry>
     <entry key="yukon.common.events.hardware.hardwareAdditionAttempted">User {1} attempted to add device {3} to account {2}. Source: {4}</entry>
     <entry key="yukon.common.events.hardware.hardwareDeletionAttempted">User {1} attempted to delete device {2}. Source: {3}</entry>
-    <entry key="yukon.common.events.hardware.hardwareRemovalAttempted">User {1} attempted to remove device {2} from account {3}. Source: {4}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareRemovalAttempted">User {1} attempted to remove device {3} from account {2}. Source: {4}.</entry>
     <entry key="yukon.common.events.hardware.hardwareUpdateAttempted">User {1} attempted to update device {3} on account {2}. Source: {4}</entry>
     
     <!-- Hardware Service Level -->
