@@ -56,4 +56,23 @@ public class DataProviderClass {
         { (int) -2, "Must be between 1 and 8.", 422 }, 
         { (int) 11, "Must be between 1 and 8.", 422 } };
     }
+
+    /**
+     * DataProvider provides data to test method in the form of object array
+     * Data provided -
+     * col1 : goldAddress
+     * col2 : silverAddress
+     * col3 : Expected field errors code in response
+     * col4 : Expected response code
+     */
+
+    @DataProvider(name = "EmetconAddressData")
+    public Object[][] getEmetconAddressData() {
+
+        return new Object[][] { { "", "22", "Gold Address is required.", 422 },
+            { "3", "", "Silver Address is required.", 422 }, { "5", "22", "Must be between 0 and 4.", 422 },
+            { "0", "0", "Gold Address must be between 1 and 4 when Gold is selected for Address to Use.", 422 },
+            { "-1", "22", "Must be between 0 and 4.", 422 }, { "3", "61", "Must be between 0 and 60.", 422 },
+            { "3", "-1", "Must be between 0 and 60.", 422 } };
+    }
 }

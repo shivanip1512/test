@@ -3,6 +3,7 @@ package com.cannontech.rest.api.common;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import com.cannontech.rest.api.utilities.Log;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -31,9 +32,16 @@ public class ApiTokenAuthentication {
     private String generateToken() {
         baseURI = ApiCallHelper.getProperty("baseURI");
         File file = ApiCallHelper.getInputFile("login.json");
-        String authTokenValue = given().accept("application/json").contentType("application/json").body(file).when().post(
+        String authTokenValue = null;
+        try {
+        authTokenValue = given().accept("application/json").contentType("application/json").body(file).when().post(
             "/api/token").then().extract().path("token").toString();
+        }catch(Exception e) {
+            e.printStackTrace();
+            Log.error("Error in token generation - "+e.toString(), e);
+        }
         tokenCache.put(authTokenKey, authTokenValue);
         return authTokenValue;
-    }
+    
+}
 }

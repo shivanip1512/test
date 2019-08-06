@@ -7,6 +7,7 @@
 			<class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupItronAPITest" />
 			<class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupMeterDisconnectAPITest" />
 			<class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupNestAPITest" />
+			<class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupEmetconAPITest" />
 		</classes>
 	</test>
 </suite>

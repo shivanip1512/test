@@ -20,7 +20,8 @@ public class ApiCallHelper {
      * 
      */
     public static File getInputFile(String fileName) {
-        return new File(userDirectory + File.separatorChar + "resources" + File.separatorChar + "payload" + File.separatorChar + fileName);
+        return new File(userDirectory + File.separatorChar + "resources" + File.separatorChar + "payload"
+            + File.separatorChar + fileName);
     }
 
     /**
@@ -89,13 +90,13 @@ public class ApiCallHelper {
      * JSON Object payload and path variable.
      * 
      */
-    
+
     public static ExtractableResponse<?> post(String key, JSONObject payload, String param) {
         String uri = getProperty(key);
         String body = payload.toJSONString();
         return getHeader().body(body).when().post(uri + param).then().log().all().extract();
     }
-    
+
     /**
      * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP DELETE method for specified URI
      * and request parameter.
@@ -116,7 +117,19 @@ public class ApiCallHelper {
     public static ExtractableResponse<?> delete(String key, String fileName, String param) {
         String uri = getProperty(key);
         File file = getInputFile(fileName);
-        return getHeader().body(file).delete(uri + param).then().extract();
+        return getHeader().body(file).delete(uri + param).then().log().all().extract();
+    }
+
+    /**
+     * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP
+     * DELETE method for specified URI, JSON Object payload and path variable.
+     * 
+     */
+
+    public static ExtractableResponse<?> delete(String key, JSONObject payload, String param) {
+        String uri = getProperty(key);
+        String body = payload.toJSONString();
+        return getHeader().body(body).delete(uri + param).then().log().all().log().all().extract();
     }
 
     private static RequestSpecification getHeader() {
