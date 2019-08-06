@@ -5,6 +5,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
@@ -81,7 +82,7 @@
                             <cti:msg2 var="triggerTitle" key="yukon.web.modules.dr.setup.controlArea.trigger.title"/>
                             <cti:url var="triggerUrl" value="/dr/setup/trigger/${trigger.triggerId}"/>
                             <div class="dn" id="trigger-${trigger.triggerId}" data-title="${triggerTitle}" data-dialog data-url="${triggerUrl}"></div>
-                            <a href="javascript:void(0);" data-popup="#trigger-${trigger.triggerId}">${triggerName}</a>
+                            <a href="javascript:void(0);" data-popup="#trigger-${trigger.triggerId}">${fn:escapeXml(triggerName)}</a>
                             <tags:hidden path="triggers[${status.index}].triggerId"/>
                             <tags:hidden path="triggers[${status.index}].triggerNumber"/>
                             <tags:hidden path="triggers[${status.index}].triggerType"/>
@@ -154,7 +155,7 @@
                         </div>
                     
                         <!-- Assigned Programs -->
-                        <div class="column two nogutter">
+                        <div class="column two nogutter oa" style="height:560px;">
                             <h3 class="dib"><i:inline key="yukon.common.assigned"/></h3>
                             <table id="program-assignments" class="compact-results-table dashed">
                                 <thead>

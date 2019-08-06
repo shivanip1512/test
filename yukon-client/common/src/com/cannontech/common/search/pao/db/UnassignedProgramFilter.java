@@ -11,19 +11,19 @@ public class UnassignedProgramFilter implements SqlFilter {
     
     @Override
     public SqlFragmentSource getWhereClauseFragment() {
-        SqlStatementBuilder bySubBus = new SqlStatementBuilder();
-        bySubBus.append("PAObjectId IN (");
-        bySubBus.append("  SELECT DeviceId");
-        bySubBus.append("  FROM LMProgram lm");
-        bySubBus.append("  WHERE lm.deviceId NOT IN (SELECT cap.lmProgramDeviceId");
-        bySubBus.append("    FROM LMControlAreaProgram cap");
+        SqlStatementBuilder programFilter = new SqlStatementBuilder();
+        programFilter.append("PAObjectId IN (");
+        programFilter.append("  SELECT DeviceId");
+        programFilter.append("  FROM LMProgram lm");
+        programFilter.append("  WHERE lm.deviceId NOT IN (SELECT cap.lmProgramDeviceId");
+        programFilter.append("    FROM LMControlAreaProgram cap");
         if (controlAreaId != null) {
-            bySubBus.append("    WHERE cap.DeviceId").neq(controlAreaId);
+            programFilter.append("    WHERE cap.DeviceId").neq(controlAreaId);
         }
-        bySubBus.append("  )");
-        bySubBus.append(")");
+        programFilter.append("  )");
+        programFilter.append(")");
         
-        return bySubBus;
+        return programFilter;
     }
     
     public void setControlAreaId(int controlAreaId) {
