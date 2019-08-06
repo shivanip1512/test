@@ -48,11 +48,13 @@ public interface DrMeterDisconnectStatusService {
     
     /**
      * Retrieve the statuses for all devices in the most recent event on the specified program.
-     * @param controlStatuses if present, only devices with the specified statuses will be retrieved.
+     * @param controlStatuses if present, only devices with the specified control statuses will be retrieved.
+     * @param controlStatuses if present, only devices with the specified restore statuses will be retrieved.
      * @return The list of meter statuses for the event.
      */
     List<DrMeterEventStatus> getAllCurrentStatusForLatestProgramEvent(int programId,
-                                                                      Collection<DrMeterControlStatus> controlStatuses);
+                                                                      Collection<DrMeterControlStatus> controlStatuses,
+                                                                      Collection<DrMeterControlStatus> restoreStatuses);
     
     /**
      * @return The event ID of the currently active event for the specified program, if there is one.

@@ -35,16 +35,17 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
 
     @Override
     public void addDevicesToEvent(int eventId, Collection<Integer> deviceIds) {
-        batchInsertDeviceStatuses(eventId, deviceIds, DrMeterControlStatus.NOT_SENT, Optional.empty());
+        Instant now = Instant.now();
+        batchInsertDeviceStatuses(eventId, deviceIds, DrMeterControlStatus.CONTROL_NOT_SENT, now);
+        batchInsertDeviceStatuses(eventId, deviceIds, DrMeterControlStatus.RESTORE_NOT_SENT, now);
     }
     
     private void batchInsertDeviceStatuses(int eventId, Collection<Integer> deviceIds, DrMeterControlStatus status, 
-                                           Optional<Instant> timestamp) {
+                                           Instant timestamp) {
         
-        Instant statusTime = timestamp.orElse(Instant.now());
         List<List<Object>> insertValues = deviceIds.stream()
                                                    .map(deviceId -> getNewEventDeviceInserts(eventId, deviceId, 
-                                                                                             statusTime, status))
+                                                                                             timestamp, status))
                                                    .collect(Collectors.toList());
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -84,14 +85,14 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
         List<Integer> deviceIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         
         // Insert a new status for those devices
-        batchInsertDeviceStatuses(eventId, deviceIds, status, Optional.empty());
+        batchInsertDeviceStatuses(eventId, deviceIds, status, Instant.now());
     }
 
     @Override
     public void updateControlStatus(int eventId, DrMeterControlStatus status, Instant timestamp,
                                     Collection<Integer> deviceIds) {
         
-        batchInsertDeviceStatuses(eventId, deviceIds, status, Optional.of(timestamp));
+        batchInsertDeviceStatuses(eventId, deviceIds, status, timestamp);
     }
 
     @Override
@@ -133,45 +134,65 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
 
     @Override
     public List<DrMeterEventStatus> getAllCurrentStatusForLatestProgramEvent(int programId,
-                                                                             Collection<DrMeterControlStatus> controlStatuses) {
+                                                                             Collection<DrMeterControlStatus> shedStatuses,
+                                                                             Collection<DrMeterControlStatus> restoreStatuses) {
+        
+        // Default to all shed/restore statuses if no filter is selected
+        shedStatuses = shedStatuses != null ? shedStatuses : DrMeterControlStatus.getShedStatuses();
+        restoreStatuses = restoreStatuses != null ? restoreStatuses : DrMeterControlStatus.getRestoreStatuses();
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("WITH DevicesInEvent AS (");
-        sql.append("  SELECT DISTINCT DeviceId");
-        sql.append("  FROM DrDisconnectDeviceStatus");
-        sql.append("  WHERE EventId = (");
-        sql.append("    SELECT MAX(EventId)");
-        sql.append("    FROM DrDisconnectEvent");
-        sql.append("    WHERE ProgramId").eq(programId);
-        sql.append("  )");
+        sql.append(  "SELECT DISTINCT DeviceId");
+        sql.append(  "FROM DrDisconnectDeviceStatus");
+        sql.append(  "WHERE EventId = (");
+        sql.append(    "SELECT MAX(EventId)");
+        sql.append(    "FROM DrDisconnectEvent");
+        sql.append(    "WHERE ProgramId").eq(programId);
+        sql.append(  ")");
         sql.append(")");
-        sql.append("SELECT EntryId, EventId, ddds1.DeviceId, ib.InventoryId, ControlStatus, ControlStatusTime, ypo.PaoName");
-        sql.append("FROM DrDisconnectDeviceStatus ddds1");
-        sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = ddds1.DeviceId");
-        sql.append("JOIN InventoryBase ib ON ib.DeviceId = ddds1.DeviceId");
-        sql.append("WHERE ddds1.DeviceId IN (SELECT * FROM DevicesInEvent)");
-        sql.append("AND ddds1.ControlStatusTime = (");
-        sql.append("  SELECT MAX(ddds2.ControlStatusTime)");
-        sql.append("  FROM DrDisconnectDeviceStatus ddds2");
-        sql.append("  WHERE ddds2.DeviceId = ddds1.DeviceId");
+        sql.append("SELECT shed.EntryId, shed.EventId, shed.DeviceId, shed.ControlStatus, shed.ControlStatusTime,");
+        sql.append(       "ib.InventoryId, ypo.PaoName, resto.ControlStatus AS RestoreStatus,");
+        sql.append(       "resto.ControlStatusTime AS RestoreStatusTime");
+        sql.append("FROM DrDisconnectDeviceStatus shed");
+        sql.append("JOIN DrDisconnectDeviceStatus resto ON shed.DeviceId = resto.DeviceId");
+        sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = shed.DeviceId");
+        sql.append("JOIN InventoryBase ib ON ib.DeviceId = shed.DeviceId");
+        sql.append("WHERE shed.DeviceId IN (SELECT * FROM DevicesInEvent)");
+        sql.append("AND shed.ControlStatus").in(shedStatuses);
+        sql.append("AND shed.ControlStatusTime = (");
+        sql.append(  "SELECT MAX(shedTimes.ControlStatusTime)");
+        sql.append(  "FROM DrDisconnectDeviceStatus shedTimes");
+        sql.append(  "WHERE shedTimes.DeviceId = shed.DeviceId");
+        sql.append(  "AND shedTimes.ControlStatus").in(shedStatuses);
         sql.append(")");
-        sql.append("GROUP BY ddds1.DeviceId, ib.InventoryId, ypo.PaoName, ControlStatus, ControlStatusTime, EventId, EntryId");
+        sql.append("AND resto.ControlStatus").in(restoreStatuses);
+        sql.append("AND resto.ControlStatusTime = (");
+        sql.append(  "SELECT MAX(restoTimes.ControlStatusTime)");
+        sql.append(  "FROM DrDisconnectDeviceStatus restoTimes");
+        sql.append(  "WHERE restoTimes.DeviceId = resto.DeviceId");
+        sql.append(  "AND restoTimes.ControlStatus").in(restoreStatuses);
+        sql.append(")");
+        sql.append("GROUP BY shed.DeviceId, shed.ControlStatus, shed.ControlStatusTime, shed.EventId, shed.EntryId,");
+        sql.append(         "ib.InventoryId, ypo.PaoName, resto.ControlStatus, resto.ControlStatusTime");
         
         return jdbcTemplate.query(sql, eventStatusRowMapper);
     }
 
-    @Override
-    public List<DrMeterEventStatus> getAllStatusForEvent(int eventId) {
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EntryId, EventId, ddds.DeviceId, ib.InventoryId, ControlStatus, ControlStatusTime, ypo.PaoName");
-        sql.append("FROM DrDisconnectDeviceStatus ddds");
-        sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = ddds.DeviceId");
-        sql.append("JOIN InventoryBase ib ON ib.DeviceId = ddds.DeviceId");
-        sql.append("WHERE EventId").eq(eventId);
-        sql.append("ORDER BY ControlStatusTime DESC");
-        
-        return jdbcTemplate.query(sql, eventStatusRowMapper);
-    }
+// Something like this could be used to retrieve full status history for event.
+//    @Override
+//    public List<DrMeterEventStatus> getAllStatusForEvent(int eventId) {
+//        
+//        SqlStatementBuilder sql = new SqlStatementBuilder();
+//        sql.append("SELECT EntryId, EventId, ddds.DeviceId, ib.InventoryId, ControlStatus, ControlStatusTime, ypo.PaoName");
+//        sql.append("FROM DrDisconnectDeviceStatus ddds");
+//        sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = ddds.DeviceId");
+//        sql.append("JOIN InventoryBase ib ON ib.DeviceId = ddds.DeviceId");
+//        sql.append("WHERE EventId").eq(eventId);
+//        sql.append("ORDER BY ControlStatusTime DESC");
+//        
+//        return jdbcTemplate.query(sql, eventStatusRowMapper);
+//    }
     
     private static final YukonRowMapper<DrMeterEventStatus> eventStatusRowMapper = (YukonResultSet rs) -> {
         DrMeterEventStatus status = new DrMeterEventStatus();
@@ -181,6 +202,8 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
         status.setMeterDisplayName(rs.getString("PaoName"));
         status.setControlStatus(rs.getEnum("ControlStatus", DrMeterControlStatus.class));
         status.setControlStatusTime(rs.getInstant("ControlStatusTime"));
+        status.setRestoreStatus(rs.getEnum("RestoreStatus", DrMeterControlStatus.class));
+        status.setControlStatusTime(rs.getInstant("RestoreStatusTime"));
         return status;
     };
 }

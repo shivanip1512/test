@@ -14,6 +14,8 @@ public class DrMeterEventStatus {
     private String meterDisplayName;
     private DrMeterControlStatus controlStatus;
     private Instant controlStatusTime;
+    private DrMeterControlStatus restoreStatus;
+    private Instant restoreStatusTime;
     
     private static final List<DrMeterControlStatus> canControlStatuses = List.of(
         DrMeterControlStatus.CONTROL_FAILED,
@@ -74,6 +76,22 @@ public class DrMeterEventStatus {
 
     public void setControlStatusTime(Instant controlStatusTime) {
         this.controlStatusTime = controlStatusTime;
+    }
+
+    public DrMeterControlStatus getRestoreStatus() {
+        return restoreStatus;
+    }
+
+    public void setRestoreStatus(DrMeterControlStatus restoreStatus) {
+        this.restoreStatus = restoreStatus;
+    }
+
+    public Instant getRestoreStatusTime() {
+        return restoreStatusTime;
+    }
+
+    public void setRestoreStatusTime(Instant restoreStatusTime) {
+        this.restoreStatusTime = restoreStatusTime;
     }
 
     public boolean canSendControl() {

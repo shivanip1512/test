@@ -1177,7 +1177,7 @@ The devices in this category have not reported DR message for the event.
 
 
 <!-- Control Status Types -->
-<entry key="yukon.web.modules.dr.controlStatus.NOT_SENT">Disconnect command not sent yet</entry>
+<entry key="yukon.web.modules.dr.controlStatus.CONTROL_NOT_SENT">Disconnect command not sent yet</entry>
 <entry key="yukon.web.modules.dr.controlStatus.CONTROL_SENT">Command sent, waiting for response</entry>
 <entry key="yukon.web.modules.dr.controlStatus.CONTROL_CONFIRMED">Successful disconnect</entry>
 <entry key="yukon.web.modules.dr.controlStatus.CONTROL_FAILED_UNSUPPORTED">Command not supported</entry>
@@ -1189,6 +1189,7 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.controlStatus.NO_CONTROL_OPTED_OUT">Opt-out prevented disconnect</entry>
 <entry key="yukon.web.modules.dr.controlStatus.MANUAL_CONTROL_SENT">Manual control sent, waiting for response</entry>
 
+<entry key="yukon.web.modules.dr.controlStatus.RESTORE_NOT_SENT">Restore not sent yet</entry>
 <entry key="yukon.web.modules.dr.controlStatus.RESTORE_SENT">Restore sent, waiting for response</entry>
 <entry key="yukon.web.modules.dr.controlStatus.RESTORE_CONFIRMED">Successful re-connect</entry>
 <entry key="yukon.web.modules.dr.controlStatus.RESTORE_FAILED_UNSUPPORTED">Re-connect failed, command unsupported</entry>

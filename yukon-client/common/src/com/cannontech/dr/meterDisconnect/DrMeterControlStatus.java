@@ -1,9 +1,11 @@
 package com.cannontech.dr.meterDisconnect;
 
+import java.util.List;
+
 import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum DrMeterControlStatus implements DisplayableEnum {
-    NOT_SENT,                       // Event started, disconnect command not sent yet
+    CONTROL_NOT_SENT,               // Event started, disconnect command not sent yet
     CONTROL_SENT,                   // Disconnect command sent, waiting for response
     CONTROL_CONFIRMED,              // Device confirmed successful disconnect
     CONTROL_FAILED_UNSUPPORTED,     // Disconnect failed - command unsupported
@@ -15,7 +17,7 @@ public enum DrMeterControlStatus implements DisplayableEnum {
     NO_CONTROL_OPTED_OUT,           // Opt-out prevented disconnect command from being sent
     MANUAL_CONTROL_SENT,            // Disconnect command sent from report page, waiting for response
     
-    // Restore statuses only occur after successful disconnect (CONTROL_CONFIRMED)
+    RESTORE_NOT_SENT,               // No re-connect sent yet
     RESTORE_SENT,                   // Device controlled, re-connect command sent, waiting for response.
     RESTORE_CONFIRMED,              // Device confirmed successful re-connect
     RESTORE_FAILED_UNSUPPORTED,     // Re-connect failed - command unsupported
@@ -31,5 +33,37 @@ public enum DrMeterControlStatus implements DisplayableEnum {
     @Override
     public String getFormatKey() {
         return "yukon.web.modules.dr.controlStatus." + name();
+    }
+    
+    public static final List<DrMeterControlStatus> getShedStatuses() {
+        return List.of(
+            CONTROL_NOT_SENT,
+            CONTROL_SENT,
+            CONTROL_CONFIRMED,
+            CONTROL_FAILED_UNSUPPORTED,
+            CONTROL_FAILED_NOT_CONFIGURED,
+            FAILED_ARMED,
+            CONTROL_FAILED,
+            CONTROL_UNKNOWN,
+            CONTROL_TIMEOUT,
+            NO_CONTROL_OPTED_OUT,
+            MANUAL_CONTROL_SENT
+        );
+    }
+    
+    public static final List<DrMeterControlStatus> getRestoreStatuses() {
+        return List.of(
+            RESTORE_NOT_SENT,
+            RESTORE_SENT,
+            RESTORE_CONFIRMED,
+            RESTORE_FAILED_UNSUPPORTED,
+            RESTORE_FAILED_NOT_CONFIGURED,
+            RESTORE_FAILED,
+            RESTORE_TIMEOUT,
+            RESTORE_UNKNOWN,
+            RESTORE_OPT_OUT_SENT,
+            RESTORE_OPT_OUT_CONFIRMED,
+            MANUAL_RESTORE_SENT
+        );
     }
 }

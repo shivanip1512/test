@@ -59,8 +59,9 @@ public class DrMeterDisconnectStatusServiceImpl implements DrMeterDisconnectStat
 
     @Override
     public List<DrMeterEventStatus> getAllCurrentStatusForLatestProgramEvent(int programId,
-                                                                             Collection<DrMeterControlStatus> controlStatuses) {
-        return statusDao.getAllCurrentStatusForLatestProgramEvent(programId, controlStatuses);
+                                                                             Collection<DrMeterControlStatus> controlStatuses,
+                                                                             Collection<DrMeterControlStatus> restoreStatuses) {
+        return statusDao.getAllCurrentStatusForLatestProgramEvent(programId, controlStatuses, restoreStatuses);
     }
 
     @Override

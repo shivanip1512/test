@@ -253,7 +253,7 @@ public class ProgramController extends ProgramControllerBase {
             };
         }
         List<Map.Entry<LiteHardwarePAObject, PointValueHolder>> list =
-                new LinkedList<Map.Entry<LiteHardwarePAObject, PointValueHolder>>(disconnectStatusMap.entrySet());
+                new LinkedList<>(disconnectStatusMap.entrySet());
         if (sorting.getDirection() == Direction.desc) {
             comparator = Collections.reverseOrder(comparator);
         }
@@ -353,7 +353,7 @@ public class ProgramController extends ProgramControllerBase {
         DisplayablePao program = programService.getProgram(programId);
         model.addAttribute("program", program);
         model.addAttribute("programId", programId);
-        List<DrMeterEventStatus> statuses = meterDisconnectService.getAllCurrentStatusForLatestProgramEvent(programId, Arrays.asList(DrMeterControlStatus.values()));
+        List<DrMeterEventStatus> statuses = meterDisconnectService.getAllCurrentStatusForLatestProgramEvent(programId, Arrays.asList(DrMeterControlStatus.values()), null);
         model.addAttribute("statuses", statuses);
         return "dr/controlStatus/detail.jsp";
     }
@@ -488,7 +488,7 @@ public class ProgramController extends ProgramControllerBase {
         }
         model.addAttribute("programs", programs);
 
-        List<ProgramGearChangeInfo> programGearChangeInfo = new ArrayList<ProgramGearChangeInfo>(programs.size());
+        List<ProgramGearChangeInfo> programGearChangeInfo = new ArrayList<>(programs.size());
         
         for (DisplayablePao program : programs) {
             int programId = program.getPaoIdentifier().getPaoId();
