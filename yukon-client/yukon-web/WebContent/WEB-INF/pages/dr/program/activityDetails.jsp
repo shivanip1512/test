@@ -13,7 +13,7 @@
             <tr>
                 <th><i:inline key=".day"/></th>
                 <th><i:inline key=".programName"/></th>
-                <th><i:inline key=".status"/></th>
+                <th><i:inline key=".origin"/></th>
                 <th><i:inline key=".gearName"/></th>
                 <th><i:inline key=".eventTime"/></th>
             </tr>
@@ -37,7 +37,7 @@
                             <c:param name="programId" value="${programData.programId}"/>
                         </c:url>
                         <td><a href="${programURL}">${fn:escapeXml(programData.programName)}</a></td>
-                        <td>${fn:escapeXml(programData.originSource)}</td>
+                        <td><cti:msg key="${programData.originSource.formatKey}"/></td>
                         <c:choose>
                             <c:when test="${empty programData.gears}">
                                 <td><cti:dataUpdaterValue identifier="${programData.programId}/CURRENT_GEAR" type="DR_PROGRAM"/></td>
@@ -74,6 +74,11 @@
                                                 <cti:formatDate type="DATEHMS_12" value="${gearData.startDateTime}" var="eventStartTime"/>
                                                 <td title="${eventStartTime}">
                                                     <cti:formatDate type="TIME24H" value="${gearData.startDateTime}"/>
+                                                    <c:choose>
+                                                        <c:when test="${gearData.startedOnSameDay == false}">
+                                                            <cti:msg key="yukon.web.modules.dr.program.time.mismatchIndicator"/>
+                                                        </c:when>
+                                                    </c:choose>
                                                 </td>
                                                 <td>
                                                     -
@@ -99,6 +104,11 @@
                                                         <cti:formatDate type="DATEHMS_12" value="${gearData.stopDateTime}" var="eventStopTime"/>
                                                         <td title="${eventStopTime}">
                                                             <cti:formatDate type="TIME24H" value="${gearData.stopDateTime}"/>
+                                                            <c:choose>
+                                                                <c:when test="${gearData.stoppedOnSameDay == false}">
+                                                                    <cti:msg key="yukon.web.modules.dr.program.time.mismatchIndicator"/>
+                                                                </c:when>
+                                                            </c:choose>
                                                         </td>
                                                     </c:otherwise>
                                                 </c:choose>

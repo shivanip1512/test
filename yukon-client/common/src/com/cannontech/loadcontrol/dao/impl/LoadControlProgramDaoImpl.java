@@ -212,6 +212,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         programControlHistory.setGearName(startHist.getGearName());
         programControlHistory.setStartDateTime(startHist.getEventTime());
         programControlHistory.setOriginSource(startHist.getOriginSource());
+        programControlHistory.setProgramGearHistoryId(startHist.getProgramGearHistoryId());
         programControlHistory.setKnownGoodStopDateTime(false);
 
         // If there is no nextHist then it is ongoing control.

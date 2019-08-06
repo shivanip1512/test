@@ -46,6 +46,10 @@ public class WidgetHelper {
                 String broadcastEventStatusDetail = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.infoText");
                 widget.setHelpText(rfBroadcastWidgetDetail + broadcastEventStatusDetail);
                 break;
+             case PROGRAM:
+                 String programsWidgetHelpText = accessor.getMessage("yukon.web.widgets.programWidget.helpText");
+                 widget.setHelpText(programsWidgetHelpText);
+                 break;
              default:
                 widget.setHelpText(
                     accessor.getMessageWithDefault(helpTextBaseKey + widget.getType().getBeanName() + ".helpText", ""));

@@ -11,7 +11,9 @@ public class GearData {
     private DateTime startDateTime;
     private DateTime stopDateTime;
     private boolean knownGoodStopDateTime;
-    private boolean isStoppedOnSameDay;
+    private boolean stoppedOnSameDay;
+    private boolean startedOnSameDay;
+    private int programGearHistoryId;
 
     public String getGearName() {
         return gearName;
@@ -46,10 +48,26 @@ public class GearData {
     }
 
     public boolean isStoppedOnSameDay() {
-        return isStoppedOnSameDay;
+        return stoppedOnSameDay;
     }
 
-    public void setStoppedOnSameDay(boolean isStoppedOnSameDay) {
-        this.isStoppedOnSameDay = isStoppedOnSameDay;
+    public void setStoppedOnSameDay(boolean stoppedOnSameDay) {
+        this.stoppedOnSameDay = stoppedOnSameDay;
+    }
+
+    public boolean isStartedOnSameDay() {
+        return startedOnSameDay;
+    }
+
+    public void setStartedOnSameDay(boolean startedOnSameDay) {
+        this.startedOnSameDay = startedOnSameDay;
+    }
+
+    public int getProgramGearHistoryId() {
+        return programGearHistoryId;
+    }
+
+    public void setProgramGearHistoryId(int programGearHistoryId) {
+        this.programGearHistoryId = programGearHistoryId;
     }
 }

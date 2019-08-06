@@ -11,6 +11,7 @@ public class ProgramControlHistory {
     private String gearName;
     private boolean knownGoodStopDateTime;
     private String originSource;
+    private int programGearHistoryId;
 
     public ProgramControlHistory(int programHistoryId, int programId) {
         this.programHistoryId = programHistoryId;
@@ -88,5 +89,13 @@ public class ProgramControlHistory {
 
     public void setOriginSource(String originSource) {
         this.originSource = originSource;
+    }
+
+    public int getProgramGearHistoryId() {
+        return programGearHistoryId;
+    }
+
+    public void setProgramGearHistoryId(int programGearHistoryId) {
+        this.programGearHistoryId = programGearHistoryId;
     }
 }

@@ -406,6 +406,14 @@
 <entry key="yukon.web.modules.dr.program.changeMultipleGears.currentState">Current State</entry>
 <entry key="yukon.web.modules.dr.program.changeMultipleGears.confirmChange.scenario">Are you sure you want to change gears for programs in {0}?</entry>
 
+<!-- Program widget and activity details -->
+<entry key="yukon.web.modules.dr.program.time.mismatchIndicator">*</entry>
+<entry key="yukon.web.modules.dr.program.origin.MANUAL">Manual</entry>
+<entry key="yukon.web.modules.dr.program.origin.AUTOMATIC">Automatic</entry>
+<entry key="yukon.web.modules.dr.program.origin.EIM">EIM</entry>
+<entry key="yukon.web.modules.dr.program.origin.MULTISPEAK">Multispeak</entry>
+<entry key="yukon.web.modules.dr.program.origin.OPENADR">OpenADR</entry>
+<entry key="yukon.web.modules.dr.program.origin.NONE">Unknown</entry>
 <!--  Load Group Field Values -->
 <entry key="yukon.web.modules.dr.loadGroup.value.STATE.ACTIVE">Active</entry>
 <entry key="yukon.web.modules.dr.loadGroup.value.STATE.INACTIVE">Inactive</entry>
@@ -1077,7 +1085,7 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.program.activityDetails.pageName">Program Activity Details</entry>
 <entry key="yukon.web.modules.dr.program.activityDetails.day">Day</entry>
 <entry key="yukon.web.modules.dr.program.activityDetails.programName">Program Name</entry>
-<entry key="yukon.web.modules.dr.program.activityDetails.status">Status</entry>
+<entry key="yukon.web.modules.dr.program.activityDetails.origin">Origin</entry>
 <entry key="yukon.web.modules.dr.program.activityDetails.eventTime">Event Time</entry>
 <entry key="yukon.web.modules.dr.program.activityDetails.gearName">Gear Name</entry>
 <entry key="yukon.web.modules.dr.program.activityDetails.unKnownStopTime">Stop Time does not exist.</entry>

@@ -26,6 +26,7 @@ import com.cannontech.common.program.widget.model.GearData;
 import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.service.ProgramWidgetService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
@@ -106,16 +107,21 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
                 }
             }
             if (addToCache && !isExistInProgramDataCache(program)) {
-                // Todays ProgramData from DB
-                todaysProgramsDataCache.add(program);
+                if (!isExistInPreviousDaysProgramsCache(program)) {
+                    todaysProgramsDataCache.add(program);
+                }
             } else {
                 // Update cached program data with gear information.
                 for (ProgramData todaysProgram : todaysPrograms) {
                     if (isSameProgramEvent(todaysProgram, program)) {
                         List<GearData> gearHistory = program.getGears();
                         updateGearInfo(todaysProgram, gearHistory);
+                        todaysProgram.setOriginSource(program.getOriginSource());
                     }
                 }
+            }
+            if (isExistInPreviousDaysProgramsCache(program)) {
+                addGearsToProgramHistoryCache(program);
             }
         }
     }
@@ -273,7 +279,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
                              .setProgramName(lmProgramBase.getYukonName())
                              .setStartDateTime(new DateTime(lmProgramBase.getStartTime()
                                                                          .getTimeInMillis()))
-                             .setOriginSource(lmProgramBase.getOriginSource())
+                             .setOriginSource(ProgramOriginSource.getProgramOriginSource(lmProgramBase.getOriginSource()))
                              .build();
     }
 
@@ -334,10 +340,89 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
         ProgramData programData = new ProgramData.ProgramDataBuilder(programHistory.getProgramId())
                                                  .setStartDateTime(new DateTime(programHistory.getStartDateTime()))
                                                  .setGears(gears)
-                                                 .setOriginSource(programHistory.getOriginSource())
+                                                 .setOriginSource(ProgramOriginSource.getProgramOriginSource(programHistory.getOriginSource()))
                                                  .setProgramName(programHistory.getProgramName())
+                                                 .setProgramHistoryId(programHistory.getProgramHistoryId())
                                                  .build();
+        updateProgramGearInfo(gears, programData);
         return programData;
+    }
+
+
+    private void updateProgramGearInfo(List<GearData> gears, ProgramData programData) {
+        outer: for (GearData gear : gears) {
+            if (gear.getStopDateTime() == null) {
+                try {
+                Set<LMProgramBase> allLMProgramBase = loadControlClientConnection.getAllProgramsSet();
+                for (LMProgramBase lmProgramBase : allLMProgramBase) {
+                    ProgramData program =
+                        new ProgramData.ProgramDataBuilder(lmProgramBase.getYukonID().intValue()).setStartDateTime(
+                            new DateTime(lmProgramBase.getStartTime().getTimeInMillis())).build();
+                    if (isSameProgramEvent(program, programData)) {
+                        gear.setKnownGoodStopDateTime(true);
+                        break outer;
+                    }
+                }
+                } catch (ConnectionException e) {
+                    log.warn(e.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * Check if the Current Day program is present in previous day programs cache.
+     * This is needed to handle the scenario where Programs are running overnight.
+     */
+    private boolean isExistInPreviousDaysProgramsCache(ProgramData todaysProgram) {
+        for (ProgramData previousDayProgram : getProgramsDataCache()) {
+            if (previousDayProgram.getProgramHistoryId() == todaysProgram.getProgramHistoryId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Add overnight running program gear to previous days program in previous days program cache.
+     * This is needed for program running overnight with gears can be clubbed. Also set the startedOnSameDay
+     * stoppedOnSameDay flag. As these are from different date, so we can set this directly.
+     */
+    private void addGearsToProgramHistoryCache(ProgramData todaysProgram) {
+        for (ProgramData previousDayProgram : getProgramsDataCache()) {
+            if (previousDayProgram.getProgramHistoryId() == todaysProgram.getProgramHistoryId()) {
+                List<GearData> gears = compareTodaysProgramGearWithPreviousDayProgramsGear(todaysProgram.getGears(),
+                    previousDayProgram.getGears());
+                for (GearData gear : gears) {
+                    if (gear.getStopDateTime() == null) {
+                        gear.setKnownGoodStopDateTime(true);
+                    }
+                    gear.setStartedOnSameDay(false);
+                    gear.setStoppedOnSameDay(false);
+                }
+                previousDayProgram.getGears().addAll(gears);
+            }
+        }
+    }
+
+    /**
+     * Check if current program gears are present in previous days program cache.
+     * If not present return the gears and add in previous days program cache.
+     */
+    private List<GearData> compareTodaysProgramGearWithPreviousDayProgramsGear(List<GearData> currentDayProgramGear, List<GearData> previousDayProgramGear) {
+        List<GearData> gears = new ArrayList<>();
+        for (GearData currentDay : currentDayProgramGear) {
+            boolean presentFlag = false;
+            for(GearData previousDayGear : previousDayProgramGear) {
+                if (currentDay.getProgramGearHistoryId() == previousDayGear.getProgramGearHistoryId()) {
+                    presentFlag = true;
+                }
+            }
+            if (!presentFlag) {
+                gears.add(currentDay);
+            }
+        }
+        return gears;
     }
 
     /**
@@ -358,7 +443,9 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
         if (programStartDate != null && gearStopTime != null) {
             gearData.setStoppedOnSameDay(DateUtils.isSameDay(programStartDate, gearStopTime.toDate()));
         }
+        gearData.setStartedOnSameDay(DateUtils.isSameDay(programStartDate, programHistory.getStartDateTime()));
         gearData.setKnownGoodStopDateTime(programHistory.isKnownGoodStopDateTime());
+        gearData.setProgramGearHistoryId(programHistory.getProgramGearHistoryId());
         return gearData;
     }
 

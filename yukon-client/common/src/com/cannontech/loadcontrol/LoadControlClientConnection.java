@@ -390,7 +390,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
 
     private void handleLMProgramChange(LMProgramChanged changedProgram) {
         DatedObject<LMProgramBase> datedProgram = programs.get(changedProgram.getPaoID());
-    	LMProgramBase newProgram = datedProgram.getObject().cloneKeepingLoadGroups();
+        LMProgramBase newProgram = datedProgram.getObject().cloneKeepingLoadGroups();
 
         newProgram.setDisableFlag(changedProgram.getDisableFlag());
         if (newProgram instanceof LMProgramDirect) {
@@ -404,6 +404,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
             directProgram.setNotifyActiveTime(changedProgram.getNotifyActiveTime());
             directProgram.setNotifyInactiveTime(changedProgram.getNotifyInactiveTime());
             directProgram.setStartedRampingOut(changedProgram.getStartedRampingOutTime());
+            if (directProgram.isScheduled())
             directProgram.setOriginSource(changedProgram.getOriginSource());
         }
 

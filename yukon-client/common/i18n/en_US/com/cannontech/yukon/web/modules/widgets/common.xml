@@ -279,5 +279,23 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
 <entry key="yukon.web.widgets.programWidget">Programs</entry>
 <entry key="yukon.web.widgets.programWidget.today">Today</entry>
 <entry key="yukon.web.widgets.programWidget.noProgramFound">No programs are currently running or scheduled to run in the next control day.</entry>
-
+<entry key="yukon.web.widgets.programWidget.helpText"><![CDATA[
+        The Program widget shows information about scheduled, current day and previous 7 days program events. Widget will show maximum of 10 events. Priority to show the events is given to current day, followed by scheduled, followed by previous 7 days events. So, if the system have 10 or more events for current day, then widget will display only 10 events from current day and will not show the available scheduled and previous 7 days events. Each program event display program name, origin, gear used, start and stop time.
+        <br/> 
+        Asterisk mark (*) on start or stop time symbolize, the start or stop date are different from program start date.
+        <br/>
+        The widget is updated every 1 minute, by default. The Refresh button will force an update if data has not been updated in the last 30 seconds.
+        <br><br>
+        The following is the list of possible origin values :
+        <ul>
+            <li><b>Manual</b> – Program started using Web interface and TDC client application.</li>
+            <li><b>Automatic</b> - Triggered based control managed by control areas and timed start program.</li>
+            <li><b>EIM</b> – Program started via EIM.</li>
+            <li><b>Multispeak</b> – Program started via Multispeak.</li>
+            <li><b>OpenADR</b> – Program started via OpenADR.</li>
+            <li><b>Unknown</b> - Origin not known.</li>
+        </ul>
+        <br>
+        Click on the "View Details" link to view all scheduled, current day and previous 7 days program events.
+]]></entry>
 </properties>

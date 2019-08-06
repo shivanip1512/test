@@ -57,6 +57,17 @@
             _initialized = true;
         },
  
+        setStartTimeTooltip: function (element) {
+            return function (data) {
+                element.attr("title", moment(data.value).tz(yg.timezone).format(yg.formats.date.both_with_ampm));
+            }
+        },
+
+        setStopTimeTooltip: function (element) {
+            return function (data) {
+                element.attr("title", moment(data.value).tz(yg.timezone).format(yg.formats.date.both_with_ampm));
+            }
+        }
     };
  
     return mod;

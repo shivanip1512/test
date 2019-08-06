@@ -4,12 +4,15 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 
+import com.cannontech.dr.model.ProgramOriginSource;
+
 public class ProgramData {
 
     private int programId;
     private String programName;
     private DateTime startDateTime;
-    private String originSource;
+    private ProgramOriginSource originSource;
+    private int programHistoryId;
 
     private List<GearData> gears;
 
@@ -19,6 +22,7 @@ public class ProgramData {
         this.startDateTime = programDataBuilder.startDateTime;
         this.originSource = programDataBuilder.originSource;
         this.gears = programDataBuilder.gears;
+        this.programHistoryId = programDataBuilder.programHistoryId;
     }
 
     public int getProgramId() {
@@ -37,10 +41,13 @@ public class ProgramData {
         return gears;
     }
 
-    public String getOriginSource() {
+    public ProgramOriginSource getOriginSource() {
         return originSource;
     }
 
+    public int getProgramHistoryId() {
+        return programHistoryId;
+    }
     /**
      * It is not recommended to add setter in Builder design pattern.
      * Adding it exceptionally.
@@ -49,11 +56,16 @@ public class ProgramData {
         this.gears = gears;
     }
 
+    public void setOriginSource(ProgramOriginSource originSource) {
+        this.originSource = originSource;
+    }
+
     public static class ProgramDataBuilder {
         private int programId;
         private String programName;
         private DateTime startDateTime;
-        private String originSource;
+        private ProgramOriginSource originSource;
+        private int programHistoryId;
 
         private List<GearData> gears;
 
@@ -80,11 +92,15 @@ public class ProgramData {
             return this;
         }
 
-        public ProgramDataBuilder setOriginSource(String originSource) {
+        public ProgramDataBuilder setOriginSource(ProgramOriginSource originSource) {
             this.originSource = originSource;
             return this;
         }
 
+        public ProgramDataBuilder setProgramHistoryId(int programHistoryId) {
+            this.programHistoryId = programHistoryId;
+            return this;
+        }
     }
 
 }
