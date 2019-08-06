@@ -29,7 +29,6 @@ public class SimpleThermostatRampingGearFieldsValidator
 
     @Override
     protected void doValidation(SimpleThermostatRampingGearFields simpleThermostatRampingCycleGear, Errors errors) {
-        // Heat Mode or Cool Mode
 
         // Check Random Start Time
         lmValidatorHelper.checkIfFieldRequired("randomStartTimeInMinutes", errors,

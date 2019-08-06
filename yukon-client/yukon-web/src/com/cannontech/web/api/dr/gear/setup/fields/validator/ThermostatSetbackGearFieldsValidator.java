@@ -28,9 +28,6 @@ public class ThermostatSetbackGearFieldsValidator extends ProgramGearFieldsValid
 
     @Override
     protected void doValidation(ThermostatSetbackGearFields thermostatSetBackCycleGear, Errors errors) {
-        // Absolutes or Deltas
-
-        // Fahrenheit or Celsius
 
         // Check for Heat Mode
         lmValidatorHelper.checkIfFieldRequired("isHeatMode", errors, thermostatSetBackCycleGear.getIsHeatMode(),

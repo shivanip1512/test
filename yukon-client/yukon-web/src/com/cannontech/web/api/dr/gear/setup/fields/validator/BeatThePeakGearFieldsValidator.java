@@ -34,13 +34,17 @@ public class BeatThePeakGearFieldsValidator extends ProgramGearFieldsValidator<B
         // Check Max Indicator Timeout
         lmValidatorHelper.checkIfFieldRequired("timeoutInMinutes", errors, beatThePeakCycleGear.getTimeoutInMinutes(),
             "Max Indicator Timeout");
+        if (!errors.hasFieldErrors("timeoutInMinutes")) {
+            YukonValidationUtils.checkRange(errors, "timeoutInMinutes", beatThePeakCycleGear.getTimeoutInMinutes(), 0,
+                99999, false);
+        }
 
         // Check Resend Rate
         lmValidatorHelper.checkIfFieldRequired("resendInMinutes", errors, beatThePeakCycleGear.getResendInMinutes(),
             "Resend Rate");
         if (!errors.hasFieldErrors("resendInMinutes")) {
             YukonValidationUtils.checkRange(errors, "resendInMinutes", beatThePeakCycleGear.getResendInMinutes(), 0,
-                999, false);
+                99999, false);
         }
 
         // Check When to Change

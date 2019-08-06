@@ -22,6 +22,7 @@ import com.cannontech.common.dr.program.setup.model.ProgramControlWindow;
 import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -176,6 +177,13 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                                 if (gear.getGearName() == null || !StringUtils.hasText(gear.getGearName().toString())) {
                                     errors.rejectValue("gearName", "yukon.web.modules.dr.setup.error.required",
                                         new Object[] { "Gear Name" }, "");
+                                }
+
+                                if (!errors.hasFieldErrors("gearName")) {
+                                    YukonValidationUtils.checkExceedsMaxLength(errors, "gearName", gear.getGearName(), 60);
+                                    if (!PaoUtils.isValidPaoName(gear.getGearName())) {
+                                        errors.rejectValue("gearName", "yukon.web.error.paoName.containsIllegalChars");
+                                    }
                                 }
 
                                 lmValidatorHelper.checkIfFieldRequired("gearNumber", errors, gear.getGearNumber(),

@@ -36,10 +36,6 @@ public class SepTemperatureOffsetGearFieldsValidator
         // Check Ramp Out
         gearValidatorHelper.checkRampOut(sepTemperatureOffsetCycleGear.getRampOut(), errors);
 
-        // Degree F or Degree C
-
-        // Heating Mode or Cooling Mode
-
         // Check Heating offset or Cooling Offset
         errors.pushNestedPath("mode");
         lmValidatorHelper.checkIfFieldRequired("offset", errors, sepTemperatureOffsetCycleGear.getOffset(), "Offset");

@@ -29,9 +29,7 @@ public class MasterCycleGearFieldsValidator extends ProgramGearFieldsValidator<M
         gearValidatorHelper.checkControlPercent(masterCycleGear.getControlPercent(), errors);
 
         // Check Cycle Period
-        gearValidatorHelper.checkCyclePeriod(masterCycleGear.getCyclePeriodInMinutes(), errors);
-
-        // Group Selection Method
+        gearValidatorHelper.checkCyclePeriod(masterCycleGear.getCyclePeriodInMinutes(), getControlMethod(), errors);
 
         // Check Ramp In
         if (masterCycleGear.getRampInPercent() != null || masterCycleGear.getRampInIntervalInSeconds() != null) {

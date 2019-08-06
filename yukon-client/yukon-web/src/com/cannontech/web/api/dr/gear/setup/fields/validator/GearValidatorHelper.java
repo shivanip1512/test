@@ -72,58 +72,65 @@ public class GearValidatorHelper {
      * Check for When to Change
      */
     public void checkWhenToChange(WhenToChangeFields whenToChange, Errors errors) {
-        // Check for When to Change type
-        lmValidatorHelper.checkIfFieldRequired("whenToChangeFields", errors, whenToChange.getWhenToChange(),
-            "When To Change");
+        // Check for When to Change Fields
+        lmValidatorHelper.checkIfFieldRequired("whenToChangeFields", errors, whenToChange, "When To Change Fields");
+
         if (!errors.hasFieldErrors("whenToChangeFields")) {
             errors.pushNestedPath("whenToChangeFields");
-            // Check for Fields for Trigger
-            if (whenToChange.getWhenToChange() == WhenToChange.TriggerOffset) {
 
-                // Check for Trigger Number
-                lmValidatorHelper.checkIfFieldRequired("triggerNumber", errors, whenToChange.getTriggerNumber(),
-                    "Trigger Number");
-                if (!errors.hasFieldErrors("triggerNumber")) {
-                    YukonValidationUtils.checkRange(errors, "triggerNumber", whenToChange.getTriggerNumber(), 1, 99999,
-                        false);
+            // Check for When to Change
+            lmValidatorHelper.checkIfFieldRequired("whenToChange", errors, whenToChange.getWhenToChange(),
+                "When To Change");
+            if (!errors.hasFieldErrors("whenToChange")) {
+                // Check for Fields for Trigger
+                if (whenToChange.getWhenToChange() == WhenToChange.TriggerOffset) {
+
+                    // Check for Trigger Number
+                    lmValidatorHelper.checkIfFieldRequired("triggerNumber", errors, whenToChange.getTriggerNumber(),
+                        "Trigger Number");
+                    if (!errors.hasFieldErrors("triggerNumber")) {
+                        YukonValidationUtils.checkRange(errors, "triggerNumber", whenToChange.getTriggerNumber(), 1,
+                            99999, false);
+                    }
+
+                    // Check for Trigger Offset
+                    lmValidatorHelper.checkIfFieldRequired("triggerOffset", errors, whenToChange.getTriggerOffset(),
+                        "Trigger Offset");
+                    if (!errors.hasFieldErrors("triggerOffset")) {
+                        YukonValidationUtils.checkRange(errors, "triggerOffset", whenToChange.getTriggerOffset(),
+                            -99999.9999, 99999.9999, false);
+                    }
+
                 }
 
-                // Check for Trigger Offset
-                lmValidatorHelper.checkIfFieldRequired("triggerOffset", errors, whenToChange.getTriggerOffset(),
-                    "Trigger Offset");
-                if (!errors.hasFieldErrors("triggerOffset")) {
-                    YukonValidationUtils.checkRange(errors, "triggerOffset", whenToChange.getTriggerOffset(),
-                        -99999.9999, 99999.9999, false);
+                // Check for Fields for Priority
+                if (whenToChange.getWhenToChange() == WhenToChange.Priority) {
+
+                    // Check for Change Priority
+                    lmValidatorHelper.checkIfFieldRequired("changePriority", errors, whenToChange.getChangePriority(),
+                        "Change Priority");
+                    if (!errors.hasFieldErrors("changePriority")) {
+                        YukonValidationUtils.checkRange(errors, "changePriority", whenToChange.getChangePriority(), 0,
+                            9999, false);
+                    }
                 }
 
-            }
+                // Check for Fields for Duration
+                if (whenToChange.getWhenToChange() == WhenToChange.Duration) {
 
-            // Check for Fields for Priority
-            if (whenToChange.getWhenToChange() == WhenToChange.Priority) {
-
-                // Check for Change Priority
-                lmValidatorHelper.checkIfFieldRequired("changePriority", errors, whenToChange.getChangePriority(),
-                    "Change Priority");
-                if (!errors.hasFieldErrors("changePriority")) {
-                    YukonValidationUtils.checkRange(errors, "changePriority", whenToChange.getChangePriority(), 0, 9999,
-                        false);
+                    // Check for Change Duration
+                    lmValidatorHelper.checkIfFieldRequired("changeDurationInMinutes", errors,
+                        whenToChange.getChangeDurationInMinutes(), "Change Duration In Minutes");
+                    if (!errors.hasFieldErrors("changeDurationInMinutes")) {
+                        YukonValidationUtils.checkRange(errors, "changeDurationInMinutes",
+                            whenToChange.getChangeDurationInMinutes(), 0, 99999, false);
+                    }
                 }
-            }
 
-            // Check for Fields for Duration
-            if (whenToChange.getWhenToChange() == WhenToChange.Duration) {
-
-                // Check for Change Duration
-                lmValidatorHelper.checkIfFieldRequired("changeDurationInMinutes", errors,
-                    whenToChange.getChangeDurationInMinutes(), "Change Duration In Minutes");
-                if (!errors.hasFieldErrors("changeDurationInMinutes")) {
-                    YukonValidationUtils.checkRange(errors, "changeDurationInMinutes",
-                        whenToChange.getChangeDurationInMinutes(), 0, 99999, false);
-                }
             }
             errors.popNestedPath();
-
         }
+
     }
 
     /**
@@ -139,10 +146,15 @@ public class GearValidatorHelper {
     /**
      * Check for Check for Cycle Period
      */
-    public void checkCyclePeriod(Integer cyclePeriodInMinutes, Errors errors) {
+    public void checkCyclePeriod(Integer cyclePeriodInMinutes, GearControlMethod gearType, Errors errors) {
         lmValidatorHelper.checkIfFieldRequired("cyclePeriodInMinutes", errors, cyclePeriodInMinutes, "Cycle Period");
         if (!errors.hasFieldErrors("cyclePeriodInMinutes")) {
-            YukonValidationUtils.checkRange(errors, "cyclePeriodInMinutes", cyclePeriodInMinutes, 1, 945, false);
+            if (gearType != GearControlMethod.MasterCycle) {
+                YukonValidationUtils.checkRange(errors, "cyclePeriodInMinutes", cyclePeriodInMinutes, 1, 945, false);
+            } else {
+                YukonValidationUtils.checkRange(errors, "cyclePeriodInMinutes", cyclePeriodInMinutes, 5, 945, false);
+            }
+
         }
     }
 

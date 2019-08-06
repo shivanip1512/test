@@ -48,8 +48,6 @@ public class TimeRefreshGearFieldsValidator extends ProgramGearFieldsValidator<T
         // Check Command Resend Rate
         gearValidatorHelper.checkCommandResendRate(timeRefreshCycleGear.getSendRate(), errors);
 
-        // Group Selection Method
-
         // Check Ramp In Percent and Interval
         if (timeRefreshCycleGear.getRampInPercent() != null
             || timeRefreshCycleGear.getRampInIntervalInSeconds() != null) {

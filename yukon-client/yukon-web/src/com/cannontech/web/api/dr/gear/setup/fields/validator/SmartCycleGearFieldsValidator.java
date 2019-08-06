@@ -1,5 +1,6 @@
 package com.cannontech.web.api.dr.gear.setup.fields.validator;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
@@ -37,7 +38,7 @@ public class SmartCycleGearFieldsValidator extends ProgramGearFieldsValidator<Sm
         gearValidatorHelper.checkControlPercent(smartCycleGear.getControlPercent(), errors);
 
         // Check for Cycle Period
-        gearValidatorHelper.checkCyclePeriod(smartCycleGear.getCyclePeriodInMinutes(), errors);
+        gearValidatorHelper.checkCyclePeriod(smartCycleGear.getCyclePeriodInMinutes(), getControlMethod(), errors);
 
         // Check for Cycle Count Send Type
         if (smartCycleGear.getCycleCountSendType() == CycleCountSendType.FixedShedTime
@@ -48,6 +49,15 @@ public class SmartCycleGearFieldsValidator extends ProgramGearFieldsValidator<Sm
         // Check for Max Cycle Count
         lmValidatorHelper.checkIfFieldRequired("maxCycleCount", errors, smartCycleGear.getMaxCycleCount(),
             "Max Cycle Count");
+        if (!errors.hasFieldErrors("maxCycleCount")) {
+            boolean isValidMaxCycleCount = NumberUtils.isNumber(smartCycleGear.getMaxCycleCount());
+            if (isValidMaxCycleCount) {
+                YukonValidationUtils.checkRange(errors, "maxCycleCount",
+                    Integer.parseInt(smartCycleGear.getMaxCycleCount()), 0, 63, false);
+            } else {
+                errors.rejectValue("maxCycleCount", invalidKey, new Object[] { "Max Cycle Count" }, "");
+            }
+        }
 
         // Check for Starting Period Count
         lmValidatorHelper.checkIfFieldRequired("startingPeriodCount", errors, smartCycleGear.getStartingPeriodCount(),

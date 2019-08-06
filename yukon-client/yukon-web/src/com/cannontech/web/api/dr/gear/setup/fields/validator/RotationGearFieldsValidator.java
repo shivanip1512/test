@@ -43,8 +43,6 @@ public class RotationGearFieldsValidator extends ProgramGearFieldsValidator<Rota
         // Check Command Resend Rate
         gearValidatorHelper.checkCommandResendRate(rotationCycleGear.getSendRate(), errors);
 
-        // Group Selection Method
-
         // Check How to Stop Control
         gearValidatorHelper.checkHowToStopControl(rotationCycleGear.getHowToStopControl(), getControlMethod(), errors);
 
