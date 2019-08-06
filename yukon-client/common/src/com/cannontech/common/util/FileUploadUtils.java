@@ -142,7 +142,8 @@ public class FileUploadUtils {
         } finally {
             if (csvReader != null) {
                 csvReader.close();
-            } else if (reader != null) {
+            }
+            if (reader != null) {
                 reader.close();
             }
         }
