@@ -12,11 +12,8 @@ import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LMSetupFilter;
 import com.cannontech.common.search.FilterCriteria;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.api.dr.setup.service.impl.LMSetupFilterServiceImpl;
-import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
 
 @RestController
@@ -26,7 +23,6 @@ public class LMSetupFilterApiController {
     @Autowired private LMSetupFilterServiceImpl filterService;
     
     @PostMapping("/filter")
-    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<Object> filter(@RequestBody FilterCriteria<LMSetupFilter> filterCriteria) {
         SearchResults<LMPaoDto> filteredResults = filterService.filter(filterCriteria);
         return new ResponseEntity<>(filteredResults, HttpStatus.OK);

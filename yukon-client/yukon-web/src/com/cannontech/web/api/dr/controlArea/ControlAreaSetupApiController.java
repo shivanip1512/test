@@ -39,7 +39,6 @@ public class ControlAreaSetupApiController {
     @Autowired private LMDeleteValidator lmDeleteValidator;
 
     @GetMapping("/{id}")
-    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<ControlArea> retrieve(@PathVariable int id) {
         return new ResponseEntity<>(controlAreaService.retrieve(id), HttpStatus.OK);
     }
@@ -68,14 +67,12 @@ public class ControlAreaSetupApiController {
     }
 
     @GetMapping("/unAssignedPrograms")
-    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<List<LMDto>> getAvailablePrograms() {
         List<LMDto> programs = controlAreaService.retrieveUnassignedPrograms();
         return new ResponseEntity<>(programs, HttpStatus.OK);
     }
 
     @GetMapping("/normalState/{pointId}")
-    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<Object> getNormalState(@PathVariable int pointId) {
         List<LMDto> normalStates = controlAreaService.retrieveNormalState(pointId);
         HashMap<Integer, List<LMDto>> normalStateMap = new HashMap<>();

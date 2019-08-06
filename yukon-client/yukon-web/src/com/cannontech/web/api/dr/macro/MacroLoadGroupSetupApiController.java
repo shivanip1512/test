@@ -37,7 +37,6 @@ public class MacroLoadGroupSetupApiController {
     @Autowired LMCopyValidator lmCopyValidator;
 
     @GetMapping("/{id}")
-    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<Object> retrieve(@PathVariable int id) {
         MacroLoadGroup loadGroup = macroLoadGroupService.retrieve(id);
         return new ResponseEntity<>(loadGroup, HttpStatus.OK);

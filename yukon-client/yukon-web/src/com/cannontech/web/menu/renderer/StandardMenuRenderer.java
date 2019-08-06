@@ -214,12 +214,7 @@ public class StandardMenuRenderer {
                 return true;
             }
         } else if (type == Permission.roleProperty) {
-            YukonRoleProperty roleProperty = YukonRoleProperty.valueOf(permission.getAttributeValue("name"));
-            if (roleProperty == YukonRoleProperty.DR_SETUP_PERMISSION) {
-                if (rpDao.checkLevel(roleProperty, HierarchyPermissionLevel.LIMITED, user)) {
-                    return true;
-                }
-            } else if (rpDao.checkProperty(roleProperty, user)) {
+            if (rpDao.checkProperty(YukonRoleProperty.valueOf(permission.getAttributeValue("name")), user)) {
                 return true;
             }
         } else if (type == Permission.ecOperator) {

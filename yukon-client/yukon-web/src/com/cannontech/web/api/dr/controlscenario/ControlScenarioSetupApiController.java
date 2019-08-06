@@ -34,7 +34,6 @@ public class ControlScenarioSetupApiController {
     @Autowired private LMDeleteValidator lmDeleteValidator;
 
     @GetMapping("/{id}")
-    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public ResponseEntity<ControlScenario> retrieve(@PathVariable int id) {
         return new ResponseEntity<>(controlScenarioService.retrieve(id), HttpStatus.OK);
     }
