@@ -27,16 +27,17 @@ public class AutomationSetup {
     public static void setBasicConfiguration() throws IOException {
 
         String rootLogDirectory = System.getProperty("user.dir") + "\\Logs\\";
+        
         // Log4j configuration
         basicConfiguration.setlog4jPath(
             System.getProperty("user.dir") + File.separatorChar + "configs" + File.separatorChar + "log4j2.properties");
-        String log4jPath = basicConfiguration.getlog4jPath();
 
         Date Date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String currentDate = dateFormat.format(Date);
         String testLog = rootLogDirectory.concat(currentDate).concat("RESTAssured.logs");
 
+        System.setProperty("logDir", testLog);
         basicConfiguration.setTestLogPath(testLog);
         basicConfiguration.setconfigPropertyFilePath(System.getProperty("user.dir") + File.separatorChar + "configs"
             + File.separatorChar + "configuration.properties");
@@ -44,7 +45,6 @@ public class AutomationSetup {
             ReadPropertyFile.getPropertyValue("baseURI", basicConfiguration.getconfigPropertyFilePath()));
         
         ReadPropertyFile.updateProperty("testLogPath", testLog, basicConfiguration.getconfigPropertyFilePath());
-        ReadPropertyFile.updateProperty("log4j.appender.fileAppender.File", testLog, log4jPath);
 
         Log.info("Base URI is : " + basicConfiguration.getEndpoint());
         Log.info("Test Log Path : " + basicConfiguration.getTestLogPath());

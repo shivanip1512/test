@@ -1,19 +1,15 @@
 package com.cannontech.rest.api.utilities;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
 
 public class Log {
 
     // Initialize log4j logs
 
     private static Logger log = LogManager.getLogger(Log.class);
-
-    static {
-        PropertyConfigurator.configure(BasicConfiguration.getInstance().getlog4jPath());
-    }
-
+    
     // This is to print log for the beginning of the test case, as we usually run so many test cases as a test
     // suite
 
@@ -58,6 +54,10 @@ public class Log {
 
     public static void error(String message) {
         log.error(message);
+    }
+    
+    public static void error(String message, Throwable arg1) {
+        log.error(message, arg1);
     }
 
     public static void fatal(String message) {
