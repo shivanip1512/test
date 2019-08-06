@@ -2,6 +2,7 @@ package com.cannontech.common.config;
 
 public enum MasterConfigBoolean {
     
+    ADD_STARS_METERS_ALLOWED, // YUK-20341, make Stars meters unable to be added unless this is set.
     BULK_IMPORTER_SINGLE_GROUP, // Option to limit membership to only 1 child group per parent group.
     CYME_ENABLED,
     DEFAULT_ENERGY_COMPANY_EDIT,

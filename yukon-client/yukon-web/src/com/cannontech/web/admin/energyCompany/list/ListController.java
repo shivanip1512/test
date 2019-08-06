@@ -161,13 +161,10 @@ public class ListController {
         listDefinitions =
             objectFormattingService.sortDisplayableValues(listDefinitions, null, null, userContext);
 
-        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
-        MeteringType meteringType = ecSettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION,
-            MeteringType.class, energyCompany.getEnergyCompanyId());
-
-        // For metering type yukon (z_meter_mct_base_desig = yukon) the  "Meter" type should be
-        // displayed in selection list only if entry with the "Meter" type already exists.
-        if (meteringType == MeteringType.yukon) {
+        // For the CPARM (ADD_STARS_METERS_ALLOWED) the  "Meter" type should be
+        // displayed in selection list only if entry with the "Meter" type already exists and the CPARM is true.
+        // Changed in YUK-20341
+        if (!configSource.getBoolean(MasterConfigBoolean.ADD_STARS_METERS_ALLOWED)) {
             List<YukonListEntry> entries = list.getYukonListEntries();
             final Predicate<YukonListEntry> meterTypeEntry = new Predicate<YukonListEntry>() {
                 @Override
