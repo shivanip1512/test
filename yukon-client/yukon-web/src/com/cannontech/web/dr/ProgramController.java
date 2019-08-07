@@ -417,6 +417,16 @@ public class ProgramController extends ProgramControllerBase {
             comparator = (o1, o2) -> {
                 return o1.getControlStatusTime().compareTo(o2.getControlStatusTime());         
             };
+        } else if (sortBy == ControlStatusSortBy.restoreStatus) {
+            comparator = (o1, o2) -> {
+                String status1 = accessor.getMessage(o1.getRestoreStatus().getFormatKey());
+                String status2 = accessor.getMessage(o2.getRestoreStatus().getFormatKey());
+                return status1.compareTo(status2);            
+            };
+        } else if (sortBy == ControlStatusSortBy.restoreStatusTimestamp) {
+            comparator = (o1, o2) -> {
+                return o1.getRestoreStatusTime().compareTo(o2.getRestoreStatusTime());         
+            };
         }
         if (sorting.getDirection() == Direction.desc) {
             comparator = Collections.reverseOrder(comparator);
