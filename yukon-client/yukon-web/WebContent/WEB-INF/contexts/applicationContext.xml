@@ -1308,8 +1308,8 @@
     <bean class="com.cannontech.web.support.service.impl.YsmJmxQueryService"/>
     <bean class="com.cannontech.web.support.dao.impl.SystemMetricCriteriaDaoImpl"/>
     
-    <bean id="database" class="com.cannontech.web.support.waterNode.dao.impl.WaterNodeDaoImpl"/>
-    <bean id="csv" class="com.cannontech.web.support.waterNode.dao.impl.WaterNodeCSVDaoImpl"/>
+    <bean class="com.cannontech.web.support.waterNode.dao.impl.WaterNodeDaoImpl"/>
+    <bean class="com.cannontech.web.support.waterNode.csvDao.impl.WaterNodeCSVDaoImpl"/>
     <bean class="com.cannontech.web.support.waterNode.service.impl.WaterNodeServiceImpl"/>
     
     <!-- System Metric Criteria -->

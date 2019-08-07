@@ -32,15 +32,18 @@
         </tags:boxContainer2>
     </form:form>
     
-    <form:form action="generateCSVReport" method="get">
-        <tags:boxContainer2 nameKey="waterNode.csvReport" >
-            <i:inline key="yukon.web.modules.support.waterNode.csvReport.description"/>
-            <div class="MT30">
-                <div>
-                    <tags:file name="csvUpload.csv" buttonKey="yukon.web.modules.support.waterNode.upload"/>
+    <form:form action="generateCSVReport" method="post" enctype="multipart/form-data">
+        <cti:csrfToken/>
+            <tags:boxContainer2 nameKey="waterNode.csvReport">
+                <i:inline key="yukon.web.modules.support.waterNode.csvReport.description"/>
+                <div class="MT30">
+                    <tags:file classes="js-file" buttonKey="yukon.web.modules.support.waterNode.upload"/>
+                </div>
+                <div class="MT30">
+                    <i:inline key=".csvEndDate"/>
+                    <dt:date name="csvEndDate" wrapperClass="fn vam" displayValidationToRight="true" value="${batteryModel.csvEndDate}"/>
                     <cti:button nameKey="generateCSVReport" classes="action fn vab" type="submit" icon="icon-page-white-excel"/>
                 </div>
-            </div>
-        </tags:boxContainer2>
-    </form:form>
+            </tags:boxContainer2>
+        </form:form>
 </cti:standardPage>

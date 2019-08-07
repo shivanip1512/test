@@ -1,4 +1,4 @@
-package com.cannontech.web.support.waterNode.dao.impl;
+package com.cannontech.web.support.waterNode.csvDao.impl;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,23 +12,26 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityServiceImpl;
-import com.cannontech.web.support.waterNode.dao.WaterNodeDao;
+import com.cannontech.web.support.waterNode.csvDao.WaterNodeCSVDao;
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
 import com.cannontech.web.support.waterNode.voltageDetails.VoltageDetails;
 import com.opencsv.CSVReader;
 
-public class WaterNodeCSVDaoImpl implements WaterNodeDao {
+public class WaterNodeCSVDaoImpl implements WaterNodeCSVDao {
     private static final Logger log = YukonLogManager.getLogger(AssetAvailabilityServiceImpl.class);
 
     @Override
-    public List<WaterNodeDetails> getWaterNodeDetails(Instant startTime, Instant stopTime) {
-
-        File file = new File(CtiUtilities.getImportArchiveDirPath(), "data.csv");
+    public List<WaterNodeDetails> getWaterNodeDetails(Instant startTime, Instant stopTime, File file) {
         CSVReader reader;
         ArrayList<WaterNodeDetails> resultsList = new ArrayList<WaterNodeDetails>();
         WaterNodeDetails waterNodeDetails = new WaterNodeDetails();
+        
+        //Java millisecond time and second time are both stored as type long. Current millisecond time
+        //is 1000 as large as current second time. To determine if the input is second or millisecond
+        //time, a sentinel value of 10* the current epoch second time is used. This date is September 19,
+        //2462
+        long MILLISBOUNDARY =  155486880000L;
         try {
             reader = new CSVReader(new BufferedReader(new FileReader(file)));
             String[] row;
@@ -39,7 +42,12 @@ public class WaterNodeCSVDaoImpl implements WaterNodeDao {
 
             while ((row = reader.readNext()) != null) {
                 if (row.length == 6) {
-                    Instant currentTimestamp = new Instant(Long.valueOf(row[4]));
+                    Long newTimestamp = Long.valueOf(row[4]);
+                    if (newTimestamp<MILLISBOUNDARY)
+                    {
+                        newTimestamp = newTimestamp*1000;//convert from seconds to milliseconds
+                    }
+                    Instant currentTimestamp = new Instant(newTimestamp);
                     if (currentTimestamp.isAfter(startTime) && currentTimestamp.isBefore(stopTime)) {
                         // Set a meter's serial number and details once for each set of voltage readings.
                         if (!row[0].equals(oldSN)) {
@@ -49,7 +57,6 @@ public class WaterNodeCSVDaoImpl implements WaterNodeDao {
                             if (waterNodeDetails.getSerialNumber() != null) {
                                 resultsList.add(waterNodeDetails);
                             }
-
                             waterNodeDetails = new WaterNodeDetails();
                             waterNodeDetails.setSerialNumber(row[0]);
                             waterNodeDetails.setMeterNumber(String.valueOf(row[1]));
@@ -58,8 +65,16 @@ public class WaterNodeCSVDaoImpl implements WaterNodeDao {
                             waterNodeDetails.setHighSleepingCurrentIndicator(false);
                             waterNodeDetails.setBatteryLevel(null);
                         }
-                        waterNodeDetails.addTimestamp(new Instant(Long.valueOf(row[4])));
-                        waterNodeDetails.addVoltage(Double.valueOf(row[5]));
+                        
+                        
+                        Double newVoltage = Double.valueOf(row[5]);
+                        if (newVoltage>1000)
+                        {
+                            newVoltage = newVoltage/1000.0;//convert from millivolts to volts
+                        }
+                        
+                        waterNodeDetails.addTimestamp(new Instant(newTimestamp));
+                        waterNodeDetails.addVoltage(newVoltage);
                         oldSN = row[0];
                     }
                 } else {

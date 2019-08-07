@@ -2,6 +2,7 @@ package com.cannontech.web.support.waterNode.service;
 
 import org.joda.time.Instant;
 
+import java.io.File;
 import java.util.List;
 
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
@@ -16,6 +17,13 @@ public interface WaterNodeService {
      */
     public List<WaterNodeDetails> getAnalyzedNodes(Instant intervalStart, Instant intervalEnd);
 
+    /**
+     * @param intervalStart - the start of the report interval
+     * @param intervalEnd - the end of the report interval
+     * @param file - the uploaded csv file
+     * @return
+     */
+    public List<WaterNodeDetails> getCSVAnalyzedNodes(Instant intervalStart, Instant intervalEnd, File file);
     /**
      * @param intervalStart - the start of the report interval
      * @param intervalEnd - the end of the report interval

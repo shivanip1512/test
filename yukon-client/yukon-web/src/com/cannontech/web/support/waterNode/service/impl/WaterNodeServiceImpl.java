@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.web.support.waterNode.batteryLevel.WaterNodeBatteryLevel;
+import com.cannontech.web.support.waterNode.csvDao.WaterNodeCSVDao;
 import com.cannontech.web.support.waterNode.dao.WaterNodeDao;
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
 import com.cannontech.web.support.waterNode.service.WaterNodeService;
@@ -21,9 +23,12 @@ import com.cannontech.web.support.waterNode.voltageDetails.VoltageDetails;
 public class WaterNodeServiceImpl implements WaterNodeService {
     private static final Logger log = YukonLogManager.getLogger(WaterNodeServiceImpl.class);
     private final WaterNodeDao waterNodeDao;
+    private final WaterNodeCSVDao waterNodeCSVDao;
     @Autowired
-    public WaterNodeServiceImpl(@Qualifier("database") WaterNodeDao waterNodeDao) {
+    
+    public WaterNodeServiceImpl(WaterNodeDao waterNodeDao, WaterNodeCSVDao waterNodeCSVDao) {
         this.waterNodeDao = waterNodeDao;
+        this.waterNodeCSVDao = waterNodeCSVDao;
     }
 
     @Override
@@ -46,6 +51,16 @@ public class WaterNodeServiceImpl implements WaterNodeService {
         return voltageData;
     }
 
+    @Override
+    public List<WaterNodeDetails> getCSVAnalyzedNodes(Instant intervalStart, Instant intervalEnd, File file) {
+        List<WaterNodeDetails> csvNodeData = waterNodeCSVDao.getWaterNodeDetails(intervalStart, intervalEnd, file);
+        log.info("Csv analysis initiated: " + csvNodeData.size() + " water nodes found");
+        csvNodeData.forEach(details -> {
+            pruneResultsList(details.getVoltages(), details.getTimestamps());
+        });
+        List<WaterNodeDetails> csvAnalyzedRows = analyzeBatteryData(csvNodeData, intervalStart, intervalEnd);
+        return csvAnalyzedRows;
+    }
     /*
      * Given parallel lists of voltage and timestamp data, this method 
      * returns the same lists ith a pruned subset of data where all 

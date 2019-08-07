@@ -226,7 +226,7 @@
     <entry key="yukon.web.modules.support.waterNode.pageName">Water Node Battery Analysis</entry>
     <entry key="yukon.web.modules.support.waterNode.batteryAnalysis.title">Battery Analysis Report</entry>
     <entry key="yukon.web.modules.support.waterNode.description">
-        The battery depletion report documents the condition of all active water nodes.
+        The battery analysis report documents the condition of all active water nodes.
         Clicking "generate report" will generate a report with the serial number, meter number, 
         device name, device type, battery condition category, high sleeping current indicator,
         and most recent battery voltage reading of each water node. Analysis will be performed
@@ -237,7 +237,7 @@
     <entry key="yukon.web.modules.support.waterNode.generateReport.label">Generate Report</entry>
 
     <entry key="yukon.web.modules.support.waterNode.voltageData.title">Voltage Data Details</entry>
-    <entry key="yukon.web.modules.support.waterNode.generateDetailedReport.label">Generate Detailed Data</entry>
+    <entry key="yukon.web.modules.support.waterNode.generateDetailedReport.label">Generate Detailed Data Report</entry>
     <entry key="yukon.web.modules.support.waterNode.voltageData.description">
         The voltage data report contains all interval data points used to analyze a
         test interval. To view the voltage data used in the analysis of an already downloaded battery
@@ -246,8 +246,17 @@
         the interval, the time of the interval, and the voltage for each value in the interval.
     </entry>
     
+    <entry key="yukon.web.modules.support.waterNode.csvReport.title">CSV Data Analysis</entry>
+    <entry key="yukon.web.modules.support.waterNode.csvReport.description">
+        To analyze prexisting data, upload a CSV file with the following columns in this order:
+        {serial number, meter number,  name, type, timestamp (seconds), voltage}. Clicking "generate report" will 
+        generate a battery analysis report on the uploaded data for the selected interval.
+    </entry>
+    <entry key="yukon.web.modules.support.waterNode.generateCSVReport.label">Generate Report</entry>
+    <entry key="yukon.web.modules.support.waterNode.upload">Upload</entry>
     <entry key="yukon.web.modules.support.waterNode.intervalEnd">Interval End: </entry>
     <entry key="yukon.web.modules.support.waterNode.lastGenerated">End Date of Analysis Report: </entry>
+    <entry key="yukon.web.modules.support.waterNode.csvEndDate">Interval End: </entry>
     <entry key="yukon.web.modules.support.waterNode.NORMAL">Normal</entry>
     <entry key="yukon.web.modules.support.waterNode.LOW">Low</entry>
     <entry key="yukon.web.modules.support.waterNode.CRITICALLY_LOW">Critically Low</entry>

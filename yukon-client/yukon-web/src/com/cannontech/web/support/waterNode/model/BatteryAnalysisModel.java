@@ -5,6 +5,7 @@ import org.joda.time.Instant;
 public class BatteryAnalysisModel {
     private Instant analysisEnd;
     private Instant lastCreatedReport;
+    private Instant csvEndDate;
     
     public Instant getAnalysisEnd() {
         return analysisEnd;
@@ -20,5 +21,13 @@ public class BatteryAnalysisModel {
     
     public void setLastCreatedReport(Instant lastCreatedReport) {
         this.lastCreatedReport = lastCreatedReport;
+    }
+
+    public Instant getCsvEndDate() {
+        return csvEndDate;
+    }
+
+    public void setCsvEndDate(Instant csvEndDate) {
+        this.csvEndDate = csvEndDate;
     }
 }
