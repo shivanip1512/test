@@ -649,6 +649,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                 boolean isHoneywellProgram = programType == PaoType.LM_HONEYWELL_PROGRAM;
                 boolean isNestProgram = programType == PaoType.LM_NEST_PROGRAM;
                 boolean isItronProgram = programType == PaoType.LM_ITRON_PROGRAM;
+                boolean isMeterDisconnectProgram = programType == PaoType.LM_METER_DISCONNECT_PROGRAM;
 
                 if (isSepProgram && isGroupSepCompatible(loadGroupType)) {
                     programGroups.add(buildProgramLoadGroup(group));
@@ -665,6 +666,8 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                 } else if (isNestProgram && isGroupNestCompatible(loadGroupType)) {
                     programGroups.add(buildProgramLoadGroup(group));
                 } else if (isItronProgram && isGroupItronCompatible(loadGroupType)) {
+                    programGroups.add(buildProgramLoadGroup(group));
+                } else if (isMeterDisconnectProgram && isGroupMeterDisconnectCompatible(loadGroupType)) {
                     programGroups.add(buildProgramLoadGroup(group));
                 }
             }
@@ -698,6 +701,10 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
     private boolean isGroupItronCompatible(PaoType groupType) {
         return groupType == PaoType.LM_GROUP_ITRON;
+    }
+    
+    private boolean isGroupMeterDisconnectCompatible(PaoType groupType) {
+        return groupType == PaoType.LM_GROUP_METER_DISCONNECT;
     }
 
     @Override

@@ -200,6 +200,15 @@ public class LoadProgramSetupControllerHelper {
         }
     }
 
+    public void buildNotificationModel(ModelMap model, LoadProgram loadProgram) {
+        if (loadProgram.getNotification() == null) {
+            Notification notif = new Notification();
+            notif.setEnableOnSchedule(false);
+            notif.setNotifyOnAdjust(false);
+            loadProgram.setNotification(notif);
+        }
+
+    }
     /**
      * Default values for object should be set here.
      */
@@ -309,5 +318,7 @@ public class LoadProgramSetupControllerHelper {
             
         }
     }
+
+   
 
 }

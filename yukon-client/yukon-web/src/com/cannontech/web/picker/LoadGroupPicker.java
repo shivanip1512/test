@@ -46,6 +46,7 @@ public class LoadGroupPicker extends DatabasePaoPicker {
                             boolean isHoneywellProgram = programType == PaoType.LM_HONEYWELL_PROGRAM;
                             boolean isNestProgram = programType == PaoType.LM_NEST_PROGRAM;
                             boolean isItronProgram = programType == PaoType.LM_ITRON_PROGRAM;
+                            boolean isMeterDisconnectProgram = programType == PaoType.LM_METER_DISCONNECT_PROGRAM;
 
                             if (isSepProgram && loadGroupType == PaoType.LM_GROUP_DIGI_SEP) {
                                 lightPaos.add(group);
@@ -53,7 +54,8 @@ public class LoadGroupPicker extends DatabasePaoPicker {
                                     && (!isEcobeeProgram && !isGroupEcobeeCompatible(loadGroupType))
                                     && (!isHoneywellProgram && !isGroupHoneywellCompatible(loadGroupType))
                                     && (!isItronProgram && !isGroupItronCompatible(loadGroupType))
-                                    && (!isNestProgram && !isGroupNestCompatible(loadGroupType))) {
+                                    && (!isNestProgram && !isGroupNestCompatible(loadGroupType))
+                                    && (!isMeterDisconnectProgram && !isGroupMeterDisconnectCompatible(loadGroupType))) {
                                 lightPaos.add(group);
                             } else if (isEcobeeProgram && isGroupEcobeeCompatible(loadGroupType)) {
                                 lightPaos.add(group);
@@ -62,6 +64,8 @@ public class LoadGroupPicker extends DatabasePaoPicker {
                             } else if (isNestProgram && isGroupNestCompatible(loadGroupType)) {
                                 lightPaos.add(group);
                             } else if (isItronProgram && isGroupItronCompatible(loadGroupType)) {
+                                lightPaos.add(group);
+                            } else if (isMeterDisconnectProgram && isGroupMeterDisconnectCompatible(loadGroupType)) {
                                 lightPaos.add(group);
                             }
                         }
@@ -90,5 +94,9 @@ public class LoadGroupPicker extends DatabasePaoPicker {
 
     private boolean isGroupItronCompatible(PaoType groupType) {
         return groupType == PaoType.LM_GROUP_ITRON;
+    }
+    
+    private boolean isGroupMeterDisconnectCompatible(PaoType groupType) {
+        return groupType == PaoType.LM_GROUP_METER_DISCONNECT;
     }
 }

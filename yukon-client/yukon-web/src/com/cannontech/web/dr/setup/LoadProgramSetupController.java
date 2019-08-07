@@ -108,7 +108,7 @@ public class LoadProgramSetupController {
             model.addAttribute("loadProgram", loadProgram);
 
             controllerHelper.buildGearInfo(model, loadProgram);
-
+            controllerHelper.buildNotificationModel(model, loadProgram);
             return "dr/setup/loadProgram/loadProgramView.jsp";
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
