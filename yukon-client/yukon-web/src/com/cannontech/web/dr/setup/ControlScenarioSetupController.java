@@ -253,13 +253,15 @@ public class ControlScenarioSetupController {
             List<LiteGear> allGears = retrieveGears(assignedProgram.getProgramId(), userContext, request);
             if (CollectionUtils.isNotEmpty(assignedProgram.getGears())) {
                 LiteGear selectGear = new LiteGear();
-                selectGear.setGearID(assignedProgram.getGears().get(0).getId());
-                selectGear.setOwnerID(assignedProgram.getProgramId());
-                int index = allGears.indexOf(selectGear);
-                if (index != -1) {
-                    LiteGear gear = allGears.get(index);
-                    allGears.remove(selectGear);
-                    allGears.add(0, gear);
+                if (assignedProgram.getGears().get(0).getId() != null) {
+                    selectGear.setGearID(assignedProgram.getGears().get(0).getId());
+                    selectGear.setOwnerID(assignedProgram.getProgramId());
+                    int index = allGears.indexOf(selectGear);
+                    if (index != -1) {
+                        LiteGear gear = allGears.get(index);
+                        allGears.remove(selectGear);
+                        allGears.add(0, gear);
+                    }
                 }
             }
             assignedProgram.setGears(allGears.stream()
