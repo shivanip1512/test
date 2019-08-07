@@ -18,7 +18,7 @@
                 <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
                     <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                 </cti:url>
-                <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" classes="js-collection-action" href="${collectionActionUrl}" newTab="true"/> 
+                <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" href="${collectionActionUrl}" newTab="true"/> 
                 <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="js-download"/>  
             </cm:dropdown>
         </span>
@@ -73,6 +73,9 @@
                     </td>
                 </tr>
             </c:forEach>
+            <c:if test="${empty disconnectStatusList.resultList}">
+                <tr><td colspan="4"><span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span></td></tr>
+            </c:if>
         </tbody>
     </table>
     <tags:pagingResultsControls result="${disconnectStatusList}" adjustPageCount="true" thousands="true"/>

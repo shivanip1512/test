@@ -349,13 +349,143 @@ public class ProgramController extends ProgramControllerBase {
     }
     
     @GetMapping("/program/controlStatus")
-    public String controlStatus(ModelMap model, int programId) {
+    public String controlStatus(ModelMap model, int programId, DrMeterControlStatus[] controlStatuses, DrMeterControlStatus[] restoreStatuses,
+                                @DefaultSort(dir=Direction.asc, sort="device") SortingParameters sorting, 
+                                @DefaultItemsPerPage(value=250) PagingParameters paging, YukonUserContext userContext) {
         DisplayablePao program = programService.getProgram(programId);
         model.addAttribute("program", program);
         model.addAttribute("programId", programId);
-        List<DrMeterEventStatus> statuses = meterDisconnectService.getAllCurrentStatusForLatestProgramEvent(programId, Arrays.asList(DrMeterControlStatus.values()), null);
-        model.addAttribute("statuses", statuses);
+
+        model.addAttribute("controlStatuses", DrMeterControlStatus.getShedStatuses());
+        model.addAttribute("restoreStatuses", DrMeterControlStatus.getRestoreStatuses());
+        
+        //get opted out devices
+        List<LoadGroup> loadGroups = loadGroupDao.getByProgramId(programId);
+        List<Integer> loadGroupIds = new ArrayList<>();
+        loadGroups.forEach(group -> loadGroupIds.add(group.getLoadGroupId()));
+        Set<Integer> optOutInventory = optOutEventDao.getOptedOutInventoryByLoadGroups(loadGroupIds);
+        model.addAttribute("optedOutDevices", optOutInventory);
+        
+        getControlStatusResults(sorting, paging, programId, controlStatuses, restoreStatuses, userContext, model);
+
         return "dr/controlStatus/detail.jsp";
+    }
+    
+    @GetMapping("/program/controlStatusTable")
+    public String controlStatusTable(ModelMap model, int programId, DrMeterControlStatus[] controlStatuses, DrMeterControlStatus[] restoreStatuses,
+                                   @DefaultSort(dir=Direction.asc, sort="device") SortingParameters sorting, 
+                                   @DefaultItemsPerPage(value=250) PagingParameters paging, YukonUserContext userContext) {
+        getControlStatusResults(sorting, paging, programId, controlStatuses, restoreStatuses, userContext, model);
+
+        return "dr/controlStatus/filteredResultsTable.jsp";
+    }
+    
+    private void getControlStatusResults(SortingParameters sorting, PagingParameters paging, int programId, DrMeterControlStatus[] controlStatuses, 
+                                         DrMeterControlStatus[] restoreStatuses, YukonUserContext userContext, ModelMap model) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        
+        List<DrMeterControlStatus> selectedControlStatuses = controlStatuses == null ? DrMeterControlStatus.getShedStatuses() : Arrays.asList(controlStatuses);
+        List<DrMeterControlStatus> selectedRestoreStatuses = restoreStatuses == null ? DrMeterControlStatus.getRestoreStatuses() : Arrays.asList(restoreStatuses);
+
+        List<DrMeterEventStatus> statuses = meterDisconnectService.getAllCurrentStatusForLatestProgramEvent(programId, selectedControlStatuses, selectedRestoreStatuses);
+        
+        //create device collection
+        List<Integer> deviceIds = new ArrayList<>();
+        statuses.forEach(device -> deviceIds.add(device.getDeviceId()));
+        DeviceCollection deviceCollection = dcProducer.createDeviceCollection(deviceIds, null);
+        model.addAttribute("deviceCollection", deviceCollection);
+        
+        SearchResults<DrMeterEventStatus> searchResult = new SearchResults<>();
+
+        int startIndex = paging.getStartIndex();
+        int itemsPerPage = paging.getItemsPerPage();
+        int endIndex = Math.min(startIndex + itemsPerPage, statuses.size());
+        
+        ControlStatusSortBy sortBy = ControlStatusSortBy.valueOf(sorting.getSort());
+        Direction dir = sorting.getDirection();
+        
+        Comparator<DrMeterEventStatus> comparator = (o1, o2) -> {
+            return o1.getMeterDisplayName().compareTo(o2.getMeterDisplayName());
+        };
+        if (sortBy == ControlStatusSortBy.controlStatus) {
+            comparator = (o1, o2) -> {
+                String status1 = accessor.getMessage(o1.getControlStatus().getFormatKey());
+                String status2 = accessor.getMessage(o2.getControlStatus().getFormatKey());
+                return status1.compareTo(status2);            
+            };
+        } else if (sortBy == ControlStatusSortBy.controlStatusTimestamp) {
+            comparator = (o1, o2) -> {
+                return o1.getControlStatusTime().compareTo(o2.getControlStatusTime());         
+            };
+        }
+        if (sorting.getDirection() == Direction.desc) {
+            comparator = Collections.reverseOrder(comparator);
+        }
+        Collections.sort(statuses, comparator);
+        
+        List<DrMeterEventStatus> itemList = Lists.newArrayList(statuses);
+
+        itemList = itemList.subList(startIndex, endIndex);
+        searchResult.setBounds(startIndex, itemsPerPage, statuses.size());
+        searchResult.setResultList(itemList);
+        
+        List<SortableColumn> columns = new ArrayList<>();
+        for (ControlStatusSortBy column : ControlStatusSortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            columns.add(col);
+            model.addAttribute(column.name(), col);
+        }
+        
+        model.addAttribute("statuses", searchResult);
+    }
+    
+    
+    @GetMapping("/program/controlStatus/download")
+    public void download(int programId, DrMeterControlStatus[] controlStatuses, DrMeterControlStatus[] restoreStatuses, 
+                         YukonUserContext userContext, HttpServletResponse response) throws IOException {
+        DisplayablePao program = programService.getProgram(programId);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String[] headerRow = new String[5];
+
+        headerRow[0] = accessor.getMessage(ControlStatusSortBy.device);
+        headerRow[1] = accessor.getMessage(ControlStatusSortBy.controlStatus);
+        headerRow[2] = accessor.getMessage(ControlStatusSortBy.controlStatusTimestamp);
+        headerRow[3] = accessor.getMessage(ControlStatusSortBy.restoreStatus);
+        headerRow[4] = accessor.getMessage(ControlStatusSortBy.restoreStatusTimestamp);
+        
+        List<DrMeterControlStatus> selectedControlStatuses = controlStatuses == null ? DrMeterControlStatus.getShedStatuses() : Arrays.asList(controlStatuses);
+        List<DrMeterControlStatus> selectedRestoreStatuses = restoreStatuses == null ? DrMeterControlStatus.getRestoreStatuses() : Arrays.asList(restoreStatuses);
+        
+        List<DrMeterEventStatus> statuses = meterDisconnectService.getAllCurrentStatusForLatestProgramEvent(programId, selectedControlStatuses, selectedRestoreStatuses);
+
+        List<String[]> dataRows = Lists.newArrayList();
+        for (DrMeterEventStatus status : statuses) {
+            String[] dataRow = new String[5];
+            dataRow[0] = status.getMeterDisplayName();
+            dataRow[1] = accessor.getMessage(status.getControlStatus().getFormatKey());
+            dataRow[2] =  dateFormattingService.format(status.getControlStatusTime(), DateFormatEnum.BOTH, userContext);
+            dataRow[3] = accessor.getMessage(status.getRestoreStatus().getFormatKey());
+            dataRow[4] =  dateFormattingService.format(status.getRestoreStatusTime(), DateFormatEnum.BOTH, userContext);
+
+            dataRows.add(dataRow);
+        }
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "ControlStatus_" + program.getName() + "_" + now + ".csv");
+    }
+    
+    public enum ControlStatusSortBy implements DisplayableEnum {
+
+        device,
+        controlStatus,
+        controlStatusTimestamp,
+        restoreStatus,
+        restoreStatusTimestamp;
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.dr.controlStatus." + name();
+        }
     }
 
     @ResponseBody

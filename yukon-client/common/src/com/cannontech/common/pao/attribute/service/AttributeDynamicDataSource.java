@@ -4,8 +4,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -22,6 +24,7 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Maps;
 
 public class AttributeDynamicDataSource {
+    private static final Logger log = YukonLogManager.getLogger(AttributeDynamicDataSource.class);
 
     @Autowired public AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired public AttributeService attributeService;
@@ -48,11 +51,16 @@ public class AttributeDynamicDataSource {
         Map<LiteHardwarePAObject,PointValueHolder> pointValues = Maps.newHashMapWithExpectedSize(paos.size());
         
         for (LiteHardwarePAObject hwPao : paos) {
-            PointValueHolder value = getPointValue(hwPao, attribute);
-            String formattedValue = pointFormattingService.getValueString(value, Format.VALUE, userContext);
-            if (filteredValues.isEmpty() || filteredValues.contains(formattedValue)) {
-                pointValues.put(hwPao, value);
+            try {
+                PointValueHolder value = getPointValue(hwPao, attribute);
+                String formattedValue = pointFormattingService.getValueString(value, Format.VALUE, userContext);
+                if (filteredValues.isEmpty() || filteredValues.contains(formattedValue)) {
+                    pointValues.put(hwPao, value);
+                }
+            } catch (IllegalUseOfAttribute e) {
+                log.info("Disconnect Status not found for device:  " + hwPao.getPaoName());
             }
+
         }
         
         return pointValues;

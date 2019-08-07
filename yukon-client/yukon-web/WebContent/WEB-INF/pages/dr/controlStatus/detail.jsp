@@ -1,40 +1,42 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="dr" page="controlStatus">
 
-    <table class="compact-results-table row-highlighting has-actions">
-        <thead>
-            <th>Device</th>
-            <th>Control Status</th>
-            <th>Last Updated</th>
-            <th class="action-column"><cti:icon icon="icon-cog" classes="M0" /></th>
-        </thead>
-        <tbody>
-            <c:forEach var="controlStatus" items="${statuses}">
-                <tr>
-                    <td>
-                        <cti:url var="inventoryViewUrl" value="/stars/operator/inventory/view">
-                            <cti:param name="inventoryId" value="${controlStatus.inventoryId}"/>
-                        </cti:url>
-                        <a href="${inventoryViewUrl}" target="_blank">${fn:escapeXml(controlStatus.meterDisplayName)}</a>
-                    </td>
-                    <td><i:inline key="${controlStatus.controlStatus.formatKey}"/></td>
-                    <td><cti:formatDate type="BOTH" value="${controlStatus.controlStatusTime}"/></td>
-                    <td>
-                        <cm:dropdown icon="icon-cog">
-                            <cti:paoDetailUrl var="meterDetailLink" paoId="${controlStatus.deviceId}"/>
-                            <cm:dropdownOption key=".meterDetail" href="${meterDetailLink}" newTab="true" icon="icon-control-equalizer-blue"/>
-                        </cm:dropdown>
-                    </td>
-                </tr>
-            </c:forEach>
-        </tbody>
-    </table>
+    <hr>
+    <div class="filter-section">
+        <cti:url var="filterUrl" value="/dr/program/controlStatusTable"/>
+        <form:form id="control-status-form" action="${filterUrl}" method="get">
+            <input type="hidden" name="programId" value="${programId}"/>
+            <i:inline key="yukon.common.filterBy"/>&nbsp;
+            <cti:msg2 var="allLabel" key=".allControlStatuses"/>
+            <select id="controlStatuses" name="controlStatuses" multiple data-placeholder="${allLabel}">
+                <c:forEach var="status" items="${controlStatuses}">
+                    <option value="${status}"><i:inline key="${status.formatKey}"/></option>
+                </c:forEach>
+            </select>
+            <cti:msg2 var="allLabel" key=".allRestoreStatuses"/>
+            <select id="restoreStatuses" name="restoreStatuses" multiple data-placeholder="${allLabel}">
+                <c:forEach var="status" items="${restoreStatuses}">
+                    <option value="${status}"><i:inline key="${status.formatKey}"/></option>
+                </c:forEach>
+            </select>
+            <cti:button nameKey="filter" classes="js-filter primary action fn vab"/>
+        </form:form>
+    </div>
+    <hr>
+
+    <cti:url var="dataUrl" value="/dr/program/controlStatusTable">
+        <cti:param name="programId" value="${programId}"/>
+    </cti:url>
+    <div id="control-status-table" data-url="${dataUrl}">
+        <%@ include file="filteredResultsTable.jsp" %>
+    </div>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.dr.controlStatus.js"/>
     
 </cti:standardPage>
