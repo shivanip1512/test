@@ -59,7 +59,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
     @JsonSubTypes.Type(value = TrendPicker.class, name = "TREND_PICKER"),
     @JsonSubTypes.Type(value = UnassignedApplianceCategoryPicker.class, name = "UNASSIGNED_APPIANCE_CATEGORY_PICKER"),
     @JsonSubTypes.Type(value = UnassignedGearPicker.class, name = "UNASSIGNED_GEAR_PICKER"),
-    @JsonSubTypes.Type(value = UnassignedGearPicker.class, name = "UNASSIGNED_PROGRAM_PICKER"),
+    @JsonSubTypes.Type(value = UnassignedProgramPicker.class, name = "UNASSIGNED_PROGRAM_PICKER"),
     @JsonSubTypes.Type(value = UserGroupPicker.class, name = "USER_GROUP_PICKER"),
     @JsonSubTypes.Type(value = UserPicker.class, name = "USER_PICKER"),
     })
