@@ -109,7 +109,7 @@ public class MeterDisconnectMessageListener {
                 
                 MeterCollection collection = new MeterCollection(Lists.newArrayList(meters));
                 SimpleCallback<CollectionActionResult> doNothingCallback = result -> {};
-                DrDisconnectStatusCallback statusCallback = new DrDisconnectStatusCallback(true, eventId,
+                DrDisconnectStatusCallback statusCallback = new DrDisconnectStatusCallback(false, eventId,
                     drStatusService, smartNotificationEventCreationService, getProgramName(programId));
                 disconnectService.execute(DisconnectCommand.DISCONNECT, collection, doNothingCallback,
                                           statusCallback, YukonUserContext.system);
@@ -167,7 +167,7 @@ public class MeterDisconnectMessageListener {
                 SimpleCallback<CollectionActionResult> doNothingCallback = result -> {};
                 DrDisconnectStatusCallback statusCallback = null;
                 if (eventId.isPresent()) {
-                    statusCallback = new DrDisconnectStatusCallback(false, eventId.get(), drStatusService, smartNotificationEventCreationService, getProgramName(programId));
+                    statusCallback = new DrDisconnectStatusCallback(true, eventId.get(), drStatusService, smartNotificationEventCreationService, getProgramName(programId));
 
                 disconnectService.execute(DisconnectCommand.CONNECT, collection, doNothingCallback,
                                           statusCallback, YukonUserContext.system);
