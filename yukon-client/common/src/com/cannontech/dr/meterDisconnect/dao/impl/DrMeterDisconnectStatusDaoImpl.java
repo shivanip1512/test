@@ -203,7 +203,7 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
         status.setControlStatus(rs.getEnum("ControlStatus", DrMeterControlStatus.class));
         status.setControlStatusTime(rs.getInstant("ControlStatusTime"));
         status.setRestoreStatus(rs.getEnum("RestoreStatus", DrMeterControlStatus.class));
-        status.setControlStatusTime(rs.getInstant("RestoreStatusTime"));
+        status.setRestoreStatusTime(rs.getInstant("RestoreStatusTime"));
         return status;
     };
 }
