@@ -34,14 +34,13 @@ public class ApiTokenAuthentication {
         File file = ApiCallHelper.getInputFile("login.json");
         String authTokenValue = null;
         try {
-        authTokenValue = given().accept("application/json").contentType("application/json").body(file).when().post(
-            "/api/token").then().extract().path("token").toString();
-        }catch(Exception e) {
-            e.printStackTrace();
-            Log.error("Error in token generation - "+e.toString(), e);
+            authTokenValue = given().accept("application/json").contentType("application/json").body(file).when().post(
+                "/api/token").then().extract().path("token").toString();
+        } catch (Exception e) {
+            Log.error("Error in token generation - " + e.toString(), e);
         }
         tokenCache.put(authTokenKey, authTokenValue);
         return authTokenValue;
-    
-}
+
+    }
 }

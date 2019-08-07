@@ -12,7 +12,6 @@ public class DataProviderClass {
      * col2 : Expected field errors code in response
      * col3 : Expected response code
      */
-
     @DataProvider(name = "GroupNameData")
     public Object[][] getGroupNameData(ITestContext context) {
 
@@ -30,7 +29,6 @@ public class DataProviderClass {
      * col2 : Expected field errors code in response
      * col3 : Expected response code
      */
-
     @DataProvider(name = "KwCapacityData")
     public Object[][] getKwCapacityData() {
 
@@ -47,7 +45,6 @@ public class DataProviderClass {
      * col2 : Expected field errors code in response
      * col3 : Expected response code
      */
-
     @DataProvider(name = "VirtualRelayIdData")
     public Object[][] getVirtualRelayIdData() {
 
@@ -65,7 +62,6 @@ public class DataProviderClass {
      * col3 : Expected field errors code in response
      * col4 : Expected response code
      */
-
     @DataProvider(name = "EmetconAddressData")
     public Object[][] getEmetconAddressData() {
 

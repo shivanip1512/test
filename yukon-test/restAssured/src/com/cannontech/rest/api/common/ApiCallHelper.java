@@ -90,7 +90,6 @@ public class ApiCallHelper {
      * JSON Object payload and path variable.
      * 
      */
-
     public static ExtractableResponse<?> post(String key, JSONObject payload, String param) {
         String uri = getProperty(key);
         String body = payload.toJSONString();
@@ -102,7 +101,6 @@ public class ApiCallHelper {
      * and request parameter.
      * 
      */
-
     public static ExtractableResponse<?> delete(String key, String param) {
         String uri = getProperty(key);
         return getHeader().delete(uri + param).then().log().all().extract();
@@ -113,7 +111,6 @@ public class ApiCallHelper {
      * URI, input file and path variable.
      * 
      */
-
     public static ExtractableResponse<?> delete(String key, String fileName, String param) {
         String uri = getProperty(key);
         File file = getInputFile(fileName);
@@ -125,7 +122,6 @@ public class ApiCallHelper {
      * DELETE method for specified URI, JSON Object payload and path variable.
      * 
      */
-
     public static ExtractableResponse<?> delete(String key, JSONObject payload, String param) {
         String uri = getProperty(key);
         String body = payload.toJSONString();

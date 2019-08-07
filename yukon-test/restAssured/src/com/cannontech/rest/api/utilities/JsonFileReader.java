@@ -22,7 +22,6 @@ public class JsonFileReader {
      * @param payloadFile - relative path ( w.r.t to payload directory)
      * @return JSONObject
      */
-
     public static JSONObject readJsonFileAsJSONObject(String payloadFile) {
 
         String payload = payloadBaseDir + payloadFile;
@@ -53,7 +52,6 @@ public class JsonFileReader {
      *        * @param replaceValueWith - value to update
      * @return JSONObject
      */
-
     @SuppressWarnings("unchecked")
     public static JSONObject updateLoadGroup(JSONObject obj, String key, String replaceValueWith) {
 
@@ -76,8 +74,6 @@ public class JsonFileReader {
      *        * @param replaceValueWith - value to update
      * @return JSONObject
      */
-
-    @SuppressWarnings("unchecked")
     public static JSONObject updateLoadGroup(String payloadFile, String key, String replaceValueWith) {
 
         JSONObject obj = JsonFileReader.readJsonFileAsJSONObject(payloadFile);
