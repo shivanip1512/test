@@ -126,7 +126,7 @@ public class CapControlImportController {
         InputStream inputStream = dataFile.getInputStream();
         
         try {
-            FileUploadUtils.validateDataUploadFileType(dataFile);
+            FileUploadUtils.validateTabularDataUploadFileType(dataFile);
             importStarted(ImportType.CBC.getFormatKey(), userContext, dataFile.getOriginalFilename());
             List<CbcImportData> cbcImportData = fileImporterDao.getCbcImportData(inputStream, results);
 
@@ -290,7 +290,7 @@ public class CapControlImportController {
         InputStream inputStream = dataFile.getInputStream();
         
         try {
-            FileUploadUtils.validateDataUploadFileType(dataFile);
+            FileUploadUtils.validateTabularDataUploadFileType(dataFile);
             importStarted(ImportType.HIERARCHY.getFormatKey(), userContext, dataFile.getOriginalFilename());
             List<HierarchyImportData> hierarchyImportData =
                 fileImporterDao.getHierarchyImportData(inputStream, results);

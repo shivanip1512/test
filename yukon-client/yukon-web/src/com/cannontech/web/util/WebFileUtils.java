@@ -57,7 +57,7 @@ public class WebFileUtils {
 
         File tempFile = new File("");
         try {
-            FileUploadUtils.validateDataUploadFileType(dataFile);
+            FileUploadUtils.validateTabularDataUploadFileType(dataFile);
             tempFile = convertToTempFile(dataFile, dataFile.getOriginalFilename(), "");
         } catch (FileImportException e) {
             throw new FileImportException(e.getMessage());

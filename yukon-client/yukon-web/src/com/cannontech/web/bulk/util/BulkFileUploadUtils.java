@@ -25,7 +25,7 @@ public class BulkFileUploadUtils {
             MultipartFile dataFile = mRequest.getFile(StringUtils.defaultIfEmpty(fileInputName, "dataFile"));
 
             try {
-                FileUploadUtils.validateDataUploadFileType(dataFile);
+                FileUploadUtils.validateTabularDataUploadFileType(dataFile);
                 File file = WebFileUtils.convertToTempFile(dataFile, dataFile.getOriginalFilename(), "");
                 bulkFileUpload.setName(dataFile.getOriginalFilename());
                 bulkFileUpload.setFile(file);

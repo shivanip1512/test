@@ -65,7 +65,7 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
 
             MultipartFile dataFile = mRequest.getFile(getSupportedType().getParameterName("dataFile"));
             try {
-                FileUploadUtils.validateDataUploadFileType(dataFile);
+                FileUploadUtils.validateTabularDataUploadFileType(dataFile);
             } catch (FileImportException e) {
                 throw new IllegalArgumentException(e.getMessage());
             }

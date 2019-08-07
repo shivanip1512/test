@@ -70,7 +70,7 @@ public class FileUploadCollectionProducer implements CollectionProducer<Inventor
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) req;
             
             MultipartFile dataFile = mRequest.getFile(getSupportedType().getParameterName("dataFile"));
-            FileUploadUtils.validateDataUploadFileType(dataFile);
+            FileUploadUtils.validateTabularDataUploadFileType(dataFile);
             String ecIdParam = getSupportedType().getParameterName("energyCompanyId");
             int ecId = ServletRequestUtils.getRequiredIntParameter(req, ecIdParam);
             

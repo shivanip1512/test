@@ -50,7 +50,7 @@ public class GroupValidatorController {
             }
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
             MultipartFile file = mRequest.getFile("fileUpload.dataFile");
-            FileUploadUtils.validateDataUploadFileType(file);
+            FileUploadUtils.validateTabularDataUploadFileType(file);
             DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
             collectionAttributes.putAll(deviceCollection.getCollectionParameters());
             collectionAttributes.put("deviceCount", Long.toString(deviceCollection.getDeviceCount(), 10));

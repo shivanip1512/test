@@ -124,7 +124,7 @@ public class DeviceGroupUpdaterController {
         model.addAttribute("fileName", dataFile.getOriginalFilename());
         // get file from request
         try {
-            FileUploadUtils.validateDataUploadFileType(dataFile);
+            FileUploadUtils.validateTabularDataUploadFileType(dataFile);
         } catch (FileImportException e) {
             flashScope.setError(new YukonMessageSourceResolvable(e.getMessage()));
             return "redirect:upload";

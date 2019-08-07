@@ -35,7 +35,7 @@ public class UploadGenericController extends StarsImportManagerActionController 
         try 
         {
             MultipartFile genericMultipartFile = mRequest.getFile("GenericFile");
-            FileUploadUtils.validateDataUploadFileType(genericMultipartFile);
+            FileUploadUtils.validateTabularDataUploadFileType(genericMultipartFile);
             
             TimeConsumingTask task = new UploadGenericFileTask( energyCompany, genericMultipartFile );
             long id = ProgressChecker.addTask( task );

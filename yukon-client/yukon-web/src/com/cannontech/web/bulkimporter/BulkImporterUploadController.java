@@ -76,7 +76,7 @@ public class BulkImporterUploadController  {
             dataFile = mRequest.getFile("dataFile");
 
             try {
-                FileUploadUtils.validateDataUploadFileType(dataFile);
+                FileUploadUtils.validateTabularDataUploadFileType(dataFile);
             } catch (NoImportFileException | EmptyImportFileException | ImportFileFormatException e) {
                 badMsgs.add(dataFile.getOriginalFilename() + " " + accessor.getMessage(e.getMessage()));
             }
