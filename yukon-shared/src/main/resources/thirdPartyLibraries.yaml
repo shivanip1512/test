@@ -4572,20 +4572,6 @@ Network Manager :
     jira : NM-1023
     notes :  
 
-  - filename : ant.jar
-    yukon group : IzPack
-    project : IzPack
-    version : 4.3.3
-    project URL : "http://izpack.org/"
-    license : Public domain
-    license URLs : n/a
-    maven URL : n/a
-    md5 : 4c0bf2a6b9d33ba96b81481560d80f6d
-    sha1 : f43d0b2267d8ac1a86f0e16594d8766f62d8311c
-    updated : 2009-04-30
-    jira : none
-    notes : 
-
   - filename : bsf.jar
     yukon group : IzPack
     project : IzPack
