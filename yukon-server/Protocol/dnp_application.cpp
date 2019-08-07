@@ -232,8 +232,6 @@ void ApplicationLayer::initForSlaveOutput( void )
     _appState    = SendFirstResponse;
     _comm_errors = 0;
 
-    unsigned pos = 0;
-
     memset( &_response, 0, sizeof(_response) );
 
     //  ACH: if we need to use multiple outbound application layer request packets, this will need to change
@@ -250,6 +248,10 @@ void ApplicationLayer::initForSlaveOutput( void )
 
     _response.func_code = DNP::ApplicationLayer::ResponseResponse;
 
+    unsigned pos = 0;
+    size_t index = 0;
+    const size_t ob_count = _out_object_blocks.size();
+
     for( const auto& ob : _out_object_blocks )
     {
         if( ! ob )
@@ -259,12 +261,16 @@ void ApplicationLayer::initForSlaveOutput( void )
         }
         if( pos + ob->getSerializedLen() >= BufferSize )
         {
-            CTILOG_ERROR(dout, "Exceeded application buffer size");
+            CTILOG_ERROR(dout, "Exceeded application buffer size" << FormattedList::of(
+                "Buffer position", std::to_string(pos) + "/" + std::to_string(BufferSize),
+                "Object length", ob->getSerializedLen(),
+                "Object index", std::to_string(index) + "/" + std::to_string(ob_count)));
             break;
         }
 
         ob->serialize(_response.buf + pos);
         pos += ob->getSerializedLen();
+        ++index;
     }
 
     _out_object_blocks.clear();
