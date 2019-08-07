@@ -86,10 +86,8 @@
                                                 <c:choose>
                                                     <c:when test="${empty gearData.stopDateTime}">
                                                         <c:choose>
-                                                            <c:when test="${!gearData.knownGoodStopDateTime}">
-                                                                <td title="${eventStopTime}">
-                                                                    <span style="font-style: italic"><i:inline key="yukon.common.unknown"/></span>
-                                                                </td>
+                                                            <c:when test="${gearData.knownGoodStopDateTime == false}">
+                                                                <span style="font-style: italic"><i:inline key="yukon.common.unknown"/></span>
                                                             </c:when>
                                                             <c:otherwise>
                                                                 <td id="js-stop-time-td-${programData.programId}">
@@ -101,15 +99,22 @@
                                                         </c:choose>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <cti:formatDate type="DATEHMS_12" value="${gearData.stopDateTime}" var="eventStopTime"/>
-                                                        <td title="${eventStopTime}">
-                                                            <cti:formatDate type="TIME24H" value="${gearData.stopDateTime}"/>
-                                                            <c:choose>
-                                                                <c:when test="${gearData.stoppedOnSameDay == false}">
-                                                                    <cti:msg key="yukon.web.modules.dr.program.time.mismatchIndicator"/>
-                                                                </c:when>
-                                                            </c:choose>
-                                                        </td>
+                                                        <c:choose>
+                                                            <c:when test="${gearData.knownGoodStopDateTime == false}">
+                                                                <td><span style="font-style: italic"><i:inline key="yukon.common.unknown"/></span></td>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <cti:formatDate type="DATEHMS_12" value="${gearData.stopDateTime}" var="eventStopTime"/>
+                                                                <td title="${eventStopTime}">
+                                                                <cti:formatDate type="TIME24H" value="${gearData.stopDateTime}"/>
+                                                                <c:choose>
+                                                                    <c:when test="${gearData.stoppedOnSameDay == false}">
+                                                                        <cti:msg key="yukon.web.modules.dr.program.time.mismatchIndicator"/>
+                                                                    </c:when>
+                                                                </c:choose>
+                                                                </td>
+                                                            </c:otherwise>
+                                                        </c:choose>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </tr>

@@ -24,6 +24,7 @@ public class ProgramStopTimeField extends ProgramStopField {
         if (hasBlankStopTime(program)) {
             return blankFieldResolvable;
         } else if (program.getStopTime().getTime().after(endOfProgramControlDay.toDate())) {
+            // In case the stop day is not matching the start day append * to the time to be shown on UI.
             DateFormat dateFormatter = dateFormattingService.getDateFormatter(DateFormattingService.DateFormatEnum.TIME24H, YukonUserContext.system);
             return dateFormatter.format(program.getStopTime().getTime()) + " *";
         } else {
