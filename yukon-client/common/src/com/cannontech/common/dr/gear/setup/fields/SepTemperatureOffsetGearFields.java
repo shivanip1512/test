@@ -106,8 +106,8 @@ public class SepTemperatureOffsetGearFields implements ProgramGearFields {
     public void buildModel(LMProgramDirectGear programDirectGear) {
         SepTemperatureOffsetGear sepTemperatureOffsetGear = (SepTemperatureOffsetGear) programDirectGear;
 
-        sepTemperatureOffsetGear.setFrontRampEnabled(sepTemperatureOffsetGear.isFrontRampEnabled());
-        sepTemperatureOffsetGear.setFrontRampEnabled(sepTemperatureOffsetGear.isBackRampEnabled());
+        setRampIn(sepTemperatureOffsetGear.isFrontRampEnabled());
+        setRampOut(sepTemperatureOffsetGear.isBackRampEnabled());
 
         double heatingOffset = sepTemperatureOffsetGear.getHeatingOffset();
         double coolingOffset = sepTemperatureOffsetGear.getCoolingOffset();

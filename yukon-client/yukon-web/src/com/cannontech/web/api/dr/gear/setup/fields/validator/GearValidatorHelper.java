@@ -3,7 +3,9 @@ package com.cannontech.web.api.dr.gear.setup.fields.validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.dr.gear.setup.GroupSelectionMethod;
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
+import com.cannontech.common.dr.gear.setup.StopOrder;
 import com.cannontech.common.dr.gear.setup.WhenToChange;
 import com.cannontech.common.dr.gear.setup.fields.WhenToChangeFields;
 import com.cannontech.common.util.TimeIntervals;
@@ -23,18 +25,33 @@ public class GearValidatorHelper {
      * Check for How To Stop Control
      */
     public void checkHowToStopControl(HowToStopControl howToStopControl, GearControlMethod gearType, Errors errors) {
-        if (gearType == GearControlMethod.TimeRefresh || gearType == GearControlMethod.MasterCycle) {
-            if (howToStopControl == HowToStopControl.StopCycle) {
-                errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
+        lmValidatorHelper.checkIfFieldRequired("howToStopControl", errors, howToStopControl, "How To Stop Control");
+        if (!errors.hasFieldErrors("howToStopControl")) {
+            if (gearType == GearControlMethod.SmartCycle || gearType == GearControlMethod.TrueCycle
+                || gearType == GearControlMethod.MagnitudeCycle || gearType == GearControlMethod.TargetCycle) {
+                if (howToStopControl != HowToStopControl.StopCycle && howToStopControl != HowToStopControl.Restore) {
+                    errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
+                }
+            } else {
+                if (howToStopControl != HowToStopControl.TimeIn && howToStopControl != HowToStopControl.Restore) {
+                    errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
+                }
             }
-        } else if (gearType == GearControlMethod.SmartCycle || gearType == GearControlMethod.TrueCycle
-            || gearType == GearControlMethod.MagnitudeCycle || gearType == GearControlMethod.TargetCycle) {
-            if (howToStopControl != HowToStopControl.StopCycle && howToStopControl != HowToStopControl.Restore) {
-                errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
-            }
-        } else {
-            if (howToStopControl != HowToStopControl.TimeIn && howToStopControl != HowToStopControl.Restore) {
-                errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
+        }
+    }
+
+    /**
+     * Check for How To Stop Control and Stop Order
+     */
+    public void checkStopControlAndOrder(HowToStopControl howToStopControl, StopOrder stopOrder, Errors errors) {
+        lmValidatorHelper.checkIfFieldRequired("howToStopControl", errors, howToStopControl, "How To Stop Control");
+        if (!errors.hasFieldErrors("howToStopControl") && (howToStopControl == HowToStopControl.RampOutRestore
+            || howToStopControl == HowToStopControl.RampOutTimeIn)) {
+            lmValidatorHelper.checkIfFieldRequired("stopOrder", errors, stopOrder, "Stop Order");
+            if (!errors.hasFieldErrors("stopOrder")) {
+                if (howToStopControl == HowToStopControl.StopCycle) {
+                    errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
+                }
             }
         }
     }
@@ -162,9 +179,12 @@ public class GearValidatorHelper {
      * Check for Command Resend Rate
      */
     public void checkCommandResendRate(Integer sendRate, Errors errors) {
-        TimeIntervals commandResendRate = TimeIntervals.fromSeconds(sendRate);
-        if (!TimeIntervals.getCommandResendRate().contains(commandResendRate)) {
-            errors.rejectValue("sendRate", invalidKey, new Object[] { "Command Resend Rate" }, "");
+        lmValidatorHelper.checkIfFieldRequired("sendRate", errors, sendRate, "Command Resend Rate");
+        if (!errors.hasFieldErrors("sendRate")) {
+            TimeIntervals commandResendRate = TimeIntervals.fromSeconds(sendRate);
+            if (!TimeIntervals.getCommandResendRate().contains(commandResendRate)) {
+                errors.rejectValue("sendRate", invalidKey, new Object[] { "Command Resend Rate" }, "");
+            }
         }
     }
 
@@ -235,4 +255,13 @@ public class GearValidatorHelper {
             YukonValidationUtils.checkRange(errors, "numberOfGroups", numberOfGroups, 0, 25, false);
         }
     }
+
+    /**
+     * Check Group Selection Method
+     */
+    public void checkGroupSelectionMethod(GroupSelectionMethod groupSelectionMethod, Errors errors) {
+        lmValidatorHelper.checkIfFieldRequired("groupSelectionMethod", errors, groupSelectionMethod,
+            "Group Selection Method");
+    }
+
 }

@@ -4,7 +4,6 @@ import com.cannontech.common.dr.gear.setup.CycleCountSendType;
 import com.cannontech.common.dr.gear.setup.GroupSelectionMethod;
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.dr.gear.setup.StopOrder;
-import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.database.data.device.lm.TimeRefreshGear;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.fasterxml.jackson.annotation.JsonInclude;

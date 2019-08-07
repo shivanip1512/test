@@ -52,18 +52,25 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
 
         if (!errors.hasFieldErrors("addressUsage")) {
             if (loadGroup.getAddressUsage().contains(AddressUsage.SERIAL)) {
-                lmValidatorHelper.checkIfFieldRequired("serialNumber", errors, loadGroup.getSerialNumber(),
-                    "Serial Number");
-                if (!errors.hasFieldErrors("serialNumber")) {
-                    // Validate Serial
-                    try {
-                        Integer serialNumber = Integer.valueOf(loadGroup.getSerialNumber());
-                        YukonValidationUtils.checkRange(errors, "serialNumber", serialNumber, 0, 999999999, true);
-                    } catch (NumberFormatException e) {
-                        // Reject value with invalid format message
-                        errors.rejectValue("serialNumber", key + "invalidValue");
+                if (loadGroup.getAddressUsage().size() > 1) {
+                    errors.rejectValue("addressUsage", key + "incorrectCombination", new Object[] { "Address Usage" },
+                        "");
+                } else {
+                    lmValidatorHelper.checkIfFieldRequired("serialNumber", errors, loadGroup.getSerialNumber(),
+                        "Serial Number");
+                    if (!errors.hasFieldErrors("serialNumber")) {
+                        // Validate Serial
+                        try {
+                            Integer serialNumber = Integer.valueOf(loadGroup.getSerialNumber());
+                            YukonValidationUtils.checkRange(errors, "serialNumber", serialNumber, 0, 999999999, true);
+                        } catch (NumberFormatException e) {
+                            // Reject value with invalid format message
+                            errors.rejectValue("serialNumber", key + "invalidValue");
+                        }
                     }
                 }
+            } else {
+                loadGroup.setSerialNumber("0");
             }
             if (loadGroup.getAddressUsage().contains(AddressUsage.GEO)) {
                 // Validate Geo
@@ -108,9 +115,9 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 if (!errors.hasFieldErrors("user")) {
                     YukonValidationUtils.checkRange(errors, "user", loadGroup.getUser(), 1, 65534, true);
                 }
-            }  else {
+            } else {
                 loadGroup.setUser(0);
-            } 
+            }
             if (loadGroup.getAddressUsage().contains(AddressUsage.PROGRAM)) {
                 // validate Program
 
@@ -120,7 +127,7 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 }
             } else {
                 loadGroup.setProgram(0);
-            } 
+            }
             if (loadGroup.getAddressUsage().contains(AddressUsage.SPLINTER)) {
                 // validate Splinter
                 lmValidatorHelper.checkIfFieldRequired("splinter", errors, loadGroup.getSplinter(), "Splinter");
@@ -129,10 +136,11 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 }
             } else {
                 loadGroup.setSplinter(0);
-            } 
+            }
             if (loadGroup.getAddressUsage().contains(AddressUsage.LOAD)) {
                 // validate Loads
-                YukonValidationUtils.checkIfListRequired("relayUsage", errors, loadGroup.getRelayUsage(), "Load Address");
+                YukonValidationUtils.checkIfListRequired("relayUsage", errors, loadGroup.getRelayUsage(),
+                    "Load Address");
             }
         }
     }

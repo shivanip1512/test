@@ -36,8 +36,14 @@ public class SepTemperatureOffsetGearFieldsValidator
         // Check Ramp Out
         gearValidatorHelper.checkRampOut(sepTemperatureOffsetCycleGear.getRampOut(), errors);
 
+        // Check degree F/ degree C
+        lmValidatorHelper.checkIfFieldRequired("celsiusOrFahrenheit", errors,
+            sepTemperatureOffsetCycleGear.getCelsiusOrFahrenheit(), "Temperature Measure Unit");
+
+        // Check Heating Mode or Cooling Mode
+        lmValidatorHelper.checkIfFieldRequired("mode", errors, sepTemperatureOffsetCycleGear.getMode(), "Mode");
+
         // Check Heating offset or Cooling Offset
-        errors.pushNestedPath("mode");
         lmValidatorHelper.checkIfFieldRequired("offset", errors, sepTemperatureOffsetCycleGear.getOffset(), "Offset");
         if (!errors.hasFieldErrors("offset")) {
             if (sepTemperatureOffsetCycleGear.getCelsiusOrFahrenheit() == TemperatureMeasureUnit.FAHRENHEIT) {
@@ -48,15 +54,19 @@ public class SepTemperatureOffsetGearFieldsValidator
                     false);
             }
         }
-        errors.popNestedPath();
 
         // Check Criticality
+        gearValidatorHelper.checkCriticality(sepTemperatureOffsetCycleGear.getCriticality(), errors);
 
         // Check How to Stop Control
+        gearValidatorHelper.checkHowToStopControl(sepTemperatureOffsetCycleGear.getHowToStopControl(),
+            getControlMethod(), errors);
 
         // Check Group Capacity Reduction
+        gearValidatorHelper.checkGroupCapacityReduction(sepTemperatureOffsetCycleGear.getCapacityReduction(), errors);
 
         // Check When to Change
+        gearValidatorHelper.checkWhenToChange(sepTemperatureOffsetCycleGear.getWhenToChangeFields(), errors);
     }
 
 }

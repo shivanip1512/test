@@ -216,6 +216,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.loadAddress.required">At least usage type should be selected.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.notRequired">Address Usage do not have {0}, remove {1}.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.loadRequired">{0} should atleast have LOAD, SPLINTER or PROGRAM</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.incorrectCombination">Address Usage, SERIAL not allowed with other usage types.</entry>
 
 <!-- Load Program Validation -->
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.constraintId.doesNotExist">Constraint Id does not exist.</entry>

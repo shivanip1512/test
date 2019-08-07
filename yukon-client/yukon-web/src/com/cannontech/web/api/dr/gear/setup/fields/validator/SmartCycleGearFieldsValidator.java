@@ -41,8 +41,11 @@ public class SmartCycleGearFieldsValidator extends ProgramGearFieldsValidator<Sm
         gearValidatorHelper.checkCyclePeriod(smartCycleGear.getCyclePeriodInMinutes(), getControlMethod(), errors);
 
         // Check for Cycle Count Send Type
-        if (smartCycleGear.getCycleCountSendType() == CycleCountSendType.FixedShedTime
-            || smartCycleGear.getCycleCountSendType() == CycleCountSendType.DynamicShedTime) {
+        lmValidatorHelper.checkIfFieldRequired("cycleCountSendType", errors, smartCycleGear.getCycleCountSendType(),
+            "Cycle Count Send");
+        if (!errors.hasFieldErrors("cycleCountSendType")
+            && (smartCycleGear.getCycleCountSendType() == CycleCountSendType.FixedShedTime
+                || smartCycleGear.getCycleCountSendType() == CycleCountSendType.DynamicShedTime)) {
             errors.rejectValue("cycleCountSendType", invalidKey, new Object[] { "Cycle Count Send Type" }, "");
         }
 

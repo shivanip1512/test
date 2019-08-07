@@ -8,9 +8,10 @@ import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.dr.gear.setup.fields.TimeRefreshGearFields;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.database.db.device.lm.GearControlMethod;
+import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
 public class TimeRefreshGearFieldsValidator extends ProgramGearFieldsValidator<TimeRefreshGearFields> {
-
+    @Autowired private LMValidatorHelper lmValidatorHelper;
     @Autowired private GearValidatorHelper gearValidatorHelper;
     private final static String invalidKey = "yukon.web.modules.dr.setup.error.invalid";
 
@@ -29,18 +30,30 @@ public class TimeRefreshGearFieldsValidator extends ProgramGearFieldsValidator<T
 
     @Override
     protected void doValidation(TimeRefreshGearFields timeRefreshCycleGear, Errors errors) {
-        // Check Refresh Shed Time
-        if (timeRefreshCycleGear.getRefreshShedTime() != CycleCountSendType.FixedShedTime
-            && timeRefreshCycleGear.getRefreshShedTime() != CycleCountSendType.DynamicShedTime) {
-            errors.rejectValue("refreshShedTime", invalidKey, new Object[] { "Refresh Shed Time" }, "");
+        // Check Refresh Shed Type
+        lmValidatorHelper.checkIfFieldRequired("refreshShedTime", errors, timeRefreshCycleGear.getRefreshShedTime(),
+            "Refresh Shed Type");
+        if (!errors.hasFieldErrors("refreshShedTime")) {
+            if (timeRefreshCycleGear.getRefreshShedTime() != CycleCountSendType.FixedShedTime
+                && timeRefreshCycleGear.getRefreshShedTime() != CycleCountSendType.DynamicShedTime) {
+                errors.rejectValue("refreshShedTime", invalidKey, new Object[] { "Refresh Shed Time" }, "");
+            }
         }
 
         // Check Shed Time
         if (!errors.hasFieldErrors("refreshShedTime")) {
-            if (!TimeIntervals.getShedtime().contains(timeRefreshCycleGear.getShedTime())) {
-                errors.rejectValue("shedTime", invalidKey, new Object[] { "Shed Time" }, "");
+            lmValidatorHelper.checkIfFieldRequired("shedTime", errors, timeRefreshCycleGear.getShedTime(), "Shed Time");
+            if (!errors.hasFieldErrors("shedTime")) {
+                TimeIntervals shedTime = TimeIntervals.fromSeconds(timeRefreshCycleGear.getShedTime());
+                if (!TimeIntervals.getShedtime().contains(shedTime)) {
+                    errors.rejectValue("shedTime", invalidKey, new Object[] { "Shed Time" }, "");
+                }
             }
+
         }
+
+        // Check Group Selection Method
+        gearValidatorHelper.checkGroupSelectionMethod(timeRefreshCycleGear.getGroupSelectionMethod(), errors);
 
         // Check No. of groups Each Time
         gearValidatorHelper.checkNumberOfGroups(timeRefreshCycleGear.getNumberOfGroups(), errors);
@@ -56,8 +69,8 @@ public class TimeRefreshGearFieldsValidator extends ProgramGearFieldsValidator<T
         }
 
         // Check How to Stop Control
-        gearValidatorHelper.checkHowToStopControl(timeRefreshCycleGear.getHowToStopControl(), getControlMethod(),
-            errors);
+        gearValidatorHelper.checkStopControlAndOrder(timeRefreshCycleGear.getHowToStopControl(),
+            timeRefreshCycleGear.getStopOrder(), errors);
 
         // Check for Ramp Out and Ramp Out Interval
         if (!errors.hasFieldErrors("howToStopControl")

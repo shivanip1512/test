@@ -38,6 +38,9 @@ public class SimpleThermostatRampingGearFieldsValidator
                 simpleThermostatRampingCycleGear.getRandomStartTimeInMinutes(), 0, 2, false);
         }
 
+        // Check Heating Mode or Cooling Mode
+        lmValidatorHelper.checkIfFieldRequired("mode", errors, simpleThermostatRampingCycleGear.getMode(), "Mode");
+
         // Check Pre-op (Cool or Heat) Temp
         lmValidatorHelper.checkIfFieldRequired("preOpTemp", errors, simpleThermostatRampingCycleGear.getPreOpTemp(),
             "Pre-op Temp");

@@ -30,7 +30,7 @@ public class HoneywellCycleGearFieldsValidator extends ProgramGearFieldsValidato
     @Override
     protected void doValidation(HoneywellCycleGearFields honeywellCycleGear, Errors errors) {
         // Check Ramp In/Out
-        gearValidatorHelper.checkRampIn(honeywellCycleGear.getRampInOut(), errors);
+        lmValidatorHelper.checkIfFieldRequired("rampInOut", errors, honeywellCycleGear.getRampInOut(), "Ramp In/Out");
 
         // Check Control Percent
         lmValidatorHelper.checkIfFieldRequired("controlPercent", errors, honeywellCycleGear.getControlPercent(),

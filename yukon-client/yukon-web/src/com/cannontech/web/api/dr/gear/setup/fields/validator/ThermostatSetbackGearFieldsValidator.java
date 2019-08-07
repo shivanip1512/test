@@ -29,6 +29,14 @@ public class ThermostatSetbackGearFieldsValidator extends ProgramGearFieldsValid
     @Override
     protected void doValidation(ThermostatSetbackGearFields thermostatSetBackCycleGear, Errors errors) {
 
+        //Check for Absolutes or Deltas
+        lmValidatorHelper.checkIfFieldRequired("absoluteOrDelta", errors, thermostatSetBackCycleGear.getAbsoluteOrDelta(),
+                "Absolute Or Delta");
+
+        // Check for Fahrenheit or Celsius
+        lmValidatorHelper.checkIfFieldRequired("measureUnit", errors, thermostatSetBackCycleGear.getMeasureUnit(),
+                "Temperature Measure Unit");
+
         // Check for Heat Mode
         lmValidatorHelper.checkIfFieldRequired("isHeatMode", errors, thermostatSetBackCycleGear.getIsHeatMode(),
             "Heating Mode");

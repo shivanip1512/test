@@ -42,7 +42,7 @@ public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenar
                 } else if (program.getGears().get(0) == null) {
                     lmValidatorHelper.checkIfFieldRequired("gears", errors, program.getGears().get(0), "Gear");
                 } else if(program.getGears().get(0).getId() == null) {
-                    lmValidatorHelper.checkIfFieldRequired("gears[0].id", errors, program.getGears().get(0).getId(), "Gear Id");
+                    lmValidatorHelper.checkIfFieldRequired("gears[0].id", errors, program.getGears().get(0).getId(), "Gear");
                 }
                 errors.popNestedPath();
             }

@@ -178,60 +178,64 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                     errors.reject(key + "latchNotAllowedWithOtherGears");
                 }
 
-                Set<Integer> duplicatedGearNumbers =
-                    loadProgram.getGears().stream()
-                                          .filter(gear -> loadProgram.getGears().stream()
-                                                                                .filter(x -> x.getGearNumber() == gear.getGearNumber())
-                                                                                .count() > 1)
-                                          .map(gear -> gear.getGearNumber())
-                                          .collect(Collectors.toSet());
+                for (int i = 0; i < loadProgram.getGears().size(); i++) {
 
-                if (!duplicatedGearNumbers.isEmpty()) {
-                    errors.reject("yukon.web.modules.dr.setup.gear.error.uniqueGearNumber",
-                        new Object[] { duplicatedGearNumbers }, "");
-                } else {
-                    for (int i = 0; i < loadProgram.getGears().size(); i++) {
+                    ProgramGear gear = loadProgram.getGears().get(i);
+                    lmValidatorHelper.checkIfFieldRequired("gears[" + i + "].controlMethod", errors,
+                        gear.getControlMethod(), "Control Method");
+                    if (!errors.hasFieldErrors("gears[" + i + "].controlMethod")) {
+                        ImmutableSet<PaoType> supportedProgramTypesForGearType =
+                            gear.getControlMethod().getProgramTypes();
 
-                        ProgramGear gear = loadProgram.getGears().get(i);
-                        lmValidatorHelper.checkIfFieldRequired("gears[" + i + "].controlMethod", errors,
-                            gear.getControlMethod(), "Control Method");
-                        if (!errors.hasFieldErrors("gears[" + i + "].controlMethod")) {
-                            ImmutableSet<PaoType> supportedProgramTypesForGearType =
-                                gear.getControlMethod().getProgramTypes();
-
-                            if (supportedProgramTypesForGearType.contains(loadProgram.getType())) {
-                                errors.pushNestedPath("gears[" + i + "]");
-                                if (gear.getGearName() == null || !StringUtils.hasText(gear.getGearName().toString())) {
-                                    errors.rejectValue("gearName", "yukon.web.modules.dr.setup.error.required",
-                                        new Object[] { "Gear Name" }, "");
-                                }
-
-                                if (!errors.hasFieldErrors("gearName")) {
-                                    YukonValidationUtils.checkExceedsMaxLength(errors, "gearName", gear.getGearName(), 60);
-                                    if (!PaoUtils.isValidPaoName(gear.getGearName())) {
-                                        errors.rejectValue("gearName", "yukon.web.error.paoName.containsIllegalChars");
-                                    }
-                                }
-
-                                lmValidatorHelper.checkIfFieldRequired("gearNumber", errors, gear.getGearNumber(),
-                                    "Gear Number");
-                                errors.popNestedPath();
-
-                                // Validate Gear Fields
-                                ProgramGearFields fields = gear.getFields();
-                                if (fields != null) {
-                                    errors.pushNestedPath("gears[" + i + "].fields");
-                                    gearFieldsValidatorMap.get(gear.getControlMethod()).validate(fields, errors);
-                                    errors.popNestedPath();
-                                }
-                            } else {
-                                errors.reject(key + "notSupportedControlMethod",
-                                    new Object[] { gear.getControlMethod().name(), loadProgram.getType() }, "");
+                        if (supportedProgramTypesForGearType.contains(loadProgram.getType())) {
+                            errors.pushNestedPath("gears[" + i + "]");
+                            if (gear.getGearName() == null || !StringUtils.hasText(gear.getGearName().toString())) {
+                                errors.rejectValue("gearName", "yukon.web.modules.dr.setup.error.required",
+                                    new Object[] { "Gear Name" }, "");
                             }
+
+                            if (!errors.hasFieldErrors("gearName")) {
+                                YukonValidationUtils.checkExceedsMaxLength(errors, "gearName", gear.getGearName(), 60);
+                                if (!PaoUtils.isValidPaoName(gear.getGearName())) {
+                                    errors.rejectValue("gearName", "yukon.web.error.paoName.containsIllegalChars");
+                                }
+                            }
+
+                            lmValidatorHelper.checkIfFieldRequired("gearNumber", errors, gear.getGearNumber(),
+                                "Gear Number");
+                            errors.popNestedPath();
+
+                            // Validate Gear Fields
+                            ProgramGearFields fields = gear.getFields();
+                            if (fields != null) {
+                                errors.pushNestedPath("gears[" + i + "].fields");
+                                gearFieldsValidatorMap.get(gear.getControlMethod()).validate(fields, errors);
+                                errors.popNestedPath();
+                            } else {
+                                errors.reject("yukon.web.modules.dr.setup.error.required",
+                                    new Object[] { "Gear fields" }, "");
+                            }
+                        } else {
+                            errors.reject(key + "notSupportedControlMethod",
+                                new Object[] { gear.getControlMethod().name(), loadProgram.getType() }, "");
                         }
                     }
                 }
 
+                if (!errors.hasFieldErrors()) {
+                    Set<Integer> duplicatedGearNumbers =
+                        loadProgram.getGears().stream()
+                                              .filter(gear -> loadProgram.getGears().stream()
+                                                                                    .filter(x -> x.getGearNumber() == gear.getGearNumber())
+                                                                                    .count() > 1)
+                                              .map(gear -> gear.getGearNumber())
+                                              .collect(Collectors.toSet());
+
+                    if (!duplicatedGearNumbers.isEmpty()) {
+                        errors.reject("yukon.web.modules.dr.setup.gear.error.uniqueGearNumber",
+                            new Object[] { duplicatedGearNumbers }, "");
+                    }
+                }
             }
 
         }

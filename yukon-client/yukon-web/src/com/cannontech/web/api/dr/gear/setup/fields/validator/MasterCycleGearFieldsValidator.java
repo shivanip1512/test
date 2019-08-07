@@ -31,6 +31,9 @@ public class MasterCycleGearFieldsValidator extends ProgramGearFieldsValidator<M
         // Check Cycle Period
         gearValidatorHelper.checkCyclePeriod(masterCycleGear.getCyclePeriodInMinutes(), getControlMethod(), errors);
 
+        // Check Group Selection Method
+        gearValidatorHelper.checkGroupSelectionMethod(masterCycleGear.getGroupSelectionMethod(), errors);
+
         // Check Ramp In
         if (masterCycleGear.getRampInPercent() != null || masterCycleGear.getRampInIntervalInSeconds() != null) {
             gearValidatorHelper.checkRampInPercentAndInterval(masterCycleGear.getRampInPercent(),
@@ -38,7 +41,8 @@ public class MasterCycleGearFieldsValidator extends ProgramGearFieldsValidator<M
         }
 
         // Check How to Stop Control
-        gearValidatorHelper.checkHowToStopControl(masterCycleGear.getHowToStopControl(), getControlMethod(), errors);
+        gearValidatorHelper.checkStopControlAndOrder(masterCycleGear.getHowToStopControl(),
+            masterCycleGear.getStopOrder(), errors);
 
         // Check for Ramp Out and Ramp Out Interval
         if (!errors.hasFieldErrors("howToStopControl")
