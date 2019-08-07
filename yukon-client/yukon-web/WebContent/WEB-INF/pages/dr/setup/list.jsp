@@ -29,23 +29,25 @@
                 </tr>
                 <tr>
                     <td>
+                        <cti:url var="createLoadProgramUrl" value="/dr/setup/loadProgram/create"/>
+                        <a href="${createLoadProgramUrl}"><i:inline key=".loadProgram.title"/></a>
+                    </td>
+                    <td>
                         <cti:url var="createLoadGroupUrl" value="/dr/setup/loadGroup/create"/>
                         <a href="${createLoadGroupUrl}"><i:inline key=".loadGroup.title"/></a>
                     </td>
+
+                </tr>
+                <tr>
                     <td>
                         <cti:url var="createMacroLoadGroupUrl" value="/dr/setup/macroLoadGroup/create"/>
                         <a href="${createMacroLoadGroupUrl}"><i:inline key=".macroLoadGroup.title"/></a>
                     </td>
-                </tr>
-                <tr>
                     <td>
                         <cti:url var="createProgramConstraint" value="/dr/setup/constraint/create"/>
                         <a href="${createProgramConstraint}"><i:inline key=".constraint.title"/></a>
                     </td>
-                    <td>
-                        <cti:url var="createLoadProgramUrl" value="/dr/setup/loadProgram/create"/>
-                        <a href="${createLoadProgramUrl}"><i:inline key=".loadProgram.title"/></a>
-                    </td>
+
                 </tr>
             </table>
         </div>
