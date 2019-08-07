@@ -300,6 +300,54 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.filter.TYPE">Type</entry>
 <entry key="yukon.web.modules.dr.setup.filter.error">Error filtering records: {0}.</entry>
 
+<!-- Program Gear -->
+<entry key="yukon.web.modules.dr.setup.gear.title">Gear Creation</entry>
+<entry key="yukon.web.modules.dr.setup.gear.general.title">General</entry>
+<entry key="yukon.web.modules.dr.setup.gear.whenToChange.title">When To Change</entry>
+<entry key="yukon.web.modules.dr.setup.gear.controlParameters.title">Control Parameters</entry>
+<entry key="yukon.web.modules.dr.setup.gear.optionalAttributes.title">Optional Attributes</entry>
+<entry key="yukon.web.modules.dr.setup.gear.rampIn.title">Ramp In</entry>
+<entry key="yukon.web.modules.dr.setup.gear.rampInRampOut.title">Ramp In / Ramp Out</entry>
+<entry key="yukon.web.modules.dr.setup.gear.stopControl.title">Stop Control</entry>
+<entry key="yukon.web.modules.dr.setup.gear.gearName">Gear Name</entry>
+<entry key="yukon.web.modules.dr.setup.gear.gearType">Gear Type</entry>
+<entry key="yukon.web.modules.dr.setup.gear.yes">Yes</entry>
+<entry key="yukon.web.modules.dr.setup.gear.no">No</entry>
+<entry key="yukon.web.modules.dr.setup.gear.controlPercent">Control Percent</entry>
+<entry key="yukon.web.modules.dr.setup.gear.noRamp">No Ramp (Expresscom only)</entry>
+<entry key="yukon.web.modules.dr.setup.gear.rampInRampOut">Ramp In/Out</entry>
+<entry key="yukon.web.modules.dr.setup.gear.cyclePeriod">Cycle Period</entry>
+<entry key="yukon.web.modules.dr.setup.gear.cycleCountSendType">Cycle Count Send Type</entry>
+<entry key="yukon.web.modules.dr.setup.gear.maxCycleCount">Max Cycle Count</entry>
+<entry key="yukon.web.modules.dr.setup.gear.startingPeriodCount">Starting Period Count</entry>
+<entry key="yukon.web.modules.dr.setup.gear.commandResendRate">Command Resend Rate</entry>
+<entry key="yukon.web.modules.dr.setup.gear.howToStopControl">How To Stop Control</entry>
+<entry key="yukon.web.modules.dr.setup.gear.stopCommandRepeat">Stop command Repeat</entry>
+<entry key="yukon.web.modules.dr.setup.gear.sendRate">Command Resend Rate</entry>
+<entry key="yukon.web.modules.dr.setup.gear.groupCapacityReduction">Group Capacity Reduction</entry>
+<entry key="yukon.web.modules.dr.setup.gear.whenToChange">When to Change</entry>
+<entry key="yukon.web.modules.dr.setup.gear.groupCapacityReduction">Group Capacity Reduction %</entry>
+<entry key="yukon.web.modules.dr.setup.gear.changeDuration">Change Duration</entry>
+<entry key="yukon.web.modules.dr.setup.gear.changePriority">Change Priority</entry>
+<entry key="yukon.web.modules.dr.setup.gear.triggerNumber">Trigger Number</entry>
+<entry key="yukon.web.modules.dr.setup.gear.triggerOffset">Trigger Offset</entry>
+<entry key="yukon.web.modules.dr.setup.gear.kWReduction">KW Reduction</entry>
+<entry key="yukon.web.modules.dr.setup.gear.changePrority">Change Priority</entry>
+<entry key="yukon.web.modules.dr.setup.gear.changeDurationInMinutes">Change Duration</entry>
+<entry key="yukon.web.modules.dr.setup.gear.triggerNumber">Trigger Number</entry>
+<entry key="yukon.web.modules.dr.setup.gear.triggerOffset">Trigger Offset</entry>
+<entry key="yukon.web.modules.dr.setup.gear.rampIn">Ramp In</entry>
+<entry key="yukon.web.modules.dr.setup.gear.rampOut">Ramp Out</entry>
+<entry key="yukon.web.modules.dr.setup.gear.trueCycle">True Cycle</entry>
+<entry key="yukon.web.modules.dr.setup.gear.criticality">Criticality</entry>
+<entry key="yukon.web.modules.dr.setup.gear.mandatory">Mandatory</entry>
+<entry key="yukon.web.modules.dr.setup.gear.dutyCycleType">Duty Cycle Type</entry>
+<entry key="yukon.web.modules.dr.setup.gear.dutyCyclePercentage">Duty Cycle %</entry>
+<entry key="yukon.web.modules.dr.setup.gear.dutyCyclePeriod">Duty Cycle Period</entry>
+<entry key="yukon.web.modules.dr.setup.gear.preparationLoadShaping">Preparation Load Shaping</entry>
+<entry key="yukon.web.modules.dr.setup.gear.peakLoadShaping">Peak Load Shaping</entry>
+<entry key="yukon.web.modules.dr.setup.gear.postPeakLoadShaping">Post Peak Load Shaping</entry>
+
 <!-- Program Constraint -->
 <entry key="yukon.web.modules.dr.setup.constraint.error.used">{0} because it is in use by a Program.</entry>
 <entry key="yukon.web.modules.dr.setup.constraint.title">Program Constraint</entry>

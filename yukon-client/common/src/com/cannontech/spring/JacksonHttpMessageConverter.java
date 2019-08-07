@@ -11,6 +11,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class JacksonHttpMessageConverter extends MappingJackson2HttpMessageConverter {
 
@@ -20,6 +21,7 @@ public class JacksonHttpMessageConverter extends MappingJackson2HttpMessageConve
         super();
         objectMapper.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
         objectMapper.configure(DeserializationFeature.FAIL_ON_MISSING_EXTERNAL_TYPE_ID_PROPERTY, false);
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
     @Override

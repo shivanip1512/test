@@ -17,7 +17,9 @@ import com.cannontech.common.dr.gear.setup.CycleCountSendType;
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.dr.gear.setup.OperationalState;
 import com.cannontech.common.dr.gear.setup.WhenToChange;
-import com.cannontech.common.dr.gear.setup.fields.SepCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SmartCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.TargetCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.WhenToChangeFields;
@@ -35,6 +37,10 @@ import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
+import com.cannontech.dr.itron.model.ItronCycleType;
+import com.cannontech.dr.nest.model.v3.PeakLoadShape;
+import com.cannontech.dr.nest.model.v3.PostLoadShape;
+import com.cannontech.dr.nest.model.v3.PrepLoadShape;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.ApiRequestHelper;
@@ -207,6 +213,31 @@ public class LoadProgramSetupControllerHelper {
             setSmartCycleGearFieldsDefaultValue(smartCycleGearFields);
             programGear.setFields(smartCycleGearFields);
             break;
+        case EcobeeCycle:
+            EcobeeCycleGearFields ecobeeCycleGearFields = (EcobeeCycleGearFields) programGear.getFields();
+            ecobeeCycleGearFields.setMandatory(false);
+            ecobeeCycleGearFields.setRampIn(true);
+            ecobeeCycleGearFields.setRampOut(true);
+            ecobeeCycleGearFields.setControlPercent(50);
+            ecobeeCycleGearFields.setCapacityReduction(100);
+            ecobeeCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
+            break;
+        case HoneywellCycle:
+            HoneywellCycleGearFields honeywellCycleGearFields = (HoneywellCycleGearFields) programGear.getFields();
+            honeywellCycleGearFields.setRampInOut(true);
+            honeywellCycleGearFields.setControlPercent(0);
+            honeywellCycleGearFields.setCapacityReduction(100);
+            honeywellCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
+            break;
+        case ItronCycle:
+            ItronCycleGearFields itronCycleGearFields = (ItronCycleGearFields) programGear.getFields();
+            itronCycleGearFields.setRampIn(true);
+            itronCycleGearFields.setRampOut(true);
+            itronCycleGearFields.setCapacityReduction(100);
+            itronCycleGearFields.setDutyCyclePercent(50);
+            itronCycleGearFields.setCriticality(1);
+            itronCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
+            break;
         }
     }
 
@@ -255,6 +286,27 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("commandResendRate", TimeIntervals.getCommandResendRate());
             break;
+        case EcobeeCycle:
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
+            break;
+        case HoneywellCycle:
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
+            model.addAttribute("cyclePeriod", List.of(30));
+            break;
+        case ItronCycle:
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            model.addAttribute("cycleType",List.of(ItronCycleType.STANDARD,ItronCycleType.TRUE_CYCLE,ItronCycleType.SMART_CYCLE));
+            model.addAttribute("dutyCyclePeriod", ImmutableList.of(30, 60));
+            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
+            break;
+        case NestStandardCycle:
+            model.addAttribute("preparationLoadShaping",List.of(PrepLoadShape.PREP_STANDARD,PrepLoadShape.PREP_RAMPING,PrepLoadShape.PREP_UNSPECIFIED,PrepLoadShape.PREP_NONE));
+            model.addAttribute("peakLoadShaping",List.of(PeakLoadShape.PEAK_STANDARD,PeakLoadShape.PEAK_SYMMETRIC,PeakLoadShape.PEAK_UNIFORM,PeakLoadShape.PEAK_UNSPECIFIED));
+            model.addAttribute("postPeakLoadShaping",List.of(PostLoadShape.POST_STANDARD,PostLoadShape.POST_RAMPING,PostLoadShape.POST_UNSPECIFIED));
+            break;
+            
         }
     }
 
