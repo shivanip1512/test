@@ -75,9 +75,7 @@ public class ControlAreaSetupApiController {
     @GetMapping("/normalState/{pointId}")
     public ResponseEntity<Object> getNormalState(@PathVariable int pointId) {
         List<LMDto> normalStates = controlAreaService.retrieveNormalState(pointId);
-        HashMap<Integer, List<LMDto>> normalStateMap = new HashMap<>();
-        normalStateMap.put(pointId, normalStates);
-        return new ResponseEntity<>(normalStateMap, HttpStatus.OK);
+        return new ResponseEntity<>(normalStates, HttpStatus.OK);
     }
 
     private ResponseEntity<HashMap<String, Integer>> buildResponse(int controlAreaId) {

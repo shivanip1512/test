@@ -40,7 +40,7 @@ public enum ControlAreaProjectionType implements DisplayableEnum, DatabaseRepres
 
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.dr.setup.controlArea." + name();
+        return "yukon.web.modules.dr.setup.controlArea.trigger." + name();
     }
 
     @Override

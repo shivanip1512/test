@@ -131,8 +131,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                     ControlAreaProjection projection = new ControlAreaProjection();
                     projection.setProjectionType(
                         ControlAreaProjectionType.getProjectionValue(areaTrigger.getProjectionType()));
-                    projection.setProjectAheadDuration(
-                        TimeIntervals.fromSeconds(areaTrigger.getProjectAheadDuration()));
+                    projection.setProjectAheadDuration(areaTrigger.getProjectAheadDuration());
                     projection.setProjectionPoint(areaTrigger.getProjectionPoints());
                     controlAreaTrigger.setControlAreaProjection(projection);
                     controlAreaTrigger.setAtku(areaTrigger.getThresholdKickPercent());
@@ -289,8 +288,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                      lmControlAreaTrigger.setProjectAheadDuration(TimeIntervals.MINUTES_5.getSeconds());
                 }else {
                      lmControlAreaTrigger.setProjectionPoints(areaTrigger.getControlAreaProjection().getProjectionPoint());
-                     lmControlAreaTrigger.setProjectAheadDuration(
-                         areaTrigger.getControlAreaProjection().getProjectAheadDuration().getSeconds());
+                     lmControlAreaTrigger.setProjectAheadDuration(areaTrigger.getControlAreaProjection().getProjectAheadDuration());
                 }
             }
 

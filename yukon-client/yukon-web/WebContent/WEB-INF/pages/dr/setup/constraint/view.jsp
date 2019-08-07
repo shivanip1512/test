@@ -162,7 +162,7 @@
                 <cti:button nameKey="cancel" href="${viewUrl}"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:button id="cancel-btn" nameKey="cancel" />
+                <cti:button id="js-cancel-btn" nameKey="cancel" />
             </cti:displayForPageEditModes>
         </div>
     </form:form>

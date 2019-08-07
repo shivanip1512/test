@@ -13,6 +13,7 @@
 <cti:standardPage module="dr" page="setup.controlArea.${mode}">
     <tags:setFormEditMode mode="${mode}" />
     
+    <input id="js-form-edit-mode" value="${mode}" type="hidden"/>
     <!-- Actions drop-down -->
     <cti:displayForPageEditModes modes="VIEW">
         <div id="page-actions" class="dn">
@@ -40,10 +41,11 @@
     </cti:displayForPageEditModes>
     
     <cti:url var="action" value="/dr/setup/controlArea/save" />
-    <form:form modelAttribute="controlArea" action="${action}" method="post">
+    <form:form modelAttribute="controlArea" action="${action}" method="post" id="js-control-area-form">
         <cti:csrfToken />
         <form:hidden path="controlAreaId"/>
         
+        <input id="js-trigger-ids" name="triggerIds" type="hidden"/>
         <div class="column-12-12 clearfix">
             <div class="column one">
                 <tags:sectionContainer2 nameKey="general">
@@ -68,47 +70,107 @@
             </div>
             <div class="column two nogutter">
                 <tags:sectionContainer2 nameKey="trigger">
-                    <span class="empty-list js-no-triggers dn"><i:inline key=".noTriggersAssigned"/></span>
-                    <c:forEach var="trigger" items="${controlArea.triggers}" varStatus="status">
-                        <div class="js-triggers js-trigger-row-${trigger.triggerId} PB10">
-                            <cti:triggerName var="triggerName" pointId="${trigger.triggerPointId}" type="${trigger.triggerType}"/>                         
-                            <cti:displayForPageEditModes modes="EDIT,CREATE">
-                                <cti:button id="delete-trigger-${trigger.triggerId}" icon="icon-cross" renderMode="buttonImage" 
-                                    data-id="${trigger.triggerId}" data-ok-event="yukon:trigger:delete"/>
-                                <d:confirm on="#delete-trigger-${trigger.triggerId}" nameKey="confirmDelete" argument="${triggerName}"/>
-                            </cti:displayForPageEditModes>
-                            
-                            <!-- Trigger dialog -->
-                            <cti:msg2 var="triggerTitle" key="yukon.web.modules.dr.setup.controlArea.trigger.title"/>
-                            <cti:url var="triggerUrl" value="/dr/setup/trigger/${trigger.triggerId}"/>
-                            <div class="dn" id="trigger-${trigger.triggerId}" data-title="${triggerTitle}" data-dialog data-url="${triggerUrl}"></div>
-                            <a href="javascript:void(0);" data-popup="#trigger-${trigger.triggerId}">${fn:escapeXml(triggerName)}</a>
-                            <tags:hidden path="triggers[${status.index}].triggerId"/>
-                            <tags:hidden path="triggers[${status.index}].triggerNumber"/>
-                            <tags:hidden path="triggers[${status.index}].triggerType"/>
-                            <tags:hidden path="triggers[${status.index}].triggerPointId"/>
-                            <tags:hidden path="triggers[${status.index}].normalState"/>
-                            <tags:hidden path="triggers[${status.index}].threshold"/>
-                            <tags:hidden path="triggers[${status.index}].controlAreaProjection.projectionType"/>
-                            <tags:hidden path="triggers[${status.index}].controlAreaProjection.projectionPoint"/>
-                            <tags:hidden path="triggers[${status.index}].controlAreaProjection.projectAheadDuration"/>
-                            <tags:hidden path="triggers[${status.index}].atku"/>
-                            <tags:hidden path="triggers[${status.index}].minRestoreOffset"/>
-                            <tags:hidden path="triggers[${status.index}].peakPointId"/>
-                            <tags:hidden path="triggers[${status.index}].thresholdPointId"/>
-
-                        </div>
-                    
-                    </c:forEach>
-                    <br/><br/>
+                    <div class="js-trigger-template-row select-box-item dn" data-trigger-id="0">
+                        <span class="js-trigger-name"></span>
+                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove-trigger" />
+                    </div>
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
-                        <cti:url var="triggerCreateUrl" value="/dr/setup/trigger/create"/>
-                        <!-- Trigger create dialog -->
-                        <cti:msg2 var="triggerTitle" key="yukon.web.modules.dr.setup.controlArea.triggerCreate.title"/>
-                        <div class="dn" id="trigger-create" data-title="${triggerTitle}" data-dialog data-url="${triggerCreateUrl}"></div>
-                        <cti:button nameKey="create" icon="icon-plus-green" classes="fr js-create-trigger" data-popup="#trigger-create"/>
+                        <c:if test="${empty controlArea.triggers}">
+                            <span class="empty-list js-no-triggers dn"><i:inline key=".noTriggersAssigned" /></span>
+                        </c:if>
+                        <div class="js-trigger-container select-box">
+                            <c:forEach var="trigger" items="${controlArea.triggers}" varStatus="status">
+                                <c:set var="triggerId" value="${triggerIds[status.index]}" />
+                                <cti:url var="triggerUrl" value="/dr/setup/controlArea/renderTrigger/${triggerId}?mode=${mode}" />
+                                <div class="select-box-item" data-trigger-id="${triggerId}" id="js-trigger-${triggerId}">
+                                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove"
+                                        id="delete-trigger-${triggerId}" data-ok-event="yukon:trigger:delete" data-id="${triggerId}"/>
+                                    <d:confirm on="#delete-trigger-${triggerId}" nameKey="confirmDelete"
+                                        argument="Trigger"/>
+                                    <a href="${triggerUrl}" class="js-trigger-link" data-popup="#js-trigger-dialog-${triggerId}"
+                                        id="js-trigger-link-${triggerId}" data-trigger-id="${triggerId}"> 
+                                            <cti:triggerName pointId="${trigger.triggerPointId}" type="${trigger.triggerType}" />
+                                    </a>
+                                </div>
+                                <div data-dialog 
+                                    id="js-trigger-dialog-${triggerId}"
+                                    data-url="${triggerUrl}"
+                                    data-target="#js-trigger-link-${triggerId}"
+                                    data-event="yukon:dr:setup:controlArea:saveTrigger"
+                                    data-load-event="yukon:dr:setup:controlArea:renderTriggerFields"
+                                    data-width="600"
+                                    data-height="auto"
+                                    data-title="<cti:triggerName pointId="${trigger.triggerPointId}" type="${trigger.triggerType}"/>">
+                                </div>
+                            </c:forEach>
+                        </div>
+                        <br />
+                        <div class="action-area">
+                            <cti:url var="triggerPopupUrl" value="/dr/setup/controlArea/renderTrigger" />
+                            <cti:msg2 var="triggerTitle" key="yukon.web.modules.dr.setup.controlArea.triggerCreate.title" />
+                            <cti:button nameKey="create" icon="icon-plus-green" classes="fr js-create-trigger" data-popup="#js-add-triggers" />
+                        </div>
                     </cti:displayForPageEditModes>
-                
+                    <cti:displayForPageEditModes modes="VIEW">
+                        <c:choose>
+                            <c:when test="${empty controlArea.triggers}">
+                                <span class="empty-list js-no-triggers dn"><i:inline key=".noTriggersAssigned" /></span>
+                            </c:when>
+                            <c:otherwise>
+                                <table class="compact-results-table dashed">
+                                    <thead>
+                                        <tr>
+                                            <th><i:inline key="yukon.common.name" /></th>
+                                            <th><i:inline key="yukon.common.type" /></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="trigger" items="${controlArea.triggers}" varStatus="status">
+                                            <tr>
+                                                <td>
+                                                    <c:set var="triggerId" value="${triggerIds[status.index]}"/>
+                                                    <cti:url var="triggerUrl" value="/dr/setup/controlArea/renderTrigger/${triggerId}?mode=${mode}"/>
+                                                    <a href="${triggerUrl}" class="js-trigger-link" data-popup="#js-trigger-dialog-${triggerId}"
+                                                        id="js-trigger-link-${triggerId}" data-trigger-id="${triggerId}">
+                                                            <cti:triggerName pointId="${trigger.triggerPointId}" type="${trigger.triggerType}" />
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <i:inline key="yukon.web.modules.dr.setup.controlArea.trigger.${trigger.triggerType}" />
+                                                </td>
+                                                <div data-dialog 
+                                                    id="js-trigger-dialog-${triggerId}"
+                                                    data-url="${triggerUrl}"
+                                                    data-target="#js-trigger-link-${triggerId}"
+                                                    data-event="yukon:dr:setup:controlArea:saveTrigger"
+                                                    data-load-event="yukon:dr:setup:controlArea:renderTriggerFields"
+                                                    data-width="600"
+                                                    data-height="auto"
+                                                    data-title="<cti:triggerName pointId="${trigger.triggerPointId}" type="${trigger.triggerType}"/>">
+                                                </div>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </c:otherwise>
+                        </c:choose>
+                    </cti:displayForPageEditModes>
+                    <div data-dialog
+                        id="js-add-triggers"
+                        data-url="${triggerPopupUrl}"
+                        data-event="yukon:dr:setup:controlArea:saveTrigger"
+                        data-load-event="yukon:dr:setup:controlArea:renderTriggerFields"
+                        data-width="600"
+                        data-height="auto"
+                        data-title="<cti:msg2 key="yukon.web.modules.dr.setup.controlArea.trigger.title"/>" class="dn">
+                    </div>
+                    <div data-dialog
+                        data-event="yukon:dr:setup:controlArea:saveTrigger"
+                        data-load-event="yukon:dr:setup:controlArea:renderTriggerFields"
+                        data-width="600" data-height="auto"
+                        data-title="<cti:msg2 key="yukon.web.modules.dr.setup.controlArea.trigger.title"/>"
+                        class="dn js-trigger-dialog-template">
+                    </div>
                 </tags:sectionContainer2>
                 <tags:sectionContainer2 nameKey="controlWindow">
                     <c:set var="controlWindowEnabled" value="${controlArea.dailyStartTimeInMinutes > 0 || controlArea.dailyStopTimeInMinutes > 0}"/>
@@ -218,7 +280,7 @@
                             <c:forEach var="assignedProgram" items="${controlArea.programAssignment}">
                                 <tr>
                                     <td>
-                                        <cti:url var="viewUrl" value="/dr/setup/loadProgram/${assignedProgram.programId}"/>
+                                        <cti:url var="viewUrl" value="/dr/setup/program/${assignedProgram.programId}"/>
                                         <a href="${viewUrl}"><cti:deviceName deviceId="${assignedProgram.programId}"/></a>
                                     </td>
                                     <td>
@@ -240,7 +302,7 @@
         
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <cti:button nameKey="save" classes="primary action" type="submit"/>
+                <cti:button nameKey="save" classes="primary action js-save"/>
             </cti:displayForPageEditModes>
             
             <cti:displayForPageEditModes modes="EDIT">
@@ -258,5 +320,6 @@
     <cti:includeScript link="JQUERY_SCROLL_TABLE_BODY"/>
     <cti:includeScript link="YUKON_TIME_FORMATTER"/>
     <cti:includeScript link="/resources/js/pages/yukon.dr.setup.controlArea.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dr.setup.controlArea.trigger.js" />
 
 </cti:standardPage>

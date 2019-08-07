@@ -48,5 +48,6 @@ public class ApiURL {
     
     public static final String drLoadProgramAvailableProgramsUrl = "/dr/setup/loadProgram/availablePrograms";
     public static final String drGetGearsForLoadProgram = "/dr/setup/loadProgram/getGearsForProgram/";
+    public static final String drNormalStateUrl = "/dr/setup/controlArea/normalState/";
 
 }

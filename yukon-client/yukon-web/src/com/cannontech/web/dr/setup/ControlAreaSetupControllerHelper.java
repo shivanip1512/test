@@ -2,12 +2,14 @@ package com.cannontech.web.dr.setup;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.joda.time.LocalTime;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.dr.setup.ControlArea;
+import com.cannontech.common.dr.setup.ControlAreaProjectionType;
+import com.cannontech.common.dr.setup.ControlAreaTrigger;
+import com.cannontech.common.dr.setup.ControlAreaTriggerType;
 import com.cannontech.common.dr.setup.DailyDefaultState;
 import com.cannontech.common.util.TimeIntervals;
 
@@ -36,6 +38,13 @@ public class ControlAreaSetupControllerHelper {
             LocalTime dailyStop = LocalTime.fromMillisOfDay(stopTimeMinutes * 60000);
             model.addAttribute("dailyStopTime", dailyStop);
         }
+    }
+
+    public void buildTriggerModelMap(ModelMap model, ControlAreaTrigger controlAreaTrigger) {
+        model.addAttribute("triggerTypes", ControlAreaTriggerType.values());
+        model.addAttribute("projectionTypes", ControlAreaProjectionType.values());
+        model.addAttribute("projectAheadDurations", TimeIntervals.getProjectionAheadDuration());
+        model.addAttribute("controlAreaTrigger", controlAreaTrigger);
     }
 
 }

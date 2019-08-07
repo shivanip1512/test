@@ -7,8 +7,9 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ImmutableMap;
 
 public enum ControlAreaTriggerType implements DisplayableEnum, DatabaseRepresentationSource {
-    THRESHOLD("Threshold"),
+    
     THRESHOLD_POINT("Threshold Point"),
+    THRESHOLD("Threshold"),
     STATUS("Status");
 
     private String triggerType;
@@ -41,7 +42,7 @@ public enum ControlAreaTriggerType implements DisplayableEnum, DatabaseRepresent
 
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.dr.setup.controlArea.triggerType." + name();
+        return "yukon.web.modules.dr.setup.controlArea.trigger." + name();
     }
 
     @Override

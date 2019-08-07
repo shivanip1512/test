@@ -19,6 +19,7 @@ public class ControlAreaTrigger {
     private Double minRestoreOffset;
     private Integer peakPointId;
     private Integer thresholdPointId;
+    private String triggerPointName;
 
     public Integer getTriggerId() {
         return triggerId;
@@ -110,6 +111,14 @@ public class ControlAreaTrigger {
 
     public void setThresholdPointId(Integer thresholdPointId) {
         this.thresholdPointId = thresholdPointId;
+    }
+
+    public String getTriggerPointName() {
+        return triggerPointName;
+    }
+
+    public void setTriggerPointName(String triggerPointName) {
+        this.triggerPointName = triggerPointName;
     }
 
 }
