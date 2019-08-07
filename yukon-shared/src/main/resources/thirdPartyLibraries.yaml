@@ -3626,7 +3626,7 @@ Network Manager :
     version : 3.6.0
     project URL : "https://community.jaspersoft.com/project/jasperreports-library"
     license : LGPL
-    license URLs : n/a
+    license URLs : "https://github.com/TIBCOSoftware/jasperreports/blob/jr-3-6-0/jasperreports/license.txt"
     maven URL : "https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports/3.6.0"
     md5 : be640676303f99e6f482ed1e988eda04
     sha1 : 60c2053de08177d215444bfa960024980f1e78b2
