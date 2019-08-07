@@ -117,7 +117,7 @@
                             <div class="notes"><i:inline key=".controlWindow.note"/></div><br/>
                         </cti:displayForPageEditModes>
                         <tags:nameValue2 nameKey=".useControlWindow">
-                            <tags:switchButton name="controlWindow" toggleGroup="controlWindow" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label" 
+                            <tags:switchButton classes="js-control-window" name="controlWindow" toggleGroup="controlWindow" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label" 
                                 checked="${controlWindowEnabled}"/>
                         </tags:nameValue2>
                         <c:set var="controlWindowClass" value="${controlWindowEnabled ? '' : 'dn'}"/>

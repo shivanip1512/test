@@ -1,6 +1,8 @@
 package com.cannontech.web.dr.setup;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -118,6 +121,14 @@ public class ControlAreaSetupController {
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(controlArea, "controlArea");
                 result = helper.populateBindingError(result, error, response);
+                if (result.hasGlobalErrors()) {
+
+                    List<ObjectError> objectErrorList = result.getGlobalErrors();
+                    List<String> errors = objectErrorList.stream()
+                                                         .map(obj -> obj.getCode())
+                                                         .collect(Collectors.toList());
+                    flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(String.join(",", errors)));
+                }
                 return bindAndForward(controlArea, result, redirectAttributes);
             }
 

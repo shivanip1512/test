@@ -24,6 +24,16 @@ yukon.dr.setup.controlArea = (function() {
         $('.js-no-triggers').toggleClass('dn', nbrTriggers > 0);
         
     },
+    
+    _updateStartTime = function () {
+        var start = _timeFormatter.parse24HourTime($('#dailyStartTime').val());
+        $('#dailyStartTimeInMinutes').val(start);
+    },
+    
+    _updateStopTime = function () {
+        var stop = _timeFormatter.parse24HourTime($('#dailyStopTime').val());
+        $('#dailyStopTimeInMinutes').val(stop);
+    }
 
     mod = {
         
@@ -96,13 +106,23 @@ yukon.dr.setup.controlArea = (function() {
             });
             
             $(document).on('change', '#dailyStartTime', function() {
-                var number = _timeFormatter.parse24HourTime($(this).val());
-                $('#dailyStartTimeInMinutes').val(number);
+                _updateStartTime();
             });
             
             $(document).on('change', '#dailyStopTime', function () {
-                var number = _timeFormatter.parse24HourTime($(this).val());
-                $('#dailyStopTimeInMinutes').val(number);
+                _updateStopTime();
+            });
+            
+            $(document).on('click', '.js-control-window', function() {
+                var controlWindowRow = $(this).closest('tr'),
+                    useControlWindow = controlWindowRow.find('.switch-btn-checkbox').prop('checked');
+                if (!useControlWindow) {
+                    $('#dailyStartTimeInMinutes').val(0);
+                    $('#dailyStopTimeInMinutes').val(0);
+                } else {
+                    _updateStartTime();
+                    _updateStopTime();
+                }
             });
             
             _initialized = true;
