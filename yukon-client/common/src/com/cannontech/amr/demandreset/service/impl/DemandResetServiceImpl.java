@@ -268,7 +268,7 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
         commandRequestExecutionResultDao.saveUnsupported(summary.unsupportedDevices, execution.getId(),
             CommandRequestUnsupportedType.UNSUPPORTED);
 
-        if (!summary.devicesToSend.isEmpty()) {
+        if (summary.devicesToSend.isEmpty()) {
             completeCommandRequestExecution(execution, COMPLETE);
             return;
         }
@@ -326,7 +326,7 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
         commandRequestExecutionResultDao.saveUnsupported(summary.unsupportedDevices, initExecution.getId(),
             CommandRequestUnsupportedType.UNSUPPORTED);
 
-        if (!summary.devicesToSend.isEmpty()) {
+        if (summary.devicesToSend.isEmpty()) {
             completeCommandRequestExecution(initExecution, COMPLETE);
             return;
         }
