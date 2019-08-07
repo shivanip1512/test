@@ -160,7 +160,7 @@ public class LoadProgramSetupController {
             List<ProgramGear> gears = Lists.newArrayList();
             Integer gearOrder = 1;
             for (String gearId : selectedGearsIds) {
-                ProgramGear programGear = gearCache.asMap().get(gearId);
+                ProgramGear programGear = gearCache.getIfPresent(gearId);
                 programGear.setGearNumber(gearOrder);
                 gears.add(programGear);
                 gearOrder++;

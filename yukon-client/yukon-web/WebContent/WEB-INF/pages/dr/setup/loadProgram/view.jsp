@@ -53,7 +53,7 @@
     </cti:displayForPageEditModes>
 
     <cti:url var="action" value="/dr/setup/loadProgram/save" />
-    <form:form modelAttribute="loadProgram" action="${action}" method="post">
+    <form:form modelAttribute="loadProgram" action="${action}" method="post" id="js-load-program-form">
         <cti:csrfToken />
         <form:hidden path="programId" />
         <input type="hidden" name="selectedGroupIds" id="js-selected-group-ids" />
