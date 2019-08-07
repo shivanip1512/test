@@ -79,6 +79,11 @@ public class ProgramConstraintApiController {
         return new ResponseEntity<>(programConstraintService.getHolidaySchedules(), HttpStatus.OK);
     }
 
+    @GetMapping("/getAllProgramConstraint")
+    public ResponseEntity<List<LMDto>> getAllProgramConstraint() {
+        return new ResponseEntity<>(programConstraintService.getAllProgramConstraint(), HttpStatus.OK);
+    }
+
     @InitBinder("LMDelete")
     public void setupBinderDelete(WebDataBinder binder) {
         binder.setValidator(lmDeleteValidator);
