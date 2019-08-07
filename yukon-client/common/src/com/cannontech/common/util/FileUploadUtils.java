@@ -34,12 +34,12 @@ public class FileUploadUtils {
 
     private static final Logger log = YukonLogManager.getLogger(FileUploadUtils.class);
 
-    public static void validateDataUploadFileType(MultipartFile file) throws IOException, FileImportException {
+    public static void validateTabularDataUploadFileType(MultipartFile file) throws IOException, FileImportException {
         validateFileUpload(file);
         File importFile = File.createTempFile(file.getName(), StringUtils.EMPTY);
         importFile.deleteOnExit();
         file.transferTo(importFile);
-        validateUploadFileType(importFile);
+        validateTabularDataFileType(importFile);
     }
 
     public static void validateImageUploadFileType(MultipartFile file) throws IOException, FileImportException {
@@ -68,24 +68,22 @@ public class FileUploadUtils {
     private static void validateFileUpload(MultipartFile file) throws FileImportException, IOException {
         if (file == null || StringUtils.isBlank(file.getOriginalFilename())) {
             throw new NoImportFileException("yukon.web.import.error.noImportFile");
-        } else {
-            validateEmptyFile(file.getInputStream());
         }
+        validateEmptyFile(file.getInputStream());
     }
     
     private static void validateEmptyFile(InputStream inputStream) throws EmptyImportFileException, IOException {
         if (inputStream.available() <= 0) {
             throw new EmptyImportFileException("yukon.web.import.error.emptyFile");
-        } else {
-            BOMInputStream bomInputStream = new BOMInputStream(inputStream, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
-                ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
-            InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream);
-            BufferedReader reader = new BufferedReader(inputStreamReader);
-            String x = reader.readLine();
-            reader.close();
-            if (StringUtils.isBlank(x)) {
-                throw new EmptyImportFileException("yukon.web.import.error.emptyFile");
-            }
+        }
+        BOMInputStream bomInputStream = new BOMInputStream(inputStream, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
+            ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
+        InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream);
+        BufferedReader reader = new BufferedReader(inputStreamReader);
+        String x = reader.readLine();
+        reader.close();
+        if (StringUtils.isBlank(x)) {
+            throw new EmptyImportFileException("yukon.web.import.error.emptyFile");
         }
     }
 
@@ -99,7 +97,7 @@ public class FileUploadUtils {
      * @throws ImportFileFormatException
      * @throws IOException
      */
-    private static void validateUploadFileType(File file) throws ImportFileFormatException, IOException {
+    private static void validateTabularDataFileType(File file) throws ImportFileFormatException, IOException {
         try (Reader fileReader = new FileReader(file.getAbsoluteFile());) {
             CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
             CSVReader csvReaderWithDelimeter = new CSVReaderBuilder(fileReader).withCSVParser(parser).build();
@@ -159,7 +157,7 @@ public class FileUploadUtils {
                 return false;
             }
             validateEmptyFile(new FileInputStream(path.toFile()));
-            validateUploadFileType(path.toFile());
+            validateTabularDataFileType(path.toFile());
         } catch (ImportFileFormatException e) {
             log.error("Import file must be text or CSV " + path.toFile().getName());
             return false;
