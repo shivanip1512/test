@@ -109,26 +109,30 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
      * Attempts publish the point data received from NM.
      */
     private void processRequest(RfnStatusArchiveRequest request, String processor) {
-        if (!request.getRfnIdentifier().is_Empty_()) {
+        if (!request.getRfnIdentifier().is_Empty_() && request.getStatus() != null) {
             if (request.getStatus() instanceof DemandResetStatus) {
                 DemandResetStatus status = (DemandResetStatus) request.getStatus();
-                int value = status.getData().getDemandResetStatusCodeID();
-                publishPointData(value, BuiltInAttribute.RF_DEMAND_RESET_STATUS, request.getRfnIdentifier(),
-                    status.getTimeStamp(), processor);
+                if (status.getData() != null) {
+                    int value = status.getData().getDemandResetStatusCodeID();
+                    publishPointData(value, BuiltInAttribute.RF_DEMAND_RESET_STATUS, request.getRfnIdentifier(),
+                        status.getTimeStamp(), processor);
+                }
             } else if (request.getStatus() instanceof MeterInfoStatus) {
                 MeterInfoStatus status = (MeterInfoStatus) request.getStatus();
                 try {
-                    Pair<RfnMeterDisconnectMeterMode, RfnMeterDisconnectStateType> key =
-                        Pair.of(status.getData().getMeterDisconnectStatus().getMeterMode(),
-                            status.getData().getMeterDisconnectStatus().getRelayStatus());
-                    RfnMeterDisconnectState state = disconnectStates.get(key);
-                    if (state != null) {
-                        publishPointData(state.getRawState(), BuiltInAttribute.DISCONNECT_STATUS,
-                            request.getRfnIdentifier(), status.getTimeStamp(), processor);
-                    } else {
-                        log.info(
-                            "Attempt to publish point data for disconnect status {} failed. Disconnect state doesn't exist for combination {}",
-                            status, key);
+                    if (status.getData() != null && status.getData().getMeterDisconnectStatus() != null) {
+                        Pair<RfnMeterDisconnectMeterMode, RfnMeterDisconnectStateType> key =
+                            Pair.of(status.getData().getMeterDisconnectStatus().getMeterMode(),
+                                status.getData().getMeterDisconnectStatus().getRelayStatus());
+                        RfnMeterDisconnectState state = disconnectStates.get(key);
+                        if (state != null) {
+                            publishPointData(state.getRawState(), BuiltInAttribute.DISCONNECT_STATUS,
+                                request.getRfnIdentifier(), status.getTimeStamp(), processor);
+                        } else {
+                            log.info(
+                                "Attempt to publish point data for disconnect status {} failed. Disconnect state doesn't exist for combination {}",
+                                status, key);
+                        }
                     }
                 } catch (Exception e) {
                     // the data doesn't have disconnect status information
