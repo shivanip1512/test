@@ -209,7 +209,7 @@ private:
 
     unsigned long _curLogID;
 
-    bool _restart;  // this is to try to log a start vs a restart/update
+    bool _controlStarted;  // this is to try to log a start vs a restart/update
 
     //don't stream/don't save
     BOOL _insertDynamicDataFlag;
