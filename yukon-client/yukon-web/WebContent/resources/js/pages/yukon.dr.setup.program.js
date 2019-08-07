@@ -129,7 +129,7 @@ yukon.dr.setup.program = (function() {
 
             var _mode = $('.js-page-mode').val();
             if (_mode !== 'VIEW' && $("#type").val() !== '') {
-                if (_mode === 'EDIT') {
+                if (_mode === 'EDIT' && $('#js-inline-member-picker-container').exists()) {
                     _memberControlPicker();
                 }
                 _notificationGroupPicker();
