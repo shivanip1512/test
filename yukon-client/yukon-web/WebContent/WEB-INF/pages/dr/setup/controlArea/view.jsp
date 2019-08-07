@@ -218,7 +218,7 @@
                             <c:forEach var="assignedProgram" items="${controlArea.programAssignment}">
                                 <tr>
                                     <td>
-                                        <cti:url var="viewUrl" value="/dr/setup/program/${assignedProgram.programId}"/>
+                                        <cti:url var="viewUrl" value="/dr/setup/loadProgram/${assignedProgram.programId}"/>
                                         <a href="${viewUrl}"><cti:deviceName deviceId="${assignedProgram.programId}"/></a>
                                     </td>
                                     <td>

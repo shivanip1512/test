@@ -15,6 +15,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "whenToChangeFields" })
 public class TargetCycleGearFields extends TrueCycleGearFields {
 
+    public TargetCycleGearFields() {
+    }
+    
     private Double kWReduction;
 
     public Double getkWReduction() {

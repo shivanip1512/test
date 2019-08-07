@@ -162,6 +162,8 @@
     <bean name="availableVoltageRegulatorGangPicker" class="com.cannontech.web.picker.AvailableVoltageRegulatorGangPicker"/>
     <bean name="availableVoltageRegulatorPhasePicker" class="com.cannontech.web.picker.AvailableVoltageRegulatorPhasePicker"/>
     <bean name="regulatorPicker" class="com.cannontech.web.picker.RegulatorPicker"/>
+    <bean name="memberControlPicker" class="com.cannontech.web.picker.MemberControlPicker"/>
+    <bean name="loadGroupPicker" class="com.cannontech.web.picker.LoadGroupPicker"/>
     <bean name="capControlSubstationBusPicker" class="com.cannontech.web.picker.CapControlSubstationBusPicker"/>
     <bean name="capControlCBCOrphanPicker" class="com.cannontech.web.picker.CapControlCBCOrphanPicker"/>
     <bean name="unassignedProgramPicker" class="com.cannontech.web.picker.UnassignedProgramPicker"/>

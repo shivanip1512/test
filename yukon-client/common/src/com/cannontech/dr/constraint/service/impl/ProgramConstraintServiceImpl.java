@@ -157,4 +157,12 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
             }
         }
     }
+
+    @Override
+    public List<LMDto> getAllProgramConstraint() {
+
+        return dbCache.getAllLMProgramConstraints().stream()
+                                                   .map(liteBase -> new LMDto(liteBase.getLiteID(), liteBase.toString()))
+                                                   .collect(Collectors.toList());
+    }
 }

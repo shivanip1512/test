@@ -14,9 +14,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class TimeRefreshGearFields implements ProgramGearFields {
 
     private CycleCountSendType refreshShedTime;
-    private TimeIntervals shedTime;
+    private Integer shedTime;
     private Integer numberOfGroups;
-    private TimeIntervals sendRate;
+    private Integer sendRate;
 
     private GroupSelectionMethod groupSelectionMethod;
 
@@ -34,11 +34,11 @@ public class TimeRefreshGearFields implements ProgramGearFields {
 
     private WhenToChangeFields whenToChangeFields;
 
-    public TimeIntervals getShedTime() {
+    public Integer getShedTime() {
         return shedTime;
     }
 
-    public void setShedTime(TimeIntervals shedTime) {
+    public void setShedTime(Integer shedTime) {
         this.shedTime = shedTime;
     }
 
@@ -50,11 +50,11 @@ public class TimeRefreshGearFields implements ProgramGearFields {
         this.numberOfGroups = numberOfGroups;
     }
 
-    public TimeIntervals getSendRate() {
+    public Integer getSendRate() {
         return sendRate;
     }
 
-    public void setSendRate(TimeIntervals sendRate) {
+    public void setSendRate(Integer sendRate) {
         this.sendRate = sendRate;
     }
 
@@ -182,7 +182,7 @@ public class TimeRefreshGearFields implements ProgramGearFields {
 
         setCapacityReduction(timeRefreshGear.getPercentReduction());
         setStopCommandRepeat(timeRefreshGear.getStopCommandRepeat());
-        setShedTime(TimeIntervals.fromSeconds(timeRefreshGear.getShedTime()));
+        setShedTime(timeRefreshGear.getShedTime());
         setNumberOfGroups(timeRefreshGear.getNumberOfGroups());
 
         if (timeRefreshGear.getMethodOptionType().compareTo(LMProgramDirectGear.OPTION_COUNT_DOWN) == 0) {
@@ -191,7 +191,7 @@ public class TimeRefreshGearFields implements ProgramGearFields {
             setRefreshShedTime(CycleCountSendType.valueOf(LMProgramDirectGear.OPTION_FIXED_SHED));
         }
 
-        setSendRate(TimeIntervals.fromSeconds(timeRefreshGear.getRefreshRate()));
+        setSendRate(timeRefreshGear.getRefreshRate());
         setGroupSelectionMethod(GroupSelectionMethod.valueOf(timeRefreshGear.getGroupSelectionMethod()));
 
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
@@ -246,9 +246,9 @@ public class TimeRefreshGearFields implements ProgramGearFields {
 
         timeRefreshGear.setPercentReduction(getCapacityReduction());
         timeRefreshGear.setStopCommandRepeat(getStopCommandRepeat());
-        timeRefreshGear.setShedTime(getShedTime().getSeconds());
+        timeRefreshGear.setShedTime(getShedTime());
         timeRefreshGear.setNumberOfGroups(getNumberOfGroups());
-        timeRefreshGear.setRefreshRate(getSendRate().getSeconds());
+        timeRefreshGear.setRefreshRate(getSendRate());
         timeRefreshGear.setGroupSelectionMethod(getGroupSelectionMethod().name());
 
         whenToChangeFields.buildDBPersistent(programDirectGear);

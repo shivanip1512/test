@@ -22,13 +22,16 @@ public class SmartCycleGearFields implements ProgramGearFields {
     private String maxCycleCount;
     private Integer startingPeriodCount;
 
-    private TimeIntervals sendRate;
+    private Integer sendRate;
     private Integer stopCommandRepeat;
 
     private HowToStopControl howToStopControl;
     private Integer capacityReduction;
 
     private WhenToChangeFields whenToChangeFields;
+
+    public SmartCycleGearFields() {
+    }
 
     public Boolean getNoRamp() {
         return noRamp;
@@ -78,11 +81,11 @@ public class SmartCycleGearFields implements ProgramGearFields {
         this.startingPeriodCount = startingPeriodCount;
     }
 
-    public TimeIntervals getSendRate() {
+    public Integer getSendRate() {
         return sendRate;
     }
 
-    public void setSendRate(TimeIntervals sendRate) {
+    public void setSendRate(Integer sendRate) {
         this.sendRate = sendRate;
     }
 
@@ -128,7 +131,7 @@ public class SmartCycleGearFields implements ProgramGearFields {
         setStopCommandRepeat(smartCycleGear.getStopCommandRepeat());
         setCyclePeriodInMinutes(smartCycleGear.getCyclePeriodLength() / 60);
         setStartingPeriodCount(smartCycleGear.getStartingPeriodCnt());
-        setSendRate(TimeIntervals.fromSeconds(smartCycleGear.getResendRate()));
+        setSendRate(smartCycleGear.getResendRate());
 
         if (smartCycleGear.getMethodOptionMax().intValue() > 0) {
             setMaxCycleCount(String.valueOf(smartCycleGear.getMethodOptionMax()));
@@ -167,8 +170,7 @@ public class SmartCycleGearFields implements ProgramGearFields {
         smartCycleGear.setCyclePeriodLength(getCyclePeriodInMinutes() * 60);
         smartCycleGear.setStartingPeriodCnt(getStartingPeriodCount());
 
-        Integer sendRate = getSendRate().getSeconds();
-        smartCycleGear.setResendRate(sendRate);
+        smartCycleGear.setResendRate(getSendRate());
 
         if (StringUtils.isNumeric(getMaxCycleCount())) {
             smartCycleGear.setMethodOptionMax(Integer.valueOf(getMaxCycleCount()));

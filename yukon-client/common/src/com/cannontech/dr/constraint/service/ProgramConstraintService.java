@@ -17,4 +17,10 @@ public interface ProgramConstraintService extends LMSetupService <ProgramConstra
      * Retrieve available holiday schedules.
      */
     List<LMDto> getHolidaySchedules();
+    
+    /**
+     * Retrieve all program constraint.
+     */
+    
+    List<LMDto> getAllProgramConstraint();
 }

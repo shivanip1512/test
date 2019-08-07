@@ -1,8 +1,5 @@
 package com.cannontech.common.dr.program.setup.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(value={ "notificationGrpName"}, allowGetters= true, ignoreUnknown = true)
 public class NotificationGroup {
 
     private Integer notificationGrpID;
@@ -10,12 +7,12 @@ public class NotificationGroup {
 
     public NotificationGroup() {
     }
-    
+
     public NotificationGroup(Integer notificationGrpID, String notificationGrpName) {
         this.notificationGrpID = notificationGrpID;
-        this.notificationGrpName =notificationGrpName;
+        this.notificationGrpName = notificationGrpName;
     }
-    
+
     public Integer getNotificationGrpID() {
         return notificationGrpID;
     }

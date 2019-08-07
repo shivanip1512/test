@@ -9,6 +9,7 @@ import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
 import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.setup.service.LMSetupService;
 
@@ -45,6 +46,12 @@ public interface LoadProgramSetupService extends LMSetupService<LoadProgram, Loa
      */
 
     List<ProgramGroup> getAllAvailableProgramLoadGroups(PaoType programType);
+    
+    /**
+     * Get all program Load Groups associated with paoType and groups.
+     */
+
+    List<ProgramGroup> getAllProgramLoadGroups(PaoType programType, List<LiteYukonPAObject> groups);
 
     /**
      * Return all the Programs which belong to Control Area.

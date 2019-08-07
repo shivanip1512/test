@@ -13,18 +13,18 @@ public class RotationGearFields implements ProgramGearFields {
 
     private TimeIntervals shedTime;
     private Integer numberOfGroups;
-    private TimeIntervals sendRate;
+    private Integer sendRate;
     private GroupSelectionMethod groupSelectionMethod;
     private HowToStopControl howToStopControl;
     private Integer capacityReduction;
 
     private WhenToChangeFields whenToChangeFields;
 
-    public TimeIntervals getSendRate() {
+    public Integer getSendRate() {
         return sendRate;
     }
 
-    public void setSendRate(TimeIntervals sendRate) {
+    public void setSendRate(Integer sendRate) {
         this.sendRate = sendRate;
     }
 
@@ -84,7 +84,7 @@ public class RotationGearFields implements ProgramGearFields {
         setCapacityReduction(rotationGear.getPercentReduction());
         setShedTime(TimeIntervals.fromSeconds(rotationGear.getShedTime()));
         setNumberOfGroups(rotationGear.getNumberOfGroups());
-        setSendRate(TimeIntervals.fromSeconds(rotationGear.getSendRate()));
+        setSendRate(rotationGear.getSendRate());
         setGroupSelectionMethod(GroupSelectionMethod.valueOf(rotationGear.getGroupSelectionMethod()));
 
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
@@ -102,7 +102,7 @@ public class RotationGearFields implements ProgramGearFields {
         rotationGear.setPercentReduction(getCapacityReduction());
         rotationGear.setShedTime(getShedTime().getSeconds());
         rotationGear.setNumberOfGroups(getNumberOfGroups());
-        rotationGear.setSendRate(getSendRate().getSeconds());
+        rotationGear.setSendRate(getSendRate());
         rotationGear.setGroupSelectionMethod(getGroupSelectionMethod().name());
 
         whenToChangeFields.buildDBPersistent(programDirectGear);

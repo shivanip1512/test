@@ -95,6 +95,7 @@
            <set>
               <bean class="com.cannontech.web.dr.setup.LoadGroupBaseConverter"/>
               <bean class="com.cannontech.web.dr.setup.LMCopyConverter"/>
+              <bean class="com.cannontech.web.dr.setup.LoadProgramGearConverter"/>
            </set>
        </property>
     </bean>

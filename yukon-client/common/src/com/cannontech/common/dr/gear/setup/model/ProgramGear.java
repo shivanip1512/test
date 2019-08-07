@@ -7,6 +7,7 @@ import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.LatchingGearFields;
 import com.cannontech.common.dr.gear.setup.fields.MagnitudeCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.MasterCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.MeterDisconnectGearFields;
 import com.cannontech.common.dr.gear.setup.fields.NestCriticalCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.NestStandardCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.NoControlGearFields;
@@ -14,7 +15,6 @@ import com.cannontech.common.dr.gear.setup.fields.ProgramGearFields;
 import com.cannontech.common.dr.gear.setup.fields.RotationGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SepCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SepTemperatureOffsetGearFields;
-import com.cannontech.common.dr.gear.setup.fields.MeterDisconnectGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SimpleThermostatRampingGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SmartCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.TargetCycleGearFields;
@@ -24,14 +24,12 @@ import com.cannontech.common.dr.gear.setup.fields.TrueCycleGearFields;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonInclude(Include.NON_NULL)
-@JsonIgnoreProperties(value={ "gearId"}, allowGetters= true, ignoreUnknown = true)
 public class ProgramGear {
 
     private Integer gearId;

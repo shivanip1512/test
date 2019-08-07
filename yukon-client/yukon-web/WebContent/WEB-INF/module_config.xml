@@ -561,6 +561,15 @@
                 <page name="setup.macroLoadGroup.EDIT" type="BASIC" hideFavorite="true">
                     <labelArgument>${macroLoadGroup.name}</labelArgument>
                 </page>
+                <page name="setup.loadProgram.CREATE" type="BASIC"/>
+                <page name="setup.loadProgram.VIEW" type="DETAIL">
+                    <link>/dr/setup/loadProgram/{id}</link>
+                    <labelArgument>${loadProgram.name}</labelArgument>
+                </page>
+                <page name="setup.loadProgram.EDIT" type="BASIC" hideFavorite="true">
+                    <labelArgument>${loadProgram.name}</labelArgument>
+                </page>
+
                 <page name="setup.constraint.CREATE" type="BASIC"/>
                 <page name="setup.constraint.VIEW" type="DETAIL">
                     <link>/dr/setup/constraint/{id}</link>

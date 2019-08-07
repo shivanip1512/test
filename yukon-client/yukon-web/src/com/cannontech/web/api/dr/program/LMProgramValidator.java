@@ -1,5 +1,8 @@
 package com.cannontech.web.api.dr.program;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +33,10 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.IlmDefines;
+import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.UserUtils;
 import com.cannontech.web.api.dr.gear.setup.fields.validator.ProgramGearFieldsValidator;
 import com.cannontech.web.api.dr.setup.LMValidatorHelper;
@@ -92,9 +97,33 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         YukonValidationUtils.checkRange(errors, "restoreOffset", loadProgram.getTriggerOffset(), -9999.9999, 99999.9999, false);
 
         if (!errors.hasFieldErrors("type")) {
+            
+            if (ServletUtils.getPathVariable("id") != null) {
+                Integer programId = Integer.valueOf(ServletUtils.getPathVariable("id"));
+                try {
+                    LMProgramDirectGroup[] groups = LMProgramDirectGroup.getAllDirectGroups(programId);
+                    List<Integer> currentAssignedGroups = Arrays.stream(groups).map(p -> p.getLmGroupDeviceID()).collect(Collectors.toList());
+                    List<Integer> assignedGroups = new ArrayList<>();
+                    if (CollectionUtils.isNotEmpty(loadProgram.getAssignedGroups())) {
+                        assignedGroups = loadProgram.getAssignedGroups().stream().map(p -> p.getGroupId()).collect(Collectors.toList());
+                    }
+
+                    List<Integer> assignedGroupsDiff = (List<Integer>) CollectionUtils.disjunction(currentAssignedGroups, assignedGroups);
+
+                    for (Integer groupId : assignedGroupsDiff) {
+                        if (loadGroupDao.isLoadGroupInUse(groupId)) {
+                            errors.reject(key + "groupEnrollmentConflict", new Object[] { cache.getAllPaosMap().get(groupId).getPaoName() }, "");
+                        }
+                    }
+
+                } catch (SQLException e) {
+                }
+            }
+
             if (CollectionUtils.isEmpty(loadProgram.getAssignedGroups())) {
                 errors.reject(key + "noGroup");
             } else {
+
                 for (int i = 0; i < loadProgram.getAssignedGroups().size(); i++) {
                     errors.pushNestedPath("assignedGroups[" + i + "]");
                     ProgramGroup group = loadProgram.getAssignedGroups().get(i);
@@ -107,9 +136,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                             errors.rejectValue("groupId", key + "groupId.doesNotExist");
                         } else {
 
-                            if (loadGroupDao.isLoadGroupInUse(group.getGroupId())) {
-                                errors.reject(key + "groupEnrollmentConflict", new Object[] { programGroup.get().getGroupName() }, "");
-                            }
+
 
                             if (PaoType.LM_GROUP_NEST == programGroup.get().getType() && i > 0) {
                                 errors.reject(key + "nestGroup", new Object[] { programGroup.get().getGroupName() }, "");
@@ -277,8 +304,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
             Integer availableStopTimeInMinutes) {
         if (availableStartTimeInMinutes != null && availableStopTimeInMinutes != null) {
             errors.pushNestedPath(nestedPath);
-            YukonValidationUtils.checkRange(errors, "availableStartTimeInMinutes", availableStartTimeInMinutes, 0, 1439, false);
-            YukonValidationUtils.checkRange(errors, "availableStopTimeInMinutes", availableStopTimeInMinutes, 0, 1439, false);
+            YukonValidationUtils.checkRange(errors, "availableStartTimeInMinutes", availableStartTimeInMinutes, 0, 1440, false);
+            YukonValidationUtils.checkRange(errors, "availableStopTimeInMinutes", availableStopTimeInMinutes, 0, 1440, false);
             errors.popNestedPath();
         }
 

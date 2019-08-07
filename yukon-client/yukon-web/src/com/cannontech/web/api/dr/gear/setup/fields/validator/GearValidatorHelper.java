@@ -161,8 +161,9 @@ public class GearValidatorHelper {
     /**
      * Check for Command Resend Rate
      */
-    public void checkCommandResendRate(TimeIntervals sendRate, Errors errors) {
-        if (!TimeIntervals.getCommandResendRate().contains(sendRate)) {
+    public void checkCommandResendRate(Integer sendRate, Errors errors) {
+        TimeIntervals commandResendRate = TimeIntervals.fromSeconds(sendRate);
+        if (!TimeIntervals.getCommandResendRate().contains(commandResendRate)) {
             errors.rejectValue("sendRate", invalidKey, new Object[] { "Command Resend Rate" }, "");
         }
     }

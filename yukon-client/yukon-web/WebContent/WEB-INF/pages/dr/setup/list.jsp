@@ -42,6 +42,10 @@
                         <cti:url var="createProgramConstraint" value="/dr/setup/constraint/create"/>
                         <a href="${createProgramConstraint}"><i:inline key=".constraint.title"/></a>
                     </td>
+                    <td>
+                        <cti:url var="createLoadProgramUrl" value="/dr/setup/loadProgram/create"/>
+                        <a href="${createLoadProgramUrl}"><i:inline key=".loadProgram.title"/></a>
+                    </td>
                 </tr>
             </table>
         </div>

@@ -15,7 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.data.lite.LiteGear;
@@ -32,6 +32,8 @@ public class ApiRequestHelper {
     public final static HashMap<Class, ParameterizedTypeReference> paramTypeRefMap = new HashMap<>();
     static {
         paramTypeRefMap.put(LiteYukonPAObject.class, new ParameterizedTypeReference<List<LiteYukonPAObject>>() {
+        });
+        paramTypeRefMap.put(LMDto.class, new ParameterizedTypeReference<List<LMDto>>() {
         });
         paramTypeRefMap.put(LiteGear.class, new ParameterizedTypeReference<List<LiteGear>>() {
         });

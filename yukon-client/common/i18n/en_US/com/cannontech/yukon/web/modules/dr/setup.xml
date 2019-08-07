@@ -111,6 +111,40 @@ By including load in your address usage, you are requiring the load to be config
 with the specified program address for it to respond to the request for control.
 Are you sure you want do this?</entry>
 
+<entry key="yukon.web.modules.dr.setup.loadProgram.CREATE.pageName">Create Load Program</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.CREATE.pageDescription">Create Load Program</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.EDIT.pageHeading">Edit Load Program: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.EDIT.crumbTitle">Edit</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.EDIT.pageTitle">Load Program: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.VIEW.pageHeading">Load Program: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.VIEW.crumbTitle">{0}</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.VIEW.pageTitle">Load Program: {0}</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.title">Load Program</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.general.title">General</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.name">Name</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.type">Type</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.gears.title">Gears</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.operationalState">Operational State</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.controlWindow.title">Control Window</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.controlWindowOne">Use Window 1</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.controlWindowTwo">Use Window 2</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.startTime">Start Time</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.stopTime">Stop Time</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.trigger.title">Trigger Threshold Settings</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.triggerOffset">Trigger Offset</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.restoreOffset">Restore Offset</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.constraint">Constraint</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.loadGroupsTab">Load Groups</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.memberControlTab">Member Control</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.notificationTab">Notification</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.allowMemberControl">Allow Member Control</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.programStart">Program Start</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.programStop">Program Stop</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.notifyOnAdjustment">Notify On Adjustment</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.notifyOnSchedule">Notify On Schedule</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.copy">Copy Load Program</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.retrieve.error">Load Program could not be retrieved.</entry>
+
 <!-- Versacom -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.addressUsage.title">Address Usage</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.usage">Usage</entry>

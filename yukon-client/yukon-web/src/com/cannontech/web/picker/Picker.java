@@ -46,6 +46,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
     @JsonSubTypes.Type(value = LmProgramPicker.class, name = "LM_PROGRAM_PICKER"),
     @JsonSubTypes.Type(value = LoginGroupPicker.class, name = "LOGIN_GROUP_PICKER"),
     @JsonSubTypes.Type(value = LucenePicker.class, name = "LUCENE_PICKER"),
+    @JsonSubTypes.Type(value = LoadGroupPicker.class, name = "LOAD_GROUP_PICKER"),
+    @JsonSubTypes.Type(value = MemberControlPicker.class, name = "MEMBER_CONTROL_PICKER"),
     @JsonSubTypes.Type(value = MonitorPicker.class, name = "MONITOR_PICKER"),
     @JsonSubTypes.Type(value = NonResidentailUserPicker.class, name = "NON_RESIDENTIAL_USER_PICKER"),
     @JsonSubTypes.Type(value = NotificationGroupPicker.class, name = "NOTIFICATION_GROUP_PICKER"),
@@ -60,7 +62,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
     @JsonSubTypes.Type(value = UnassignedGearPicker.class, name = "UNASSIGNED_PROGRAM_PICKER"),
     @JsonSubTypes.Type(value = UserGroupPicker.class, name = "USER_GROUP_PICKER"),
     @JsonSubTypes.Type(value = UserPicker.class, name = "USER_PICKER"),
-
     })
 public interface Picker<T> {
 

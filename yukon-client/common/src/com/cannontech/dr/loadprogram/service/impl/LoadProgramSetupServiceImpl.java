@@ -553,10 +553,14 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         boolean isNotifyAdjust = lmProgramDirectBase.getDirectProgram().getNotifyAdjust() == LMProgramDirect.NOTIFY_ADJUST_ENABLED.intValue();
         if (isNotifyAdjust) {
             notification.setNotifyOnAdjust(true);
+        } else {
+            notification.setNotifyOnAdjust(false);
         }
         boolean isNotifyWhenScheduled = lmProgramDirectBase.getDirectProgram().shouldNotifyWhenScheduled() == LMProgramDirect.NOTIFY_SCHEDULE_ENABLED.intValue();
         if (isNotifyWhenScheduled) {
             notification.setEnableOnSchedule(true);
+        } else {
+            notification.setEnableOnSchedule(false);
         }
 
         if (CollectionUtils.isNotEmpty(notificationGroupList) || numStart.intValue() != -1 || numStop.intValue() != -1
@@ -629,7 +633,12 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     @Override
     public List<ProgramGroup> getAllProgramLoadGroups(PaoType programType) {
         List<LiteYukonPAObject> groups = dbCache.getAllLoadManagement();
-        
+        return getAllProgramLoadGroups(programType, groups);
+    }
+
+    @Override
+    public List<ProgramGroup> getAllProgramLoadGroups(PaoType programType, List<LiteYukonPAObject> groups) {
+
         List<ProgramGroup> programGroups = new ArrayList<>();
         groups.forEach(group -> {
             PaoType loadGroupType = group.getPaoType();

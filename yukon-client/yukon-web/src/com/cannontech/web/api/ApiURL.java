@@ -18,7 +18,17 @@ public class ApiURL {
     public static final String drMacroLoadGroupUpdateUrl = "/dr/setup/macroLoadGroup/update/";
     public static final String drMacroLoadGroupDeleteUrl = "/dr/setup/macroLoadGroup/delete/";
     public static final String drMacroLoadGroupCopyUrl = "/dr/setup/macroLoadGroup/copy/";
-    
+
+    public static final String drAllProgramConstraintUrl = "/dr/setup/constraint/getAllProgramConstraint";
+    public static final String drLoadProgramSaveUrl = "/dr/setup/loadProgram/create";
+    public static final String drLoadProgramRetrieveUrl = "/dr/setup/loadProgram/";
+    public static final String drAvailableLoadGroupsUrl = "/dr/setup/loadProgram/availableLoadGroups/";
+    public static final String drAvailableNotificationGroupsUrl = "/dr/setup/loadProgram/availableNotificationGroups/";
+    public static final String drAvailableDirectMemberControlsUrl = "/dr/setup/loadProgram/availableDirectMemberControls/";
+    public static final String drLoadProgramDeleteUrl = "/dr/setup/loadProgram/delete/";
+    public static final String drLoadProgramCopyUrl = "/dr/setup/loadProgram/copy/";
+    public static final String drLoadProgramUpdateUrl = "/dr/setup/loadProgram/update/";
+
     public static final String drProgramConstraintRetrieveUrl = "/dr/setup/constraint/";
     public static final String drProgramConstraintCreateUrl = "/dr/setup/constraint/create";
     public static final String drProgramConstraintUpdateUrl = "/dr/setup/constraint/update/";

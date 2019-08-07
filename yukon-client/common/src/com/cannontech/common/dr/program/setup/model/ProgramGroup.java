@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-@JsonIgnoreProperties(value={ "groupName", "groupOrder", "type"}, allowGetters= true, ignoreUnknown = true)
+@JsonIgnoreProperties(value={ "groupName"}, allowGetters= true, ignoreUnknown = true)
 public class ProgramGroup {
 
     private Integer groupId;
