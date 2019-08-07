@@ -5,6 +5,9 @@
 #include "ctidate.h"
 
 #include "boost_test_helpers.h"
+#include "rtdb_test_helpers.h"
+
+#include <boost/range/adaptor/reversed.hpp>
 
 #include <bitset>
 
@@ -28,6 +31,25 @@ struct test_CtiPointClientManager : CtiPointClientManager
     ptr_type getPoint(long point, long pao) override
     {
         return points.emplace(point, boost::make_shared<CtiPointBase>(point)).first->second;
+    }
+
+    ptr_type pt;
+
+    ptr_type getCachedPoint(LONG Pt) override
+    {
+        return pt;
+    }
+
+    CtiDynamicPointDispatchSPtr dyn;
+
+    CtiDynamicPointDispatchSPtr getDynamic(const CtiPointBase &point) const override
+    {
+        return dyn;
+    }
+
+    CtiDynamicPointDispatchSPtr getDynamic(unsigned long pointID) const override
+    {
+        return dyn;
     }
 };
 
@@ -224,6 +246,70 @@ BOOST_AUTO_TEST_CASE( test_hasPointDataChanged )
         dpd.setPoint(msg.getTime(), msg.getMillis(), msg.getValue(), UnintializedQuality, msg.getTags());
         BOOST_CHECK_EQUAL( true, CtiVanGogh::hasPointDataChanged(msg, dpd) );
     }
+}
+
+BOOST_AUTO_TEST_CASE(test_dynamicPointDispatch_archival)
+{
+    using boost::adaptors::reversed;
+
+    test_CtiPointClientManager pcm;
+    test_CtiVanGogh vg { pcm };
+
+    CtiDate d{ 7, 5, 2019 };
+    constexpr int pointId = 1133, deviceId = 99;
+
+    auto dyn = boost::make_shared<CtiDynamicPointDispatch>(pointId, 0.0, NormalQuality);
+    dyn->setPoint({ d, 3, 30 }, 0, 0.0, NormalQuality, 0U);
+
+    pcm.pt.reset(Cti::Test::makeAnalogPoint(deviceId, pointId, 198));
+    pcm.dyn = dyn;
+
+    //  Data from https://jira-prod.tcc.etn.com/browse/TSSL-4925
+    //   ChangeId(DESC) PointId    Timestamp            Quality  Value        millis
+    //   15994698840    1133       5/7/2019 9:30:00     5        27164.68     0
+    //   15994698818    1133       5/7/2019 9:15:00     5        27164.623    0
+    //   15994698810    1133       5/7/2019 9:00:00     5        27164.599    0
+    //   15994698802    1133       5/7/2019 8:45:00     5        27164.543    0
+    //   15994698788    1133       5/7/2019 8:30:00     5        27164.466    0
+    //   15994698764    1133       5/7/2019 8:15:00     5        27164.332    0
+    //   15994698754    1133       5/7/2019 8:00:00     5        27164.095    0
+    //   15994698680    1133       5/7/2019 6:45:00     5        27161.247    0
+    //   15994698668    1133       5/7/2019 6:30:00     5        27161.188    0
+    //   15994698654    1133       5/7/2019 6:15:00     5        27161.156    0
+    //   15994698614    1133       5/7/2019 7:45:00     5        27163.377    0
+    //   15994698602    1133       5/7/2019 7:30:00     5        27162.327    0
+    //   15994698598    1133       5/7/2019 7:15:00     5        27161.692    0
+    //   15994698578    1133       5/7/2019 7:00:00     5        27161.352    0
+    //   15994698544    1133       5/7/2019 10:00:00    5        27164.75     0
+    //   15994698520    1133       5/7/2019 9:45:00     5        27164.72     0
+    std::vector<std::tuple<CtiPointDataMsg, CtiTime>> msgs { 
+        { { pointId, 27164.68 , NormalQuality, AnalogPointType }, { d, 9, 30 } },
+        { { pointId, 27164.623, NormalQuality, AnalogPointType }, { d, 9, 15 } },
+        { { pointId, 27164.599, NormalQuality, AnalogPointType }, { d, 9, 00 } },
+        { { pointId, 27164.543, NormalQuality, AnalogPointType }, { d, 8, 45 } },
+        { { pointId, 27164.466, NormalQuality, AnalogPointType }, { d, 8, 30 } },
+        { { pointId, 27164.332, NormalQuality, AnalogPointType }, { d, 8, 15 } },
+        { { pointId, 27164.095, NormalQuality, AnalogPointType }, { d, 8, 00 } },
+        { { pointId, 27161.247, NormalQuality, AnalogPointType }, { d, 6, 45 } },
+        { { pointId, 27161.188, NormalQuality, AnalogPointType }, { d, 6, 30 } },
+        { { pointId, 27161.156, NormalQuality, AnalogPointType }, { d, 6, 15 } },
+        { { pointId, 27163.377, NormalQuality, AnalogPointType }, { d, 7, 45 } },
+        { { pointId, 27162.327, NormalQuality, AnalogPointType }, { d, 7, 30 } },
+        { { pointId, 27161.692, NormalQuality, AnalogPointType }, { d, 7, 15 } },
+        { { pointId, 27161.352, NormalQuality, AnalogPointType }, { d, 7, 00 } },
+        { { pointId, 27164.75 , NormalQuality, AnalogPointType }, { d, 10, 00 } },
+        { { pointId, 27164.72 , NormalQuality, AnalogPointType }, { d, 9, 45 } },
+    };
+
+    for( auto& [ msg, t ] : msgs | reversed )  //  change from DESC to arrival/archive order
+    {
+        msg.setTime(t);
+
+        vg.archivePointDataMessage(msg);
+    }
+
+    BOOST_CHECK_EQUAL(dyn->getTimeStamp(), CtiTime(d, 10, 00));
+    BOOST_CHECK_EQUAL(dyn->getValue(), 27164.75);
 }
 
 BOOST_AUTO_TEST_CASE( test_registration_add_remove_points )

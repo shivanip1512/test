@@ -80,7 +80,7 @@ private:
    void writeRecordsToDB(const DynamicPointDispatchList& records);
    void removeOldDynamicData();
 
-   CtiDynamicPointDispatchSPtr getDynamic(unsigned long pointID) const;
+   virtual CtiDynamicPointDispatchSPtr getDynamic(unsigned long pointID) const;
 
    void removePoint(long point, bool isExpiration = false);
 
@@ -105,7 +105,7 @@ public:
    void loadAllStaticData();
 
    virtual Inherited::ptr_type getPoint(LONG Pt, LONG pao = 0);
-   Inherited::ptr_type         getCachedPoint(LONG Pt);
+   virtual Inherited::ptr_type getCachedPoint(LONG Pt);
    bool                        isPointLoaded(LONG Pt);
    CtiPointManager::ptr_type   getOffsetTypeEqual(LONG pao, INT offset, CtiPointType_t type);
    CtiPointManager::ptr_type   getControlOffsetEqual(LONG pao, INT offset);
@@ -145,7 +145,7 @@ public:
    ReasonabilityLimitStruct getReasonabilityLimits(const CtiPointBase &point) const;
    CtiTablePointLimit       getPointLimit(const CtiPointBase &point, LONG limitNum) const;  //  is copying the table cheap/fast enough?
    CtiTablePointAlarming    getAlarming  (const CtiPointBase &point) const;          //    if not, we'll need to return smart pointers
-   CtiDynamicPointDispatchSPtr getDynamic(const CtiPointBase &point) const;
+   virtual CtiDynamicPointDispatchSPtr getDynamic(const CtiPointBase &point) const;
    bool                     setDynamic   (long pointID, CtiDynamicPointDispatchSPtr &point);
    int  getProperty (LONG point, unsigned int property) const;
    bool hasProperty (LONG point, unsigned int property) const;
