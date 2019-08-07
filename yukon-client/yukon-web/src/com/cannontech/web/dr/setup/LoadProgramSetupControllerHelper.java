@@ -194,4 +194,68 @@ public class LoadProgramSetupControllerHelper {
         }
     }
 
+    /**
+     * Default values for object should be set here.
+     */
+    public void setDefaultGearFieldValues(ProgramGear programGear) {
+        switch (programGear.getControlMethod()) {
+        case MagnitudeCycle:
+        case TrueCycle:
+        case SmartCycle:
+        case TargetCycle:
+            SmartCycleGearFields smartCycleGearFields = (SmartCycleGearFields) programGear.getFields();
+            setSmartCycleGearFieldsDefaultValue(smartCycleGearFields);
+            programGear.setFields(smartCycleGearFields);
+            break;
+        }
+    }
+
+    private void setSmartCycleGearFieldsDefaultValue(SmartCycleGearFields smartCycleGearFields) {
+        smartCycleGearFields.setNoRamp(false);
+        smartCycleGearFields.setControlPercent(50);
+        smartCycleGearFields.setCyclePeriodInMinutes(30);
+        smartCycleGearFields.setCycleCountSendType(CycleCountSendType.FixedCount);
+        smartCycleGearFields.setStartingPeriodCount(8);
+        smartCycleGearFields.setSendRate(TimeIntervals.HOURS_1.getSeconds());
+        smartCycleGearFields.setHowToStopControl(HowToStopControl.StopCycle);
+        smartCycleGearFields.setStopCommandRepeat(0);
+        smartCycleGearFields.setCapacityReduction(100);
+        if (smartCycleGearFields instanceof TargetCycleGearFields) {
+            TargetCycleGearFields targetCycleGearFields = (TargetCycleGearFields) smartCycleGearFields;
+            targetCycleGearFields.setkWReduction(0.0);
+        }
+        smartCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
+    }
+
+    private WhenToChangeFields getWhenToChangeDefaultValues() {
+        WhenToChangeFields whenToChange = new WhenToChangeFields();
+        whenToChange.setWhenToChange(WhenToChange.None);
+        whenToChange.setChangeDurationInMinutes(0);
+        whenToChange.setChangePriority(0);
+        whenToChange.setTriggerNumber(1);
+        whenToChange.setTriggerOffset(0.0);
+        return whenToChange;
+    }
+
+    public void buildGearModelMap(GearControlMethod controlMethod, ModelMap model, HttpServletRequest request,
+            YukonUserContext userContext) {
+        switch (controlMethod) {
+        case MagnitudeCycle:
+        case TrueCycle:
+        case SmartCycle:
+        case TargetCycle:
+            model.addAttribute("cycleCountSendType", List.of(CycleCountSendType.FixedCount, CycleCountSendType.CountDown, CycleCountSendType.LimitedCountDown));
+            List<Integer> startingPeriodCount = new ArrayList<>();
+            for (int i = 1; i <= 63; i++) {
+                startingPeriodCount.add(i);
+            }
+            model.addAttribute("maxCycleCount", startingPeriodCount);
+            model.addAttribute("startingPeriodCount", startingPeriodCount);
+            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore, HowToStopControl.StopCycle));
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            model.addAttribute("commandResendRate", TimeIntervals.getCommandResendRate());
+            break;
+        }
+    }
+
 }
