@@ -694,6 +694,7 @@ ctitime_t CtiTime::getLocalTimeSeconds() const
 }
 
 /*
+    DO NOT USE - This method is difficult to use and leads to bugs, use getLocalTimeSeconds() instead
     Returns the number of seconds of offset between the local time and the same time expressed in GMT.
         Q: How many seconds between (for example) 01/01/2010 00:00:00 GMT and 01/01/2010 00:00:00 CST
         A:  21600

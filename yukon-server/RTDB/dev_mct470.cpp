@@ -4704,7 +4704,7 @@ unsigned long Mct470Device::convertTimestamp(const unsigned long timestamp, cons
 
     //  we want to move from our local midnight to GMT midnight, so we subtract the difference between us and GMT
     //  example:  1/1/2009 06:00 - 1/1/2009 00:00 = 06:00;  1/1/2009 00:00 - 06:00 = 12/31/2008 18:00
-    mct_year_end = CtiTime(mct_year_end.getLocalTimeSeconds());
+    mct_year_end -= mct_year_end.secondOffsetToGMT();
 
     const int minutes_until_end_of_year = timestamp & 0x007fffff;
 

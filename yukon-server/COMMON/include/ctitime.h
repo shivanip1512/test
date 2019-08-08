@@ -20,8 +20,6 @@ private:
     ctitime_t maketm(const CtiDate& d, unsigned hour = 0, unsigned minute = 0, unsigned second = 0);
     ctitime_t _seconds;
 
-    long secondOffsetToGMT() const;
-
 public:
 
     enum specialvalues  {neg_infin, pos_infin, not_a_time};
@@ -51,13 +49,16 @@ public:
     int second() const;
     int secondGMT() const;
     ctitime_t seconds() const;
-    ctitime_t getLocalTimeSeconds() const;
+	ctitime_t getLocalTimeSeconds() const;
     int minute() const;
     int minuteGMT()const;
     int hour() const;
     int hourGMT() const;
     CtiDate date() const;
     CtiDate dateGMT() const;
+    
+    // DO NOT USE, use getLocalTimeSeconds() instead.
+    long secondOffsetToGMT() const;
 
     void extract(struct tm*) const;
 
