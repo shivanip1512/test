@@ -201,7 +201,7 @@
                                 </div>
                             </div>
                             <div class="action-area">
-                                <cti:button icon="icon-add" nameKey="create" data-popup="#gear-create-popup" />
+                                <cti:button icon="icon-add" nameKey="create" data-popup="#gear-create-popup-${selectedSwitchType}" />
                                 <cti:url var="createGearUrl" value="/dr/setup/loadProgram/createGearPopup/${selectedSwitchType}" />
                             </div>
                             <cti:msg2 var="programGearCreation" key="yukon.web.modules.dr.setup.gear.title" />
@@ -519,8 +519,7 @@
             </cti:displayForPageEditModes>
         </div>
     </form:form>
-
-    <div id="gear-create-popup" 
+    <div id="gear-create-popup-${selectedSwitchType}" 
          data-title="${programGearCreation}" 
          data-url="${createGearUrl}" 
          data-width="900" 

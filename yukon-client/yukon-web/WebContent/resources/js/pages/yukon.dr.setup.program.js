@@ -43,7 +43,7 @@ yukon.dr.setup.program = (function() {
     _loadProgram = function() {
 
         var type = $('#type').val();
-        $("#gear-create-popup").html('')
+        $("#gear-create-popup-"+ type).empty();
         if (type !== '') {
             yukon.ui.block($('#js-load-program-container'));
             var name = $('#name').val();
