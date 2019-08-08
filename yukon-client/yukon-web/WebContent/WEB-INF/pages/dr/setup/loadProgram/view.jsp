@@ -183,7 +183,7 @@
                                              id="gear-quick-view-${item.id}"
                                              data-title="${item.name}"
                                              data-width="900"
-                                             data-height="auto"
+                                             data-height="525"
                                              data-event="yukon:dr:setup:program:saveGear"
                                              data-target="#js-gear-link-${item.id}"
                                              data-url="${viewUrl}"
@@ -227,6 +227,7 @@
                                                 <div id="gear-quick-view-${gearInfo.id}"
                                                      data-title="${gearInfo.name}"
                                                      data-width="900"
+                                                     data-height="525"
                                                      data-load-event="yukon:dr:setup:gear:viewMode" 
                                                      data-height="auto"
                                                      data-url="${viewUrl}">
@@ -523,6 +524,7 @@
          data-title="${programGearCreation}" 
          data-url="${createGearUrl}" 
          data-width="900" 
+         data-height="525"
          data-event="yukon:dr:setup:program:saveGear"
          data-ok-text="<cti:msg2 key="yukon.common.save"/>" 
          data-dialog>
@@ -531,6 +533,7 @@
     <div data-dialog
          data-title="<cti:msg2 key="yukon.common.edit"/>"
          data-width="900"
+         data-height="525"
          data-event="yukon:dr:setup:program:saveGear"
          data-load-event="yukon:dr:setup:program:gearRendered"
          data-ok-text="<cti:msg2 key="yukon.common.save"/>"
