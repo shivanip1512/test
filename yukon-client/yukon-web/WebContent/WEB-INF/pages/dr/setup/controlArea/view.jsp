@@ -72,24 +72,26 @@
                 <tags:sectionContainer2 nameKey="trigger">
                     <div class="js-trigger-template-row select-box-item dn" data-trigger-id="0">
                         <span class="js-trigger-name"></span>
-                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove-trigger" />
+                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove" data-ok-event="yukon:trigger:delete" />
+                        <d:confirm on="" nameKey="confirmDelete"/>
                     </div>
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <c:if test="${empty controlArea.triggers}">
-                            <span class="empty-list js-no-triggers dn"><i:inline key=".noTriggersAssigned" /></span>
+                            <span class="empty-list js-no-triggers"><i:inline key=".noTriggersAssigned" /></span>
                         </c:if>
                         <div class="js-trigger-container select-box">
                             <c:forEach var="trigger" items="${controlArea.triggers}" varStatus="status">
                                 <c:set var="triggerId" value="${triggerIds[status.index]}" />
                                 <cti:url var="triggerUrl" value="/dr/setup/controlArea/renderTrigger/${triggerId}?mode=${mode}" />
+                                <cti:triggerName pointId="${trigger.triggerPointId}" type="${trigger.triggerType}" var="triggerName"/>
                                 <div class="select-box-item" data-trigger-id="${triggerId}" id="js-trigger-${triggerId}">
                                     <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove"
                                         id="delete-trigger-${triggerId}" data-ok-event="yukon:trigger:delete" data-id="${triggerId}"/>
                                     <d:confirm on="#delete-trigger-${triggerId}" nameKey="confirmDelete"
-                                        argument="Trigger"/>
+                                        argument="${fn:escapeXml(triggerName)}"/>
                                     <a href="${triggerUrl}" class="js-trigger-link" data-popup="#js-trigger-dialog-${triggerId}"
                                         id="js-trigger-link-${triggerId}" data-trigger-id="${triggerId}"> 
-                                            <cti:triggerName pointId="${trigger.triggerPointId}" type="${trigger.triggerType}" />
+                                            ${fn:escapeXml(triggerName)}
                                     </a>
                                 </div>
                                 <div data-dialog 
@@ -100,7 +102,7 @@
                                     data-load-event="yukon:dr:setup:controlArea:renderTriggerFields"
                                     data-width="600"
                                     data-height="auto"
-                                    data-title="<cti:triggerName pointId="${trigger.triggerPointId}" type="${trigger.triggerType}"/>">
+                                    data-title="${fn:escapeXml(triggerName)}">
                                 </div>
                             </c:forEach>
                         </div>
@@ -114,7 +116,7 @@
                     <cti:displayForPageEditModes modes="VIEW">
                         <c:choose>
                             <c:when test="${empty controlArea.triggers}">
-                                <span class="empty-list js-no-triggers dn"><i:inline key=".noTriggersAssigned" /></span>
+                                <span class="empty-list js-no-triggers"><i:inline key=".noTriggersAssigned" /></span>
                             </c:when>
                             <c:otherwise>
                                 <table class="compact-results-table dashed">
@@ -130,15 +132,16 @@
                                                 <td>
                                                     <c:set var="triggerId" value="${triggerIds[status.index]}"/>
                                                     <cti:url var="triggerUrl" value="/dr/setup/controlArea/renderTrigger/${triggerId}?mode=${mode}"/>
+                                                    <cti:triggerName pointId="${trigger.triggerPointId}" type="${trigger.triggerType}" var="triggerName"/>
                                                     <a href="${triggerUrl}" class="js-trigger-link" data-popup="#js-trigger-dialog-${triggerId}"
                                                         id="js-trigger-link-${triggerId}" data-trigger-id="${triggerId}">
-                                                            <cti:triggerName pointId="${trigger.triggerPointId}" type="${trigger.triggerType}" />
+                                                            ${fn:escapeXml(triggerName)}
                                                     </a>
                                                 </td>
                                                 <td>
                                                     <i:inline key="yukon.web.modules.dr.setup.controlArea.trigger.${trigger.triggerType}" />
                                                 </td>
-                                                <div data-dialog 
+                                                <div 
                                                     id="js-trigger-dialog-${triggerId}"
                                                     data-url="${triggerUrl}"
                                                     data-target="#js-trigger-link-${triggerId}"
@@ -146,7 +149,7 @@
                                                     data-load-event="yukon:dr:setup:controlArea:renderTriggerFields"
                                                     data-width="600"
                                                     data-height="auto"
-                                                    data-title="<cti:triggerName pointId="${trigger.triggerPointId}" type="${trigger.triggerType}"/>">
+                                                    data-title="${fn:escapeXml(triggerName)}">
                                                 </div>
                                             </tr>
                                         </c:forEach>
@@ -280,7 +283,7 @@
                             <c:forEach var="assignedProgram" items="${controlArea.programAssignment}">
                                 <tr>
                                     <td>
-                                        <cti:url var="viewUrl" value="/dr/setup/program/${assignedProgram.programId}"/>
+                                        <cti:url var="viewUrl" value="/dr/setup/loadProgram/${assignedProgram.programId}"/>
                                         <a href="${viewUrl}"><cti:deviceName deviceId="${assignedProgram.programId}"/></a>
                                     </td>
                                     <td>

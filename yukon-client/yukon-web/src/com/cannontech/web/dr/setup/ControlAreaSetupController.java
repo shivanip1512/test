@@ -134,9 +134,9 @@ public class ControlAreaSetupController {
                 url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaUpdateUrl + controlArea.getControlAreaId());
             }
             List<ControlAreaTrigger> triggers = new ArrayList<>(2);
-            triggerIds.stream()
-                      .forEach(id -> {
-                       triggers.add(controlAreaTriggerCache.asMap().get(id));
+            CollectionUtils.emptyIfNull(triggerIds)
+                           .forEach(id -> {
+                               triggers.add(controlAreaTriggerCache.asMap().get(id));
             });
             controlArea.setTriggers(triggers);
             ResponseEntity<? extends Object> response =
@@ -159,6 +159,10 @@ public class ControlAreaSetupController {
             if (response.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> controlAreaIdMap = (HashMap<String, Integer>) response.getBody();
                 int controlAreaId = controlAreaIdMap.get("controlAreaId");
+                CollectionUtils.emptyIfNull(triggerIds)
+                               .forEach(id -> {
+                                   controlAreaTriggerCache.asMap().remove(id);
+                 });
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", controlArea.getName()));
                 return "redirect:/dr/setup/controlArea/" + controlAreaId;
             }
@@ -260,7 +264,7 @@ public class ControlAreaSetupController {
             YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", mode);
         ControlAreaTrigger controlAreaTrigger = controlAreaTriggerCache.asMap().get(triggerId);
-        if (mode != PageEditMode.VIEW && controlAreaTrigger.getTriggerType() == ControlAreaTriggerType.STATUS) {
+        if (controlAreaTrigger.getTriggerType() == ControlAreaTriggerType.STATUS) {
             model.addAttribute("normalStates", retrieveNormalState(controlAreaTrigger.getTriggerPointId(), userContext, request));
         }
         controllerHelper.buildTriggerModelMap(model, controlAreaTrigger);
@@ -310,7 +314,7 @@ public class ControlAreaSetupController {
         return normalStates;
     }
 
-    @GetMapping("/trigger/remove/{triggerId}")
+    @DeleteMapping("/trigger/remove/{triggerId}")
     public void removeTrigger(@PathVariable String triggerId) {
         controlAreaTriggerCache.asMap().remove(triggerId);
     }

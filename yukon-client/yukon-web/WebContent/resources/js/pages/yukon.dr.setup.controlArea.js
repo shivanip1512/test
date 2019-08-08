@@ -30,6 +30,19 @@ yukon.dr.setup.controlArea = (function() {
         $(".js-peak-tracking-error").addClass("dn");
         $(".js-threshold-setting-error").addClass("dn");
     },
+
+    _renderConfirmDeletePopup = function(triggerId, triggerName){
+        yukon.dialogConfirm.add({
+            'on': '#delete-trigger-'+triggerId,
+            'strings':{
+                'title': 'Confirm Delete',
+                'message': 'Are you sure you want to delete '+ triggerName+'?',
+                'ok': 'Delete',
+                'cancel': 'Cancel',
+                'okClasses': ''
+            }
+        });
+    },
     
     _validatePickerValues = function(thresholdType) {
         var errorFlag = false,
@@ -62,6 +75,13 @@ yukon.dr.setup.controlArea = (function() {
         }
         return errorFlag;
     },
+    _enableDisableTriggerCreate = function (){
+        if($(".js-trigger-container > div").length >=2){
+            $(".js-create-trigger").prop('disabled', true);
+        }else{
+        	$(".js-create-trigger").prop('disabled', false);
+        }
+    }
 
     mod = {
         
@@ -70,6 +90,7 @@ yukon.dr.setup.controlArea = (function() {
             
             if (_initialized) return;
             
+            $(document).ready(_enableDisableTriggerCreate());
             
             if ($("#js-inline-picker-container").is(":visible")) {
                 yukon.pickers['js-avaliable-programs-picker'].show();
@@ -158,7 +179,7 @@ yukon.dr.setup.controlArea = (function() {
                 }
                 $.ajax({
                     url: yukon.url('/dr/setup/controlArea/trigger/remove/' + triggerId),
-                    type: 'get'
+                    type: 'delete'
                 });
             });
             $(document).on('click', '.js-save', function() {
@@ -176,16 +197,18 @@ yukon.dr.setup.controlArea = (function() {
                 _clearErrors();
                 var dialog = $(event.target);
                 if (($("#js-trigger-type option:selected").val() === "THRESHOLD_POINT") || 
-                        ($(this).find("#triggerType").val() === "THRESHOLD_POINT")) {
+                        ($(this).find("#trigger-type").val() === "THRESHOLD_POINT")) {
                     $("#point-trigger-identification-name").val(thresholdPointTriggerIdentification.selectionLabel.innerText);
+                    $("#min-restore-offset").val($("#js-threshold-point-min-restore-offset").val());
                     $("#trigger-type").val("THRESHOLD_POINT");
                     if (_validatePickerValues("THRESHOLD_POINT")) {
                         return;
                     }
                 }
                 if (($("#js-trigger-type option:selected").val() === "THRESHOLD") || 
-                        ($(this).find("#triggerType").val() === "THRESHOLD")) {
+                        ($(this).find("#trigger-type").val() === "THRESHOLD")) {
                     $("#point-trigger-identification-name").val(thresholdTriggerIdentification.selectionLabel.innerText);
+                    $("#min-restore-offset").val($("#js-threshold-min-restore-offset").val());
                     $("#trigger-type").val("THRESHOLD");
                     if(_validatePickerValues("THRESHOLD")){
                         return;
@@ -194,7 +217,7 @@ yukon.dr.setup.controlArea = (function() {
                     $("#trigger-type").val("THRESHOLD");
                 }
                 if (($("#js-trigger-type option:selected").val() === "STATUS") || 
-                        ($(this).find("#triggerType").val() === "STATUS")) {
+                        ($(this).find("#trigger-type").val() === "STATUS")) {
                     $("#point-trigger-identification-name").val(statusTriggerIdentification.selectionLabel.innerText);
                     $("#trigger-type").val("STATUS");
                     if (_validatePickerValues("STATUS")) {
@@ -232,9 +255,14 @@ yukon.dr.setup.controlArea = (function() {
                         clonedRow.removeClass("js-trigger-template-row dn");
                         $(".js-no-triggers").addClass("dn");
                         $(".js-trigger-container").append(clonedRow);
-                        if($(".js-trigger-container > div").length >=2){
-                            $(".js-create-trigger").prop('disabled', true);
-                        }
+                        _enableDisableTriggerCreate();
+
+                        clonedRow.find(".select-box-item-remove").attr("id", "delete-trigger-" + triggerId);
+                        clonedRow.find(".select-box-item-remove").attr("data-id", triggerId);
+                        
+                        _renderConfirmDeletePopup(triggerId, triggerName);
+                        /*clonedRow.find("#js-confirm-delete").attr("on", "#delete-trigger-" + triggerId);
+                        clonedRow.find("$js-confirm-delete").attr("argument", triggerName);*/
 
                         var clonedDialog = $(".js-trigger-dialog-template").clone();
                         clonedDialog.attr("id", "js-trigger-dialog-" + triggerId);

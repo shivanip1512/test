@@ -27,6 +27,7 @@
         <form:hidden id="point-threshold-settings" path="thresholdPointId" />
         <form:hidden id="point-trigger-identification-name" path="triggerPointName" />
         <form:hidden id="trigger-type" path="triggerType" />
+        <form:hidden id="min-restore-offset" path="minRestoreOffset" />
         <input id="js-trigger-id" name="id" type="hidden" />
         <cti:displayForPageEditModes modes="CREATE">
             <tags:nameValueContainer2>
@@ -36,7 +37,7 @@
             </tags:nameValueContainer2>
             <tags:nameValueContainer2 tableClass="js-threshold-point-section">
                 <tags:nameValue2 nameKey=".trigger.minRestoreOffset" nameColumnWidth="170px">
-                    <tags:numeric path="minRestoreOffset" size="11" minValue="-99999.9999" maxValue="99999.9999" />
+                    <tags:numeric path="minRestoreOffset" size="11" minValue="-99999.9999" maxValue="99999.9999" id="js-threshold-point-min-restore-offset"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.identiofication" nameColumnWidth="170px">
                     <tags:pickerDialog 
@@ -86,7 +87,7 @@
                     <tags:numeric path="threshold" size="5" minValue="-999999.99999999" maxValue="999999.99999999" />
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.minRestoreOffset" nameColumnWidth="170px">
-                    <tags:numeric path="minRestoreOffset" size="5" minValue="-99999.9999" maxValue="99999.9999" />
+                    <tags:numeric path="minRestoreOffset" size="5" minValue="-99999.9999" maxValue="99999.9999" id="js-threshold-min-restore-offset"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.atku" nameColumnWidth="170px">
                     <tags:numeric path="atku" size="5" minValue="-2147483648" maxValue="2147483647" />
@@ -249,11 +250,11 @@
                             <c:otherwise>
                                 <tags:nameValue2 nameKey=".trigger.samples" nameColumnWidth="170px">
                                     <tags:numeric path="controlAreaProjection.projectionPoint" minValue="2" maxValue="12" stepValue="1"
-                                        id="js-threshold-samples" disabled="true" />
+                                        id="js-threshold-samples" />
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".trigger.ahead" nameColumnWidth="170px">
                                     <tags:intervalDropdown path="controlAreaProjection.projectAheadDuration" intervals="${projectAheadDurations}"
-                                        id="js-threshold-ahead" classes="disabled" />
+                                        id="js-threshold-ahead" />
                                 </tags:nameValue2>
                             </c:otherwise>
                         </c:choose>

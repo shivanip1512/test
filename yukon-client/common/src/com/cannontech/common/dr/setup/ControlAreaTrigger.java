@@ -98,7 +98,7 @@ public class ControlAreaTrigger {
     }
 
     public Integer getPeakPointId() {
-        return peakPointId;
+        return peakPointId != null && peakPointId == 0 ? null : peakPointId;
     }
 
     public void setPeakPointId(Integer peakPointId) {

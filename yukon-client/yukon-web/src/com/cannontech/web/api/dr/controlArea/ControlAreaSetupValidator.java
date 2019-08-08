@@ -134,7 +134,7 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                                     }
                                     lmValidatorHelper.checkIfFieldRequired("controlAreaProjection.projectAheadDuration", errors, trigger.getControlAreaProjection().getProjectAheadDuration(), "Projection Ahead Duration");
                                     if (!errors.hasFieldErrors("controlAreaProjection.projectAheadDuration")) { 
-                                        if(!TimeIntervals.getProjectionAheadDuration().contains(trigger.getControlAreaProjection().getProjectAheadDuration())) {
+                                        if(!TimeIntervals.getProjectionAheadDuration().contains(TimeIntervals.fromSeconds(trigger.getControlAreaProjection().getProjectAheadDuration()))) {
                                             errors.rejectValue("controlAreaProjection.projectAheadDuration", key + "invalid.intervalValue", new Object[] { "Project Ahead Duration" }, "");
                                         }
                                     }
