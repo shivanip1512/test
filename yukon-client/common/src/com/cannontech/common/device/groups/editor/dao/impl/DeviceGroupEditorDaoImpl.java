@@ -60,13 +60,11 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
-import com.cannontech.message.DbChangeManager;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
@@ -78,7 +76,6 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DeviceGroupService deviceGroupService;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
     
@@ -574,11 +571,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                              .append("WHERE ws.Name = 'deviceGroup'")
                              .append("AND Value").eq(group.getFullName());
 
-        List<DeviceGroupInUse> references = jdbcTemplate.query(referencesQuery, new YukonRowMapper<DeviceGroupInUse>() {
-            @Override
-            public DeviceGroupInUse mapRow(YukonResultSet rs) throws SQLException {
+        List<DeviceGroupInUse> references = jdbcTemplate.query(referencesQuery, (YukonResultSet rs) -> {
                 return new DeviceGroupInUse(group.getFullName(), "dashboard", rs.getString("Name"), rs.getString("UserName"));
-            }
         });
         
         // Check if referenced by any jobs
@@ -591,12 +585,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                           .append("OR (Value").contains(group.getFullName()).append("AND Name = 'deviceGroupNames'))")
                           .append("AND Name = 'name'")
                           .append("AND j.Disabled").neq_k(JobDisabledStatus.D);
-
-        references.addAll(jdbcTemplate.query(referencesQuery, new YukonRowMapper<DeviceGroupInUse>() {
-            @Override
-            public DeviceGroupInUse mapRow(YukonResultSet rs) throws SQLException {
+        references.addAll(jdbcTemplate.query(referencesQuery, (YukonResultSet rs) -> {
                 return new DeviceGroupInUse(group.getFullName(), rs.getString("BeanName"), rs.getString("Value"), rs.getString("UserName"));
-            }
         }));
         
         // Check if referenced by any monitors or composed groups
@@ -619,11 +609,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                   .append("JOIN DeviceGroupComposed dgc ON dgcg.DeviceGroupComposedId = dgc.DeviceGroupComposedId")
                   .append("JOIN DeviceGroup dg on dgc.DeviceGroupId = dg.DeviceGroupId")
                   .append("WHERE dgcg.GroupName").eq(group.getFullName());
-        references.addAll(jdbcTemplate.query(referencesQuery, new YukonRowMapper<DeviceGroupInUse>() {
-            @Override
-            public DeviceGroupInUse mapRow(YukonResultSet rs) throws SQLException {
-                return new DeviceGroupInUse(group.getFullName(), rs.getString("ReferenceTYpe"), rs.getString("Name"), "system");
-            }
+        references.addAll(jdbcTemplate.query(referencesQuery, (YukonResultSet rs) -> {
+            return new DeviceGroupInUse(group.getFullName(), rs.getString("ReferenceType"), rs.getString("Name"), "system");
         }));
 
         if (CollectionUtils.isNotEmpty(references)) {
