@@ -13,6 +13,17 @@ yukon.dr.controlStatus = (function () {
     var
     _initialized = false,
     
+    _updateTable = function () {
+        var tableContainer = $('#control-status-table'),
+            form = $('#control-status-form');
+        form.ajaxSubmit({
+            success: function(data, status, xhr, $form) {
+                tableContainer.html(data);
+                tableContainer.data('url', yukon.url('/dr/program/controlStatusTable?' + form.serialize()));
+            }
+        });
+    },
+    
     mod = {
         
         /** Initialize this module. */
@@ -24,30 +35,24 @@ yukon.dr.controlStatus = (function () {
             $('#restoreStatuses').chosen({width: "300px"});
             
             $(document).on('click', '.js-filter', function (ev) {
-                var tableContainer = $('#control-status-table'),
-                    form = $('#control-status-form');
-                form.ajaxSubmit({
-                    success: function(data, status, xhr, $form) {
-                        tableContainer.html(data);
-                        tableContainer.data('url', yukon.url('/dr/program/controlStatusTable?' + form.serialize()));
-                    }
-                });
+                _updateTable();
             });
             
             $(document).on('click', '.js-connect, .js-disconnect', function () {
                 yukon.ui.block($('#control-status-table'));
                 var deviceId = $(this).data('deviceId'),
+                    programId = $('#programId').val(),
                     connect = $(this).hasClass('js-connect');
                 $.ajax({
-                    url: yukon.url('/dr/disconnectStatus/change?deviceId=' + deviceId + '&connect=' + connect),
+                    url: yukon.url('/dr/disconnectStatus/change?deviceId=' + deviceId + '&connect=' + connect + '&programId=' + programId),
                     type: 'POST'
                 }).done(function(data) {
-                    if (data.success) {
-                        yukon.ui.alertSuccess("Success");
-                    } else {
+                    if (data.errors) {
                         yukon.ui.alertError(data.errors);
                     }
+                    _updateTable();
                     yukon.ui.unblock($('#control-status-table'));
+                    $('.js-row-' + deviceId).flash();
                 });
                 
             });

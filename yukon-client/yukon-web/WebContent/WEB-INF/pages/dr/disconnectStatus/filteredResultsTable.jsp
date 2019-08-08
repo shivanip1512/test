@@ -36,7 +36,7 @@
                 <c:set var="pao" value="${disconnectStatus.key}"/>
                 <c:set var="pointData" value="${disconnectStatus.value}"/>
                 <c:set var="paoId" value="${pao.paoIdentifier.paoId}"/>
-                <tr>
+                <tr class="js-row-${paoId}">
                     <td>
                         <cti:url var="inventoryViewUrl" value="/stars/operator/inventory/view">
                             <cti:param name="inventoryId" value="${pao.inventoryId}"/>

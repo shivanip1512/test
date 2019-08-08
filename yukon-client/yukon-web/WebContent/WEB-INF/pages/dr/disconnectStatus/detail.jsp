@@ -11,7 +11,7 @@
     <div class="filter-section">
         <cti:url var="filterUrl" value="/dr/program/disconnectStatusTable"/>
         <form:form id="disconnect-form" action="${filterUrl}" method="get">
-            <input type="hidden" name="programId" value="${programId}"/>
+            <input type="hidden" id="programId" name="programId" value="${programId}"/>
             <i:inline key="yukon.common.filterBy"/>&nbsp;
             <cti:msg2 var="allLabel" key=".allDisconnectStatuses"/>
             <select id="disconnectStatus" name="disconnectStatus" multiple data-placeholder="${allLabel}">

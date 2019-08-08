@@ -34,7 +34,7 @@
         </thead>
         <tbody>
             <c:forEach var="controlStatus" items="${statuses.resultList}">
-                <tr>
+                <tr class="js-row-${controlStatus.deviceId}">
                     <td>
                         <cti:url var="inventoryViewUrl" value="/stars/operator/inventory/view">
                             <cti:param name="inventoryId" value="${controlStatus.inventoryId}"/>

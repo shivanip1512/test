@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,13 +38,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectMeterResult;
+import com.cannontech.amr.disconnect.model.DrDisconnectStatusCallback;
 import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -55,7 +59,9 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.util.DatedObject;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -67,12 +73,14 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteHardwarePAObject;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
 import com.cannontech.dr.meterDisconnect.DrMeterControlStatus;
 import com.cannontech.dr.meterDisconnect.DrMeterEventStatus;
+import com.cannontech.dr.meterDisconnect.MeterDisconnectMessageListener.MeterCollection;
 import com.cannontech.dr.meterDisconnect.service.DrMeterDisconnectStatusService;
 import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
@@ -99,6 +107,7 @@ import com.cannontech.web.dr.LoadGroupHelper.LoadGroupFilter;
 import com.cannontech.web.dr.ProgramsHelper.ProgramFilter;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.util.WebFileUtils;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -121,6 +130,8 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private LoadGroupDao loadGroupDao;
     @Autowired private OptOutEventDao optOutEventDao;
     @Autowired private DrMeterDisconnectStatusService meterDisconnectService;
+    @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
+    @Autowired private IDatabaseCache dbCache;
 
     @RequestMapping(value = "/program/list", method = RequestMethod.GET)
     public String list(ModelMap model, YukonUserContext userContext,
@@ -311,15 +322,39 @@ public class ProgramController extends ProgramControllerBase {
     }
     
     @PostMapping("/disconnectStatus/change")
-    public @ResponseBody Map<String, Object> changeDisconnectStatus(int deviceId, boolean connect, YukonUserContext userContext) {
+    public @ResponseBody Map<String, Object> changeDisconnectStatus(int deviceId, int programId, boolean connect, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         YukonMeter meter = meterDao.getForId(deviceId);
         DisconnectCommand command = connect ? DisconnectCommand.CONNECT : DisconnectCommand.DISCONNECT;
-        DisconnectMeterResult result = disconnectService.execute(command,
-                                                                 DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
+        
+        DisplayablePao program = programService.getProgram(programId);
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(deviceId);
+        SimpleDevice device = new SimpleDevice(pao);
+        MeterCollection collection = new MeterCollection(Lists.newArrayList(device));
+        Integer eventId = null;
+        try {
+            Optional<Integer> optEvent = meterDisconnectService.findActiveEventForDevice(deviceId);
+            if (optEvent.isPresent()) {
+                eventId = optEvent.get();
+                SimpleCallback<CollectionActionResult> doNothingCallback = result -> {};
+                DrDisconnectStatusCallback statusCallback = new DrDisconnectStatusCallback(!connect, eventId, meterDisconnectService, 
+                                                                                           smartNotificationEventCreationService, program.getName());
+
+                CollectionActionResult result = disconnectService.execute(command, collection, doNothingCallback, statusCallback, userContext);
+                if (!result.getExecutionExceptionText().isEmpty()) {
+                    json.put("errors", result.getExecutionExceptionText());
+                }
+                return json;
+            }
+        } catch (Exception e) {
+            
+        }
+
+        DisconnectMeterResult result = disconnectService.execute(command, DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
                                                                  userContext.getYukonUser());
         addDisconnectResultToModel(json, result, accessor);
+
         return json;
     }
     
