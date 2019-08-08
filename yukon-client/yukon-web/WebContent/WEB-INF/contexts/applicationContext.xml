@@ -1428,6 +1428,7 @@
     <bean id="itronCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.ItronCycleGearFieldsValidator"/>
     <bean id="noControlGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.NoControlGearFieldsValidator"/>
     <bean id="nestStandardCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.NestStandardCycleGearFieldsValidator"/>
+    <bean id="nestCriticalCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.NestCriticalCycleGearFieldsValidator"/>
     <bean id="timeRefreshGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.TimeRefreshGearFieldsValidator"/>
     <bean id="beatThePeakGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.BeatThePeakGearFieldsValidator"/>
     <bean id="masterCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MasterCycleGearFieldsValidator"/>
