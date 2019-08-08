@@ -182,11 +182,12 @@
                                         <div data-dialog
                                              id="gear-quick-view-${item.id}"
                                              data-title="${item.name}"
-                                             data-width="800"
+                                             data-width="900"
                                              data-height="auto"
                                              data-event="yukon:dr:setup:program:saveGear"
                                              data-target="#js-gear-link-${item.id}"
                                              data-url="${viewUrl}"
+                                             data-load-event="yukon:dr:setup:program:gearRendered"
                                              data-ok-text="<cti:msg2 key="yukon.common.save"/>">
                                          </div>
                                     </c:forEach>
@@ -223,10 +224,9 @@
                                                     <a href="javascript:void(0);" data-popup="#gear-quick-view-${gearInfo.id}">${fn:escapeXml(gearInfo.name)}</a>
                                                 </td>
                                                 <div id="edit-gear-popup" class="dn"></div>
-                                                <div data-dialog
-                                                     id="gear-quick-view-${gearInfo.id}"
+                                                <div id="gear-quick-view-${gearInfo.id}"
                                                      data-title="${gearInfo.name}"
-                                                     data-width="800"
+                                                     data-width="900"
                                                      data-load-event="yukon:dr:setup:gear:viewMode" 
                                                      data-height="auto"
                                                      data-url="${viewUrl}">
@@ -530,10 +530,9 @@
     <div id="gear-edit-popup" class="dn"></div>
     <div data-dialog
          data-title="<cti:msg2 key="yukon.common.edit"/>"
-         data-width="800"
-         data-height="auto"
+         data-width="900"
          data-event="yukon:dr:setup:program:saveGear"
-         data-load-event="yukon:dr:setup:program:cleanGearForm"
+         data-load-event="yukon:dr:setup:program:gearRendered"
          data-ok-text="<cti:msg2 key="yukon.common.save"/>"
          class="dn js-gear-dialog-template">
     </div>

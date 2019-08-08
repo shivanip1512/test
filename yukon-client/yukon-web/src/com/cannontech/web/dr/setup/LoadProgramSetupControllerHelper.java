@@ -380,38 +380,98 @@ public class LoadProgramSetupControllerHelper {
     }
 
     private void setThermostatCycleGearFieldsDefaultValues(ThermostatSetbackGearFields thermostatCycleGearFields) {
-        thermostatCycleGearFields.setCapacityReduction(100);
-        thermostatCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
-        thermostatCycleGearFields.setHowToStopControl(HowToStopControl.TimeIn);
-        thermostatCycleGearFields.setValueTa(0);
-        thermostatCycleGearFields.setValueTb(0);
-        thermostatCycleGearFields.setValueTc(0);
-        thermostatCycleGearFields.setValueTd(0);
-        thermostatCycleGearFields.setValueTe(0);
-        thermostatCycleGearFields.setValueTf(0);
-        thermostatCycleGearFields.setValueD(0);
-        thermostatCycleGearFields.setValueB(0);
-        thermostatCycleGearFields.setValueF(0);
-        thermostatCycleGearFields.setMinValue(0);
-        thermostatCycleGearFields.setMaxValue(0);
-        thermostatCycleGearFields.setIsCoolMode(false);
-        thermostatCycleGearFields.setIsHeatMode(false);
-        thermostatCycleGearFields.setAbsoluteOrDelta(AbsoluteOrDelta.DELTA);
-        thermostatCycleGearFields.setMeasureUnit(TemperatureMeasureUnit.CELSIUS);
+        if (thermostatCycleGearFields.getRandom() == null) {
+            thermostatCycleGearFields.setRandom(0);
+        }
+        if (thermostatCycleGearFields.getCapacityReduction() == null) {
+            thermostatCycleGearFields.setCapacityReduction(100);
+        }
+        if (thermostatCycleGearFields.getWhenToChangeFields() == null) {
+            thermostatCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
+        }
+        if (thermostatCycleGearFields.getHowToStopControl() == null) {
+            thermostatCycleGearFields.setHowToStopControl(HowToStopControl.TimeIn);
+        }
+        if (thermostatCycleGearFields.getValueTa() == null) {
+            thermostatCycleGearFields.setValueTa(0);
+        }
+        if (thermostatCycleGearFields.getValueTb() == null) {
+            thermostatCycleGearFields.setValueTb(0);
+        }
+        if (thermostatCycleGearFields.getValueTc() == null) {
+            thermostatCycleGearFields.setValueTc(0);
+        }
+        if (thermostatCycleGearFields.getValueTd() == null) {
+            thermostatCycleGearFields.setValueTd(0);
+        }
+        if (thermostatCycleGearFields.getValueTe() == null) {
+            thermostatCycleGearFields.setValueTe(0);
+        }
+        if (thermostatCycleGearFields.getValueTf() == null) {
+            thermostatCycleGearFields.setValueTf(0);
+        }
+        if (thermostatCycleGearFields.getValueD() == null) {
+            thermostatCycleGearFields.setValueD(0);
+        }
+        if (thermostatCycleGearFields.getValueB() == null) {
+            thermostatCycleGearFields.setValueB(0);
+        }
+        if (thermostatCycleGearFields.getValueF() == null) {
+            thermostatCycleGearFields.setValueF(0);
+        }
+        if (thermostatCycleGearFields.getMinValue() == null) {
+            thermostatCycleGearFields.setMinValue(0);
+        }
+        if (thermostatCycleGearFields.getMaxValue() == null) {
+            thermostatCycleGearFields.setMaxValue(0);
+        }
+        if (thermostatCycleGearFields.getIsCoolMode() == null) {
+            thermostatCycleGearFields.setIsCoolMode(false);
+        }
+        if (thermostatCycleGearFields.getIsHeatMode() == null) {
+            thermostatCycleGearFields.setIsHeatMode(false);
+        }
+        if (thermostatCycleGearFields.getAbsoluteOrDelta() == null) {
+            thermostatCycleGearFields.setAbsoluteOrDelta(AbsoluteOrDelta.DELTA);
+        }
+        if (thermostatCycleGearFields.getMeasureUnit() == null) {
+            thermostatCycleGearFields.setMeasureUnit(TemperatureMeasureUnit.CELSIUS);
+        }
     }
 
-    private void setSimpleThermostatCycleGearFieldsDefaultValues(SimpleThermostatRampingGearFields simpleThermostatRampingGearFields) {
-        simpleThermostatRampingGearFields.setMode(Mode.COOL);
-        simpleThermostatRampingGearFields.setRandomStartTimeInMinutes(0);
-        simpleThermostatRampingGearFields.setPreOpTemp(0);
-        simpleThermostatRampingGearFields.setPreOpTimeInMinutes(0);
-        simpleThermostatRampingGearFields.setPreOpHoldInMinutes(0);
+    private void setSimpleThermostatCycleGearFieldsDefaultValues(
+            SimpleThermostatRampingGearFields simpleThermostatRampingGearFields) {
+        if (simpleThermostatRampingGearFields.getMode() == null) {
+            simpleThermostatRampingGearFields.setMode(Mode.COOL);
+        }
+        if (simpleThermostatRampingGearFields.getRampOutTimeInMinutes() == null) {
+            simpleThermostatRampingGearFields.setRandomStartTimeInMinutes(0);
+        }
+        if (simpleThermostatRampingGearFields.getPreOpTemp() == null) {
+            simpleThermostatRampingGearFields.setPreOpTemp(0);
+        }
+        if (simpleThermostatRampingGearFields.getPreOpTimeInMinutes() == null) {
+            simpleThermostatRampingGearFields.setPreOpTimeInMinutes(0);
+        }
+        if (simpleThermostatRampingGearFields.getPreOpHoldInMinutes() == null) {
+            simpleThermostatRampingGearFields.setPreOpHoldInMinutes(0);
+        }
         simpleThermostatRampingGearFields.setMaxRuntimeInMinutes(480);
-        simpleThermostatRampingGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
-        simpleThermostatRampingGearFields.setMax(0);
-        simpleThermostatRampingGearFields.setRampPerHour(0f);
-        simpleThermostatRampingGearFields.setRampOutTimeInMinutes(0);
-        simpleThermostatRampingGearFields.setHowToStopControl(HowToStopControl.TimeIn);
+        if (simpleThermostatRampingGearFields.getWhenToChangeFields() == null) {
+            simpleThermostatRampingGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
+        }
+        if (simpleThermostatRampingGearFields.getMax() == null) {
+            simpleThermostatRampingGearFields.setMax(0);
+        }
+        if (simpleThermostatRampingGearFields.getRampPerHour() == null) {
+            simpleThermostatRampingGearFields.setRampPerHour(0f);
+        }
+        if (simpleThermostatRampingGearFields.getRampOutTimeInMinutes() == null) {
+            simpleThermostatRampingGearFields.setRampOutTimeInMinutes(0);
+        }
+        if (simpleThermostatRampingGearFields.getHowToStopControl() == null) {
+            simpleThermostatRampingGearFields.setHowToStopControl(HowToStopControl.TimeIn);
+        }
     }
 
     private void setSepTemperatureOffsetGearFieldsDefaultValues(SepTemperatureOffsetGearFields sepTemperatureOffsetGearFields) {

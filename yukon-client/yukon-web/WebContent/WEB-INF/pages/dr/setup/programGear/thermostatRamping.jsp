@@ -8,43 +8,67 @@
                     <tags:nameValue2 nameKey=".mode">
                         <cti:msg2 var="heatBtnLbl" key=".mode.heat"/>
                         <cti:msg2 var="coolBtnLbl" key=".mode.cool"/>
-                        <div class="button-group">
-                            <tags:check path="fields.isHeatMode" label="${heatBtnLbl}" classes="ML0"/>
-                            <tags:check path="fields.isCoolMode" label="${coolBtnLbl}"/>
-                        </div>
+                        <cti:displayForPageEditModes modes="CREATE,EDIT">
+                            <div class="button-group">
+                                <tags:check path="fields.isHeatMode" label="${heatBtnLbl}" classes="ML0"/>
+                                <tags:check path="fields.isCoolMode" label="${coolBtnLbl}"/>
+                            </div>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <c:choose>
+                                <c:when test="${programGear.fields.isHeatMode && programGear.fields.isCoolMode}">
+                                    ${heatBtnLbl},&nbsp;${coolBtnLbl}
+                                </c:when>
+                                <c:when test="${programGear.fields.isHeatMode}">
+                                    ${heatBtnLbl}
+                                </c:when>
+                                <c:when test="${programGear.fields.isCoolMode}">
+                                    ${coolBtnLbl}
+                                </c:when>
+                            </c:choose>
+                        </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".unit">
-                        <c:forEach var="unit" items="${units}" varStatus="status">
-                            <c:choose>
-                                <c:when test="${status.index == 0}">
-                                    <c:set var="css" value="left yes ML0"/>
-                                </c:when>
-                                <c:when test="${status.index == fn:length(units)-1}">
-                                    <c:set var="css" value="right yes"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <c:set var="css" value="middle yes"/>
-                                </c:otherwise>
-                            </c:choose>
-                            <tags:radio path="fields.measureUnit" value="${unit}" classes="${css}" key=".${unit}" />
-                        </c:forEach>
+                        <cti:displayForPageEditModes modes="CREATE,EDIT">
+                            <c:forEach var="unit" items="${units}" varStatus="status">
+                                <c:choose>
+                                    <c:when test="${status.index == 0}">
+                                        <c:set var="css" value="left yes ML0"/>
+                                    </c:when>
+                                    <c:when test="${status.index == fn:length(units)-1}">
+                                        <c:set var="css" value="right yes"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:set var="css" value="middle yes"/>
+                                    </c:otherwise>
+                                </c:choose>
+                                <tags:radio path="fields.measureUnit" value="${unit}" classes="${css}" key=".${unit}" />
+                            </c:forEach>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <i:inline key=".${programGear.fields.measureUnit}"/>
+                        </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".setpoint">
-                        <!-- Create a tag file if time permits. -->
-                        <c:forEach var="setpoint" items="${setpoints}" varStatus="status">
-                            <c:choose>
-                                <c:when test="${status.index == 0}">
-                                    <c:set var="css" value="left yes ML0"/>
-                                </c:when>
-                                <c:when test="${status.index == fn:length(units)-1}">
-                                    <c:set var="css" value="right yes"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <c:set var="css" value="middle yes"/>
-                                </c:otherwise>
-                            </c:choose>
-                            <tags:radio path="fields.absoluteOrDelta" value="${setpoint}" classes="${css}" key=".${setpoint}" />
-                        </c:forEach>
+                        <cti:displayForPageEditModes modes="CREATE,EDIT">
+                            <c:forEach var="setpoint" items="${setpoints}" varStatus="status">
+                                <c:choose>
+                                    <c:when test="${status.index == 0}">
+                                        <c:set var="css" value="left yes ML0"/>
+                                    </c:when>
+                                    <c:when test="${status.index == fn:length(units)-1}">
+                                        <c:set var="css" value="right yes"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:set var="css" value="middle yes"/>
+                                    </c:otherwise>
+                                </c:choose>
+                                <tags:radio path="fields.absoluteOrDelta" value="${setpoint}" classes="${css}" key=".${setpoint}" />
+                            </c:forEach>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <i:inline key=".${programGear.fields.absoluteOrDelta}"/>
+                        </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".minimumTempreature">
                         <tags:input path="fields.minValue"/>
@@ -108,7 +132,12 @@
             <tags:sectionContainer2 nameKey="stopControl">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".howToStopControl">
-                        <tags:selectWithItems items="${howtoStopControlFields}" path="fields.howToStopControl" />
+                        <cti:displayForPageEditModes modes="CREATE,EDIT">
+                            <tags:selectWithItems items="${howtoStopControlFields}" path="fields.howToStopControl"/>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <i:inline key=".${programGear.fields.howToStopControl}"/>
+                        </cti:displayForPageEditModes>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>

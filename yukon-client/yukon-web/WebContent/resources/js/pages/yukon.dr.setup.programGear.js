@@ -42,7 +42,15 @@ yukon.dr.setup.programGear = (function() {
     _handleRampInField = function() {
         $('#js-rampInPercent-row').toggleClass('dn', !($('#rampIn').is(':checked')));
         $('#js-rampInInterval-row').toggleClass('dn', !($('#rampIn').is(':checked')));
-    }
+    },
+    
+    _initCss = function () {
+        $("#js-program-gear-form").find(".timeOffsetWrap").css({"margin-left" : "-5px"});
+        $("#js-program-gear-form").find(".js-delta-value").css({"margin-left" : "-5px"});
+        var selectedGearType = $("#controlMethod option:selected").val();
+        $(".js-help-btn-span").toggleClass("dn", selectedGearType != 'ThermostatRamping' && selectedGearType != 'SimpleThermostatRamping');
+        yukon.ui.initDateTimePickers().ancestorInit('.js-simple-thermostat-ramping-gear');
+    },
 
     mod = {
         /** Initialize this module. */
@@ -81,6 +89,7 @@ yukon.dr.setup.programGear = (function() {
                 _howToStopControl();
                 _refreshShedType();
                 _handleRampIn();
+                _initCss();
             });
 
             _initialized = true;
