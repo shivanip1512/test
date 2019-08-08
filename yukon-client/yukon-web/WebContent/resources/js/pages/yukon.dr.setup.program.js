@@ -261,37 +261,43 @@ yukon.dr.setup.program = (function() {
                 }
             });
 
-            $(document).on("yukon:dr:setup:program:saveGear", function(event) {
-                var dialog = $(event.target), 
-                    form = dialog.find('#js-program-gear-form'),
-                    isGearNameBlank = $.trim($("#gearName").val()).length == 0 ? true : false,
-                    isControlMethodBlank = $("#controlMethod option:selected").val() == "" ? true :false;
-
-                $("#gearName").toggleClass("error", isGearNameBlank);
-                $("#gearNameIsBlankError").toggleClass("dn", !isGearNameBlank);
-                $("#controlMethod").toggleClass("error", isControlMethodBlank);
-                $("#gearTypeIsRequiredError").toggleClass("dn", !isControlMethodBlank);
-                
-                if (!isGearNameBlank && !isControlMethodBlank) {
-                    form.ajaxSubmit({
-                        success : function(data) {
-                            var id = data.id, 
-                                gearName = data.gearName, 
-                                anchorTag = $("<a>"), 
-                                url = yukon.url("/dr/setup/loadProgram/gear/" + id), 
-                                clonedRow = $('.js-template-gears-row').clone();
-                        
+            $(document).on("yukon:dr:setup:program:saveGear", function (event) {
+                var dialog = $(event.target),
+                form = dialog.find('#js-program-gear-form');
+                form.ajaxSubmit({
+                    success: function (data) {
+                        var id = data.id,
+                            gearName = data.gearName,
+                            mode = $("#js-form-mode").val(),
+                            anchorTag = $("<a>"),
+                            saveUrl = yukon.url("/dr/setup/loadProgram/gear/save"),
+                            url = yukon.url("/dr/setup/loadProgram/gear/" + id + "?mode=" + mode),
+                            clonedRow = $('.js-template-gears-row').clone();
                             anchorTag.attr("href", url);
                             anchorTag.text(gearName);
 
                             clonedRow.attr('data-id', id);
                             clonedRow.find(".js-gear-name").append(anchorTag);
+                            clonedRow.addClass('js-gear-link');
                             clonedRow.removeClass('dn js-template-gears-row');
                             clonedRow.appendTo($("#js-assigned-gear"));
-                        }
-                    });
-                    dialog.dialog('close');
-                }
+                            
+                            var clonedDialog = $(".js-gear-dialog-template").clone();
+                            clonedDialog.attr("id", "js-gear-dialog-" + id);
+                            clonedDialog.attr("data-url", url);
+                            clonedDialog.removeClass("js-gear-dialog-template");
+                            $(".js-assigned-gear").append(clonedDialog);
+                            
+                            anchorTag.attr("data-popup", "#js-gear-dialog-" + id);
+                    }
+                });
+           
+               dialog.dialog('close');
+               dialog.empty();
+            });
+            
+            $(document).on('click', '.js-gear-link', function(event) {
+                event.preventDefault();
             });
 
             $(document).on('click', '.js-gear-remove', function() {

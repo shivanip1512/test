@@ -368,9 +368,15 @@ public class LoadProgramSetupController {
     }
 
     @GetMapping("/gear/{id}")
-    public String gear(ModelMap model, @PathVariable String id) {
+    public String gear(ModelMap model, @PathVariable String id, @RequestParam PageEditMode mode,
+            YukonUserContext userContext, HttpServletRequest request) {
         ProgramGear programGear = gearCache.getIfPresent(id);
+        model.addAttribute("mode", mode);
+        model.addAttribute("selectedGearType", programGear.getControlMethod());
         model.addAttribute("programGear", programGear);
+        if (mode == PageEditMode.EDIT || mode == PageEditMode.CREATE) {
+            controllerHelper.buildGearModelMap(programGear.getControlMethod(), model, request, userContext);
+        }
         return "dr/setup/programGear/view.jsp";
     }
 

@@ -50,6 +50,9 @@
                                 <i:inline key="yukon.web.error.fieldrequired" arguments="${gearTypeLbl}"/>
                             </span>
                         </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <i:inline key="${programGear.controlMethod}"/>
+                        </cti:displayForPageEditModes>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
