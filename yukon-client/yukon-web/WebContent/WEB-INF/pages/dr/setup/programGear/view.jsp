@@ -63,6 +63,15 @@
                         selectedGearType == 'TrueCycle' || selectedGearType == 'MagnitudeCycle' || selectedGearType == 'TargetCycle'}">
                     <%@ include file="smartCycle.jsp"%>
                 </c:if>
+                <c:if test="${selectedGearType == 'SepCycle'}">
+                    <%@ include file="sepCycle.jsp"%>
+                </c:if>
+                <c:if test="${selectedGearType == 'MasterCycle'}">
+                    <%@ include file="masterCycle.jsp"%>
+                </c:if>
+                <c:if test="${selectedGearType == 'TimeRefresh'}">
+                    <%@ include file="timeRefresh.jsp"%>
+                </c:if>
                 <c:if test="${selectedGearType == 'EcobeeCycle'}">
                     <%@ include file="ecobeeCycle.jsp" %>
                 </c:if>

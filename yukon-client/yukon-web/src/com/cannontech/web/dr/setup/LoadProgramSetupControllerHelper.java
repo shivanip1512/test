@@ -25,18 +25,22 @@ import com.cannontech.common.dr.gear.setup.GroupSelectionMethod;
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.dr.gear.setup.Mode;
 import com.cannontech.common.dr.gear.setup.OperationalState;
+import com.cannontech.common.dr.gear.setup.StopOrder;
 import com.cannontech.common.dr.gear.setup.TemperatureMeasureUnit;
 import com.cannontech.common.dr.gear.setup.WhenToChange;
 import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.MasterCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.RotationGearFields;
+import com.cannontech.common.dr.gear.setup.fields.SepCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SepTemperatureOffsetGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SimpleThermostatRampingGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SmartCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.TargetCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ThermostatSetbackGearFields;
+import com.cannontech.common.dr.gear.setup.fields.TimeRefreshGearFields;
 import com.cannontech.common.dr.gear.setup.fields.WhenToChangeFields;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
@@ -240,6 +244,18 @@ public class LoadProgramSetupControllerHelper {
             SmartCycleGearFields smartCycleGearFields = (SmartCycleGearFields) programGear.getFields();
             setSmartCycleGearFieldsDefaultValue(smartCycleGearFields);
             break;
+        case SepCycle:
+            SepCycleGearFields sepCycleGearFields = (SepCycleGearFields) programGear.getFields();
+            setSepCycleGearFieldsDefaultValues(sepCycleGearFields);
+            break;
+        case MasterCycle:
+            MasterCycleGearFields masterCycleGearFields = (MasterCycleGearFields) programGear.getFields();
+            setMasterCycleGearFieldsDefaultValues(masterCycleGearFields);
+            break;
+        case TimeRefresh:
+            TimeRefreshGearFields timeRefreshGearFields = (TimeRefreshGearFields) programGear.getFields();
+            setTimeRefreshGearFieldsDefaultValues(timeRefreshGearFields);
+            break;
         case EcobeeCycle:
             EcobeeCycleGearFields ecobeeCycleGearFields = (EcobeeCycleGearFields) programGear.getFields();
             setEcobeeCycleGearFieldsDefaultValues(ecobeeCycleGearFields);
@@ -302,6 +318,40 @@ public class LoadProgramSetupControllerHelper {
             targetCycleGearFields.setkWReduction(0.0);
         }
         smartCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
+    }
+
+    private void setSepCycleGearFieldsDefaultValues(SepCycleGearFields sepCycleGearFields) {
+        sepCycleGearFields.setRampIn(true);
+        sepCycleGearFields.setRampOut(true);
+        sepCycleGearFields.setTrueCycle(true);
+        sepCycleGearFields.setControlPercent(50);
+        sepCycleGearFields.setCriticality(6);
+        sepCycleGearFields.setHowToStopControl(HowToStopControl.TimeIn);
+        sepCycleGearFields.setCapacityReduction(100);
+        sepCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
+    }
+
+    private void setMasterCycleGearFieldsDefaultValues(MasterCycleGearFields masterCycleGearFields) {
+        masterCycleGearFields.setControlPercent(50);
+        masterCycleGearFields.setCyclePeriodInMinutes(30);
+        masterCycleGearFields.setGroupSelectionMethod(GroupSelectionMethod.LastControlled);
+        masterCycleGearFields.setRampInPercent(0);
+        masterCycleGearFields.setHowToStopControl(HowToStopControl.TimeIn);
+        masterCycleGearFields.setStopOrder(StopOrder.RANDOM);
+        masterCycleGearFields.setRampOutPercent(0);
+        masterCycleGearFields.setCapacityReduction(100);
+        masterCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
+    }
+
+    private void setTimeRefreshGearFieldsDefaultValues(TimeRefreshGearFields timeRefreshGearFields) {
+        timeRefreshGearFields.setShedTime(TimeIntervals.HOURS_1.getSeconds());
+        timeRefreshGearFields.setSendRate(TimeIntervals.HOURS_1.getSeconds());
+        timeRefreshGearFields.setGroupSelectionMethod(GroupSelectionMethod.LastControlled);
+        timeRefreshGearFields.setHowToStopControl(HowToStopControl.TimeIn);
+        timeRefreshGearFields.setStopOrder(StopOrder.RANDOM);
+        timeRefreshGearFields.setStopCommandRepeat(0);
+        timeRefreshGearFields.setCapacityReduction(100);
+        timeRefreshGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
     }
 
     private void setEcobeeCycleGearFieldsDefaultValues(EcobeeCycleGearFields ecobeeCycleGearFields) {
@@ -403,6 +453,31 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore, HowToStopControl.StopCycle));
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("commandResendRate", TimeIntervals.getCommandResendRate());
+            break;
+        case SepCycle:
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore, HowToStopControl.StopCycle));
+            break;
+        case MasterCycle:
+            model.addAttribute("groupSelectionMethod", GroupSelectionMethod.values());
+            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore, HowToStopControl.TimeIn,
+                HowToStopControl.RampOutTimeIn, HowToStopControl.RampOutRestore));
+            model.addAttribute("stopOrder", List.of(StopOrder.RANDOM, StopOrder.FIRSTINFIRSTOUT));
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            break;
+        case TimeRefresh:
+            model.addAttribute("refreshShedType", List.of(CycleCountSendType.FixedShedTime, CycleCountSendType.DynamicShedTime));
+            model.addAttribute("shedTime", TimeIntervals.getCommandResendRate());
+            List<Integer> noOfGroups = new ArrayList<>();
+            for (int i = 1; i <= 25; i++) {
+                noOfGroups.add(i);
+            }
+            model.addAttribute("numberOfGroups", noOfGroups);
+            model.addAttribute("commandResendRate", TimeIntervals.getCommandResendRate());
+            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore, HowToStopControl.TimeIn, HowToStopControl.RampOutTimeIn, HowToStopControl.RampOutRestore));
+            model.addAttribute("stopOrder", List.of(StopOrder.RANDOM, StopOrder.FIRSTINFIRSTOUT));
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            model.addAttribute("groupSelectionMethod", List.of(GroupSelectionMethod.LastControlled, GroupSelectionMethod.AlwaysFirstGroup, GroupSelectionMethod.LeastControlTime));
             break;
         case EcobeeCycle:
             model.addAttribute("whenToChangeFields", WhenToChange.values());

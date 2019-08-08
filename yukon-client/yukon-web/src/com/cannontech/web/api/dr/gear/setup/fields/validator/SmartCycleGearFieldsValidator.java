@@ -50,16 +50,9 @@ public class SmartCycleGearFieldsValidator extends ProgramGearFieldsValidator<Sm
         }
 
         // Check for Max Cycle Count
-        lmValidatorHelper.checkIfFieldRequired("maxCycleCount", errors, smartCycleGear.getMaxCycleCount(),
-            "Max Cycle Count");
+        lmValidatorHelper.checkIfFieldRequired("maxCycleCount", errors, smartCycleGear.getMaxCycleCount(), "Max Cycle Count");
         if (!errors.hasFieldErrors("maxCycleCount")) {
-            boolean isValidMaxCycleCount = NumberUtils.isNumber(smartCycleGear.getMaxCycleCount());
-            if (isValidMaxCycleCount) {
-                YukonValidationUtils.checkRange(errors, "maxCycleCount",
-                    Integer.parseInt(smartCycleGear.getMaxCycleCount()), 0, 63, false);
-            } else {
-                errors.rejectValue("maxCycleCount", invalidKey, new Object[] { "Max Cycle Count" }, "");
-            }
+            YukonValidationUtils.checkRange(errors, "maxCycleCount", smartCycleGear.getMaxCycleCount(), 0, 63, false);
         }
 
         // Check for Starting Period Count

@@ -441,6 +441,8 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.fixedShedTime">Fixed Shed Time</entry>
 <entry key="yukon.web.modules.dr.setup.gear.maxShedTime">Max Shed Time</entry>
 <entry key="yukon.web.modules.dr.setup.gear.numberOfGroups">Groups Per Send</entry>
+<entry key="yukon.web.modules.dr.setup.gear.sec">sec.</entry>
+<entry key="yukon.web.modules.dr.setup.gear.NONE">(none)</entry>
 
 <entry key="yukon.web.modules.dr.setup.gear.mode">Mode</entry>
 <entry key="yukon.web.modules.dr.setup.gear.unit">Unit</entry>

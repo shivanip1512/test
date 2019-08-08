@@ -227,6 +227,7 @@
                                                      id="gear-quick-view-${gearInfo.id}"
                                                      data-title="${gearInfo.name}"
                                                      data-width="800"
+                                                     data-load-event="yukon:dr:setup:gear:viewMode" 
                                                      data-height="auto"
                                                      data-url="${viewUrl}">
                                                  </div>

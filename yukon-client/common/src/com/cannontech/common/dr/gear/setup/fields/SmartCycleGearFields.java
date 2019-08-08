@@ -19,7 +19,7 @@ public class SmartCycleGearFields implements ProgramGearFields {
     private Integer controlPercent;
     private Integer cyclePeriodInMinutes;
     private CycleCountSendType cycleCountSendType;
-    private String maxCycleCount;
+    private Integer maxCycleCount;
     private Integer startingPeriodCount;
 
     private Integer sendRate;
@@ -65,11 +65,11 @@ public class SmartCycleGearFields implements ProgramGearFields {
         this.cycleCountSendType = cycleCountSendType;
     }
 
-    public String getMaxCycleCount() {
+    public Integer getMaxCycleCount() {
         return maxCycleCount;
     }
 
-    public void setMaxCycleCount(String maxCycleCount) {
+    public void setMaxCycleCount(Integer maxCycleCount) {
         this.maxCycleCount = maxCycleCount;
     }
 
@@ -134,9 +134,9 @@ public class SmartCycleGearFields implements ProgramGearFields {
         setSendRate(smartCycleGear.getResendRate());
 
         if (smartCycleGear.getMethodOptionMax().intValue() > 0) {
-            setMaxCycleCount(String.valueOf(smartCycleGear.getMethodOptionMax()));
+            setMaxCycleCount(smartCycleGear.getMethodOptionMax());
         } else {
-            setMaxCycleCount(CtiUtilities.STRING_NONE);
+            setMaxCycleCount(0);
         }
         setCycleCountSendType(CycleCountSendType.valueOf(smartCycleGear.getMethodOptionType()));
 
@@ -172,8 +172,8 @@ public class SmartCycleGearFields implements ProgramGearFields {
 
         smartCycleGear.setResendRate(getSendRate());
 
-        if (StringUtils.isNumeric(getMaxCycleCount())) {
-            smartCycleGear.setMethodOptionMax(Integer.valueOf(getMaxCycleCount()));
+        if (getMaxCycleCount() != null) {
+            smartCycleGear.setMethodOptionMax(getMaxCycleCount());
         } else {
             smartCycleGear.setMethodOptionMax(0);
         }
