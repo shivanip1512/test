@@ -87,7 +87,7 @@
                                                     <c:when test="${empty gearData.stopDateTime}">
                                                         <c:choose>
                                                             <c:when test="${gearData.knownGoodStopDateTime == false}">
-                                                                <span style="font-style: italic"><i:inline key="yukon.common.unknown"/></span>
+                                                                <td><span style="font-style: italic"><i:inline key="yukon.common.unknown"/></span></td>
                                                             </c:when>
                                                             <c:otherwise>
                                                                 <td id="js-stop-time-td-${programData.programId}">

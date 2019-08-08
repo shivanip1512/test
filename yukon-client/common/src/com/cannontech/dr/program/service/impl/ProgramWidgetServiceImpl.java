@@ -99,17 +99,17 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
         todaysProgramsDataCache.addAll(todaysPrograms);
         List<ProgramData> todaysProgramsFromDB = getProgramsHistoryDetail(from, to);
         for (ProgramData program : todaysProgramsFromDB) {
+            boolean stopTimePresent = true;
             boolean addToCache = true;
             List<GearData> gears = program.getGears();
             for (GearData gear : gears) {
                 if (gear.getStopDateTime() == null) {
-                    addToCache = false;
+                    stopTimePresent = false;
                 }
             }
-            if (addToCache && !isExistInProgramDataCache(program)) {
-                if (!isExistInPreviousDaysProgramsCache(program)) {
+            if (stopTimePresent && !isExistInProgramDataCache(program) && !isExistInPreviousDaysProgramsCache(program)) {
                     todaysProgramsDataCache.add(program);
-                }
+                    addToCache = false;
             } else {
                 // Update cached program data with gear information.
                 for (ProgramData todaysProgram : todaysPrograms) {
@@ -117,11 +117,16 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
                         List<GearData> gearHistory = program.getGears();
                         updateGearInfo(todaysProgram, gearHistory);
                         todaysProgram.setOriginSource(program.getOriginSource());
+                        addToCache = false;
                     }
                 }
             }
             if (isExistInPreviousDaysProgramsCache(program)) {
                 addGearsToProgramHistoryCache(program);
+                addToCache = false;
+            }
+            if (!stopTimePresent && addToCache) {
+                todaysProgramsDataCache.add(program);
             }
         }
     }

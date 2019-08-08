@@ -24,7 +24,7 @@
                                         <c:url var="programURL" value="/dr/program/detail">
                                             <c:param name="programId" value="${programId}"/>
                                         </c:url>
-                                        <td><a href="${programURL}">${fn:escapeXml(program.programName)}</a></td>
+                                        <td width="350"><a href="${programURL}">${fn:escapeXml(program.programName)}</a></td>
                                         <td class="tar"><cti:msg key="${program.originSource.formatKey}"/></td>
                                     </tr>
                                     <c:choose>
