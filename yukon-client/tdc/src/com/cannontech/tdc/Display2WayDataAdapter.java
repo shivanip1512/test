@@ -1522,7 +1522,8 @@ public synchronized void processPointDataReceived( PointData point )
 {
 	// make sure we have a PointData and the display is a user defined one
 	if ( point == null || pointValues == null || pointValues.size() < 1 
-		||	getCurrentDisplay().getDisplayNumber() < Display.PRECANNED_USER_DISPLAY_NUMBER )
+		|| getCurrentDisplay().getDisplayNumber() < Display.PRECANNED_USER_DISPLAY_NUMBER 
+		|| point.getTagsOldTimestamp() )
 	{
 		return;
 	}
