@@ -102,22 +102,22 @@ public class DrDisconnectStatusCallback {
                 break;
             case CONNECTED:
                 // THIS IS THE SUCCESS CASE
-                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_CONFIRMED, now, deviceIds);
-                increment(DrMeterControlStatus.CONTROL_CONFIRMED);
+                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.RESTORE_CONFIRMED, now, deviceIds);
+                increment(DrMeterControlStatus.RESTORE_CONFIRMED);
                 break;
             case DISCONNECTED:
-                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_FAILED, now,  deviceIds);
-                increment(DrMeterControlStatus.CONTROL_FAILED);
+                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.RESTORE_FAILED, now,  deviceIds);
+                increment(DrMeterControlStatus.RESTORE_FAILED);
                 break;
             case FAILURE:
-                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_FAILED, now, deviceIds);
-                increment(DrMeterControlStatus.CONTROL_FAILED);
+                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.RESTORE_FAILED, now, deviceIds);
+                increment(DrMeterControlStatus.RESTORE_FAILED);
                 break;
             //handle CANCELED, CONFIRMED, NOT_CONFIGURED, SUCCESS, UNCONFIRMED, UNSUPPORTED
             default:
                 log.warn("Unexpected connect response: " + resultDetail);
-                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_UNKNOWN, now, deviceIds);
-                increment(DrMeterControlStatus.CONTROL_UNKNOWN);
+                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.RESTORE_UNKNOWN, now, deviceIds);
+                increment(DrMeterControlStatus.RESTORE_UNKNOWN);
                 break;
         }
     }
@@ -131,28 +131,24 @@ public class DrDisconnectStatusCallback {
      */
     private void handleDisconnectResult(CollectionActionDetail resultDetail, Collection<Integer> deviceIds, Instant now) {
         switch (resultDetail) {
-            case ARMED:
-                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.FAILED_ARMED, now, deviceIds);
-                increment(DrMeterControlStatus.FAILED_ARMED);
-                break;
             case CONNECTED:
-                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.RESTORE_FAILED, now, deviceIds);
-                increment(DrMeterControlStatus.RESTORE_FAILED);
+                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_FAILED, now, deviceIds);
+                increment(DrMeterControlStatus.CONTROL_FAILED);
                 break;
             case DISCONNECTED:
                 // THIS IS THE SUCCESS CASE
-                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.RESTORE_CONFIRMED, now, deviceIds);
-                increment(DrMeterControlStatus.RESTORE_CONFIRMED);
+                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_CONFIRMED, now, deviceIds);
+                increment(DrMeterControlStatus.CONTROL_CONFIRMED);
                 break;
             case FAILURE:
-                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.RESTORE_FAILED, now, deviceIds);
-                increment(DrMeterControlStatus.RESTORE_FAILED);
+                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_FAILED, now, deviceIds);
+                increment(DrMeterControlStatus.CONTROL_FAILED);
                 break;
             //handle CANCELED, CONFIRMED, NOT_CONFIGURED, SUCCESS, UNCONFIRMED, UNSUPPORTED
             default:
                 log.warn("Unexpected disconnect response: " + resultDetail);
-                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.RESTORE_UNKNOWN, now, deviceIds);
-                increment(DrMeterControlStatus.RESTORE_UNKNOWN);
+                drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_UNKNOWN, now, deviceIds);
+                increment(DrMeterControlStatus.CONTROL_UNKNOWN);
                 break;
         }
     }

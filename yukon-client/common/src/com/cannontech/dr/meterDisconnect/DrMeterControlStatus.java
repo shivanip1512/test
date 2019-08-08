@@ -10,13 +10,13 @@ public enum DrMeterControlStatus implements DisplayableEnum {
     CONTROL_CONFIRMED,              // Device confirmed successful disconnect
     CONTROL_FAILED_UNSUPPORTED,     // Disconnect failed - command unsupported
     CONTROL_FAILED_NOT_CONFIGURED,  // Disconnect failed - device not configured
-    FAILED_ARMED,                   // Disconnect failed - device misconfigured to arm
     CONTROL_FAILED,                 // Disconnect failed - device sent failure response
     CONTROL_UNKNOWN,                // Disconnect status unknown - received an unexpected status
     CONTROL_TIMEOUT,                // Timeout, no response received for disconnect message
     NO_CONTROL_OPTED_OUT,           // Opt-out prevented disconnect command from being sent
     MANUAL_CONTROL_SENT,            // Disconnect command sent from report page, waiting for response
     
+    FAILED_ARMED,                   // Connect failed - device misconfigured to arm    
     RESTORE_NOT_SENT,               // No re-connect sent yet
     RESTORE_SENT,                   // Device controlled, re-connect command sent, waiting for response.
     RESTORE_CONFIRMED,              // Device confirmed successful re-connect
@@ -42,7 +42,6 @@ public enum DrMeterControlStatus implements DisplayableEnum {
             CONTROL_CONFIRMED,
             CONTROL_FAILED_UNSUPPORTED,
             CONTROL_FAILED_NOT_CONFIGURED,
-            FAILED_ARMED,
             CONTROL_FAILED,
             CONTROL_UNKNOWN,
             CONTROL_TIMEOUT,
@@ -53,6 +52,7 @@ public enum DrMeterControlStatus implements DisplayableEnum {
     
     public static final List<DrMeterControlStatus> getRestoreStatuses() {
         return List.of(
+            FAILED_ARMED,           
             RESTORE_NOT_SENT,
             RESTORE_SENT,
             RESTORE_CONFIRMED,

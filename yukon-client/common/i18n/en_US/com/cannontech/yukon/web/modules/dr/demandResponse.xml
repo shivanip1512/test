@@ -1187,13 +1187,13 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.controlStatus.CONTROL_CONFIRMED">Successful disconnect</entry>
 <entry key="yukon.web.modules.dr.controlStatus.CONTROL_FAILED_UNSUPPORTED">Command not supported</entry>
 <entry key="yukon.web.modules.dr.controlStatus.CONTROL_FAILED_NOT_CONFIGURED">Device not configured</entry>
-<entry key="yukon.web.modules.dr.controlStatus.FAILED_ARMED">Device misconfigured to arm</entry>
 <entry key="yukon.web.modules.dr.controlStatus.CONTROL_FAILED">Failed</entry>
 <entry key="yukon.web.modules.dr.controlStatus.CONTROL_UNKNOWN">Disconnect status unknown</entry>
 <entry key="yukon.web.modules.dr.controlStatus.CONTROL_TIMEOUT">Timeout, no response received</entry>
 <entry key="yukon.web.modules.dr.controlStatus.NO_CONTROL_OPTED_OUT">Opt-out prevented disconnect</entry>
 <entry key="yukon.web.modules.dr.controlStatus.MANUAL_CONTROL_SENT">Manual control sent, waiting for response</entry>
 
+<entry key="yukon.web.modules.dr.controlStatus.FAILED_ARMED">Device misconfigured to arm</entry>
 <entry key="yukon.web.modules.dr.controlStatus.RESTORE_NOT_SENT">Restore not sent yet</entry>
 <entry key="yukon.web.modules.dr.controlStatus.RESTORE_SENT">Restore sent, waiting for response</entry>
 <entry key="yukon.web.modules.dr.controlStatus.RESTORE_CONFIRMED">Successful re-connect</entry>
