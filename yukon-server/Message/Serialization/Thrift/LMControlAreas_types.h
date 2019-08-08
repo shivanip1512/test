@@ -1632,7 +1632,7 @@ class LMProgramDirect : public virtual ::apache::thrift::TBase {
 
   LMProgramDirect(const LMProgramDirect&);
   LMProgramDirect& operator=(const LMProgramDirect&);
-  LMProgramDirect() : _currentGearNumber(0), _lastGroupControlled(0), _directStartTime(0), _directstopTime(0), _notifyActiveTime(0), _notifyInactiveTime(0), _startedRampingOut(0), _triggerOffset(0), _triggerRestoreOffset(0), _constraintOverride(0) {
+  LMProgramDirect() : _currentGearNumber(0), _lastGroupControlled(0), _directStartTime(0), _directstopTime(0), _notifyActiveTime(0), _notifyInactiveTime(0), _startedRampingOut(0), _triggerOffset(0), _triggerRestoreOffset(0), _constraintOverride(0), _originSource() {
   }
 
   virtual ~LMProgramDirect() throw();
@@ -1651,6 +1651,7 @@ class LMProgramDirect : public virtual ::apache::thrift::TBase {
   std::vector< ::Cti::Messaging::Serialization::Thrift::GenericMessage>  _lmProgramDirectGroups;
   std::vector< ::Cti::Messaging::Serialization::Thrift::GenericMessage>  _activeMasters;
   std::vector< ::Cti::Messaging::Serialization::Thrift::GenericMessage>  _activeSubordinates;
+  std::string _originSource;
 
   void __set__baseMessage(const LMProgramBase& val);
 
@@ -1681,6 +1682,8 @@ class LMProgramDirect : public virtual ::apache::thrift::TBase {
   void __set__activeMasters(const std::vector< ::Cti::Messaging::Serialization::Thrift::GenericMessage> & val);
 
   void __set__activeSubordinates(const std::vector< ::Cti::Messaging::Serialization::Thrift::GenericMessage> & val);
+
+  void __set__originSource(const std::string& val);
 
   bool operator == (const LMProgramDirect & rhs) const
   {
@@ -1713,6 +1716,8 @@ class LMProgramDirect : public virtual ::apache::thrift::TBase {
     if (!(_activeMasters == rhs._activeMasters))
       return false;
     if (!(_activeSubordinates == rhs._activeSubordinates))
+      return false;
+    if (!(_originSource == rhs._originSource))
       return false;
     return true;
   }

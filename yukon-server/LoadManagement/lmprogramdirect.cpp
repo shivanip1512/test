@@ -5285,6 +5285,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
         _master_programs = right._master_programs;
         _subordinate_programs = right._subordinate_programs;
         _controlActivatedByStatusTrigger = right._controlActivatedByStatusTrigger;
+        _origin = right._origin;
     }
     return *this;
 }
@@ -6321,7 +6322,7 @@ string CtiLMProgramDirect::getLastUser()
     return _last_user;
 }
 
-std::string CtiLMProgramDirect::getOrigin()
+std::string CtiLMProgramDirect::getOrigin() const
 {
     return _origin;
 }

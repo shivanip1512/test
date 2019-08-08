@@ -5246,6 +5246,10 @@ void LMProgramDirect::__set__activeMasters(const std::vector< ::Cti::Messaging::
 void LMProgramDirect::__set__activeSubordinates(const std::vector< ::Cti::Messaging::Serialization::Thrift::GenericMessage> & val) {
   this->_activeSubordinates = val;
 }
+
+void LMProgramDirect::__set__originSource(const std::string& val) {
+  this->_originSource = val;
+}
 std::ostream& operator<<(std::ostream& out, const LMProgramDirect& obj)
 {
   obj.printTo(out);
@@ -5280,6 +5284,7 @@ uint32_t LMProgramDirect::read(::apache::thrift::protocol::TProtocol* iprot) {
   bool isset__lmProgramDirectGroups = false;
   bool isset__activeMasters = false;
   bool isset__activeSubordinates = false;
+  bool isset__originSource = false;
 
   while (true)
   {
@@ -5457,6 +5462,14 @@ uint32_t LMProgramDirect::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 16:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->_originSource);
+          isset__originSource = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -5495,6 +5508,8 @@ uint32_t LMProgramDirect::read(::apache::thrift::protocol::TProtocol* iprot) {
   if (!isset__activeMasters)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__activeSubordinates)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset__originSource)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -5596,6 +5611,10 @@ uint32_t LMProgramDirect::write(::apache::thrift::protocol::TProtocol* oprot) co
   }
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("_originSource", ::apache::thrift::protocol::T_STRING, 16);
+  xfer += oprot->writeString(this->_originSource);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -5618,6 +5637,7 @@ void swap(LMProgramDirect &a, LMProgramDirect &b) {
   swap(a._lmProgramDirectGroups, b._lmProgramDirectGroups);
   swap(a._activeMasters, b._activeMasters);
   swap(a._activeSubordinates, b._activeSubordinates);
+  swap(a._originSource, b._originSource);
 }
 
 LMProgramDirect::LMProgramDirect(const LMProgramDirect& other88) {
@@ -5636,6 +5656,7 @@ LMProgramDirect::LMProgramDirect(const LMProgramDirect& other88) {
   _lmProgramDirectGroups = other88._lmProgramDirectGroups;
   _activeMasters = other88._activeMasters;
   _activeSubordinates = other88._activeSubordinates;
+  _originSource = other88._originSource;
 }
 LMProgramDirect& LMProgramDirect::operator=(const LMProgramDirect& other89) {
   _baseMessage = other89._baseMessage;
@@ -5653,6 +5674,7 @@ LMProgramDirect& LMProgramDirect::operator=(const LMProgramDirect& other89) {
   _lmProgramDirectGroups = other89._lmProgramDirectGroups;
   _activeMasters = other89._activeMasters;
   _activeSubordinates = other89._activeSubordinates;
+  _originSource = other89._originSource;
   return *this;
 }
 void LMProgramDirect::printTo(std::ostream& out) const {
@@ -5673,6 +5695,7 @@ void LMProgramDirect::printTo(std::ostream& out) const {
   out << ", " << "_lmProgramDirectGroups=" << to_string(_lmProgramDirectGroups);
   out << ", " << "_activeMasters=" << to_string(_activeMasters);
   out << ", " << "_activeSubordinates=" << to_string(_activeSubordinates);
+  out << ", " << "_originSource=" << to_string(_originSource);
   out << ")";
 }
 

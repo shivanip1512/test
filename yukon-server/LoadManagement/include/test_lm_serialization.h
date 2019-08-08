@@ -836,6 +836,8 @@ struct TestCase<CtiLMProgramDirect> : public TestCase<CtiLMProgramBase>
                 GenerateRandom( (*imsg._subordinate_programs.rbegin())->_programstate, programState_items ); // re-call random generator on the program state
             }
         }
+
+        GenerateRandom( imsg._origin );
     }
 };
 

@@ -144,7 +144,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     virtual void setChangeReason(const std::string& reason);
 
     void setOrigin(const std::string& origin) override;
-    std::string getOrigin();
+    std::string getOrigin() const;
 
     virtual bool getHasBeatThePeakGear() const;
 

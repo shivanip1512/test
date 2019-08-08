@@ -206,6 +206,7 @@ MessagePtr<Thrift::LMProgramDirect>::type populateThrift( const ::CtiLMProgramDi
         }
     }
     omsg->__set__activeSubordinates             ( activeSubordinates );
+    omsg->__set__originSource                   ( imsg.getOrigin() );
 
     return omsg;
 }
