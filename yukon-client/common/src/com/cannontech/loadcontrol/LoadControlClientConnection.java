@@ -404,7 +404,6 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
             directProgram.setNotifyActiveTime(changedProgram.getNotifyActiveTime());
             directProgram.setNotifyInactiveTime(changedProgram.getNotifyInactiveTime());
             directProgram.setStartedRampingOut(changedProgram.getStartedRampingOutTime());
-            if (directProgram.isScheduled())
             directProgram.setOriginSource(changedProgram.getOriginSource());
         }
 

@@ -290,10 +290,7 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
         Origin of program start:
         <ul>
             <li><b>Manual</b> – Program started manually from Yukon Web Application or Tabular Data Console (legacy).</li>
-            <li><b>Automatic</b> - Program started via control area trigger and timed start program..</li>
-            <li><b>EIM</b> – Program started via Enterprise Integration Module.</li>
-            <li><b>Multispeak</b> – Program started via MultiSpeak.</li>
-            <li><b>OpenADR</b> – Program started via OpenADR.</li>
+            <li><b>Automatic</b> - Program started via control area trigger and timed start program.</li>
             <li><b>Unknown</b> - Origin not known.</li>
         </ul>
         <br>
