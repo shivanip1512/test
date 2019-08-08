@@ -41,23 +41,28 @@ public class ThirdPartyJavaLibraryTest {
             "catalina-ha.jar",
             "catalina-storeconfig.jar",
             "catalina-tribes.jar",
-            "ecj-4.7.3a.jar",
+            "ecj-4.10.jar",
             "el-api.jar",
             "jasper-el.jar",
             "jasper.jar",
             "jaspic-api.jar",
             "tomcat-coyote.jar",
             "tomcat-dbcp.jar",
+            "tomcat-i18n-cs.jar",
+            "tomcat-i18n-de.jar",
             "tomcat-i18n-es.jar",
             "tomcat-i18n-fr.jar",
             "tomcat-i18n-ja.jar",
+            "tomcat-i18n-ko.jar",
+            "tomcat-i18n-pt-BR.jar",
             "tomcat-i18n-ru.jar",
+            "tomcat-i18n-zh-CN.jar",
             "tomcat-jdbc.jar",
             "tomcat-jni.jar",
             "tomcat-websocket.jar",
             "websocket-api.jar",
             "catalina.jar",
-            "tomcat-juli-9.0.12.jar");
+            "tomcat-juli-9.0.20.jar");
 
     private static Stream<File> recurse(File f) {
         if (f.isDirectory()) {
