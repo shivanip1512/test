@@ -223,6 +223,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
         if (CollectionUtils.isNotEmpty(prog.getLmProgramDirectGearVector())) {
             prog.getLmProgramDirectGearVector().clear();
+            LMProgramDirectGear.deleteAllDirectGears(loadProgram.getProgramId());
         }
 
         if (loadProgram.getGears() != null) {

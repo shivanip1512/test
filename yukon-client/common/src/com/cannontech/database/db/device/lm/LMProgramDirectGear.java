@@ -1,11 +1,13 @@
 package com.cannontech.database.db.device.lm;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.device.lm.ItronCycleGear;
 import com.cannontech.database.data.device.lm.BeatThePeakGear;
@@ -127,6 +129,11 @@ public abstract class LMProgramDirectGear
 	{
 		delete(TABLE_NAME, "GearID", getGearID());
 	}
+	
+    public final static void deleteAllDirectGears(Integer deviceID) {
+        Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+        deleteAllDirectGears(deviceID, conn);
+    }
 	/**
 	 * This method was created in VisualAge.
 	 * @return com.cannontech.database.db.point.State[]
