@@ -51,7 +51,7 @@ public:
     int second() const;
     int secondGMT() const;
     ctitime_t seconds() const;
-	ctitime_t getLocalTimeSeconds() const;
+    ctitime_t getLocalTimeSeconds() const;
     int minute() const;
     int minuteGMT()const;
     int hour() const;
