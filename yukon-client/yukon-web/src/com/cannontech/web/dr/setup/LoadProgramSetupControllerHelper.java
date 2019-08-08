@@ -265,6 +265,21 @@ public class LoadProgramSetupControllerHelper {
             gearFields.setCapacityReduction(100);
             gearFields.setWhenToChangeFields(whenToChange);
             gearFields.setHowToStopControl(HowToStopControl.TimeIn);
+            gearFields.setValueTa(0);
+            gearFields.setValueTb(0);
+            gearFields.setValueTc(0);
+            gearFields.setValueTd(0);
+            gearFields.setValueTe(0);
+            gearFields.setValueTf(0);
+            gearFields.setValueD(0);
+            gearFields.setValueB(0);
+            gearFields.setValueF(0);
+            gearFields.setMinValue(0);
+            gearFields.setMaxValue(0);
+            gearFields.setIsCoolMode(false);
+            gearFields.setIsHeatMode(false);
+            gearFields.setAbsoluteOrDelta(AbsoluteOrDelta.DELTA);
+            gearFields.setMeasureUnit(TemperatureMeasureUnit.CELSIUS);
             break;
         case SimpleThermostatRamping:
             SimpleThermostatRampingGearFields simpleThermostatRampingGearFields = (SimpleThermostatRampingGearFields)programGear.getFields();
