@@ -76,7 +76,7 @@ yukon.dr.setup.controlArea = (function() {
         return errorFlag;
     },
     _enableDisableTriggerCreate = function (){
-        if($(".js-trigger-container > div").length >=2){
+        if($(".js-trigger-container > div").length >= 3){
             $(".js-create-trigger").prop('disabled', true);
         }else{
         	$(".js-create-trigger").prop('disabled', false);
@@ -231,6 +231,7 @@ yukon.dr.setup.controlArea = (function() {
                     dialog.dialog('close');
                 }
                 $("#js-trigger-id").val(triggerID);
+                $("#js-trigger-id").val(triggerID);
                 $('#js-controlArea-trigger-form').ajaxSubmit({
                     success: function (data) {
                         var triggerId = data.triggerId, 
@@ -261,13 +262,12 @@ yukon.dr.setup.controlArea = (function() {
                         clonedRow.find(".select-box-item-remove").attr("data-id", triggerId);
                         
                         _renderConfirmDeletePopup(triggerId, triggerName);
-                        /*clonedRow.find("#js-confirm-delete").attr("on", "#delete-trigger-" + triggerId);
-                        clonedRow.find("$js-confirm-delete").attr("argument", triggerName);*/
 
                         var clonedDialog = $(".js-trigger-dialog-template").clone();
                         clonedDialog.attr("id", "js-trigger-dialog-" + triggerId);
                         clonedDialog.attr("data-target","#js-trigger-link-" + triggerId)
                         clonedDialog.attr("data-url", url);
+                        clonedDialog.attr("data-title", triggerName);
                         clonedDialog.removeClass("js-trigger-dialog-template");
                         $(".js-trigger-container").append(clonedDialog);
 

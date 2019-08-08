@@ -75,14 +75,24 @@ yukon.dr.setup.controlArea.trigger = (function() {
             
             $(document).on('yukon:trigger:identification:complete', function() {
                 var pointId = $("#point-trigger-identification").val();
+                var mode = $("#js-form-trigger-edit-mode").val();
                 $.ajax({
                     url: yukon.url('/dr/setup/controlArea/getNormalState/' + pointId),
                     type: 'get'
                 }).done(function (data) {
-                    data.normalStates.forEach(function (field){
-                        var option = $('<option value=' + field.id + '>' + field.name + '</option>');
-                        $('#js-ststus-normal-state').append(option);
-                    });
+                    if(mode === 'CREATE'){
+                        $("#js-status-normal-state-create").empty();
+                        data.normalStates.forEach(function (field){
+                            var option = $('<option value=' + field.id + '>' + field.name + '</option>');
+                            $("#js-status-normal-state-create").append(option);
+                        });
+                    } else {
+                        $("#js-status-normal-state-edit").empty();
+                        data.normalStates.forEach(function (field){
+                            var option = $('<option value=' + field.id + '>' + field.name + '</option>');
+                            $("#js-status-normal-state-edit").append(option);
+                        });
+                    }
                 });
             });
             _initialized = true;

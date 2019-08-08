@@ -510,7 +510,7 @@ Are you sure you want do this?</entry>
 
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.title">Create Trigger</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.type">Type</entry>
-<entry key="yukon.web.modules.dr.setup.controlArea.trigger.identiofication">Trigger Identification</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.trigger.identification">Trigger Identification</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.THRESHOLD">Threshold</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.THRESHOLD_POINT">Threshold Point</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.STATUS">Status</entry>
@@ -525,7 +525,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.ahead">Ahead</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.NONE">(none)</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.LSF">LSF</entry>
-<entry key="yukon.web.modules.dr.setup.controlArea.trigger.identiofication.required">Trigger Identification is required.</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.trigger.identification.required">Trigger Identification is required.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.peakTracking.required">Peak Tracking is required.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.thresholdPointSettings.required">Threshold Point Settings is required.</entry>
 </properties>

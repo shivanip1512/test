@@ -72,17 +72,16 @@
                 <tags:sectionContainer2 nameKey="trigger">
                     <div class="js-trigger-template-row select-box-item dn" data-trigger-id="0">
                         <span class="js-trigger-name"></span>
-                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove" data-ok-event="yukon:trigger:delete" />
-                        <d:confirm on="" nameKey="confirmDelete"/>
+                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove" data-ok-event="yukon:trigger:delete"/>
                     </div>
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <c:if test="${empty controlArea.triggers}">
-                            <span class="empty-list js-no-triggers"><i:inline key=".noTriggersAssigned" /></span>
+                            <span class="empty-list js-no-triggers"><i:inline key=".noTriggersAssigned"/></span>
                         </c:if>
                         <div class="js-trigger-container select-box">
                             <c:forEach var="trigger" items="${controlArea.triggers}" varStatus="status">
-                                <c:set var="triggerId" value="${triggerIds[status.index]}" />
-                                <cti:url var="triggerUrl" value="/dr/setup/controlArea/renderTrigger/${triggerId}?mode=${mode}" />
+                                <c:set var="triggerId" value="${triggerIds[status.index]}"/>
+                                <cti:url var="triggerUrl" value="/dr/setup/controlArea/renderTrigger/${triggerId}?mode=${mode}"/>
                                 <cti:triggerName pointId="${trigger.triggerPointId}" type="${trigger.triggerType}" var="triggerName"/>
                                 <div class="select-box-item" data-trigger-id="${triggerId}" id="js-trigger-${triggerId}">
                                     <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove"
@@ -90,7 +89,7 @@
                                     <d:confirm on="#delete-trigger-${triggerId}" nameKey="confirmDelete"
                                         argument="${fn:escapeXml(triggerName)}"/>
                                     <a href="${triggerUrl}" class="js-trigger-link" data-popup="#js-trigger-dialog-${triggerId}"
-                                        id="js-trigger-link-${triggerId}" data-trigger-id="${triggerId}"> 
+                                        id="js-trigger-link-${triggerId}" data-trigger-id="${triggerId}">
                                             ${fn:escapeXml(triggerName)}
                                     </a>
                                 </div>
@@ -108,22 +107,22 @@
                         </div>
                         <br />
                         <div class="action-area">
-                            <cti:url var="triggerPopupUrl" value="/dr/setup/controlArea/renderTrigger" />
-                            <cti:msg2 var="triggerTitle" key="yukon.web.modules.dr.setup.controlArea.triggerCreate.title" />
-                            <cti:button nameKey="create" icon="icon-plus-green" classes="fr js-create-trigger" data-popup="#js-add-triggers" />
+                            <cti:url var="triggerPopupUrl" value="/dr/setup/controlArea/renderTrigger"/>
+                            <cti:msg2 var="triggerTitle" key="yukon.web.modules.dr.setup.controlArea.triggerCreate.title"/>
+                            <cti:button nameKey="create" icon="icon-plus-green" classes="fr js-create-trigger" data-popup="#js-add-triggers"/>
                         </div>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
                         <c:choose>
                             <c:when test="${empty controlArea.triggers}">
-                                <span class="empty-list js-no-triggers"><i:inline key=".noTriggersAssigned" /></span>
+                                <span class="empty-list js-no-triggers"><i:inline key=".noTriggersAssigned"/></span>
                             </c:when>
                             <c:otherwise>
                                 <table class="compact-results-table dashed">
                                     <thead>
                                         <tr>
-                                            <th><i:inline key="yukon.common.name" /></th>
-                                            <th><i:inline key="yukon.common.type" /></th>
+                                            <th><i:inline key="yukon.common.name"/></th>
+                                            <th><i:inline key="yukon.common.type"/></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -139,7 +138,7 @@
                                                     </a>
                                                 </td>
                                                 <td>
-                                                    <i:inline key="yukon.web.modules.dr.setup.controlArea.trigger.${trigger.triggerType}" />
+                                                    <i:inline key="yukon.web.modules.dr.setup.controlArea.trigger.${trigger.triggerType}"/>
                                                 </td>
                                                 <div 
                                                     id="js-trigger-dialog-${triggerId}"

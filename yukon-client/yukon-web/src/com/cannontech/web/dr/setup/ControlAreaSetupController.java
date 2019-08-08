@@ -262,7 +262,8 @@ public class ControlAreaSetupController {
     @GetMapping("/renderTrigger/{triggerId}")
     public String renderTrigger(ModelMap model, @PathVariable String triggerId, @RequestParam PageEditMode mode,
             YukonUserContext userContext, HttpServletRequest request) {
-        model.addAttribute("mode", mode);
+        PageEditMode editMode = mode == PageEditMode.CREATE ? PageEditMode.EDIT : mode;
+        model.addAttribute("mode", editMode);
         ControlAreaTrigger controlAreaTrigger = controlAreaTriggerCache.asMap().get(triggerId);
         if (controlAreaTrigger.getTriggerType() == ControlAreaTriggerType.STATUS) {
             model.addAttribute("normalStates", retrieveNormalState(controlAreaTrigger.getTriggerPointId(), userContext, request));
