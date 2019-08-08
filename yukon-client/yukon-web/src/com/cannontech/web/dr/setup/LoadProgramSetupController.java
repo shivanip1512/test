@@ -183,9 +183,6 @@ public class LoadProgramSetupController {
                 if (result.hasGlobalErrors()) {
 
                     List<ObjectError> objectErrorList = result.getGlobalErrors();
-                
-                    
-
                     List<String> errors = objectErrorList.stream()
                                                          .map(obj -> obj.getCode())
                                                          .collect(Collectors.toList());
