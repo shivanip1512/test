@@ -1,4 +1,3 @@
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <tags:nameValue2 nameKey=".whenToChange">
     <cti:displayForPageEditModes modes="EDIT,CREATE">
         <tags:selectWithItems id="whenToChange" path="fields.whenToChangeFields.whenToChange" items="${whenToChangeFields}" />
