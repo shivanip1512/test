@@ -5,12 +5,30 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:msgScope paths="yukon.web.modules.dr.setup.gear">
     <tags:setFormEditMode mode="${mode}" />
+    
     <cti:url var="action" value="/dr/setup/loadProgram/gear/save" />
     <div class="js-program-gear-container">
         <form:form modelAttribute="programGear" action="${action}" method="post" id="js-program-gear-form">
+            <div class="js-help-section">
+                <span class="fr js-help-btn-span dn">
+                    <cti:button renderMode="image" icon="icon-help" classes="fr js-help-btn"/>
+                </span>
+    
+                <cti:url var="simpleThermostatRampingGraph" value="/WebConfig/yukon/SimpleThermostatRampingGraph.png"/>
+                <c:set var="simpleThermostatRampingGraphCss" value="width:250 px; height: 100px; display:block; margin-left:auto; margin-right:auto;"/>
+    
+                <cti:url value="/WebConfig/yukon/ThermostatRampingGraph.png" var="thermostatRampingGraph"/>
+                <c:set var="thermostatRampingGraphCss" value="width:250 px; height: 100px; display:block; margin-left:auto; margin-right:auto;"/>
+    
+                <tags:alertBox type="info" classes="dn js-user-message js-simple-thermostat-ramping-alert-box" 
+                               includeCloseButton="true" imgUrl="${simpleThermostatRampingGraph}" imgCss="${simpleThermostatRampingGraphCss}"/>
+                <tags:alertBox type="info" classes="dn js-user-message js-thermostat-ramping-alert-box" 
+                               includeCloseButton="true" imgUrl="${thermostatRampingGraph}" imgCss="${thermostatRampingGraphCss}"/>
+            </div>
             <cti:csrfToken />
             <input type="hidden" name="programGear" value="${selectedGearType}">
             <input type="hidden" name="programType" value="${programType}" />
@@ -18,12 +36,19 @@
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".gearName">
                         <tags:input id="gearName" path="gearName" size="25" maxlength="60" autofocus="autofocus" />
+                        <br>
+                        <span id="gearNameIsBlankError" class="error dn"><i:inline key="yukon.web.error.isBlank"/></span>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".gearType">
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
                             <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl" />
                             <tags:selectWithItems items="${gearTypes}" id="controlMethod" path="controlMethod" defaultItemLabel="${selectLbl}"
                                 defaultItemValue="" />
+                            <br>
+                            <span id="gearTypeIsRequiredError" class="error dn">
+                                <cti:msg2 key=".gearType" var="gearTypeLbl"/>
+                                <i:inline key="yukon.web.error.fieldrequired" arguments="${gearTypeLbl}"/>
+                            </span>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
@@ -47,8 +72,16 @@
                 <c:if test="${selectedGearType == 'NestStandardCycle'}">
                     <%@ include file="nestStandardCycle.jsp" %>
                 </c:if>
+                <c:if test="${selectedGearType == 'ThermostatRamping'}">
+                    <%@ include file="thermostatRamping.jsp" %>
+                </c:if>
+                <c:if test="${selectedGearType == 'SimpleThermostatRamping'}">
+                    <%@ include file="simpleThermostatRamping.jsp" %>
+                </c:if>
+                <c:if test="${selectedGearType == 'SepTemperatureOffset'}">
+                    <%@ include file="sepTempreatureOffset.jsp" %>
+                </c:if>
             </div>
         </form:form>
     </div>
-
 </cti:msgScope>

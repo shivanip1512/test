@@ -504,7 +504,7 @@
     <div id="gear-create-popup" 
          data-title="${programGearCreation}" 
          data-url="${createGearUrl}" 
-         data-width="800" 
+         data-width="900" 
          data-event="yukon:dr:setup:program:saveGear"
          data-ok-text="<cti:msg2 key="yukon.common.save"/>" 
          data-dialog>

@@ -23,12 +23,18 @@ yukon.ui.numeric= (function () {
             $('.js-numeric').each(function(idx, elm) {
                 var minValue = $(this).data('minValue'),
                     maxValue = $(this).data('maxValue'),
-                    stepValue = $(this).data('stepValue');            
-                $(this).spinner({
-                    min: minValue,
-                    max: maxValue,
-                    step: stepValue
-                });
+                    stepValue = $(this).data('stepValue'),
+                    spanCss = $(this).data('wrapperCss'),
+                    numberFormat = $(this).data('isDecimalNumber') ? "n" : null;
+            
+                    $(this).spinner({
+                        min: minValue,
+                        max: maxValue,
+                        step: stepValue,
+                        numberFormat: numberFormat
+                    });
+                    
+                    $(this).closest(".ui-spinner").addClass(spanCss);
             });
             
             $(document).on('blur', '.js-numeric', function (event) {

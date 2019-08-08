@@ -13,6 +13,8 @@
                          description="Arguments to use when resolving the i18n message. Only valid when 'key' is used." %>
 <%@ attribute name="classes" %>
 <%@ attribute name="includeCloseButton" type="java.lang.Boolean" %>
+<%@ attribute name="imgUrl" type="java.lang.String" %>
+<%@ attribute name="imgCss" type="java.lang.String" %>
 
                          
 <cti:default var="type" value="error"/>
@@ -21,10 +23,13 @@
     <c:if test="${includeCloseButton}">
         <i class="cp fr icon icon-close-x" onclick="$(this).parent().addClass('dn');"></i>
     </c:if>
+    <c:if test="${not empty imgUrl}">
+        <img class="vam" src="${imgUrl}" style="${imgCss}">
+    </c:if>
     <c:choose>
         <c:when test="${not empty pageScope.key}">
             <i:inline key="${key}" arguments="${arguments}"/>
         </c:when>
         <c:otherwise><jsp:doBody/></c:otherwise>
     </c:choose>
-</div>
+</div> 

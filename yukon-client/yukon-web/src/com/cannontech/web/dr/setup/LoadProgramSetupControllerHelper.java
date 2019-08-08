@@ -13,15 +13,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
 
+import com.cannontech.common.dr.gear.setup.AbsoluteOrDelta;
 import com.cannontech.common.dr.gear.setup.CycleCountSendType;
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
+import com.cannontech.common.dr.gear.setup.Mode;
 import com.cannontech.common.dr.gear.setup.OperationalState;
+import com.cannontech.common.dr.gear.setup.TemperatureMeasureUnit;
 import com.cannontech.common.dr.gear.setup.WhenToChange;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.SepTemperatureOffsetGearFields;
+import com.cannontech.common.dr.gear.setup.fields.SimpleThermostatRampingGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SmartCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.TargetCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.ThermostatSetbackGearFields;
 import com.cannontech.common.dr.gear.setup.fields.WhenToChangeFields;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
@@ -213,6 +219,8 @@ public class LoadProgramSetupControllerHelper {
      * Default values for object should be set here.
      */
     public void setDefaultGearFieldValues(ProgramGear programGear) {
+        WhenToChangeFields whenToChange = new WhenToChangeFields();
+        whenToChange.setWhenToChange(WhenToChange.None);
         switch (programGear.getControlMethod()) {
         case MagnitudeCycle:
         case TrueCycle:
@@ -246,6 +254,38 @@ public class LoadProgramSetupControllerHelper {
             itronCycleGearFields.setDutyCyclePercent(50);
             itronCycleGearFields.setCriticality(1);
             itronCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
+            break;
+        case ThermostatRamping:
+            ThermostatSetbackGearFields gearFields = (ThermostatSetbackGearFields) programGear.getFields();
+            gearFields.setCapacityReduction(100);
+            gearFields.setWhenToChangeFields(whenToChange);
+            gearFields.setHowToStopControl(HowToStopControl.TimeIn);
+            break;
+        case SimpleThermostatRamping:
+            SimpleThermostatRampingGearFields simpleThermostatRampingGearFields = (SimpleThermostatRampingGearFields)programGear.getFields();
+            simpleThermostatRampingGearFields.setMode(Mode.COOL);
+            simpleThermostatRampingGearFields.setRandomStartTimeInMinutes(0);
+            simpleThermostatRampingGearFields.setPreOpTemp(0);
+            simpleThermostatRampingGearFields.setPreOpTimeInMinutes(0);
+            simpleThermostatRampingGearFields.setPreOpHoldInMinutes(0);
+            simpleThermostatRampingGearFields.setMaxRuntimeInMinutes(480);
+            simpleThermostatRampingGearFields.setWhenToChangeFields(whenToChange);
+            simpleThermostatRampingGearFields.setMax(0);
+            simpleThermostatRampingGearFields.setRampPerHour(0f);
+            simpleThermostatRampingGearFields.setRampOutTimeInMinutes(0);
+            simpleThermostatRampingGearFields.setHowToStopControl(HowToStopControl.TimeIn);
+            break;
+        case SepTemperatureOffset:
+            SepTemperatureOffsetGearFields sepTemperatureOffsetGearFields = (SepTemperatureOffsetGearFields)programGear.getFields();
+            sepTemperatureOffsetGearFields.setRampIn(true);
+            sepTemperatureOffsetGearFields.setRampOut(true);
+            sepTemperatureOffsetGearFields.setMode(Mode.HEAT);
+            sepTemperatureOffsetGearFields.setCelsiusOrFahrenheit(TemperatureMeasureUnit.FAHRENHEIT);
+            sepTemperatureOffsetGearFields.setOffset(1.0);
+            sepTemperatureOffsetGearFields.setCriticality(6);
+            sepTemperatureOffsetGearFields.setHowToStopControl(HowToStopControl.TimeIn);
+            sepTemperatureOffsetGearFields.setCapacityReduction(100);
+            sepTemperatureOffsetGearFields.setWhenToChangeFields(whenToChange);
             break;
         }
     }
@@ -315,10 +355,24 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("peakLoadShaping",List.of(PeakLoadShape.PEAK_STANDARD,PeakLoadShape.PEAK_SYMMETRIC,PeakLoadShape.PEAK_UNIFORM,PeakLoadShape.PEAK_UNSPECIFIED));
             model.addAttribute("postPeakLoadShaping",List.of(PostLoadShape.POST_STANDARD,PostLoadShape.POST_RAMPING,PostLoadShape.POST_UNSPECIFIED));
             break;
-            
+        case ThermostatRamping:
+            model.addAttribute("tempreatureMode", true);
+            model.addAttribute("units", TemperatureMeasureUnit.values());
+            model.addAttribute("setpoints", AbsoluteOrDelta.values());
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
+            break;
+        case SimpleThermostatRamping:
+            model.addAttribute("tempreatureModes", Mode.values());
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
+            break;
+        case SepTemperatureOffset:
+            model.addAttribute("tempreatureModes", Mode.values());
+            model.addAttribute("units", TemperatureMeasureUnit.values());
+            model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            break;
         }
     }
-
-   
-
 }

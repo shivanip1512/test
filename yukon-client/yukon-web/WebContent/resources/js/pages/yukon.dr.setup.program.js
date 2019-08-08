@@ -73,26 +73,14 @@ yukon.dr.setup.program = (function() {
             $('.noswitchtype').html('');
         }
     },
-
-    _programGear = function(element) {
-        yukon.ui.block($('#js-gear-fields-container'));
-        var gearType = element.val(), 
-            gearName = element.closest("div.js-program-gear-container").find("input[name='gearName']").val(), 
-            programType = element.closest("div.js-program-gear-container").find("input[name='programType']").val();
-
-        $.ajax({
-            url : yukon.url('/dr/setup/loadProgram/populateGearFields/' + gearType),
-            type : 'get',
-            data : {
-                gearName : gearName,
-                programType : programType
-            }
-        }).done(function(data) {
-            $(".js-program-gear-container").empty();
-            $(".js-program-gear-container").html(data);
-            yukon.ui.unblock($('#js-gear-fields-container'));
-        });
-    }, 
+    
+    _initCss = function () {
+        $("#js-program-gear-form").find(".timeOffsetWrap").css({"margin-left" : "-5px"});
+        $("#js-program-gear-form").find(".js-delta-value").css({"margin-left" : "-5px"});
+        var selectedGearType = $("#controlMethod option:selected").val();
+        $(".js-help-btn-span").toggleClass("dn", selectedGearType != 'ThermostatRamping' && selectedGearType != 'SimpleThermostatRamping');
+        yukon.ui.initDateTimePickers().ancestorInit('.js-simple-thermostat-ramping-gear');
+    },
 
     mod = {
 
@@ -101,6 +89,8 @@ yukon.dr.setup.program = (function() {
 
             if (_initialized)
                 return;
+            
+            _initCss();
 
             $(document).on('click', '#js-program-cancel-btn', function(event) {
                 window.history.back();
@@ -245,31 +235,63 @@ yukon.dr.setup.program = (function() {
             });
 
             $(document).on('change', '#controlMethod', function(event) {
-                _programGear($(this));
+                var isControlMethodBlank = $("#controlMethod option:selected").val() == "" ? true :false;
+                $("#js-gear-fields-container").toggleClass('dn', isControlMethodBlank);
+                
+                if (!isControlMethodBlank) {
+                    yukon.ui.block($('#js-gear-fields-container'));
+                    var gearType = $(this).val(), 
+                        gearName = $(this).closest("div.js-program-gear-container").find("input[name='gearName']").val(), 
+                        programType = $(this).closest("div.js-program-gear-container").find("input[name='programType']").val();
+
+                    $.ajax({
+                        url : yukon.url('/dr/setup/loadProgram/populateGearFields/' + gearType),
+                        type : 'get',
+                        data : {
+                            gearName : gearName,
+                            programType : programType
+                        }
+                    }).done(function(data) {
+                        $(".js-program-gear-container").empty();
+                        $(".js-program-gear-container").html(data);
+                        yukon.ui.unblock($('#js-gear-fields-container'));
+                        _initCss();
+                    });
+                    
+                }
             });
 
             $(document).on("yukon:dr:setup:program:saveGear", function(event) {
                 var dialog = $(event.target), 
-                form = dialog.find('#js-program-gear-form');
+                    form = dialog.find('#js-program-gear-form'),
+                    isGearNameBlank = $.trim($("#gearName").val()).length == 0 ? true : false,
+                    isControlMethodBlank = $("#controlMethod option:selected").val() == "" ? true :false;
 
-                form.ajaxSubmit({
-                    success : function(data) {
-                        var id = data.id, 
-                        gearName = data.gearName, 
-                        anchorTag = $("<a>"), 
-                        url = yukon.url("/dr/setup/loadProgram/gear/" + id), 
-                        clonedRow = $('.js-template-gears-row').clone();
-                        anchorTag.attr("href", url);
-                        anchorTag.text(gearName);
+                $("#gearName").toggleClass("error", isGearNameBlank);
+                $("#gearNameIsBlankError").toggleClass("dn", !isGearNameBlank);
+                $("#controlMethod").toggleClass("error", isControlMethodBlank);
+                $("#gearTypeIsRequiredError").toggleClass("dn", !isControlMethodBlank);
+                
+                if (!isGearNameBlank && !isControlMethodBlank) {
+                    form.ajaxSubmit({
+                        success : function(data) {
+                            var id = data.id, 
+                                gearName = data.gearName, 
+                                anchorTag = $("<a>"), 
+                                url = yukon.url("/dr/setup/loadProgram/gear/" + id), 
+                                clonedRow = $('.js-template-gears-row').clone();
+                        
+                            anchorTag.attr("href", url);
+                            anchorTag.text(gearName);
 
-                        clonedRow.attr('data-id', id);
-                        clonedRow.find(".js-gear-name").append(anchorTag);
-                        clonedRow.removeClass('dn js-template-gears-row');
-                        clonedRow.appendTo($("#js-assigned-gear"));
-                    }
-                });
-
-                dialog.dialog('close');
+                            clonedRow.attr('data-id', id);
+                            clonedRow.find(".js-gear-name").append(anchorTag);
+                            clonedRow.removeClass('dn js-template-gears-row');
+                            clonedRow.appendTo($("#js-assigned-gear"));
+                        }
+                    });
+                    dialog.dialog('close');
+                }
             });
 
             $(document).on('click', '.js-gear-remove', function() {

@@ -428,6 +428,37 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.maxShedTime">Max Shed Time</entry>
 <entry key="yukon.web.modules.dr.setup.gear.numberOfGroups">Groups Per Send</entry>
 
+<entry key="yukon.web.modules.dr.setup.gear.mode">Mode</entry>
+<entry key="yukon.web.modules.dr.setup.gear.unit">Unit</entry>
+<entry key="yukon.web.modules.dr.setup.gear.setpoint">Setpoint</entry>
+<entry key="yukon.web.modules.dr.setup.gear.minimumTempreature">Minimum Tempreature</entry>
+<entry key="yukon.web.modules.dr.setup.gear.maximumTempreature">Maximum Tempreature</entry>
+<entry key="yukon.web.modules.dr.setup.gear.randomOffsetTime">Random Offset Time</entry>
+<entry key="yukon.web.modules.dr.setup.gear.ta">Ta</entry>
+<entry key="yukon.web.modules.dr.setup.gear.tb">Tb</entry>
+<entry key="yukon.web.modules.dr.setup.gear.tc">Tc</entry>
+<entry key="yukon.web.modules.dr.setup.gear.td">Td</entry>
+<entry key="yukon.web.modules.dr.setup.gear.te">Te</entry>
+<entry key="yukon.web.modules.dr.setup.gear.tf">Tf</entry>
+<entry key="yukon.web.modules.dr.setup.gear.valueB">Delta B</entry>
+<entry key="yukon.web.modules.dr.setup.gear.valueD">Delta D</entry>
+<entry key="yukon.web.modules.dr.setup.gear.valueF">Delta F</entry>
+<entry key="yukon.web.modules.dr.setup.gear.mode.heat">Heat</entry>
+<entry key="yukon.web.modules.dr.setup.gear.mode.cool">Cool</entry>
+<entry key="yukon.web.modules.dr.setup.gear.randomStartTime">Random Start Time</entry>
+<entry key="yukon.web.modules.dr.setup.gear.preOpCoolOrHeat">Pre-Op (Cool or Heat)</entry>
+<entry key="yukon.web.modules.dr.setup.gear.temp">Temp</entry>
+<entry key="yukon.web.modules.dr.setup.gear.time">Time</entry>
+<entry key="yukon.web.modules.dr.setup.gear.hold">Hold</entry>
+<entry key="yukon.web.modules.dr.setup.gear.maxRuntime">Max Runtime</entry>
+<entry key="yukon.web.modules.dr.setup.gear.rampFahrenheitPerHour">Ramp °F/Hour</entry>
+<entry key="yukon.web.modules.dr.setup.gear.degreeFahrenheit">°F</entry>
+<entry key="yukon.web.modules.dr.setup.gear.maxDegreeDelta">Max °Δ</entry>
+<entry key="yukon.web.modules.dr.setup.gear.rampOutTime">Ramp Out Time</entry>
+<entry key="yukon.web.modules.dr.setup.gear.heatingOffset">Heating Offset</entry>
+<entry key="yukon.web.modules.dr.setup.gear.ramp">Ramp</entry>
+<entry key="yukon.web.modules.dr.setup.gear.groupCapacityReductionPercentage">Group Capacity Reduction %</entry>
+
 <!-- Control Area -->
 <entry key="yukon.web.modules.dr.setup.controlArea.CREATE.pageName">Create Control Area</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.CREATE.pageDescription">Create Control Area</entry>
