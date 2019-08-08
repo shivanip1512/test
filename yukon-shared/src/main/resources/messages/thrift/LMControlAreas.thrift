@@ -268,6 +268,7 @@ struct LMProgramDirect
    13: required     list<Message.GenericMessage>    _lmProgramDirectGroups; // is actually a list of LMGroupBase
    14: required     list<Message.GenericMessage>    _activeMasters;         // is actually a list of LMProgramDirect
    15: required     list<Message.GenericMessage>    _activeSubordinates;    // is actually a list of LMProgramDirect
+   16: required     string                          _originSource;
 }
 
 struct LMEnergyExchangeHourlyOffer
