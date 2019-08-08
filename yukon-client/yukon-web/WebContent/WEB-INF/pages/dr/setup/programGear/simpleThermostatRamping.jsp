@@ -1,6 +1,3 @@
- <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
- <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-
 <cti:msgScope paths="yukon.web.modules.dr.setup.gear">
     <div class="column-12-12 clearfix js-simple-thermostat-ramping-gear">
         <div class="column one">

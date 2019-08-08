@@ -1,5 +1,4 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="yukon.web.modules.dr.setup.gear">
     <div class="column-12-12 clearfix">
