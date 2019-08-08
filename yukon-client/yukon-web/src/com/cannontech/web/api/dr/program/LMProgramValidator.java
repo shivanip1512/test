@@ -212,8 +212,13 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                                 gearFieldsValidatorMap.get(gear.getControlMethod()).validate(fields, errors);
                                 errors.popNestedPath();
                             } else {
-                                errors.reject("yukon.web.modules.dr.setup.error.required",
-                                    new Object[] { "Gear fields" }, "");
+                                if (gear.getControlMethod() == GearControlMethod.MeterDisconnect
+                                    || gear.getControlMethod() == GearControlMethod.NestCriticalCycle) {
+                                    // Do not display error as these gears types do not have any validation
+                                } else {
+                                    errors.reject("yukon.web.modules.dr.setup.error.required",
+                                        new Object[] { "Gear fields" }, "");
+                                }
                             }
                         } else {
                             errors.reject(key + "notSupportedControlMethod",

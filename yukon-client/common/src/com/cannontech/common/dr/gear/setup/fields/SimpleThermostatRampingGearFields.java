@@ -142,7 +142,7 @@ public class SimpleThermostatRampingGearFields implements ProgramGearFields {
 
         Integer random = rampingGear.getRandom();
         if (random != null && random.intValue() != 0) {
-            setRandomStartTimeInMinutes(random / 60);
+            setRandomStartTimeInMinutes(random);
         }
 
         Integer preCoolTemp = rampingGear.getValueB();
@@ -152,12 +152,12 @@ public class SimpleThermostatRampingGearFields implements ProgramGearFields {
 
         Integer preCoolTime = rampingGear.getValueTb();
         if (preCoolTime != null && preCoolTime.intValue() != 0) {
-            setPreOpTimeInMinutes(preCoolTime / 60);
+            setPreOpTimeInMinutes(preCoolTime);
         }
 
         Integer preCoolHold = rampingGear.getValueTc();
         if (preCoolHold != null && preCoolHold.intValue() != 0) {
-            setPreOpHoldInMinutes(preCoolHold / 60);
+            setPreOpHoldInMinutes(preCoolHold);
         }
 
         Float rampRate = rampingGear.getRampRate();
@@ -172,12 +172,12 @@ public class SimpleThermostatRampingGearFields implements ProgramGearFields {
 
         Integer restoreTime = rampingGear.getValueTf();
         if (restoreTime != null && restoreTime.intValue() != 0) {
-            setRampOutTimeInMinutes(restoreTime / 60);
+            setRampOutTimeInMinutes(restoreTime);
         }
 
         Integer maxRuntime = rampingGear.getValueTa();
         if (maxRuntime != null && maxRuntime.intValue() != 0) {
-            setMaxRuntimeInMinutes(maxRuntime / 60);
+            setMaxRuntimeInMinutes(maxRuntime);
         }
 
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
@@ -199,14 +199,14 @@ public class SimpleThermostatRampingGearFields implements ProgramGearFields {
         char coolChar = (getMode() == Mode.COOL) ? coolChar = 'I' : '-';
         lmThermostatGear.getSettings().setCharAt(3, coolChar);
 
-        lmThermostatGear.setRandom(getRandomStartTimeInMinutes() * 60);
+        lmThermostatGear.setRandom(getRandomStartTimeInMinutes());
         lmThermostatGear.setValueB(getPreOpTemp());
-        lmThermostatGear.setValueTb(getPreOpTimeInMinutes() * 60);
-        lmThermostatGear.setValueTc(getPreOpHoldInMinutes() * 60);
+        lmThermostatGear.setValueTb(getPreOpTimeInMinutes());
+        lmThermostatGear.setValueTc(getPreOpHoldInMinutes());
         lmThermostatGear.setRampRate(getRampPerHour());
         lmThermostatGear.setValueD(getMax());
-        lmThermostatGear.setValueTf(getRampOutTimeInMinutes() * 60);
-        lmThermostatGear.setValueTa(getMaxRuntimeInMinutes() * 60);
+        lmThermostatGear.setValueTf(getRampOutTimeInMinutes());
+        lmThermostatGear.setValueTa(getMaxRuntimeInMinutes());
         lmThermostatGear.setMethodRate(0);
 
         whenToChangeFields.buildDBPersistent(programDirectGear);

@@ -32,6 +32,11 @@ public class GearValidatorHelper {
                 if (howToStopControl != HowToStopControl.StopCycle && howToStopControl != HowToStopControl.Restore) {
                     errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
                 }
+            } else if (gearType == GearControlMethod.EcobeeCycle || gearType == GearControlMethod.HoneywellCycle
+                || gearType == GearControlMethod.ItronCycle) {
+                if (howToStopControl != HowToStopControl.Restore) {
+                    errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");
+                }
             } else {
                 if (howToStopControl != HowToStopControl.TimeIn && howToStopControl != HowToStopControl.Restore) {
                     errors.rejectValue("howToStopControl", invalidKey, new Object[] { "How To Stop Control" }, "");

@@ -35,7 +35,7 @@ public class SimpleThermostatRampingGearFieldsValidator
             simpleThermostatRampingCycleGear.getRandomStartTimeInMinutes(), "Random Start Time");
         if (!errors.hasFieldErrors("randomStartTimeInMinutes")) {
             YukonValidationUtils.checkRange(errors, "randomStartTimeInMinutes",
-                simpleThermostatRampingCycleGear.getRandomStartTimeInMinutes(), 0, 2, false);
+                simpleThermostatRampingCycleGear.getRandomStartTimeInMinutes(), 0, 120, false);
         }
 
         // Check Heating Mode or Cooling Mode
@@ -54,7 +54,7 @@ public class SimpleThermostatRampingGearFieldsValidator
             simpleThermostatRampingCycleGear.getPreOpTimeInMinutes(), "Pre-op Time");
         if (!errors.hasFieldErrors("preOpTemp")) {
             YukonValidationUtils.checkRange(errors, "preOpTimeInMinutes",
-                simpleThermostatRampingCycleGear.getPreOpTimeInMinutes(), 0, 5, false);
+                simpleThermostatRampingCycleGear.getPreOpTimeInMinutes(), 0, 300, false);
         }
 
         // Check Pre-op (Cool or Heat) Hold
@@ -62,7 +62,7 @@ public class SimpleThermostatRampingGearFieldsValidator
             simpleThermostatRampingCycleGear.getPreOpHoldInMinutes(), "Pre-op Hold");
         if (!errors.hasFieldErrors("preOpHoldInMinutes")) {
             YukonValidationUtils.checkRange(errors, "preOpHoldInMinutes",
-                simpleThermostatRampingCycleGear.getPreOpHoldInMinutes(), 0, 5, false);
+                simpleThermostatRampingCycleGear.getPreOpHoldInMinutes(), 0, 300, false);
         }
 
         // Check Ramp degree F/Hour
@@ -85,7 +85,7 @@ public class SimpleThermostatRampingGearFieldsValidator
             simpleThermostatRampingCycleGear.getRampOutTimeInMinutes(), "Ramp out Time");
         if (!errors.hasFieldErrors("rampOutTimeInMinutes")) {
             YukonValidationUtils.checkRange(errors, "rampOutTimeInMinutes",
-                simpleThermostatRampingCycleGear.getRampOutTimeInMinutes(), 0, 5, false);
+                simpleThermostatRampingCycleGear.getRampOutTimeInMinutes(), 0, 300, false);
         }
 
         // Check Max Runtime
@@ -93,7 +93,7 @@ public class SimpleThermostatRampingGearFieldsValidator
             simpleThermostatRampingCycleGear.getMaxRuntimeInMinutes(), "Max Runtime");
         if (!errors.hasFieldErrors("maxRuntimeInMinutes")) {
             YukonValidationUtils.checkRange(errors, "maxRuntimeInMinutes",
-                simpleThermostatRampingCycleGear.getMaxRuntimeInMinutes(), 4, 24, false);
+                simpleThermostatRampingCycleGear.getMaxRuntimeInMinutes(), 240, 1439, false);
         }
 
         // Check How to Stop Control
