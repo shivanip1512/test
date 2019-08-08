@@ -152,7 +152,6 @@ yukon.dr.setup.program = (function() {
                 $('#js-selected-gear-ids').val(selectedGears.join(','));
                 $('#js-selected-member-ids').val(selectedMembers.join(','));
                 $('#js-selected-notification-group-ids').val(selectedNotificationGroups.join(','));
-                $('#js-load-program-form').submit();
             });
 
             $(document).on("click", ".js-add-group", function() {
