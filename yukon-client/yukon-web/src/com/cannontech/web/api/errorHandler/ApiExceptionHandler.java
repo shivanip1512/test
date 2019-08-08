@@ -206,6 +206,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                         messageSourceAccessor.getMessage(fieldError.getCode(), fieldError.getArguments()),
                         fieldError.getRejectedValue())
                 )
+                .peek(fieldError -> log.error(fieldError.getCode()))
                 .collect(Collectors.toList());
 
         List<ApiGlobalError> apiGlobalErrors = bindingResult
@@ -214,6 +215,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(globalError -> new ApiGlobalError(
                         messageSourceAccessor.getMessage(globalError.getCode(), globalError.getArguments()))
                 )
+                .peek(fieldError -> log.error(fieldError.getCode()))
                 .collect(Collectors.toList());
 
         ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY.value(), "Validation error", apiFieldErrors, apiGlobalErrors, uniqueKey);

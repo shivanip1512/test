@@ -32,7 +32,8 @@ public class RotationGearFieldsValidator extends ProgramGearFieldsValidator<Rota
         // Check Shed Time
         lmValidatorHelper.checkIfFieldRequired("shedTime", errors, rotationCycleGear.getShedTime(), "Shed Time");
         if (!errors.hasFieldErrors("shedTime")) {
-            if (!TimeIntervals.getRotationshedtime().contains(rotationCycleGear.getShedTime())) {
+            TimeIntervals shedTime = TimeIntervals.fromSeconds(rotationCycleGear.getShedTime());
+            if (!TimeIntervals.getRotationshedtime().contains(shedTime)) {
                 errors.rejectValue("shedTime", invalidKey, new Object[] { "Shed Time" }, "");
             }
         }

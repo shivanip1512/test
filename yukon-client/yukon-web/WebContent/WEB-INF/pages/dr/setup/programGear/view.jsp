@@ -81,6 +81,18 @@
                 <c:if test="${selectedGearType == 'SepTemperatureOffset'}">
                     <%@ include file="sepTempreatureOffset.jsp" %>
                 </c:if>
+                <c:if test="${selectedGearType == 'Rotation'}">
+                       <%@ include file="rotation.jsp" %>
+                </c:if>
+                <c:if test="${selectedGearType == 'BeatThePeak'}">
+                    <%@ include file="beatThePeak.jsp" %>
+                </c:if>
+                <c:if test="${selectedGearType == 'Latching'}">
+                    <%@ include file="latching.jsp" %>
+                </c:if>
+                <c:if test="${selectedGearType == 'NoControl'}">
+                       <%@ include file="noControl.jsp" %>
+                </c:if>
             </div>
         </form:form>
     </div>

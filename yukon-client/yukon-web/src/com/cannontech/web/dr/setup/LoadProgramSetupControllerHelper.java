@@ -14,15 +14,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.dr.gear.setup.AbsoluteOrDelta;
+import com.cannontech.common.dr.gear.setup.BtpLedIndicator;
+import com.cannontech.common.dr.gear.setup.ControlStartState;
 import com.cannontech.common.dr.gear.setup.CycleCountSendType;
+import com.cannontech.common.dr.gear.setup.GroupSelectionMethod;
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.dr.gear.setup.Mode;
 import com.cannontech.common.dr.gear.setup.OperationalState;
 import com.cannontech.common.dr.gear.setup.TemperatureMeasureUnit;
 import com.cannontech.common.dr.gear.setup.WhenToChange;
+import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.RotationGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SepTemperatureOffsetGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SimpleThermostatRampingGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SmartCycleGearFields;
@@ -287,7 +292,27 @@ public class LoadProgramSetupControllerHelper {
             sepTemperatureOffsetGearFields.setCapacityReduction(100);
             sepTemperatureOffsetGearFields.setWhenToChangeFields(whenToChange);
             break;
+        case Rotation:
+            RotationGearFields rotationGearFields = (RotationGearFields) programGear.getFields();
+            setDefaultRotationGearFields(rotationGearFields);
+            break;
+        case BeatThePeak:
+            BeatThePeakGearFields beatThePeakGearFields = (BeatThePeakGearFields) programGear.getFields();
+            setDefaultBeatThePeakGearFields(beatThePeakGearFields);
+            break;
         }
+    }
+    
+    
+    private void setDefaultRotationGearFields(RotationGearFields rotationGearFields) {
+        rotationGearFields.setShedTime(5);
+        rotationGearFields.setSendRate(30);
+        rotationGearFields.setCapacityReduction(100);
+    }
+
+    private void setDefaultBeatThePeakGearFields(BeatThePeakGearFields rotationGearFields) {
+        rotationGearFields.setResendInMinutes(0);
+        rotationGearFields.setTimeoutInMinutes(0);
     }
 
     private void setSmartCycleGearFieldsDefaultValue(SmartCycleGearFields smartCycleGearFields) {
@@ -371,6 +396,29 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("tempreatureModes", Mode.values());
             model.addAttribute("units", TemperatureMeasureUnit.values());
             model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            break;
+        case Rotation:
+            model.addAttribute("shedTime", TimeIntervals.getRotationshedtime());
+            List<Integer> groupOptions = new ArrayList<>();
+            for (int i = 1; i <= 25; i++) {
+                groupOptions.add(i);
+            }
+            model.addAttribute("groupOptions", groupOptions);
+            model.addAttribute("commandResendRate", TimeIntervals.getCommandResendRate());
+            model.addAttribute("groupSelectionMethodOptions", GroupSelectionMethod.values());
+            model.addAttribute("stopControlOptions", List.of(HowToStopControl.Restore,HowToStopControl.StopCycle));
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            break;
+        case BeatThePeak:
+            model.addAttribute("indicators", BtpLedIndicator.values());
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            break;
+        case NoControl:
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            break;
+        case Latching:
+            model.addAttribute("controlStartState", ControlStartState.values());
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             break;
         }

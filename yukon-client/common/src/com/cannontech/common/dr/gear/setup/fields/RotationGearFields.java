@@ -2,7 +2,6 @@ package com.cannontech.common.dr.gear.setup.fields;
 
 import com.cannontech.common.dr.gear.setup.GroupSelectionMethod;
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
-import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.database.data.device.lm.RotationGear;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class RotationGearFields implements ProgramGearFields {
 
-    private TimeIntervals shedTime;
+    private Integer shedTime;
     private Integer numberOfGroups;
     private Integer sendRate;
     private GroupSelectionMethod groupSelectionMethod;
@@ -36,11 +35,11 @@ public class RotationGearFields implements ProgramGearFields {
         this.groupSelectionMethod = groupSelectionMethod;
     }
 
-    public TimeIntervals getShedTime() {
+    public Integer getShedTime() {
         return shedTime;
     }
 
-    public void setShedTime(TimeIntervals shedTime) {
+    public void setShedTime(Integer shedTime) {
         this.shedTime = shedTime;
     }
 
@@ -82,7 +81,7 @@ public class RotationGearFields implements ProgramGearFields {
 
         setHowToStopControl(HowToStopControl.valueOf(rotationGear.getMethodStopType()));
         setCapacityReduction(rotationGear.getPercentReduction());
-        setShedTime(TimeIntervals.fromSeconds(rotationGear.getShedTime()));
+        setShedTime(rotationGear.getShedTime());
         setNumberOfGroups(rotationGear.getNumberOfGroups());
         setSendRate(rotationGear.getSendRate());
         setGroupSelectionMethod(GroupSelectionMethod.valueOf(rotationGear.getGroupSelectionMethod()));
@@ -100,7 +99,7 @@ public class RotationGearFields implements ProgramGearFields {
 
         rotationGear.setMethodStopType(getHowToStopControl().name());
         rotationGear.setPercentReduction(getCapacityReduction());
-        rotationGear.setShedTime(getShedTime().getSeconds());
+        rotationGear.setShedTime(getShedTime());
         rotationGear.setNumberOfGroups(getNumberOfGroups());
         rotationGear.setSendRate(getSendRate());
         rotationGear.setGroupSelectionMethod(getGroupSelectionMethod().name());
