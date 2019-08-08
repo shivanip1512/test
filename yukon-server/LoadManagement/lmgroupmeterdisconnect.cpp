@@ -31,13 +31,12 @@ bool LMGroupMeterDisconnect::sendControl( long controlSeconds )
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
     CtiTime now;
-    CtiTime utcNow( now - now.secondOffsetToGMT() );
 
     ActiveMQConnectionManager::enqueueMessage( 
         OutboundQueue::MeterDisconnectControl, 
         std::make_unique<LMMeterDisconnectControlMessage>( 
             getPAOId(), 
-            utcNow.seconds(),
+            now.seconds(),
             controlSeconds ) );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -65,13 +64,12 @@ bool LMGroupMeterDisconnect::sendStopControl( bool stopImmediately )
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
     CtiTime now;
-    CtiTime utcNow( now - now.secondOffsetToGMT() );
 
     ActiveMQConnectionManager::enqueueMessage(
         OutboundQueue::MeterDisconnectRestore,
         std::make_unique<LMMeterDisconnectRestoreMessage>(
             getPAOId(),
-            utcNow.seconds() ) );
+            now.seconds() ) );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

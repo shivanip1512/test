@@ -20,6 +20,8 @@ private:
     ctitime_t maketm(const CtiDate& d, unsigned hour = 0, unsigned minute = 0, unsigned second = 0);
     ctitime_t _seconds;
 
+    long secondOffsetToGMT() const;
+
 public:
 
     enum specialvalues  {neg_infin, pos_infin, not_a_time};
@@ -49,6 +51,7 @@ public:
     int second() const;
     int secondGMT() const;
     ctitime_t seconds() const;
+	ctitime_t getLocalTimeSeconds() const;
     int minute() const;
     int minuteGMT()const;
     int hour() const;
@@ -63,8 +66,6 @@ public:
     bool is_special() const;
     bool is_neg_infinity() const;
     bool is_pos_infinity() const;
-
-    long secondOffsetToGMT() const;
 
     enum DisplayOffset
     {

@@ -677,6 +677,34 @@ BOOST_AUTO_TEST_CASE(test_ctitime_asString)
         results.begin(), results.end());
 }
 
+BOOST_AUTO_TEST_CASE(test_ctitime_get_local_seconds)
+{
+	Cti::Test::set_to_central_timezone();
+
+    // In Central time, localtime in seconds is a smaller number than GST in seconds.
+    // If you are in CST, for GMT 1970 6am as CST = GMT-6.
+    // .seconds = 21600, .getLocalTimeSeconds = 0
+
+	{// Not DST central
+		CtiDate d = CtiDate(1, 1, 2009);
+
+		CtiTime t = CtiTime(d, 0, 0, 0);
+
+		BOOST_CHECK_EQUAL(t.seconds(), 1230789600); // This is the expected result via epochconverter.com
+		BOOST_CHECK_EQUAL(t.getLocalTimeSeconds(), 1230789600-(6*3600)); // Add 6 hours of seconds for central no dst
+	}
+
+	{// During DST Central
+		CtiDate d = CtiDate(1, 7, 2009);
+
+		CtiTime t = CtiTime(d, 0, 0, 0);
+
+		BOOST_CHECK_EQUAL(t.seconds(), 1246424400); // This is the expected result via epochconverter.com
+		BOOST_CHECK_EQUAL(t.getLocalTimeSeconds(), 1246424400-(5*3600)); // Add 6 hours of seconds for central no dst
+	}
+}
+
+
 /*
 BOOST_AUTO_TEST_CASE(test_ctitime_asString_CST)
 {

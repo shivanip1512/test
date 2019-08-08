@@ -41,14 +41,14 @@ bool LMGroupEcobee::sendCycleControl( long dutyCycle,
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
     CtiTime now;
-    CtiTime utcNow( now - now.secondOffsetToGMT() );
+    ctitime_t localSeconds = now.getLocalTimeSeconds();
 
     ActiveMQConnectionManager::enqueueMessage( 
             OutboundQueue::EcobeeCyclingControl, 
             std::make_unique<LMEcobeeCyclingControlMessage>( 
                     getPAOId(),
                     dutyCycle,
-                    static_cast<int>(utcNow.seconds()),
+                    static_cast<int>(localSeconds),
                     controlDurationSeconds,
                     rampInOption,
                     rampOutOption,
@@ -84,13 +84,13 @@ bool LMGroupEcobee::sendStopControl( bool stopImmediately /* unused */ )
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
     CtiTime now;
-    CtiTime utcNow( now - now.secondOffsetToGMT() );
+    ctitime_t localSeconds = now.getLocalTimeSeconds();
 
     ActiveMQConnectionManager::enqueueMessage( 
             OutboundQueue::EcobeeRestore, 
             std::make_unique<LMEcobeeRestoreMessage>( 
                     getPAOId(), 
-                    static_cast<int>(utcNow.seconds()) ) );
+                    static_cast<int>(localSeconds) ) );
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -113,14 +113,14 @@ bool LMGroupEcobee::sendShedControl( long controlMinutes )
     // shed == cycle at 100% duty cycle with no ramp in/out
 
     CtiTime now;
-    CtiTime utcNow( now - now.secondOffsetToGMT() );
+    ctitime_t localSeconds = now.getLocalTimeSeconds();
 
     ActiveMQConnectionManager::enqueueMessage( 
             OutboundQueue::EcobeeCyclingControl,
             std::make_unique<LMEcobeeCyclingControlMessage>( 
                     getPAOId(),
                     100,
-                    static_cast<int>(utcNow.seconds()),
+                    static_cast<int>(localSeconds),
                     controlMinutes * 60,
                     false,
                     false,

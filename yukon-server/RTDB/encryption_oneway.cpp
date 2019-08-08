@@ -14,8 +14,7 @@
 
 
 
-const unsigned long OneWayEncryption::_utcJan2000Seconds = CtiTime(CtiDate(1, 1, 2000), 0, 0, 0).seconds()
-                                                         - CtiTime(CtiDate(1, 1, 2000), 0, 0, 0).secondOffsetToGMT();
+const unsigned long OneWayEncryption::_utcJan2000Seconds = CtiTime(CtiDate(1, 1, 2000), 0, 0, 0).getLocalTimeSeconds();
 
 
 /* 

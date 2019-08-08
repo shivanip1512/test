@@ -682,6 +682,17 @@ std::ostream& operator<< (std::ostream& s, const CtiTime& t)
     return s;
 }
 
+/* 
+    Only use this if you are really sure you want seconds from midnight 1970 in LOCAL time. 
+    Returns seconds as if this was a localtime object.
+    If you are in CST, for 1970 6am
+       .seconds = 21600, .getLocalTimeSeconds = 0
+*/
+ctitime_t CtiTime::getLocalTimeSeconds() const
+{
+    return _seconds - secondOffsetToGMT();
+}
+
 /*
     Returns the number of seconds of offset between the local time and the same time expressed in GMT.
         Q: How many seconds between (for example) 01/01/2010 00:00:00 GMT and 01/01/2010 00:00:00 CST

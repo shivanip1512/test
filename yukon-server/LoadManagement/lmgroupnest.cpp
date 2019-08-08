@@ -36,13 +36,13 @@ bool LMGroupNest::sendCycleControl( long controlDurationSeconds )
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
     CtiTime now;
-    CtiTime utcNow( now - now.secondOffsetToGMT() );
+    ctitime_t localSeconds = now.getLocalTimeSeconds();
 
     ActiveMQConnectionManager::enqueueMessage( 
         OutboundQueue::NestCyclingControl, 
         std::make_unique<LMNestCyclingControlMessage>( 
             getPAOId(), 
-            utcNow.seconds(),
+            localSeconds,
             controlDurationSeconds ) );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -70,13 +70,13 @@ bool LMGroupNest::sendStopControl( bool stopImmediately )
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
     CtiTime now;
-    CtiTime utcNow( now - now.secondOffsetToGMT() );
+    ctitime_t localSeconds = now.getLocalTimeSeconds();
 
     ActiveMQConnectionManager::enqueueMessage(
         OutboundQueue::NestRestore,
         std::make_unique<LMNestRestoreMessage>(
             getPAOId(),
-            utcNow.seconds() ) );
+            localSeconds ) );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
