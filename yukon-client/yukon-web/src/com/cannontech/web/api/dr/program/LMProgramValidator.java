@@ -164,7 +164,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
             } else {
 
                 if (loadProgram.getGears().size() >= IlmDefines.MAX_GEAR_COUNT) {
-                    errors.reject(key + "maxGearCount");
+                    errors.reject(key + "maxGearCount", new Object[] { loadProgram.getGears().size()}, "");
                 }
 
                 Long latchCount = loadProgram.getGears().stream()

@@ -2,7 +2,9 @@ package com.cannontech.web.dr.setup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,6 +14,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import com.cannontech.common.dr.gear.setup.AbsoluteOrDelta;
 import com.cannontech.common.dr.gear.setup.BtpLedIndicator;
@@ -52,11 +56,13 @@ import com.cannontech.dr.itron.model.ItronCycleType;
 import com.cannontech.dr.nest.model.v3.PeakLoadShape;
 import com.cannontech.dr.nest.model.v3.PostLoadShape;
 import com.cannontech.dr.nest.model.v3.PrepLoadShape;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiControllerHelper;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -224,6 +230,8 @@ public class LoadProgramSetupControllerHelper {
      * Default values for object should be set here.
      */
     public void setDefaultGearFieldValues(ProgramGear programGear) {
+        WhenToChangeFields whenToChange = new WhenToChangeFields();
+        whenToChange.setWhenToChange(WhenToChange.None);
         switch (programGear.getControlMethod()) {
         case MagnitudeCycle:
         case TrueCycle:
@@ -231,30 +239,79 @@ public class LoadProgramSetupControllerHelper {
         case TargetCycle:
             SmartCycleGearFields smartCycleGearFields = (SmartCycleGearFields) programGear.getFields();
             setSmartCycleGearFieldsDefaultValue(smartCycleGearFields);
+            programGear.setFields(smartCycleGearFields);
             break;
         case EcobeeCycle:
             EcobeeCycleGearFields ecobeeCycleGearFields = (EcobeeCycleGearFields) programGear.getFields();
-            setEcobeeCycleGearFieldsDefaultValues(ecobeeCycleGearFields);
+            ecobeeCycleGearFields.setMandatory(false);
+            ecobeeCycleGearFields.setRampIn(true);
+            ecobeeCycleGearFields.setRampOut(true);
+            ecobeeCycleGearFields.setControlPercent(50);
+            ecobeeCycleGearFields.setCapacityReduction(100);
+            ecobeeCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
             break;
         case HoneywellCycle:
             HoneywellCycleGearFields honeywellCycleGearFields = (HoneywellCycleGearFields) programGear.getFields();
-            setHoneywellCycleGearFieldsDefaultValues(honeywellCycleGearFields);
+            honeywellCycleGearFields.setRampInOut(true);
+            honeywellCycleGearFields.setControlPercent(0);
+            honeywellCycleGearFields.setCapacityReduction(100);
+            honeywellCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
             break;
         case ItronCycle:
             ItronCycleGearFields itronCycleGearFields = (ItronCycleGearFields) programGear.getFields();
-            setItronCycleGearFieldsDefaultValues(itronCycleGearFields);
+            itronCycleGearFields.setRampIn(true);
+            itronCycleGearFields.setRampOut(true);
+            itronCycleGearFields.setCapacityReduction(100);
+            itronCycleGearFields.setDutyCyclePercent(50);
+            itronCycleGearFields.setCriticality(1);
+            itronCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
             break;
         case ThermostatRamping:
-            ThermostatSetbackGearFields thermostatCycleGearFields = (ThermostatSetbackGearFields) programGear.getFields();
-            setThermostatCycleGearFieldsDefaultValues(thermostatCycleGearFields);
+            ThermostatSetbackGearFields gearFields = (ThermostatSetbackGearFields) programGear.getFields();
+            gearFields.setCapacityReduction(100);
+            gearFields.setWhenToChangeFields(whenToChange);
+            gearFields.setHowToStopControl(HowToStopControl.TimeIn);
+            gearFields.setValueTa(0);
+            gearFields.setValueTb(0);
+            gearFields.setValueTc(0);
+            gearFields.setValueTd(0);
+            gearFields.setValueTe(0);
+            gearFields.setValueTf(0);
+            gearFields.setValueD(0);
+            gearFields.setValueB(0);
+            gearFields.setValueF(0);
+            gearFields.setMinValue(0);
+            gearFields.setMaxValue(0);
+            gearFields.setIsCoolMode(false);
+            gearFields.setIsHeatMode(false);
+            gearFields.setAbsoluteOrDelta(AbsoluteOrDelta.DELTA);
+            gearFields.setMeasureUnit(TemperatureMeasureUnit.CELSIUS);
             break;
         case SimpleThermostatRamping:
             SimpleThermostatRampingGearFields simpleThermostatRampingGearFields = (SimpleThermostatRampingGearFields)programGear.getFields();
-            setSimpleThermostatCycleGearFieldsDefaultValues(simpleThermostatRampingGearFields);
+            simpleThermostatRampingGearFields.setMode(Mode.COOL);
+            simpleThermostatRampingGearFields.setRandomStartTimeInMinutes(0);
+            simpleThermostatRampingGearFields.setPreOpTemp(0);
+            simpleThermostatRampingGearFields.setPreOpTimeInMinutes(0);
+            simpleThermostatRampingGearFields.setPreOpHoldInMinutes(0);
+            simpleThermostatRampingGearFields.setMaxRuntimeInMinutes(480);
+            simpleThermostatRampingGearFields.setWhenToChangeFields(whenToChange);
+            simpleThermostatRampingGearFields.setMax(0);
+            simpleThermostatRampingGearFields.setRampPerHour(0f);
+            simpleThermostatRampingGearFields.setRampOutTimeInMinutes(0);
+            simpleThermostatRampingGearFields.setHowToStopControl(HowToStopControl.TimeIn);
             break;
         case SepTemperatureOffset:
             SepTemperatureOffsetGearFields sepTemperatureOffsetGearFields = (SepTemperatureOffsetGearFields)programGear.getFields();
-            setSepTemperatureOffsetGearFieldsDefaultValues(sepTemperatureOffsetGearFields);
+            sepTemperatureOffsetGearFields.setRampIn(true);
+            sepTemperatureOffsetGearFields.setRampOut(true);
+            sepTemperatureOffsetGearFields.setMode(Mode.HEAT);
+            sepTemperatureOffsetGearFields.setCelsiusOrFahrenheit(TemperatureMeasureUnit.FAHRENHEIT);
+            sepTemperatureOffsetGearFields.setOffset(1.0);
+            sepTemperatureOffsetGearFields.setCriticality(6);
+            sepTemperatureOffsetGearFields.setHowToStopControl(HowToStopControl.TimeIn);
+            sepTemperatureOffsetGearFields.setCapacityReduction(100);
+            sepTemperatureOffsetGearFields.setWhenToChangeFields(whenToChange);
             break;
         case Rotation:
             RotationGearFields rotationGearFields = (RotationGearFields) programGear.getFields();
@@ -266,7 +323,8 @@ public class LoadProgramSetupControllerHelper {
             break;
         }
     }
-
+    
+    
     private void setDefaultRotationGearFields(RotationGearFields rotationGearFields) {
         rotationGearFields.setShedTime(5);
         rotationGearFields.setSendRate(30);
@@ -293,78 +351,6 @@ public class LoadProgramSetupControllerHelper {
             targetCycleGearFields.setkWReduction(0.0);
         }
         smartCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
-    }
-
-    private void setEcobeeCycleGearFieldsDefaultValues(EcobeeCycleGearFields ecobeeCycleGearFields) {
-        ecobeeCycleGearFields.setMandatory(false);
-        ecobeeCycleGearFields.setRampIn(true);
-        ecobeeCycleGearFields.setRampOut(true);
-        ecobeeCycleGearFields.setControlPercent(50);
-        ecobeeCycleGearFields.setCapacityReduction(100);
-        ecobeeCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
-    }
-
-    private void setHoneywellCycleGearFieldsDefaultValues(HoneywellCycleGearFields honeywellCycleGearFields) {
-        honeywellCycleGearFields.setRampInOut(true);
-        honeywellCycleGearFields.setControlPercent(50);
-        honeywellCycleGearFields.setCapacityReduction(100);
-        honeywellCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
-    }
-
-    private void setItronCycleGearFieldsDefaultValues(ItronCycleGearFields itronCycleGearFields) {
-        itronCycleGearFields.setRampIn(true);
-        itronCycleGearFields.setRampOut(true);
-        itronCycleGearFields.setCapacityReduction(100);
-        itronCycleGearFields.setDutyCyclePercent(50);
-        itronCycleGearFields.setCriticality(1);
-        itronCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
-    }
-
-    private void setThermostatCycleGearFieldsDefaultValues(ThermostatSetbackGearFields thermostatCycleGearFields) {
-        thermostatCycleGearFields.setCapacityReduction(100);
-        thermostatCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
-        thermostatCycleGearFields.setHowToStopControl(HowToStopControl.TimeIn);
-        thermostatCycleGearFields.setValueTa(0);
-        thermostatCycleGearFields.setValueTb(0);
-        thermostatCycleGearFields.setValueTc(0);
-        thermostatCycleGearFields.setValueTd(0);
-        thermostatCycleGearFields.setValueTe(0);
-        thermostatCycleGearFields.setValueTf(0);
-        thermostatCycleGearFields.setValueD(0);
-        thermostatCycleGearFields.setValueB(0);
-        thermostatCycleGearFields.setValueF(0);
-        thermostatCycleGearFields.setMinValue(0);
-        thermostatCycleGearFields.setMaxValue(0);
-        thermostatCycleGearFields.setIsCoolMode(false);
-        thermostatCycleGearFields.setIsHeatMode(false);
-        thermostatCycleGearFields.setAbsoluteOrDelta(AbsoluteOrDelta.DELTA);
-        thermostatCycleGearFields.setMeasureUnit(TemperatureMeasureUnit.CELSIUS);
-    }
-
-    private void setSimpleThermostatCycleGearFieldsDefaultValues(SimpleThermostatRampingGearFields simpleThermostatRampingGearFields) {
-        simpleThermostatRampingGearFields.setMode(Mode.COOL);
-        simpleThermostatRampingGearFields.setRandomStartTimeInMinutes(0);
-        simpleThermostatRampingGearFields.setPreOpTemp(0);
-        simpleThermostatRampingGearFields.setPreOpTimeInMinutes(0);
-        simpleThermostatRampingGearFields.setPreOpHoldInMinutes(0);
-        simpleThermostatRampingGearFields.setMaxRuntimeInMinutes(480);
-        simpleThermostatRampingGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
-        simpleThermostatRampingGearFields.setMax(0);
-        simpleThermostatRampingGearFields.setRampPerHour(0f);
-        simpleThermostatRampingGearFields.setRampOutTimeInMinutes(0);
-        simpleThermostatRampingGearFields.setHowToStopControl(HowToStopControl.TimeIn);
-    }
-
-    private void setSepTemperatureOffsetGearFieldsDefaultValues(SepTemperatureOffsetGearFields sepTemperatureOffsetGearFields) {
-        sepTemperatureOffsetGearFields.setRampIn(true);
-        sepTemperatureOffsetGearFields.setRampOut(true);
-        sepTemperatureOffsetGearFields.setMode(Mode.HEAT);
-        sepTemperatureOffsetGearFields.setCelsiusOrFahrenheit(TemperatureMeasureUnit.FAHRENHEIT);
-        sepTemperatureOffsetGearFields.setOffset(1.0);
-        sepTemperatureOffsetGearFields.setCriticality(6);
-        sepTemperatureOffsetGearFields.setHowToStopControl(HowToStopControl.TimeIn);
-        sepTemperatureOffsetGearFields.setCapacityReduction(100);
-        sepTemperatureOffsetGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
     }
 
     private WhenToChangeFields getWhenToChangeDefaultValues() {
@@ -406,14 +392,14 @@ public class LoadProgramSetupControllerHelper {
             break;
         case ItronCycle:
             model.addAttribute("whenToChangeFields", WhenToChange.values());
-            model.addAttribute("cycleType", ItronCycleType.values());
+            model.addAttribute("cycleType",List.of(ItronCycleType.STANDARD,ItronCycleType.TRUE_CYCLE,ItronCycleType.SMART_CYCLE));
             model.addAttribute("dutyCyclePeriod", ImmutableList.of(30, 60));
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
         case NestStandardCycle:
-            model.addAttribute("preparationLoadShaping", PrepLoadShape.values());
-            model.addAttribute("peakLoadShaping", PeakLoadShape.values());
-            model.addAttribute("postPeakLoadShaping", PostLoadShape.values());
+            model.addAttribute("preparationLoadShaping",List.of(PrepLoadShape.PREP_STANDARD,PrepLoadShape.PREP_RAMPING,PrepLoadShape.PREP_UNSPECIFIED,PrepLoadShape.PREP_NONE));
+            model.addAttribute("peakLoadShaping",List.of(PeakLoadShape.PEAK_STANDARD,PeakLoadShape.PEAK_SYMMETRIC,PeakLoadShape.PEAK_UNIFORM,PeakLoadShape.PEAK_UNSPECIFIED));
+            model.addAttribute("postPeakLoadShaping",List.of(PostLoadShape.POST_STANDARD,PostLoadShape.POST_RAMPING,PostLoadShape.POST_UNSPECIFIED));
             break;
         case ThermostatRamping:
             model.addAttribute("tempreatureMode", true);
@@ -458,4 +444,27 @@ public class LoadProgramSetupControllerHelper {
             break;
         }
     }
+    
+    public void setValidationMessageInFlash(BindingResult result, FlashScope flash, LoadProgram loadProgram , String baseKey ){
+        List<FieldError> errorList = result.getFieldErrors();
+        Set<Integer> gearPositionIndexes = errorList.stream()
+                                                    .filter(fieldError -> fieldError.getField().contains("gears") 
+                                                        && !(fieldError.getField().contains("gearName")) 
+                                                        && !(fieldError.getField().contains("controlMethod")))
+                                                    .map(fieldError -> Integer.parseInt(fieldError.getField().replaceAll("[\\D]", "")))
+                                                    .collect(Collectors.toSet());
+        
+        List<String> filteredList = 
+                IntStream.range(0, loadProgram.getGears().size())
+                         .filter(i -> gearPositionIndexes.contains(i))
+                         .mapToObj(loadProgram.getGears()::get)
+                         .map(gear -> gear.getGearName())
+                         .collect(Collectors.toList());
+
+        if (CollectionUtils.isNotEmpty(filteredList)) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "gear.error", String.join(", ", filteredList)));
+        }
+        
+    }
+
 }

@@ -144,6 +144,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.notifyOnSchedule">Notify On Schedule</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.copy">Copy Load Program</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.retrieve.error">Load Program could not be retrieved.</entry>
+<entry key="yukon.web.modules.dr.setup.gear.error">Please check gear field errors in {0}.</entry>
 
 <!-- Versacom -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.addressUsage.title">Address Usage</entry>
