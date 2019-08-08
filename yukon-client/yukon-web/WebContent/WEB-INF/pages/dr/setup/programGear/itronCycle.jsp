@@ -25,7 +25,7 @@
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>  
                     <tags:nameValue2 nameKey=".criticality">
-                        <tags:numeric path="fields.criticality" size="10" minValue="1" maxValue="15"/>
+                        <tags:numeric path="fields.criticality" size="10" minValue="0" maxValue="255"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".howToStopControl">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
