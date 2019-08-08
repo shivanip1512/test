@@ -476,18 +476,20 @@ public class LoadProgramSetupControllerHelper {
                                                         && !(fieldError.getField().contains("controlMethod")))
                                                     .map(fieldError -> Integer.parseInt(fieldError.getField().replaceAll("[\\D]", "")))
                                                     .collect(Collectors.toSet());
-        
-        List<String> filteredList = 
+        if (CollectionUtils.isNotEmpty(loadProgram.getGears())) {
+            List<String> filteredList =
                 IntStream.range(0, loadProgram.getGears().size())
                          .filter(i -> gearPositionIndexes.contains(i))
                          .mapToObj(loadProgram.getGears()::get)
                          .map(gear -> gear.getGearName())
                          .collect(Collectors.toList());
 
-        if (CollectionUtils.isNotEmpty(filteredList)) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "gear.error", String.join(", ", filteredList)));
+            if (CollectionUtils.isNotEmpty(filteredList)) {
+                flash.setError(
+                    new YukonMessageSourceResolvable(baseKey + "gear.error", String.join(", ", filteredList)));
+            }
         }
-        
+
     }
 
 }
