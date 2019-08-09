@@ -338,7 +338,7 @@ public class ProgramController extends ProgramControllerBase {
             if (optEvent.isPresent()) {
                 eventId = optEvent.get();
                 SimpleCallback<CollectionActionResult> doNothingCallback = result -> {};
-                DrDisconnectStatusCallback statusCallback = new DrDisconnectStatusCallback(!connect, eventId, meterDisconnectService, 
+                DrDisconnectStatusCallback statusCallback = new DrDisconnectStatusCallback(connect, eventId, meterDisconnectService, 
                                                                                            smartNotificationEventCreationService, program.getName());
 
                 CollectionActionResult result = disconnectService.execute(command, collection, doNothingCallback, statusCallback, userContext);
