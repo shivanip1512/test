@@ -466,6 +466,18 @@ ALTER COLUMN Origin VARCHAR(30) NOT NULL;
 INSERT INTO DBUpdates VALUES ('YUK-20412', '7.3.0', GETDATE());
 /* @end YUK-20412 */
 
+/* @start YUK-20419 */
+DELETE FROM YukonListEntry
+WHERE EntryID IN (
+    SELECT yle.EntryID 
+    FROM YukonListEntry yle
+    WHERE yle.YukonDefinitionID = 1303
+    AND yle.EntryID NOT IN (SELECT DISTINCT mhb.MeterTypeID FROM MeterHardwareBase mhb) 
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-20419', '7.3.0', GETDATE());
+/* @end YUK-20419 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
