@@ -21,8 +21,9 @@ public class LMProgramDirect extends LMProgramBase implements IGearProgram
 	private Integer triggerRestoreOffset = null;	
 	private boolean constraintOverride = false;	
     private String addtionalInfo = null;
-	
-	/**
+    private String originSource;
+
+    /**
 	 * @return Returns the triggerOffset.
 	 */
     public Integer getTriggerOffset() {
@@ -256,5 +257,13 @@ public class LMProgramDirect extends LMProgramBase implements IGearProgram
     }
     public void setAddtionalInfo(String addtionalInfo) {
         this.addtionalInfo = addtionalInfo;
+    }
+
+    @Override
+    public String getOriginSource() {
+        return originSource;
+    }
+    public void setOriginSource(String originSource) {
+        this.originSource = originSource;
     }
 }

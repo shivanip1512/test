@@ -72,6 +72,7 @@ public class ProgramDirectSerializer
         msg.setStartedRampingOut(ConverterHelper.millisecToCalendar(entity.get_startedRampingOut()));
         msg.setTriggerOffset(entity.get_triggerOffset());
         msg.setTriggerRestoreOffset(entity.get_triggerRestoreOffset());
+        msg.setOriginSource(entity.get_originSource());
     }
 
     @Override
