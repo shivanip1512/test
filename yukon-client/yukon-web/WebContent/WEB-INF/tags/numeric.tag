@@ -27,7 +27,6 @@
 <%@ attribute name="maxValue" type="java.lang.String" description="The maximum value that can be entered." %>
 <%@ attribute name="stepValue" type="java.lang.Integer" description="The step value to increment/decrement when clicking on the arrows." %>
 <%@ attribute name="isDecimalNumber" type="java.lang.Boolean" description="Set this value to ture if the number is decimal." %>
-<%@ attribute name="wrapperCss" type="java.lang.String" description="Css to be passed to wrapper span." %>
 
 <cti:default var="autocomplete" value="on"/>
 
@@ -75,7 +74,6 @@
             data-max-value="${pageScope.maxValue}"
             data-is-decimal-number="${pageScope.isDecimalNumber}"
             data-step-value="${pageScope.stepValue}"
-            data-wrapper-css="${pageScope.wrapperCss}"
             placeholder="${pageScope.placeholder}"/>
         <c:if test="${pageScope.units != null}">
             &nbsp;${pageScope.units}

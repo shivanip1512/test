@@ -91,6 +91,10 @@ yukon.dr.setup.programGear = (function() {
                 _handleRampIn();
                 _initCss();
             });
+            
+            $(document).on("yukon:dr:setup:program:gearRendered", function (event) {
+                _initCss();
+            });
 
             _initialized = true;
         }

@@ -435,7 +435,7 @@ public class LoadProgramSetupControllerHelper {
             thermostatCycleGearFields.setAbsoluteOrDelta(AbsoluteOrDelta.DELTA);
         }
         if (thermostatCycleGearFields.getMeasureUnit() == null) {
-            thermostatCycleGearFields.setMeasureUnit(TemperatureMeasureUnit.CELSIUS);
+            thermostatCycleGearFields.setMeasureUnit(TemperatureMeasureUnit.FAHRENHEIT);
         }
     }
 

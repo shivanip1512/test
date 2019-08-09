@@ -71,15 +71,10 @@
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".heatingOffset" nameClass="vam">
-                        <table>
-                            <tr>
-                                <td><tags:numeric path="fields.offset" size="5"/></td>
-                                <td class="vam"><cti:msg2 key=".degreeFahrenheit"/></td>
-                            </tr>
-                        </table>
+                        <tags:numeric path="fields.offset" size="5"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".criticality" nameClass="vam">
-                        <tags:numeric path="fields.criticality" size="5"/>
+                        <tags:numeric path="fields.criticality" size="5" minValue="1" maxValue="15"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
@@ -88,7 +83,7 @@
             <tags:sectionContainer2 nameKey="optionalAttributes">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".groupCapacityReductionPercentage">
-                        <tags:input path="fields.capacityReduction"/>
+                        <tags:numeric path="fields.capacityReduction" size="5" minValue="0" maxValue="100"/>
                     </tags:nameValue2>
                     <c:if test="${not empty selectedGearType}">
                         <%@ include file="gearWhenToChange.jsp" %>
@@ -97,14 +92,7 @@
             </tags:sectionContainer2>
             <tags:sectionContainer2 nameKey="stopControl">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".howToStopControl" nameClass="vam">
-                        <cti:displayForPageEditModes modes="CREATE,EDIT">
-                            <tags:selectWithItems items="${howtoStopControlFields}" path="fields.howToStopControl"/>
-                        </cti:displayForPageEditModes>
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key=".${programGear.fields.howToStopControl}"/>
-                        </cti:displayForPageEditModes>
-                    </tags:nameValue2>
+                    <%@ include file="howToStopControl.jsp" %>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
         </div>

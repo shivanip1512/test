@@ -70,7 +70,7 @@
                             <i:inline key=".${programGear.fields.absoluteOrDelta}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".minimumTempreature">
+                    <tags:nameValue2 nameKey=".minimumTemperature">
                         <tags:input path="fields.minValue"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".maximumTempreature">
@@ -122,7 +122,7 @@
             <tags:sectionContainer2 nameKey="optionalAttributes">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".groupCapacityReductionPercentage">
-                        <tags:input path="fields.capacityReduction"/>
+                        <tags:numeric path="fields.capacityReduction" size="5" minValue="0" maxValue="100" />
                     </tags:nameValue2>
                     <c:if test="${not empty selectedGearType}">
                         <%@ include file="gearWhenToChange.jsp" %>
@@ -131,14 +131,7 @@
             </tags:sectionContainer2>
             <tags:sectionContainer2 nameKey="stopControl">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".howToStopControl">
-                        <cti:displayForPageEditModes modes="CREATE,EDIT">
-                            <tags:selectWithItems items="${howtoStopControlFields}" path="fields.howToStopControl"/>
-                        </cti:displayForPageEditModes>
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key=".${programGear.fields.howToStopControl}"/>
-                        </cti:displayForPageEditModes>
-                    </tags:nameValue2>
+                    <%@ include file="howToStopControl.jsp" %>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
         </div>

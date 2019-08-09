@@ -443,8 +443,8 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.mode">Mode</entry>
 <entry key="yukon.web.modules.dr.setup.gear.unit">Unit</entry>
 <entry key="yukon.web.modules.dr.setup.gear.setpoint">Setpoint</entry>
-<entry key="yukon.web.modules.dr.setup.gear.minimumTempreature">Minimum Tempreature</entry>
-<entry key="yukon.web.modules.dr.setup.gear.maximumTempreature">Maximum Tempreature</entry>
+<entry key="yukon.web.modules.dr.setup.gear.minimumTemperature">Minimum Temperature</entry>
+<entry key="yukon.web.modules.dr.setup.gear.maximumTempreature">Maximum Temperature</entry>
 <entry key="yukon.web.modules.dr.setup.gear.randomOffsetTime">Random Offset Time</entry>
 <entry key="yukon.web.modules.dr.setup.gear.ta">Ta</entry>
 <entry key="yukon.web.modules.dr.setup.gear.tb">Tb</entry>

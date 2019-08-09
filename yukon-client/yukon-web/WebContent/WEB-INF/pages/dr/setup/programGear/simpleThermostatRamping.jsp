@@ -45,7 +45,7 @@
                     <tags:nameValue2 nameKey=".temp" nameClass="vam">
                         <table>
                             <tr>
-                                <td class="vam"><tags:numeric path="fields.preOpTemp" minValue="-20" maxlength="20" size="5"/></td>
+                                <td class="vam"><tags:numeric path="fields.preOpTemp" minValue="-20" maxValue="20" size="5"/></td>
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                                     <td class="vam">(-20 to 20)</td>
                                 </cti:displayForPageEditModes>
@@ -75,7 +75,7 @@
                     <tags:nameValue2 nameKey=".maxRuntime">
                         <table>
                             <tr>
-                                <td><dt:timeOffset path="fields.maxRuntimeInMinutes" minValue="240"/></td>
+                                <td><dt:timeOffset path="fields.maxRuntimeInMinutes" minValue="240" maxValue="1439"/></td>
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                                     <td class="vam">(4:00 to 24:00)</td>
                                 </cti:displayForPageEditModes>
@@ -108,7 +108,7 @@
                     <tags:nameValue2 nameKey=".maxDegreeDelta" nameClass="vam">
                         <table>
                             <tr>
-                                <td><tags:numeric path="fields.max" size="5" minValue="0" maxlength="20"/></td>
+                                <td><tags:numeric path="fields.max" size="5" minValue="0" maxValue="20"/></td>
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                                     <td class="vam">(0 to 20)</td>
                                 </cti:displayForPageEditModes>
@@ -123,7 +123,7 @@
                         <table>
                             <tr>
                                 <td class="vam">
-                                    <dt:timeOffset path="fields.rampOutTimeInMinutes" minValue="0" maxValue="300" wrapClass="js-ramp-out"/>
+                                    <dt:timeOffset path="fields.rampOutTimeInMinutes" minValue="0" maxValue="300"/>
                                 </td>
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                                     <td class="vam">(0:00 to 5:00)</td>
@@ -131,14 +131,7 @@
                             </tr>
                         </table>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".howToStopControl" nameClass="vam">
-                        <cti:displayForPageEditModes modes="CREATE,EDIT">
-                            <tags:selectWithItems items="${howtoStopControlFields}" path="fields.howToStopControl"/>
-                        </cti:displayForPageEditModes>
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key=".${programGear.fields.howToStopControl}"/>
-                        </cti:displayForPageEditModes>
-                    </tags:nameValue2>
+                    <%@ include file="howToStopControl.jsp" %>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
         </div>

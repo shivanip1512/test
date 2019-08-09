@@ -24,7 +24,6 @@ yukon.ui.numeric= (function () {
                 var minValue = $(this).data('minValue'),
                     maxValue = $(this).data('maxValue'),
                     stepValue = $(this).data('stepValue'),
-                    spanCss = $(this).data('wrapperCss'),
                     numberFormat = $(this).data('isDecimalNumber') ? "n" : null;
             
                     $(this).spinner({
@@ -33,8 +32,6 @@ yukon.ui.numeric= (function () {
                         step: stepValue,
                         numberFormat: numberFormat
                     });
-                    
-                    $(this).closest(".ui-spinner").addClass(spanCss);
             });
             
             $(document).on('blur', '.js-numeric', function (event) {

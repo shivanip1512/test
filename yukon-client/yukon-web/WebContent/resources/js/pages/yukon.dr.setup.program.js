@@ -321,10 +321,6 @@ yukon.dr.setup.program = (function() {
                }
             });
             
-            $(document).on("yukon:dr:setup:program:gearRendered", function (event) {
-                _initCss();
-            });
-            
             $(document).on('click', '.js-gear-link', function(event) {
                 event.preventDefault();
             });
