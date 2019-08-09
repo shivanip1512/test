@@ -437,14 +437,19 @@ WHERE RolePropertyID = -90049;
 INSERT INTO DBUpdates VALUES ('YUK-20350-1', '7.3.0', GETDATE());
 /* @end YUK-20350-1 */
 
-/* @start YUK-20271 */
-CREATE INDEX INDX_YPO_Type_PAOName ON YukonPAObject (
+/* @start YUK-20271-1 */
+/* @error ignore-begin */
+DROP INDEX INDX_YPO_Type_PAOName ON YukonPAObject;
+GO
+/* @error ignore-end */
+
+CREATE INDEX INDX_PAO_Type_PAOId ON YukonPAObject (
     Type ASC,
     PAObjectID ASC
 );
 
 INSERT INTO DBUpdates VALUES ('YUK-20271', '7.3.0', GETDATE());
-/* @end YUK-20271 */
+/* @end YUK-20271-1 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

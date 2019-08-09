@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/8/2019 1:22:15 PM                          */
+/* Created on:     8/9/2019 9:38:22 AM                          */
 /*==============================================================*/
 
 
@@ -10129,9 +10129,9 @@ create table YukonPAObject  (
 INSERT into YukonPAObject values (0, 'DEVICE', 'SYSTEM', 'System Device', 'SYSTEM', 'Reserved System Device', 'N', '-----'); 
 
 /*==============================================================*/
-/* Index: INDX_YPO_Type_PAOName                                 */
+/* Index: INDX_PAO_Type_PAOId                                   */
 /*==============================================================*/
-create index INDX_YPO_Type_PAOName on YukonPAObject (
+create index INDX_PAO_Type_PAOId on YukonPAObject (
    Type ASC,
    PAObjectID ASC
 );
