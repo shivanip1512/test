@@ -16,7 +16,7 @@ public interface LocationService {
     /**
      * Save the location information
      */
-    public void saveLocation(PaoLocation paoLocation, LiteYukonUser user);
+    public void saveLocation(PaoLocation paoLocation, String paoName, LiteYukonUser user);
     
     public static final Comparator<PaoDistance> ON_DISTANCE = new Comparator<PaoDistance>() {
         @Override

@@ -1082,7 +1082,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 double longitude = mspMeter.getAssetLocation().getGPSLocation().getLongitude();
                 double latitude = mspMeter.getAssetLocation().getGPSLocation().getLatitude();
                 PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude, longitude, Origin.MULTISPEAK, Instant.now());
-                updatePaoLocation(meterToUpdate.getMeterNumber(), paoLocation);
+                updatePaoLocation(meterToUpdate.getMeterNumber(), meterToUpdate.getName(), paoLocation);
             }
         }
     }
@@ -1097,7 +1097,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 double longitude = mspServiceLocation.getGPSLocation().getLongitude();
                 double latitude = mspServiceLocation.getGPSLocation().getLatitude();
                 PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude, longitude, Origin.MULTISPEAK, Instant.now());
-                updatePaoLocation(meterToUpdate.getMeterNumber(), paoLocation);
+                updatePaoLocation(meterToUpdate.getMeterNumber(), meterToUpdate.getName(), paoLocation);
             }
         }
     }

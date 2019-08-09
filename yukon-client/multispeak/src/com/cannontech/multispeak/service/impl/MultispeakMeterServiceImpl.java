@@ -2018,7 +2018,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 if (longitude != null && latitude != null) {
                     PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude.doubleValue(), longitude.doubleValue(),
                                                               Origin.MULTISPEAK, Instant.now());
-                    updatePaoLocation(meterToUpdate.getMeterNumber(), paoLocation);
+                    updatePaoLocation(meterToUpdate.getMeterNumber(), meterToUpdate.getName(), paoLocation);
                 }
             }
         }
@@ -2036,7 +2036,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 if (longitude != null && latitude != null) {
                     PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude.doubleValue(), longitude.doubleValue(),
                                                               Origin.MULTISPEAK, Instant.now());
-                    updatePaoLocation(meterToUpdate.getMeterNumber(), paoLocation);
+                    updatePaoLocation(meterToUpdate.getMeterNumber(), meterToUpdate.getName(), paoLocation);
                 }
             }
             else if (mspServiceLocation.getMapLocation() != null &&
@@ -2046,7 +2046,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 if (longitude != null && latitude != null) {
                     PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude.doubleValue(), longitude.doubleValue(),
                                                               Origin.MULTISPEAK, Instant.now());
-                    updatePaoLocation(meterToUpdate.getMeterNumber(), paoLocation);
+                    updatePaoLocation(meterToUpdate.getMeterNumber(), meterToUpdate.getName(), paoLocation);
                 }
             }
         }

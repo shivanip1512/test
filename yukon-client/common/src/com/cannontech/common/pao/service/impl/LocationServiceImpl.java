@@ -40,10 +40,9 @@ public class LocationServiceImpl implements LocationService{
     }
     
     @Override
-    public void saveLocation(PaoLocation paoLocation, LiteYukonUser user) {
-        LiteYukonPAObject liteYukonPaobject = databaseCache.getAllPaosMap().get(paoLocation.getPaoIdentifier().getPaoId());
+    public void saveLocation(PaoLocation paoLocation, String paoName, LiteYukonUser user) {
         paoLocationDao.save(paoLocation);
-        endpointEventLogService.locationUpdated(liteYukonPaobject.getPaoName(), paoLocation, user);
+        endpointEventLogService.locationUpdated(paoName, paoLocation, user);
     }
     
     @Override

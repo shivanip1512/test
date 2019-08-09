@@ -539,16 +539,20 @@ public class MultispeakMeterServiceBase {
             });
         });
     }
-
     
-    public void updatePaoLocation(String meterNumber, PaoLocation paoLocation) {
+    /**
+     * Update paolocation coordinates.
+     * If latitude AND longitude are not valid, no action will be taken.
+     * If latitude AND longitude have not changed, existing paoLocation will not be updated.
+     */
+    public void updatePaoLocation(String meterNumber, String meterName, PaoLocation paoLocation) {
         boolean isLatitudeValid = YukonValidationUtils.isLatitudeInRange(paoLocation.getLatitude());
         boolean isLongitudeValid = YukonValidationUtils.isLongitudeInRange(paoLocation.getLongitude());
         if (isLatitudeValid && isLongitudeValid) {
             PaoLocation existingPaoLocation = paoLocationDao.getLocation(paoLocation.getPaoIdentifier().getPaoId());
             if (existingPaoLocation == null || !existingPaoLocation.equalsCoordinates(paoLocation)) {
                 // new entry or updated lat/loong
-                locationService.saveLocation(paoLocation, YukonUserContext.system.getYukonUser());
+                locationService.saveLocation(paoLocation, meterName, YukonUserContext.system.getYukonUser());
             }
         } else {
             log.warn("Location info not updated for meter number " + meterNumber + ". " + paoLocation.toString());
