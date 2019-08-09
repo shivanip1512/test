@@ -55,7 +55,7 @@
             <tags:sectionContainer2 nameKey="optionalAttributes">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".groupCapacityReduction">
-                        <tags:numeric path="fields.capacityReduction" size="10" minValue="0" maxValue="100" stepValue="1" />
+                        <tags:numeric path="fields.capacityReduction" size="10" minValue="0" maxValue="100" />
                     </tags:nameValue2>
                     <%@ include file="gearWhenToChange.jsp"%>
                 </tags:nameValueContainer2>
@@ -64,40 +64,20 @@
 
         <div class="column two nogutter">
             <tags:sectionContainer2 nameKey="rampIn">
+                <c:set var="rampInFieldEnabled"
+                    value="${programGear.fields.rampInPercent > 0 || programGear.fields.rampInIntervalInSeconds > 0}" />
                 <tags:nameValueContainer2>
-                    <cti:displayForPageEditModes modes="EDIT,CREATE">
-                        <tags:nameValue2 nameKey=".rampIn">
-                            <input type="checkbox" id="rampIn" />
-                        </tags:nameValue2>
-                    </cti:displayForPageEditModes>
-                    <tags:nameValue2 id='js-rampInPercent-row' nameKey=".rampInPercent" rowClass="dn">
-                        <tags:numeric path="fields.rampInPercent" size="10" minValue="0" maxValue="100" stepValue="1" />
-                        <i:inline key="yukon.common.units.PERCENT" />
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <input type=hidden id="rampInPercent" value="${programGear.fields.rampInPercent}">
-                        </cti:displayForPageEditModes>
+                    <tags:nameValue2 nameKey=".rampIn">
+                        <tags:switchButton name="rampIn" toggleGroup="rampInWindow" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label"
+                            checked="${rampInFieldEnabled}" />
                     </tags:nameValue2>
-                    <tags:nameValue2 id='js-rampInInterval-row' nameKey=".rampInInterval" rowClass="dn">
-                        <tags:numeric path="fields.rampInIntervalInSeconds" size="10" minValue="-99999" maxValue="99999" stepValue="1" />
-                        <i:inline key=".sec" />
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <input type=hidden id="rampInIntervalInSeconds" value="${fields.rampInIntervalInSeconds}">
-                        </cti:displayForPageEditModes>
-                    </tags:nameValue2>
-                    <tags:nameValue2 id="js-stopOrder-row" nameKey=".stopOrder" rowClass="dn">
-                        <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <tags:selectWithItems items="${stopOrder}" path="fields.stopOrder" />
-                        </cti:displayForPageEditModes>
-                        <cti:displayForPageEditModes modes="VIEW">
-                            ${programGear.fields.stopOrder}
-                        </cti:displayForPageEditModes>
-                    </tags:nameValue2>
-                    <tags:nameValue2 id="js-rampOutPercent-row" nameKey=".rampOutPercent" rowClass="dn">
-                        <tags:numeric path="fields.rampOutPercent" size="10" minValue="0" maxValue="100" stepValue="1" />
+                    <c:set var="rampInFieldClass" value="${rampInFieldEnabled ? '' : 'dn'}" />
+                    <tags:nameValue2 nameKey=".rampInPercent" data-toggle-group="rampInWindow" rowClass="${rampInFieldClass}">
+                        <tags:numeric path="fields.rampInPercent" size="10" minValue="0" maxValue="100"/>
                         <i:inline key="yukon.common.units.PERCENT" />
                     </tags:nameValue2>
-                    <tags:nameValue2 id="js-rampOutInterval-row" nameKey=".rampOutInterval" rowClass="dn">
-                        <tags:numeric path="fields.rampOutIntervalInSeconds" size="10" minValue="-99999" maxValue="99999" stepValue="1" />
+                    <tags:nameValue2 nameKey=".rampInInterval" data-toggle-group="rampInWindow" rowClass="${rampInFieldClass}">
+                        <tags:numeric path="fields.rampInIntervalInSeconds" size="10" minValue="-99999" maxValue="99999"/>
                         <i:inline key=".sec" />
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
@@ -114,8 +94,24 @@
                             ${programGear.fields.howToStopControl}
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
+                     <tags:nameValue2 id="js-stopOrder-row" nameKey=".stopOrder" rowClass="dn">
+                        <cti:displayForPageEditModes modes="EDIT,CREATE">
+                            <tags:selectWithItems items="${stopOrder}" path="fields.stopOrder" />
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            ${programGear.fields.stopOrder}
+                        </cti:displayForPageEditModes>
+                    </tags:nameValue2>
+                    <tags:nameValue2 id="js-rampOutPercent-row" nameKey=".rampOutPercent" rowClass="dn">
+                        <tags:numeric path="fields.rampOutPercent" size="10" minValue="0" maxValue="100"/>
+                        <i:inline key="yukon.common.units.PERCENT" />
+                    </tags:nameValue2>
+                    <tags:nameValue2 id="js-rampOutInterval-row" nameKey=".rampOutInterval" rowClass="dn">
+                        <tags:numeric path="fields.rampOutIntervalInSeconds" size="10" minValue="-99999" maxValue="99999"/>
+                        <i:inline key=".sec" />
+                    </tags:nameValue2>
                     <tags:nameValue2 nameKey=".stopCommandRepeat">
-                        <tags:numeric path="fields.stopCommandRepeat" size="10" minValue="0" maxValue="5" stepValue="1" />
+                        <tags:numeric path="fields.stopCommandRepeat" size="10" minValue="0" maxValue="5"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>

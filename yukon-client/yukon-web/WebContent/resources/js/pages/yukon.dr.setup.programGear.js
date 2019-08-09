@@ -28,22 +28,12 @@ yukon.dr.setup.programGear = (function() {
         $('#js-rampOutInterval-row').toggleClass('dn', (howToStopControl != 'RampOutTimeIn' && howToStopControl != 'RampOutRestore'));
     },
 
-    _handleRampIn= function() {
-        $('#js-rampInPercent-row').toggleClass('dn', $("#rampInPercent").val() == 0 &&  $("#rampInIntervalInSeconds").val() == 0);
-        $('#js-rampInInterval-row').toggleClass('dn', $("#rampInPercent").val() == 0 &&  $("#rampInIntervalInSeconds").val() == 0);
-    },
-
     _refreshShedType= function() {
         var refreshShedType = $("#refreshShedType").val();
         $('#js-fixedShedTime-row').toggleClass('dn', refreshShedType != 'FixedShedTime');
         $('#js-maxShedTime-row').toggleClass('dn', refreshShedType != 'DynamicShedTime');
     },
 
-    _handleRampInField = function() {
-        $('#js-rampInPercent-row').toggleClass('dn', !($('#rampIn').is(':checked')));
-        $('#js-rampInInterval-row').toggleClass('dn', !($('#rampIn').is(':checked')));
-    },
-    
     _initCss = function () {
         $("#js-program-gear-form").find(".timeOffsetWrap").css({"margin-left" : "-5px"});
         var selectedGearType = $("#controlMethod option:selected").val();
@@ -87,11 +77,13 @@ yukon.dr.setup.programGear = (function() {
                 _whenToChange();
                 _howToStopControl();
                 _refreshShedType();
-                _handleRampIn();
                 _initCss();
             });
             
             $(document).on("yukon:dr:setup:program:gearRendered", function (event) {
+                _whenToChange();
+                _howToStopControl();
+                _refreshShedType();
                 _initCss();
             });
 
