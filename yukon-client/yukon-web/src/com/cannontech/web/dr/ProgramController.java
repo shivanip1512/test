@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectMeterResult;
 import com.cannontech.amr.disconnect.model.DrDisconnectStatusCallback;
+import com.cannontech.amr.disconnect.model.DrDisconnectStatusCallback.ControlOperation;
 import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
@@ -338,8 +339,9 @@ public class ProgramController extends ProgramControllerBase {
             if (optEvent.isPresent()) {
                 eventId = optEvent.get();
                 SimpleCallback<CollectionActionResult> doNothingCallback = result -> {};
-                DrDisconnectStatusCallback statusCallback = new DrDisconnectStatusCallback(connect, eventId, meterDisconnectService, 
-                                                                                           smartNotificationEventCreationService, program.getName());
+                DrDisconnectStatusCallback statusCallback = 
+                        new DrDisconnectStatusCallback(ControlOperation.of(connect), eventId, meterDisconnectService, 
+                                                       smartNotificationEventCreationService, program.getName());
 
                 CollectionActionResult result = disconnectService.execute(command, collection, doNothingCallback, statusCallback, userContext);
                 if (!result.getExecutionExceptionText().isEmpty()) {

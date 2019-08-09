@@ -27,7 +27,10 @@ public class MeterDrEmailBuilder extends SmartNotificationEmailBuilder {
         List<Object> argumentList = new ArrayList<>();
         Map<String, Object> params = new HashMap<>();
         params.putAll(events.get(0).getParameters());
+        // Add program name to body arg 0
+        argumentList.add(params.get(MeterDrEventAssembler.PROGRAM_NAME));
         params.remove(MeterDrEventAssembler.PROGRAM_NAME);
+        // Add counts of each status to body arg 1
         argumentList.add(params.entrySet().stream()
             .map(entry -> entry.getValue() + " " + messageSourceAccessor.getMessage(DrMeterControlStatus.valueOf(entry.getKey()).getFormatKey()))
             .collect(Collectors.joining("\n")));

@@ -2,8 +2,7 @@ package com.cannontech.amr.disconnect.model;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.core.Logger;
@@ -16,6 +15,7 @@ import com.cannontech.common.smartNotification.model.MeterDrEventAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.dr.meterDisconnect.DrMeterControlStatus;
+import com.cannontech.dr.meterDisconnect.DrMeterEventStatus;
 import com.cannontech.dr.meterDisconnect.service.DrMeterDisconnectStatusService;
 
 /**
@@ -28,14 +28,13 @@ public class DrDisconnectStatusCallback {
     private final DrMeterDisconnectStatusService drStatusService;
     private final SmartNotificationEventCreationService smartNotificationEventCreationService;
     private final String programName;
-    private ConcurrentMap<String, Integer> statistics = new ConcurrentHashMap<>();
     
-    public DrDisconnectStatusCallback(boolean isConnect, int eventId, DrMeterDisconnectStatusService drStatusService,
+    public DrDisconnectStatusCallback(ControlOperation operation, int eventId, DrMeterDisconnectStatusService drStatusService,
             SmartNotificationEventCreationService notifService, String programName) {
-        this.isConnect = isConnect;
+        isConnect = operation.isConnect;
         this.eventId = eventId;
         this.drStatusService = drStatusService;
-        this.smartNotificationEventCreationService = notifService;
+        smartNotificationEventCreationService = notifService;
         this.programName = programName;
     }
     
@@ -87,8 +86,16 @@ public class DrDisconnectStatusCallback {
         } else {
             drStatusService.updateAllRestoreTimeout(eventId);
         }
+        
+        // Collect the total counts of each status, for notification
+        Map<String, Long> statusCounts = drStatusService.getAllCurrentStatusForEvent(eventId)
+                                                        .stream()
+                                                        .map(DrMeterEventStatus::getControlStatus)
+                                                        .collect(Collectors.groupingBy(DrMeterControlStatus::name, 
+                                                                                       Collectors.counting()));
+        
         smartNotificationEventCreationService.send(SmartNotificationEventType.METER_DR,
-            MeterDrEventAssembler.assemble(statistics, programName));
+            MeterDrEventAssembler.assemble(statusCounts, programName));
     }
     
     /**
@@ -98,32 +105,23 @@ public class DrDisconnectStatusCallback {
         switch (resultDetail) {
             case ARMED:
                 drStatusService.updateControlStatus(eventId, DrMeterControlStatus.FAILED_ARMED, now, deviceIds);
-                increment(DrMeterControlStatus.FAILED_ARMED);
                 break;
             case CONNECTED:
                 // THIS IS THE SUCCESS CASE
                 drStatusService.updateControlStatus(eventId, DrMeterControlStatus.RESTORE_CONFIRMED, now, deviceIds);
-                increment(DrMeterControlStatus.RESTORE_CONFIRMED);
                 break;
             case DISCONNECTED:
                 drStatusService.updateControlStatus(eventId, DrMeterControlStatus.RESTORE_FAILED, now,  deviceIds);
-                increment(DrMeterControlStatus.RESTORE_FAILED);
                 break;
             case FAILURE:
                 drStatusService.updateControlStatus(eventId, DrMeterControlStatus.RESTORE_FAILED, now, deviceIds);
-                increment(DrMeterControlStatus.RESTORE_FAILED);
                 break;
             //handle CANCELED, CONFIRMED, NOT_CONFIGURED, SUCCESS, UNCONFIRMED, UNSUPPORTED
             default:
                 log.warn("Unexpected connect response: " + resultDetail);
                 drStatusService.updateControlStatus(eventId, DrMeterControlStatus.RESTORE_UNKNOWN, now, deviceIds);
-                increment(DrMeterControlStatus.RESTORE_UNKNOWN);
                 break;
         }
-    }
-    
-    private void increment(DrMeterControlStatus status) {
-        statistics.compute(status.name(), (key, value) -> value == null ? 1 : value + 1);
     }
     
     /**
@@ -133,22 +131,18 @@ public class DrDisconnectStatusCallback {
         switch (resultDetail) {
             case CONNECTED:
                 drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_FAILED, now, deviceIds);
-                increment(DrMeterControlStatus.CONTROL_FAILED);
                 break;
             case DISCONNECTED:
                 // THIS IS THE SUCCESS CASE
                 drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_CONFIRMED, now, deviceIds);
-                increment(DrMeterControlStatus.CONTROL_CONFIRMED);
                 break;
             case FAILURE:
                 drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_FAILED, now, deviceIds);
-                increment(DrMeterControlStatus.CONTROL_FAILED);
                 break;
             //handle CANCELED, CONFIRMED, NOT_CONFIGURED, SUCCESS, UNCONFIRMED, UNSUPPORTED
             default:
                 log.warn("Unexpected disconnect response: " + resultDetail);
                 drStatusService.updateControlStatus(eventId, DrMeterControlStatus.CONTROL_UNKNOWN, now, deviceIds);
-                increment(DrMeterControlStatus.CONTROL_UNKNOWN);
                 break;
         }
     }
@@ -156,9 +150,28 @@ public class DrDisconnectStatusCallback {
     /**
      * Transform a collection of simple devices into a list of deviceIds.
      */
-    private List<Integer> getDeviceIds(Collection<SimpleDevice> devices) {
+    private static List<Integer> getDeviceIds(Collection<SimpleDevice> devices) {
         return devices.stream()
                       .map(SimpleDevice::getDeviceId)
                       .collect(Collectors.toList());
+    }
+    
+    public enum ControlOperation {
+        CONTROL(false),
+        RESTORE(true)
+        ;
+        
+        public final boolean isConnect;
+        
+        private ControlOperation(boolean isConnect) {
+            this.isConnect = isConnect;
+        }
+        
+        public static ControlOperation of(boolean isConnect) {
+            if (isConnect) {
+                return RESTORE;
+            }
+            return CONTROL;
+        }
     }
 }

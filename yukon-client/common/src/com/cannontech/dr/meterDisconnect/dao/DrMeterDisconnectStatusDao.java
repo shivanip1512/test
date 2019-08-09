@@ -60,6 +60,12 @@ public interface DrMeterDisconnectStatusDao {
                                                                       Collection<DrMeterControlStatus> controlStatuses,
                                                                       Collection<DrMeterControlStatus> restoreStatuses);
     
+    /**
+     * Retrieve the statuses for all devices in the specified event.
+     * @return The list of meter statuses for the event.
+     */
+    public List<DrMeterEventStatus> getAllCurrentStatusForEvent(int eventId);
+    
     //List<DrMeterEventStatus> getAllStatusForEvent(int eventId);
     
 }

@@ -57,6 +57,12 @@ public interface DrMeterDisconnectStatusService {
                                                                       Collection<DrMeterControlStatus> restoreStatuses);
     
     /**
+     * Retrieve the statuses for all devices in the specified event.
+     * @return The list of meter statuses for the event.
+     */
+    public List<DrMeterEventStatus> getAllCurrentStatusForEvent(int eventId);
+    
+    /**
      * @return The event ID of the currently active event for the specified program, if there is one.
      */
     Optional<Integer> findActiveEventForProgram(int programId);

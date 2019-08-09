@@ -65,6 +65,11 @@ public class DrMeterDisconnectStatusServiceImpl implements DrMeterDisconnectStat
     }
 
     @Override
+    public List<DrMeterEventStatus> getAllCurrentStatusForEvent(int eventId) {
+        return statusDao.getAllCurrentStatusForEvent(eventId);
+    }
+    
+    @Override
     public Optional<Integer> findActiveEventForProgram(int programId) {
         return statusDao.findActiveEventForProgram(programId);
     }

@@ -1,5 +1,7 @@
 package com.cannontech.dr.meterDisconnect;
 
+import static com.cannontech.amr.disconnect.model.DrDisconnectStatusCallback.ControlOperation.*;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -84,7 +86,7 @@ public class MeterDisconnectMessageListener {
                 Set <SimpleDevice> meters = inventoryBaseDao.getLMHardwareForIds(inventory).stream()
                                                                                            .map(LiteLmHardwareBase::getDeviceID)
                                                                                            .map(paoId -> dbCache.getAllPaosMap().get(paoId))
-                                                                                           .map(pao -> new SimpleDevice(pao))
+                                                                                           .map(SimpleDevice::new)
                                                                                            .collect(Collectors.toSet());
                 
                 int programId = loadGroupDao.getProgramIdByGroupId(groupId);
@@ -109,7 +111,7 @@ public class MeterDisconnectMessageListener {
                 
                 MeterCollection collection = new MeterCollection(Lists.newArrayList(meters));
                 SimpleCallback<CollectionActionResult> doNothingCallback = result -> {};
-                DrDisconnectStatusCallback statusCallback = new DrDisconnectStatusCallback(false, eventId,
+                DrDisconnectStatusCallback statusCallback = new DrDisconnectStatusCallback(CONTROL, eventId,
                     drStatusService, smartNotificationEventCreationService, getProgramName(programId));
                 disconnectService.execute(DisconnectCommand.DISCONNECT, collection, doNothingCallback,
                                           statusCallback, YukonUserContext.system);
@@ -161,13 +163,14 @@ public class MeterDisconnectMessageListener {
                 Set <SimpleDevice> meters  = inventoryBaseDao.getLMHardwareForIds(inventory).stream()
                                                                                             .map(LiteLmHardwareBase::getDeviceID)
                                                                                             .map(paoId -> dbCache.getAllPaosMap().get(paoId))
-                                                                                            .map(pao -> new SimpleDevice(pao))
+                                                                                            .map(SimpleDevice::new)
                                                                                             .collect(Collectors.toSet());
                 MeterCollection collection = new MeterCollection(Lists.newArrayList(meters));
                 SimpleCallback<CollectionActionResult> doNothingCallback = result -> {};
                 DrDisconnectStatusCallback statusCallback = null;
                 if (eventId.isPresent()) {
-                    statusCallback = new DrDisconnectStatusCallback(true, eventId.get(), drStatusService, smartNotificationEventCreationService, getProgramName(programId));
+                    statusCallback = new DrDisconnectStatusCallback(RESTORE, eventId.get(), drStatusService, 
+                            smartNotificationEventCreationService, getProgramName(programId));
 
                 disconnectService.execute(DisconnectCommand.CONNECT, collection, doNothingCallback,
                                           statusCallback, YukonUserContext.system);
