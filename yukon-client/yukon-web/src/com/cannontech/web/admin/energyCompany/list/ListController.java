@@ -162,7 +162,7 @@ public class ListController {
             objectFormattingService.sortDisplayableValues(listDefinitions, null, null, userContext);
 
         // For the CPARM (ADD_STARS_METERS_ALLOWED) the  "Meter" type should be
-        // displayed in selection list only if entry with the "Meter" type already exists and the CPARM is true.
+        // displayed in selection list only if entry with the "Meter" type already exists when the CPARM is false.
         // Changed in YUK-20341
         if (!configSource.getBoolean(MasterConfigBoolean.ADD_STARS_METERS_ALLOWED)) {
             List<YukonListEntry> entries = list.getYukonListEntries();
