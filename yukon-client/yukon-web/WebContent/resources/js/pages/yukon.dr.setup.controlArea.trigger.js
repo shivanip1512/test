@@ -13,21 +13,12 @@ yukon.dr.setup.controlArea.trigger = (function() {
     var _initialized = false,
 
     _enableTriggerSection = function() {
-        if ($("#js-trigger-type option:selected").val() === "THRESHOLD_POINT") {
-            $(".js-threshold-point-section").removeClass("dn");
-            $(".js-threshold-section").addClass("dn");
-            $(".js-status-section").addClass("dn");
-        }
-        if ($("#js-trigger-type option:selected").val() === "THRESHOLD") {
-            $(".js-threshold-point-section").addClass("dn");
-            $(".js-threshold-section").removeClass("dn");
-            $(".js-status-section").addClass("dn");
+        var triggerType = $("#js-trigger-type option:selected").val();
+        $('.js-threshold-point-section').toggleClass('dn', triggerType !== 'THRESHOLD_POINT');
+        $('.js-threshold-section').toggleClass('dn', triggerType !== 'THRESHOLD');
+        $('.js-status-section').toggleClass('dn', triggerType !== 'STATUS');
+        if(triggerType === 'THRESHOLD'){
             _setDefaultProjectionProperties();
-        }
-        if ($("#js-trigger-type option:selected").val() === "STATUS") {
-            $(".js-threshold-point-section").addClass("dn");
-            $(".js-threshold-section").addClass("dn");
-            $(".js-status-section").removeClass("dn");
         }
     },
     _setDefaultProjectionProperties = function(){
@@ -51,18 +42,16 @@ yukon.dr.setup.controlArea.trigger = (function() {
             $(document).on('change', '#js-threshold-projection-type', function() {
                 _setDefaultProjectionProperties()
             });
-            $(document).on('click', '#js-use-peak-tracking-threshold-point .button', function() {
-                var usePeakTracking = $(this).hasClass('use-Prak-Tracking');
-                if (usePeakTracking) {
+            $(document).on('change', '#js-use-peak-tracking-threshold-point', function() {
+                if (this.checked) {
                     $("#picker-thresholdPointPeakTracking-btn").prop('disabled', false);
                 } else {
                     $("#point-peak-tracking").val("");
                     $("#picker-thresholdPointPeakTracking-btn").prop('disabled', true);
                 }
             });
-            $(document).on('click', '#js-use-peak-tracking-threshold .button', function() {
-                var usePeakTracking = $(this).hasClass('use-Prak-Tracking');
-                if (usePeakTracking) {
+            $(document).on('change', '#js-use-peak-tracking-threshold', function() {
+                if (this.checked) {
                     $("#picker-thresholdPeakTracking-btn").prop('disabled', false);
                 } else {
                     $("#point-peak-tracking").val("");

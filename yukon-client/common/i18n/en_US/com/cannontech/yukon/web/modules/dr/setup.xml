@@ -504,7 +504,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.startPriority">Start Priority</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.stopPriority">Stop Priority</entry>
 
-<entry key="yukon.web.modules.dr.setup.controlArea.trigger.title">Create Trigger</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.trigger.title">Triggers</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.type">Type</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.identification">Trigger Identification</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.THRESHOLD">Threshold</entry>

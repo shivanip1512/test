@@ -52,10 +52,8 @@
                         removeValue="0"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.usePeakTracking" nameColumnWidth="170px">
-                    <div class="button-group button-group-toggle" id="js-use-peak-tracking-threshold-point">
-                        <cti:button nameKey="yes" classes="on yes M0 use-Prak-Tracking"/>
-                        <cti:button nameKey="no" classes="no M0"/>
-                    </div>
+                    <tags:switchButton  name="usePeak" onNameKey=".yes.label" offNameKey=".no.label" checked="${empty controlAreaTrigger.peakPointId}" 
+                        id="js-use-peak-tracking-threshold-point"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.peakTracking" id="js-peak-tracking" nameColumnWidth="170px">
                     <tags:pickerDialog
@@ -114,10 +112,8 @@
                         removeValue="0"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.usePeakTracking" nameColumnWidth="170px">
-                    <div class="button-group button-group-toggle" id="js-use-peak-tracking-threshold">
-                        <cti:button nameKey="yes" classes="on yes M0 use-Prak-Tracking"/>
-                        <cti:button nameKey="no" classes="no M0"/>
-                    </div>
+	                <tags:switchButton  name="usePeak" onNameKey=".yes.label" offNameKey=".no.label" checked="${empty controlAreaTrigger.peakPointId}" 
+	                    id="js-use-peak-tracking-threshold"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.peakTracking" id="js-peak-tracking" nameColumnWidth="170px">
                     <tags:pickerDialog
@@ -180,32 +176,8 @@
                                 removeValue="0"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".trigger.usePeakTracking" nameColumnWidth="170px">
-                            <cti:displayForPageEditModes modes="EDIT">
-                                <c:choose>
-                                    <c:when test="${empty controlAreaTrigger.peakPointId}">
-                                        <div class="button-group button-group-toggle" id="js-use-peak-tracking-threshold-point">
-                                            <cti:button nameKey="yes" classes="yes M0 use-Prak-Tracking"/>
-                                            <cti:button nameKey="no" classes="on no M0"/>
-                                        </div>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <div class="button-group button-group-toggle" id="js-use-peak-tracking-threshold-point">
-                                            <cti:button nameKey="yes" classes="on yes M0 use-Prak-Tracking"/>
-                                            <cti:button nameKey="no" classes="no M0"/>
-                                        </div>
-                                    </c:otherwise>
-                                </c:choose>
-                            </cti:displayForPageEditModes>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <c:choose>
-                                    <c:when test="${empty controlAreaTrigger.peakPointId}">
-                                        <span class="red"> <i:inline key="yukon.web.components.button.no.label"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span class="green"> <i:inline key="yukon.web.components.button.yes.label"/>
-                                    </c:otherwise>
-                                </c:choose>
-                            </cti:displayForPageEditModes>
+                            <tags:switchButton  name="usePeak" onNameKey=".yes.label" offNameKey=".no.label" checked="${!empty controlAreaTrigger.peakPointId}" 
+                                id="js-use-peak-tracking-threshold-point"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".trigger.peakTracking" id="js-peak-tracking" nameColumnWidth="170px">
                             <tags:pickerDialog
@@ -282,22 +254,8 @@
                                 removeValue="0"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".trigger.usePeakTracking" nameColumnWidth="170px">
-                            <cti:displayForPageEditModes modes="EDIT">
-                                <div class="button-group button-group-toggle" id="js-use-peak-tracking-threshold">
-                                    <cti:button nameKey="yes" classes="on yes M0 use-Prak-Tracking"/>
-                                    <cti:button nameKey="no" classes="no M0"/>
-                                </div>
-                            </cti:displayForPageEditModes>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <c:choose>
-                                    <c:when test="${empty controlAreaTrigger.peakPointId}">
-                                        <span class="red"> <i:inline key="yukon.web.components.button.no.label"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span class="green"> <i:inline key="yukon.web.components.button.yes.label"/>
-                                    </c:otherwise>
-                                </c:choose>
-                            </cti:displayForPageEditModes>
+                            <tags:switchButton  name="usePeak" onNameKey=".yes.label" offNameKey=".no.label" checked="${!empty controlAreaTrigger.peakPointId}" 
+                                id="js-use-peak-tracking-threshold"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".trigger.peakTracking" id="js-peak-tracking" nameColumnWidth="170px">
                             <tags:pickerDialog

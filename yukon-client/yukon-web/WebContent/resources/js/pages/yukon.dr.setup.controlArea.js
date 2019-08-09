@@ -43,6 +43,10 @@ yukon.dr.setup.controlArea = (function() {
             }
         });
     },
+
+    _setTriggerType = function(triggerType){
+        $("#trigger-type").val(triggerType);
+    },
     
     _validatePickerValues = function(thresholdType) {
         var errorFlag = false,
@@ -79,7 +83,7 @@ yukon.dr.setup.controlArea = (function() {
         if($(".js-trigger-container > div").length >= 3){
             $(".js-create-trigger").prop('disabled', true);
         }else{
-        	$(".js-create-trigger").prop('disabled', false);
+            $(".js-create-trigger").prop('disabled', false);
         }
     }
 
@@ -200,7 +204,7 @@ yukon.dr.setup.controlArea = (function() {
                         ($(this).find("#trigger-type").val() === "THRESHOLD_POINT")) {
                     $("#point-trigger-identification-name").val(thresholdPointTriggerIdentification.selectionLabel.innerText);
                     $("#min-restore-offset").val($("#js-threshold-point-min-restore-offset").val());
-                    $("#trigger-type").val("THRESHOLD_POINT");
+                    _setTriggerType("THRESHOLD_POINT");
                     if (_validatePickerValues("THRESHOLD_POINT")) {
                         return;
                     }
@@ -209,7 +213,7 @@ yukon.dr.setup.controlArea = (function() {
                         ($(this).find("#trigger-type").val() === "THRESHOLD")) {
                     $("#point-trigger-identification-name").val(thresholdTriggerIdentification.selectionLabel.innerText);
                     $("#min-restore-offset").val($("#js-threshold-min-restore-offset").val());
-                    $("#trigger-type").val("THRESHOLD");
+                    _setTriggerType("THRESHOLD");
                     if(_validatePickerValues("THRESHOLD")){
                         return;
                     }
@@ -219,19 +223,18 @@ yukon.dr.setup.controlArea = (function() {
                 if (($("#js-trigger-type option:selected").val() === "STATUS") || 
                         ($(this).find("#trigger-type").val() === "STATUS")) {
                     $("#point-trigger-identification-name").val(statusTriggerIdentification.selectionLabel.innerText);
-                    $("#trigger-type").val("STATUS");
+                    _setTriggerType("STATUS");
                     if (_validatePickerValues("STATUS")) {
                         return;
                     }
                     $("#point-trigger-identification-name").val(statusTriggerIdentification.selectionLabel.innerText);
                     $("#trigger-type").val("STATUS");
                 }
-                var triggerID = $(event.target).data("triggerId");
-                if(!triggerID){
+                var triggerId = $(event.target).data("triggerId");
+                if(!triggerId){
                     dialog.dialog('close');
                 }
-                $("#js-trigger-id").val(triggerID);
-                $("#js-trigger-id").val(triggerID);
+                $("#js-trigger-id").val(triggerId);
                 $('#js-controlArea-trigger-form').ajaxSubmit({
                     success: function (data) {
                         var triggerId = data.triggerId, 
