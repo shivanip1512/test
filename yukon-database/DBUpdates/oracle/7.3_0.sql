@@ -424,6 +424,19 @@ CREATE INDEX INDX_YPO_Type_PAOName ON YukonPAObject (
 INSERT INTO DBUpdates VALUES ('YUK-20271', '7.3.0', SYSDATE);
 /* @end YUK-20271-1 */
 
+/* @start YUK-20412 */
+ALTER TABLE DynamicLMProgramDirect
+ADD Origin VARCHAR2(30);
+
+UPDATE DynamicLMProgramDirect
+SET Origin = '(none)';
+
+ALTER TABLE DynamicLMProgramDirect
+MODIFY (Origin VARCHAR2(30) NOT NULL);
+
+INSERT INTO DBUpdates VALUES ('YUK-20412', '7.3.0', SYSDATE);
+/* @end YUK-20412 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

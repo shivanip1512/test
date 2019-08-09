@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/9/2019 9:38:22 AM                          */
+/* Created on:     8/9/2019 10:37:35 AM                         */
 /*==============================================================*/
 
 
@@ -4992,6 +4992,7 @@ create table DynamicLMProgramDirect  (
    ConstraintOverride   CHAR(1)                         not null,
    AdditionalInfo       VARCHAR2(80)                    not null,
    CurrentLogId         NUMBER                         default 0 not null,
+   Origin               VARCHAR2(30)                    not null,
    constraint PK_DYNAMICLMPROGRAMDIRECT primary key (DeviceID)
 );
 

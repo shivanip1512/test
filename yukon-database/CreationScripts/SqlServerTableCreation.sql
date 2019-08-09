@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/9/2019 9:39:37 AM                          */
+/* Created on:     8/9/2019 10:36:44 AM                         */
 /*==============================================================*/
 
 
@@ -5242,6 +5242,7 @@ create table DynamicLMProgramDirect (
    ConstraintOverride   char(1)              not null,
    AdditionalInfo       varchar(80)          not null,
    CurrentLogId         numeric              not null default 0,
+   Origin               varchar(30)          not null,
    constraint PK_DYNAMICLMPROGRAMDIRECT primary key (DeviceID)
 )
 go
