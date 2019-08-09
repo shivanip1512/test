@@ -4,10 +4,12 @@ import static org.junit.Assert.assertTrue;
 
 import org.json.simple.JSONObject;
 import org.testng.ITestContext;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.data.DataProviderClass;
+import com.cannontech.rest.api.utilities.ExcelUtils;
 import com.cannontech.rest.api.utilities.JsonFileReader;
 import com.cannontech.rest.api.utilities.Log;
 
@@ -18,6 +20,8 @@ public class LoadGroupEmetconAPITest {
 
     private final static String emetconPaoTypeStr = "LM_GROUP_EMETCON";
     private final static String emetconPayloadFile = "loadgroup\\lmGroupEmetconCreate.json";
+    private final static String filePath = System.getProperty("user.dir") + "\\resources\\testDataFiles\\LoadGroupData.xlsx";
+    private final static String sheetName = "Emetcon";
 
     /**
      * This test case validates creation of Emetcon load group with default values provided in payload json
@@ -137,10 +141,9 @@ public class LoadGroupEmetconAPITest {
      * This test case validates negative scenarios of Emetcon load group with different input data provided in
      * DataProviderClass
      */
-    @Test(dataProvider = "EmetconAddressData", dataProviderClass = DataProviderClass.class, dependsOnMethods = {
-        "loadGroupEmetcon_01_Create" })
+    @Test(dataProvider = "EmetconAddressData")
     public void loadGroupEmetcon_06_AddressValidation(String goldAddress, String silverAddress, String expectedErrorMsg,
-            int expectedStatusCode) {
+            String expectedStatusCode) {
 
         Log.startTestCase("loadGroupEmetcon_06_AddressValidation");
 
@@ -149,7 +152,8 @@ public class LoadGroupEmetconAPITest {
         payload = JsonFileReader.updateLoadGroup(payload, "addressUsage", "GOLD");
 
         ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", payload);
-        assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
+        Integer statusCode = response.statusCode();
+        assertTrue("Status code should be " + expectedStatusCode, expectedStatusCode.equals(statusCode.toString()));
 
         JsonPath jsonPath = response.jsonPath();
         assertTrue("Expected message should be - Validation error", jsonPath.get("message").equals("Validation error"));
@@ -157,7 +161,21 @@ public class LoadGroupEmetconAPITest {
             expectedErrorMsg.equals(jsonPath.get("fieldErrors.code[0]")));
 
         Log.endTestCase("loadGroupEmetcon_06_AddressValidation");
+    }
+    
+    /**
+     * DataProvider provides data to test method in the form of object array
+     * Data provided in test data sheet -
+     * col1 : goldAddress
+     * col2 : silverAddress
+     * col3 : expectedErrorMsg
+     * col4 : expectedStatusCode
+     */
+    @DataProvider(name = "EmetconAddressData")
+    public Object[][] getEmetconAddressData() throws Exception {
 
+        Object[][] testObjArray = ExcelUtils.getTableArray(filePath, sheetName);
+        return testObjArray;
     }
 
 }
