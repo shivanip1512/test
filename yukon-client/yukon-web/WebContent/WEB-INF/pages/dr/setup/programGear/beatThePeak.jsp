@@ -15,10 +15,10 @@
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".timeout">
-                        <tags:numeric path="fields.timeoutInMinutes" minValue="0" maxValue="100" stepValue="1" size="15"></tags:numeric>
+                        <tags:numeric path="fields.timeoutInMinutes" minValue="0" maxValue="99999" stepValue="1" size="15"></tags:numeric>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".resendRate">
-                        <tags:numeric path="fields.resendInMinutes" minValue="0" maxValue="100" stepValue="1" size="15"></tags:numeric>
+                        <tags:numeric path="fields.resendInMinutes" minValue="0" maxValue="99999" stepValue="1" size="15"></tags:numeric>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
