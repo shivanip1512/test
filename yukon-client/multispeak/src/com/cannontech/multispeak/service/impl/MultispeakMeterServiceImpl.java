@@ -2037,9 +2037,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude.doubleValue(), longitude.doubleValue(),
                                                               Origin.MULTISPEAK, Instant.now());
                     updatePaoLocation(meterToUpdate.getMeterNumber(), meterToUpdate.getName(), paoLocation);
+                    return;
                 }
             }
-            else if (mspServiceLocation.getMapLocation() != null &&
+            if (mspServiceLocation.getMapLocation() != null &&
                 mspServiceLocation.getMapLocation().getCoord() != null) {
                 BigDecimal longitude = mspServiceLocation.getMapLocation().getCoord().getX();
                 BigDecimal latitude = mspServiceLocation.getMapLocation().getCoord().getY();
