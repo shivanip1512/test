@@ -382,8 +382,8 @@ public class LoadProgramSetupController {
             model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(programType));
             controllerHelper.buildGearModelMap(programGear.getControlMethod(), model, request, userContext);
         }
-        if (programGear.getControlMethod() == GearControlMethod.ThermostatRamping
-            || programGear.getControlMethod() == GearControlMethod.SimpleThermostatRamping) {
+        if (mode == PageEditMode.VIEW && (programGear.getControlMethod() == GearControlMethod.ThermostatRamping
+            || programGear.getControlMethod() == GearControlMethod.SimpleThermostatRamping)) {
             controllerHelper.setDefaultGearFieldValues(programGear);
         }
         return "dr/setup/programGear/view.jsp";
