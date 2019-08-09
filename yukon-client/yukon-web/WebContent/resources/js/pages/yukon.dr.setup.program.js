@@ -277,13 +277,16 @@ yukon.dr.setup.program = (function() {
                 }
                 $("#temp-gear-id").val(gearId);
                 var form = dialog.find('#js-program-gear-form'),
-                    isGearNameBlank = $.trim($("#gearName").val()).length == 0 ? true : false,
-                    isControlMethodBlank = $("#controlMethod option:selected").val() == "" ? true :false;
+                    gearNameElement = dialog.find("#gearName"),
+                    controlMethodElement = dialog.find("#controlMethod"),
+                    isGearNameBlank = $.trim(gearNameElement.val()).length == 0 ? true : false,
+                    isControlMethodBlank = controlMethodElement.find("option:selected").val() == "" ? true :false;
                 
-                $("#gearName").toggleClass("error", isGearNameBlank);
-                $("#gearNameIsBlankError").toggleClass("dn", !isGearNameBlank);
-                $("#controlMethod").toggleClass("error", isControlMethodBlank);
-                $("#gearTypeIsRequiredError").toggleClass("dn", !isControlMethodBlank);
+                gearNameElement.toggleClass("error", isGearNameBlank);
+                dialog.find("#gearNameIsBlankError").toggleClass("dn", !isGearNameBlank);
+                controlMethodElement.toggleClass("error", isControlMethodBlank);
+                dialog.find("#gearTypeIsRequiredError").toggleClass("dn", !isControlMethodBlank);
+                
                 if (!isGearNameBlank && !isControlMethodBlank) {
                 form.ajaxSubmit({
                     success: function (data) {
@@ -317,7 +320,7 @@ yukon.dr.setup.program = (function() {
                    });
                    dialog.dialog('close');
                    dialog.empty();
-               }
+                }
             });
             
             $(document).on('click', '.js-gear-link', function(event) {
