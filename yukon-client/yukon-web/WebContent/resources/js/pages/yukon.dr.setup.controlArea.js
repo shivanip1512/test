@@ -160,13 +160,8 @@ yukon.dr.setup.controlArea = (function() {
             $(document).on('click', '.js-control-window', function() {
                 var controlWindowRow = $(this).closest('tr'),
                     useControlWindow = controlWindowRow.find('.switch-btn-checkbox').prop('checked');
-                if (!useControlWindow) {
-                    $('#dailyStartTimeInMinutes').val(0);
-                    $('#dailyStopTimeInMinutes').val(0);
-                } else {
-                    _updateStartTime();
-                    _updateStopTime();
-                }
+                $('#dailyStartTimeInMinutes').prop('disabled', !useControlWindow);
+                $('#dailyStopTimeInMinutes').prop('disabled', !useControlWindow);
             });
             
             $(document).on("yukon:trigger:delete", function (ev) {
