@@ -6,7 +6,7 @@
                 <tags:nameValueContainer2>
                     <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl"/>
                     <tags:nameValue2 nameKey=".controlPercent">
-                        <tags:numeric path="fields.controlPercent" size="10" minValue="5" maxValue="100"/>
+                        <tags:numeric path="fields.controlPercent" size="10" minValue="0" maxValue="100"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".cyclePeriod"> 
                         <cti:displayForPageEditModes modes="EDIT,CREATE">

@@ -375,7 +375,7 @@ public class LoadProgramSetupControllerHelper {
         itronCycleGearFields.setRampOut(true);
         itronCycleGearFields.setCapacityReduction(100);
         itronCycleGearFields.setDutyCyclePercent(50);
-        itronCycleGearFields.setCriticality(1);
+        itronCycleGearFields.setCriticality(100);
         itronCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
     }
 

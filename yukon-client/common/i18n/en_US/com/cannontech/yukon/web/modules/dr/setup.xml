@@ -329,8 +329,6 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.groupCapacityReduction">Group Capacity Reduction</entry>
 <entry key="yukon.web.modules.dr.setup.gear.whenToChange">When to Change</entry>
 <entry key="yukon.web.modules.dr.setup.gear.groupCapacityReduction">Group Capacity Reduction %</entry>
-<entry key="yukon.web.modules.dr.setup.gear.changeDuration">Change Duration</entry>
-<entry key="yukon.web.modules.dr.setup.gear.changePriority">Change Priority</entry>
 <entry key="yukon.web.modules.dr.setup.gear.triggerNumber">Trigger Number</entry>
 <entry key="yukon.web.modules.dr.setup.gear.triggerOffset">Trigger Offset</entry>
 <entry key="yukon.web.modules.dr.setup.gear.kWReduction">KW Reduction</entry>
@@ -418,13 +416,11 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.groupCapacityReduction">Group Capacity Reduction</entry>
 <entry key="yukon.web.modules.dr.setup.gear.whenToChange">When to Change</entry>
 <entry key="yukon.web.modules.dr.setup.gear.groupCapacityReduction">Group Capacity Reduction %</entry>
-<entry key="yukon.web.modules.dr.setup.gear.changeDuration">Change Duration</entry>
 <entry key="yukon.web.modules.dr.setup.gear.changePriority">Change Priority</entry>
 <entry key="yukon.web.modules.dr.setup.gear.triggerNumber">Trigger Number</entry>
 <entry key="yukon.web.modules.dr.setup.gear.triggerOffset">Trigger Offset</entry>
 <entry key="yukon.web.modules.dr.setup.gear.kWReduction">KW Reduction</entry>
 <entry key="yukon.web.modules.dr.setup.gear.changePrority">Change Priority</entry>
-<entry key="yukon.web.modules.dr.setup.gear.changeDurationInMinutes">Cvhange Duration</entry>
 <entry key="yukon.web.modules.dr.setup.gear.triggerNumber">Trigger Number</entry>
 <entry key="yukon.web.modules.dr.setup.gear.triggerOffset">Trigger Offset</entry>
 <entry key="yukon.web.modules.dr.setup.gear.rampIn">Ramp In</entry>
