@@ -11884,7 +11884,7 @@
         </i__foreignKeys>
         <i__indexes>
           <entry>
-            <string>INDX_YPO_Type_PAOName</string>
+            <string>INDX_PAO_Type_PAOId</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -11900,7 +11900,7 @@
                   <i__nonNonUnique>true</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>INDX_YPO_Type_PAOName</indexName>
+              <indexName>INDX_PAO_Type_PAOId</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
