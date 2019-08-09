@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -352,21 +353,20 @@ public class LoadProgramSetupController {
     }
 
     @PostMapping("/gear/save")
-    public @ResponseBody Map<String, String> save(@ModelAttribute("programGear") ProgramGear programGear,
+    public @ResponseBody Map<String, String> save(@ModelAttribute("programGear") ProgramGear programGear, @RequestParam String tempGearId,
             BindingResult result, YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes,
             HttpServletRequest request) {
         Map<String, String> programGearMap = new HashMap<>();
-        final String id;
-
-        if (programGear.getGearId() != null) {
-            id = programGear.getGearId().toString();
-            gearCache.put(id, programGear);
+        final String gearId;
+        if (StringUtils.isNotBlank(tempGearId)) {
+            gearId = tempGearId;
+            gearCache.put(tempGearId, programGear);
         } else {
-            id = UUID.randomUUID().toString();
-            gearCache.put(id, programGear);
+            gearId = UUID.randomUUID().toString().replace("-", "");
+            gearCache.put(gearId, programGear);
         }
 
-        programGearMap.put("id", id);
+        programGearMap.put("id", gearId);
         programGearMap.put("gearName", programGear.getGearName());
         return programGearMap;
     }
@@ -379,6 +379,7 @@ public class LoadProgramSetupController {
         model.addAttribute("selectedGearType", programGear.getControlMethod());
         model.addAttribute("programGear", programGear);
         if (mode == PageEditMode.EDIT || mode == PageEditMode.CREATE) {
+            model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(PaoType.LM_DIRECT_PROGRAM));
             controllerHelper.buildGearModelMap(programGear.getControlMethod(), model, request, userContext);
         }
         if (programGear.getControlMethod() == GearControlMethod.ThermostatRamping

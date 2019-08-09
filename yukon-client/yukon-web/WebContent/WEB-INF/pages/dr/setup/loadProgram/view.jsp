@@ -60,6 +60,7 @@
         <input type="hidden" name="selectedMemberIds" id="js-selected-member-ids" />
         <input type="hidden" name="selectedNotificationGroupIds" id="js-selected-notification-group-ids" />
         <input type="hidden" name="selectedGearsIds" id="js-selected-gear-ids" />
+        <input type="hidden" id="js-selected-program" value="${selectedSwitchType}"/>
 
         <div class="column-12-12 clearfix">
             <div class="column one">
@@ -168,9 +169,9 @@
                             <div style="height: 346px;" class="oa bordered-div select-box">
                                 <div id="js-assigned-gear" class="select-box-selected js-with-movables" style="min-height: 150px;" data-item-selector=".select-box-item">
                                     <c:forEach var="item" items="${gearInfos}" varStatus="status">
-                                        <div class="select-box-item cm js-assigned-gear" data-id="${item.id}">
+                                        <div id="${item.id}" class="select-box-item cm js-assigned-gear" data-id="${item.id}">
                                             <cti:url var="viewUrl" value="/dr/setup/loadProgram/gear/${item.id}?mode=${mode}"/> 
-                                            <a href="javascript:void(0)" data-popup="#gear-quick-view-${item.id}" data-gear-id="${item.id}"> ${fn:escapeXml(item.name)} </a>
+                                            <a href="javascript:void(0)" data-popup="#gear-quick-view-${item.id}"> ${fn:escapeXml(item.name)} </a>
                                             <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-gear-remove" />
                                             <div class="select-box-item-movers">
                                                 <c:set var="disabled" value="${status.first}" />
@@ -185,7 +186,6 @@
                                              data-width="900"
                                              data-height="525"
                                              data-event="yukon:dr:setup:program:saveGear"
-                                             data-target="#js-gear-link-${item.id}"
                                              data-url="${viewUrl}"
                                              data-load-event="yukon:dr:setup:program:gearRendered"
                                              data-ok-text="<cti:msg2 key="yukon.common.save"/>">

@@ -13,6 +13,7 @@
     <cti:url var="action" value="/dr/setup/loadProgram/gear/save" />
     <div class="js-program-gear-container">
         <form:form modelAttribute="programGear" action="${action}" method="post" id="js-program-gear-form">
+        <input type="hidden" name="tempGearId" id="temp-gear-id"/>
             <div class="js-help-section">
                 <span class="fr js-help-btn-span dn">
                     <cti:button renderMode="image" icon="icon-help" classes="fr js-help-btn"/>
@@ -31,7 +32,7 @@
             </div>
             <cti:csrfToken />
             <input type="hidden" name="programGear" value="${selectedGearType}">
-            <input type="hidden" name="programType" value="${programType}" />
+            <input id="js-programType" type="hidden" name="programType" value="${programType}" />
             <tags:sectionContainer2 nameKey="general">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".gearName">

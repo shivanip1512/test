@@ -82,6 +82,12 @@ yukon.dr.setup.program = (function() {
         yukon.ui.initDateTimePickers().ancestorInit('.js-simple-thermostat-ramping-gear');
     },
 
+    _checkForPopup = function(id) {
+        var selector = "#" + id;
+        var length = $("#js-assigned-gear").children(selector).length;
+        return length;
+    },
+
     mod = {
 
         /** Initialize this module. */
@@ -261,8 +267,17 @@ yukon.dr.setup.program = (function() {
             });
 
             $(document).on("yukon:dr:setup:program:saveGear", function (event) {
-                var dialog = $(event.target),
-                    form = dialog.find('#js-program-gear-form'),
+                var dialog = $(event.target);
+                var popupDiv = $(event.target)[0];
+                var popupId = divPopup.id, gearId;
+                if(popupId !== 'gear-create-popup') {
+                    var arr = popupId.split('-');
+                        gearId = arr[arr.length - 1];
+                } else {
+                    gearId = '';
+                }
+                $("#temp-gear-id").val(gearId);
+                var form = dialog.find('#js-program-gear-form'),
                     isGearNameBlank = $.trim($("#gearName").val()).length == 0 ? true : false,
                     isControlMethodBlank = $("#controlMethod option:selected").val() == "" ? true :false;
                 
@@ -270,38 +285,40 @@ yukon.dr.setup.program = (function() {
                 $("#gearNameIsBlankError").toggleClass("dn", !isGearNameBlank);
                 $("#controlMethod").toggleClass("error", isControlMethodBlank);
                 $("#gearTypeIsRequiredError").toggleClass("dn", !isControlMethodBlank);
-                
                 if (!isGearNameBlank && !isControlMethodBlank) {
-                    form.ajaxSubmit({
-                        success: function (data) {
-                            var id = data.id,
-                                gearName = data.gearName,
-                                mode = $("#js-form-mode").val(),
-                                anchorTag = $("<a>"),
-                                saveUrl = yukon.url("/dr/setup/loadProgram/gear/save"),
-                                url = yukon.url("/dr/setup/loadProgram/gear/" + id + "?mode=" + mode),
-                                clonedRow = $('.js-template-gears-row').clone();
-                                anchorTag.attr("href", url);
-                                anchorTag.text(gearName);
+                form.ajaxSubmit({
+                    success: function (data) {
+                            var id = data.id;
+                            if(_checkForPopup(id) == 0) {
+                            var gearName = data.gearName,
+                            mode = $("#js-form-mode").val(),
+                            anchorTag = $("<a>"),
+                            url = yukon.url("/dr/setup/loadProgram/gear/" + id + "?mode=" + mode),
+                            clonedRow = $('.js-template-gears-row').clone();
+                            anchorTag.attr("href", url);
+                            anchorTag.text(gearName);
+                            clonedRow.attr('id', id);
+                            clonedRow.attr('data-id', id);
+                            clonedRow.find(".js-gear-name").append(anchorTag);
+                            clonedRow.addClass('js-gear-link');
+                            clonedRow.removeClass('dn js-template-gears-row');
+                            clonedRow.appendTo($("#js-assigned-gear"));
 
-                                clonedRow.attr('data-id', id);
-                                clonedRow.find(".js-gear-name").append(anchorTag);
-                                clonedRow.addClass('js-gear-link');
-                                clonedRow.removeClass('dn js-template-gears-row');
-                                clonedRow.appendTo($("#js-assigned-gear"));
-                            
                             var clonedDialog = $(".js-gear-dialog-template").clone();
-                                clonedDialog.attr("id", "js-gear-dialog-" + id);
-                                clonedDialog.attr("data-url", url);
-                                clonedDialog.removeClass("js-gear-dialog-template");
-                            
+                            clonedDialog.attr("id", "js-gear-dialog-" + id);
+                            clonedDialog.attr("data-url", url);
+                            clonedDialog.removeClass("js-gear-dialog-template");
                             $(".js-assigned-gear").append(clonedDialog);
                             anchorTag.attr("data-popup", "#js-gear-dialog-" + id);
+                            } else {
+                                $('#' + id + ' a').text(data.gearName);
+                                $(event.target).dialog('close');
+                            }
                         }
-                    });
-                    dialog.dialog('close');
-                    dialog.empty();
-                }
+                   });
+                   dialog.dialog('close');
+                   dialog.empty();
+               }
             });
             
             $(document).on("yukon:dr:setup:program:gearRendered", function (event) {
