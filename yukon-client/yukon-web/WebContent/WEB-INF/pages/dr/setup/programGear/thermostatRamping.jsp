@@ -83,37 +83,28 @@
                         <tags:input path="fields.valueTa" size="3"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".tb">
-                        <table>
-                            <tr>
-                                <td><tags:input path="fields.valueTb" size="3" inputClass="js-delta-value"/></td>
-                                <td><cti:msg2 key=".valueB"/>:</td>
-                                <td><tags:input path="fields.valueB" size="3"/></td>
-                            </tr>
-                        </table>
+                        <tags:input path="fields.valueTb" size="3"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".valueB">
+                        <tags:input path="fields.valueB" size="3"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".tc">
-                        <tags:input path="fields.valueTc" size="3" inputClass="js-valueTb"/>
+                        <tags:input path="fields.valueTc" size="3"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".td">
-                        <table>
-                            <tr>
-                                <td><tags:input path="fields.valueTd" size="3" inputClass="js-delta-value"/></td>
-                                <td><cti:msg2 key=".valueD"/>:</td>
-                                <td><tags:input path="fields.valueD" size="3"/></td>
-                            </tr>
-                        </table>
+                        <tags:input path="fields.valueTd" size="3"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".valueD">
+                        <tags:input path="fields.valueD" size="3"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".te">
                         <tags:input path="fields.valueTe" size="3" inputClass="test"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".tf">
-                        <table>
-                            <tr>
-                                <td><tags:input path="fields.valueTf" size="3" inputClass="js-delta-value"/></td>
-                                <td><cti:msg2 key=".valueF"/>:</td>
-                                <td><tags:input path="fields.valueF" size="3"/></td>
-                            </tr>
-                        </table>
+                        <tags:input path="fields.valueTf" size="3" inputClass="js-delta-value"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".valueF">
+                        <tags:input path="fields.valueF" size="3"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
