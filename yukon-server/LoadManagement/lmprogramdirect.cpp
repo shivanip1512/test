@@ -5363,6 +5363,7 @@ void CtiLMProgramDirect::restore(Cti::RowReader &rdr)
         rdr["startedrampingout"] >> _startedrampingout;
         rdr["additionalinfo"] >> _additionalinfo;
         rdr["currentlogid"] >> _curLogID;
+        rdr["Origin"] >> _origin;
         rdr["constraintoverride"] >> tempBoolString;
         CtiToLower(tempBoolString);
         setConstraintOverride(tempBoolString=="y"?TRUE:FALSE);
@@ -5422,6 +5423,12 @@ void CtiLMProgramDirect::dumpDynamicData(Cti::Database::DatabaseConnection& conn
         additionalInfo = "(none)";
     }
 
+    string origin = getOrigin();
+    if( !origin.length() )
+    {
+        origin = "(none)";
+    }
+
     if( !_insertDynamicDataFlag )
     {
         static const std::string sql_update = "update dynamiclmprogramdirect"
@@ -5436,7 +5443,8 @@ void CtiLMProgramDirect::dumpDynamicData(Cti::Database::DatabaseConnection& conn
                                                     "notifyinactivetime = ?, "
                                                     "constraintoverride = ?, "
                                                     "additionalinfo = ?, "
-                                                    "currentlogid = ?"
+                                                    "currentlogid = ? ,"
+                                                    "Origin = ?"
                                                " where "
                                                     "deviceid = ?";
 
@@ -5454,6 +5462,7 @@ void CtiLMProgramDirect::dumpDynamicData(Cti::Database::DatabaseConnection& conn
             << ( getConstraintOverride() ? std::string("Y") : std::string("N") )
             << additionalInfo
             << getCurrentHistLogId()
+            << origin
             << getPAOId();
 
         if( ! Cti::Database::executeCommand( updater, CALLSITE, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
@@ -5466,7 +5475,7 @@ void CtiLMProgramDirect::dumpDynamicData(Cti::Database::DatabaseConnection& conn
         CTILOG_INFO(dout, "Inserted program direct into DynamicLMProgramDirect: " << getPAOName());
 
         {
-            static const std::string sql_insert = "insert into dynamiclmprogramdirect values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            static const std::string sql_insert = "insert into dynamiclmprogramdirect values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             Cti::Database::DatabaseWriter   inserter(conn, sql_insert);
 
@@ -5482,7 +5491,8 @@ void CtiLMProgramDirect::dumpDynamicData(Cti::Database::DatabaseConnection& conn
                 << getNotifyInactiveTime()
                 << ( getConstraintOverride() ? std::string("Y") : std::string("N") )
                 << additionalInfo
-                << getCurrentHistLogId();
+                << getCurrentHistLogId()
+                << origin;
 
             if( ! Cti::Database::executeCommand( inserter, CALLSITE, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
             {
