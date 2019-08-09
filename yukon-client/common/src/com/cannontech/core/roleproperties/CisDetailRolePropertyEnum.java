@@ -20,6 +20,6 @@ public enum CisDetailRolePropertyEnum implements DisplayableEnum {
     
     @Override
     public String getFormatKey() {
-        return "yukon.common.multispeakCisDetail." + name();
+        return "yukon.common.cisDetail." + name();
     }
 }
