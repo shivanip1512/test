@@ -28,7 +28,7 @@
 
     <entry key="yukon.web.modules.support.eventViewer.byCategory.csvExport.label">CSV</entry>
     <entry key="yukon.web.modules.support.eventViewer.byCategory.csvExport.hoverText">Export results to a CSV formatted file.</entry>
-    <entry key="yukon.web.modules.support.eventViewer.byCategory.csvExport.fileName">eventLogCategoryExport</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byCategory.csvExport.fileName">EventLogCategoryExport</entry>
 
     <entry key="yukon.web.modules.support.eventViewer.confirmExport.title">Large Event Log Export</entry>
     <entry key="yukon.web.modules.support.eventViewer.confirmExport.message">Are you sure you want to export so many event log entries?</entry>
