@@ -15,7 +15,6 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.web.support.waterNode.dao.WaterNodeDao;
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
-import com.cannontech.web.support.waterNode.voltageDetails.VoltageDetails;
 
 public class WaterNodeDaoImpl implements WaterNodeDao {
     @Autowired YukonJdbcTemplate yukonJdbcTemplate;
@@ -66,44 +65,5 @@ public class WaterNodeDaoImpl implements WaterNodeDao {
         });
         return results;
     }
-
-    public List<VoltageDetails> getVoltageData(Instant startTime, Instant stopTime) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT rfa.SerialNumber, ypo.PaObjectId, rph.Timestamp, rph.Value");
-        sql.append("FROM YukonPaObject ypo");
-        sql.append(  "JOIN Point p ON ypo.PaObjectId = p.PaObjectId");
-        sql.append(  "JOIN RawPointHistory rph ON rph.PointId = p.PointId");
-        sql.append(  "JOIN RfnAddress rfa ON ypo.PaObjectId = rfa.DeviceId");
-        sql.append("WHERE ypo.Type").in(PaoType.getWaterMeterTypes());
-        sql.append(  "AND p.PointType").eq_k(PointType.Analog);
-        sql.append(  "AND p.PointOffset").eq(5);
-        sql.append(  "AND rph.Timestamp").lte(stopTime);
-        sql.append(  "AND rph.Timestamp").gte(startTime);
-        sql.append("ORDER BY rfa.SerialNumber, rph.Timestamp;");
-        
-        final List<VoltageDetails> results = new ArrayList<VoltageDetails>();
-        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                int PaObjectId = rs.getInt("PaObjectId");
-                int oldPaObjectId = -1;
-                int currentNodeIndex = results.size();
-                if (currentNodeIndex != 0) {
-                    oldPaObjectId = (results.get(currentNodeIndex - 1).getPaObjectId()).intValue();
-                }
-                if (oldPaObjectId!=PaObjectId) {
-                    VoltageDetails voltageDetails = new VoltageDetails();
-                    voltageDetails.setSerialNumber(rs.getString("SerialNumber"));
-                    voltageDetails.setPaObjectId(PaObjectId);
-                    results.add(voltageDetails);
-                } else {
-                    // if a new waterNodeDetails object has not been created, desired index is size-1
-                    currentNodeIndex--;
-                }
-                results.get(currentNodeIndex).addTimestamp(rs.getInstant("Timestamp"));
-                results.get(currentNodeIndex).addVoltage(rs.getDouble("Value"));
-            }
-        });
-        return results;
-    }
 }
+

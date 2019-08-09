@@ -224,55 +224,74 @@
     
     <!-- waterNode.jsp -->
     <entry key="yukon.web.modules.support.waterNode.pageName">Water Node Battery Analysis</entry>
-    <entry key="yukon.web.modules.support.waterNode.batteryAnalysis.title">Battery Analysis Report</entry>
+    <entry key="yukon.web.modules.support.waterNode.batteryAnalysis.title">Battery Condition Report</entry>
     <entry key="yukon.web.modules.support.waterNode.description">
-        The battery analysis report documents the condition of all active water nodes.
-        Clicking "generate report" will generate a report with the serial number, meter number, 
-        device name, device type, battery condition category, high sleeping current indicator,
-        and most recent battery voltage reading of each water node. Analysis will be performed
-        on the previous six days' data readings to evaluate each node for the presence of high
-        sleeping current, and on the previous three days' data to evaluate the battery level of
-        each node.
+        The Battery Analysis report is used to evaluate the current condition of all active battery 
+        powered nodes in the system.  The interval voltage data collected by Yukon will be analyzed 
+        for two conditions.
     </entry>
-    <entry key="yukon.web.modules.support.waterNode.generateReport.label">Generate Report</entry>
-
-    <entry key="yukon.web.modules.support.waterNode.voltageData.title">Voltage Data Details</entry>
-    <entry key="yukon.web.modules.support.waterNode.generateDetailedReport.label">Generate Detailed Data Report</entry>
-    <entry key="yukon.web.modules.support.waterNode.voltageData.description">
-        The voltage data report contains all interval data points used to analyze a
-        test interval. To view the voltage data used in the analysis of an already downloaded battery
-        analysis report, select the end date of the battery analysis report.
-        Clicking "Generate Detailed Report" will generate a report that contains the meter serial number, the date of
-        the interval, the time of the interval, and the voltage for each value in the interval.
+    <entry key="yukon.web.modules.support.waterNode.batteryConditionDefinition">
+        Battery Condition: Weighted average voltage for the three days previous to the selected “Interval End” 
+        date chosen by the user will be evaluated and one of the following conditions returned:
+    </entry>
+    <entry key="yukon.web.modules.support.waterNode.sleepingCurrentDefinition">
+        High Sleeping Current: Linear regression algorithm executed against the six days previous
+        to the selected “Interval End” date chosen by the user will be evaluated and an indication of 
+        True or False will be returned
     </entry>
     
-    <entry key="yukon.web.modules.support.waterNode.csvReport.title">CSV Data Analysis</entry>
-    <entry key="yukon.web.modules.support.waterNode.csvReport.description">
-        To analyze prexisting data, upload a CSV file with the following columns in this order:
-        {serial number, meter number,  name, type, timestamp (seconds), voltage}. Clicking "generate report" will 
-        generate a battery analysis report on the uploaded data for the selected interval.
+    <entry key="yukon.web.modules.support.waterNode.generateReport.label">Generate Report</entry>
+
+    <entry key="yukon.web.modules.support.waterNode.voltageData.title">Voltage Data Report</entry>
+    <entry key="yukon.web.modules.support.waterNode.generateDetailedReport.label">Generate Voltage Data Report</entry>
+    <entry key="yukon.web.modules.support.waterNode.voltageData.description">
+        The Voltage Data report is used to export the voltage interval data used by the 
+        Battery Analysis report to indicate the battery condition.  Clicking “Generate Report” 
+        will produce a comma separated file of voltage interval data for all active battery powered 
+        nodes in the system for the six days previous to the selected “Interval End” date chosen by the user.  
+        The export contains the following data:
     </entry>
+    
+    <entry key="yukon.web.modules.support.waterNode.csvReport.title">Pre-existing Voltage Data Analysis</entry>
+    <entry key="yukon.web.modules.support.waterNode.csvReport.description">
+        The Pre-existing Voltage Data Analysis report will import a comma separated (CSV) file of device identifiers 
+        and interval voltage data and execute the algorithm appropriately.  The CSV file must include columns with the 
+        following headers in the following order: </entry>
+    <entry key="yukon.web.modules.support.waterNode.csvReport.headerRow">[Serial Number, Meter Number, Device Name, Device Type, Timestamp (seconds), Voltage Reading].</entry>
+    
+    
+    <entry key="yukon.web.modules.support.waterNode.batteryCategory.NORMAL">Normal (&gt;3.45 Volts)</entry>
+    <entry key="yukon.web.modules.support.waterNode.batteryCategory.LOW">Low (3.3 - 3.45 Volts)</entry>
+    <entry key="yukon.web.modules.support.waterNode.batteryCategory.CRITICALLY_LOW">Critically low (&lt; 3.3 Volts)</entry>
+    <entry key="yukon.web.modules.support.waterNode.batteryCategory.UNREPORTED">Unreported (missing more than 50% of interval data from the selected timeframe)</entry>
+    
+    <entry key="yukon.web.modules.support.waterNode.batteryAnalysis.description">Clicking “Generate Report” will produce a comma separated file of the following data for further review:</entry>
     <entry key="yukon.web.modules.support.waterNode.generateCSVReport.label">Generate Report</entry>
     <entry key="yukon.web.modules.support.waterNode.upload">Upload</entry>
     <entry key="yukon.web.modules.support.waterNode.intervalEnd">Interval End: </entry>
-    <entry key="yukon.web.modules.support.waterNode.lastGenerated">End Date of Analysis Report: </entry>
-    <entry key="yukon.web.modules.support.waterNode.csvEndDate">Interval End: </entry>
     <entry key="yukon.web.modules.support.waterNode.NORMAL">Normal</entry>
     <entry key="yukon.web.modules.support.waterNode.LOW">Low</entry>
     <entry key="yukon.web.modules.support.waterNode.CRITICALLY_LOW">Critically Low</entry>
     <entry key="yukon.web.modules.support.waterNode.UNREPORTED">Unreported</entry>
     
-    <entry key="yukon.web.modules.suppport.waterNode.serialNumber">Serial Number</entry>
-    <entry key="yukon.web.modules.suppport.waterNode.deviceName">Device Name</entry>
-    <entry key="yukon.web.modules.suppport.waterNode.meterNumber">Meter Number</entry>
-    <entry key="yukon.web.modules.suppport.waterNode.deviceType">Device Type</entry>
-    <entry key="yukon.web.modules.suppport.waterNode.deviceCategory">Device Category</entry>
-    <entry key="yukon.web.modules.suppport.waterNode.currentIndicator">High Sleeping Current Indicator</entry>
-    <entry key="yukon.web.modules.suppport.waterNode.recentReading">Most Recent Reading</entry>
+    <entry key="yukon.web.modules.support.waterNode.timestamp">Timestamp (seconds since epoch (Jan 1, 1970))</entry>
+    <entry key="yukon.web.modules.support.waterNode.voltage">Voltage (volts)</entry>
+    <entry key="yukon.web.modules.support.waterNode.reading">Reading</entry>
+    <entry key="yukon.web.modules.support.waterNode.mostRecentVoltage">Most Recent Battery Voltage</entry>
+    <entry key="yukon.web.modules.support.waterNode.uom">UOM</entry>
+    <entry key="yukon.web.modules.support.waterNode.batteryCondition">Battery Condition</entry>
+    <entry key="yukon.web.modules.support.waterNode.highSleepingCurrent">High Sleeping Current Indicator</entry>
+    <entry key="yukon.web.modules.support.waterNode.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.support.waterNode.deviceName">Device Name</entry>
+    <entry key="yukon.web.modules.support.waterNode.meterNumber">Meter Number</entry>
+    <entry key="yukon.web.modules.support.waterNode.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.support.waterNode.deviceCategory">Device Category</entry>
+    <entry key="yukon.web.modules.support.waterNode.currentIndicator">High Sleeping Current Indicator</entry>
+    <entry key="yukon.web.modules.support.waterNode.recentReading">Most Recent Reading</entry>
     
-    <entry key="yukon.web.modules.suppport.waterNode.date">Date</entry>
-    <entry key="yukon.web.modules.suppport.waterNode.time">Time</entry>
-    <entry key="yukon.web.modules.suppport.waterNode.voltage">Voltage</entry>
+    <entry key="yukon.web.modules.support.waterNode.date">Date</entry>
+    <entry key="yukon.web.modules.support.waterNode.time">Time</entry>
+    <entry key="yukon.web.modules.support.waterNode.voltage">Voltage</entry>
     
     <!-- deviceDefinition/deviceDefinitionViewer.jsp -->
     <entry key="yukon.web.modules.support.deviceDef.pageName">Device Definitions</entry>

@@ -93,4 +93,12 @@ public class WaterNodeDetails {
     public void setBatteryLevel(WaterNodeBatteryLevel batteryLevel) {
         this.batteryLevel = batteryLevel;
     }
+    
+    public Instant getLastTimestamp() {
+        return timestamps.get(timestamps.size()-1);
+    }
+    
+    public Double getLastVoltage() {
+        return voltages.get(voltages.size()-1);
+    }
 }

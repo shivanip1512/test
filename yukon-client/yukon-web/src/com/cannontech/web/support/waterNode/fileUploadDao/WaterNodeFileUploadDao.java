@@ -1,4 +1,4 @@
-package com.cannontech.web.support.waterNode.csvDao;
+package com.cannontech.web.support.waterNode.fileUploadDao;
 
 import java.io.File;
 import java.util.List;
@@ -6,9 +6,8 @@ import java.util.List;
 import org.joda.time.Instant;
 
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
-import com.cannontech.web.support.waterNode.voltageDetails.VoltageDetails;
 
-public interface WaterNodeCSVDao {
+public interface WaterNodeFileUploadDao {
 
     /**
      * Creates WaterNodeDetails list that contains the details of water nodes
@@ -23,5 +22,5 @@ public interface WaterNodeCSVDao {
      * @param stopTime
      * @return ArrayList of VoltageDetails which have the voltage data and serial number of the water nodes
      */
-    public List<VoltageDetails> getVoltageData(Instant startTime, Instant stopTime);
+    public List<WaterNodeDetails> getVoltageData(Instant startTime, Instant stopTime);
 }

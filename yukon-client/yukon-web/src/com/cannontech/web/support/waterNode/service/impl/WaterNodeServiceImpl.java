@@ -14,19 +14,18 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.web.support.waterNode.batteryLevel.WaterNodeBatteryLevel;
-import com.cannontech.web.support.waterNode.csvDao.WaterNodeCSVDao;
 import com.cannontech.web.support.waterNode.dao.WaterNodeDao;
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
+import com.cannontech.web.support.waterNode.fileUploadDao.WaterNodeFileUploadDao;
 import com.cannontech.web.support.waterNode.service.WaterNodeService;
-import com.cannontech.web.support.waterNode.voltageDetails.VoltageDetails;
 
 public class WaterNodeServiceImpl implements WaterNodeService {
     private static final Logger log = YukonLogManager.getLogger(WaterNodeServiceImpl.class);
     private final WaterNodeDao waterNodeDao;
-    private final WaterNodeCSVDao waterNodeCSVDao;
+    private final WaterNodeFileUploadDao waterNodeCSVDao;
     @Autowired
     
-    public WaterNodeServiceImpl(WaterNodeDao waterNodeDao, WaterNodeCSVDao waterNodeCSVDao) {
+    public WaterNodeServiceImpl(WaterNodeDao waterNodeDao, WaterNodeFileUploadDao waterNodeCSVDao) {
         this.waterNodeDao = waterNodeDao;
         this.waterNodeCSVDao = waterNodeCSVDao;
     }
@@ -43,8 +42,8 @@ public class WaterNodeServiceImpl implements WaterNodeService {
     }
 
     @Override
-    public List<VoltageDetails> getVoltageDetails(Instant intervalStart, Instant intervalEnd) {
-        List<VoltageDetails> voltageData = waterNodeDao.getVoltageData(intervalStart, intervalEnd);
+    public List<WaterNodeDetails> getVoltageDetails(Instant intervalStart, Instant intervalEnd) {
+        List<WaterNodeDetails> voltageData = waterNodeDao.getWaterNodeDetails(intervalStart, intervalEnd);
         voltageData.forEach(voltageDetails -> {
             pruneResultsList(voltageDetails.getVoltages(), voltageDetails.getTimestamps());
         });
@@ -52,7 +51,7 @@ public class WaterNodeServiceImpl implements WaterNodeService {
     }
 
     @Override
-    public List<WaterNodeDetails> getCSVAnalyzedNodes(Instant intervalStart, Instant intervalEnd, File file) {
+    public List<WaterNodeDetails> getCsvAnalyzedNodes(Instant intervalStart, Instant intervalEnd, File file) {
         List<WaterNodeDetails> csvNodeData = waterNodeCSVDao.getWaterNodeDetails(intervalStart, intervalEnd, file);
         log.info("Csv analysis initiated: " + csvNodeData.size() + " water nodes found");
         csvNodeData.forEach(details -> {

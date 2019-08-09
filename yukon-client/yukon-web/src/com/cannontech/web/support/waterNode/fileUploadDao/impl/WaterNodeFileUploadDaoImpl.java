@@ -1,4 +1,4 @@
-package com.cannontech.web.support.waterNode.csvDao.impl;
+package com.cannontech.web.support.waterNode.fileUploadDao.impl;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,12 +13,11 @@ import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityServiceImpl;
-import com.cannontech.web.support.waterNode.csvDao.WaterNodeCSVDao;
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
-import com.cannontech.web.support.waterNode.voltageDetails.VoltageDetails;
+import com.cannontech.web.support.waterNode.fileUploadDao.WaterNodeFileUploadDao;
 import com.opencsv.CSVReader;
 
-public class WaterNodeCSVDaoImpl implements WaterNodeCSVDao {
+public class WaterNodeFileUploadDaoImpl implements WaterNodeFileUploadDao {
     private static final Logger log = YukonLogManager.getLogger(AssetAvailabilityServiceImpl.class);
 
     @Override
@@ -93,7 +92,7 @@ public class WaterNodeCSVDaoImpl implements WaterNodeCSVDao {
     }
 
     @Override
-    public List<VoltageDetails> getVoltageData(Instant startTime, Instant stopTime) {
+    public List<WaterNodeDetails> getVoltageData(Instant startTime, Instant stopTime) {
         return null;
     }
 

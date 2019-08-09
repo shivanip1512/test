@@ -2,6 +2,7 @@ package com.cannontech.web.support;
 
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang3.StringUtils;
 import org.jfree.util.Log;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -40,7 +41,6 @@ import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
 import com.cannontech.web.support.waterNode.model.BatteryAnalysisModel;
 import com.cannontech.web.support.waterNode.service.WaterNodeService;
-import com.cannontech.web.support.waterNode.voltageDetails.VoltageDetails;
 import com.cannontech.web.util.WebFileUtils;
 
 
@@ -67,7 +67,7 @@ public class WaterNodeAnalysisController {
             
             List<WaterNodeDetails> analyzedNodes = waterNodeService.getAnalyzedNodes(intervalStart, intervalEnd);
             String[] headerRow = getReportHeaderRow(userContext);
-            List<String[]> dataRows = getReportDataRows(analyzedNodes);
+            List<String[]> dataRows = getReportDataRows(analyzedNodes, userContext);
             
             writeToCSV(headerRow, dataRows, response, userContext, timestampEnd, "BatteryAnalysis");
             batteryAnalysisModel.setLastCreatedReport(intervalEnd);
@@ -84,7 +84,7 @@ public class WaterNodeAnalysisController {
             intervalEnd = intervalEnd.plus(Duration.standardDays(1));
             Instant intervalStart =  intervalEnd.minus(Duration.standardDays(6)).plus(Duration.standardSeconds(1));//interval lasts six days and starts at 00:00:01
             
-            List<VoltageDetails> voltageDetails =  waterNodeService.getVoltageDetails(intervalStart, intervalEnd);
+            List<WaterNodeDetails> voltageDetails =  waterNodeService.getVoltageDetails(intervalStart, intervalEnd);
             String[] headerRow = getVoltageHeaderRow(userContext);
             List<String[]> dataRows = getVoltageDataRows(voltageDetails, userContext);
             
@@ -92,7 +92,7 @@ public class WaterNodeAnalysisController {
         }
         
         @RequestMapping(value = "generateCSVReport", method = RequestMethod.POST)
-        public String testCSVData( @RequestParam("csvEndDate") String csvEndDate, ModelMap model, HttpServletResponse response, HttpServletRequest request, YukonUserContext userContext) throws IOException {
+        public String fileUploadAndAnalyze(@RequestParam("csvEndDate") String csvEndDate, ModelMap model, HttpServletResponse response, HttpServletRequest request, YukonUserContext userContext) throws IOException {
             DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
             DateTimeZone timeZone = userContext.getJodaTimeZone();
             Instant intervalEnd = formatter.parseDateTime(csvEndDate).withTimeAtStartOfDay().withZone(timeZone).toInstant();
@@ -113,9 +113,9 @@ public class WaterNodeAnalysisController {
                 
                 try {
                     os.write(dataFile.getBytes());
-                    List<WaterNodeDetails> analyzedNodes = waterNodeService.getCSVAnalyzedNodes(intervalStart, intervalEnd, temp);
+                    List<WaterNodeDetails> analyzedNodes = waterNodeService.getCsvAnalyzedNodes(intervalStart, intervalEnd, temp);
                     String[] headerRow = getReportHeaderRow(userContext);
-                    List<String[]> dataRows = getReportDataRows(analyzedNodes);
+                    List<String[]> dataRows = getReportDataRows(analyzedNodes, userContext);
                     writeToCSV(headerRow, dataRows, response, userContext, timestampEnd, "BatteryAnalysisFromCSV");
                 } catch(Exception e) {
                     Log.error("Unable to read csv file");
@@ -142,31 +142,37 @@ public class WaterNodeAnalysisController {
         
         private String[] getReportHeaderRow(YukonUserContext userContext) {
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String[] headerRow = new String[7];
-            headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.serialNumber");
-            headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.deviceName"); 
-            headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.meterNumber");
-            headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.deviceType");
-            headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.deviceCategory");
-            headerRow[5] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.currentIndicator");
-            headerRow[6] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.recentReading");
+            String[] headerRow = new String[10];
+            headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.deviceName"); 
+            headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.meterNumber");
+            headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.serialNumber");
+            headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.deviceType");
+            headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.deviceCategory");
+            headerRow[5] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.currentIndicator");
+            headerRow[6] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.recentReading");
+            headerRow[7] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.uom");
+            headerRow[8] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.date");
+            headerRow[9] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.time");
             return headerRow;
          }
         
         
-        private List<String[]> getReportDataRows(List<WaterNodeDetails> analyzedNodes) {
+        private List<String[]> getReportDataRows(List<WaterNodeDetails> analyzedNodes, YukonUserContext userContext) {
             List<String[]> dataRows = Lists.newArrayList();
             
             analyzedNodes.forEach(details -> {
-                String[] dataRow = new String[7];
+                String[] dataRow = new String[10];
                 ArrayList<Double> voltages = details.getVoltages();
-                dataRow[0] = details.getSerialNumber();
-                dataRow[1] = details.getName();
-                dataRow[2] = details.getMeterNumber().toString();
+                dataRow[0] = details.getName();
+                dataRow[1] = details.getMeterNumber().toString();
+                dataRow[2] = details.getSerialNumber();
                 dataRow[3] = details.getType();
-                dataRow[4] = details.getBatteryLevel().toString();
+                dataRow[4] = details.getBatteryLevel().getOutputName();
                 dataRow[5] = String.valueOf(details.getHighSleepingCurrentIndicator());
                 dataRow[6] = voltages.get(voltages.size()-1).toString();
+                dataRow[7] = "volts";//
+                dataRow[8] = dateFormattingService.format(details.getLastTimestamp(), DateFormatEnum.DATE, userContext);
+                dataRow[9] = dateFormattingService.format(details.getLastTimestamp(), DateFormatEnum.TIME24H, userContext);
                 dataRows.add(dataRow);
             });
             return dataRows; 
@@ -174,28 +180,39 @@ public class WaterNodeAnalysisController {
         
         private String[] getVoltageHeaderRow(YukonUserContext userContext) {
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String[] headerRow = new String[4];
-            headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.serialNumber");
-            headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.date"); 
-            headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.time");
-            headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.suppport.waterNode.voltage");
+            String[] headerRow = new String[8];
+            headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.deviceName"); 
+            headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.meterNumber");
+            headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.serialNumber");
+            headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.deviceType");
+            headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.date"); 
+            headerRow[5] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.time");
+            headerRow[6] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.voltage");
+            headerRow[7] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.uom");
             return headerRow;
          }
         
-        private List<String[]> getVoltageDataRows(List<VoltageDetails> voltageDetails, YukonUserContext userContext) {
+        private List<String[]> getVoltageDataRows(List<WaterNodeDetails> voltageDetails, YukonUserContext userContext) {
             List<String[]> dataRows = Lists.newArrayList();
     
             voltageDetails.forEach(details -> {
                     ArrayList<Double> voltages = details.getVoltages();
                     ArrayList<Instant> timestamps = details.getTimestamps();
+                    String deviceName = details.getName();
+                    String meterNumber = details.getMeterNumber();
                     String serialNumber = details.getSerialNumber();
+                    String deviceType = details.getType();
                     int numValues = voltages.size();
                 for (int currentIndex = 0; currentIndex < numValues; currentIndex++) {
-                    String[] dataRow = new String[4];
-                    dataRow[0] = serialNumber;
-                    dataRow[1] = dateFormattingService.format(timestamps.get(currentIndex), DateFormatEnum.DATE, userContext);
-                    dataRow[2] = dateFormattingService.format(timestamps.get(currentIndex), DateFormatEnum.TIME24H, userContext);
-                    dataRow[3] = voltages.get(currentIndex).toString();
+                    String[] dataRow = new String[8];
+                    dataRow[0] = deviceName;
+                    dataRow[1] = meterNumber;
+                    dataRow[2] = serialNumber;
+                    dataRow[3] = deviceType;
+                    dataRow[4] = dateFormattingService.format(timestamps.get(currentIndex), DateFormatEnum.DATE, userContext);
+                    dataRow[5] = dateFormattingService.format(timestamps.get(currentIndex), DateFormatEnum.TIME24H, userContext);
+                    dataRow[6] = voltages.get(currentIndex).toString();
+                    dataRow[7] = "volts";
                     dataRows.add(dataRow);
                 }
             });

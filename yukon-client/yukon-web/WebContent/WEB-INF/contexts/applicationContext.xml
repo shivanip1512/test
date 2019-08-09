@@ -1309,7 +1309,7 @@
     <bean class="com.cannontech.web.support.dao.impl.SystemMetricCriteriaDaoImpl"/>
     
     <bean class="com.cannontech.web.support.waterNode.dao.impl.WaterNodeDaoImpl"/>
-    <bean class="com.cannontech.web.support.waterNode.csvDao.impl.WaterNodeCSVDaoImpl"/>
+    <bean class="com.cannontech.web.support.waterNode.fileUploadDao.impl.WaterNodeFileUploadDaoImpl"/>
     <bean class="com.cannontech.web.support.waterNode.service.impl.WaterNodeServiceImpl"/>
     
     <!-- System Metric Criteria -->

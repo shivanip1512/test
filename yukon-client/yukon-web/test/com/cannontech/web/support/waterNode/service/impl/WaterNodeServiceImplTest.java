@@ -19,8 +19,8 @@ import com.cannontech.dr.itron.service.impl.ItronCommunicationServiceImpl;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
+import com.cannontech.web.support.waterNode.fileUploadDao.WaterNodeFileUploadDao;
 import com.cannontech.web.support.waterNode.batteryLevel.WaterNodeBatteryLevel;
-import com.cannontech.web.support.waterNode.csvDao.WaterNodeCSVDao;
 import com.cannontech.web.support.waterNode.dao.WaterNodeDao;
 
 public class WaterNodeServiceImplTest {
@@ -32,7 +32,7 @@ public class WaterNodeServiceImplTest {
     @Before
     public void init() {
           WaterNodeDao mockWaterNodeDao = EasyMock.createNiceMock(WaterNodeDao.class);
-          WaterNodeCSVDao mockWaterNodeCSVDao = EasyMock.createNiceMock(WaterNodeCSVDao.class);
+          WaterNodeFileUploadDao mockWaterNodeCSVDao = EasyMock.createNiceMock(WaterNodeFileUploadDao.class);
           waterNodeServiceImplTest = new WaterNodeServiceImpl(mockWaterNodeDao, mockWaterNodeCSVDao);
     }
     
