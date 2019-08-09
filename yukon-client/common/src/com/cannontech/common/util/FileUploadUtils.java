@@ -3,6 +3,8 @@ package com.cannontech.common.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,14 +33,17 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
 public class FileUploadUtils {
+    
+    private FileUploadUtils() {
+        //  hiding public constructor for static class
+    }
 
     private static final Logger log = YukonLogManager.getLogger(FileUploadUtils.class);
 
     public static void validateTabularDataUploadFileType(MultipartFile file) throws IOException, FileImportException {
         validateFileUpload(file);
-        File importFile = File.createTempFile(file.getName(), StringUtils.EMPTY);
+        File importFile = createExcerptFile(file);
         importFile.deleteOnExit();
-        file.transferTo(importFile);
         validateTabularDataFileType(importFile);
     }
 
@@ -87,6 +92,17 @@ public class FileUploadUtils {
         }
     }
 
+    private static File createExcerptFile(MultipartFile file) throws IOException, FileNotFoundException {
+        File excerptFile = File.createTempFile(file.getName(), StringUtils.EMPTY);
+        //  Copy 4 kilobytes of the file's contents for content validation
+        try (var outputStream = new FileOutputStream(excerptFile)) {
+            byte[] fileBytes = file.getBytes();
+            int chunkLength = Math.min(fileBytes.length, 4096);
+            outputStream.write(fileBytes, 0, chunkLength);
+        }
+        return excerptFile;
+    }
+
     /**
      * Validate file type and throw exception if it is not valid CSV file
      * 
@@ -104,7 +120,7 @@ public class FileUploadUtils {
             String[] csvData = csvReaderWithDelimeter.readNext();
             String[] csvRecord = getCsvRecord(file);
             if (csvData != null && csvRecord == null) {
-                if (csvRecord == null && csvReaderWithDelimeter.readNext() != null)
+                if (csvReaderWithDelimeter.readNext() != null)
                     throw new ImportFileFormatException("yukon.common.validDataFileRequired.error");
             }
         }
@@ -150,6 +166,7 @@ public class FileUploadUtils {
     /**
      * Validate file type and empty file return true if it is valid CSV non empty file
      */
+    @SuppressWarnings("unused")
     public static boolean validateCsvFileContentType(Path path) {
 
         try {
