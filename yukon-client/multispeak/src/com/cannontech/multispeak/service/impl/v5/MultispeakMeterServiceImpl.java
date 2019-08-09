@@ -17,6 +17,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
@@ -65,13 +66,16 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
+import com.cannontech.core.roleproperties.MultispeakManagePaoLocation;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.stategroup.Disconnect410State;
@@ -247,13 +251,14 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                     @Override
                     protected void doInTransactionWithoutResult(TransactionStatus status) {
-
+                        YukonMeter newMeter;
                         validateMspMeter(mspMeter, mspVendor, METER_CREATED_STRING);
                         try {
-                            checkForExistingMeterAndUpdate(mspMeter, mspVendor, METER_CREATED_STRING);
+                            newMeter = checkForExistingMeterAndUpdate(mspMeter, mspVendor, METER_CREATED_STRING);
                         } catch (NotFoundException e) { // and NEW meter
-                            addNewMeter(mspMeter, mspVendor, METER_CREATED_STRING);
+                            newMeter = addNewMeter(mspMeter, mspVendor, METER_CREATED_STRING);
                         }
+                        updatePaoLocation(mspMeter, newMeter, METER_CREATED_STRING);
                         // TODO Decide if the meter shall be enabled or disabled when created
                     };
                 });
@@ -379,8 +384,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                         updateCISDeviceClassGroup(mspMeter.getPrimaryIdentifier().getValue(), mspMeter.getDeviceClass(), newMeter, METER_INSTALLED_STRING, mspVendor);
 
                         String billingCycle = mspMeter.getBillingCycle();
-                        updateBillingCyle(billingCycle, newMeter.getMeterNumber(), newMeter, METER_INSTALLED_STRING,
-                            mspVendor);
+                        updateBillingCyle(billingCycle, newMeter.getMeterNumber(), newMeter, METER_INSTALLED_STRING, mspVendor);
+                        updatePaoLocation(mspMeter, newMeter, METER_INSTALLED_STRING);
                         // Must complete route locate after meter is enabled
                         verifyAndUpdateSubstationGroupAndRoute(newMeter, mspVendor, mspMeter, METER_INSTALLED_STRING);
                     };
@@ -488,11 +493,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                         replacementMspMeter.getDeviceClass(), replacementMeter, METER_EXCHANGED_STRING, mspVendor);
 
                                     String billingCycle = replacementMspMeter.getBillingCycle();
-                                    updateBillingCyle(billingCycle, replacementMeter.getMeterNumber(),
-                                        replacementMeter, METER_EXCHANGED_STRING, mspVendor);
+                                    updateBillingCyle(billingCycle, replacementMeter.getMeterNumber(), replacementMeter, METER_EXCHANGED_STRING, mspVendor);
+                                    updatePaoLocation(replacementMspMeter, replacementMeter, METER_EXCHANGED_STRING);
                                     // Must complete route locate after meter is enabled
-                                    verifyAndUpdateSubstationGroupAndRoute(replacementMeter, mspVendor,
-                                        replacementMspMeter, METER_EXCHANGED_STRING);
+                                    verifyAndUpdateSubstationGroupAndRoute(replacementMeter, mspVendor, replacementMspMeter, METER_EXCHANGED_STRING);
                                 } catch (MspErrorObjectException e) {
                                     errorObjects.add(e.getErrorObject());
                                     multispeakEventLogService.errorObject(e.getErrorObject().getDisplayString(),
@@ -570,8 +574,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             updateCISDeviceClassGroup(mspMeter.getPrimaryIdentifier().getValue(),
                                 mspMeter.getDeviceClass(), meterToChange, METER_CHANGED_STRING, mspVendor);
 
-                            verifyAndUpdateSubstationGroupAndRoute(meterToChange, mspVendor, mspMeter,
-                                SERV_LOC_CHANGED_STRING);
+                            updatePaoLocation(mspMeter, meterToChange, METER_CHANGED_STRING);
+                            verifyAndUpdateSubstationGroupAndRoute(meterToChange, mspVendor, mspMeter, SERV_LOC_CHANGED_STRING);
                         } catch (NotFoundException e) {
                             multispeakEventLogService.meterNotFound(mspMeter.getPrimaryIdentifier().getValue(),
                                 METER_CHANGED_STRING, mspVendor.getCompanyName());
@@ -950,11 +954,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                                     if (meter != null) {
                                         // update the billing group from request
-                                        updateBillingCyle(billingCycle, meter.getMeterNumber(), meter,
-                                            SERV_LOC_CHANGED_STRING, mspVendor);
+                                        updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
+                                        updatePaoLocation(mspServiceLocation, meter, SERV_LOC_CHANGED_STRING);
                                         // using null for mspMeter. See comments in getSubstationNameFromMspMeter(...)
-                                        verifyAndUpdateSubstationGroupAndRoute(meter, mspVendor, null,
-                                            SERV_LOC_CHANGED_STRING);
+                                        verifyAndUpdateSubstationGroupAndRoute(meter, mspVendor, null, SERV_LOC_CHANGED_STRING);
                                     }
                                     // TODO if above both optional fields (meterID/mspMeter ) are
                                     // not present in ServiceLocation then should we need to send any error message.
@@ -981,6 +984,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                                         String billingCycle = mspMeter.getBillingCycle();
                                         updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
+                                        updatePaoLocation(mspServiceLocation, meter, SERV_LOC_CHANGED_STRING);
                                         verifyAndUpdateSubstationGroupAndRoute(meter, mspVendor, mspMeter, SERV_LOC_CHANGED_STRING);
                                     } catch (NotFoundException e) {
                                         multispeakEventLogService.meterNotFound(mspMeter.getPrimaryIdentifier().getValue(), 
@@ -1064,6 +1068,38 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         }
         log.warn("Extension " + extensionName + " key was not found. Returning default value: " + defaultValue);
         return defaultValue;
+    }
+    
+
+    /**
+     * Update the paolocation coordinates based on METER object.
+     */
+    private void updatePaoLocation(MspMeter mspMeter, YukonMeter meterToUpdate, String mspMethod) {
+        MultispeakManagePaoLocation managePaoLocation = globalSettingDao.getEnum(GlobalSettingType.MSP_MANAGE_PAO_LOCATION, MultispeakManagePaoLocation.class);
+        if (managePaoLocation == MultispeakManagePaoLocation.METER) {
+            if (mspMeter.getAssetLocation() != null &&
+                mspMeter.getAssetLocation().getGPSLocation() != null) {
+                double longitude = mspMeter.getAssetLocation().getGPSLocation().getLongitude();
+                double latitude = mspMeter.getAssetLocation().getGPSLocation().getLatitude();
+                PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude, longitude, Origin.MULTISPEAK, Instant.now());
+                updatePaoLocation(meterToUpdate.getMeterNumber(), paoLocation);
+            }
+        }
+    }
+    
+    /**
+     * Update the paolocation coordinates based on SERVICELOCATION object.
+     */
+    private void updatePaoLocation(ServiceLocation mspServiceLocation, YukonMeter meterToUpdate, String mspMethod) {
+        MultispeakManagePaoLocation managePaoLocation = globalSettingDao.getEnum(GlobalSettingType.MSP_MANAGE_PAO_LOCATION, MultispeakManagePaoLocation.class);
+        if (managePaoLocation == MultispeakManagePaoLocation.SERVICE_LOCATION) {
+            if (mspServiceLocation.getGPSLocation() != null) {
+                double longitude = mspServiceLocation.getGPSLocation().getLongitude();
+                double latitude = mspServiceLocation.getGPSLocation().getLatitude();
+                PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude, longitude, Origin.MULTISPEAK, Instant.now());
+                updatePaoLocation(meterToUpdate.getMeterNumber(), paoLocation);
+            }
+        }
     }
 
     /**

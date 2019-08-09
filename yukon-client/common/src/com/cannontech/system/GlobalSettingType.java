@@ -16,6 +16,7 @@ import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
+import com.cannontech.core.roleproperties.MultispeakManagePaoLocation;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.system.GlobalSettingTypeValidators.TypeValidator;
 import com.cannontech.web.input.type.InputType;
@@ -73,6 +74,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     MSP_DISABLE_DISCONNECT_STATUS(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),
     CIS_DETAIL_TYPE(GlobalSettingSubCategory.MULTISPEAK, InputTypeFactory.enumType(CisDetailRolePropertyEnum.class), CisDetailRolePropertyEnum.NONE),
     MSP_REMOVE_DEVICE_FROM_CIS_GROUP(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),
+    MSP_MANAGE_PAO_LOCATION(GlobalSettingSubCategory.MULTISPEAK, InputTypeFactory.enumType(MultispeakManagePaoLocation.class), MultispeakManagePaoLocation.NONE),
     
     // OpenADR
     OADR_REQUEST_INTERVAL(GlobalSettingSubCategory.OPEN_ADR, integerType(), 60000),

@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.service.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,6 +18,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.MessageSourceResolvable;
@@ -73,7 +75,9 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -81,6 +85,7 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
+import com.cannontech.core.roleproperties.MultispeakManagePaoLocation;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
@@ -1334,6 +1339,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             newMeter = addNewMeter(mspMeter, mspVendor);
                         }
 
+                        updatePaoLocation(mspMeter, newMeter, METER_ADD_STRING);
                         removeFromGroup(newMeter, SystemGroupEnum.INVENTORY, METER_ADD_STRING, mspVendor);
 
                         updateCISDeviceClassGroup(mspMeter.getMeterNo(), mspMeter.getDeviceClass(), newMeter, METER_ADD_STRING, mspVendor);
@@ -1684,7 +1690,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                         String billingCycle = mspServiceLocation.getBillingCycle();
                                         updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
                                         updateAltGroup(mspServiceLocation, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
-    
+                                        
+                                        updatePaoLocation(mspServiceLocation, meter, SERV_LOC_CHANGED_STRING);
                                         // using null for mspMeter. See comments in getSubstationNameFromMspMeter(...)
                                         verifyAndUpdateSubstationGroupAndRoute(meter, mspVendor, null, mspServiceLocation, SERV_LOC_CHANGED_STRING);
                                     } else {
@@ -1712,6 +1719,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                         updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
                                         updateAltGroup(mspServiceLocation, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
 
+                                        updatePaoLocation(mspServiceLocation, meter, SERV_LOC_CHANGED_STRING);
                                         verifyAndUpdateSubstationGroupAndRoute(meter, mspVendor, mspMeter, mspServiceLocation, METER_ADD_STRING);
                                     } catch (NotFoundException e) {
                                         multispeakEventLogService.meterNotFound(mspMeter.getMeterNo(), SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
@@ -1782,6 +1790,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             }
                             meterToChange = updateExistingMeter(mspMeter, meterToChange, templateMeter, METER_CHANGED_STRING, mspVendor, false);
 
+                            updatePaoLocation(mspMeter, meterToChange, METER_CHANGED_STRING);
                             updateCISDeviceClassGroup(mspMeter.getMeterNo(), mspMeter.getDeviceClass(), meterToChange, METER_CHANGED_STRING, mspVendor);
 
                             // using null for mspServiceLocation. See comments in getSubstationNameFromMspMeter(...)
@@ -1996,6 +2005,52 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         return false;
     }
 
+    /**
+     * Update the paolocation coordinates based on METER object.
+     */
+    private void updatePaoLocation(Meter mspMeter, YukonMeter meterToUpdate, String mspMethod) {
+        MultispeakManagePaoLocation managePaoLocation = globalSettingDao.getEnum(GlobalSettingType.MSP_MANAGE_PAO_LOCATION, MultispeakManagePaoLocation.class);
+        if (managePaoLocation == MultispeakManagePaoLocation.METER) {
+            if (mspMeter.getUtilityInfo() != null && mspMeter.getUtilityInfo().getMapLocation() != null &&
+                mspMeter.getUtilityInfo().getMapLocation().getCoord() != null) {
+                BigDecimal longitude = mspMeter.getUtilityInfo().getMapLocation().getCoord().getX();
+                BigDecimal latitude = mspMeter.getUtilityInfo().getMapLocation().getCoord().getY();
+                if (longitude != null && latitude != null) {
+                    PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude.doubleValue(), longitude.doubleValue(),
+                                                              Origin.MULTISPEAK, Instant.now());
+                    updatePaoLocation(meterToUpdate.getMeterNumber(), paoLocation);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Update the paolocation coordinates based on SERVICELOCATION object.
+     */
+    private void updatePaoLocation(ServiceLocation mspServiceLocation, YukonMeter meterToUpdate, String mspMethod) {
+        MultispeakManagePaoLocation managePaoLocation = globalSettingDao.getEnum(GlobalSettingType.MSP_MANAGE_PAO_LOCATION, MultispeakManagePaoLocation.class);
+        if (managePaoLocation == MultispeakManagePaoLocation.SERVICE_LOCATION) {
+            if (mspServiceLocation.getGPS() != null) {
+                Double longitude = mspServiceLocation.getGPS().getLongitude();
+                Double latitude = mspServiceLocation.getGPS().getLatitude();
+                if (longitude != null && latitude != null) {
+                    PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude.doubleValue(), longitude.doubleValue(),
+                                                              Origin.MULTISPEAK, Instant.now());
+                    updatePaoLocation(meterToUpdate.getMeterNumber(), paoLocation);
+                }
+            }
+            else if (mspServiceLocation.getMapLocation() != null &&
+                mspServiceLocation.getMapLocation().getCoord() != null) {
+                BigDecimal longitude = mspServiceLocation.getMapLocation().getCoord().getX();
+                BigDecimal latitude = mspServiceLocation.getMapLocation().getCoord().getY();
+                if (longitude != null && latitude != null) {
+                    PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude.doubleValue(), longitude.doubleValue(),
+                                                              Origin.MULTISPEAK, Instant.now());
+                    updatePaoLocation(meterToUpdate.getMeterNumber(), paoLocation);
+                }
+            }
+        }
+    }
     /**
      * Helper method to add meterNos to systemGroup
      */

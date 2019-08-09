@@ -13,6 +13,11 @@ public interface LocationService {
 
     void deleteLocation(int deviceId, LiteYukonUser user);
     
+    /**
+     * Save the location information
+     */
+    public void saveLocation(PaoLocation paoLocation, LiteYukonUser user);
+    
     public static final Comparator<PaoDistance> ON_DISTANCE = new Comparator<PaoDistance>() {
         @Override
         public int compare(PaoDistance o1, PaoDistance o2) {

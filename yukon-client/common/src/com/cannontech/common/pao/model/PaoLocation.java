@@ -122,6 +122,30 @@ public class PaoLocation implements YukonPao {
         return true;
     }
 
+    /**
+     * Compares latitude, longitude to determine if coordinates only are equal.
+     */
+    public boolean equalsCoordinates(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        PaoLocation other = (PaoLocation) obj;
+        if (Double.doubleToLongBits(latitude) != Double.doubleToLongBits(other.latitude))
+            return false;
+        if (Double.doubleToLongBits(longitude) != Double.doubleToLongBits(other.longitude))
+            return false;
+        if (paoIdentifier == null) {
+            if (other.paoIdentifier != null)
+                return false;
+        } else if (!paoIdentifier.equals(other.paoIdentifier))
+            return false;
+        return true;
+    }
+
+
     @Override
     public String toString() {
         return String.format(

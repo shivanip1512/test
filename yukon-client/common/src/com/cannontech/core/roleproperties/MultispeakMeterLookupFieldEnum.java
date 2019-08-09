@@ -1,6 +1,8 @@
 package com.cannontech.core.roleproperties;
 
-public enum MultispeakMeterLookupFieldEnum {
+import com.cannontech.common.i18n.DisplayableEnum;
+
+public enum MultispeakMeterLookupFieldEnum implements DisplayableEnum{
 
     AUTO_METER_NUMBER_FIRST("Auto (Meter Number First)"),
     AUTO_DEVICE_NAME_FIRST("Auto (Device Name First)"),
@@ -16,6 +18,11 @@ public enum MultispeakMeterLookupFieldEnum {
     
     public String getLabel() {
         return label;
+    }
+    
+    @Override
+    public String getFormatKey() {
+        return "yukon.common.multispeakMeterLookupField." + name();
     }
 
 }

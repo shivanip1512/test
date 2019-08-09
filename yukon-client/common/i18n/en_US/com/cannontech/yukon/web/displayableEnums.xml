@@ -211,17 +211,19 @@
     <entry key="yukon.common.setting.MSP_EXCLUDE_DISABLED_METERS">Exclude Disabled Meters</entry>
     <entry key="yukon.common.setting.MSP_EXCLUDE_DISABLED_METERS.description">When true, excludes disabled meters from initiated read, ping, and control requests and from supported meters requests.</entry>
     <entry key="yukon.common.setting.MSP_METER_LOOKUP_FIELD">Meter Lookup Field</entry>
-    <entry key="yukon.common.setting.MSP_METER_LOOKUP_FIELD.description">Defines the field used to lookup a meter by in Yukon. Valid values: AUTO_METER_NUMBER_FIRST, AUTO_DEVICE_NAME_FIRST, METER_NUMBER, DEVICE_NAME, or ADDRESS.</entry>
+    <entry key="yukon.common.setting.MSP_METER_LOOKUP_FIELD.description">The data attribute field used to lookup a meter in Yukon.</entry>
+    <entry key="yukon.common.setting.MSP_MANAGE_PAO_LOCATION">Manage Endpoint Location</entry>
+    <entry key="yukon.common.setting.MSP_MANAGE_PAO_LOCATION.description">The MultiSpeak field used to manage location coordinates. None - disable updating coordinates through MultiSpeak; Meter - update coordinates based off Meter object; Service Location - update coordinates based of ServiceLocation object.</entry>
     <entry key="yukon.common.setting.MSP_LM_MAPPING_SETUP">LM Mapping Setup</entry>
     <entry key="yukon.common.setting.MSP_LM_MAPPING_SETUP.description">Controls access to setup the MultiSpeak LM interface mappings.</entry>
     <entry key="yukon.common.setting.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP">Billing Cycle Parent Device Group</entry>
-    <entry key="yukon.common.setting.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP.description">Defines the Device Group parent group name for the MultiSpeak billingCycle element. Valid values are '/Meters/Billing/', '/Meters/Collection', '/Meters/Alternate'</entry>
+    <entry key="yukon.common.setting.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP.description">The Device Group parent group name for the MultiSpeak billingCycle element. Valid values are '/Meters/Billing/', '/Meters/Collection', '/Meters/Alternate'</entry>
     <entry key="yukon.common.setting.MSP_PRIMARY_CB_VENDORID">Primary CIS Vendor</entry>
-    <entry key="yukon.common.setting.MSP_PRIMARY_CB_VENDORID.description">Defines the primary CIS vendor Id for CB_Server interfaces.</entry>
+    <entry key="yukon.common.setting.MSP_PRIMARY_CB_VENDORID.description">The primary CIS vendor for CB_Server interfaces. Used for CIS Account Information widget and Meter Search functionality.</entry>
     <entry key="yukon.common.setting.MSP_PAONAME_ALIAS">PAO Name Alias</entry>
-    <entry key="yukon.common.setting.MSP_PAONAME_ALIAS.description">Defines a Yukon Pao (Device) Name field alias. Valid values(0-5): [0=Device Name, 1=Account Number, 2=Service Location, 3=Customer, 4=EA Location, 5=Grid Location, 6=Service Location [Position]]</entry>
+    <entry key="yukon.common.setting.MSP_PAONAME_ALIAS.description">The MultiSpeak field used to set the Yukon Device Name data for meter management. </entry>
     <entry key="yukon.common.setting.MSP_PAONAME_EXTENSION">PAO Name Extension</entry>
-    <entry key="yukon.common.setting.MSP_PAONAME_EXTENSION.description">The extension name of the field appended to PaoName Alias. Leave this value blank to ignore the use of extensions.</entry>
+    <entry key="yukon.common.setting.MSP_PAONAME_EXTENSION.description">The MultiSpeak field extension name to be appended to Device Name Alias. Leave this value blank to ignore the use of extensions.</entry>
     <entry key="yukon.common.setting.MSP_RFN_PING_FORCE_CHANNEL_READ">Force Read for OD Ping (RFN Only)</entry>
     <entry key="yukon.common.setting.MSP_RFN_PING_FORCE_CHANNEL_READ.description">Force an attribute read for RFN meter types, otherwise latest archived outage status will be used.</entry>
     <entry key="yukon.common.setting.MSP_DISABLE_DISCONNECT_STATUS">Disable Disconnect Status</entry>
@@ -445,7 +447,7 @@
     <entry key="yukon.common.setting.ERROR_REPORTING.description">When true, pages supporting system data collection will display an option for the user to initiate a debug report to the log files.</entry>
     
     <entry key="yukon.common.setting.PRESERVE_ENDPOINT_LOCATION">Preserve Endpoint Location</entry>
-    <entry key="yukon.common.setting.PRESERVE_ENDPOINT_LOCATION.description">When true, location coordinates are retained following remove, disable, or return to warehouse action. Otherwise they are deleted</entry>
+    <entry key="yukon.common.setting.PRESERVE_ENDPOINT_LOCATION.description">When true, location coordinates are retained following remove, disable, or return to warehouse action. Otherwise they are deleted.</entry>
     
     <entry key="yukon.common.setting.RFN_INCOMING_DATA_TIMESTAMP_LIMIT">RFN Incoming Data Timestamp Limit</entry>
     <entry key="yukon.common.setting.RFN_INCOMING_DATA_TIMESTAMP_LIMIT.description">Incoming RFN data having timestamps older than this number (in months) will not be processed nor archived.</entry>
@@ -470,6 +472,28 @@
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_TREND_MAX_NUM_PORTS.description">The maximum number of comm channels to be displayed in one Comm Channel Queue Counts Widget.</entry>
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH">Comm Channel Queue Counts: Minutes to wait before data refresh</entry>
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH.description">The number of minutes to wait before data can be refreshed for a given Comm Channel Queue Counts Widget.</entry>
+    
+    <!-- global setting enums -->
+    <entry key="yukon.common.multispeakPaoNameAlias.METER_NUMBER">Meter Number (Default)</entry>
+    <entry key="yukon.common.multispeakPaoNameAlias.ACCOUNT_NUMBER">Account Number</entry>
+    <entry key="yukon.common.multispeakPaoNameAlias.SERVICE_LOCATION">Service Location</entry>
+    <entry key="yukon.common.multispeakPaoNameAlias.CUSTOMER_ID">Customer</entry>
+    <entry key="yukon.common.multispeakPaoNameAlias.EA_LOCATION">EA Location</entry>
+    <entry key="yukon.common.multispeakPaoNameAlias.GRID_LOCATION">Grid Location</entry>
+    <entry key="yukon.common.multispeakPaoNameAlias.POLE_NUMBER">Pole Number</entry>
+    
+    <entry key="yukon.common.multispeakMeterLookupField.AUTO_METER_NUMBER_FIRST">Auto (Meter Number First)</entry>
+    <entry key="yukon.common.multispeakMeterLookupField.AUTO_DEVICE_NAME_FIRST">Auto (Device Name First)</entry>
+    <entry key="yukon.common.multispeakMeterLookupField.DEVICE_NAME">Device Name</entry>
+    <entry key="yukon.common.multispeakMeterLookupField.METER_NUMBER">Meter Number</entry>
+    <entry key="yukon.common.multispeakMeterLookupField.ADDRESS">Address</entry>
+    <entry key="yukon.common.multispeakManagePaoLocation.NONE">None</entry>
+    <entry key="yukon.common.multispeakManagePaoLocation.METER">Meter</entry>
+    <entry key="yukon.common.multispeakManagePaoLocation.SERVICE_LOCATION">Service Location</entry>
+    
+    <entry key="yukon.common.cisDetail.NONE">None</entry>
+    <entry key="yukon.common.cisDetail.MULTISPEAK">Service Location</entry>
+    <entry key="yukon.common.cisDetail.CAYENTA">Cayenta</entry>
     
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS">Admin Email Address</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS.description">Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.</entry>

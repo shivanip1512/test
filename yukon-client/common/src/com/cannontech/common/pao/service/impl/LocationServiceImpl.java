@@ -40,6 +40,13 @@ public class LocationServiceImpl implements LocationService{
     }
     
     @Override
+    public void saveLocation(PaoLocation paoLocation, LiteYukonUser user) {
+        LiteYukonPAObject liteYukonPaobject = databaseCache.getAllPaosMap().get(paoLocation.getPaoIdentifier().getPaoId());
+        paoLocationDao.save(paoLocation);
+        endpointEventLogService.locationUpdated(liteYukonPaobject.getPaoName(), paoLocation, user);
+    }
+    
+    @Override
     public List<PaoDistance> getNearbyLocations(PaoLocation location, double distance, DistanceUnit unit, List<PaoTag> tags) {
         
         List<PaoLocation> locations = paoLocationDao.getAllLocations();

@@ -34,9 +34,12 @@ import com.cannontech.common.model.Substation;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.PaoLocation;
+import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.substation.dao.SubstationDao;
@@ -48,6 +51,7 @@ import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.UserUtils;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ImmutableList;
 
 public class MultispeakMeterServiceBase {
@@ -68,6 +72,8 @@ public class MultispeakMeterServiceBase {
     @Autowired private SubstationDao substationDao;
     @Autowired private SubstationToRouteMappingDao substationToRouteMappingDao;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private LocationService locationService;
+    @Autowired private PaoLocationDao paoLocationDao;
     
     public static final String DEVICE_NAME_EXT_REGEX = "\\s+\\[[a-zA-Z0-9]+\\]";
     /**
@@ -534,4 +540,18 @@ public class MultispeakMeterServiceBase {
         });
     }
 
+    
+    public void updatePaoLocation(String meterNumber, PaoLocation paoLocation) {
+        boolean isLatitudeValid = YukonValidationUtils.isLatitudeInRange(paoLocation.getLatitude());
+        boolean isLongitudeValid = YukonValidationUtils.isLongitudeInRange(paoLocation.getLongitude());
+        if (isLatitudeValid && isLongitudeValid) {
+            PaoLocation existingPaoLocation = paoLocationDao.getLocation(paoLocation.getPaoIdentifier().getPaoId());
+            if (existingPaoLocation == null || !existingPaoLocation.equalsCoordinates(paoLocation)) {
+                // new entry or updated lat/loong
+                locationService.saveLocation(paoLocation, YukonUserContext.system.getYukonUser());
+            }
+        } else {
+            log.warn("Location info not updated for meter number " + meterNumber + ". " + paoLocation.toString());
+        }
+    }
 }

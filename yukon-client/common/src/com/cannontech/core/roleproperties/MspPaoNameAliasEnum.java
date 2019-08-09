@@ -1,7 +1,8 @@
 package com.cannontech.core.roleproperties;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum MspPaoNameAliasEnum {
+public enum MspPaoNameAliasEnum implements DisplayableEnum{
 
     METER_NUMBER ("Meter Number (Default)") ,
     ACCOUNT_NUMBER ("Account Number"),
@@ -20,5 +21,10 @@ public enum MspPaoNameAliasEnum {
     
     public String getDisplayName() {
         return displayName;
+    }
+    
+    @Override
+    public String getFormatKey() {
+        return "yukon.common.multispeakPaoNameAlias." + name();
     }
 }
