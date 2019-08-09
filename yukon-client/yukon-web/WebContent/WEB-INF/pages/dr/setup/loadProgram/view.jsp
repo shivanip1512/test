@@ -170,7 +170,7 @@
                                 <div id="js-assigned-gear" class="select-box-selected js-with-movables" style="min-height: 150px;" data-item-selector=".select-box-item">
                                     <c:forEach var="item" items="${gearInfos}" varStatus="status">
                                         <div id="${item.id}" class="select-box-item cm js-assigned-gear" data-id="${item.id}">
-                                            <cti:url var="viewUrl" value="/dr/setup/loadProgram/gear/${item.id}?mode=${mode}"/> 
+                                            <cti:url var="viewUrl" value="/dr/setup/loadProgram/gear/${item.id}?mode=${mode}&programType=${selectedSwitchType}"/> 
                                             <a href="javascript:void(0)" data-popup="#gear-quick-view-${item.id}"> ${fn:escapeXml(item.name)} </a>
                                             <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-gear-remove" />
                                             <div class="select-box-item-movers">
@@ -220,7 +220,7 @@
                                         <c:forEach var="gearInfo" items="${gearInfos}">
                                             <tr>
                                                 <td>
-                                                    <cti:url var="viewUrl" value="/dr/setup/loadProgram/gear/${gearInfo.id}?mode=${mode}" /> 
+                                                    <cti:url var="viewUrl" value="/dr/setup/loadProgram/gear/${gearInfo.id}?mode=${mode}&programType=${selectedSwitchType}" /> 
                                                     <a href="javascript:void(0);" data-popup="#gear-quick-view-${gearInfo.id}">${fn:escapeXml(gearInfo.name)}</a>
                                                 </td>
                                                 <div id="edit-gear-popup" class="dn"></div>

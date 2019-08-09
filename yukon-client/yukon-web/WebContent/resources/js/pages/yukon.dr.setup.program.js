@@ -268,8 +268,9 @@ yukon.dr.setup.program = (function() {
             $(document).on("yukon:dr:setup:program:saveGear", function (event) {
                 var dialog = $(event.target),
                     popupDiv = $(event.target)[0],
-                    popupId = popupDiv.id, gearId;
-                if(popupId !== 'gear-create-popup') {
+                    popupId = popupDiv.id, gearId,
+                    selectedProgramType = $("#js-selected-program").val();
+                if(popupId !== 'gear-create-popup-'+ selectedProgramType) {
                     var arr = popupId.split('-');
                         gearId = arr[arr.length - 1];
                 } else {
@@ -279,8 +280,8 @@ yukon.dr.setup.program = (function() {
                 var form = dialog.find('#js-program-gear-form'),
                     gearNameElement = dialog.find("#gearName"),
                     controlMethodElement = dialog.find("#controlMethod"),
-                    isGearNameBlank = $.trim(gearNameElement.val()).length == 0 ? true : false,
-                    isControlMethodBlank = controlMethodElement.find("option:selected").val() == "" ? true :false;
+                    isGearNameBlank = $.trim($("#gearName").val()).length == 0 ? true : false,
+                    isControlMethodBlank = $("#controlMethod option:selected").val() == "" ? true :false;
                 
                 gearNameElement.toggleClass("error", isGearNameBlank);
                 dialog.find("#gearNameIsBlankError").toggleClass("dn", !isGearNameBlank);
@@ -295,7 +296,7 @@ yukon.dr.setup.program = (function() {
                             var gearName = data.gearName,
                             mode = $("#js-form-mode").val(),
                             anchorTag = $("<a>"),
-                            url = yukon.url("/dr/setup/loadProgram/gear/" + id + "?mode=" + mode),
+                            url = yukon.url("/dr/setup/loadProgram/gear/" + id + "?mode=" + mode + "&programType=" + selectedProgramType),
                             clonedRow = $('.js-template-gears-row').clone();
                             anchorTag.attr("href", url);
                             anchorTag.text(gearName);
@@ -320,7 +321,7 @@ yukon.dr.setup.program = (function() {
                    });
                    dialog.dialog('close');
                    dialog.empty();
-                }
+               }
             });
             
             $(document).on('click', '.js-gear-link', function(event) {

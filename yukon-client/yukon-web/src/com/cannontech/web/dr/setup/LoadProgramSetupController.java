@@ -372,14 +372,14 @@ public class LoadProgramSetupController {
     }
 
     @GetMapping("/gear/{id}")
-    public String gear(ModelMap model, @PathVariable String id, @RequestParam PageEditMode mode,
+    public String gear(ModelMap model, @PathVariable String id, @RequestParam PageEditMode mode, @RequestParam PaoType programType,
             YukonUserContext userContext, HttpServletRequest request) {
         ProgramGear programGear = gearCache.getIfPresent(id);
         model.addAttribute("mode", mode);
         model.addAttribute("selectedGearType", programGear.getControlMethod());
         model.addAttribute("programGear", programGear);
         if (mode == PageEditMode.EDIT || mode == PageEditMode.CREATE) {
-            model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(PaoType.LM_DIRECT_PROGRAM));
+            model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(programType));
             controllerHelper.buildGearModelMap(programGear.getControlMethod(), model, request, userContext);
         }
         if (programGear.getControlMethod() == GearControlMethod.ThermostatRamping
