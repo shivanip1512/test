@@ -40,7 +40,7 @@ yukon.dr.setup.program = (function() {
         });
     },
     
-    _renderConfirmDeletePopup = function(gearId, gearName){
+    _initConfirmGearDeletePopup = function(gearId, gearName){
         yukon.dialogConfirm.add({
             'on': '#js-remove-gear-' + gearId,
             'strings':{
@@ -316,10 +316,8 @@ yukon.dr.setup.program = (function() {
                             clonedRow.attr('data-id', id);
                             clonedRow.find(".js-gear-name").append(anchorTag);
                             clonedRow.addClass('js-gear-link');
-                            clonedRow.addClass('js-gear-' + id);
                             clonedRow.removeClass('dn js-template-gears-row');
                             clonedRow.find(".js-gear-remove").attr("id", "js-remove-gear-" + data.id);
-                            clonedRow.find(".js-gear-remove").attr("data-id", id)
                             clonedRow.appendTo($("#js-assigned-gear"));
 
                             var clonedDialog = $(".js-gear-dialog-template").clone();
@@ -332,7 +330,7 @@ yukon.dr.setup.program = (function() {
                                 $('#' + id + ' a').text(data.gearName);
                                 $(event.target).dialog('close');
                             }
-                            _renderConfirmDeletePopup(data.id, data.gearName);
+                            _initConfirmGearDeletePopup(data.id, data.gearName);
                         }
                    });
                    dialog.dialog('close');
