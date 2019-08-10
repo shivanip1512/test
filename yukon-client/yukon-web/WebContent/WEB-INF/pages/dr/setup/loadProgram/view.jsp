@@ -171,8 +171,13 @@
                                     <c:forEach var="item" items="${gearInfos}" varStatus="status">
                                         <div id="${item.id}" class="select-box-item cm js-assigned-gear" data-id="${item.id}">
                                             <cti:url var="viewUrl" value="/dr/setup/loadProgram/gear/${item.id}?mode=${mode}&programType=${selectedSwitchType}"/> 
-                                            <a href="javascript:void(0)" data-popup="#gear-quick-view-${item.id}"> ${fn:escapeXml(item.name)} </a>
-                                            <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-gear-remove" />
+                                            <a href="javascript:void(0)" data-popup="#gear-quick-view-${item.id}">
+                                                ${fn:escapeXml(item.name)}
+                                            </a>
+                                            <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-gear-remove"
+                                                        id="js-remove-gear-${item.id}" data-ok-event="yukon:dr:setup:program:gearRemoved"/>
+                                            <d:confirm on="#js-remove-gear-${item.id}" nameKey="confirmDelete"
+                                                       argument="${fn:escapeXml(item.name)}"/>
                                             <div class="select-box-item-movers">
                                                 <c:set var="disabled" value="${status.first}" />
                                                 <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up" disabled="${disabled}" />
@@ -194,7 +199,8 @@
                                 </div>
                                 <div class="select-box-item cm js-assigned-gear js-template-gears-row dn" data-id="0">
                                     <span class="js-gear-name"></span>
-                                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-gear-remove" />
+                                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-gear-remove"
+                                                data-ok-event="yukon:dr:setup:program:gearRemoved"/>
                                     <div class="select-box-item-movers">
                                         <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up" />
                                         <cti:button icon="icon-bullet-go-down" renderMode="buttonImage" classes="right select-box-item-down js-move-down" disabled="${true}" />

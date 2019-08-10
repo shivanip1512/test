@@ -39,6 +39,18 @@ yukon.dr.setup.program = (function() {
             }
         });
     },
+    
+    _renderConfirmDeletePopup = function(gearId, gearName){
+        yukon.dialogConfirm.add({
+            'on': '#js-remove-gear-' + gearId,
+            'strings':{
+                'title': yg.text.confirmDeleteTitle,
+                'message': yg.text.confirmDeleteMessage.replace("{0}", gearName),
+                'ok': yg.text.deleteButton,
+                'cancel': yg.text.cancel
+            }
+        });
+    },
 
     _loadProgram = function() {
 
@@ -280,8 +292,8 @@ yukon.dr.setup.program = (function() {
                 var form = dialog.find('#js-program-gear-form'),
                     gearNameElement = dialog.find("#gearName"),
                     controlMethodElement = dialog.find("#controlMethod"),
-                    isGearNameBlank = $.trim($("#gearName").val()).length == 0 ? true : false,
-                    isControlMethodBlank = $("#controlMethod option:selected").val() == "" ? true :false;
+                    isGearNameBlank = $.trim(gearNameElement.val()).length == 0 ? true : false,
+                    isControlMethodBlank = controlMethodElement.find("option:selected").val() == "" ? true :false;
                 
                 gearNameElement.toggleClass("error", isGearNameBlank);
                 dialog.find("#gearNameIsBlankError").toggleClass("dn", !isGearNameBlank);
@@ -304,7 +316,10 @@ yukon.dr.setup.program = (function() {
                             clonedRow.attr('data-id', id);
                             clonedRow.find(".js-gear-name").append(anchorTag);
                             clonedRow.addClass('js-gear-link');
+                            clonedRow.addClass('js-gear-' + id);
                             clonedRow.removeClass('dn js-template-gears-row');
+                            clonedRow.find(".js-gear-remove").attr("id", "js-remove-gear-" + data.id);
+                            clonedRow.find(".js-gear-remove").attr("data-id", id)
                             clonedRow.appendTo($("#js-assigned-gear"));
 
                             var clonedDialog = $(".js-gear-dialog-template").clone();
@@ -317,6 +332,7 @@ yukon.dr.setup.program = (function() {
                                 $('#' + id + ' a').text(data.gearName);
                                 $(event.target).dialog('close');
                             }
+                            _renderConfirmDeletePopup(data.id, data.gearName);
                         }
                    });
                    dialog.dialog('close');
@@ -328,9 +344,9 @@ yukon.dr.setup.program = (function() {
                 event.preventDefault();
             });
 
-            $(document).on('click', '.js-gear-remove', function() {
-                $(this).parent().remove();
-                $("#js-assigned-gear").closest('.select-box').find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+            $(document).on("yukon:dr:setup:program:gearRemoved", function (event) {
+                $(event.target).closest("div.js-assigned-gear").remove();
+                $(event.target).closest('.select-box').find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
             });
 
             _initialized = true;
