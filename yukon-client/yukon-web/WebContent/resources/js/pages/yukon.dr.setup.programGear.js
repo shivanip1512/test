@@ -86,6 +86,19 @@ yukon.dr.setup.programGear = (function() {
                 _refreshShedType();
                 _initCss();
             });
+            
+            $(document).on('change', '.js-setpoint-input', function (event) {
+                var container = $(this).closest(".js-thermostat-ramping-ctrl-prms");
+                if ($(this).val() == 'DELTA') {
+                    container.find(".js-value-b").text($(".js-deltaB-lbl").val() + ":");
+                    container.find(".js-value-d").text($(".js-deltaD-lbl").val() + ":");
+                    container.find(".js-value-f").text($(".js-deltaF-lbl").val() + ":");
+                } else {
+                    container.find(".js-value-b").text($(".js-absB-lbl").val() + ":");
+                    container.find(".js-value-d").text($(".js-absD-lbl").val() + ":");
+                    container.find(".js-value-f").text($(".js-absF-lbl").val() + ":");
+                }
+            });
 
             _initialized = true;
         }

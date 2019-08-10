@@ -38,7 +38,10 @@
                     <tags:nameValue2 nameKey=".gearName">
                         <tags:input id="gearName" path="gearName" size="25" maxlength="60" autofocus="autofocus" />
                         <br>
-                        <span id="gearNameIsBlankError" class="error dn"><i:inline key="yukon.web.error.isBlank"/></span>
+                        <cti:msg2 var="gearNameLbl" key=".gearName"/>
+                        <span id="gearNameIsBlankError" class="error dn">
+                            <i:inline key="yukon.web.error.fieldrequired" arguments="${gearNameLbl}"/>
+                        </span>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".gearType">
                         <cti:displayForPageEditModes modes="CREATE,EDIT">

@@ -3,7 +3,34 @@
 <cti:msgScope paths="yukon.web.modules.dr.setup.gear">
     <div class="column-12-12 clearfix">
         <div class="column one">
-            <tags:sectionContainer2 nameKey="controlParameters">
+            <cti:msg2 var="absBLbl" key=".absB"/>
+            <cti:msg2 var="absDLbl" key=".absD"/>
+            <cti:msg2 var="absFLbl" key=".absF"/>
+            <cti:msg2 var="deltaBLbl" key=".deltaB"/>
+            <cti:msg2 var="deltaDLbl" key=".deltaD"/>
+            <cti:msg2 var="deltaFLbl" key=".deltaF"/>
+            
+            <input type="hidden" class="js-absB-lbl" value="${absBLbl}"/>
+            <input type="hidden" class="js-absD-lbl" value="${absDLbl}"/>
+            <input type="hidden" class="js-absF-lbl" value="${absFLbl}"/>
+            <input type="hidden" class="js-deltaB-lbl" value="${deltaBLbl}"/>
+            <input type="hidden" class="js-deltaD-lbl" value="${deltaDLbl}"/>
+            <input type="hidden" class="js-deltaF-lbl" value="${deltaFLbl}"/>
+            
+            <c:choose>
+                <c:when test="${programGear.fields.absoluteOrDelta == 'ABSOLUTE'}">
+                    <c:set var="valueBLblKey" value=".absB"/>
+                    <c:set var="valueDLblKey" value=".absD"/>
+                    <c:set var="valueFLblKey" value=".absF"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="valueBLblKey" value=".deltaB"/>
+                    <c:set var="valueDLblKey" value=".deltaD"/>
+                    <c:set var="valueFLblKey" value=".deltaF"/>
+                </c:otherwise>
+            </c:choose>
+            
+            <tags:sectionContainer2 nameKey="controlParameters" styleClass="js-thermostat-ramping-ctrl-prms">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".mode">
                         <cti:msg2 var="heatBtnLbl" key=".mode.heat"/>
@@ -63,7 +90,8 @@
                                         <c:set var="css" value="middle yes"/>
                                     </c:otherwise>
                                 </c:choose>
-                                <tags:radio path="fields.absoluteOrDelta" value="${setpoint}" classes="${css}" key=".${setpoint}" />
+                                <tags:radio path="fields.absoluteOrDelta" value="${setpoint}" classes="${css}"
+                                            key=".${setpoint}" inputClass="js-setpoint-input"/>
                             </c:forEach>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
@@ -85,7 +113,7 @@
                     <tags:nameValue2 nameKey=".tb">
                         <tags:input path="fields.valueTb" size="3"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".valueB">
+                    <tags:nameValue2 nameKey="${valueBLblKey}" nameClass="js-value-b">
                         <tags:input path="fields.valueB" size="3"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".tc">
@@ -94,16 +122,16 @@
                     <tags:nameValue2 nameKey=".td">
                         <tags:input path="fields.valueTd" size="3"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".valueD">
+                    <tags:nameValue2 nameKey="${valueDLblKey}" nameClass="js-value-d">
                         <tags:input path="fields.valueD" size="3"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".te">
-                        <tags:input path="fields.valueTe" size="3" inputClass="test"/>
+                        <tags:input path="fields.valueTe" size="3"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".tf">
-                        <tags:input path="fields.valueTf" size="3" inputClass="js-delta-value"/>
+                        <tags:input path="fields.valueTf" size="3"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".valueF">
+                    <tags:nameValue2 nameKey="${valueFLblKey}" nameClass="js-value-f">
                         <tags:input path="fields.valueF" size="3"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
