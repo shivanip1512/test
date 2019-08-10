@@ -93,8 +93,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
             errors.popNestedPath();
         }
 
-        YukonValidationUtils.checkRange(errors, "triggerOffset", loadProgram.getRestoreOffset(), 0.0, 99999.9999, false);
-        YukonValidationUtils.checkRange(errors, "restoreOffset", loadProgram.getTriggerOffset(), -9999.9999, 99999.9999, false);
+        YukonValidationUtils.checkRange(errors, "triggerOffset", loadProgram.getTriggerOffset(), 0.0, 99999.9999, false);
+        YukonValidationUtils.checkRange(errors, "restoreOffset", loadProgram.getRestoreOffset(), -9999.9999, 99999.9999, false);
 
         if (!errors.hasFieldErrors("type")) {
             
@@ -246,7 +246,9 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         }
 
         if (loadProgram.getOperationalState() == OperationalState.Timed && (loadProgram.getControlWindow() == null
-            || loadProgram.getControlWindow().getControlWindowOne() == null)) {
+                || loadProgram.getControlWindow().getControlWindowOne() == null
+                || loadProgram.getControlWindow().getControlWindowOne().getAvailableStartTimeInMinutes() == null
+                || loadProgram.getControlWindow().getControlWindowOne().getAvailableStopTimeInMinutes() == null)) {
             errors.reject(key + "timedSupportedControlWindow");
         }
 

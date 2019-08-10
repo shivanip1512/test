@@ -118,45 +118,43 @@
                 <div id="js-control-window" class="noswitchtype">
                     <c:if test="${not empty selectedSwitchType}">
                         <tags:sectionContainer2 nameKey="controlWindow">
-                            <c:if test="${not empty loadProgram.controlWindow.controlWindowOne}">
-                                <c:set var="controlWindowOneEnabled"
-                                    value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes > 0 || loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes > 0}" />
-                            </c:if>
+                            <c:set var="controlWindowOneEnabled"
+                                value="${not empty loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes
+                                      || not empty loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}"/>
                             <tags:nameValueContainer2>
                                 <tags:nameValue2 nameKey=".controlWindowOne">
-                                    <tags:switchButton name="controlWindowOne" toggleGroup="controlWindowOne" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label"
-                                        checked="${controlWindowOneEnabled}" />
+                                <tags:switchButton name="controlWindowOne" toggleGroup="controlWindowOne" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label"
+                                    checked="${controlWindowOneEnabled}" id="controlWindowOne"/>
                                 </tags:nameValue2>
                                 <c:set var="controlWindowOneClass" value="${controlWindowOneEnabled ? '' : 'dn'}" />
                                 <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindowOne" rowClass="${controlWindowOneClass}">
-                                    <dt:timeOffset id="startTimeInMinutesWindowOne" name="controlWindow.controlWindowOne.availableStartTimeInMinutes"
-                                        value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}" />
+                                    <dt:timeOffset id="startTimeWindowOne" name="startTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}"/>
+                                    <input type="hidden" id="startTimeInMinutesWindowOne" name="controlWindow.controlWindowOne.availableStartTimeInMinutes" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}"/>
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindowOne" rowClass="${controlWindowOneClass}">
-                                    <dt:timeOffset id="stopTimeInMinutesWindowOne" name="controlWindow.controlWindowOne.availableStopTimeInMinutes"
-                                        value="${loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}" />
+                                    <dt:timeOffset id="stopTimeWindowOne" name="stopTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}"/>
+                                    <input type="hidden" id="stopTimeInMinutesWindowOne" name="controlWindow.controlWindowOne.availableStopTimeInMinutes" value="${loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}"/>
                                 </tags:nameValue2>
-                            </tags:nameValueContainer2>
-                            <br />
-                            <c:if test="${not empty loadProgram.controlWindow.controlWindowTwo}">
+                                </tags:nameValueContainer2>
+                                <br />
                                 <c:set var="controlWindowTwoEnabled"
-                                    value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes > 0 || loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes > 0}" />
-                            </c:if>
-                            <tags:nameValueContainer2>
-                                <tags:nameValue2 nameKey=".controlWindowTwo">
+                                    value="${not empty loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes
+                                      || not empty loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}" />
+                                <tags:nameValueContainer2>
+                                    <tags:nameValue2 nameKey=".controlWindowTwo">
                                     <tags:switchButton name="controlWindowTwo" toggleGroup="controlWindowTwo" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label"
-                                        checked="${controlWindowTwoEnabled}" />
-                                </tags:nameValue2>
-                                <c:set var="controlWindowTwoClass" value="${controlWindowTwoEnabled ? '' : 'dn'}" />
-                                <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindowTwo" rowClass="${controlWindowTwoClass}">
-                                    <dt:timeOffset id="startTimeInMinutesWindowTwo" name="controlWindow.controlWindowTwo.availableStartTimeInMinutes"
-                                        value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}" />
-                                </tags:nameValue2>
-                                <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindowTwo" rowClass="${controlWindowTwoClass}">
-                                    <dt:timeOffset id="stopTimeInMinutesWindowTwo" name="controlWindow.controlWindowTwo.availableStopTimeInMinutes"
-                                        value="${loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}" />
-                                </tags:nameValue2>
-                            </tags:nameValueContainer2>
+                                        checked="${controlWindowTwoEnabled}" id="controlWindowTwo" />
+                                    </tags:nameValue2>
+                                    <c:set var="controlWindowTwoClass" value="${controlWindowTwoEnabled ? '' : 'dn'}" />
+                                    <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindowTwo" rowClass="${controlWindowTwoClass}">
+                                        <dt:timeOffset id="startTimeWindowTwo" name="startTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"/>
+                                        <input type="hidden" id="startTimeInMinutesWindowTwo" name="controlWindow.controlWindowTwo.availableStartTimeInMinutes" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"/>
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindowTwo" rowClass="${controlWindowTwoClass}">
+                                        <dt:timeOffset id="stopTimeWindowTwo" name="stopTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}"/>
+                                        <input type="hidden" id="stopTimeInMinutesWindowTwo" name="controlWindow.controlWindowTwo.availableStopTimeInMinutes" value="${loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}"/>
+                                    </tags:nameValue2>
+                                    </tags:nameValueContainer2>
                         </tags:sectionContainer2>
                     </c:if>
                 </div>

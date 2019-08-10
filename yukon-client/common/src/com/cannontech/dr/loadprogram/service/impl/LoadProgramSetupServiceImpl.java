@@ -223,7 +223,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
         if (CollectionUtils.isNotEmpty(prog.getLmProgramDirectGearVector())) {
             prog.getLmProgramDirectGearVector().clear();
-            LMProgramDirectGear.deleteAllDirectGears(loadProgram.getProgramId());
+            LMProgramDirectGear.deleteAllDirectGearsForProgram(loadProgram.getProgramId());
         }
 
         if (loadProgram.getGears() != null) {
@@ -247,19 +247,20 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
             prog.getLmProgramDirectNotifyGroupVector().clear();
         }
 
-        if (loadProgram.getNotification() != null && loadProgram.getNotification().getAssignedNotificationGroups() != null) {
+        if (loadProgram.getNotification() != null) {
 
-            loadProgram.getNotification().getAssignedNotificationGroups().forEach(notificationGroup -> {
+            if (loadProgram.getNotification().getAssignedNotificationGroups() != null) {
+                loadProgram.getNotification().getAssignedNotificationGroups().forEach(notificationGroup -> {
 
-                LMDirectNotificationGroupList group = new LMDirectNotificationGroupList();
-                group.setDeviceID(loadProgram.getProgramId());
-                group.setNotificationGrpID(notificationGroup.getNotificationGrpID());
-                prog.getLmProgramDirectNotifyGroupVector().addElement(group);
+                    LMDirectNotificationGroupList group = new LMDirectNotificationGroupList();
+                    group.setDeviceID(loadProgram.getProgramId());
+                    group.setNotificationGrpID(notificationGroup.getNotificationGrpID());
+                    prog.getLmProgramDirectNotifyGroupVector().addElement(group);
 
-            });
+                });
+            }
 
             if (loadProgram.getNotification().getProgramStartInMinutes() != null) {
-                // Send 0 value from UI if selected
                 Integer programStart = loadProgram.getNotification().getProgramStartInMinutes();
                 prog.getDirectProgram().setNotifyActiveOffset(programStart * 60);
             } else {
@@ -267,7 +268,6 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
             }
 
             if (loadProgram.getNotification().getProgramStopInMinutes() != null) {
-                // Send 0 value from UI if selected
                 Integer programStop = loadProgram.getNotification().getProgramStopInMinutes();
                 prog.getDirectProgram().setNotifyInactiveOffset(programStop * 60);
             } else {
@@ -335,27 +335,21 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
             ProgramControlWindowFields controlWindowOne = loadProgram.getControlWindow().getControlWindowOne();
             ProgramControlWindowFields controlWindowTwo = loadProgram.getControlWindow().getControlWindowTwo();
             lmProgram.setPAObjectID(loadProgram.getProgramId());
-            if (controlWindowOne != null && (loadProgram.getOperationalState() == OperationalState.Automatic
-                || loadProgram.getOperationalState() == OperationalState.ManualOnly)) {
-                LMProgramControlWindow lmControlWindowOne =
-                    buildLmProgramControlWindow(loadProgram.getProgramId(), controlWindowOne, 1);
-                lmProgram.getLmProgramControlWindowVector().add(lmControlWindowOne);
+            if (controlWindowOne != null) {
+                buildLmProgramControlWindow(lmProgram, loadProgram.getProgramId(), controlWindowOne, 1);
             }
             if (controlWindowTwo != null) {
-                LMProgramControlWindow lmControlWindowTwo =
-                    buildLmProgramControlWindow(loadProgram.getProgramId(), controlWindowTwo, 2);
-                lmProgram.getLmProgramControlWindowVector().add(lmControlWindowTwo);
+                buildLmProgramControlWindow(lmProgram, loadProgram.getProgramId(), controlWindowTwo, 2);
             }
         }
         
     }
 
-    private LMProgramControlWindow buildLmProgramControlWindow(Integer programId, ProgramControlWindowFields controlWindowFields,
+    private void buildLmProgramControlWindow(LMProgramBase lmProgram, Integer programId, ProgramControlWindowFields controlWindowFields,
             Integer windowNumber) {
-        LMProgramControlWindow window = new LMProgramControlWindow();
 
         if (controlWindowFields != null && controlWindowFields.getAvailableStartTimeInMinutes() != null && controlWindowFields.getAvailableStopTimeInMinutes() != null) {
-
+            LMProgramControlWindow window = new LMProgramControlWindow();
             int startTimeInSeconds = controlWindowFields.getAvailableStartTimeInMinutes() * 60;
             int stopTimeInSeconds = controlWindowFields.getAvailableStopTimeInMinutes() * 60;
             if (stopTimeInSeconds < startTimeInSeconds) {
@@ -366,9 +360,8 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
             window.setAvailableStopTime(stopTimeInSeconds);
             window.setDeviceID(programId);
             window.setWindowNumber(windowNumber);
+            lmProgram.getLmProgramControlWindowVector().add(window);
         }
-
-        return window;
 
     }
 

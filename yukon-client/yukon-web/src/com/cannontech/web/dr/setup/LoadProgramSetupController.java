@@ -87,7 +87,6 @@ public class LoadProgramSetupController {
         } else {
             loadProgram.setName(name);
             loadProgram.setType(type);
-            controllerHelper.setDefaultProgramControlWindow(loadProgram);
         }
 
         controllerHelper.buildProgramModelMap(model, userContext, request, loadProgram);

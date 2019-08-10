@@ -12,6 +12,35 @@ yukon.dr.setup.program = (function() {
     'use strict';
 
     var _initialized = false,
+    _timeFormatter = yukon.timeFormatter,
+    
+    _updateStartTimeWindowOne = function () {
+        var start = _timeFormatter.parse24HourTime($('#startTimeWindowOne').val());
+        $('#startTimeInMinutesWindowOne').val(start);
+    },
+
+    _updateStopTimeWindowOne = function () {
+        var stop = _timeFormatter.parse24HourTime($('#stopTimeWindowOne').val());
+        $('#stopTimeInMinutesWindowOne').val(stop);
+    },
+
+    _updateStartTimeWindowTwo = function () {
+        var start = _timeFormatter.parse24HourTime($('#startTimeWindowTwo').val());
+        $('#startTimeInMinutesWindowTwo').val(start);
+    },
+
+    _updateStopTimeWindowTwo = function () {
+        var stop = _timeFormatter.parse24HourTime($('#stopTimeWindowTwo').val());
+        $('#stopTimeInMinutesWindowTwo').val(stop);
+    },
+
+    _gearMovableChange = function () {
+        $("#js-assigned-gear").sortable({
+            stop : function(event, ui) {
+                ui.item.closest('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+            }
+        });
+    },
 
     _loadGroupPicker = function() {
         yukon.pickers['js-avaliable-groups-picker'].show();
@@ -71,13 +100,9 @@ yukon.dr.setup.program = (function() {
 
                 _notificationGroupPicker();
                 _loadGroupPicker();
+                _gearMovableChange();
 
                 yukon.ui.initDateTimePickers().ancestorInit("#js-load-program-container");
-                $(' #js-assigned-gear').sortable({
-                    stop : function(event, ui) {
-                        ui.item.closest('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
-                    }
-                });
                 yukon.ui.unblock($('#js-load-program-container'));
             });
            
@@ -136,6 +161,7 @@ yukon.dr.setup.program = (function() {
 
             var _mode = $('.js-page-mode').val();
             if (_mode !== 'VIEW' && $("#type").val() !== '') {
+                _gearMovableChange();
                 if (_mode === 'EDIT' && $('#js-inline-member-picker-container').exists()) {
                     _memberControlPicker();
                 }
@@ -253,19 +279,17 @@ yukon.dr.setup.program = (function() {
             $(document).on('change', '#controlMethod', function(event) {
                 var isControlMethodBlank = $("#controlMethod option:selected").val() == "" ? true :false;
                 $("#js-gear-fields-container").toggleClass('dn', isControlMethodBlank);
-                
                 if (!isControlMethodBlank) {
                     yukon.ui.block($('#js-gear-fields-container'));
                     var gearType = $(this).val(), 
-                        gearName = $(this).closest("div.js-program-gear-container").find("input[name='gearName']").val(), 
-                        programType = $(this).closest("div.js-program-gear-container").find("input[name='programType']").val();
-
+                        gearName = $(this).closest("div.js-program-gear-container").find("input[name='gearName']").val(),
+                        selectedProgramType = $("#js-selected-program").val();
                     $.ajax({
                         url : yukon.url('/dr/setup/loadProgram/populateGearFields/' + gearType),
                         type : 'get',
                         data : {
                             gearName : gearName,
-                            programType : programType
+                            programType : selectedProgramType
                         }
                     }).done(function(data) {
                         $(".js-program-gear-container").empty();
@@ -331,6 +355,7 @@ yukon.dr.setup.program = (function() {
                                 $(event.target).dialog('close');
                             }
                             _initConfirmGearDeletePopup(data.id, data.gearName);
+                            $('#js-assigned-gear').closest('.select-box').find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
                         }
                    });
                    dialog.dialog('close');
@@ -342,9 +367,62 @@ yukon.dr.setup.program = (function() {
                 event.preventDefault();
             });
 
+            $(document).on('click', '#controlWindowOne', function() {
+                var controlWindowRow = $(this).closest('tr'),
+                useControlWindow = controlWindowRow.find('.switch-btn-checkbox').prop('checked');
+                if (!useControlWindow) {
+                    $('#startTimeInMinutesWindowOne').val('');
+                    $('#stopTimeInMinutesWindowOne').val('');
+                } else {
+                    _updateStartTimeWindowOne();
+                    _updateStopTimeWindowOne();
+                }
+            });
+
+            $(document).on('click', '#controlWindowTwo', function() {
+                var controlWindowRow = $(this).closest('tr'),
+                useControlWindow = controlWindowRow.find('.switch-btn-checkbox').prop('checked');
+                if (!useControlWindow) {
+                    $('#startTimeInMinutesWindowTwo').val('');
+                    $('#startTimeInMinutesWindowTwo').val('');
+                } else {
+                    _updateStartTimeWindowTwo();
+                    _updateStopTimeWindowTwo();
+                }
+            });
+
+            $(document).on('change', '#startTimeWindowOne', function() {
+                _updateStartTimeWindowOne();
+            });
+
+            $(document).on('change', '#stopTimeWindowOne', function () {
+                _updateStopTimeWindowOne();
+            });
+
+            $(document).on('change', '#startTimeWindowTwo', function() {
+                _updateStartTimeWindowTwo();
+            });
+
+            $(document).on('change', '#stopTimeWindowTwo', function () {
+                _updateStopTimeWindowTwo();
+            });
+
+            $(document).on('click', '#js-program-save', function (event) {
+                if (($('#js-program-start-check').is(':checked'))) {
+                    if(!$('#js-program-start').val()) {
+                        $('#js-program-start').val(0);
+                    }
+                }
+                if (($('#js-program-stop-check').is(':checked'))) {
+                    if(!$('#js-program-stop').val()) {
+                        $('#js-program-stop').val(0);
+                    }
+                }
+            });
+
             $(document).on("yukon:dr:setup:program:gearRemoved", function (event) {
                 $(event.target).closest("div.js-assigned-gear").remove();
-                $(event.target).closest('.select-box').find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+                $('#js-assigned-gear').closest('.select-box').find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
             });
 
             _initialized = true;

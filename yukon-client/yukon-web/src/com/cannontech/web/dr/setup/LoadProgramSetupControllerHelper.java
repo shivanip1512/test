@@ -138,14 +138,6 @@ public class LoadProgramSetupControllerHelper {
 
     }
 
-    public void setDefaultProgramControlWindow(LoadProgram loadProgram) {
-        ProgramControlWindow window = new ProgramControlWindow();
-        ProgramControlWindowFields fields = new ProgramControlWindowFields(0, 0);
-        window.setControlWindowOne(fields);
-        window.setControlWindowTwo(fields);
-        loadProgram.setControlWindow(window);
-    }
-
     /**
      * Retrieve ProgramConstraints
      */
