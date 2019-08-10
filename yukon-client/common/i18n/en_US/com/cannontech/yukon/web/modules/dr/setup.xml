@@ -242,7 +242,7 @@ Are you sure you want do this?</entry>
 
 <!-- Gear setup -->
 <entry key="yukon.web.modules.dr.setup.gear.ABSOLUTE">Absolutes</entry>
-<entry key="yukon.web.modules.dr.setup.gear.DELTA">Delta</entry>
+<entry key="yukon.web.modules.dr.setup.gear.DELTA">Deltas</entry>
 <entry key="yukon.web.modules.dr.setup.gear.Yellow">Yellow</entry>
 <entry key="yukon.web.modules.dr.setup.gear.Red">Red</entry>
 <entry key="yukon.web.modules.dr.setup.gear.FixedCount">Fixed Count</entry>
@@ -452,9 +452,12 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.td">Td</entry>
 <entry key="yukon.web.modules.dr.setup.gear.te">Te</entry>
 <entry key="yukon.web.modules.dr.setup.gear.tf">Tf</entry>
-<entry key="yukon.web.modules.dr.setup.gear.valueB">Delta B</entry>
-<entry key="yukon.web.modules.dr.setup.gear.valueD">Delta D</entry>
-<entry key="yukon.web.modules.dr.setup.gear.valueF">Delta F</entry>
+<entry key="yukon.web.modules.dr.setup.gear.deltaB">Delta B</entry>
+<entry key="yukon.web.modules.dr.setup.gear.deltaD">Delta D</entry>
+<entry key="yukon.web.modules.dr.setup.gear.deltaF">Delta F</entry>
+<entry key="yukon.web.modules.dr.setup.gear.absB">Abs B</entry>
+<entry key="yukon.web.modules.dr.setup.gear.absD">Abs D</entry>
+<entry key="yukon.web.modules.dr.setup.gear.absF">Abs F</entry>
 <entry key="yukon.web.modules.dr.setup.gear.mode.heat">Heat</entry>
 <entry key="yukon.web.modules.dr.setup.gear.mode.cool">Cool</entry>
 <entry key="yukon.web.modules.dr.setup.gear.randomStartTime">Random Start Time</entry>
