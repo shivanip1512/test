@@ -1,6 +1,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:msgScope paths="yukon.web.modules.dr.setup.gear">   
+<cti:msgScope paths="yukon.web.modules.dr.setup.gear">
     <div class="column-12-12 clearfix">
         <div class="column one">
             <tags:sectionContainer2 nameKey="controlParameters">
@@ -13,7 +13,7 @@
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
                             <input type=hidden id="refreshShedType" value="${programGear.fields.refreshShedTime}">
-                             ${programGear.fields.refreshShedTime}
+                               <i:inline key="${programGear.fields.refreshShedTime}" />
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 id="js-fixedShedTime-row" nameKey=".fixedShedTime" rowClass="dn">
@@ -27,8 +27,8 @@
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".numberOfGroups">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <tags:selectWithItems items="${numberOfGroups}" path="fields.numberOfGroups" defaultItemLabel="All Of Them"
-                                defaultItemValue="0" />
+                            <cti:msg2 key=".allOfThem" var="selectLbl"/>
+                            <tags:selectWithItems items="${numberOfGroups}" path="fields.numberOfGroups" defaultItemLabel="${selectLbl}" defaultItemValue="0" />
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
                             <c:choose>
@@ -46,8 +46,8 @@
                             <tags:selectWithItems items="${groupSelectionMethod}" path="fields.groupSelectionMethod" />
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                             ${programGear.fields.groupSelectionMethod}
-                         </cti:displayForPageEditModes>
+                            <i:inline key="${programGear.fields.groupSelectionMethod}" />
+                        </cti:displayForPageEditModes>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
@@ -91,7 +91,7 @@
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
                             <input type=hidden id="howToStopControl" value="${programGear.fields.howToStopControl}">
-                            ${programGear.fields.howToStopControl}
+                                <i:inline key="${programGear.fields.howToStopControl}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                      <tags:nameValue2 id="js-stopOrder-row" nameKey=".stopOrder" rowClass="dn">
@@ -99,7 +99,7 @@
                             <tags:selectWithItems items="${stopOrder}" path="fields.stopOrder" />
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            ${programGear.fields.stopOrder}
+                            <i:inline key="${programGear.fields.stopOrder}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 id="js-rampOutPercent-row" nameKey=".rampOutPercent" rowClass="dn">
