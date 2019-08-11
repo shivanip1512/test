@@ -26,12 +26,14 @@ public class LoadProgramCopy {
     public void setConstraint(ProgramConstraint constraint) {
         this.constraint = constraint;
     }
-    public Boolean isCopyMemberControl() {
+
+    public Boolean getCopyMemberControl() {
         return copyMemberControl;
     }
     public void setCopyMemberControl(Boolean copyMemberControl) {
         this.copyMemberControl = copyMemberControl;
     }
+
     public OperationalState getOperationalState() {
         return operationalState;
     }

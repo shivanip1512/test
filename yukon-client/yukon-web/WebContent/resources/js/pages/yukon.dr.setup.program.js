@@ -197,6 +197,23 @@ yukon.dr.setup.program = (function() {
                 $('#js-selected-notification-group-ids').val(selectedNotificationGroups.join(','));
             });
 
+            $(document).on("yukon:loadProgram:copy", function () {
+                yukon.ui.blockPage();
+                $('#loadProgram-copy-form').ajaxSubmit({
+                    success: function (data, status, xhr, $form) {
+                        if (!$.isEmptyObject(data.redirectUrl))
+                            window.location.href=yukon.url(data.redirectUrl);
+                        else
+                            window.location.href=yukon.url('/dr/setup/loadProgram/' + data.loadProgramId);
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#copy-loadProgram-popup').html(xhr.responseText);
+                        yukon.ui.initContent('#copy-loadProgram-popup');
+                        yukon.ui.unblockPage();
+                    }
+                });
+            });
+
             $(document).on("click", ".js-add-group", function() {
                 var picker = yukon.pickers['js-avaliable-groups-picker'];
 

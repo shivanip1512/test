@@ -44,10 +44,9 @@ import com.cannontech.common.dr.gear.setup.fields.TimeRefreshGearFields;
 import com.cannontech.common.dr.gear.setup.fields.WhenToChangeFields;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
+import com.cannontech.common.dr.program.setup.model.LoadProgramCopy;
 import com.cannontech.common.dr.program.setup.model.Notification;
 import com.cannontech.common.dr.program.setup.model.NotificationGroup;
-import com.cannontech.common.dr.program.setup.model.ProgramControlWindow;
-import com.cannontech.common.dr.program.setup.model.ProgramControlWindowFields;
 import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
 import com.cannontech.common.dr.setup.LMDto;
@@ -221,6 +220,20 @@ public class LoadProgramSetupControllerHelper {
             loadProgram.setNotification(notif);
         }
 
+    }
+
+    public void buildProgramCopyModelMap(ModelMap model, YukonUserContext userContext, HttpServletRequest request,
+            LoadProgramCopy programCopy, LiteYukonPAObject lmProgram) {
+
+        retrieveProgramConstraints(model, request, userContext);
+        if (lmProgram.getPaoType() == PaoType.LM_NEST_PROGRAM) {
+            model.addAttribute("operationalStates", List.of(OperationalState.ManualOnly));
+        } else {
+            model.addAttribute("operationalStates", OperationalState.values());
+        }
+        model.addAttribute("loadProgramId", lmProgram.getLiteID());
+        model.addAttribute("programCopy", programCopy);
+        model.addAttribute("selectedSwitchType", lmProgram.getPaoType());
     }
     /**
      * Default values for object should be set here.

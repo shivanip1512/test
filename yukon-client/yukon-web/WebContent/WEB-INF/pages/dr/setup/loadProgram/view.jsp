@@ -27,7 +27,7 @@
                 <li class="divider"></li>
 
                 <!-- Copy -->
-                <cm:dropdownOption key="yukon.web.components.button.copy.label" icon="icon-disk-multiple" data-popup="#js-copy-popup" />
+                <cm:dropdownOption key="yukon.web.components.button.copy.label" icon="icon-disk-multiple" data-popup="#copy-loadProgram-popup" />
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="OWNER">
                 <li class="divider"></li>
@@ -48,8 +48,14 @@
         <cti:msg2 var="copyloadProgramPopUpTitle" key="yukon.web.modules.dr.setup.loadProgram.copy" />
         <cti:url var="renderCopyloadProgramUrl" value="/dr/setup/loadProgram/${loadProgram.programId}/rendercopyloadProgram" />
         <cti:msg2 var="copyText" key="components.button.copy.label" />
-        <div class="dn" id="copy-loadProgram-popup" data-title="${copyloadProgramPopUpTitle}" data-dialog data-ok-text="${copyText}" data-event="yukon:loadProgram:copy"
-            data-url="${renderCopyloadProgramUrl}"></div>
+        <div class="dn" id="copy-loadProgram-popup"
+                        data-title="${copyloadProgramPopUpTitle}" 
+                        data-dialog data-ok-text="${copyText}" 
+                        data-event="yukon:loadProgram:copy"
+                        data-url="${renderCopyloadProgramUrl}"
+                        data-width="400"
+                        data-height="auto">
+        </div>
     </cti:displayForPageEditModes>
 
     <cti:url var="action" value="/dr/setup/loadProgram/save" />

@@ -156,7 +156,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
             gear.setGearID(null);
         });
 
-        if (loadProgramCopy.isCopyMemberControl() != null && !loadProgramCopy.isCopyMemberControl()) {
+        if (loadProgramCopy.getCopyMemberControl() != null && !loadProgramCopy.getCopyMemberControl()) {
             program.getPAOExclusionVector().removeAllElements();
         }
 

@@ -1,5 +1,6 @@
 package com.cannontech.web.dr.setup;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,11 +37,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
+import com.cannontech.common.dr.program.setup.model.LoadProgramCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMModelFactory;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.JsonUtils;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.api.ApiRequestHelper;
@@ -63,6 +71,8 @@ public class LoadProgramSetupController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private LoadProgramSetupControllerHelper controllerHelper;
+    @Autowired private ServerDatabaseCache dbCache;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     private Cache<String, ProgramGear> gearCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();
 
     @GetMapping("/create")
@@ -240,6 +250,68 @@ public class LoadProgramSetupController {
         return "dr/setup/list/list.jsp";
     }
 
+    @PostMapping("/{id}/copy")
+    public String copy(@ModelAttribute("programCopy") LoadProgramCopy programCopy, @PathVariable int id, BindingResult result,
+            YukonUserContext userContext, FlashScope flash, ModelMap model, HttpServletRequest request,
+            HttpServletResponse servletResponse) throws IOException {
+        Map<String, String> json = new HashMap<>();
+        try {
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramCopyUrl + id);
+            ResponseEntity<? extends Object> response = copyProgram(userContext, request, url, programCopy, HttpMethod.POST);
+
+            if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
+                BindException error = new BindException(programCopy, "programCopy");
+                result = helper.populateBindingError(result, error, response);
+               
+                return bindAndForwardForCopy(programCopy, userContext, request, result, model, servletResponse, id);
+            }
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
+                int programId = paoIdMap.get("programId");
+                json.put("loadProgramId", Integer.toString(programId));
+            }
+
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            json.put("redirectUrl", "/dr/setup/list");
+            servletResponse.setContentType("application/json");
+            JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
+            return null;
+        } catch (RestClientException ex) {
+            log.error("Error while copying load program: " + ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", programCopy.getName()));
+            json.put("redirectUrl", "/dr/setup/list");
+        }
+
+        servletResponse.setContentType("application/json");
+        JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "copy.success", programCopy.getName()));
+        return null;
+    }
+
+    /**
+     * Load Program - Copy Popup functionality.
+     */
+    @GetMapping("/{id}/rendercopyloadProgram")
+    public String renderCopyLoadProgram(@PathVariable int id, ModelMap model, YukonUserContext userContext,
+            HttpServletRequest request) {
+
+        LoadProgramCopy programCopy = null;
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
+        LiteYukonPAObject lmProgram = getProgramFromCache(id);
+        if (model.containsAttribute("programCopy")) {
+            programCopy = (LoadProgramCopy) model.get("programCopy");
+        } else {
+            programCopy = new LoadProgramCopy();
+            programCopy.setName(messageSourceAccessor.getMessage("yukon.common.copyof", lmProgram.getPaoName()));
+        }
+        controllerHelper.buildProgramCopyModelMap(model, userContext, request, programCopy, lmProgram);
+
+        return "dr/setup/loadProgram/copyLoadProgram.jsp";
+    }
+
     private String bindAndForward(LoadProgram loadProgram, List<String> selectedGearsIds, BindingResult result, RedirectAttributes attrs) {
         attrs.addFlashAttribute("loadProgram", loadProgram);
         
@@ -315,6 +387,38 @@ public class LoadProgramSetupController {
         return response;
     }
     
+    /**
+     * Returns the LiteYukonPAObject based upon the Load Program Id
+     */
+    LiteYukonPAObject getProgramFromCache(int programId) {
+        LiteYukonPAObject lmProgram = dbCache.getAllLMPrograms().stream()
+                                                                .filter(program -> program.getLiteID() == programId)
+                                                                .findFirst()
+                                                                .get();
+        return lmProgram;
+    }
+    
+    /**
+     * Get the response for copy
+     */
+    private ResponseEntity<? extends Object> copyProgram(YukonUserContext userContext, HttpServletRequest request,
+            String webserverUrl, LoadProgramCopy programCopy, HttpMethod methodtype) throws RestClientException {
+        ResponseEntity<? extends Object> response =
+            apiRequestHelper.callAPIForObject(userContext, request, webserverUrl, methodtype, Object.class, programCopy);
+        return response;
+    }
+
+    private String bindAndForwardForCopy(LoadProgramCopy programCopy, YukonUserContext userContext,
+            HttpServletRequest request, BindingResult result, ModelMap model, HttpServletResponse response, int id) {
+
+        model.addAttribute("org.springframework.validation.BindingResult.loadProgramCopy", result);
+        LiteYukonPAObject lmProgram = getProgramFromCache(id);
+        controllerHelper.buildProgramCopyModelMap(model, userContext, request, programCopy, lmProgram);
+
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        return "dr/setup/loadProgram/copyLoadProgram.jsp";
+    }
+
     @GetMapping("/createGearPopup/{programType}")
     public String createGearPopup(ModelMap model, @PathVariable PaoType programType) {
         model.addAttribute("mode", PageEditMode.CREATE);
