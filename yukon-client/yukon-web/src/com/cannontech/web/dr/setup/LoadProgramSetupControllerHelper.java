@@ -340,10 +340,8 @@ public class LoadProgramSetupControllerHelper {
         masterCycleGearFields.setControlPercent(50);
         masterCycleGearFields.setCyclePeriodInMinutes(30);
         masterCycleGearFields.setGroupSelectionMethod(GroupSelectionMethod.LastControlled);
-        masterCycleGearFields.setRampInPercent(0);
         masterCycleGearFields.setHowToStopControl(HowToStopControl.TimeIn);
         masterCycleGearFields.setStopOrder(StopOrder.RANDOM);
-        masterCycleGearFields.setRampOutPercent(0);
         masterCycleGearFields.setCapacityReduction(100);
         masterCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
     }
