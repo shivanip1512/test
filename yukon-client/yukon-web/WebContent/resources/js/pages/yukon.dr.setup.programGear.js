@@ -14,11 +14,19 @@ yukon.dr.setup.programGear = (function() {
     var _initialized = false, 
     
     _whenToChange = function() {
-        var whenToChange = $("#whenToChange").val();
-        $('#js-changePriority-row').toggleClass('dn', whenToChange != 'Priority');
-        $('#js-changeDurationInMinutes-row').toggleClass('dn', whenToChange != 'Duration');
-        $('#js-triggerNumber-row').toggleClass('dn', whenToChange != 'TriggerOffset');
-        $('#js-triggerOffset-row').toggleClass('dn', whenToChange != 'TriggerOffset');
+        var whenToChangeElement = null,
+            whenToChange = "";
+        if ($(".js-when-to-change").is(":visible")) {
+           whenToChangeElement = $(".js-when-to-change:visible");
+           whenToChange = $(".js-when-to-change:visible option:selected").val();
+        } else {
+           whenToChangeElement = $("#whenToChange");
+           whenToChange = $("#whenToChange").val();
+        }
+        whenToChangeElement.closest(".name-value-table").find('#js-changePriority-row').toggleClass('dn', whenToChange != 'Priority');
+        whenToChangeElement.closest(".name-value-table").find('#js-changeDurationInMinutes-row').toggleClass('dn', whenToChange != 'Duration');
+        whenToChangeElement.closest(".name-value-table").find('#js-triggerNumber-row').toggleClass('dn', whenToChange != 'TriggerOffset');
+        whenToChangeElement.closest(".name-value-table").find('#js-triggerOffset-row').toggleClass('dn', whenToChange != 'TriggerOffset');
     },
 
     _howToStopControl= function() {
@@ -51,7 +59,7 @@ yukon.dr.setup.programGear = (function() {
                 window.history.back();
             });
 
-            $(document).on('change', '#whenToChange', function(event) {
+            $(document).on('change', '.js-when-to-change', function(event) {
                 _whenToChange();
             });
 

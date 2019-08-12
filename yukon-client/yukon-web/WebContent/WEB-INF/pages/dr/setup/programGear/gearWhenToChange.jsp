@@ -1,10 +1,10 @@
 <tags:nameValue2 nameKey=".whenToChange">
     <cti:displayForPageEditModes modes="EDIT,CREATE">
-        <tags:selectWithItems id="whenToChange" path="fields.whenToChangeFields.whenToChange" items="${whenToChangeFields}" />
+        <tags:selectWithItems id="whenToChange" path="fields.whenToChangeFields.whenToChange" items="${whenToChangeFields}" inputClass="js-when-to-change"/>
     </cti:displayForPageEditModes>
     <cti:displayForPageEditModes modes="VIEW">
         <input type=hidden id="whenToChange" value="${programGear.fields.whenToChangeFields.whenToChange}">
-        <i:inline key="${programGear.fields.whenToChangeFields.whenToChange}" />
+        <cti:msg2 key=".${programGear.fields.whenToChangeFields.whenToChange}"/>
     </cti:displayForPageEditModes>
 </tags:nameValue2>
 <tags:nameValue2 id="js-changePriority-row" nameKey=".changePrority" rowClass="dn">
