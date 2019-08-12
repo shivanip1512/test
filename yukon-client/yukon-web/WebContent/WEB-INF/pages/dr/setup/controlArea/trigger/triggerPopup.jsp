@@ -183,23 +183,37 @@
                                     id="js-use-peak-tracking-threshold-point"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".trigger.peakTracking" id="js-peak-tracking" nameColumnWidth="170px">
-                                <c:choose>
-                                    <c:when test="${!empty controlAreaTrigger.peakPointId}">
-                                        <tags:pickerDialog
-                                            id="thresholdPointPeakTracking"
-                                            type="notSystemPointPicker"
-                                            linkType="selectionLabel"
-                                            selectionProperty="paoPoint"
-                                            buttonStyleClass="M0"
-                                            destinationFieldId="point-peak-tracking"
-                                            viewOnlyMode="${mode == 'VIEW'}"
-                                            includeRemoveButton="${true}"
-                                            removeValue="0"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <i:inline key=".trigger.none"/>
-                                    </c:otherwise>
-                                </c:choose>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <c:choose>
+                                        <c:when test="${!empty controlAreaTrigger.peakPointId}">
+                                            <tags:pickerDialog
+                                                id="thresholdPointPeakTracking"
+                                                type="notSystemPointPicker"
+                                                linkType="selectionLabel"
+                                                selectionProperty="paoPoint"
+                                                buttonStyleClass="M0"
+                                                destinationFieldId="point-peak-tracking"
+                                                viewOnlyMode="${mode == 'VIEW'}"
+                                                includeRemoveButton="${true}"
+                                                removeValue="0"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <i:inline key=".trigger.none"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </cti:displayForPageEditModes>
+                                <cti:displayForPageEditModes modes="EDIT">
+                                    <tags:pickerDialog
+                                        id="thresholdPointPeakTracking"
+                                        type="notSystemPointPicker"
+                                        linkType="selectionLabel"
+                                        selectionProperty="paoPoint"
+                                        buttonStyleClass="M0"
+                                        destinationFieldId="point-peak-tracking"
+                                        viewOnlyMode="${mode == 'VIEW'}"
+                                        includeRemoveButton="${true}"
+                                        removeValue="0"/>
+                                </cti:displayForPageEditModes>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".trigger.thresholdPointSettings" nameColumnWidth="170px">
                                 <tags:pickerDialog
@@ -268,23 +282,37 @@
                                     id="js-use-peak-tracking-threshold"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".trigger.peakTracking" id="js-peak-tracking" nameColumnWidth="170px">
-                                <c:choose>
-                                    <c:when test="${!empty controlAreaTrigger.peakPointId}">
-                                        <tags:pickerDialog
-                                            id="thresholdPeakTracking"
-                                            type="notSystemPointPicker"
-                                            linkType="selectionLabel"
-                                            selectionProperty="paoPoint"
-                                            buttonStyleClass="M0"
-                                            destinationFieldId="point-peak-tracking"
-                                            viewOnlyMode="${mode == 'VIEW'}"
-                                            includeRemoveButton="${true}"
-                                            removeValue="0"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                      <i:inline key=".trigger.none"/>
-                                    </c:otherwise>
-                                </c:choose>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <c:choose>
+                                        <c:when test="${!empty controlAreaTrigger.peakPointId}">
+                                            <tags:pickerDialog
+                                                id="thresholdPeakTracking"
+                                                type="notSystemPointPicker"
+                                                linkType="selectionLabel"
+                                                selectionProperty="paoPoint"
+                                                buttonStyleClass="M0"
+                                                destinationFieldId="point-peak-tracking"
+                                                viewOnlyMode="${mode == 'VIEW'}"
+                                                includeRemoveButton="${true}"
+                                                removeValue="0"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                          <i:inline key=".trigger.none"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </cti:displayForPageEditModes>
+                                <cti:displayForPageEditModes modes="EDIT">
+                                    <tags:pickerDialog
+                                        id="thresholdPeakTracking"
+                                        type="notSystemPointPicker"
+                                        linkType="selectionLabel"
+                                        selectionProperty="paoPoint"
+                                        buttonStyleClass="M0"
+                                        destinationFieldId="point-peak-tracking"
+                                        viewOnlyMode="${mode == 'VIEW'}"
+                                        includeRemoveButton="${true}"
+                                        removeValue="0"/>
+                                </cti:displayForPageEditModes>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
                     </c:when>
