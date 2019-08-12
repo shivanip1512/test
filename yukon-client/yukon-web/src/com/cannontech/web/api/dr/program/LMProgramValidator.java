@@ -97,28 +97,30 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         YukonValidationUtils.checkRange(errors, "restoreOffset", loadProgram.getRestoreOffset(), -9999.9999, 99999.9999, false);
 
         if (!errors.hasFieldErrors("type")) {
-            
+            Integer programId = null;
             if (ServletUtils.getPathVariable("id") != null) {
-                Integer programId = Integer.valueOf(ServletUtils.getPathVariable("id"));
-                try {
-                    LMProgramDirectGroup[] groups = LMProgramDirectGroup.getAllDirectGroups(programId);
-                    List<Integer> currentAssignedGroups = Arrays.stream(groups).map(p -> p.getLmGroupDeviceID()).collect(Collectors.toList());
-                    List<Integer> assignedGroups = new ArrayList<>();
-                    if (CollectionUtils.isNotEmpty(loadProgram.getAssignedGroups())) {
-                        assignedGroups = loadProgram.getAssignedGroups().stream().map(p -> p.getGroupId()).collect(Collectors.toList());
-                    }
-
-                    List<Integer> assignedGroupsDiff = (List<Integer>) CollectionUtils.disjunction(currentAssignedGroups, assignedGroups);
-
-                    for (Integer groupId : assignedGroupsDiff) {
-                        if (loadGroupDao.isLoadGroupInUse(groupId)) {
-                            errors.reject(key + "groupEnrollmentConflict", new Object[] { cache.getAllPaosMap().get(groupId).getPaoName() }, "");
-                        }
-                    }
-
-                } catch (SQLException e) {
-                }
+                programId = Integer.valueOf(ServletUtils.getPathVariable("id"));
             }
+            List<Integer> currentAssignedGroups = new ArrayList<>();
+            try {
+                if (programId != null) {
+                    LMProgramDirectGroup[] groups = LMProgramDirectGroup.getAllDirectGroups(programId);
+                    currentAssignedGroups = Arrays.stream(groups).map(p -> p.getLmGroupDeviceID()).collect(Collectors.toList());
+                }
+                List<Integer> assignedGroups = new ArrayList<>();
+                if (CollectionUtils.isNotEmpty(loadProgram.getAssignedGroups())) {
+                    assignedGroups = loadProgram.getAssignedGroups().stream().map(p -> p.getGroupId()).collect(Collectors.toList());
+                }
+
+                List<Integer> assignedGroupsDiff = (List<Integer>) CollectionUtils.disjunction(currentAssignedGroups, assignedGroups);
+
+                for (Integer groupId : assignedGroupsDiff) {
+                    if (loadGroupDao.isLoadGroupInUse(groupId)) {
+                        errors.reject(key + "groupEnrollmentConflict", new Object[] { cache.getAllPaosMap().get(groupId).getPaoName() }, "");
+                    }
+                }
+
+            } catch (SQLException e) {}
 
             if (CollectionUtils.isEmpty(loadProgram.getAssignedGroups())) {
                 errors.reject(key + "noGroup");
