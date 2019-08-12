@@ -10,7 +10,7 @@
                     <tags:nameValue2 nameKey=".shedTime">
                         <tags:intervalDropdown path="fields.shedTime" intervals="${shedTime}" />
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".groupEachTime">
+                    <tags:nameValue2 nameKey=".numberOfGroups">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
                             <cti:msg2 key=".allOfThem" var="selectLbl"/>
                             <tags:selectWithItems items="${groupOptions}" path="fields.numberOfGroups" defaultItemLabel="${selectLbl}" defaultItemValue="0"/>

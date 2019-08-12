@@ -349,7 +349,6 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.peakLoadShaping">Peak Load Shaping</entry>
 <entry key="yukon.web.modules.dr.setup.gear.postPeakLoadShaping">Post Peak Load Shaping</entry>
 <entry key="yukon.web.modules.dr.setup.gear.shedTime">Shed Time</entry>
-<entry key="yukon.web.modules.dr.setup.gear.groupEachTime">Number of Groups Each Time</entry>
 <entry key="yukon.web.modules.dr.setup.gear.commandResendRate">Command Resend Rate</entry>
 <entry key="yukon.web.modules.dr.setup.gear.groupSelectionMethod">Group Selection Method</entry>
 <entry key="yukon.web.modules.dr.setup.gear.stopControl">How To Stop Control</entry>
