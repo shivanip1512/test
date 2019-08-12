@@ -151,30 +151,7 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
         sql.append(    "WHERE ProgramId").eq(programId);
         sql.append(  ")");
         sql.append(")");
-        sql.append("SELECT shed.EntryId, shed.EventId, shed.DeviceId, shed.ControlStatus, shed.ControlStatusTime,");
-        sql.append(       "ib.InventoryId, ypo.PaoName, resto.ControlStatus AS RestoreStatus,");
-        sql.append(       "resto.ControlStatusTime AS RestoreStatusTime");
-        sql.append("FROM DrDisconnectDeviceStatus shed");
-        sql.append("JOIN DrDisconnectDeviceStatus resto ON shed.DeviceId = resto.DeviceId");
-        sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = shed.DeviceId");
-        sql.append("JOIN InventoryBase ib ON ib.DeviceId = shed.DeviceId");
-        sql.append("WHERE shed.DeviceId IN (SELECT * FROM DevicesInEvent)");
-        sql.append("AND shed.ControlStatus").in(shedStatuses);
-        sql.append("AND shed.ControlStatusTime = (");
-        sql.append(  "SELECT MAX(shedTimes.ControlStatusTime)");
-        sql.append(  "FROM DrDisconnectDeviceStatus shedTimes");
-        sql.append(  "WHERE shedTimes.DeviceId = shed.DeviceId");
-        sql.append(  "AND shedTimes.ControlStatus").in(shedStatuses);
-        sql.append(")");
-        sql.append("AND resto.ControlStatus").in(restoreStatuses);
-        sql.append("AND resto.ControlStatusTime = (");
-        sql.append(  "SELECT MAX(restoTimes.ControlStatusTime)");
-        sql.append(  "FROM DrDisconnectDeviceStatus restoTimes");
-        sql.append(  "WHERE restoTimes.DeviceId = resto.DeviceId");
-        sql.append(  "AND restoTimes.ControlStatus").in(restoreStatuses);
-        sql.append(")");
-        sql.append("GROUP BY shed.DeviceId, shed.ControlStatus, shed.ControlStatusTime, shed.EventId, shed.EntryId,");
-        sql.append(         "ib.InventoryId, ypo.PaoName, resto.ControlStatus, resto.ControlStatusTime");
+        selectEvents(sql, shedStatuses, restoreStatuses);
         
         return jdbcTemplate.query(sql, eventStatusRowMapper);
     }
@@ -190,6 +167,13 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
         sql.append(  "FROM DrDisconnectDeviceStatus");
         sql.append(  "WHERE EventId").eq(eventId);
         sql.append(")");
+        selectEvents(sql, shedStatuses, restoreStatuses);
+        
+        return jdbcTemplate.query(sql, eventStatusRowMapper);
+    }
+    
+    private SqlStatementBuilder selectEvents(SqlStatementBuilder sql, Collection<DrMeterControlStatus> shedStatuses,
+                                          Collection<DrMeterControlStatus> restoreStatuses) {
         sql.append("SELECT shed.EntryId, shed.EventId, shed.DeviceId, shed.ControlStatus, shed.ControlStatusTime,");
         sql.append(       "ib.InventoryId, ypo.PaoName, resto.ControlStatus AS RestoreStatus,");
         sql.append(       "resto.ControlStatusTime AS RestoreStatusTime");
@@ -214,8 +198,7 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
         sql.append(")");
         sql.append("GROUP BY shed.DeviceId, shed.ControlStatus, shed.ControlStatusTime, shed.EventId, shed.EntryId,");
         sql.append(         "ib.InventoryId, ypo.PaoName, resto.ControlStatus, resto.ControlStatusTime");
-        
-        return jdbcTemplate.query(sql, eventStatusRowMapper);
+        return sql;
     }
     
 // Something like this could be used to retrieve full status history for event.
