@@ -476,6 +476,11 @@ public class LoadProgramSetupController {
         programGearMap.put("gearName", programGear.getGearName());
         return programGearMap;
     }
+    
+    @DeleteMapping("/gear/{id}/delete")
+    public void deleteGear(@PathVariable String id) {
+       gearCache.invalidate(id);
+    }
 
     @GetMapping("/gear/{id}")
     public String gear(ModelMap model, @PathVariable String id, @RequestParam PageEditMode mode, YukonUserContext userContext, HttpServletRequest request) {

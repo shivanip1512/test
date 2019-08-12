@@ -117,7 +117,6 @@ yukon.dr.setup.programGear = (function() {
             });
             
             $(document).on('change', '.js-temperature-mode', function (event) {
-                debugger;
                 var container = $(this).closest(".js-sep-temperature-ctrl-prms");
                 if ($(this).val() == 'HEAT') {
                     container.find(".js-temperature-mode-td").text($(".js-heating-offset-lbl").val() + ":");
