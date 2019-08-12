@@ -29,6 +29,7 @@
         <form:hidden id="trigger-type" path="triggerType"/>
         <form:hidden id="min-restore-offset" path="minRestoreOffset"/>
         <input id="js-trigger-id" name="id" type="hidden"/>
+        <input id="js-peak-point-id" value="${controlAreaTrigger.peakPointId}" type="hidden"/>
         <cti:displayForPageEditModes modes="CREATE">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".trigger.type" nameColumnWidth="170px">
@@ -52,7 +53,7 @@
                         removeValue="0"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.usePeakTracking" nameColumnWidth="170px">
-                    <tags:switchButton  name="usePeak" onNameKey=".yes.label" offNameKey=".no.label" checked="${empty controlAreaTrigger.peakPointId}" 
+                    <tags:switchButton  name="usePeak" onNameKey=".yes.label" offNameKey=".no.label" checked="${!empty controlAreaTrigger.peakPointId}" 
                         id="js-use-peak-tracking-threshold-point"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.peakTracking" id="js-peak-tracking" nameColumnWidth="170px">
@@ -112,8 +113,8 @@
                         removeValue="0"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.usePeakTracking" nameColumnWidth="170px">
-	                <tags:switchButton  name="usePeak" onNameKey=".yes.label" offNameKey=".no.label" checked="${empty controlAreaTrigger.peakPointId}" 
-	                    id="js-use-peak-tracking-threshold"/>
+                    <tags:switchButton  name="usePeak" onNameKey=".yes.label" offNameKey=".no.label" checked="${!empty controlAreaTrigger.peakPointId}"
+                        id="js-use-peak-tracking-threshold"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.peakTracking" id="js-peak-tracking" nameColumnWidth="170px">
                     <tags:pickerDialog
@@ -151,7 +152,7 @@
         <cti:displayForPageEditModes modes="EDIT,VIEW">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".trigger.type" nameColumnWidth="170px">
-                    <span id ="js-trigger-type">
+                    <span id ="js-trigger-type-view-mode">
                        <i:inline key="yukon.web.modules.dr.setup.controlArea.trigger.${controlAreaTrigger.triggerType}"/>
                     </span>
                 </tags:nameValue2>
@@ -180,16 +181,23 @@
                                 id="js-use-peak-tracking-threshold-point"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".trigger.peakTracking" id="js-peak-tracking" nameColumnWidth="170px">
-                            <tags:pickerDialog
-                                id="thresholdPointPeakTracking"
-                                type="notSystemPointPicker"
-                                linkType="selectionLabel"
-                                selectionProperty="paoPoint"
-                                buttonStyleClass="M0"
-                                destinationFieldId="point-peak-tracking"
-                                viewOnlyMode="${mode == 'VIEW'}"
-                                includeRemoveButton="${true}"
-                                removeValue="0"/>
+                            <c:choose>
+                                <c:when test="${!empty controlAreaTrigger.peakPointId}">
+                                    <tags:pickerDialog
+                                        id="thresholdPointPeakTracking"
+                                        type="notSystemPointPicker"
+                                        linkType="selectionLabel"
+                                        selectionProperty="paoPoint"
+                                        buttonStyleClass="M0"
+                                        destinationFieldId="point-peak-tracking"
+                                        viewOnlyMode="${mode == 'VIEW'}"
+                                        includeRemoveButton="${true}"
+                                        removeValue="0"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <i:inline key=".trigger.none"/>
+                                </c:otherwise>
+                            </c:choose>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".trigger.thresholdPointSettings" nameColumnWidth="170px">
                             <tags:pickerDialog
@@ -258,16 +266,23 @@
                                 id="js-use-peak-tracking-threshold"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".trigger.peakTracking" id="js-peak-tracking" nameColumnWidth="170px">
-                            <tags:pickerDialog
-                                id="thresholdPeakTracking"
-                                type="notSystemPointPicker"
-                                linkType="selectionLabel"
-                                selectionProperty="paoPoint"
-                                buttonStyleClass="M0"
-                                destinationFieldId="point-peak-tracking"
-                                viewOnlyMode="${mode == 'VIEW'}"
-                                includeRemoveButton="${true}"
-                                removeValue="0"/>
+                            <c:choose>
+                                <c:when test="${!empty controlAreaTrigger.peakPointId}">
+                                    <tags:pickerDialog
+                                        id="thresholdPeakTracking"
+                                        type="notSystemPointPicker"
+                                        linkType="selectionLabel"
+                                        selectionProperty="paoPoint"
+                                        buttonStyleClass="M0"
+                                        destinationFieldId="point-peak-tracking"
+                                        viewOnlyMode="${mode == 'VIEW'}"
+                                        includeRemoveButton="${true}"
+                                        removeValue="0"/>
+                                </c:when>
+                                <c:otherwise>
+                                  <i:inline key=".trigger.none"/>
+                                </c:otherwise>
+                            </c:choose>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </c:when>

@@ -528,4 +528,5 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.identification.required">Trigger Identification is required.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.peakTracking.required">Peak Tracking is required.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.thresholdPointSettings.required">Threshold Point Settings is required.</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.trigger.none">None</entry>
 </properties>
