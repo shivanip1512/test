@@ -593,7 +593,7 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("groupOptions", groupOptions);
             model.addAttribute("commandResendRate", TimeIntervals.getCommandResendRate());
             model.addAttribute("groupSelectionMethodOptions", GroupSelectionMethod.values());
-            model.addAttribute("stopControlOptions", List.of(HowToStopControl.Restore,HowToStopControl.StopCycle));
+            model.addAttribute("stopControlOptions", List.of(HowToStopControl.TimeIn,HowToStopControl.Restore));
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             break;
         case BeatThePeak:
