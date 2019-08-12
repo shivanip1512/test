@@ -39,6 +39,9 @@
                                 <c:when test="${programGear.fields.rampOut}">
                                     ${rampOutBtnLbl}
                                 </c:when>
+                                <c:otherwise>
+                                    <i:inline key="yukon.common.none.choice"/>
+                                </c:otherwise>
                             </c:choose>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
