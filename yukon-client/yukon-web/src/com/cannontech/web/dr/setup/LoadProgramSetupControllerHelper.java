@@ -2,9 +2,7 @@ package com.cannontech.web.dr.setup;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,8 +12,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 
 import com.cannontech.common.dr.gear.setup.AbsoluteOrDelta;
 import com.cannontech.common.dr.gear.setup.BtpLedIndicator;
@@ -60,13 +56,11 @@ import com.cannontech.dr.itron.model.ItronCycleType;
 import com.cannontech.dr.nest.model.v3.PeakLoadShape;
 import com.cannontech.dr.nest.model.v3.PostLoadShape;
 import com.cannontech.dr.nest.model.v3.PrepLoadShape;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiControllerHelper;
-import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -608,30 +602,6 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             break;
         }
-    }
-    
-    public void setValidationMessageInFlash(BindingResult result, FlashScope flash, LoadProgram loadProgram , String baseKey ){
-        List<FieldError> errorList = result.getFieldErrors();
-        Set<Integer> gearPositionIndexes = errorList.stream()
-                                                    .filter(fieldError -> fieldError.getField().contains("gears") 
-                                                        && !(fieldError.getField().contains("gearName")) 
-                                                        && !(fieldError.getField().contains("controlMethod")))
-                                                    .map(fieldError -> Integer.parseInt(fieldError.getField().replaceAll("[\\D]", "")))
-                                                    .collect(Collectors.toSet());
-        if (CollectionUtils.isNotEmpty(loadProgram.getGears())) {
-            List<String> filteredList =
-                IntStream.range(0, loadProgram.getGears().size())
-                         .filter(i -> gearPositionIndexes.contains(i))
-                         .mapToObj(loadProgram.getGears()::get)
-                         .map(gear -> gear.getGearName())
-                         .collect(Collectors.toList());
-
-            if (CollectionUtils.isNotEmpty(filteredList)) {
-                flash.setError(
-                    new YukonMessageSourceResolvable(baseKey + "gear.error", String.join(", ", filteredList)));
-            }
-        }
-
     }
 
 }

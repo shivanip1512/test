@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -74,6 +76,7 @@ public class LoadProgramSetupController {
     @Autowired private ServerDatabaseCache dbCache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     private Cache<String, ProgramGear> gearCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();
+    private Cache<String, BindingResult> gearErrorCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();
 
     @GetMapping("/create")
     public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
@@ -119,6 +122,13 @@ public class LoadProgramSetupController {
 
             controllerHelper.buildGearInfo(model, loadProgram);
             controllerHelper.buildNotificationModel(model, loadProgram);
+
+            if (CollectionUtils.isNotEmpty(loadProgram.getGears())) {
+                for (ProgramGear gear : loadProgram.getGears()) {
+                    gearCache.put(String.valueOf(gear.getGearId()), gear);
+                }
+            }
+
             return "dr/setup/loadProgram/loadProgramView.jsp";
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
@@ -201,7 +211,7 @@ public class LoadProgramSetupController {
                 }
 
                 if (result.hasFieldErrors()) {
-                    controllerHelper.setValidationMessageInFlash(result, flash, loadProgram, baseKey);
+                    setValidationErrorsForGears(result, flash, loadProgram, baseKey , selectedGearsIds);
                 }
                 return bindAndForward(loadProgram, selectedGearsIds, result, redirectAttributes);
             }
@@ -211,6 +221,7 @@ public class LoadProgramSetupController {
                 int programId = programIdMap.get("programId");
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", loadProgram.getName()));
                 gearCache.invalidateAll(selectedGearsIds);
+                gearErrorCache.invalidateAll(selectedGearsIds);
                 return "redirect:/dr/setup/loadProgram/" + programId;
             }
 
@@ -312,6 +323,50 @@ public class LoadProgramSetupController {
         return "dr/setup/loadProgram/copyLoadProgram.jsp";
     }
 
+    public void setValidationErrorsForGears(BindingResult result, FlashScope flash, LoadProgram loadProgram , String baseKey , List<String> selectedGearsIds){
+        List<FieldError> errorList = result.getFieldErrors();
+        List <Integer> gearPositionIndexes = errorList.stream()
+                                                    .filter(fieldError -> fieldError.getField().contains("gears") 
+                                                        && !(fieldError.getField().contains("gearName")) 
+                                                        && !(fieldError.getField().contains("controlMethod")))
+                                                    .map(fieldError -> Integer.parseInt(fieldError.getField().replaceAll("[\\D]", "")))
+                                                    .distinct()
+                                                    .collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(loadProgram.getGears())) {
+            List<String> filteredList =
+                IntStream.range(0, loadProgram.getGears().size())
+                         .filter(i -> gearPositionIndexes.contains(i))
+                         .mapToObj(loadProgram.getGears()::get)
+                         .map(gear -> gear.getGearName())
+                         .collect(Collectors.toList());
+
+            if (CollectionUtils.isNotEmpty(filteredList)) {
+                flash.setError(
+                    new YukonMessageSourceResolvable(baseKey + "gear.error", String.join(", ", filteredList)));
+            }
+        }
+
+        CollectionUtils.emptyIfNull(gearPositionIndexes).forEach(index -> {
+            String gearId = selectedGearsIds.get(index);
+            ProgramGear programGear = gearCache.asMap().get(gearId);
+            BindException bindException = new BindException(programGear, "programGear");
+            BindingResult bindingResult = new BindException(bindException.getTarget(), bindException.getObjectName());
+
+            List<FieldError> filteredErrors =
+                errorList.stream()
+                         .filter(fieldError -> fieldError.getField().contains("gears[" + index + "]"))
+                         .collect(Collectors.toList());
+
+            filteredErrors.stream().forEach(fieldError -> {
+                String fieldName = StringUtils.substringAfter(fieldError.getField(), "gears[" + index + "].");
+                String errorMessage = fieldError.getDefaultMessage();
+                bindingResult.rejectValue(fieldName, "", errorMessage);
+            });
+
+            gearErrorCache.put(gearId, bindingResult);
+        });
+
+    }
     private String bindAndForward(LoadProgram loadProgram, List<String> selectedGearsIds, BindingResult result, RedirectAttributes attrs) {
         attrs.addFlashAttribute("loadProgram", loadProgram);
         
@@ -353,12 +408,6 @@ public class LoadProgramSetupController {
             if (response.getStatusCode() == HttpStatus.OK) {
                 loadProgram = (LoadProgram) response.getBody();
                 loadProgram.setProgramId(id);
-            }
-
-            if (CollectionUtils.isNotEmpty(loadProgram.getGears())) {
-                for (ProgramGear gear : loadProgram.getGears()) {
-                    gearCache.put(String.valueOf(gear.getGearId()), gear);
-                }
             }
 
         } catch (RestClientException ex) {
@@ -474,6 +523,7 @@ public class LoadProgramSetupController {
 
         programGearMap.put("id", gearId);
         programGearMap.put("gearName", programGear.getGearName());
+        gearErrorCache.invalidate(gearId);
         return programGearMap;
     }
     
@@ -496,6 +546,12 @@ public class LoadProgramSetupController {
             || programGear.getControlMethod() == GearControlMethod.SimpleThermostatRamping)) {
             controllerHelper.setDefaultGearFieldValues(programGear);
         }
+
+        BindingResult result = gearErrorCache.asMap().get(id);
+        if (result != null && CollectionUtils.isNotEmpty(result.getFieldErrors())) {
+            model.put("org.springframework.validation.BindingResult.programGear", result);
+        }
+
         return "dr/setup/programGear/view.jsp";
     }
 
