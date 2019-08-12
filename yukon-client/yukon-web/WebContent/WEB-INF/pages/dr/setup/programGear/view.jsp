@@ -13,7 +13,6 @@
     <cti:url var="action" value="/dr/setup/loadProgram/gear/save" />
     <div class="js-program-gear-container">
         <form:form modelAttribute="programGear" action="${action}" method="post" id="js-program-gear-form">
-        <input type="hidden" name="tempGearId" id="temp-gear-id"/>
             <div class="js-help-section">
                 <span class="fr js-help-btn-span dn">
                     <cti:button renderMode="image" icon="icon-help" classes="fr js-help-btn"/>

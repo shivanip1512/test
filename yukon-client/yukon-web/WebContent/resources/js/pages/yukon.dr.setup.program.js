@@ -325,11 +325,10 @@ yukon.dr.setup.program = (function() {
                     selectedProgramType = $("#js-selected-program").val();
                 if(popupId !== 'gear-create-popup-'+ selectedProgramType) {
                     var arr = popupId.split('-');
-                        gearId = arr[arr.length - 1];
+                    gearId = arr[arr.length - 1];
                 } else {
                     gearId = '';
                 }
-                $("#temp-gear-id").val(gearId);
                 var form = dialog.find('#js-program-gear-form'),
                     gearNameElement = dialog.find("#gearName"),
                     controlMethodElement = dialog.find("#controlMethod"),
@@ -340,44 +339,46 @@ yukon.dr.setup.program = (function() {
                 dialog.find("#gearNameIsBlankError").toggleClass("dn", !isGearNameBlank);
                 controlMethodElement.toggleClass("error", isControlMethodBlank);
                 dialog.find("#gearTypeIsRequiredError").toggleClass("dn", !isControlMethodBlank);
-                
                 if (!isGearNameBlank && !isControlMethodBlank) {
-                form.ajaxSubmit({
-                    success: function (data) {
-                            var id = data.id;
-                            if(_checkForPopup(id) == 0) {
-                            var gearName = data.gearName,
-                            mode = $("#js-form-mode").val(),
-                            anchorTag = $("<a>"),
-                            url = yukon.url("/dr/setup/loadProgram/gear/" + id + "?mode=" + mode),
-                            clonedRow = $('.js-template-gears-row').clone();
-                            anchorTag.attr("href", url);
-                            anchorTag.text(gearName);
-                            clonedRow.attr('id', id);
-                            clonedRow.attr('data-id', id);
-                            clonedRow.find(".js-gear-name").append(anchorTag);
-                            clonedRow.addClass('js-gear-link');
-                            clonedRow.removeClass('dn js-template-gears-row');
-                            clonedRow.find(".js-gear-remove").attr("id", "js-remove-gear-" + data.id);
-                            clonedRow.appendTo($("#js-assigned-gear"));
+                var formData = $("#js-program-gear-form").serialize();
+                $.ajax({
+                    type: "POST",
+                    url: yukon.url("/dr/setup/loadProgram/gear/save"),
+                    data: formData + "&tempGearId=" + gearId
+                }).done(function(data) {
+                    var id = data.id;
+                    if(_checkForPopup(id) == 0) {
+                        var gearName = data.gearName,
+                        mode = $("#js-form-mode").val(),
+                        anchorTag = $("<a>"),
+                        url = yukon.url("/dr/setup/loadProgram/gear/" + id + "?mode=" + mode),
+                        clonedRow = $('.js-template-gears-row').clone();
+                        anchorTag.attr("href", url);
+                        anchorTag.text(gearName);
+                        clonedRow.attr('id', id);
+                        clonedRow.attr('data-id', id);
+                        clonedRow.find(".js-gear-name").append(anchorTag);
+                        clonedRow.addClass('js-gear-link');
+                        clonedRow.removeClass('dn js-template-gears-row');
+                        clonedRow.find(".js-gear-remove").attr("id", "js-remove-gear-" + data.id);
+                        clonedRow.appendTo($("#js-assigned-gear"));
 
-                            var clonedDialog = $(".js-gear-dialog-template").clone();
-                            clonedDialog.attr("id", "js-gear-dialog-" + id);
-                            clonedDialog.attr("data-url", url);
-                            clonedDialog.removeClass("js-gear-dialog-template");
-                            $(".js-assigned-gear").append(clonedDialog);
-                            anchorTag.attr("data-popup", "#js-gear-dialog-" + id);
-                            } else {
-                                $('#' + id + ' a').text(data.gearName);
-                                $(event.target).dialog('close');
-                            }
-                            _initConfirmGearDeletePopup(data.id, data.gearName);
-                            $('#js-assigned-gear').closest('.select-box').find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
-                        }
-                   });
-                   dialog.dialog('close');
-                   dialog.empty();
-               }
+                        var clonedDialog = $(".js-gear-dialog-template").clone();
+                        clonedDialog.attr("id", "js-gear-dialog-" + id);
+                        clonedDialog.attr("data-url", url);
+                        clonedDialog.removeClass("js-gear-dialog-template");
+                        $(".js-assigned-gear").append(clonedDialog);
+                        anchorTag.attr("data-popup", "#js-gear-dialog-" + id);
+                    } else {
+                        $('#' + id + ' a').text(data.gearName);
+                        $(event.target).dialog('close');
+                    }
+                    _initConfirmGearDeletePopup(data.id, data.gearName);
+                    $('#js-assigned-gear').closest('.select-box').find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+                });
+                    dialog.dialog('close');
+                    dialog.empty();
+                }
             });
             
             $(document).on('click', '.js-gear-link', function(event) {
