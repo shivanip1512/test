@@ -35,9 +35,9 @@ yukon.dr.setup.controlArea = (function() {
         yukon.dialogConfirm.add({
             'on': '#delete-trigger-'+triggerId,
             'strings':{
-                'title': yg.text.confirmDeleteTitle,
-                'message': yg.text.confirmDeleteMessage.replace("{0}", triggerName),
-                'ok': yg.text.deleteButton,
+                'title': yg.text.confirmRemoveTitle,
+                'message': yg.text.confirmRemoveMessage.replace("{0}", triggerName),
+                'ok': yg.text.remove,
                 'cancel': yg.text.cancel,
             }
         });
