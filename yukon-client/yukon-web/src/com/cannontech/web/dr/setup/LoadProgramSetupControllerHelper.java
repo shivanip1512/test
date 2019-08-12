@@ -303,7 +303,7 @@ public class LoadProgramSetupControllerHelper {
 
     private void setDefaultRotationGearFields(RotationGearFields rotationGearFields) {
         rotationGearFields.setShedTime(5);
-        rotationGearFields.setSendRate(30);
+        rotationGearFields.setSendRate(TimeIntervals.MINUTES_30.getSeconds());
         rotationGearFields.setCapacityReduction(100);
     }
 
@@ -352,7 +352,7 @@ public class LoadProgramSetupControllerHelper {
 
     private void setTimeRefreshGearFieldsDefaultValues(TimeRefreshGearFields timeRefreshGearFields) {
         timeRefreshGearFields.setShedTime(TimeIntervals.HOURS_1.getSeconds());
-        timeRefreshGearFields.setSendRate(TimeIntervals.HOURS_1.getSeconds());
+        timeRefreshGearFields.setSendRate(TimeIntervals.MINUTES_30.getSeconds());
         timeRefreshGearFields.setGroupSelectionMethod(GroupSelectionMethod.LastControlled);
         timeRefreshGearFields.setHowToStopControl(HowToStopControl.TimeIn);
         timeRefreshGearFields.setStopOrder(StopOrder.RANDOM);
@@ -523,7 +523,7 @@ public class LoadProgramSetupControllerHelper {
             break;
         case SepCycle:
             model.addAttribute("whenToChangeFields", WhenToChange.values());
-            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore, HowToStopControl.StopCycle));
+            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore, HowToStopControl.TimeIn));
             break;
         case MasterCycle:
             model.addAttribute("groupSelectionMethod", GroupSelectionMethod.values());
