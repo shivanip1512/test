@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.api.token.ApiRequestContext;
@@ -227,7 +228,12 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         }
 
         if (loadProgram.getGears() != null) {
-            loadProgram.getGears().forEach(gear -> {
+
+            List<ProgramGear> oldGears = loadProgram.getGears().stream().filter(gear -> gear.getGearId() != null).collect(Collectors.toList());
+            List<ProgramGear> newGears = loadProgram.getGears().stream().filter(gear -> gear.getGearId() == null).collect(Collectors.toList());
+
+            List<ProgramGear> gears = ListUtils.union(oldGears, newGears);
+            gears.forEach(gear -> {
                 LMProgramDirectGear directGear = gear.buildDBPersistent();
                 directGear.setDeviceID(loadProgram.getProgramId());
                 prog.getLmProgramDirectGearVector().add(directGear);
