@@ -68,23 +68,25 @@ yukon.dr.setup.controlArea.trigger = (function() {
             });
             
             $(document).on('yukon:trigger:identification:complete', function() {
-                var pointId = $("#point-trigger-identification").val();
-                var isViewMode = $("#js-trigger-type-view-mode").exists() ? true : false;
+                var container = $(".js-trigger-controls:visible"),
+                    pointId = $("#point-trigger-identification").val(),
+                    isViewMode = container.find(".js-trigger-type-view-mode").is(":visible");
+                $("#js-normal-state").removeClass("dn");
                 $.ajax({
                     url: yukon.url('/dr/setup/controlArea/getNormalState/' + pointId),
                     type: 'get'
                 }).done(function (data) {
                     if(!isViewMode){
-                        $("#js-status-normal-state-create").empty();
+                        container.find("#js-status-normal-state-create").empty();
                         data.normalStates.forEach(function (field){
                             var option = $('<option value=' + field.id + '>' + field.name + '</option>');
-                            $("#js-status-normal-state-create").append(option);
+                            container.find("#js-status-normal-state-create").append(option);
                         });
                     } else {
-                        $("#js-status-normal-state-edit").empty();
+                        container.find("#js-status-normal-state-edit").empty();
                         data.normalStates.forEach(function (field){
                             var option = $('<option value=' + field.id + '>' + field.name + '</option>');
-                            $("#js-status-normal-state-edit").append(option);
+                            container.find("#js-status-normal-state-edit").append(option);
                         });
                     }
                 });
