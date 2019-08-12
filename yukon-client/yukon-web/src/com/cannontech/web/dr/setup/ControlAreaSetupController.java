@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,6 +61,7 @@ public class ControlAreaSetupController {
     private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final Logger log = YukonLogManager.getLogger(ControlAreaSetupController.class);
+    private Cache<String, BindingResult> triggerErrorCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();
     private Cache<String, ControlAreaTrigger> controlAreaTriggerCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
@@ -153,16 +157,15 @@ public class ControlAreaSetupController {
                                                          .collect(Collectors.toList());
                     flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(String.join(",", errors)));
                 }
+                setTriggerErrors(result, controlArea, flash, triggerIds);
                 return bindAndForward(controlArea, result, redirectAttributes);
             }
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> controlAreaIdMap = (HashMap<String, Integer>) response.getBody();
                 int controlAreaId = controlAreaIdMap.get("controlAreaId");
-                CollectionUtils.emptyIfNull(triggerIds)
-                               .forEach(id -> {
-                                   controlAreaTriggerCache.asMap().remove(id);
-                 });
+                controlAreaTriggerCache.invalidateAll(triggerIds);
+                triggerErrorCache.invalidateAll(triggerIds);
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", controlArea.getName()));
                 return "redirect:/dr/setup/controlArea/" + controlAreaId;
             }
@@ -261,7 +264,7 @@ public class ControlAreaSetupController {
 
     @GetMapping("/renderTrigger/{triggerId}")
     public String renderTrigger(ModelMap model, @PathVariable String triggerId, @RequestParam PageEditMode mode,
-            YukonUserContext userContext, HttpServletRequest request) {
+            YukonUserContext userContext, HttpServletRequest request,ModelMap map, RedirectAttributes attributes) {
         PageEditMode editMode = mode == PageEditMode.CREATE ? PageEditMode.EDIT : mode;
         model.addAttribute("mode", editMode);
         ControlAreaTrigger controlAreaTrigger = controlAreaTriggerCache.asMap().get(triggerId);
@@ -269,6 +272,11 @@ public class ControlAreaSetupController {
             model.addAttribute("normalStates", retrieveNormalState(controlAreaTrigger.getTriggerPointId(), userContext, request));
         }
         controllerHelper.buildTriggerModelMap(model, controlAreaTrigger);
+        
+        BindingResult result = triggerErrorCache.asMap().get(triggerId);
+        if (result != null && CollectionUtils.isNotEmpty(result.getFieldErrors())) {
+            model.put("org.springframework.validation.BindingResult.controlAreaTrigger", result);
+        }
         return "dr/setup/controlArea/trigger/triggerPopup.jsp";
     }
 
@@ -285,6 +293,7 @@ public class ControlAreaSetupController {
             controlAreaTriggerCache.put(key, controlAreaTrigger);
         }
         triggerInfo.put("triggerName", getTriggerName(controlAreaTrigger));
+        triggerErrorCache.invalidate(id);
         return triggerInfo;
     }
 
@@ -317,7 +326,7 @@ public class ControlAreaSetupController {
 
     @DeleteMapping("/trigger/remove/{triggerId}")
     public void removeTrigger(@PathVariable String triggerId) {
-        controlAreaTriggerCache.asMap().remove(triggerId);
+        controlAreaTriggerCache.invalidate(triggerId);
     }
 
     private void populateTriggerCache(ControlArea controlArea, ModelMap model) {
@@ -328,5 +337,41 @@ public class ControlAreaSetupController {
             triggerIds.add(String.valueOf(trigger.getTriggerId()));
         });
         model.addAttribute("triggerIds", triggerIds);
+    }
+    
+    private void setTriggerErrors(BindingResult result, ControlArea controlArea, FlashScope flash,
+            List<String> triggerIds) {
+
+        List<FieldError> errorList = result.getFieldErrors();
+        Set<Integer> triggerPositionIndexes = errorList.stream()
+                                                       .filter(fieldError -> fieldError.getField().contains("triggers"))
+                                                       .map(fieldError -> Integer.parseInt(fieldError.getField().replaceAll("[\\D]", "")))
+                                                       .collect(Collectors.toSet());
+        List<String> filteredNameList = IntStream.range(0, controlArea.getTriggers().size())
+                                                 .filter(i -> triggerPositionIndexes.contains(i))
+                                                 .mapToObj(controlArea.getTriggers()::get)
+                                                 .map(controlAreaTrigger -> getTriggerName(controlAreaTrigger))
+                                                 .collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(filteredNameList)) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "controlArea.trigger.error",
+                String.join(", ", filteredNameList)));
+        }
+
+        CollectionUtils.emptyIfNull(triggerPositionIndexes).forEach(index -> {
+            ControlAreaTrigger controlAreaTrigger = controlArea.getTriggers().get(index);
+            String triggerId = triggerIds.get(index);
+            BindException bindException = new BindException(controlAreaTrigger, "controlAreaTrigger");
+            BindingResult bindingResult = new BindException(bindException.getTarget(), bindException.getObjectName());
+            List<FieldError> filteredErrors = errorList.stream()
+                                                       .filter(fieldError -> fieldError.getField().contains("triggers[" + index + "]"))
+                                                       .collect(Collectors.toList());
+            filteredErrors.stream().forEach(fieldError -> {
+                String fieldName = fieldError.getField().substring(fieldError.getField().lastIndexOf(".") + 1,
+                    fieldError.getField().length());
+                String errorMessage = fieldError.getDefaultMessage();
+                bindingResult.rejectValue(fieldName, "", errorMessage);
+            });
+            triggerErrorCache.put(triggerId, bindingResult);
+        });
     }
 }

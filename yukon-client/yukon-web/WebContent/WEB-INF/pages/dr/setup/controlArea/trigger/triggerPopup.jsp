@@ -29,6 +29,7 @@
             <form:hidden id="point-trigger-identification-name" path="triggerPointName"/>
             <form:hidden id="trigger-type" path="triggerType"/>
             <form:hidden id="min-restore-offset" path="minRestoreOffset"/>
+            <form:hidden path="triggerId"/>
             <input id="js-trigger-id" name="id" type="hidden"/>
             <input id="js-peak-point-id" value="${controlAreaTrigger.peakPointId}" type="hidden"/>
             <cti:displayForPageEditModes modes="CREATE">
