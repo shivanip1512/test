@@ -59,8 +59,6 @@ var yg = {
         close: '<cti:msg2 key="yukon.web.components.button.close.label"/>',
         confirm: '<cti:msg2 key="yukon.web.components.button.confirm.label"/>',
         confirmQuestion: '<cti:msg2 key="yukon.common.confirm"/>',
-        confirmDeleteMessage: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmDelete.message"/>',
-        confirmDeleteTitle: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmDelete.title"/>',
         complete: '<cti:msg2 key="yukon.common.complete"/>',
         deleteButton: '<cti:msg2 key="yukon.web.components.button.delete.label"/>',
         disable: '<cti:msg2 key="yukon.web.components.button.disable.label"/>',
@@ -86,7 +84,10 @@ var yg = {
         back: '<cti:msg2 key="yukon.web.components.button.back.label"/>',
         create: '<cti:msg2 key="yukon.web.components.button.create.label"/>',
         noneChoice: '<cti:msg2 key="yukon.common.none.choice"/>',
-        nextRefresh: '<cti:msg2 key="yukon.web.widgets.nextRefresh"/>'
+        nextRefresh: '<cti:msg2 key="yukon.web.widgets.nextRefresh"/>',
+        remove: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.ok"/>',
+        confirmRemoveMessage: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.message"/>',
+        confirmRemoveTitle: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.title"/>'
     },
     
     timezone: '<cti:getUsersTimezone/>',

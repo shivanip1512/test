@@ -181,7 +181,7 @@
                                             <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-gear-remove"
                                                         id="js-remove-gear-${item.id}" data-ok-event="yukon:dr:setup:program:gearRemoved"
                                                         data-id="${item.id}"/>
-                                            <d:confirm on="#js-remove-gear-${item.id}" nameKey="confirmDelete"
+                                            <d:confirm on="#js-remove-gear-${item.id}" nameKey="confirmRemove"
                                                        argument="${fn:escapeXml(item.name)}"/>
                                             <div class="select-box-item-movers">
                                                 <c:set var="disabled" value="${status.first}" />
