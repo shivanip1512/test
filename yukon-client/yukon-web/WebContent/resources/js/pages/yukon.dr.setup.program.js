@@ -340,11 +340,10 @@ yukon.dr.setup.program = (function() {
                 controlMethodElement.toggleClass("error", isControlMethodBlank);
                 dialog.find("#gearTypeIsRequiredError").toggleClass("dn", !isControlMethodBlank);
                 if (!isGearNameBlank && !isControlMethodBlank) {
-                var formData = $("#js-program-gear-form").serialize();
                 $.ajax({
                     type: "POST",
                     url: yukon.url("/dr/setup/loadProgram/gear/save"),
-                    data: formData + "&tempGearId=" + gearId
+                    data: form.serialize() + "&tempGearId=" + gearId
                 }).done(function(data) {
                     var id = data.id;
                     if(_checkForPopup(id) == 0) {
