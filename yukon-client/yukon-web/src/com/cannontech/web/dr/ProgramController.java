@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,6 +44,7 @@ import com.cannontech.amr.disconnect.model.DrDisconnectStatusCallback.ControlOpe
 import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -114,6 +116,8 @@ import com.google.common.collect.Lists;
 @Controller
 @CheckRole(YukonRole.DEMAND_RESPONSE)
 public class ProgramController extends ProgramControllerBase {
+    
+    private static final Logger log = YukonLogManager.getLogger(ProgramController.class);
 
     @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
     @Autowired private DateFormattingService dateFormattingService;
@@ -350,7 +354,7 @@ public class ProgramController extends ProgramControllerBase {
                 return json;
             }
         } catch (Exception e) {
-            
+            log.info("No current event found for device: " + pao.getPaoName(), e);
         }
 
         DisconnectMeterResult result = disconnectService.execute(command, DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
