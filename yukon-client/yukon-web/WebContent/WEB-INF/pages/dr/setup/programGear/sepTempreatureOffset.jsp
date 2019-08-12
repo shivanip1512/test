@@ -1,9 +1,23 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:msgScope paths="yukon.web.modules.dr.setup.gear">
+    <cti:msg2 var="heatingOffsetLbl" key=".heatingOffset"/>
+    <cti:msg2 var="coolingOffsetLbl" key=".coolingOffset"/>
+            
+    <input type="hidden" class="js-heating-offset-lbl" value="${heatingOffsetLbl}"/>
+    <input type="hidden" class="js-cooling-offset-lbl" value="${coolingOffsetLbl}"/>
+
+    <c:choose>
+        <c:when test="${programGear.fields.mode == 'HEAT'}">
+            <c:set var="modeOffsetLblKey" value=".heatingOffset"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="modeOffsetLblKey" value=".coolingOffset"/>
+        </c:otherwise>
+    </c:choose>
     <div class="column-12-12 clearfix">
         <div class="column one">
-            <tags:sectionContainer2 nameKey="controlParameters">
+            <tags:sectionContainer2 nameKey="controlParameters" styleClass="js-sep-temperature-ctrl-prms">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".ramp">
                         <cti:msg2 var="rampInLbl" key=".rampIn"/>
@@ -42,7 +56,8 @@
                                         <c:set var="css" value="middle yes"/>
                                     </c:otherwise>
                                 </c:choose>
-                                <tags:radio path="fields.mode" value="${tempreatureMode}" classes="${css}" key=".${tempreatureMode}" />
+                                <tags:radio path="fields.mode" value="${tempreatureMode}" classes="${css}"
+                                            key=".${tempreatureMode}" inputClass="js-temperature-mode"/>
                             </c:forEach>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
@@ -70,8 +85,8 @@
                             <i:inline key=".${programGear.fields.celsiusOrFahrenheit}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".heatingOffset" nameClass="vam">
-                        <tags:numeric path="fields.offset" size="5"/>
+                    <tags:nameValue2 nameKey="${modeOffsetLblKey}" nameClass="vam js-temperature-mode-td">
+                        <tags:numeric path="fields.offset" size="5" isDecimalNumber="true" stepValue="0.1"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".criticality" nameClass="vam">
                         <tags:numeric path="fields.criticality" size="5" minValue="1" maxValue="15"/>

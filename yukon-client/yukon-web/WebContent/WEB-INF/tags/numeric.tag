@@ -25,7 +25,7 @@
 <%@ attribute name="displayValidationToRight" type="java.lang.Boolean" description="If true, any validation will display to the right of the field. Default: false." %>
 <%@ attribute name="minValue" type="java.lang.String" description="The minimum value that can be entered." %>
 <%@ attribute name="maxValue" type="java.lang.String" description="The maximum value that can be entered." %>
-<%@ attribute name="stepValue" type="java.lang.Integer" description="The step value to increment/decrement when clicking on the arrows." %>
+<%@ attribute name="stepValue" type="java.lang.Float" description="The step value to increment/decrement when clicking on the arrows." %>
 <%@ attribute name="isDecimalNumber" type="java.lang.Boolean" description="Set this value to ture if the number is decimal." %>
 
 <cti:default var="autocomplete" value="on"/>

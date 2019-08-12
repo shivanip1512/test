@@ -99,6 +99,16 @@ yukon.dr.setup.programGear = (function() {
                     container.find(".js-value-f").text($(".js-absF-lbl").val() + ":");
                 }
             });
+            
+            $(document).on('change', '.js-temperature-mode', function (event) {
+                debugger;
+                var container = $(this).closest(".js-sep-temperature-ctrl-prms");
+                if ($(this).val() == 'HEAT') {
+                    container.find(".js-temperature-mode-td").text($(".js-heating-offset-lbl").val() + ":");
+                } else {
+                    container.find(".js-temperature-mode-td").text($(".js-cooling-offset-lbl").val() + ":");
+                }
+            });
 
             _initialized = true;
         }

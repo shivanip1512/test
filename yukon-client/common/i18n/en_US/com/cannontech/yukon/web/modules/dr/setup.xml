@@ -472,6 +472,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.maxDegreeDelta">Max °Δ</entry>
 <entry key="yukon.web.modules.dr.setup.gear.rampOutTime">Ramp Out Time</entry>
 <entry key="yukon.web.modules.dr.setup.gear.heatingOffset">Heating Offset</entry>
+<entry key="yukon.web.modules.dr.setup.gear.coolingOffset">Cooling Offset</entry>
 <entry key="yukon.web.modules.dr.setup.gear.ramp">Ramp</entry>
 <entry key="yukon.web.modules.dr.setup.gear.groupCapacityReductionPercentage">Group Capacity Reduction %</entry>
 

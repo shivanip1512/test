@@ -75,9 +75,9 @@
                     <tags:nameValue2 nameKey=".maxRuntime">
                         <table>
                             <tr>
-                                <td><dt:timeOffset path="fields.maxRuntimeInMinutes" minValue="240" maxValue="1439"/></td>
+                                <td><dt:timeOffset path="fields.maxRuntimeInMinutes" minValue="240"/></td>
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                    <td class="vam">(4:00 to 24:00)</td>
+                                    <td class="vam">(4:00 to 23:59)</td>
                                 </cti:displayForPageEditModes>
                             </tr>
                         </table>
@@ -98,7 +98,14 @@
                     <tags:nameValue2 nameKey=".rampFahrenheitPerHour" nameClass="vam">
                         <table>
                             <tr>
-                                <td class="vam"><tags:numeric path="fields.rampPerHour" size="5" minValue="-9.9" maxValue="9.9" isDecimalNumber="true"/></td>
+                                <td class="vam">
+                                    <tags:numeric path="fields.rampPerHour"
+                                                  size="5"
+                                                  minValue="-9.9" 
+                                                  maxValue="9.9"
+                                                  isDecimalNumber="true"
+                                                  stepValue="0.1"/>
+                                </td>
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                                     <td class="vam">(-9.9 to 9.9)</td>
                                 </cti:displayForPageEditModes>
