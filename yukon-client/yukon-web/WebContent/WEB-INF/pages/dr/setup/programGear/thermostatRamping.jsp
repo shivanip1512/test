@@ -52,6 +52,9 @@
                                 <c:when test="${programGear.fields.isCoolMode}">
                                     ${coolBtnLbl}
                                 </c:when>
+                                <c:otherwise>
+                                    <i:inline key="yukon.common.none.choice"/>
+                                </c:otherwise>
                             </c:choose>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
