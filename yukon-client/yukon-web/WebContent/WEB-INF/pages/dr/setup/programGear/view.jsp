@@ -57,7 +57,7 @@
                             </c:when>
                             <c:otherwise>
                                 <i:inline key="${programGear.controlMethod}"/>
-                                <form:hidden path="controlMethod" value="${programGear.controlMethod}" />
+                                <form:hidden path="controlMethod" value="${selectedGearType}" />
                             </c:otherwise>
                         </c:choose> 
                     </tags:nameValue2>

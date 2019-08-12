@@ -481,7 +481,7 @@ public class LoadProgramSetupController {
     public String gear(ModelMap model, @PathVariable String id, @RequestParam PageEditMode mode, YukonUserContext userContext, HttpServletRequest request) {
         ProgramGear programGear = gearCache.getIfPresent(id);
         model.addAttribute("mode", mode);
-        model.addAttribute("selectedGearType", programGear.getControlMethod());
+        model.addAttribute("selectedGearType", programGear.getControlMethod().name());
         model.addAttribute("programGear", programGear);
         model.addAttribute("showGearTypeOptions", false);
         if (mode == PageEditMode.EDIT || mode == PageEditMode.CREATE) {
