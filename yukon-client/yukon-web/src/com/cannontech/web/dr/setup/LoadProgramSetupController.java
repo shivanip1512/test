@@ -427,6 +427,7 @@ public class LoadProgramSetupController {
             programGear = (ProgramGear) model.get("programGear");
         }
         model.addAttribute("programGear", programGear);
+        model.addAttribute("showGearTypeOptions", true);
         model.addAttribute("programType", programType);
         model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(programType));
 
@@ -442,10 +443,12 @@ public class LoadProgramSetupController {
         programGear.setFields(LMModelFactory.createProgramGearFields(gearType));
         if (model.containsAttribute("programGear")) {
             programGear = (ProgramGear) model.get("programGear");
+            model.addAttribute("showGearTypeOptions", false);
         } else {
             programGear.setGearName(gearName);
             programGear.setControlMethod(gearType);
             controllerHelper.setDefaultGearFieldValues(programGear);
+            model.addAttribute("showGearTypeOptions", true);
         }
         model.addAttribute("programGear", programGear);
         model.addAttribute("programType", programType);
@@ -475,14 +478,13 @@ public class LoadProgramSetupController {
     }
 
     @GetMapping("/gear/{id}")
-    public String gear(ModelMap model, @PathVariable String id, @RequestParam PageEditMode mode, @RequestParam PaoType programType,
-            YukonUserContext userContext, HttpServletRequest request) {
+    public String gear(ModelMap model, @PathVariable String id, @RequestParam PageEditMode mode, YukonUserContext userContext, HttpServletRequest request) {
         ProgramGear programGear = gearCache.getIfPresent(id);
         model.addAttribute("mode", mode);
         model.addAttribute("selectedGearType", programGear.getControlMethod());
         model.addAttribute("programGear", programGear);
+        model.addAttribute("showGearTypeOptions", false);
         if (mode == PageEditMode.EDIT || mode == PageEditMode.CREATE) {
-            model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(programType));
             controllerHelper.buildGearModelMap(programGear.getControlMethod(), model, request, userContext);
         }
         if (mode == PageEditMode.VIEW && (programGear.getControlMethod() == GearControlMethod.ThermostatRamping

@@ -349,7 +349,7 @@ yukon.dr.setup.program = (function() {
                             var gearName = data.gearName,
                             mode = $("#js-form-mode").val(),
                             anchorTag = $("<a>"),
-                            url = yukon.url("/dr/setup/loadProgram/gear/" + id + "?mode=" + mode + "&programType=" + selectedProgramType),
+                            url = yukon.url("/dr/setup/loadProgram/gear/" + id + "?mode=" + mode),
                             clonedRow = $('.js-template-gears-row').clone();
                             anchorTag.attr("href", url);
                             anchorTag.text(gearName);

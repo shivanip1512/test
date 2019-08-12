@@ -44,19 +44,22 @@
                         </span>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".gearType">
-                        <cti:displayForPageEditModes modes="CREATE,EDIT">
-                            <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl" />
-                            <tags:selectWithItems items="${gearTypes}" id="controlMethod" path="controlMethod" defaultItemLabel="${selectLbl}"
-                                defaultItemValue="" />
-                            <br>
-                            <span id="gearTypeIsRequiredError" class="error dn">
-                                <cti:msg2 key=".gearType" var="gearTypeLbl"/>
-                                <i:inline key="yukon.web.error.fieldrequired" arguments="${gearTypeLbl}"/>
-                            </span>
-                        </cti:displayForPageEditModes>
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key="${programGear.controlMethod}"/>
-                        </cti:displayForPageEditModes>
+                        <c:choose>
+                            <c:when test="${showGearTypeOptions}">
+                                <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl" />
+                                <tags:selectWithItems items="${gearTypes}" id="controlMethod" path="controlMethod" defaultItemLabel="${selectLbl}"
+                                    defaultItemValue="" />
+                                <br>
+                                <span id="gearTypeIsRequiredError" class="error dn">
+                                    <cti:msg2 key=".gearType" var="gearTypeLbl"/>
+                                    <i:inline key="yukon.web.error.fieldrequired" arguments="${gearTypeLbl}"/>
+                                </span>
+                            </c:when>
+                            <c:otherwise>
+                                <i:inline key="${programGear.controlMethod}"/>
+                                <form:hidden path="controlMethod" value="${programGear.controlMethod}" />
+                            </c:otherwise>
+                        </c:choose> 
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
