@@ -50,9 +50,9 @@ public class SimpleThermostatRampingGearFieldsValidator
         }
 
         // Check Pre-op (Cool or Heat) Time
-        lmValidatorHelper.checkIfFieldRequired("preOpTemp", errors,
+        lmValidatorHelper.checkIfFieldRequired("preOpTimeInMinutes", errors,
             simpleThermostatRampingCycleGear.getPreOpTimeInMinutes(), "Pre-op Time");
-        if (!errors.hasFieldErrors("preOpTemp")) {
+        if (!errors.hasFieldErrors("preOpTimeInMinutes")) {
             YukonValidationUtils.checkRange(errors, "preOpTimeInMinutes",
                 simpleThermostatRampingCycleGear.getPreOpTimeInMinutes(), 0, 300, false);
         }
