@@ -35,7 +35,7 @@ public class SepCycleGearFieldsValidator extends ProgramGearFieldsValidator<SepC
 
         // Check TrueCycle or adaptive algorithm
         lmValidatorHelper.checkIfFieldRequired("trueCycle", errors, sepCycleGearFieldsCycleGear.getTrueCycle(),
-            "True Cycle");
+            "True Cycle or Adaptive Algorithm");
 
         // Check Control Percent
         gearValidatorHelper.checkControlPercent(sepCycleGearFieldsCycleGear.getControlPercent(), errors);

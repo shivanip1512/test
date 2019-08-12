@@ -41,7 +41,7 @@ public class SmartCycleGearFieldsValidator extends ProgramGearFieldsValidator<Sm
 
         // Check for Cycle Count Send Type
         lmValidatorHelper.checkIfFieldRequired("cycleCountSendType", errors, smartCycleGear.getCycleCountSendType(),
-            "Cycle Count Send");
+            "Cycle Count Send Type");
         if (!errors.hasFieldErrors("cycleCountSendType")
             && (smartCycleGear.getCycleCountSendType() == CycleCountSendType.FixedShedTime
                 || smartCycleGear.getCycleCountSendType() == CycleCountSendType.DynamicShedTime)) {
@@ -49,7 +49,8 @@ public class SmartCycleGearFieldsValidator extends ProgramGearFieldsValidator<Sm
         }
 
         // Check for Max Cycle Count
-        lmValidatorHelper.checkIfFieldRequired("maxCycleCount", errors, smartCycleGear.getMaxCycleCount(), "Max Cycle Count");
+        lmValidatorHelper.checkIfFieldRequired("maxCycleCount", errors, smartCycleGear.getMaxCycleCount(),
+            "Max Cycle Count");
         if (!errors.hasFieldErrors("maxCycleCount")) {
             YukonValidationUtils.checkRange(errors, "maxCycleCount", smartCycleGear.getMaxCycleCount(), 0, 63, false);
         }
