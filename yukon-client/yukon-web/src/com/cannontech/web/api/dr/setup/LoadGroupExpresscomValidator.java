@@ -52,7 +52,11 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
 
         if (!errors.hasFieldErrors("addressUsage")) {
             if (loadGroup.getAddressUsage().contains(AddressUsage.SERIAL)) {
-                if (loadGroup.getAddressUsage().size() > 1) {
+                if (loadGroup.getAddressUsage().contains(AddressUsage.GEO)
+                    || loadGroup.getAddressUsage().contains(AddressUsage.SUBSTATION)
+                    || loadGroup.getAddressUsage().contains(AddressUsage.FEEDER)
+                    || loadGroup.getAddressUsage().contains(AddressUsage.ZIP)
+                    || loadGroup.getAddressUsage().contains(AddressUsage.USER)) {
                     errors.rejectValue("addressUsage", key + "incorrectCombination", new Object[] { "Address Usage" },
                         "");
                 } else {
