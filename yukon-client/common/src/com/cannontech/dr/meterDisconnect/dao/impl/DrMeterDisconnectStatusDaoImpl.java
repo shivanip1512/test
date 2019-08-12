@@ -101,7 +101,7 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
         Instant now = Instant.now();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EventId");
+        sql.append("SELECT MAX (EventId)");
         sql.append("FROM DrDisconnectEvent");
         sql.append("WHERE ProgramId").eq(programId);
         sql.append("AND StartTime").lt(now);
@@ -119,7 +119,7 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
         Instant now = Instant.now();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT dde.EventId ");
+        sql.append("SELECT MAX (dde.EventId) ");
         sql.append("FROM DrDisconnectEvent dde");
         sql.append("JOIN DrDisconnectDeviceStatus ddds ON ddds.EventId = dde.EventId");
         sql.append("WHERE ddds.DeviceId").eq(deviceId);

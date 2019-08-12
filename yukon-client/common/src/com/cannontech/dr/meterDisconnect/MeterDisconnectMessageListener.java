@@ -157,8 +157,12 @@ public class MeterDisconnectMessageListener {
                 eventId.ifPresentOrElse(id -> drStatusService.restoreSent(new Instant(restoreTime), id),
                                         () -> log.error("No active dr disconnect event found for program ID " + programId));
                 
+                // Find all the opted out devices that are in the groupId
+                Set<Integer> optOutInventory = optOutEventDao.getOptedOutInventoryByLoadGroups(groupIdCollection);
                 // Find all the inventory in the group
                 Set<Integer> inventory = enrollmentDao.getActiveEnrolledInventoryIdsForGroupIds(groupIdCollection);
+                // Remove any meters that are opted out from the list of meters that will be sent control
+                inventory.removeAll(optOutInventory);
                 // Turn all the inventory to SimpleDevices
                 Set <SimpleDevice> meters  = inventoryBaseDao.getLMHardwareForIds(inventory).stream()
                                                                                             .map(LiteLmHardwareBase::getDeviceID)
