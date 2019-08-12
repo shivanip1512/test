@@ -34,30 +34,6 @@ yukon.ui.numeric= (function () {
                     });
             });
             
-            $(document).on('blur', '.js-numeric', function (event) {
-                var value = $(this).val(),
-                    id = $(this).attr('id'),
-                    minValue = $(this).data('minValue'),
-                    maxValue = $(this).data('maxValue'),
-                    stepValue = $(this).data('stepValue');
-                $(this).removeClass('error');
-                $('.js-' + id + '-min-value-error').addClass('dn');
-                $('.js-' + id + '-max-value-error').addClass('dn');
-                //verify the number is in between range
-                if (minValue != null) {
-                    if (value < minValue) {
-                        $(this).addClass('error');
-                        $('.js-' + id + '-min-value-error').removeClass('dn');
-                    }
-                }
-                if (maxValue != null) {
-                    if (value > maxValue) {
-                        $(this).addClass('error');
-                        $('.js-' + id + '-max-value-error').removeClass('dn');
-                    }
-                }
-            });
-                                                
             _initialized = true;
         }
         
