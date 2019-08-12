@@ -30,10 +30,18 @@ yukon.dr.setup.programGear = (function() {
     },
 
     _howToStopControl= function() {
-        var howToStopControl = $("#howToStopControl").val();
-        $('#js-stopOrder-row').toggleClass('dn', (howToStopControl != 'RampOutTimeIn' && howToStopControl != 'RampOutRestore'));
-        $('#js-rampOutPercent-row').toggleClass('dn', (howToStopControl != 'RampOutTimeIn' && howToStopControl != 'RampOutRestore'));
-        $('#js-rampOutInterval-row').toggleClass('dn', (howToStopControl != 'RampOutTimeIn' && howToStopControl != 'RampOutRestore'));
+        var value = "",
+            element = null;
+        if ($(".js-how-to-stop-control").is(":visible")) {
+            element = $(".js-how-to-stop-control:visible");
+            value = $(".js-how-to-stop-control:visible option:selected").val();
+        } else {
+            element = $("#howToStopControl");
+            value = $("#howToStopControl").val();
+        }
+        element.closest(".name-value-table").find('#js-stopOrder-row').toggleClass('dn', (value != 'RampOutTimeIn' && value != 'RampOutRestore'));
+        element.closest(".name-value-table").find('#js-rampOutPercent-row').toggleClass('dn', (value != 'RampOutTimeIn' && value != 'RampOutRestore'));
+        element.closest(".name-value-table").find('#js-rampOutInterval-row').toggleClass('dn', (value != 'RampOutTimeIn' && value != 'RampOutRestore'));
     },
 
     _refreshShedType= function() {
@@ -63,7 +71,7 @@ yukon.dr.setup.programGear = (function() {
                 _whenToChange();
             });
 
-            $(document).on('change', '#howToStopControl', function (event) {
+            $(document).on('change', '.js-how-to-stop-control', function (event) {
                 _howToStopControl();
             });
 

@@ -87,7 +87,8 @@
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".howToStopControl">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <tags:selectWithItems id="howToStopControl" items="${howToStopControl}" path="fields.howToStopControl" />
+                            <tags:selectWithItems id="howToStopControl" items="${howToStopControl}"
+                                                  path="fields.howToStopControl" inputClass="js-how-to-stop-control"/>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
                             <input type=hidden id="howToStopControl" value="${programGear.fields.howToStopControl}">
