@@ -9,7 +9,7 @@
                          <tags:numeric path="fields.controlPercent" size="10" minValue="5" maxValue="100"/>
                      </tags:nameValue2>
                      <tags:nameValue2 nameKey=".cyclePeriod"> 
-                         <tags:numeric path="fields.cyclePeriodInMinutes" size="10" minValue="1" maxValue="945"/>
+                         <tags:numeric path="fields.cyclePeriodInMinutes" size="10" minValue="5" maxValue="945"/>
                      </tags:nameValue2>
                      <tags:nameValue2 nameKey=".groupSelectionMethod">
                          <cti:displayForPageEditModes modes="EDIT,CREATE">
