@@ -1,6 +1,5 @@
 package com.cannontech.web.api.dr.gear.setup.fields.validator;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
