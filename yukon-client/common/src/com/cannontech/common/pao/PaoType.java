@@ -376,7 +376,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_SEP_PROGRAM,
             LM_ECOBEE_PROGRAM,
             LM_HONEYWELL_PROGRAM,
-            LM_NEST_PROGRAM,
+            /*LM_NEST_PROGRAM,*/
             LM_ITRON_PROGRAM,
             LM_METER_DISCONNECT_PROGRAM
             );
@@ -1141,7 +1141,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
      */
     public static List<PaoType> getAllLMGroupTypes() {
         List<PaoType> paoTypes = Arrays.stream(PaoType.values())
-                                       .filter(paoType -> paoType.isLoadGroup() && paoType.isLoadGroupSupportedFromWeb()&& paoType != PaoType.MACRO_GROUP)
+                                       .filter(paoType -> paoType.isLoadGroup() && paoType.isLoadGroupSupportedFromWeb() && paoType != PaoType.MACRO_GROUP &&paoType != PaoType.LM_GROUP_NEST)
                                        .collect(Collectors.toList());
         return paoTypes;
     }
@@ -1151,7 +1151,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
      */
     public static List<PaoType> getAllSupportedLMGroupTypes() {
         List<PaoType> paoTypes = Arrays.stream(PaoType.values())
-                                       .filter(paoType -> paoType.isLoadGroup())
+                                       .filter(paoType -> paoType.isLoadGroup() && paoType != PaoType.LM_GROUP_NEST)
                                        .collect(Collectors.toList());
         return paoTypes;
     }
