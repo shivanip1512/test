@@ -117,6 +117,8 @@ yukon.dr.setup.program = (function() {
                 _notificationGroupPicker();
                 _loadGroupPicker();
                 _gearMovableChange();
+                _enableProgramStart();
+                _enableProgramStop();
 
                 yukon.ui.initDateTimePickers().ancestorInit("#js-load-program-container");
                 yukon.ui.unblock($('#js-load-program-container'));
