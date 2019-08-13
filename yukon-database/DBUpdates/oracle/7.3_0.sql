@@ -453,4 +453,4 @@ INSERT INTO DBUpdates VALUES ('YUK-20419', '7.3.0', SYSDATE);
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('7.3', '02-FEB-2019', 'Latest Update', 0, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('7.3', '13-AUG-2019', 'Latest Update', 0, SYSDATE);
