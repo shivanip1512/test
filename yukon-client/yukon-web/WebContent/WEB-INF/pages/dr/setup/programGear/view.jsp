@@ -10,8 +10,8 @@
 <cti:msgScope paths="yukon.web.modules.dr.setup.gear">
     <tags:setFormEditMode mode="${mode}" />
     
-    <cti:url var="action" value="/dr/setup/loadProgram/gear/save" />
     <div class="js-program-gear-container">
+        <cti:url var="action" value="/dr/setup/loadProgram/gear/save" />
         <form:form modelAttribute="programGear" action="${action}" method="post" id="js-program-gear-form">
             <div class="js-help-section">
                 <span class="fr js-help-btn-span dn">

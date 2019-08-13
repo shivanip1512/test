@@ -189,16 +189,6 @@
                                                 <c:set var="disabled" value="${status.last}" />
                                                 <cti:button icon="icon-bullet-go-down" renderMode="buttonImage" classes="right select-box-item-down js-move-down" disabled="${disabled}" />
                                             </div>
-                                            <div data-dialog
-                                                id="gear-quick-view-${item.id}"
-                                                data-title="${item.name}"
-                                                data-width="900"
-                                                data-height="525"
-                                                data-event="yukon:dr:setup:program:saveGear"
-                                                data-url="${viewUrl}"
-                                                data-load-event="yukon:dr:setup:program:gearRendered"
-                                                data-ok-text="<cti:msg2 key="yukon.common.save"/>">
-                                            </div>
                                         </div>
                                     </c:forEach>
                                 </div>
@@ -234,7 +224,6 @@
                                                     <cti:url var="viewUrl" value="/dr/setup/loadProgram/gear/${gearInfo.id}?mode=${mode}" /> 
                                                     <a href="javascript:void(0);" data-popup="#gear-quick-view-${gearInfo.id}">${fn:escapeXml(gearInfo.name)}</a>
                                                 </td>
-                                                <div id="edit-gear-popup" class="dn"></div>
                                                 <div id="gear-quick-view-${gearInfo.id}"
                                                      data-title="${gearInfo.name}"
                                                      data-width="900"
@@ -541,7 +530,21 @@
          data-ok-text="<cti:msg2 key="yukon.common.save"/>" 
          data-dialog>
     </div>
-    <div id="gear-edit-popup" class="dn"></div>
+    <div id="gear-popups" class="dn">
+        <c:forEach var="item" items="${gearInfos}" varStatus="status">
+            <cti:url var="viewUrl" value="/dr/setup/loadProgram/gear/${item.id}?mode=${mode}"/> 
+            <div data-dialog
+                 id="gear-quick-view-${item.id}"
+                 data-title="${item.name}"
+                 data-width="900"
+                 data-height="525"
+                 data-event="yukon:dr:setup:program:saveGear"
+                 data-url="${viewUrl}"
+                 data-load-event="yukon:dr:setup:program:gearRendered"
+                 data-ok-text="<cti:msg2 key="yukon.common.save"/>">
+            </div>
+        </c:forEach>
+    </div>
     <div data-dialog
          data-title="<cti:msg2 key="yukon.common.edit"/>"
          data-width="900"

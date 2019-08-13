@@ -390,7 +390,7 @@ yukon.dr.setup.program = (function() {
                         clonedDialog.attr("id", "js-gear-dialog-" + id);
                         clonedDialog.attr("data-url", url);
                         clonedDialog.removeClass("js-gear-dialog-template");
-                        $(".js-assigned-gear").append(clonedDialog);
+                        $("#gear-popups").append(clonedDialog);
                         anchorTag.attr("data-popup", "#js-gear-dialog-" + id);
                     } else {
                         $('#' + id + ' a').text(data.gearName);
