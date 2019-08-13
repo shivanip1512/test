@@ -44,7 +44,18 @@ public class ControlAreaSetupControllerHelper {
         model.addAttribute("triggerTypes", ControlAreaTriggerType.values());
         model.addAttribute("projectionTypes", ControlAreaProjectionType.values());
         model.addAttribute("projectAheadDurations", TimeIntervals.getProjectionAheadDuration());
+        if (controlAreaTrigger.getTriggerType() != null) {
+            if (controlAreaTrigger.getTriggerType() == ControlAreaTriggerType.THRESHOLD_POINT) {
+                model.addAttribute("thresholdPointTriggerId", controlAreaTrigger.getTriggerPointId());
+                model.addAttribute("thresholdPointPeakPointId", controlAreaTrigger.getPeakPointId());
+                model.addAttribute("thresholdPointThresholdId", controlAreaTrigger.getThresholdPointId());
+            } else if (controlAreaTrigger.getTriggerType() == ControlAreaTriggerType.THRESHOLD) {
+                model.addAttribute("thresholdTriggerId", controlAreaTrigger.getTriggerPointId());
+                model.addAttribute("thresholdPeakPointId", controlAreaTrigger.getPeakPointId());
+            } else {
+                model.addAttribute("statusTriggerId", controlAreaTrigger.getTriggerPointId());
+            }
+        }
         model.addAttribute("controlAreaTrigger", controlAreaTrigger);
     }
-
 }

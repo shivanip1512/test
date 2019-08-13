@@ -78,16 +78,19 @@ public class PickerController {
         searchCriteria.setInitialIds(initialIds);
         
         SearchResults<?> searchResult;
-        try {
-            ResponseEntity<? extends Object> apiResponse =
-                apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, SearchResults.class, searchCriteria);
-            if (apiResponse.getStatusCode() == HttpStatus.OK) {
-                searchResult = (SearchResults<?>) apiResponse.getBody();
-                return Collections.singletonMap("hits", searchResult);
+        synchronized (this) {
+            try {
+                ResponseEntity<? extends Object> apiResponse =
+                    apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, SearchResults.class, searchCriteria);
+                if (apiResponse.getStatusCode() == HttpStatus.OK) {
+                    searchResult = (SearchResults<?>) apiResponse.getBody();
+                    return Collections.singletonMap("hits", searchResult);
+                }
+            } catch (RestClientException ex) {
+                log.error("Error retrieving search results for picker: " + ex.getMessage());
             }
-        } catch (RestClientException ex) {
-            log.error("Error retrieving search results for picker: " + ex.getMessage());
         }
+
         return null;
 
     }

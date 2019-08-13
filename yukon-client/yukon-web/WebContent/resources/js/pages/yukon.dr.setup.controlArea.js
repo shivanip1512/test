@@ -205,6 +205,11 @@ yukon.dr.setup.controlArea = (function() {
                         (container.find("#trigger-type").val() === "THRESHOLD_POINT")) {
                     container.find("#point-trigger-identification-name").val(thresholdPointTriggerIdentification.selectionLabel.innerText);
                     container.find("#min-restore-offset").val($("#js-threshold-point-min-restore-offset").val());
+
+                    container.find("#trigger-point-id").val($("#point-trigger-identification-thresholdPoint").val());
+                    container.find("#peak-point-id").val($("#point-peak-tracking-thresholdPoint").val());
+                    container.find("#threshold-point-id").val($("#point-threshold-settings-thresholdPoint").val());
+
                     _setTriggerType("THRESHOLD_POINT");
                     if (_validatePickerValues("THRESHOLD_POINT")) {
                         return;
@@ -214,6 +219,11 @@ yukon.dr.setup.controlArea = (function() {
                         (container.find("#trigger-type").val() === "THRESHOLD")) {
                     container.find("#point-trigger-identification-name").val(thresholdTriggerIdentification.selectionLabel.innerText);
                     container.find("#min-restore-offset").val($("#js-threshold-min-restore-offset").val());
+                    container.find("#trigger-point-id-test").val($("#point-trigger-identification-threshold").val());
+
+                    container.find("#trigger-point-id").val($("#point-trigger-identification-threshold").val());
+                    container.find("#peak-point-id").val($("#point-peak-tracking-threshold").val());
+
                     _setTriggerType("THRESHOLD");
                     if(_validatePickerValues("THRESHOLD")){
                         return;
@@ -223,6 +233,10 @@ yukon.dr.setup.controlArea = (function() {
                 if ((container.find("#js-trigger-type option:selected").val() === "STATUS") || 
                         (container.find("#trigger-type").val() === "STATUS")) {
                     container.find("#point-trigger-identification-name").val(statusTriggerIdentification.selectionLabel.innerText);
+                    container.find("#trigger-point-id-test").val($("#point-trigger-identification-status").val());
+
+                    container.find("#trigger-point-id").val($("#point-trigger-identification-status").val());
+
                     _setTriggerType("STATUS");
                     if (_validatePickerValues("STATUS")) {
                         return;
@@ -278,14 +292,17 @@ yukon.dr.setup.controlArea = (function() {
                         _renderConfirmDeletePopup(data.triggerId, data.triggerName);
                         if(!newTrigger){
                             $("#js-trigger-dialog-" + data.triggerId).dialog('close');
+                            $("#js-trigger-dialog-" + data.triggerId).empty()
                         }
                     }
                 });
                 if(newTrigger){
                     dialog.dialog('close');
+                    dialog.empty();
                 }
             });
             $(document).on('click', '.js-trigger-link', function(event) {
+            	$('#js-controlArea-trigger-form').html('');
                 event.preventDefault();
             });
             $(document).on('click', '#js-cancel-btn', function (event) {

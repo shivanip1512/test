@@ -23,9 +23,18 @@
     <div class="js-trigger-controls">
         <form:form modelAttribute="controlAreaTrigger" action="${action}" method="post" id="js-controlArea-trigger-form">
             <cti:csrfToken/>
-            <form:hidden id="point-trigger-identification" path="triggerPointId"/>
-            <form:hidden id="point-peak-tracking" path="peakPointId"/>
-            <form:hidden id="point-threshold-settings" path="thresholdPointId"/>
+            <input id="point-trigger-identification-thresholdPoint" value="${thresholdPointTriggerId}" type="hidden"/>
+            <input id="point-trigger-identification-threshold" value="${thresholdTriggerId}" type="hidden"/>
+            <input id="point-trigger-identification-status" value="${statusTriggerId}" type="hidden"/>
+            <form:hidden id="trigger-point-id" path="triggerPointId"/>
+
+            <input id="point-peak-tracking-thresholdPoint" value="${thresholdPointPeakPointId}" type="hidden"/>
+            <input id="point-peak-tracking-threshold" value="${thresholdPeakPointId}" type="hidden"/>
+            <form:hidden id="peak-point-id" path="peakPointId"/>
+
+            <input id="point-threshold-settings-thresholdPoint" value="${thresholdPointThresholdId}" type="hidden"/>
+            <form:hidden id="threshold-point-id" path="thresholdPointId"/>
+
             <form:hidden id="point-trigger-identification-name" path="triggerPointName"/>
             <form:hidden id="trigger-type" path="triggerType"/>
             <form:hidden id="min-restore-offset" path="minRestoreOffset"/>
@@ -49,7 +58,7 @@
                             linkType="selectionLabel"
                             selectionProperty="paoPoint"
                             buttonStyleClass="M0"
-                            destinationFieldId="point-trigger-identification"
+                            destinationFieldId="point-trigger-identification-thresholdPoint"
                             viewOnlyMode="${mode == 'VIEW'}"
                             includeRemoveButton="${true}"
                             removeValue="0"/>
@@ -65,7 +74,7 @@
                         linkType="selectionLabel"
                         selectionProperty="paoPoint"
                         buttonStyleClass="M0"
-                        destinationFieldId="point-peak-tracking"
+                        destinationFieldId="point-peak-tracking-thresholdPoint"
                         viewOnlyMode="${mode == 'VIEW'}"
                         includeRemoveButton="${true}"
                         removeValue="0"/>
@@ -77,7 +86,7 @@
                             linkType="selectionLabel"
                             selectionProperty="paoPoint"
                             buttonStyleClass="M0"
-                            destinationFieldId="point-threshold-settings"
+                            destinationFieldId="point-threshold-settings-thresholdPoint"
                             viewOnlyMode="${mode == 'VIEW'}"
                             includeRemoveButton="${true}"
                             removeValue="0"/>
@@ -109,7 +118,7 @@
                             linkType="selectionLabel"
                             selectionProperty="paoPoint"
                             buttonStyleClass="M0"
-                            destinationFieldId="point-trigger-identification"
+                            destinationFieldId="point-trigger-identification-threshold"
                             viewOnlyMode="${mode == 'VIEW'}"
                             includeRemoveButton="${true}"
                             removeValue="0"/>
@@ -125,7 +134,7 @@
                             linkType="selectionLabel"
                             selectionProperty="paoPoint"
                             buttonStyleClass="M0"
-                            destinationFieldId="point-peak-tracking"
+                            destinationFieldId="point-peak-tracking-threshold"
                             viewOnlyMode="${mode == 'VIEW'}"
                             includeRemoveButton="${true}"
                             removeValue="0"/>
@@ -139,7 +148,7 @@
                             linkType="selectionLabel"
                             selectionProperty="paoPoint"
                             buttonStyleClass="M0"
-                            destinationFieldId="point-trigger-identification"
+                            destinationFieldId="point-trigger-identification-status"
                             viewOnlyMode="${mode == 'VIEW'}"
                             includeRemoveButton="${true}"
                             removeValue="0"
@@ -173,7 +182,7 @@
                                     linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     buttonStyleClass="M0"
-                                    destinationFieldId="point-trigger-identification"
+                                    destinationFieldId="point-trigger-identification-thresholdPoint"
                                     viewOnlyMode="${mode == 'VIEW'}"
                                     includeRemoveButton="${true}"
                                     removeValue="0"/>
@@ -192,7 +201,7 @@
                                                 linkType="selectionLabel"
                                                 selectionProperty="paoPoint"
                                                 buttonStyleClass="M0"
-                                                destinationFieldId="point-peak-tracking"
+                                                destinationFieldId="point-peak-tracking-thresholdPoint"
                                                 viewOnlyMode="${mode == 'VIEW'}"
                                                 includeRemoveButton="${true}"
                                                 removeValue="0"/>
@@ -209,7 +218,7 @@
                                         linkType="selectionLabel"
                                         selectionProperty="paoPoint"
                                         buttonStyleClass="M0"
-                                        destinationFieldId="point-peak-tracking"
+                                        destinationFieldId="point-peak-tracking-thresholdPoint"
                                         viewOnlyMode="${mode == 'VIEW'}"
                                         includeRemoveButton="${true}"
                                         removeValue="0"/>
@@ -222,7 +231,7 @@
                                     linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     buttonStyleClass="M0"
-                                    destinationFieldId="point-threshold-settings"
+                                    destinationFieldId="point-threshold-settings-thresholdPoint"
                                     viewOnlyMode="${mode == 'VIEW'}"
                                     includeRemoveButton="${true}"
                                     removeValue="0"/>
@@ -272,7 +281,7 @@
                                     linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     buttonStyleClass="M0"
-                                    destinationFieldId="point-trigger-identification"
+                                    destinationFieldId="point-trigger-identification-threshold"
                                     viewOnlyMode="${mode == 'VIEW'}"
                                     includeRemoveButton="${true}"
                                     removeValue="0"/>
@@ -291,7 +300,7 @@
                                                 linkType="selectionLabel"
                                                 selectionProperty="paoPoint"
                                                 buttonStyleClass="M0"
-                                                destinationFieldId="point-peak-tracking"
+                                                destinationFieldId="point-peak-tracking-threshold"
                                                 viewOnlyMode="${mode == 'VIEW'}"
                                                 includeRemoveButton="${true}"
                                                 removeValue="0"/>
@@ -308,7 +317,7 @@
                                         linkType="selectionLabel"
                                         selectionProperty="paoPoint"
                                         buttonStyleClass="M0"
-                                        destinationFieldId="point-peak-tracking"
+                                        destinationFieldId="point-peak-tracking-threshold"
                                         viewOnlyMode="${mode == 'VIEW'}"
                                         includeRemoveButton="${true}"
                                         removeValue="0"/>
@@ -326,7 +335,7 @@
                                     linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     buttonStyleClass="M0"
-                                    destinationFieldId="point-trigger-identification"
+                                    destinationFieldId="point-trigger-identification-status"
                                     viewOnlyMode="${mode == 'VIEW'}"
                                     includeRemoveButton="${true}"
                                     removeValue="0"

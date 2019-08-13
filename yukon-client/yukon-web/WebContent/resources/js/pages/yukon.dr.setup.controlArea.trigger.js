@@ -59,7 +59,6 @@ yukon.dr.setup.controlArea.trigger = (function() {
                 }
             });
             $(document).on("yukon:dr:setup:controlArea:renderTriggerFields", function (event){
-                $("js-add-triggers").html('');
                 var peakPointId = $("#js-peak-point-id").val();
                 if(!peakPointId){
                     $("#picker-thresholdPeakTracking-btn").prop('disabled', true);
@@ -69,7 +68,7 @@ yukon.dr.setup.controlArea.trigger = (function() {
             
             $(document).on('yukon:trigger:identification:complete', function() {
                 var container = $(".js-trigger-controls:visible"),
-                    pointId = $("#point-trigger-identification").val(),
+                    pointId = $("#point-trigger-identification-status").val(),
                     isViewMode = container.find(".js-trigger-type-view-mode").is(":visible");
                 $("#js-normal-state").removeClass("dn");
                 $.ajax({
