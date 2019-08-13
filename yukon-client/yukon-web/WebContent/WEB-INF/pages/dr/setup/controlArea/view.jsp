@@ -86,7 +86,7 @@
                                 <div class="select-box-item" data-trigger-id="${triggerId}" id="js-trigger-${triggerId}">
                                     <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove"
                                         id="delete-trigger-${triggerId}" data-ok-event="yukon:trigger:delete" data-id="${triggerId}"/>
-                                    <d:confirm on="#delete-trigger-${triggerId}" nameKey="confirmDelete"
+                                    <d:confirm on="#delete-trigger-${triggerId}" nameKey="confirmRemove"
                                         argument="${fn:escapeXml(triggerName)}"/>
                                     <a href="${triggerUrl}" class="js-trigger-link" data-popup="#js-trigger-dialog-${triggerId}"
                                         id="js-trigger-link-${triggerId}" data-trigger-id="${triggerId}">

@@ -44,7 +44,12 @@ yukon.dr.setup.controlArea = (function() {
     },
 
     _setTriggerType = function(triggerType){
-        $("#trigger-type").val(triggerType);
+        $("div.ui-dialog:visible").find("#trigger-type").val(triggerType);
+    },
+    _checkForTrigger = function(triggerId) {
+        var selector = "#js-trigger-" + triggerId;
+        var length = $(".js-trigger-container").children(selector).length;
+        return length;
     },
     
     _validatePickerValues = function(thresholdType) {
@@ -194,85 +199,90 @@ yukon.dr.setup.controlArea = (function() {
             $(document).on("yukon:dr:setup:controlArea:saveTrigger", function (event) {
                 _clearErrors();
                 var dialog = $(event.target);
-                if (($("#js-trigger-type option:selected").val() === "THRESHOLD_POINT") || 
-                        ($(this).find("#trigger-type").val() === "THRESHOLD_POINT")) {
-                    $("#point-trigger-identification-name").val(thresholdPointTriggerIdentification.selectionLabel.innerText);
-                    $("#min-restore-offset").val($("#js-threshold-point-min-restore-offset").val());
+                var container = $("div.ui-dialog:visible");
+
+                if ((container.find("#js-trigger-type option:selected").val() === "THRESHOLD_POINT") || 
+                        (container.find("#trigger-type").val() === "THRESHOLD_POINT")) {
+                    container.find("#point-trigger-identification-name").val(thresholdPointTriggerIdentification.selectionLabel.innerText);
+                    container.find("#min-restore-offset").val($("#js-threshold-point-min-restore-offset").val());
                     _setTriggerType("THRESHOLD_POINT");
                     if (_validatePickerValues("THRESHOLD_POINT")) {
                         return;
                     }
                 }
-                if (($("#js-trigger-type option:selected").val() === "THRESHOLD") || 
-                        ($(this).find("#trigger-type").val() === "THRESHOLD")) {
-                    $("#point-trigger-identification-name").val(thresholdTriggerIdentification.selectionLabel.innerText);
-                    $("#min-restore-offset").val($("#js-threshold-min-restore-offset").val());
+                if ((container.find("#js-trigger-type option:selected").val() === "THRESHOLD") || 
+                        (container.find("#trigger-type").val() === "THRESHOLD")) {
+                    container.find("#point-trigger-identification-name").val(thresholdTriggerIdentification.selectionLabel.innerText);
+                    container.find("#min-restore-offset").val($("#js-threshold-min-restore-offset").val());
                     _setTriggerType("THRESHOLD");
                     if(_validatePickerValues("THRESHOLD")){
                         return;
                     }
-                    $("#point-trigger-identification-name").val(thresholdTriggerIdentification.selectionLabel.innerText);
-                    $("#trigger-type").val("THRESHOLD");
+                    container.find("#point-trigger-identification-name").val(thresholdTriggerIdentification.selectionLabel.innerText);
                 }
-                if (($("#js-trigger-type option:selected").val() === "STATUS") || 
-                        ($(this).find("#trigger-type").val() === "STATUS")) {
-                    $("#point-trigger-identification-name").val(statusTriggerIdentification.selectionLabel.innerText);
+                if ((container.find("#js-trigger-type option:selected").val() === "STATUS") || 
+                        (container.find("#trigger-type").val() === "STATUS")) {
+                    container.find("#point-trigger-identification-name").val(statusTriggerIdentification.selectionLabel.innerText);
                     _setTriggerType("STATUS");
                     if (_validatePickerValues("STATUS")) {
                         return;
                     }
-                    $("#point-trigger-identification-name").val(statusTriggerIdentification.selectionLabel.innerText);
-                    $("#trigger-type").val("STATUS");
+                    container.find("#point-trigger-identification-name").val(statusTriggerIdentification.selectionLabel.innerText);
                 }
-                var triggerId = $(event.target).data("triggerId");
-                if(!triggerId){
-                    dialog.dialog('close');
+                var triggerId = $(event.target).data("triggerId"),
+                    newTrigger = false;
+                if(triggerId === undefined){
+                    newTrigger = true;
                 }
-                $("#js-trigger-id").val(triggerId);
-                $('#js-controlArea-trigger-form').ajaxSubmit({
+                container.find("#js-trigger-id").val(triggerId);
+                container.find('#js-controlArea-trigger-form').ajaxSubmit({
                     success: function (data) {
-                        var triggerId = data.triggerId, 
-                        dataId = $(".js-trigger-container").find("#js-trigger-"+triggerId).data('trigger-id');
-                    if(!dataId){
-                        var triggerName = data.triggerName,
-                            clonedRow = $(".js-trigger-template-row").clone(),
-                            anchorTag = $("<a>"),
-                            url = yukon.url("/dr/setup/controlArea/trigger/" + triggerId),
-                            mode = $("#js-form-edit-mode").val(),
-                            url = yukon.url("/dr/setup/controlArea/renderTrigger/" + triggerId + "?mode=" + mode);
+                        if(_checkForTrigger(data.triggerId) == 0){
+                            var triggerName = data.triggerName,
+                                triggerId = data.triggerId,
+                                clonedRow = $(".js-trigger-template-row").clone(),
+                                anchorTag = $("<a>"),
+                                url = yukon.url("/dr/setup/controlArea/trigger/" + triggerId),
+                                mode = $("#js-form-edit-mode").val(),
+                                url = yukon.url("/dr/setup/controlArea/renderTrigger/" + triggerId + "?mode=" + mode);
 
-                        anchorTag.attr("href", url);
-                        anchorTag.attr("class", "js-trigger-link");
-                        anchorTag.attr("id", "js-trigger-link-"+triggerId);
-                        anchorTag.attr("data-trigger-id", triggerId);
-                        anchorTag.text(triggerName);
+                            anchorTag.attr("href", url);
+                            anchorTag.attr("class", "js-trigger-link");
+                            anchorTag.attr("id", "js-trigger-link-"+triggerId);
+                            anchorTag.attr("data-trigger-id", triggerId);
+                            anchorTag.text(triggerName);
 
-                        clonedRow.find(".js-trigger-name").append(anchorTag);
-                        clonedRow.attr("id", "js-trigger-" + triggerId);
-                        clonedRow.attr("data-trigger-id", triggerId);
-                        clonedRow.removeClass("js-trigger-template-row dn");
-                        $(".js-no-triggers").addClass("dn");
-                        $(".js-trigger-container").append(clonedRow);
-                        _enableDisableTriggerCreate();
+                            clonedRow.find(".js-trigger-name").append(anchorTag);
+                            clonedRow.attr("id", "js-trigger-" + triggerId);
+                            clonedRow.attr("data-trigger-id", triggerId);
+                            clonedRow.removeClass("js-trigger-template-row dn");
+                            $(".js-no-triggers").addClass("dn");
+                            $(".js-trigger-container").append(clonedRow);
+                            _enableDisableTriggerCreate();
 
-                        clonedRow.find(".select-box-item-remove").attr("id", "delete-trigger-" + triggerId);
-                        clonedRow.find(".select-box-item-remove").attr("data-id", triggerId);
-                        
-                        _renderConfirmDeletePopup(triggerId, triggerName);
+                            clonedRow.find(".select-box-item-remove").attr("id", "delete-trigger-" + triggerId);
+                            clonedRow.find(".select-box-item-remove").attr("data-id", triggerId);
 
-                        var clonedDialog = $(".js-trigger-dialog-template").clone();
-                        clonedDialog.attr("id", "js-trigger-dialog-" + triggerId);
-                        clonedDialog.attr("data-target","#js-trigger-link-" + triggerId)
-                        clonedDialog.attr("data-url", url);
-                        clonedDialog.attr("data-title", triggerName);
-                        clonedDialog.removeClass("js-trigger-dialog-template");
-                        $(".js-trigger-container").append(clonedDialog);
+                            _renderConfirmDeletePopup(triggerId, triggerName);
 
-                        anchorTag.attr("data-popup", "#js-trigger-dialog-" + triggerId);
-                    }
-                    $("#js-trigger-dialog-"+dataId).dialog('close');
+                            var clonedDialog = $(".js-trigger-dialog-template").clone();
+                            clonedDialog.attr("id", "js-trigger-dialog-" + triggerId);
+                            clonedDialog.attr("data-target","#js-trigger-link-" + triggerId)
+                            clonedDialog.attr("data-url", url);
+                            clonedDialog.attr("data-title", triggerName);
+                            clonedDialog.removeClass("js-trigger-dialog-template");
+                            $(".js-trigger-container").append(clonedDialog);
+
+                            anchorTag.attr("data-popup", "#js-trigger-dialog-" + triggerId);
+                        }
+                        if(!newTrigger){
+                            $("#js-trigger-dialog-" + data.triggerId).dialog('close');
+                        }
                     }
                 });
+                if(newTrigger){
+                    dialog.dialog('close');
+                }
             });
             $(document).on('click', '.js-trigger-link', function(event) {
                 event.preventDefault();
