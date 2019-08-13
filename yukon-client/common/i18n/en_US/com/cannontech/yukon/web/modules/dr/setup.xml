@@ -221,7 +221,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.incorrectCombination">Address Usage, SERIAL not allowed with other usage types.</entry>
 
 <!-- Load Program Validation -->
-<entry key="yukon.web.modules.dr.setup.loadProgram.error.constraintId.doesNotExist">Constraint Id does not exist.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.constraintId.doesNotExist">Constraint does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.notificationGrpID.doesNotExist">Notification Group Id does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.subordinateProgId.doesNotExist">Subordinate Program Id does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.groupId.doesNotExist">Load Group Id does not exist.</entry>
