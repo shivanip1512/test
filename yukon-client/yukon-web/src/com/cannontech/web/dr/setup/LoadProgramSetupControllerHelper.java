@@ -30,6 +30,7 @@ import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.LatchingGearFields;
 import com.cannontech.common.dr.gear.setup.fields.MasterCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.NoControlGearFields;
 import com.cannontech.common.dr.gear.setup.fields.RotationGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SepCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.SepTemperatureOffsetGearFields;
@@ -292,6 +293,9 @@ public class LoadProgramSetupControllerHelper {
             LatchingGearFields latchingGearFields = (LatchingGearFields) programGear.getFields();
             latchingGearFields.setCapacityReduction(100);
             break;
+        case NoControl:
+            NoControlGearFields noControlGearFields = (NoControlGearFields) programGear.getFields();
+            noControlGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
         }
     }
 
@@ -299,11 +303,13 @@ public class LoadProgramSetupControllerHelper {
         rotationGearFields.setShedTime(5);
         rotationGearFields.setSendRate(TimeIntervals.MINUTES_30.getSeconds());
         rotationGearFields.setCapacityReduction(100);
+        rotationGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
     }
 
     private void setDefaultBeatThePeakGearFields(BeatThePeakGearFields rotationGearFields) {
         rotationGearFields.setResendInMinutes(0);
         rotationGearFields.setTimeoutInMinutes(0);
+        rotationGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
     }
 
     private void setSmartCycleGearFieldsDefaultValue(SmartCycleGearFields smartCycleGearFields) {
