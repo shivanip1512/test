@@ -46,7 +46,7 @@
                             <tags:selectWithItems items="${howToStopControl}" path="fields.howToStopControl" />
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key=" ${programGear.fields.howToStopControl}"/>
+                            <i:inline key="${programGear.fields.howToStopControl}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
