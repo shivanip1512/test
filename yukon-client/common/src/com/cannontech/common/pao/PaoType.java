@@ -1147,6 +1147,16 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     }
 
     /**
+     * @return List of all LM Group types
+     */
+    public static List<PaoType> getAllSupportedLMGroupTypes() {
+        List<PaoType> paoTypes = Arrays.stream(PaoType.values())
+                                       .filter(paoType -> paoType.isLoadGroup())
+                                       .collect(Collectors.toList());
+        return paoTypes;
+    }
+
+    /**
      * Maps PaoType String IDs to their corresponding integer device IDs.
      * @param typeString
      * @return If typeString does not match a PaoType string, an IllegalArgumentException

@@ -189,17 +189,17 @@
                                                 <c:set var="disabled" value="${status.last}" />
                                                 <cti:button icon="icon-bullet-go-down" renderMode="buttonImage" classes="right select-box-item-down js-move-down" disabled="${disabled}" />
                                             </div>
+                                            <div data-dialog
+                                                id="gear-quick-view-${item.id}"
+                                                data-title="${item.name}"
+                                                data-width="900"
+                                                data-height="525"
+                                                data-event="yukon:dr:setup:program:saveGear"
+                                                data-url="${viewUrl}"
+                                                data-load-event="yukon:dr:setup:program:gearRendered"
+                                                data-ok-text="<cti:msg2 key="yukon.common.save"/>">
+                                            </div>
                                         </div>
-                                        <div data-dialog
-                                             id="gear-quick-view-${item.id}"
-                                             data-title="${item.name}"
-                                             data-width="900"
-                                             data-height="525"
-                                             data-event="yukon:dr:setup:program:saveGear"
-                                             data-url="${viewUrl}"
-                                             data-load-event="yukon:dr:setup:program:gearRendered"
-                                             data-ok-text="<cti:msg2 key="yukon.common.save"/>">
-                                         </div>
                                     </c:forEach>
                                 </div>
                                 <div class="select-box-item cm js-assigned-gear js-template-gears-row dn" data-id="0">
@@ -352,6 +352,7 @@
                                                            type="memberControlPicker" 
                                                            container="js-inline-member-picker-container"
                                                            multiSelectMode="${true}" 
+                                                           extraArgs="${loadProgram.programId}"
                                                            disabledIds="${selectedMemberIds}" />
                                         <div class="action-area">
                                             <cti:button nameKey="add" classes="fr js-add-member" icon="icon-add" />

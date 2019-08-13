@@ -247,10 +247,13 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
 
         }
 
-        if (loadProgram.getOperationalState() == OperationalState.Timed && (loadProgram.getControlWindow() == null
+        if (loadProgram.getOperationalState() == OperationalState.Timed && ((loadProgram.getControlWindow() == null
                 || loadProgram.getControlWindow().getControlWindowOne() == null
                 || loadProgram.getControlWindow().getControlWindowOne().getAvailableStartTimeInMinutes() == null
-                || loadProgram.getControlWindow().getControlWindowOne().getAvailableStopTimeInMinutes() == null)) {
+                || loadProgram.getControlWindow().getControlWindowOne().getAvailableStopTimeInMinutes() == null)
+                || (loadProgram.getControlWindow().getControlWindowOne().getAvailableStopTimeInMinutes() % 1440 == 0 &&
+                   loadProgram.getControlWindow().getControlWindowOne().getAvailableStartTimeInMinutes()  == 0))) {
+
             errors.reject(key + "timedSupportedControlWindow");
         }
 

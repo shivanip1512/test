@@ -81,6 +81,22 @@ yukon.dr.setup.program = (function() {
         });
     },
 
+    _enableProgramStart = function() {
+        if (!$('#js-program-start-check').is(':checked')) {
+            $('#js-program-start').prop("disabled", true);
+        } else {
+            $('#js-program-start').prop("disabled", false);
+        }
+    },
+    
+    _enableProgramStop =  function() {
+        if(!$('#js-program-stop-check').is(':checked')) {
+            $('#js-program-stop').prop("disabled", true);
+        } else {
+            $('#js-program-stop').prop("disabled", false);
+        }
+    },
+
     _loadProgram = function() {
 
         var type = $('#type').val();
@@ -133,6 +149,8 @@ yukon.dr.setup.program = (function() {
                 return;
             
             _initCss();
+            _enableProgramStart();
+            _enableProgramStop();
 
             $(document).on('click', '#js-program-cancel-btn', function(event) {
                 window.history.back();
@@ -144,19 +162,11 @@ yukon.dr.setup.program = (function() {
             });
 
             $(document).on('click', '#js-program-start-check', function(event) {
-                if(!$('#js-program-start-check').is(':checked')) {
-                    $('#js-program-start').prop("disabled", true);
-                } else {
-                    $('#js-program-start').prop("disabled", false);
-                }
+                _enableProgramStart();
             });
             
             $(document).on('click', '#js-program-stop-check', function(event) {
-                if(!$('#js-program-stop-check').is(':checked')) {
-                    $('#js-program-stop').prop("disabled", true);
-                } else {
-                    $('#js-program-stop').prop("disabled", false);
-                }
+                _enableProgramStop();
             });
 
             var _mode = $('.js-page-mode').val();

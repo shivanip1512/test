@@ -24,7 +24,7 @@ public class LoadGroupPicker extends DatabasePaoPicker {
             public SqlFragmentSource getWhereClauseFragment() {
 
                 SqlStatementBuilder statementBuilder = new SqlStatementBuilder();
-                statementBuilder.append("Type").in(PaoType.getAllLMGroupTypes());
+                statementBuilder.append("Type").in(PaoType.getAllSupportedLMGroupTypes());
                 return statementBuilder;
             }
         };

@@ -29,7 +29,7 @@ yukon.ui.numeric= (function () {
                     $(this).spinner({
                         min: minValue,
                         max: maxValue,
-                        step: stepValue,
+                        step: stepValue ? stepValue : 1,
                         numberFormat: numberFormat
                     });
             });
