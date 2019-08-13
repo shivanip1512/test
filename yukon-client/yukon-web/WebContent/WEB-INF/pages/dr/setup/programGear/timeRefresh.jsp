@@ -8,8 +8,7 @@
                     <tags:nameValue2 nameKey=".refreshShedType">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
                             <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl" />
-                            <tags:selectWithItems id="refreshShedType" items="${refreshShedType}" path="fields.refreshShedTime"
-                                defaultItemLabel="${selectLbl}" defaultItemValue="" />
+                            <tags:selectWithItems id="refreshShedType" items="${refreshShedType}" path="fields.refreshShedTime"/>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
                             <input type=hidden id="refreshShedType" value="${programGear.fields.refreshShedTime}">
