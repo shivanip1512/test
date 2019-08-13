@@ -263,6 +263,7 @@ public class LMProgramDirect extends LMProgramBase implements IGearProgram
     public String getOriginSource() {
         return originSource;
     }
+
     public void setOriginSource(String originSource) {
         this.originSource = originSource;
     }

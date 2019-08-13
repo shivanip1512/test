@@ -189,4 +189,12 @@ public void setMinNotifyTime(java.lang.Integer newMinNotifyTime) {
 public void setStoppedEarlyMsg(java.lang.String newStoppedEarlyMsg) {
 	stoppedEarlyMsg = newStoppedEarlyMsg;
 }
+
+/**
+ * The origin source is not supported for energy exchange program, so returning empty string.
+ */
+@Override
+public String getOriginSource() {
+    return "";
+}
 }

@@ -395,4 +395,12 @@ public void setRunStatus(java.lang.String newRunStatus) {
 public void setStoppedEarlyMsg(java.lang.String newStoppedEarlyMsg) {
 	stoppedEarlyMsg = newStoppedEarlyMsg;
 }
+
+/**
+ * The origin source is not supported for curtailment program, so returning empty string.
+ */
+@Override
+public String getOriginSource() {
+    return "";
+}
 }

@@ -362,9 +362,7 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 		yukonType = newYukonType;
 	}
 
-    public String getOriginSource() {
-        return "";
-    }
+    public abstract String getOriginSource();
 
 	public String toString() {
 		return getYukonName();
