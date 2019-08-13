@@ -3,7 +3,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:msgScope paths="yukon.web.modules.dr.setup.loadProgram, modules.dr.setup.gear">
+<cti:msgScope paths="yukon.web.modules.dr.setup.loadProgram">
     <cti:flashScopeMessages />
     <cti:url var="actionUrl" value="/dr/setup/loadProgram/${loadProgramId}/copy" />
     <form:form id="loadProgram-copy-form" action="${actionUrl}" method="post" modelAttribute="programCopy">
@@ -24,7 +24,7 @@
             </tags:nameValue2>
             <cti:checkRolesAndProperties value="ALLOW_MEMBER_PROGRAMS">
                 <tags:nameValue2 nameKey=".copyMemberControl">
-                    <tags:checkbox path="copyMemberControl" />
+                    <tags:switchButton path="copyMemberControl" />
                 </tags:nameValue2>
             </cti:checkRolesAndProperties>
         </tags:nameValueContainer2>
