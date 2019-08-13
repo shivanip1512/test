@@ -530,6 +530,7 @@
          data-ok-text="<cti:msg2 key="yukon.common.save"/>" 
          data-dialog>
     </div>
+    <cti:displayForPageEditModes modes="EDIT,CREATE">
     <div id="gear-popups" class="dn">
         <c:forEach var="item" items="${gearInfos}" varStatus="status">
             <cti:url var="viewUrl" value="/dr/setup/loadProgram/gear/${item.id}?mode=${mode}"/> 
@@ -545,6 +546,7 @@
             </div>
         </c:forEach>
     </div>
+    </cti:displayForPageEditModes>
     <div data-dialog
          data-title="<cti:msg2 key="yukon.common.edit"/>"
          data-width="900"
