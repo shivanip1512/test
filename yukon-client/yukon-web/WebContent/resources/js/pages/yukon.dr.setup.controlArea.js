@@ -263,8 +263,6 @@ yukon.dr.setup.controlArea = (function() {
                             clonedRow.find(".select-box-item-remove").attr("id", "delete-trigger-" + triggerId);
                             clonedRow.find(".select-box-item-remove").attr("data-id", triggerId);
 
-                            _renderConfirmDeletePopup(triggerId, triggerName);
-
                             var clonedDialog = $(".js-trigger-dialog-template").clone();
                             clonedDialog.attr("id", "js-trigger-dialog-" + triggerId);
                             clonedDialog.attr("data-target","#js-trigger-link-" + triggerId)
@@ -274,7 +272,10 @@ yukon.dr.setup.controlArea = (function() {
                             $(".js-trigger-container").append(clonedDialog);
 
                             anchorTag.attr("data-popup", "#js-trigger-dialog-" + triggerId);
+                        } else {
+                            $("#js-trigger-link-" + data.triggerId).text(data.triggerName);
                         }
+                        _renderConfirmDeletePopup(data.triggerId, data.triggerName);
                         if(!newTrigger){
                             $("#js-trigger-dialog-" + data.triggerId).dialog('close');
                         }
