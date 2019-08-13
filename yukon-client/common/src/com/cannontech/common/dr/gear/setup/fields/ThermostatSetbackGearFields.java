@@ -257,10 +257,14 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
 
         if (thermostatSetbackGear.getSettings().charAt(3) == 'I') {
             setIsCoolMode(true);
+        } else {
+            setIsCoolMode(false);
         }
 
         if (thermostatSetbackGear.getSettings().charAt(2) == 'H') {
             setIsHeatMode(true);
+        } else {
+            setIsHeatMode(false);
         }
 
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
