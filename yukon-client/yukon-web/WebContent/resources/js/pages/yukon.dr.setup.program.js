@@ -351,6 +351,18 @@ yukon.dr.setup.program = (function() {
                 dialog.find("#gearNameIsBlankError").toggleClass("dn", !isGearNameBlank);
                 controlMethodElement.toggleClass("error", isControlMethodBlank);
                 dialog.find("#gearTypeIsRequiredError").toggleClass("dn", !isControlMethodBlank);
+                
+                /*
+                 * Find all fields in the form that use <dt:timeOffset/>. If any of these fields have invalid numeric value,
+                 * set the field value to 0 for such fields. This is required since non-numeric value cannot be bind to an Integer
+                 * value.
+                 * */
+                $("#js-program-gear-form .timeOffsetWrap input:hidden").each(function (index, item) {
+                    if (!$.isNumeric($(item).val())) {
+                        $(item).val(0);
+                    }
+                });
+                
                 if (!isGearNameBlank && !isControlMethodBlank) {
                 $.ajax({
                     type: "POST",

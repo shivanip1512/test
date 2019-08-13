@@ -451,7 +451,7 @@ public class LoadProgramSetupControllerHelper {
         if (simpleThermostatRampingGearFields.getMode() == null) {
             simpleThermostatRampingGearFields.setMode(Mode.COOL);
         }
-        if (simpleThermostatRampingGearFields.getRampOutTimeInMinutes() == null) {
+        if (simpleThermostatRampingGearFields.getRandomStartTimeInMinutes() == null) {
             simpleThermostatRampingGearFields.setRandomStartTimeInMinutes(0);
         }
         if (simpleThermostatRampingGearFields.getPreOpTemp() == null) {
@@ -463,7 +463,9 @@ public class LoadProgramSetupControllerHelper {
         if (simpleThermostatRampingGearFields.getPreOpHoldInMinutes() == null) {
             simpleThermostatRampingGearFields.setPreOpHoldInMinutes(0);
         }
-        simpleThermostatRampingGearFields.setMaxRuntimeInMinutes(480);
+        if (simpleThermostatRampingGearFields.getMaxRuntimeInMinutes() == null) {
+            simpleThermostatRampingGearFields.setMaxRuntimeInMinutes(480);
+        }
         if (simpleThermostatRampingGearFields.getWhenToChangeFields() == null) {
             simpleThermostatRampingGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
         }
