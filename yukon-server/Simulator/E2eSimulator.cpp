@@ -29,7 +29,6 @@
 extern "C" {
 #include "coap/pdu.h"
 #include "coap/block.h"
-#undef E  //  CoAP define that interferes with templates
 }
 
 #include <random>
@@ -45,15 +44,27 @@ using Cti::Messaging::Serialization::MessagePtr;
 using Cti::Logging::Vector::Hex::operator<<;
 using Cti::Logging::Range::Hex::operator<<;
 
-namespace Cti {
-namespace Messaging {
-namespace Rfn {
+namespace Cti::Messaging::Rfn {
 DLLIMPORT MessageFactory<E2eMsg> e2eMessageFactory;
 DLLIMPORT MessageFactory<NetworkManagerBase> nmMessageFactory;
 }
-}
     
-namespace Simulator {
+namespace Cti::Simulator {
+
+struct e2edt_packet
+{
+    std::vector<unsigned char> payload;
+    bool confirmable;
+    unsigned token;
+    unsigned id;
+    Protocols::Coap::ResponseCode status;
+    enum class Method {
+        Get,
+        Post,
+        Put,
+        Delete
+    } method;
+};
 
 E2eSimulator::~E2eSimulator() = default;
 
@@ -188,7 +199,7 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
                                 replyPacket.id = e2edtRequest->id;
                                 replyPacket.token = e2edtRequest->token;
                                 replyPacket.payload = buildRfnResponse(e2edtRequest->payload, requestMsg.applicationServiceId, requestMsg.rfnIdentifier);
-                                replyPacket.status = COAP_RESPONSE_CODE(205); // 205 - CONTENT
+                                replyPacket.status = Protocols::Coap::ResponseCode::Content;
 
                                 e2edtReply = buildE2eDtReplyPayload(replyPacket);
                             }
@@ -264,25 +275,43 @@ void E2eSimulator::sendE2eDataConfirm(const E2eDataRequestMsg& requestMsg)
 auto E2eSimulator::parseE2eDtRequestPayload(const std::vector<unsigned char>& payload, const RfnIdentifier &rfnId) -> std::unique_ptr<e2edt_packet>
 {
     //  parse the payload into the CoAP packet - the MESSAGE_NON and REQUEST_GET are default values that will be overwritten
-    Protocols::scoped_pdu_ptr request_pdu(coap_pdu_init(COAP_MESSAGE_NON, COAP_REQUEST_GET, COAP_INVALID_TID, COAP_MAX_PDU_SIZE));
+    Protocols::Coap::scoped_pdu_ptr request_pdu(coap_pdu_init(COAP_MESSAGE_NON, COAP_REQUEST_GET, COAP_INVALID_TID, COAP_MAX_PDU_SIZE));
 
     auto mutablePayload = payload;
 
     coap_pdu_parse(mutablePayload.data(), mutablePayload.size(), request_pdu);
 
-    if( request_pdu->hdr->type != COAP_MESSAGE_CON )
+    auto e2edtRequest = std::make_unique<e2edt_packet>();
+
+    if( request_pdu->hdr->type == COAP_MESSAGE_CON )
+    {
+        CTILOG_INFO(dout, "Received CONfirmable packet (" << request_pdu->hdr->id << ") for rfnIdentifier " << rfnId);
+        e2edtRequest->confirmable = true;
+    }
+    else if( request_pdu->hdr->type == COAP_MESSAGE_NON )
+    {
+        CTILOG_INFO(dout, "Received NONconfirmable packet (" << request_pdu->hdr->id << ") for rfnIdentifier " << rfnId);
+        e2edtRequest->confirmable = false;
+    }
+    else
     {
         CTILOG_INFO(dout, "Received unhandled type ("<< request_pdu->hdr->type <<") for rfnIdentifier "<< rfnId);
         return nullptr;
     }
 
-    CTILOG_INFO(dout, "Received CONfirmable packet ("<< request_pdu->hdr->id <<") for rfnIdentifier "<< rfnId);
-
-    auto e2edtRequest = std::make_unique<e2edt_packet>();
-
     e2edtRequest->id     = request_pdu->hdr->id;
-    e2edtRequest->status = request_pdu->hdr->code;
     e2edtRequest->token  = coap_decode_var_bytes(request_pdu->hdr->token, request_pdu->hdr->token_length);
+
+    switch( request_pdu->hdr->code )
+    {
+    case COAP_REQUEST_GET:     e2edtRequest->method = e2edt_packet::Method::Get;     break;
+    case COAP_REQUEST_PUT:     e2edtRequest->method = e2edt_packet::Method::Put;     break;
+    case COAP_REQUEST_POST:    e2edtRequest->method = e2edt_packet::Method::Post;    break;
+    case COAP_REQUEST_DELETE:  e2edtRequest->method = e2edt_packet::Method::Delete;  break;
+    default:
+        CTILOG_INFO(dout, "Received unhandled method (" << request_pdu->hdr->code << ") for rfnIdentifier " << rfnId);
+        return nullptr;
+    }
 
     //  Extract the data from the packet
     unsigned char *data;
@@ -298,7 +327,7 @@ auto E2eSimulator::parseE2eDtRequestPayload(const std::vector<unsigned char>& pa
 
 std::vector<unsigned char> E2eSimulator::buildE2eDtReplyPayload(const e2edt_packet& replyContents)
 {
-    Protocols::scoped_pdu_ptr reply_pdu(coap_pdu_init(COAP_MESSAGE_ACK, replyContents.status, replyContents.id, COAP_MAX_PDU_SIZE));
+    Protocols::Coap::scoped_pdu_ptr reply_pdu(coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(replyContents.status), replyContents.id, COAP_MAX_PDU_SIZE));
 
     //  add token to reply
     unsigned char reply_token_buf[4];
@@ -319,7 +348,7 @@ std::vector<unsigned char> E2eSimulator::buildE2eDtReplyPayload(const e2edt_pack
 
 std::vector<unsigned char> E2eSimulator::buildE2eRequestNotAcceptable(unsigned id, unsigned long token) const
 {
-    Protocols::scoped_pdu_ptr reply_pdu(coap_pdu_init(COAP_MESSAGE_ACK, COAP_RESPONSE_CODE(406), id, COAP_MAX_PDU_SIZE)); // 406 - NOT ACCEPTABLE
+    Protocols::Coap::scoped_pdu_ptr reply_pdu(coap_pdu_init(COAP_MESSAGE_ACK, COAP_RESPONSE_CODE(406), id, COAP_MAX_PDU_SIZE)); // 406 - NOT ACCEPTABLE
 
     //  add token to reply
     unsigned char reply_token_buf[4];
@@ -452,5 +481,4 @@ std::vector<unsigned char> E2eSimulator::buildDnp3Response(const std::vector<uns
     return response;
 }
 
-}
 }

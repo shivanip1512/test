@@ -8,28 +8,28 @@ class Destination;
 
 namespace Cti {
     struct RfnIdentifier;
-
-namespace Messaging {
-namespace ActiveMQ {
+}
+namespace Cti::Messaging::ActiveMQ {
     class ManagedConnection;
     class ManagedConsumer;
     class MessageListener;
     class ManagedProducer;
 }
-namespace Rfn {
+namespace Cti::Messaging::Rfn {
     class NetworkManagerRequestHeader;
     class E2eDataRequestMsg;
 }
-}
 
-namespace Simulator {
+namespace Cti::Simulator {
+
+struct e2edt_packet;
 
 class E2eSimulator
 {
 public:
 
     E2eSimulator();
-    ~E2eSimulator();  //  defer unique_tr deletion 
+    ~E2eSimulator();  //  defer unique_ptr deletion 
 
     void stop();
 
@@ -51,14 +51,6 @@ private:
     void sendNetworkManagerRequestAck(const Messaging::Rfn::NetworkManagerRequestHeader&, const cms::Destination*);
     void sendE2eDataConfirm(const Messaging::Rfn::E2eDataRequestMsg&);
 
-    struct e2edt_packet
-    {
-        std::vector<unsigned char> payload;
-        unsigned token;
-        unsigned id;
-        unsigned char status;
-    };
-
     std::unique_ptr<e2edt_packet> parseE2eDtRequestPayload(const std::vector<unsigned char>&, const RfnIdentifier&);
 
     std::vector<unsigned char> buildE2eDtReplyPayload(const e2edt_packet&);
@@ -70,5 +62,4 @@ private:
     std::vector<unsigned char> buildDnp3Response(const std::vector<unsigned char>& request);
 };
 
-}
 }
