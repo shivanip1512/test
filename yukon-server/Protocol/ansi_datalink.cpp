@@ -425,10 +425,8 @@ void CtiANSIDatalink::buildTiming(BYTE aServiceCode, CtiXfer &xfer )
 
 void CtiANSIDatalink::buildLogOn(BYTE aServiceCode, CtiXfer &xfer )
 {
-   BYTE        data[13];
+   BYTE        data[13] {};
    BYTEUSHORT  flip;
-
-   memset( &data[3], 0x00, 13 );
 
    //this is just for TESTING
    data[0] = aServiceCode;
