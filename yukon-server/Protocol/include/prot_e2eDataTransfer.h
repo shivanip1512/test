@@ -99,6 +99,8 @@ private:
     unsigned short getOutboundIdForEndpoint(const RfnIdentifier endpointId);
     std::vector<unsigned char> sendBlockContinuation(const unsigned size, const unsigned num, const RfnIdentifier endpointId, const unsigned long token);
     std::vector<unsigned char> sendAck(const unsigned short id);
+
+    static YukonError_t translateIndicationCode(const unsigned short code, const RfnIdentifier endpointId);
 };
 
 }
