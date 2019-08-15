@@ -71,15 +71,14 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                 }
                 
                 // We need to use the AuthenticationService so the password gets encoded properly.
-                AuthenticationCategory authenticationCategory = authenticationService.getDefaultAuthenticationCategory();
+                AuthenticationCategory authenticationCategory = AuthenticationCategory.ENCRYPTED;
                 String password = loginBackingBean.getPassword1();
-                if (authenticationService.supportsPasswordSet(authenticationCategory)) {
-                    if (StringUtils.isBlank(password)) {
-                        throw new RuntimeException("password required for authentication category " + authenticationCategory);
-                    }
-                    authenticationService.setPasswordWithDefaultAuthCat(newUser, loginBackingBean.getPassword1(), user);
-                } else {
-                    authenticationService.setAuthenticationCategory(newUser, authenticationCategory);
+                
+                if (StringUtils.isBlank(password)) {
+                    throw new RuntimeException("password required for authentication category " + authenticationCategory);
+                }
+                else {
+                    authenticationService.setPassword(newUser, authenticationCategory, loginBackingBean.getPassword1(), user);
                 }
 
                 // Update primaryContact to new loginId
