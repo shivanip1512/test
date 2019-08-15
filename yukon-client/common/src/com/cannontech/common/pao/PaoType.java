@@ -339,6 +339,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> loadGroupSupportingRoute;
     private final static ImmutableSet<PaoType> wifiTypes;
     private final static ImmutableSet<PaoType> loadGroupSupportedFromWeb;
+    private final static ImmutableSet<PaoType> batteryAnalysisTypes;
 
     public final static int INVALID = -1;
     
@@ -768,6 +769,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_GROUP_METER_DISCONNECT
           );
         
+        batteryAnalysisTypes = ImmutableSet.of(
+            RFW201
+          );
+        
         rfElectricTypes = Sets.difference(rfMeterTypes, Sets.union(waterMeterTypes, gasMeterTypes)).immutableCopy();
     }
     
@@ -958,6 +963,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public boolean supportsPqr() {
         return this == LCR6700_RFN;
+    }
+    
+    public boolean supportsBatteryAnalysis() {
+        return batteryAnalysisTypes.contains(this);
     }
     
     private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory, PaoClass paoClass) {
@@ -1192,6 +1201,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getGasMeterTypes() {
         return gasMeterTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getBatteryAnalysisTypes() {
+        return batteryAnalysisTypes;
     }
     
     public boolean supportsMacroGroup() {

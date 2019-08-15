@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.userpage.model.SiteMapCategory;
 import com.cannontech.common.util.BinaryPrefix;
 import com.cannontech.common.util.BootstrapUtils;
@@ -49,6 +50,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.PoolManager;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.support.service.SupportBundleService;
 import com.cannontech.support.service.SupportBundleWriter;
 import com.cannontech.tools.sftp.SftpWriter.Status;
@@ -79,6 +81,7 @@ public class SupportController {
     @Autowired private SiteMapHelper siteMapHelper;
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private ServerDatabaseCache serverDatabaseCache;
 
     @RequestMapping(value="info")
     public String info(ModelMap model){
@@ -142,6 +145,10 @@ public class SupportController {
         List<SiteMapPage> excludePages = Lists.newArrayList();
         excludePages.add(SiteMapPage.SUPPORT);
         excludePages.add(SiteMapPage.DATABASE_VALIDATION);
+        // Check if there are any RFW-201's for battery analysis
+        if(Sets.intersection(serverDatabaseCache.getAllPaoTypes(), PaoType.getBatteryAnalysisTypes()).size() > 1) {
+            excludePages.add(SiteMapPage.WATER_NODE);
+        }
         
         List<SiteMapWrapper> supportPages = Lists.newArrayList();
         for(SiteMapWrapper wrapper : fullCategory){
