@@ -224,7 +224,7 @@
                                 thus avoiding a nested form, but we are not guaranteed this to be true in the future.  --%>
                                 <cti:displayForPageEditModes modes="EDIT">
                                     <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
-                                        <c:if test="${supportsPasswordSet and not empty login}">
+                                        <c:if test="${not empty login}">
                                             <tags:nameValue2 nameKey=".password">
                                                 <a href="javascript:void(0);" data-popup="#change-password-popup" 
                                                     class="js-reset-password-dialog"
@@ -236,7 +236,7 @@
                                 
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                                     <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
-                                        <c:if test="${supportsPasswordSet and empty login}">
+                                        <c:if test="${empty login}">
                                             
                                             <!-- IE does not support changing the 'type' attribute on input fields.
                                                  hence, what you see below in regards to the duplicate password fields -->
@@ -254,7 +254,7 @@
                             
                             <cti:displayForPageEditModes modes="CREATE,EDIT">
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
-                                    <c:if test="${supportsPasswordSet and empty login}">
+                                    <c:if test="${empty login}">
                                         <div class="action-area">
                                             <label>
                                                 <input class="js-show-password-checkbox" type="checkbox">
@@ -321,7 +321,7 @@
         <!-- Password Fields -->
         <cti:displayForPageEditModes modes="EDIT">
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
-                <c:if test="${supportsPasswordSet and not empty login}">
+                <c:if test="${not empty login}">
                     <cti:url var="url" value="/stars/operator/account/updatePassword"/>
                     <div class="dn" id="change-password-popup" data-dialog
                         data-title="<cti:msg2 key=".changePassword"/>" 
