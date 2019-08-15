@@ -203,6 +203,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.error.invalid.normalState">Invalid Normal state.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.error.invalid.intervalValue">Invalid {0} value.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.error.invalid.startStopTimeRange">The Start time must be before the Stop time.</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.retrieve.error">Control Area could not be retrieved.</entry>
 
 <!-- Load Group Validation -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.utilityEnrollmentGroup.rangeCheck">Utility Enrollment Group must be between 1 and 255; (use 0 to specify all devices in the group).</entry>

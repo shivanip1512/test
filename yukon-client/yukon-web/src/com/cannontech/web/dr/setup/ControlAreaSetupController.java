@@ -60,6 +60,7 @@ public class ControlAreaSetupController {
     
     private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
+    private static final String setupRedirectLink = "/dr/setup/filter?filterByType=CONTROL_AREA";
     private static final Logger log = YukonLogManager.getLogger(ControlAreaSetupController.class);
     private Cache<String, BindingResult> triggerErrorCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();
     private Cache<String, ControlAreaTrigger> controlAreaTriggerCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();
@@ -87,7 +88,7 @@ public class ControlAreaSetupController {
             ControlArea controlArea = retrieveControlArea(userContext, request, id, url);
             if (controlArea == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "controlArea.retrieve.error"));
-                return "redirect:/dr/setup/list";
+                return "redirect:" + setupRedirectLink;
             }
             model.addAttribute("controlArea", controlArea);
             controllerHelper.buildModelMap(model, controlArea);
@@ -96,7 +97,7 @@ public class ControlAreaSetupController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
 
     }
@@ -109,7 +110,7 @@ public class ControlAreaSetupController {
             ControlArea controlArea = retrieveControlArea(userContext, request, id, url);
             if (controlArea == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "controlArea.retrieve.error"));
-                return "redirect:/dr/setup/list";
+                return "redirect:" + setupRedirectLink;
             }
             if (model.containsAttribute("controlArea")) {
                 controlArea = (ControlArea) model.get("controlArea");
@@ -121,7 +122,7 @@ public class ControlAreaSetupController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
 
     }
@@ -173,11 +174,11 @@ public class ControlAreaSetupController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error creating control area: " + ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", controlArea.getName()));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
         return null;
     }
@@ -192,18 +193,18 @@ public class ControlAreaSetupController {
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
-                return "redirect:/dr/setup/list";
+                return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error deleting control area: " + ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName()));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
-        return "dr/setup/list.jsp";
+        return "redirect:" + setupRedirectLink;
     }
     
     /**
