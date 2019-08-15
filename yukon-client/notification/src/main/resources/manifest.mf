@@ -3,13 +3,6 @@ Main-Class: com.cannontech.notif.server.NotificationServer
 Class-Path: ./ 
  common.jar 
  cbc.jar  
- mx4j.jar 
- mx4j-jmx.jar 
- mx4j-tools.jar 
- mx4j-impl.jar 
- mx4j-remote.jar 
- mx4j-rimpl.jar 
- mx4j-rjmx.jar 
  vvr_tools.jar 
  yukonappserver.jar 
  sqljdbc42.jar 

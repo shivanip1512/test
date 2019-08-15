@@ -6,12 +6,6 @@ Class-Path: ./
  cbc.jar 
  vvr_tools.jar 
  calchist.jar 
- mx4j-jmx.jar 
- mx4j-tools.jar 
- mx4j-impl.jar 
- mx4j-remote.jar 
- mx4j-rimpl.jar 
- mx4j-rjmx.jar 
  common.jar 
  yukonappserver.jar 
  jfreechart.jar 
@@ -21,7 +15,6 @@ Class-Path: ./
  jcchart401K.jar 
  sqljdbc42.jar 
  ojdbc6.jar 
- jaxrpc.jar 
  jaxm-runtime.jar 
  jaxm-api.jar 
  saaj.jar 

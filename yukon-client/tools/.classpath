@@ -11,7 +11,6 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry exported="true" kind="src" path="/common"/>
-	<classpathentry kind="lib" path="/third-party/jaxrpc.jar"/>
 	<classpathentry kind="lib" path="/third-party/wsdl4j-1.6.3.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cbc"/>
 	<classpathentry kind="lib" path="/third-party/SchemaCompare.jar" sourcepath="/SchemaCompare"/>

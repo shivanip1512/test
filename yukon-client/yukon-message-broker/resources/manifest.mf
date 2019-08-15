@@ -3,13 +3,6 @@ Main-Class: com.cannontech.message.service.BrokerService
 Class-Path: ./ 
  common.jar 
  yukonappserver.jar 
- mx4j.jar 
- mx4j-jmx.jar 
- mx4j-tools.jar 
- mx4j-impl.jar 
- mx4j-remote.jar 
- mx4j-rimpl.jar 
- mx4j-rjmx.jar 
  sqljdbc42.jar 
  ojdbc6.jar 
  spring-aop-5.1.5.RELEASE.jar 

@@ -22,12 +22,10 @@ import com.google.common.collect.Sets;
 public class EimJavaLibraryTest {
 
     private static Set<String> excludedJars = ImmutableSet.of(
-        "AMDSCommon.jar",
         "activemq-openwire-legacy-5.13.4.jar",
         "ahessian.jar",
         "annotation-detector-3.0.4.jar",
         "annotations-api.jar",
-        "apache-activemq-4.1.0-incubator.jar",
         "apache-log4j-extras-1.0.jar",
         "applicationinsights-core-1.0.2.jar",
         "applicationinsights-web-1.0.2.jar",
@@ -82,7 +80,6 @@ public class EimJavaLibraryTest {
         "jaxb2-basics-ant-0.6.3.jar",
         "jaxb2-default-value-1.1.jar",
         "jaxm-runtime.jar",
-        "jaxrpc.jar",
         "jersey-client-1.13.jar",
         "jersey-core-1.13.jar",
         "jersey-json-1.13.jar",
@@ -105,11 +102,6 @@ public class EimJavaLibraryTest {
         "mail-1.4.5.jar",
         "msp-beans-v3.jar",
         "msp-beans-v5.jar",
-        "mx4j-impl.jar",
-        "mx4j-jmx.jar",
-        "mx4j-remote.jar",
-        "mx4j-rimpl.jar",
-        "mx4j-rjmx.jar",
         "netty-all-4.0.47.Final.jar",
         "objenesis-1.2.jar",
         "poi.jar",
