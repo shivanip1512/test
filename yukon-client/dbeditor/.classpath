@@ -12,6 +12,5 @@
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry kind="lib" path="resource"/>
 	<classpathentry kind="lib" path="/common/resource"/>
-	<classpathentry kind="lib" path="/third-party/jaxrpc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

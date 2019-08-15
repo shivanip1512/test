@@ -28,8 +28,6 @@
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-runtime.jar"/>
 	<classpathentry kind="lib" path="/third-party/activation.jar"/>
-	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
-	<classpathentry kind="lib" path="/third-party/mx4j-tools.jar"/>
 	<classpathentry kind="lib" path="/third-party/cglib-2.1.3.jar"/>
 	<classpathentry kind="lib" path="/third-party/jfreereport.jar" sourcepath="/third-party/linked-sources/jfreereport-0.8.6-4.zip"/>
 	<classpathentry kind="lib" path="/third-party/log4j-api-2.11.2.jar"/>

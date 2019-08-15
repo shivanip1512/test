@@ -52,9 +52,6 @@
         <dependent-module archiveName="jaxm-runtime.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jaxm-runtime.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="mx4j-tools.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/mx4j-tools.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="mailapi-1.5.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/mailapi-1.5.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -88,9 +85,6 @@
         <dependent-module archiveName="activation.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/activation.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="mx4j.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/mx4j.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="commons-digester-1.6.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/commons-digester-1.6.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -122,9 +116,6 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jaxm-api.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jaxm-api.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="jaxrpc.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jaxrpc.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="nagasena.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/nagasena.jar">

@@ -74,22 +74,12 @@
             <attribute name="org.eclipse.jst.component.dependency" value="../"/>
         </attributes>
     </classpathentry>
-    <classpathentry kind="lib" path="/third-party/mx4j.jar">
-        <attributes>
-            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
-        </attributes>
-    </classpathentry>
     <classpathentry kind="lib" path="/third-party/ecs-1.4.2.jar">
         <attributes>
             <attribute name="org.eclipse.jst.component.dependency" value="../"/>
         </attributes>
     </classpathentry>
     <classpathentry exported="true" kind="lib" path="/third-party/jdom-2.0.2.jar" sourcepath="/third-party/linked-sources/jdom-2.0.2-sources.jar">
-        <attributes>
-            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="lib" path="/third-party/mx4j-tools.jar">
         <attributes>
             <attribute name="org.eclipse.jst.component.dependency" value="../"/>
         </attributes>
@@ -388,11 +378,6 @@
         </attributes>
     </classpathentry>
     <classpathentry kind="lib" path="/third-party/jaxb2-basics-ant-0.6.3.jar">
-        <attributes>
-            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry exported="true" kind="lib" path="/third-party/xml-apis-1.4.01.jar" sourcepath="/third-party/linked-sources/xml-apis-1.4.01-sources.jar">
         <attributes>
             <attribute name="org.eclipse.jst.component.dependency" value="../"/>
         </attributes>

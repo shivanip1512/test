@@ -79,8 +79,6 @@
         <include name="lucene-queryparser-6.0.0.jar"/>
         <include name="mailapi-1.5.1.jar"/>
         <include name="smtp-1.5.1.jar"/>
-        <include name="mx4j-tools.jar"/>
-        <include name="mx4j.jar"/>
         <include name="notification.jar"/>
         <include name="org.osgi.core-4.1.0.jar"/>
         <include name="quartz-2.2.1.jar"/>
@@ -100,7 +98,6 @@
         <include name="web-common.jar"/>
         <include name="wsdl4j-1.6.3.jar"/>
         <include name="xercesImpl-2.11.0.jar"/>
-        <include name="xml-apis-1.4.01.jar"/>
         <include name="xmlschema-core-2.1.0.jar"/>
         <include name="yc.jar"/>
         <include name="yukon-shared.jar"/>

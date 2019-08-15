@@ -1379,20 +1379,6 @@ Java :
     jira : none
     notes : Java API for XML Messaging Runtime
   
-  - filename : jaxrpc.jar
-    yukon group : AXIS
-    project : Java API for XML-based RPC
-    version : 1.2
-    project URL : "http://axis.apache.org/axis/java/index.html"
-    license : CDDL, GPLv2 with classpath exception
-    license URLs : "https://glassfish.java.net/public/CDDL+GPL_1_1.html"
-    maven URL : "https://mvnrepository.com/artifact/axis/axis-jaxrpc/1.2"
-    md5 : 9e0ebb5885cc0a0da4423dc67c66bef7
-    sha1 : 56b85e05daa39a9bb4101c8c6e425d5f1db2d724
-    updated : 2005-08-01
-    jira : none
-    notes : 
-  
   - filename : jaxws-api.jar
     yukon group : Spring Web Services
     project : JAX-WS (JSR 224) API
@@ -1951,104 +1937,6 @@ Java :
     sha1 : f0e7ce9e6b3cc287fd1bfcfbaa4764b7102656a7
     updated : 2018-10-24
     jira : YUK-18846
-    notes : 
-  
-  - filename : mx4j.jar
-    yukon group : JMX
-    project : MX4J
-    version : 3.0.1
-    project URL : "http://mx4j.sourceforge.net/"
-    license : Apache-style
-    license URLs : "http://mx4j.sourceforge.net/docs/ch01s06.html"
-    maven URL : "https://mvnrepository.com/artifact/mx4j/mx4j/3.0.1"
-    md5 : 7a8675e26ee20f997ad4f54091e9b7a5
-    sha1 : 991089e21fce990b84d9e06e9ed9cc00d518ae56
-    updated : 2005-07-12
-    jira : none
-    notes : 
-  
-  - filename : mx4j-impl.jar
-    yukon group : JMX
-    project : MX4J
-    version : 3.0.1
-    project URL : "http://mx4j.sourceforge.net/"
-    license : Apache-style
-    license URLs : "http://mx4j.sourceforge.net/docs/ch01s06.html"
-    maven URL : "https://mvnrepository.com/artifact/mx4j/mx4j-impl"
-    md5 : 40744b27d4452da6d56281c8d5f99b56
-    sha1 : ebb453db2eea49ddd48e59176e0d2582b58c761e
-    updated : 2005-07-12
-    jira : none
-    notes : 3.0.1 not in Maven
-  
-  - filename : mx4j-jmx.jar
-    yukon group : JMX
-    project : MX4J
-    version : 3.0.1
-    project URL : "http://mx4j.sourceforge.net/"
-    license : Apache-style
-    license URLs : "http://mx4j.sourceforge.net/docs/ch01s06.html"
-    maven URL : "https://mvnrepository.com/artifact/mx4j/mx4j-jmx/3.0.1"
-    md5 : 12929acc5ca3c314103ef902176e946a
-    sha1 : 18e30bd68d4fc23d633f2dfd0ec7128e64cf18a1
-    updated : 2005-07-12
-    jira : none
-    notes : 
-  
-  - filename : mx4j-remote.jar
-    yukon group : JMX
-    project : MX4J
-    version : 3.0.1
-    project URL : "http://mx4j.sourceforge.net/"
-    license : Apache-style
-    license URLs : "http://mx4j.sourceforge.net/docs/ch01s06.html"
-    maven URL : "https://mvnrepository.com/artifact/mx4j/mx4j-remote/3.0.1"
-    md5 : bacb72e0fcad4259825c7cac1a0efe43
-    sha1 : f491951e754c24e7487efdd9f36d0677bfeb4184
-    updated : 2005-07-12
-    jira : none
-    notes : 
-  
-  - filename : mx4j-rimpl.jar
-    yukon group : JMX
-    project : MX4J
-    version : 3.0.1
-    project URL : "http://mx4j.sourceforge.net/"
-    license : Apache-style
-    license URLs : "http://mx4j.sourceforge.net/docs/ch01s06.html"
-    maven URL : "https://mvnrepository.com/artifact/mx4j/mx4j-rimpl"
-    md5 : 53181ba3d8d175ff0ef4b41af7a15b57
-    sha1 : cf77d67171c0935ad2c85f96985daeb345db8c9a
-    updated : 2005-07-12
-    jira : none
-    notes : 3.0.1 not in Maven
-  
-  - filename : mx4j-rjmx.jar
-    yukon group : JMX
-    project : MX4J
-    version : 3.0.1
-    project URL : "http://mx4j.sourceforge.net/"
-    license : Apache-style
-    license URLs : "http://mx4j.sourceforge.net/docs/ch01s06.html"
-    maven URL : "https://mvnrepository.com/artifact/mx4j/mx4j-rjmx"
-    md5 : a24fa983e2205559e1853e898f1c9f2e
-    sha1 : a8e33f471be1f61e0bd39fa1708977c185e87464
-    updated : 2005-07-12
-    jira : none
-    notes : 3.0.1 not in Maven
-  
-  - filename : mx4j-tools.jar
-    yukon group : JMX
-    project : MX4J
-    version : 3.0.1
-    project URL : "http://mx4j.sourceforge.net/"
-    license : Apache-style
-    license URLs : "http://mx4j.sourceforge.net/docs/ch01s06.html"
-    maven URL : "https://mvnrepository.com/artifact/mx4j/mx4j-tools/3.0.1"
-    md5 : 5f345ad6d9caf2d074df1c7dba35c6c6
-    sha1 : df853af9fe34d4eb6f849a1b5936fddfcbe67751
-    updated : 2005-07-12
-    jira : none
     notes : 
   
   - filename : nagasena.jar
@@ -3055,20 +2943,6 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/xerces/xercesImpl/2.11.0"
     md5 : 43584adc1f895628055bad0aa98a1007
     sha1 : 9bb329db1cfc4e22462c9d6b43a8432f5850e92c
-    updated : 2014-04-08
-    jira : YUK-11706
-    notes : 
-  
-  - filename : xml-apis-1.4.01.jar
-    yukon group : XML parsing
-    project : Apache-hosted standards - DOM, SAX, JAXP
-    version : 1.4.01
-    project URL : "http://xerces.apache.org/xml-commons/components/external/"
-    license : Apache 2.0, W3C
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/xml-apis/xml-apis/1.4.01"
-    md5 : 7eaad6fea5925cca6c36ee8b3e02ac9d
-    sha1 : 3789d9fada2d3d458c4ba2de349d48780f381ee3
     updated : 2014-04-08
     jira : YUK-11706
     notes : 
