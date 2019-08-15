@@ -55,6 +55,7 @@ public class ControlScenarioSetupController {
 
     private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
+    private static final String setupRedirectLink = "/dr/setup/filter?filterByType=CONTROL_SCENARIO";
     private static final Logger log = YukonLogManager.getLogger(ControlScenarioSetupController.class);
 
     @GetMapping("/create")
@@ -89,14 +90,14 @@ public class ControlScenarioSetupController {
             ControlScenario controlScenario = retrieveScenario(userContext, request, id, url);
             if (controlScenario == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "controlScenario.retrieve.error"));
-                return "redirect:/dr/setup/list";
+                return "redirect:" + setupRedirectLink;
             }
             controlScenario.setId(id);
             model.addAttribute("controlScenario", controlScenario);
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
         return "dr/setup/controlScenario/view.jsp";
     }
@@ -114,7 +115,7 @@ public class ControlScenarioSetupController {
                 controlScenario = retrieveScenario(userContext, request, id, url);
                 if (controlScenario == null) {
                     flash.setError(new YukonMessageSourceResolvable(baseKey + "controlScenario.retrieve.error"));
-                    return "redirect:/dr/setup/list";
+                    return "redirect:" + setupRedirectLink;
                 }
             }
             populateGears(controlScenario.getAllPrograms(), userContext, request);
@@ -125,7 +126,7 @@ public class ControlScenarioSetupController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
     }
 
@@ -140,18 +141,18 @@ public class ControlScenarioSetupController {
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
-                return "redirect:/dr/setup/list";
+                return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error deleting Scenario : ", ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName()));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
-        return "dr/setup/list.jsp";
+        return "redirect:" + setupRedirectLink;
     }
 
     @PostMapping(value = "/save")
@@ -188,11 +189,11 @@ public class ControlScenarioSetupController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error creating Scenario: ", ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", controlScenario.getName()));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
         return null;
     }

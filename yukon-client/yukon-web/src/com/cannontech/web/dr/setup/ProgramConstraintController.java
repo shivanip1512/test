@@ -49,6 +49,7 @@ public class ProgramConstraintController {
 
     private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
+    private static final String setupRedirectLink = "/dr/setup/filter?filterByType=PROGRAM_CONSTRAINT";
     private static final Logger log = YukonLogManager.getLogger(ProgramConstraintController.class);
 
     @GetMapping("/create")
@@ -72,12 +73,12 @@ public class ProgramConstraintController {
             programConstraint = retrieveConstraint(userContext, request, id, url);
             if (programConstraint == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "constraint.retrieve.error"));
-                return "redirect:/dr/setup/list";
+                return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
         return setupModel(programConstraint, model, userContext, request);
     }
@@ -91,7 +92,7 @@ public class ProgramConstraintController {
             ProgramConstraint programConstraint = retrieveConstraint(userContext, request, id, url);
             if (programConstraint == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "constraint.retrieve.error"));
-                return "redirect:/dr/setup/list";
+                return "redirect:" + setupRedirectLink;
             } else if (model.containsAttribute("programConstraint")) {
                 programConstraint = (ProgramConstraint) model.get("programConstraint");
             }
@@ -100,7 +101,7 @@ public class ProgramConstraintController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
     }
 
@@ -137,11 +138,11 @@ public class ProgramConstraintController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error creating program constraint: " + ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", programConstraint.getName()));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
         return null;
     }
@@ -155,18 +156,18 @@ public class ProgramConstraintController {
                 apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, lmDelete);
             if (response.getStatusCode() == HttpStatus.OK) {
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
-                return "redirect:/dr/setup/list";
+                return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error deleting program constraint : " + ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName()));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
-        return "dr/setup/list.jsp";
+        return "redirect:" + setupRedirectLink;
     }
 
     private String bindAndForward(ProgramConstraint programConstraint, BindingResult result,

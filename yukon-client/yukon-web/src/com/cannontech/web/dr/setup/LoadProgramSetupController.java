@@ -67,6 +67,7 @@ public class LoadProgramSetupController {
 
     private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
+    private static final String setupRedirectLink = "/dr/setup/filter?filterByType=LOAD_PROGRAM";
     private static final Logger log = YukonLogManager.getLogger(LoadProgramSetupController.class);
 
 
@@ -115,7 +116,7 @@ public class LoadProgramSetupController {
             LoadProgram loadProgram = retrieveProgram(userContext, request, id, url);
             if (loadProgram == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "loadProgram.retrieve.error"));
-                return "redirect:/dr/setup/list";
+                return "redirect:" + setupRedirectLink;
             }
             model.addAttribute("selectedSwitchType", loadProgram.getType());
             model.addAttribute("loadProgram", loadProgram);
@@ -133,7 +134,7 @@ public class LoadProgramSetupController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
 
     }
@@ -148,7 +149,7 @@ public class LoadProgramSetupController {
 
             if (loadProgram == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "loadProgram.retrieve.error"));
-                return "redirect:/dr/setup/list";
+                return "redirect:" + setupRedirectLink;
             } else if (model.containsAttribute("loadProgram")) {
                 loadProgram = (LoadProgram) model.get("loadProgram");
                 loadProgram.setProgramId(id);
@@ -159,7 +160,7 @@ public class LoadProgramSetupController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
 
     }
@@ -228,11 +229,11 @@ public class LoadProgramSetupController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error creating load program: " + ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", loadProgram.getName()));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
         return null;
     }
@@ -247,18 +248,18 @@ public class LoadProgramSetupController {
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
-                return "redirect:/dr/setup/list";
+                return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error deleting load program: " + ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName()));
-            return "redirect:/dr/setup/list";
+            return "redirect:" + setupRedirectLink;
         }
-        return "dr/setup/list/list.jsp";
+        return "redirect:" + setupRedirectLink;
     }
 
     @PostMapping("/{id}/copy")
@@ -286,14 +287,14 @@ public class LoadProgramSetupController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            json.put("redirectUrl", "/dr/setup/list");
+            json.put("redirectUrl", setupRedirectLink);
             servletResponse.setContentType("application/json");
             JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
             return null;
         } catch (RestClientException ex) {
             log.error("Error while copying load program: " + ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", programCopy.getName()));
-            json.put("redirectUrl", "/dr/setup/list");
+            json.put("redirectUrl", setupRedirectLink);
         }
 
         servletResponse.setContentType("application/json");
