@@ -121,57 +121,14 @@
                         </tags:nameValueContainer2>
                     </tags:sectionContainer2>
                 </c:if>
-                <div id="js-control-window" class="noswitchtype">
-                    <c:if test="${not empty selectedSwitchType}">
-                        <tags:sectionContainer2 nameKey="controlWindow">
-                            <c:set var="controlWindowOneEnabled"
-                                value="${not empty loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes
-                                      || not empty loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}"/>
-                            <tags:nameValueContainer2>
-                                <tags:nameValue2 nameKey=".controlWindowOne">
-                                <tags:switchButton name="controlWindowOne" toggleGroup="controlWindowOne" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label"
-                                    checked="${controlWindowOneEnabled}" id="controlWindowOne"/>
-                                </tags:nameValue2>
-                                <c:set var="controlWindowOneClass" value="${controlWindowOneEnabled ? '' : 'dn'}" />
-                                <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindowOne" rowClass="${controlWindowOneClass}">
-                                    <dt:timeOffset id="startTimeWindowOne" name="startTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}"/>
-                                    <input type="hidden" id="startTimeInMinutesWindowOne" name="controlWindow.controlWindowOne.availableStartTimeInMinutes" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}"/>
-                                </tags:nameValue2>
-                                <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindowOne" rowClass="${controlWindowOneClass}">
-                                    <dt:timeOffset id="stopTimeWindowOne" name="stopTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}"/>
-                                    <input type="hidden" id="stopTimeInMinutesWindowOne" name="controlWindow.controlWindowOne.availableStopTimeInMinutes" value="${loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}"/>
-                                </tags:nameValue2>
-                                </tags:nameValueContainer2>
-                                <br />
-                                <c:set var="controlWindowTwoEnabled"
-                                    value="${not empty loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes
-                                      || not empty loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}" />
-                                <tags:nameValueContainer2>
-                                    <tags:nameValue2 nameKey=".controlWindowTwo">
-                                    <tags:switchButton name="controlWindowTwo" toggleGroup="controlWindowTwo" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label"
-                                        checked="${controlWindowTwoEnabled}" id="controlWindowTwo" />
-                                    </tags:nameValue2>
-                                    <c:set var="controlWindowTwoClass" value="${controlWindowTwoEnabled ? '' : 'dn'}" />
-                                    <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindowTwo" rowClass="${controlWindowTwoClass}">
-                                        <dt:timeOffset id="startTimeWindowTwo" name="startTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"/>
-                                        <input type="hidden" id="startTimeInMinutesWindowTwo" name="controlWindow.controlWindowTwo.availableStartTimeInMinutes" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"/>
-                                    </tags:nameValue2>
-                                    <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindowTwo" rowClass="${controlWindowTwoClass}">
-                                        <dt:timeOffset id="stopTimeWindowTwo" name="stopTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}"/>
-                                        <input type="hidden" id="stopTimeInMinutesWindowTwo" name="controlWindow.controlWindowTwo.availableStopTimeInMinutes" value="${loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}"/>
-                                    </tags:nameValue2>
-                                    </tags:nameValueContainer2>
-                        </tags:sectionContainer2>
-                    </c:if>
-                </div>
             </div>
 
             <c:if test="${not empty selectedSwitchType}">
                 <div class="column two nogutter">
                     <tags:sectionContainer2 nameKey="gears" styleClass="noswitchtype">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <div style="height: 346px;" class="oa bordered-div select-box">
-                                <div id="js-assigned-gear" class="select-box-selected js-with-movables" style="min-height: 150px;" data-item-selector=".select-box-item">
+                            <div style="min-height:60px;max-height:120px;" class="bordered-div select-box">
+                                <div id="js-assigned-gear" class="select-box-selected js-with-movables" data-item-selector=".select-box-item">
                                     <c:forEach var="item" items="${gearInfos}" varStatus="status">
                                         <div id="${item.id}" class="select-box-item cm js-assigned-gear" data-id="${item.id}">
                                             <cti:url var="viewUrl" value="/dr/setup/loadProgram/gear/${item.id}?mode=${mode}"/> 
@@ -209,7 +166,7 @@
                             <cti:msg2 var="programGearCreation" key="yukon.web.modules.dr.setup.gear.title" />
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            <div class="scroll-lg">
+                            <div class="scroll-sm">
                                 <table class="compact-results-table dashed">
                                     <thead>
                                         <tr>
@@ -240,6 +197,47 @@
                             </div>
                         </cti:displayForPageEditModes>
                     </tags:sectionContainer2>
+                    <div id="js-control-window" class="noswitchtype">
+                        <c:if test="${not empty selectedSwitchType}">
+                            <tags:sectionContainer2 nameKey="controlWindow">
+                                <c:set var="controlWindowOneEnabled"
+                                    value="${not empty loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes
+                                          || not empty loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}"/>
+                                <tags:nameValueContainer2>
+                                    <tags:nameValue2 nameKey=".controlWindowOne">
+                                        <tags:switchButton name="controlWindowOne" toggleGroup="controlWindowOne" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label"
+                                            checked="${controlWindowOneEnabled}" id="controlWindowOne"/>
+                                    </tags:nameValue2>
+                                    <c:set var="controlWindowOneClass" value="${controlWindowOneEnabled ? '' : 'dn'}" />
+                                    <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindowOne" rowClass="${controlWindowOneClass}">
+                                        <dt:timeOffset id="startTimeWindowOne" name="startTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}"/>
+                                        <input type="hidden" id="startTimeInMinutesWindowOne" name="controlWindow.controlWindowOne.availableStartTimeInMinutes" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}"/>
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindowOne" rowClass="${controlWindowOneClass}">
+                                        <dt:timeOffset id="stopTimeWindowOne" name="stopTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}"/>
+                                        <input type="hidden" id="stopTimeInMinutesWindowOne" name="controlWindow.controlWindowOne.availableStopTimeInMinutes" value="${loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}"/>
+                                    </tags:nameValue2>
+                                </tags:nameValueContainer2>
+                                <c:set var="controlWindowTwoEnabled" value="${not empty loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes
+                                          || not empty loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}" />
+                                <tags:nameValueContainer2>
+                                    <tags:nameValue2 nameKey=".controlWindowTwo">
+                                    <tags:switchButton name="controlWindowTwo" toggleGroup="controlWindowTwo" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label"
+                                        checked="${controlWindowTwoEnabled}" id="controlWindowTwo" />
+                                    </tags:nameValue2>
+                                    <c:set var="controlWindowTwoClass" value="${controlWindowTwoEnabled ? '' : 'dn'}" />
+                                    <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindowTwo" rowClass="${controlWindowTwoClass}">
+                                        <dt:timeOffset id="startTimeWindowTwo" name="startTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"/>
+                                        <input type="hidden" id="startTimeInMinutesWindowTwo" name="controlWindow.controlWindowTwo.availableStartTimeInMinutes" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"/>
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindowTwo" rowClass="${controlWindowTwoClass}">
+                                        <dt:timeOffset id="stopTimeWindowTwo" name="stopTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}"/>
+                                        <input type="hidden" id="stopTimeInMinutesWindowTwo" name="controlWindow.controlWindowTwo.availableStopTimeInMinutes" value="${loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}"/>
+                                    </tags:nameValue2>
+                                </tags:nameValueContainer2>
+                            </tags:sectionContainer2>
+                        </c:if>
+                    </div>
                 </div>
             </c:if>
         </div>
@@ -413,25 +411,41 @@
 
                     <div class="column-12-12 clearfix select-box bordered-div">
                         <cti:msg2 var="minutes" key="yukon.common.units.MINUTES" />
+                        <table class="compact-results-table no-stripes">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" id="js-program-start-check" <c:if test="${loadProgram.notification.programStartInMinutes > -1}">checked="checked" </c:if>
+                                    <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if> />
+                                    <i:inline key=".programStart"/>&nbsp;
+                                    <span id="js-program-start-span">
+                                        <tags:numeric id="js-program-start" path="notification.programStartInMinutes" size="5" maxlength="5" units="${minutes}" minValue="0" maxValue="99999" />
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" id="js-program-stop-check" <c:if test="${loadProgram.notification.programStopInMinutes > -1}">checked="checked"</c:if>
+                                        <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if> />
+                                    <i:inline key=".programStop"/>&nbsp;
+                                    <span id="js-program-stop-span">
+                                        <tags:numeric id="js-program-stop" path="notification.programStopInMinutes" size="5" maxlength="5" units="${minutes}" minValue="0" maxValue="99999" />
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <tags:checkbox path="notification.notifyOnAdjust" id="js-notify-on-adjust"/>
+                                    <i:inline key=".notifyOnAdjustment" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <tags:checkbox path="notification.enableOnSchedule" id="js-notify-on-schedule"/>
+                                    <i:inline key=".notifyOnSchedule" />
+                                </td>
+                            </tr>
+                        </table>
 
-                        <input type="checkbox" id="js-program-start-check" <c:if test="${loadProgram.notification.programStartInMinutes > -1}">checked="checked" </c:if>
-                            <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if> />
-                        <i:inline key=".programStart" />
-                        &nbsp;
-                        <tags:numeric id="js-program-start" path="notification.programStartInMinutes" size="5" maxlength="5" units="${minutes}" minValue="0" maxValue="99999" />
-                        <br> 
-                        <input type="checkbox" id="js-program-stop-check" <c:if test="${loadProgram.notification.programStopInMinutes > -1}">checked="checked"</c:if>
-                            <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if> />
-                        <i:inline key=".programStop" />
-                        &nbsp;
-                        <tags:numeric id="js-program-stop" path="notification.programStopInMinutes" size="5" maxlength="5" units="${minutes}" minValue="0" maxValue="99999" />
-                        <br>
-                        <tags:checkbox path="notification.notifyOnAdjust" id="js-notify-on-adjust" />
-                        <i:inline key=".notifyOnAdjustment" />
-                        <br>
-                        <tags:checkbox path="notification.enableOnSchedule" id="js-notify-on-schedule" />
-                        <i:inline key=".notifyOnSchedule" />
-                        <br> <br />
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
                             <!-- Available notification Groups -->
                             <div class="column one bordered-div">

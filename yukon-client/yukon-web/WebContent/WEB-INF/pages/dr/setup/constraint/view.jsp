@@ -1,3 +1,5 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -94,7 +96,7 @@
                                 <c:forEach var="daySelection" items="${daySelections}" varStatus="status">
                                     <i:inline key="yukon.common.day.${daySelection}.short"/>
                                     <c:if test="${!status.last}">
-                                        <i:inline key="yukon.common.comma"/>
+                                        <i:inline key="yukon.common.comma"/>&nbsp;
                                     </c:if>
                                 </c:forEach>
                             </div>

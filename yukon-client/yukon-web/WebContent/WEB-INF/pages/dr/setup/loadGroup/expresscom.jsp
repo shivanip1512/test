@@ -71,7 +71,7 @@
     <tags:nameValueContainer2>
        <tags:nameValue2 id='js-loadAddressUsage'  nameKey=".loadAddressUsage">
            <cti:displayForPageEditModes modes="CREATE,EDIT">
-               <div class="button-group stacked loadaddressing">
+               <div class="button-group loadaddressing">
                    <c:forEach var="loadAddressUsageValue" items="${loadAddressUsageList}">
                        <tags:check id="${loadAddressUsageValue}_chk" path="addressUsage"  value="${loadAddressUsageValue}" key="${loadAddressUsageValue}"/>
                    </c:forEach>
@@ -94,7 +94,7 @@
 </tags:sectionContainer2>
 <tags:sectionContainer2 nameKey="loadAddressing">
     <tags:nameValueContainer2>
-        <tags:nameValue2 nameKey=".sendControlMessage">
+        <tags:nameValue2 nameKey=".sendControlMessage" nameClass="PB10">
             <cti:displayForPageEditModes modes="CREATE,EDIT">
                <span id="js-sendControlMessageNo">
                   <i:inline key="yukon.common.no"/>
@@ -116,8 +116,8 @@
         </tags:nameValue2>
         <tags:nameValue2 id="js-loads" nameKey=".loads">
             <cti:displayForPageEditModes modes="CREATE,EDIT">
-                <div class="button-group stacked">
-                    <c:forEach var="loadValue" items="${loadsList}">
+                <div class="button-group">
+                    <c:forEach var="loadValue" items="${loadsList}" varStatus="status">
                         <tags:check id="${loadValue}_chk" path="relayUsage" value="${loadValue}" key="${loadValue}" classes="${status.first ? 'ML0' : ''}"/>
                     </c:forEach>
                 </div>

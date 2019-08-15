@@ -82,19 +82,15 @@ yukon.dr.setup.program = (function() {
     },
 
     _enableProgramStart = function() {
-        if (!$('#js-program-start-check').is(':checked')) {
-            $('#js-program-start').prop("disabled", true);
-        } else {
-            $('#js-program-start').prop("disabled", false);
-        }
+        var startChecked = $('#js-program-start-check').is(':checked');
+        $('#js-program-start').prop("disabled", !startChecked)
+        $('#js-program-start-span').toggleClass('dn', !startChecked);
     },
     
     _enableProgramStop =  function() {
-        if(!$('#js-program-stop-check').is(':checked')) {
-            $('#js-program-stop').prop("disabled", true);
-        } else {
-            $('#js-program-stop').prop("disabled", false);
-        }
+        var stopChecked = $('#js-program-stop-check').is(':checked');
+        $('#js-program-stop').prop("disabled", !stopChecked)
+        $('#js-program-stop-span').toggleClass('dn', !stopChecked);
     },
 
     _loadProgram = function() {
