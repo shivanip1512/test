@@ -147,8 +147,9 @@ public class OperatorLoginController {
         modelMap.addAttribute("mode", PageEditMode.CREATE);
         
         // Determine if we can set a password
-        AuthType defaultAuthType = authenticationService.getDefaultAuthType();
-        modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(defaultAuthType));
+        AuthenticationCategory authenticationCategory = AuthenticationCategory.ENCRYPTED;
+        AuthType authType = authenticationCategory.getSupportingAuthType();
+        modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(authType));
         
         return "energyCompany/operatorLogin/create.jsp"; 
     }
