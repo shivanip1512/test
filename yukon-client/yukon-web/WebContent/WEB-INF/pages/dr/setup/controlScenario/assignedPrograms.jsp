@@ -11,9 +11,9 @@
             <thead>
                 <tr>
                     <th width="5%"/>
-                    <th width="30%"><i:inline key=".name"/></th>
-                    <th width="20%"><i:inline key=".startOffset"/></th>
-                    <th width="20%"><i:inline key=".stopOffset"/></th>
+                    <th width="40%"><i:inline key=".name"/></th>
+                    <th width="15%"><i:inline key=".startOffset"/></th>
+                    <th width="15%"><i:inline key=".stopOffset"/></th>
                     <th width="25%"><i:inline key=".startGear"/></th>
                 </tr>
             </thead>
@@ -23,7 +23,7 @@
                         <tr id ="js-assigned-program-${program.programId}" data-id="${program.programId}">
                             <tags:hidden path="allPrograms[${status.count-1}].programId"/>
                             <td><cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove"/></td>
-                            <td class="wbba">
+                            <td class="wbba vam">
                                 <cti:deviceName deviceId="${program.programId}"/>
                             </td>
                             <td><dt:timeOffset path="allPrograms[${status.count-1}].startOffsetInMinutes"/></td>

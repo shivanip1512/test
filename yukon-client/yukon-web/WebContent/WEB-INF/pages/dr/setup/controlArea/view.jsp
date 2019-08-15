@@ -235,7 +235,7 @@
                                             <td>                                            
                                                 <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" data-id="${program.programId}"/>
                                             </td>
-                                            <td>
+                                            <td class="vam">
                                                 <cti:deviceName deviceId="${program.programId}"/>
                                             </td>
                                             <td>
@@ -257,7 +257,7 @@
                                     <td>                                            
                                         <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" data-id="0"/>
                                     </td>
-                                    <td class="js-program-name"></td>
+                                    <td class="js-program-name vam"></td>
                                     <td>
                                         <input type="text" name="programAssignment[0].startPriority" size="4" data-min-value="1" data-max-value="2147483647" disabled="true" class="js-start-priority"/>
                                     </td>
