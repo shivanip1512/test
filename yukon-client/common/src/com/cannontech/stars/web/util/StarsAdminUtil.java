@@ -749,7 +749,7 @@ public class StarsAdminUtil {
         handleDBChange(liteUser, DbChangeType.ADD);
 
         AuthenticationCategory defaultAuthenticationCategory = authenticationService.getDefaultAuthenticationCategory();
-        if (authenticationService.supportsPasswordSet(defaultAuthenticationCategory)) {
+        if (authenticationService.supportsPasswordSet(defaultAuthenticationCategory) || !StringUtils.isBlank(password)) {
             if (StringUtils.isBlank(password)) {
                 throw new IllegalArgumentException("password cannot be blank");
             }
