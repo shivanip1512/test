@@ -47,5 +47,5 @@
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.securityType">Wi-Fi Security Type</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.securityType.UNSECURED">Unsecured</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.securityType.WPA2">WPA2</entry>
-
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.virtualGatewayIpv6Address">Virtual Gateway IPv6 Address</entry>
 </properties>

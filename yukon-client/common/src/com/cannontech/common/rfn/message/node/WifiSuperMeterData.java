@@ -11,6 +11,7 @@ public class WifiSuperMeterData implements Serializable {
     private String apBssid;
     private String apSsid;
     private WifiSecurityType securityType;
+    private String virtualGatewayIpv6Address;
 
     public Integer getChannelNum() {
         return channelNum;
@@ -51,6 +52,14 @@ public class WifiSuperMeterData implements Serializable {
     public void setSecurityType(WifiSecurityType securityType) {
         this.securityType = securityType;
     }
+    
+    public String getVirtualGatewayIpv6Address() {
+        return virtualGatewayIpv6Address;
+    }
+    
+    public void setVirtualGatewayIpv6Address(String virtualGatewayIpv6Address) {
+        this.virtualGatewayIpv6Address = virtualGatewayIpv6Address;
+    }
 
     @Override
     public int hashCode() {
@@ -61,6 +70,7 @@ public class WifiSuperMeterData implements Serializable {
         result = prime * result + ((channelNum == null) ? 0 : channelNum.hashCode());
         result = prime * result + ((rssi == null) ? 0 : rssi.hashCode());
         result = prime * result + ((securityType == null) ? 0 : securityType.hashCode());
+        result = prime * result + ((virtualGatewayIpv6Address == null) ? 0 : virtualGatewayIpv6Address.hashCode());
         return result;
     }
 
@@ -95,13 +105,19 @@ public class WifiSuperMeterData implements Serializable {
             return false;
         if (securityType != other.securityType)
             return false;
+        if (virtualGatewayIpv6Address == null) {
+            if (other.virtualGatewayIpv6Address != null)
+                return false;
+        } else if (!virtualGatewayIpv6Address.equals(other.virtualGatewayIpv6Address))
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
         return "WifiSuperMeterData [channelNum=" + channelNum + ", rssi=" + rssi + ", apBssid="
-            + apBssid + ", apSsid=" + apSsid + ", securityType=" + securityType + "]";
+               + apBssid + ", apSsid=" + apSsid + ", securityType=" + securityType
+               + ", virtualGatewayIpv6Address=" + virtualGatewayIpv6Address + "]";
     }
 
 }

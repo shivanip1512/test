@@ -26,6 +26,8 @@
                 <cti:msg2 var="label" key=".securityType"/>
                 <cti:msg2 var="type" key=".securityType.${fn:escapeXml(wifiSuperMeterData.securityType)}"/>
                 <tags:nameValue name="${label}">${type}</tags:nameValue>
+                <cti:msg2 var="label" key=".virtualGatewayIpv6Address"/>
+                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.virtualGatewayIpv6Address)}</tags:nameValue>
             </cti:msgScope>
         </c:if>
     </tags:nameValueContainer>
