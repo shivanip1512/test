@@ -36,18 +36,8 @@ yukon.dr.setup.list = (function() {
             
             _initTypes();
             
-            $(document).on('change', '#js-filter-by-type', function () {
-                var selectedFilterByType = $("#js-filter-by-type option:selected").val();
-                
-                $(".js-load-group-types-container").toggleClass("dn", selectedFilterByType !== 'LOAD_GROUP');
-                $(".js-load-program-types-container").toggleClass("dn", selectedFilterByType !== 'LOAD_PROGRAM');
-                $("#js-name").val('');
-                if (selectedFilterByType !== 'LOAD_GROUP') {
-                    $("#js-load-group-types").val("").trigger("chosen:updated");
-                }
-                if (selectedFilterByType !== 'LOAD_PROGRAM') {
-                    $("#js-load-program-types").val("").trigger("chosen:updated");
-                }
+            $('#setupFilter :input').change(function (ev) {
+                $('#setupFilter').submit();
             });
             
             _initialized = true;

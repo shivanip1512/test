@@ -56,10 +56,10 @@
     <!-- Filter Inputs -->
     <hr>
         <div class="filter-section">
-            <span class="vat"><i:inline key="yukon.common.filterBy"/></span>
+            <span class="vam"><i:inline key="yukon.common.filterBy"/>&nbsp;</span>
             <div class="dib">
                 <cti:url value="/dr/setup/filter" var="filterUrl"/>
-                <form:form method="get" modelAttribute="lmSetupFilter" action="${filterUrl}">
+                <form:form id="setupFilter" method="get" modelAttribute="lmSetupFilter" action="${filterUrl}">
                     <cti:msg2 var="namePlaceholder" key="yukon.common.name"/>
                     <cti:msg2 var="filterLbl" key="yukon.common.filter"/>
                     <tags:selectWithItems items="${filterByTypes}" path="filterByType" id="js-filter-by-type" inputClass="vat"/>
