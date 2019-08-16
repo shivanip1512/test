@@ -271,6 +271,7 @@ public class MapController {
                                 String securityType = accessor.getMessage("yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.securityType."
                                         + nodeData.getWifiSuperMeterData().getSecurityType());
                                 model.addAttribute("securityType", securityType);
+                                model.addAttribute("virtualGatewayIpv6Address", nodeData.getWifiSuperMeterData().getVirtualGatewayIpv6Address());
                             }
                         } else {
                             log.error("NM didn't return node data for " + rfnDevice);
