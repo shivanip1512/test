@@ -145,8 +145,8 @@ public class SupportController {
         List<SiteMapPage> excludePages = Lists.newArrayList();
         excludePages.add(SiteMapPage.SUPPORT);
         excludePages.add(SiteMapPage.DATABASE_VALIDATION);
-        // Check if there are any RFW-201's for battery analysis
-        if(Sets.intersection(serverDatabaseCache.getAllPaoTypes(), PaoType.getBatteryAnalysisTypes()).size() > 1) {
+        // Check if there are any devices that support battery analysis ( currently only supports water nodes )
+        if(serverDatabaseCache.getAllPaoTypes().stream().anyMatch(PaoType::supportsBatteryAnalysis)) {
             excludePages.add(SiteMapPage.WATER_NODE);
         }
         
