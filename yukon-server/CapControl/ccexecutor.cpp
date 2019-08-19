@@ -5878,13 +5878,19 @@ void TriggerDmvTestExecutor::execute()
 
     if ( CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( busID ) )
     {
-        IVVCStrategy * ivvcStrat = dynamic_cast<IVVCStrategy *>( bus->getStrategy().get() );
+        CTILOG_INFO( dout, "Scheduling DMV Test: '" << testName << "' on Substation Bus: " << bus->getPaoName() );
 
-        CTILOG_INFO( dout, "Preparing to execute DMV Test: '" << testName << "' on Substation Bus: " << bus->getPaoName() );
+        if ( bus->getDisableFlag() )
+        {
+            CTILOG_ERROR( dout, "Could not schedule DMV Test: '" << testName << "' - Substation Bus: " << bus->getPaoName() << " is disabled." );
+            return;
+        }
+
+        IVVCStrategy * ivvcStrat = dynamic_cast<IVVCStrategy *>( bus->getStrategy().get() );
 
         if( ! ivvcStrat )
         {
-            CTILOG_DEBUG( dout, "Unable to execute DMV Test: '" << testName << "' - Substation Bus: " << bus->getPaoName() << " does not have an IVVC Strategy assigned." );
+            CTILOG_DEBUG( dout, "Could not schedule DMV Test: '" << testName << "' - Substation Bus: " << bus->getPaoName() << " does not have an IVVC Strategy assigned." );
             return;
         }
 
@@ -5905,15 +5911,13 @@ void TriggerDmvTestExecutor::execute()
 
         rdr.execute();
 
-        std::unique_ptr<DmvTestData> testData;
-        
         if( ! rdr() ) 
         {
-            CTILOG_DEBUG(dout, "Unable to execute DMV Test: '" << testName << "' - Test parameters could not be found in the database.");
+            CTILOG_DEBUG(dout, "Could not schedule DMV Test: '" << testName << "' - Test parameters could not be found in the database.");
             return;
         }
 
-        testData = std::make_unique<DmvTestData>();
+        auto testData = std::make_unique<DmvTestData>();
 
         testData->TestId                        = rdr["TestId"].as<long>();
         testData->TestName                      = rdr["TestName"].as<string>();
@@ -5921,6 +5925,7 @@ void TriggerDmvTestExecutor::execute()
         testData->IntervalDataGatheringDuration = rdr["IntervalDataGatheringDuration"].as<long>();
         testData->StepSize                      = rdr["StepSize"].as<double>();
         testData->CommSuccessPercentage         = rdr["CommSuccessPercentage"].as<long>();
+        testData->ExecutionID                   = -1;
 
         bool testRunning = ! ivvcStrat->setDmvTestExecution( busID, std::move( testData ) );
 
@@ -5933,7 +5938,7 @@ void TriggerDmvTestExecutor::execute()
     {
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CTILOG_DEBUG( dout, "Unable to execute DMV Test: '" << testName << "' - Substation Bus with ID: " << busID << " was not found." );
+            CTILOG_DEBUG( dout, "Could not schedule DMV Test: '" << testName << "' - Substation Bus with ID: " << busID << " was not found." );
         }
     }
 }

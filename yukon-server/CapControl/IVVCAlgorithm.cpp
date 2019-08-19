@@ -252,6 +252,37 @@ bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstation
             sendDisableRemoteControl( subbus );
         }
         state->setShowBusDisableMsg(false);
+
+        // If we are running or have scheduled a DMV test, we need to cancel it and log...
+
+        if ( state->hasDmvTestState() )
+        {
+            auto & dmvTestSettings = state->getDmvTestData();
+
+            if ( dmvTestSettings.ExecutionID >= 0 )
+            {
+                // The DMV test is currently running ( ExecutionID is >= 0 ).  We need to abort it and write to the log and also
+                // update the active test result row to show why we aborted the test.
+
+                CtiTime timeNow;
+
+                CTILOG_INFO( dout, "Aborting DMV Test '" << dmvTestSettings.TestName << "' running on bus: "
+                                    << subbus->getPaoName() << ". The " << culprit << " is disabled." );
+
+                updateDmvTestStatus( dmvTestSettings.ExecutionID, dmvTestSettings.TestId, timeNow, "Abort: " + culprit + "disabled" );
+            }
+            else
+            {
+                // DMV test is scheduled but hasn't run yet.  Write to log, but database has no rows yet so we can't
+                // record anything there.
+
+                CTILOG_INFO( dout, "Cancelling DMV Test '" << dmvTestSettings.TestName << "' scheduled for bus: "
+                                    << subbus->getPaoName() << ". The " << culprit << " is disabled." );
+            }
+            state->deleteDmvState();
+            subbus->setDmvTestRunning( false );
+        }
+
         state->setState(IVVCState::IVVC_WAIT);
         return true;
     }
