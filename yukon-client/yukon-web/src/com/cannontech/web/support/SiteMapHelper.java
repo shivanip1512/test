@@ -31,7 +31,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 public class SiteMapHelper {
 
@@ -46,8 +45,8 @@ public class SiteMapHelper {
         Multimap<SiteMapCategory, SiteMapWrapper> map = ArrayListMultimap.create();
 
         List<SiteMapPage> excludePages = Lists.newArrayList();
-        // Check if there are any RFW-201's for battery analysis
-        if(Sets.intersection(serverDatabaseCache.getAllPaoTypes(), PaoType.getBatteryAnalysisTypes()).size() > 1) {
+        // Check if there are any devices that support battery analysis ( currently only supports water nodes )
+        if(serverDatabaseCache.getAllPaoTypes().stream().anyMatch(PaoType::supportsBatteryAnalysis)) {
             excludePages.add(SiteMapPage.WATER_NODE);
         }
         
