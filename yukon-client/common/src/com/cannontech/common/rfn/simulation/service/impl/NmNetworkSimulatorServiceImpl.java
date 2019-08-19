@@ -539,7 +539,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         superMeterData.setChannelNum(8);
         superMeterData.setRssi(-64D);
         superMeterData.setSecurityType(WifiSecurityType.WPA2);
-        superMeterData.setVirtualGatewayIpv6Address("FD30000000000001021408FFFE0ABF91");
+        superMeterData.setVirtualGatewayIpv6Address("FD30:0000:0000:0001:0214:08FF:FE0A:BF91");
         return superMeterData;
     }
 
