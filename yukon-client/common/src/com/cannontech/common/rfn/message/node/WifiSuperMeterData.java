@@ -7,10 +7,17 @@ public class WifiSuperMeterData implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Integer channelNum;
+    
     private Double rssi;
+    
     private String apBssid;
+    
     private String apSsid;
+    
     private WifiSecurityType securityType;
+    
+    // A string represents an ipv6 address, e.x., "FD30:0000:0000:0001:0214:08FF:FE0A:BF91"
+    // Yukon UI can display it directly without adding colons.
     private String virtualGatewayIpv6Address;
 
     public Integer getChannelNum() {
@@ -52,11 +59,11 @@ public class WifiSuperMeterData implements Serializable {
     public void setSecurityType(WifiSecurityType securityType) {
         this.securityType = securityType;
     }
-    
+
     public String getVirtualGatewayIpv6Address() {
         return virtualGatewayIpv6Address;
     }
-    
+
     public void setVirtualGatewayIpv6Address(String virtualGatewayIpv6Address) {
         this.virtualGatewayIpv6Address = virtualGatewayIpv6Address;
     }
@@ -70,7 +77,8 @@ public class WifiSuperMeterData implements Serializable {
         result = prime * result + ((channelNum == null) ? 0 : channelNum.hashCode());
         result = prime * result + ((rssi == null) ? 0 : rssi.hashCode());
         result = prime * result + ((securityType == null) ? 0 : securityType.hashCode());
-        result = prime * result + ((virtualGatewayIpv6Address == null) ? 0 : virtualGatewayIpv6Address.hashCode());
+        result = prime * result
+            + ((virtualGatewayIpv6Address == null) ? 0 : virtualGatewayIpv6Address.hashCode());
         return result;
     }
 
@@ -115,9 +123,13 @@ public class WifiSuperMeterData implements Serializable {
 
     @Override
     public String toString() {
-        return "WifiSuperMeterData [channelNum=" + channelNum + ", rssi=" + rssi + ", apBssid="
-               + apBssid + ", apSsid=" + apSsid + ", securityType=" + securityType
-               + ", virtualGatewayIpv6Address=" + virtualGatewayIpv6Address + "]";
+        return String
+            .format("WifiSuperMeterData [channelNum=%s, rssi=%s, apBssid=%s, apSsid=%s, securityType=%s, virtualGatewayIpv6Address=%s]",
+                    channelNum,
+                    rssi,
+                    apBssid,
+                    apSsid,
+                    securityType,
+                    virtualGatewayIpv6Address);
     }
-
 }
