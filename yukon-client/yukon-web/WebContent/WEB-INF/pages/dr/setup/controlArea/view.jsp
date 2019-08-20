@@ -98,7 +98,6 @@
                                     data-url="${triggerUrl}"
                                     data-target="#js-trigger-link-${triggerId}"
                                     data-event="yukon:dr:setup:controlArea:saveTrigger"
-                                    data-load-event="yukon:dr:setup:controlArea:renderTriggerFields"
                                     data-width="600"
                                     data-height="auto"
                                     data-title="${fn:escapeXml(triggerName)}">
@@ -145,7 +144,6 @@
                                                     data-url="${triggerUrl}"
                                                     data-target="#js-trigger-link-${triggerId}"
                                                     data-event="yukon:dr:setup:controlArea:saveTrigger"
-                                                    data-load-event="yukon:dr:setup:controlArea:renderTriggerFields"
                                                     data-width="600"
                                                     data-height="auto"
                                                     data-title="${fn:escapeXml(triggerName)}">
@@ -161,14 +159,12 @@
                         id="js-add-triggers"
                         data-url="${triggerPopupUrl}"
                         data-event="yukon:dr:setup:controlArea:saveTrigger"
-                        data-load-event="yukon:dr:setup:controlArea:renderTriggerFields"
                         data-width="600"
                         data-height="auto"
                         data-title="<cti:msg2 key="yukon.web.modules.dr.setup.controlArea.trigger.title"/>" class="dn">
                     </div>
                     <div data-dialog
                         data-event="yukon:dr:setup:controlArea:saveTrigger"
-                        data-load-event="yukon:dr:setup:controlArea:renderTriggerFields"
                         data-width="600" data-height="auto"
                         data-title="<cti:msg2 key="yukon.web.modules.dr.setup.controlArea.trigger.title"/>"
                         class="dn js-trigger-dialog-template">

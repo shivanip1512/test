@@ -198,51 +198,16 @@ yukon.dr.setup.controlArea = (function() {
 
             $(document).on("yukon:dr:setup:controlArea:saveTrigger", function (event) {
                 _clearErrors();
-                var dialog = $(event.target);
-                var container = $("div.ui-dialog:visible");
-
-                if ((container.find("#js-trigger-type option:selected").val() === "THRESHOLD_POINT") || 
-                        (container.find("#trigger-type").val() === "THRESHOLD_POINT")) {
-                    container.find("#point-trigger-identification-name").val(thresholdPointTriggerIdentification.selectionLabel.innerText);
-                    container.find("#min-restore-offset").val($("#js-threshold-point-min-restore-offset").val());
-
-                    container.find("#trigger-point-id").val($("#point-trigger-identification-thresholdPoint").val());
-                    container.find("#peak-point-id").val($("#point-peak-tracking-thresholdPoint").val());
-                    container.find("#threshold-point-id").val($("#point-threshold-settings-thresholdPoint").val());
-
-                    _setTriggerType("THRESHOLD_POINT");
-                    if (_validatePickerValues("THRESHOLD_POINT")) {
-                        return;
-                    }
+                var dialog = $(event.target),
+                    container = $("div.ui-dialog:visible"),
+                    triggerType = $("#js-trigger-type option:selected").val();
+                
+                container.find("#point-trigger-identification-name").val(triggerIdentification.selectionLabel.innerText);
+                
+                if (_validatePickerValues(triggerType)) {
+                    return;
                 }
-                if ((container.find("#js-trigger-type option:selected").val() === "THRESHOLD") || 
-                        (container.find("#trigger-type").val() === "THRESHOLD")) {
-                    container.find("#point-trigger-identification-name").val(thresholdTriggerIdentification.selectionLabel.innerText);
-                    container.find("#min-restore-offset").val($("#js-threshold-min-restore-offset").val());
-                    container.find("#trigger-point-id-test").val($("#point-trigger-identification-threshold").val());
 
-                    container.find("#trigger-point-id").val($("#point-trigger-identification-threshold").val());
-                    container.find("#peak-point-id").val($("#point-peak-tracking-threshold").val());
-
-                    _setTriggerType("THRESHOLD");
-                    if(_validatePickerValues("THRESHOLD")){
-                        return;
-                    }
-                    container.find("#point-trigger-identification-name").val(thresholdTriggerIdentification.selectionLabel.innerText);
-                }
-                if ((container.find("#js-trigger-type option:selected").val() === "STATUS") || 
-                        (container.find("#trigger-type").val() === "STATUS")) {
-                    container.find("#point-trigger-identification-name").val(statusTriggerIdentification.selectionLabel.innerText);
-                    container.find("#trigger-point-id-test").val($("#point-trigger-identification-status").val());
-
-                    container.find("#trigger-point-id").val($("#point-trigger-identification-status").val());
-
-                    _setTriggerType("STATUS");
-                    if (_validatePickerValues("STATUS")) {
-                        return;
-                    }
-                    container.find("#point-trigger-identification-name").val(statusTriggerIdentification.selectionLabel.innerText);
-                }
                 var triggerId = $(event.target).data("triggerId"),
                     newTrigger = false;
                 if(triggerId === undefined){

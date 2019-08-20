@@ -14,82 +14,88 @@ yukon.dr.setup.controlArea.trigger = (function() {
 
     _enableTriggerSection = function() {
         var triggerType = $("#js-trigger-type option:selected").val();
-        $('.js-threshold-point-section').toggleClass('dn', triggerType !== 'THRESHOLD_POINT');
-        $('.js-threshold-section').toggleClass('dn', triggerType !== 'THRESHOLD');
-        $('.js-status-section').toggleClass('dn', triggerType !== 'STATUS');
-        if(triggerType === 'THRESHOLD'){
+        if (triggerType === 'THRESHOLD') {
+            $('.js-threshold-point').addClass('dn');
+            $('.js-status').addClass('dn');
+            $('.js-threshold').removeClass('dn');
             _setDefaultProjectionProperties();
+            _enableDisablePeakTracking();
+        } else if (triggerType === 'THRESHOLD_POINT') {
+            $('.js-status').addClass('dn');
+            $('.js-threshold').addClass('dn');
+            $('.js-threshold-point').removeClass('dn');
+            _enableDisablePeakTracking();
+        } else {
+            $('.js-threshold').addClass('dn');
+            $('.js-threshold-point').addClass('dn');
+            $('.js-status').removeClass('dn');
+            var pointId = $("#trigger-point-id").val();
+            $('#js-normal-state').toggleClass('dn', pointId == "");
+            if (pointId != "") {
+                _retrieveNormalStates();
+            }
         }
     },
+    
+    _enableDisablePeakTracking = function() {
+        var usePeakTracking = $('#js-use-peak-tracking').prop('checked');
+        $('.js-peak-tracking').toggleClass('dn', !usePeakTracking);
+    },
+    
     _setDefaultProjectionProperties = function(){
-        if ($("#js-threshold-projection-type option:selected").val() === "NONE") {
-            $("#js-threshold-samples").prop('disabled', true);
-            $("#js-threshold-samples").val(5);
-            $("#js-threshold-ahead").prop('disabled', true);
-        } else {
-            $("#js-threshold-samples").prop('disabled', false);
-            $("#js-threshold-ahead").prop('disabled', false);
+        var noneSelected = $("#js-threshold-projection-type option:selected").val() === "NONE";
+        $('.js-threshold-samples-row').toggleClass('dn', noneSelected);
+        $('.js-threshold-ahead-row').toggleClass('dn', noneSelected);
+        if (noneSelected) {
+            var sampleValue = $('#js-threshold-samples').val();
+            if (!sampleValue) {
+                $("#js-threshold-samples").val(5);
+            }
+        }
+    },
+    
+    _retrieveNormalStates = function() {
+        var triggerType = $("#js-trigger-type option:selected").val(),
+        container = $(".js-trigger-controls:visible"),
+        pointId = $("#trigger-point-id").val();
+        if (triggerType === 'STATUS') {
+            $("#js-normal-state").removeClass("dn");
+            $.ajax({
+                url: yukon.url('/dr/setup/controlArea/getNormalState/' + pointId),
+                type: 'get'
+            }).done(function (data) {
+                container.find("#js-status-normal-state").empty();
+                data.normalStates.forEach(function (field){
+                    var option = $('<option value=' + field.id + '>' + field.name + '</option>');
+                    container.find("#js-status-normal-state").append(option);
+                });
+            });
         }
     },
 
     mod = {
         init : function() {
-            if (_initialized)
-                return;
+            
+            if (_initialized) return;
+            
             $(document).on('change', '#js-trigger-type', function() {
                 _enableTriggerSection();
             });
             $(document).on('change', '#js-threshold-projection-type', function() {
                 _setDefaultProjectionProperties()
             });
-            $(document).on('change', '#js-use-peak-tracking-threshold-point', function() {
-                if (this.checked) {
-                    $("#picker-thresholdPointPeakTracking-btn").prop('disabled', false);
-                } else {
-                    $("#point-peak-tracking").val("");
-                    $("#picker-thresholdPointPeakTracking-btn").prop('disabled', true);
-                }
-            });
-            $(document).on('change', '#js-use-peak-tracking-threshold', function() {
-                if (this.checked) {
-                    $("#picker-thresholdPeakTracking-btn").prop('disabled', false);
-                } else {
-                    $("#point-peak-tracking").val("");
-                    $("#picker-thresholdPeakTracking-btn").prop('disabled', true);
-                }
-            });
-            $(document).on("yukon:dr:setup:controlArea:renderTriggerFields", function (event){
-                var peakPointId = $("#js-peak-point-id").val();
-                if(!peakPointId){
-                    $("#picker-thresholdPeakTracking-btn").prop('disabled', true);
-                    $("#picker-thresholdPointPeakTracking-btn").prop('disabled', true);
+            
+            $(document).on('change', '#js-use-peak-tracking', function() {
+                $('.js-peak-tracking').toggleClass('dn', !this.checked);
+                if (!this.checked) {
+                    $('#point-peak-id').val(0);
                 }
             });
             
             $(document).on('yukon:trigger:identification:complete', function() {
-                var container = $(".js-trigger-controls:visible"),
-                    pointId = $("#point-trigger-identification-status").val(),
-                    isViewMode = container.find(".js-trigger-type-view-mode").is(":visible");
-                $("#js-normal-state").removeClass("dn");
-                $.ajax({
-                    url: yukon.url('/dr/setup/controlArea/getNormalState/' + pointId),
-                    type: 'get'
-                }).done(function (data) {
-                    if(!isViewMode){
-                        container.find("#js-status-normal-state-create").empty();
-                        data.normalStates.forEach(function (field){
-                            var option = $('<option value=' + field.id + '>' + field.name + '</option>');
-                            container.find("#js-status-normal-state-create").append(option);
-                        });
-                    } else {
-                        container.find("#js-status-normal-state-edit").empty();
-                        data.normalStates.forEach(function (field){
-                            var option = $('<option value=' + field.id + '>' + field.name + '</option>');
-                            container.find("#js-status-normal-state-edit").append(option);
-                        });
-                    }
-                });
+                _retrieveNormalStates();
             });
+            
             _initialized = true;
         }
     };
