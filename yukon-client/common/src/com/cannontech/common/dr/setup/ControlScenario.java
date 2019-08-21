@@ -2,6 +2,7 @@ package com.cannontech.common.dr.setup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.apache.commons.collections4.CollectionUtils;
 import com.cannontech.database.data.device.lm.LMScenario;
@@ -36,7 +37,9 @@ public class ControlScenario {
     }
 
     public List<ProgramDetails> getAllPrograms() {
-        return allPrograms;
+        return allPrograms.stream()
+                          .sorted((p1, p2) -> p1.getStartOffsetInMinutes().compareTo(p2.getStartOffsetInMinutes()))
+                          .collect(Collectors.toList());
     }
 
     public void setAllPrograms(List<ProgramDetails> allPrograms) {
