@@ -534,7 +534,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
 
     private WifiSuperMeterData getSuperMeterData() {
         WifiSuperMeterData superMeterData = new WifiSuperMeterData();
-        superMeterData.setApBssid("12:34:56:78:90:ab");
+        superMeterData.setConfiguredApBssid("12:34:56:78:90:ab");
+        superMeterData.setConnectedApBssid("ab:cd:ef:01:23:45");
         superMeterData.setApSsid("ExampleUtilityISP");
         superMeterData.setChannelNum(8);
         superMeterData.setRssi(-64D);

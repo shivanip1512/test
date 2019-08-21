@@ -19,8 +19,10 @@
                 <cti:msg2 var="dBm" key=".rssi.dBm"/>
                 <cti:msg2 var="label" key=".rssi"/>
                 <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.rssi)} ${dBm}</tags:nameValue>
-                <cti:msg2 var="label" key=".apBssid"/>
-                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.apBssid)}</tags:nameValue>
+                <cti:msg2 var="label" key=".configuredApBssid"/>
+                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.configuredApBssid)}</tags:nameValue>
+                <cti:msg2 var="label" key=".connectedApBssid"/>
+                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.connectedApBssid)}</tags:nameValue>
                 <cti:msg2 var="label" key=".apSsid"/>
                 <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.apSsid)}</tags:nameValue>
                 <cti:msg2 var="label" key=".securityType"/>

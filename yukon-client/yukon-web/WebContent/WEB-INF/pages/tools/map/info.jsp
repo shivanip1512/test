@@ -59,8 +59,11 @@
         <c:if test="${!empty rssi}">
             <tags:nameValue2 nameKey=".rssi">${fn:escapeXml(rssi)}</tags:nameValue2>
         </c:if>
-        <c:if test="${!empty apBssid}">
-            <tags:nameValue2 nameKey=".apBssid">${fn:escapeXml(apBssid)}</tags:nameValue2>
+        <c:if test="${!empty configuredApBssid}">
+            <tags:nameValue2 nameKey=".configuredApBssid">${fn:escapeXml(configuredApBssid)}</tags:nameValue2>
+        </c:if>
+        <c:if test="${!empty connectedApBssid}">
+            <tags:nameValue2 nameKey=".connectedApBssid">${fn:escapeXml(connectedApBssid)}</tags:nameValue2>
         </c:if>
         <c:if test="${!empty apSsid}">
             <tags:nameValue2 nameKey=".apSsid">${fn:escapeXml(apSsid)}</tags:nameValue2>

@@ -39,8 +39,9 @@
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.COMM_STATUS.value.READY">Ready</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.COMM_STATUS.value.NOT_READY">Not Ready</entry>
 
-<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.apBssid">Wi-Fi AP BSSID</entry>
-<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.apSsid">Wi-Fi AP SSID</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.apSsid">Wi-Fi AP Configured SSID</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.configuredApBssid">Wi-Fi AP Configured BSSID</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.connectedApBssid">Wi-Fi AP Connected BSSID</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.channelNum">Wi-Fi Channel Number</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.rssi">Recent RSSI</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.rssi.dBm">dBm</entry>
