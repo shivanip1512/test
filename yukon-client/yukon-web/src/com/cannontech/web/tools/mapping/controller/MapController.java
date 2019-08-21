@@ -266,7 +266,8 @@ public class MapController {
                                 model.addAttribute("channelNum", nodeData.getWifiSuperMeterData().getChannelNum());
                                 String dBm = accessor.getMessage("yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.rssi.dBm");
                                 model.addAttribute("rssi", nodeData.getWifiSuperMeterData().getRssi() + " " + dBm);
-                                model.addAttribute("apBssid", nodeData.getWifiSuperMeterData().getApBssid());
+                                model.addAttribute("configuredApBssid", nodeData.getWifiSuperMeterData().getConfiguredApBssid());
+                                model.addAttribute("connectedApBssid", nodeData.getWifiSuperMeterData().getConnectedApBssid());
                                 model.addAttribute("apSsid", nodeData.getWifiSuperMeterData().getApSsid());
                                 String securityType = accessor.getMessage("yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.securityType."
                                         + nodeData.getWifiSuperMeterData().getSecurityType());

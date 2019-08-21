@@ -10,9 +10,11 @@ public class WifiSuperMeterData implements Serializable {
     
     private Double rssi;
     
-    private String apBssid;
-    
     private String apSsid;
+    
+    private String configuredApBssid;
+
+    private String connectedApBssid;
     
     private WifiSecurityType securityType;
     
@@ -36,20 +38,28 @@ public class WifiSuperMeterData implements Serializable {
         this.rssi = rssi;
     }
 
-    public String getApBssid() {
-        return apBssid;
-    }
-
-    public void setApBssid(String apBssid) {
-        this.apBssid = apBssid;
-    }
-
     public String getApSsid() {
         return apSsid;
     }
 
     public void setApSsid(String apSsid) {
         this.apSsid = apSsid;
+    }
+
+    public String getConfiguredApBssid() {
+        return configuredApBssid;
+    }
+
+    public void setConfiguredApBssid(String configuredApBssid) {
+        this.configuredApBssid = configuredApBssid;
+    }
+
+    public String getConnectedApBssid() {
+        return connectedApBssid;
+    }
+
+    public void setConnectedApBssid(String connectedApBssid) {
+        this.connectedApBssid = connectedApBssid;
     }
 
     public WifiSecurityType getSecurityType() {
@@ -72,9 +82,10 @@ public class WifiSuperMeterData implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((apBssid == null) ? 0 : apBssid.hashCode());
         result = prime * result + ((apSsid == null) ? 0 : apSsid.hashCode());
         result = prime * result + ((channelNum == null) ? 0 : channelNum.hashCode());
+        result = prime * result + ((configuredApBssid == null) ? 0 : configuredApBssid.hashCode());
+        result = prime * result + ((connectedApBssid == null) ? 0 : connectedApBssid.hashCode());
         result = prime * result + ((rssi == null) ? 0 : rssi.hashCode());
         result = prime * result + ((securityType == null) ? 0 : securityType.hashCode());
         result = prime * result
@@ -91,11 +102,6 @@ public class WifiSuperMeterData implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         WifiSuperMeterData other = (WifiSuperMeterData) obj;
-        if (apBssid == null) {
-            if (other.apBssid != null)
-                return false;
-        } else if (!apBssid.equals(other.apBssid))
-            return false;
         if (apSsid == null) {
             if (other.apSsid != null)
                 return false;
@@ -105,6 +111,16 @@ public class WifiSuperMeterData implements Serializable {
             if (other.channelNum != null)
                 return false;
         } else if (!channelNum.equals(other.channelNum))
+            return false;
+        if (configuredApBssid == null) {
+            if (other.configuredApBssid != null)
+                return false;
+        } else if (!configuredApBssid.equals(other.configuredApBssid))
+            return false;
+        if (connectedApBssid == null) {
+            if (other.connectedApBssid != null)
+                return false;
+        } else if (!connectedApBssid.equals(other.connectedApBssid))
             return false;
         if (rssi == null) {
             if (other.rssi != null)
@@ -124,11 +140,12 @@ public class WifiSuperMeterData implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("WifiSuperMeterData [channelNum=%s, rssi=%s, apBssid=%s, apSsid=%s, securityType=%s, virtualGatewayIpv6Address=%s]",
+            .format("WifiSuperMeterData [channelNum=%s, rssi=%s, apSsid=%s, configuredApBssid=%s, connectedApBssid=%s, securityType=%s, virtualGatewayIpv6Address=%s]",
                     channelNum,
                     rssi,
-                    apBssid,
                     apSsid,
+                    configuredApBssid,
+                    connectedApBssid,
                     securityType,
                     virtualGatewayIpv6Address);
     }
