@@ -37,9 +37,7 @@ public class ControlScenario {
     }
 
     public List<ProgramDetails> getAllPrograms() {
-		return allPrograms.stream()
-                          .sorted((p1, p2) -> p1.getStartOffsetInMinutes().compareTo(p2.getStartOffsetInMinutes()))
-                          .collect(Collectors.toList());
+        return allPrograms;
     }
 
     public void setAllPrograms(List<ProgramDetails> allPrograms) {
@@ -62,7 +60,9 @@ public class ControlScenario {
             programDetails.setGears(gears);
             allPrograms.add(programDetails);
         });
-        setAllPrograms(allPrograms);
+        setAllPrograms(allPrograms.stream()
+                                  .sorted((p1, p2) -> p1.getStartOffsetInMinutes().compareTo(p2.getStartOffsetInMinutes()))
+                                  .collect(Collectors.toList()));
     }
 
     public void buildDBPersistent(LMScenario controlScenario) {
