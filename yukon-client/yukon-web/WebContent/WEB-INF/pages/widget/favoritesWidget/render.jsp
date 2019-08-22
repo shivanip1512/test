@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:msgScope paths="modules.operations.dashboard">
@@ -43,7 +44,7 @@
             <c:if test="${not empty history}">
                 <ol class="simple-list">
                     <c:forEach var="historyItem" items="${history}">
-                        <li><a href="<cti:url value="${historyItem.path}"/>"><cti:pageName userPage="${historyItem}"/></a></li>
+                        <li><a href="<cti:url value="${fn:escapeXml(historyItem.path)}"/>"><cti:pageName userPage="${historyItem}"/></a></li>
                     </c:forEach>
                 </ol>
             </c:if>
