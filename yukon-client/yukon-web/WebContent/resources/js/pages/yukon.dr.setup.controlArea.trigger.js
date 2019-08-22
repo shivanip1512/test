@@ -88,7 +88,7 @@ yukon.dr.setup.controlArea.trigger = (function() {
             $(document).on('change', '#js-use-peak-tracking', function() {
                 $('.js-peak-tracking').toggleClass('dn', !this.checked);
                 if (!this.checked) {
-                    $('#point-peak-id').val(0);
+                    $('#peak-point-id').val(0);
                 }
             });
             
