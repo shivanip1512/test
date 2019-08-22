@@ -174,6 +174,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     }
     
     @Override
+    @Transactional (propagation = Propagation.REQUIRES_NEW)
     public CommandRequestExecution createStartedExecution(CommandRequestType commandType, DeviceRequestType deviceType,
             int requestCount, LiteYukonUser user) {
         CommandRequestExecutionContextId contextId =
@@ -192,11 +193,8 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
         execution.setUserName(user.getUsername());
         execution.setCommandRequestType(commandType);
         execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.STARTED);
-        // TODO YUK-20330 Investigate "connect" message causing table locking
-        // If the DeviceRequestType is the new METER_DR_CONNECT_DISCONNECT_COMMAND used only by the MeterCommandStradegy opt out connect and unenrollment connect, don't do this, it locks the db tables.
-        if(deviceType != DeviceRequestType.METER_DR_CONNECT_DISCONNECT_COMMAND) {
-            saveOrUpdate(execution);
-        }
+        saveOrUpdate(execution);
+
         return execution;
     }
 }
