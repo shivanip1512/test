@@ -331,13 +331,15 @@ public class ControlAreaSetupController {
     }
 
     private void populateTriggerCache(ControlArea controlArea, ModelMap model) {
-        List<String> triggerIds = new ArrayList<>();
-        CollectionUtils.emptyIfNull(controlArea.getTriggers())
-                       .forEach(trigger -> {
-                           controlAreaTriggerCache.put(String.valueOf(trigger.getTriggerId()), trigger);
-            triggerIds.add(String.valueOf(trigger.getTriggerId()));
-        });
-        model.addAttribute("triggerIds", triggerIds);
+        if (!model.containsAttribute("triggerIds")) {
+            List<String> triggerIds = new ArrayList<>();
+            CollectionUtils.emptyIfNull(controlArea.getTriggers())
+                           .forEach(trigger -> {
+                               controlAreaTriggerCache.put(String.valueOf(trigger.getTriggerId()), trigger);
+                triggerIds.add(String.valueOf(trigger.getTriggerId()));
+            });
+            model.addAttribute("triggerIds", triggerIds);
+        }
     }
     
     private void setTriggerErrors(BindingResult result, ControlArea controlArea, FlashScope flash,
