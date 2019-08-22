@@ -56,21 +56,20 @@ yukon.dr.setup.controlArea = (function() {
         var errorFlag = false,
             nonSelected = "(none selected)",
             triggerPointName = $("#point-trigger-identification-name").val(),
-            usePeakTrackingThresholdPoint = $("#js-use-peak-tracking-threshold-point .button.yes").hasClass('on'),
-            usePeakTrackingThreshold = $("#js-use-peak-tracking-threshold .button.yes").hasClass('on');
+            usePeakTracking = $("#js-use-peak-tracking").prop('checked');
 
         if (triggerPointName.indexOf(nonSelected) != -1) {
             errorFlag = true;
             $(".js-trigger-identification-error").removeClass("dn");
         }
-        if (usePeakTrackingThresholdPoint && thresholdType === "THRESHOLD_POINT") {
+        if (usePeakTracking && thresholdType === "THRESHOLD_POINT") {
             if (thresholdPointPeakTracking.selectionLabel.innerText.indexOf(nonSelected) != -1) {
                 errorFlag = true;
                 $(".js-peak-tracking-error").removeClass("dn");
             }
         }
-        if (usePeakTrackingThreshold && thresholdType === "THRESHOLD") {
-            if (thresholdPeakTracking.selectionLabel.innerText.indexOf(nonSelected) != -1) {
+        if (usePeakTracking && thresholdType === "THRESHOLD") {
+            if (thresholdPointPeakTracking.selectionLabel.innerText.indexOf(nonSelected) != -1) {
                 errorFlag = true;
                 $(".js-peak-tracking-error").removeClass("dn");
             }
