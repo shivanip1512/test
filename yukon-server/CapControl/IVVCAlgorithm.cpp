@@ -229,17 +229,17 @@ bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstation
     if ( area != NULL && area->getDisableFlag() )
     {
         // Area is disabled.
-        culprit = "area";
+        culprit = "Area";
     }
     else if ( sub != NULL && sub->getDisableFlag() )
     {
         // Substation is disabled.
-        culprit = "substation";
+        culprit = "Substation";
     }
     else if ( subbus->getDisableFlag() && !subbus->getVerificationFlag() )
     {
         // subbus is disabled - reset the algorithm and bail
-        culprit = "bus";
+        culprit = "Bus";
     }
 
     if ( !culprit.empty() )
@@ -269,7 +269,7 @@ bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstation
                 CTILOG_INFO( dout, "Aborting DMV Test '" << dmvTestSettings.TestName << "' running on bus: "
                                     << subbus->getPaoName() << ". The " << culprit << " is disabled." );
 
-                updateDmvTestStatus( dmvTestSettings.ExecutionID, dmvTestSettings.TestId, timeNow, "Abort: " + culprit + "disabled" );
+                updateDmvTestStatus( dmvTestSettings.ExecutionID, dmvTestSettings.TestId, timeNow, "Abort: " + culprit + " disabled" );
             }
             else
             {
