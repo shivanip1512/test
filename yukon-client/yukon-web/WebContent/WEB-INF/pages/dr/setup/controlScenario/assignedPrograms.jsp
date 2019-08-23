@@ -6,7 +6,8 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <cti:msgScope paths="yukon.web.modules.dr.setup.controlScenario">
-    <tags:sectionContainer2 nameKey="assignedPrograms" styleClass="select-box">
+    <h3 class="dib"><i:inline key=".assignedPrograms.title"/></h3>
+    <div class="bordered-div oa" style="height:90%">
         <table id="js-assigned-programs-table" class="compact-results-table dashed">
             <thead>
                 <tr>
@@ -37,5 +38,5 @@
                </form:form>
             </tbody>
         </table>
-    </tags:sectionContainer2>
+    </div>
 </cti:msgScope>

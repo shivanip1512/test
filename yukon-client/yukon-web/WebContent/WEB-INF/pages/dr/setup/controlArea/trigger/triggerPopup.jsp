@@ -35,7 +35,27 @@
             <c:set var="thresholdOrThresholdPointClass" value="${triggerType != 'STATUS' ? '' : 'dn'}"/>
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".trigger.type">
-                    <tags:selectWithItems items="${triggerTypes}" path="triggerType" id="js-trigger-type"/>
+                    <cti:displayForPageEditModes modes="CREATE">
+                        <tags:selectWithItems items="${triggerTypes}" path="triggerType" id="js-trigger-type" />
+                    </cti:displayForPageEditModes>
+                    <cti:displayForPageEditModes modes="VIEW,EDIT">
+                        <form:hidden path="triggerType"/>
+                        <i:inline key=".trigger.${triggerType}"/>
+                    </cti:displayForPageEditModes>
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".trigger.identification" valueClass="vam">
+                    <form:hidden id="trigger-point-id" path="triggerPointId"/>
+                    <tags:pickerDialog 
+                        id="triggerIdentification"
+                        type="notSystemPointPicker"
+                        linkType="selection"
+                        selectionProperty="paoPoint"
+                        buttonStyleClass="M0"
+                        destinationFieldId="trigger-point-id"
+                        viewOnlyMode="${mode == 'VIEW'}"
+                        includeRemoveButton="${true}"
+                        removeValue="0"
+                        endEvent="yukon:trigger:identification:complete"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.THRESHOLD" rowClass="js-threshold ${thresholdClass}">
                     <tags:numeric path="threshold" size="5" minValue="-999999" maxValue="999999"/>
@@ -55,20 +75,6 @@
                 <tags:nameValue2 nameKey=".trigger.ahead" rowClass="js-threshold js-threshold-ahead-row ${projectionClass}">
                     <tags:intervalDropdown path="controlAreaProjection.projectAheadDuration" intervals="${projectAheadDurations}" id="js-threshold-ahead"/>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".trigger.identification" valueClass="vam">
-                    <form:hidden id="trigger-point-id" path="triggerPointId"/>
-                    <tags:pickerDialog 
-                        id="triggerIdentification"
-                        type="notSystemPointPicker"
-                        linkType="selectionLabel"
-                        selectionProperty="paoPoint"
-                        buttonStyleClass="M0"
-                        destinationFieldId="trigger-point-id"
-                        viewOnlyMode="${mode == 'VIEW'}"
-                        includeRemoveButton="${true}"
-                        removeValue="0"
-                        endEvent="yukon:trigger:identification:complete"/>
-                </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.usePeakTracking" rowClass="js-threshold js-threshold-point ${thresholdOrThresholdPointClass}">
                     <tags:switchButton name="usePeak" onNameKey=".yes.label" offNameKey=".no.label" checked="${!empty controlAreaTrigger.peakPointId}" id="js-use-peak-tracking"/>
                 </tags:nameValue2>
@@ -77,7 +83,7 @@
                     <tags:pickerDialog
                         id="thresholdPointPeakTracking"
                         type="notSystemPointPicker"
-                        linkType="selectionLabel"
+                        linkType="selection"
                         selectionProperty="paoPoint"
                         buttonStyleClass="M0"
                         destinationFieldId="peak-point-id"
@@ -90,7 +96,7 @@
                     <tags:pickerDialog
                         id="thresholdPointThresholdSettings"
                         type="notSystemPointPicker"
-                        linkType="selectionLabel"
+                        linkType="selection"
                         selectionProperty="paoPoint"
                         buttonStyleClass="M0"
                         destinationFieldId="threshold-point-id"

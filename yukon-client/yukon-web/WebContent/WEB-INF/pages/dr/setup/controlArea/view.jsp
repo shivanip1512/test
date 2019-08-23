@@ -221,37 +221,39 @@
                         </div>
                     
                         <!-- Assigned Programs -->
-                        <div class="column two nogutter oa" style="height:560px;">
+                        <div class="column two nogutter" style="height:560px;">
                             <h3 class="dib"><i:inline key="yukon.common.assigned"/></h3>
-                            <table id="program-assignments" class="compact-results-table dashed">
-                                <thead>
-                                    <th width="10%"></th>
-                                    <th width="50%"></th>
-                                    <th><i:inline key=".startPriority"/></th>
-                                    <th><i:inline key=".stopPriority"/></th>
-                                </thead>
-                                <tbody>
-                                    <c:forEach var="program" items="${controlArea.programAssignment}" varStatus="status">
-                                        <tr>
-                                            <tags:hidden path="programAssignment[${status.index}].programId"/>
-                                            <td>                                            
-                                                <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" data-id="${program.programId}"/>
-                                            </td>
-                                            <td class="vam">
-                                                <cti:deviceName deviceId="${program.programId}"/>
-                                            </td>
-                                            <td>
-                                                <tags:numeric path="programAssignment[${status.index}].startPriority" size="4" minValue="1" maxValue="2147483647"/>
-                                            </td>
-                                            <td>
-                                                <tags:numeric path="programAssignment[${status.index}].stopPriority" size="4" minValue="1" maxValue="2147483647"/>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-
-                                </tbody>
-                            
-                            </table>
+                            <div class="bordered-div oa" style="height:96%">
+                                <table id="program-assignments" class="compact-results-table">
+                                    <thead>
+                                        <th width="10%"></th>
+                                        <th width="50%"><i:inline key=".name"/></th>
+                                        <th><i:inline key=".startPriority"/></th>
+                                        <th><i:inline key=".stopPriority"/></th>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="program" items="${controlArea.programAssignment}" varStatus="status">
+                                            <tr>
+                                                <tags:hidden path="programAssignment[${status.index}].programId"/>
+                                                <td>                                            
+                                                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" data-id="${program.programId}"/>
+                                                </td>
+                                                <td class="vam">
+                                                    <cti:deviceName deviceId="${program.programId}"/>
+                                                </td>
+                                                <td>
+                                                    <tags:numeric path="programAssignment[${status.index}].startPriority" size="4" minValue="1" maxValue="2147483647"/>
+                                                </td>
+                                                <td>
+                                                    <tags:numeric path="programAssignment[${status.index}].stopPriority" size="4" minValue="1" maxValue="2147483647"/>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+    
+                                    </tbody>
+                                
+                                </table>
+                            </div>
                             
                             <table>                                          
                                 <tr class="js-template-row dn">
