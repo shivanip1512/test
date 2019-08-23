@@ -177,7 +177,7 @@ E2eDataTransferProtocol::EndpointMessage E2eDataTransferProtocol::handleIndicati
 
     coap_opt_iterator_t opt_iter;
 
-    for( auto option = coap_check_option(request_pdu, COAP_OPTION_URI_PATH, &opt_iter); option; option = coap_option_next(&opt_iter) )
+    for( auto option = coap_check_option(indication_pdu, COAP_OPTION_URI_PATH, &opt_iter); option; option = coap_option_next(&opt_iter) )
     {
         message.path += "/" + std::string(reinterpret_cast<const char *>(coap_opt_value(option)), coap_opt_length(option));
     }
