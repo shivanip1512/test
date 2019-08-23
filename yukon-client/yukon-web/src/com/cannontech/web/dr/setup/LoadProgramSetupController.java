@@ -42,6 +42,7 @@ import com.cannontech.common.dr.program.setup.model.LoadProgram;
 import com.cannontech.common.dr.program.setup.model.LoadProgramCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMModelFactory;
+import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
@@ -67,7 +68,7 @@ public class LoadProgramSetupController {
 
     private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
-    private static final String setupRedirectLink = "/dr/setup/filter?filterByType=LOAD_PROGRAM";
+    private static final String setupRedirectLink = "/dr/setup/filter?filterByType=" + LmSetupFilterType.LOAD_PROGRAM;
     private static final Logger log = YukonLogManager.getLogger(LoadProgramSetupController.class);
 
 

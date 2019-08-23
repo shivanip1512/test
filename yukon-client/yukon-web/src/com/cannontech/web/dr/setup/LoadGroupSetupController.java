@@ -32,6 +32,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMModelFactory;
+import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
@@ -55,7 +56,7 @@ public class LoadGroupSetupController {
     
     private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
-    private static final String setupRedirectLink = "/dr/setup/filter?filterByType=LOAD_GROUP";
+    private static final String setupRedirectLink = "/dr/setup/filter?filterByType=" + LmSetupFilterType.LOAD_GROUP;
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
     private static final List<PaoType> switchTypes =
             PaoType.getAllLMGroupTypes()

@@ -43,6 +43,7 @@ import com.cannontech.common.dr.setup.ControlAreaTrigger;
 import com.cannontech.common.dr.setup.ControlAreaTriggerType;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
+import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -60,7 +61,7 @@ public class ControlAreaSetupController {
     
     private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
-    private static final String setupRedirectLink = "/dr/setup/filter?filterByType=CONTROL_AREA";
+    private static final String setupRedirectLink = "/dr/setup/filter?filterByType=" + LmSetupFilterType.CONTROL_AREA;
     private static final Logger log = YukonLogManager.getLogger(ControlAreaSetupController.class);
     private Cache<String, BindingResult> triggerErrorCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();
     private Cache<String, ControlAreaTrigger> controlAreaTriggerCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();

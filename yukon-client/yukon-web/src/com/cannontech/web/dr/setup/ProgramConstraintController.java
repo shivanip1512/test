@@ -29,6 +29,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.DayOfWeek;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
+import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.ProgramConstraint;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
@@ -49,7 +50,7 @@ public class ProgramConstraintController {
 
     private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
-    private static final String setupRedirectLink = "/dr/setup/filter?filterByType=PROGRAM_CONSTRAINT";
+    private static final String setupRedirectLink = "/dr/setup/filter?filterByType=" + LmSetupFilterType.PROGRAM_CONSTRAINT;
     private static final Logger log = YukonLogManager.getLogger(ProgramConstraintController.class);
 
     @GetMapping("/create")

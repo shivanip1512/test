@@ -32,6 +32,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.ControlScenario;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
+import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -55,7 +56,7 @@ public class ControlScenarioSetupController {
 
     private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
-    private static final String setupRedirectLink = "/dr/setup/filter?filterByType=CONTROL_SCENARIO";
+    private static final String setupRedirectLink = "/dr/setup/filter?filterByType=" + LmSetupFilterType.CONTROL_SCENARIO;
     private static final Logger log = YukonLogManager.getLogger(ControlScenarioSetupController.class);
 
     @GetMapping("/create")
