@@ -58,10 +58,10 @@
             <tags:sectionContainer2 nameKey="addOrRemovePrograms" styleClass="select-box">
                 <div class="column-8-16 clearfix select-box bordered-div">
                     <!-- Available programs -->
-                    <div class="column one bordered-div">
+                    <div class="column one">
                         <h3><i:inline key=".availablePrograms.title"/></h3>
-                        <span class="empty-list"><i:inline key=".availablePrograms.description"/></span><br/><br/>
-                        <div id="js-inline-picker-container" style="height:470px;" class="oa"></div>
+                        <span class="detail empty-list"><i:inline key=".availablePrograms.description"/></span><br/>
+                        <div id="js-inline-picker-container" style="height:470px;" class="bordered-div oa"></div>
                         <tags:pickerDialog type="availableLoadProgramPicker" id="js-available-programs-picker" 
                                            container="js-inline-picker-container" multiSelectMode="true" 
                                            disabledIds="${selectedProgramIds}" />
@@ -70,7 +70,7 @@
                         </div>
                     </div>
                     <!-- Assigned Programs -->
-                    <div class="column two nogutter bordered-div oa" id="js-assigned-programs-div" style="height:595px;">
+                    <div class="column two nogutter" id="js-assigned-programs-div" style="height:595px;">
                         <%@include file="assignedPrograms.jsp" %>
                     </div>
                 </div>

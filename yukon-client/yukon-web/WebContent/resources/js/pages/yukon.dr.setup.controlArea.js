@@ -16,12 +16,20 @@ yukon.dr.setup.controlArea = (function() {
     _timeFormatter = yukon.timeFormatter,
     
     _updateStartTime = function () {
-        var start = _timeFormatter.parse24HourTime($('#dailyStartTime').val());
+        var dailyStartTime = $('#dailyStartTime').val(),
+            start = "";
+        if (dailyStartTime != "") {
+            start = _timeFormatter.parse24HourTime($('#dailyStartTime').val());
+        }
         $('#dailyStartTimeInMinutes').val(start);
     },
     
     _updateStopTime = function () {
-        var stop = _timeFormatter.parse24HourTime($('#dailyStopTime').val());
+        var dailyStopTime = $('#dailyStopTime').val(),
+            stop = "";
+        if (dailyStopTime != "") {
+            stop = _timeFormatter.parse24HourTime($('#dailyStopTime').val());
+        }
         $('#dailyStopTimeInMinutes').val(stop);
     },
     

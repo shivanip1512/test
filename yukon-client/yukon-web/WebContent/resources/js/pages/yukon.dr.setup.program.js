@@ -81,16 +81,10 @@ yukon.dr.setup.program = (function() {
         });
     },
 
-    _enableProgramStart = function() {
-        var startChecked = $('#js-program-start-check').is(':checked');
-        $('#js-program-start').prop("disabled", !startChecked)
-        $('#js-program-start-span').toggleClass('dn', !startChecked);
-    },
-    
-    _enableProgramStop =  function() {
-        var stopChecked = $('#js-program-stop-check').is(':checked');
-        $('#js-program-stop').prop("disabled", !stopChecked)
-        $('#js-program-stop-span').toggleClass('dn', !stopChecked);
+    _toggleProgramStartStop = function(action) {
+        var checked = $('#js-program-' + action + '-check').is(':checked');
+        $('#js-program-' + action).prop("disabled", !checked)
+        $('#js-program-' + action + '-span').toggleClass('dn', !checked);
     },
 
     _loadProgram = function() {
@@ -113,8 +107,8 @@ yukon.dr.setup.program = (function() {
                 _notificationGroupPicker();
                 _loadGroupPicker();
                 _gearMovableChange();
-                _enableProgramStart();
-                _enableProgramStop();
+                _toggleProgramStartStop('start');
+                _toggleProgramStartStop('stop');
 
                 yukon.ui.initDateTimePickers().ancestorInit("#js-load-program-container");
                 yukon.ui.unblock($('#js-load-program-container'));
@@ -147,9 +141,9 @@ yukon.dr.setup.program = (function() {
                 return;
             
             _initCss();
-            _enableProgramStart();
-            _enableProgramStop();
-
+            _toggleProgramStartStop('start');
+            _toggleProgramStartStop('stop');
+            
             $(document).on('click', '#js-program-cancel-btn', function(event) {
                 window.history.back();
             });
@@ -160,11 +154,11 @@ yukon.dr.setup.program = (function() {
             });
 
             $(document).on('click', '#js-program-start-check', function(event) {
-                _enableProgramStart();
+                _toggleProgramStartStop('start');
             });
             
             $(document).on('click', '#js-program-stop-check', function(event) {
-                _enableProgramStop();
+                _toggleProgramStartStop('stop');
             });
 
             var _mode = $('.js-page-mode').val();
