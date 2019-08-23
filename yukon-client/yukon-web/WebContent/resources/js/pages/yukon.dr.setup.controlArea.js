@@ -62,13 +62,7 @@ yukon.dr.setup.controlArea = (function() {
             errorFlag = true;
             $(".js-trigger-identification-error").removeClass("dn");
         }
-        if (usePeakTracking && thresholdType === "THRESHOLD_POINT") {
-            if (thresholdPointPeakTracking.selectionLabel.innerText.indexOf(nonSelected) != -1) {
-                errorFlag = true;
-                $(".js-peak-tracking-error").removeClass("dn");
-            }
-        }
-        if (usePeakTracking && thresholdType === "THRESHOLD") {
+        if (usePeakTracking) {
             if (thresholdPointPeakTracking.selectionLabel.innerText.indexOf(nonSelected) != -1) {
                 errorFlag = true;
                 $(".js-peak-tracking-error").removeClass("dn");
