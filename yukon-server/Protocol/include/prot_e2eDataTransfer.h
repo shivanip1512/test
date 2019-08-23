@@ -30,6 +30,8 @@ public:
 
         unsigned long token;
 
+        std::string path;
+
         std::vector<unsigned char> data;  //  bytes payload
 
         std::vector<unsigned char> ack;
