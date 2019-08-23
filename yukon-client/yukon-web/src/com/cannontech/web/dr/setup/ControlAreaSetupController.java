@@ -161,7 +161,7 @@ public class ControlAreaSetupController {
                     flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(String.join(",", errors)));
                 }
                 setTriggerErrors(result, controlArea, flash, triggerIds);
-                return bindAndForward(controlArea, result, redirectAttributes);
+                return bindAndForward(controlArea, result, redirectAttributes, model);
             }
 
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -229,9 +229,15 @@ public class ControlAreaSetupController {
         return response;
     }
     
-    private String bindAndForward(ControlArea controlArea, BindingResult result, RedirectAttributes attrs) {
+    private String bindAndForward(ControlArea controlArea, BindingResult result, RedirectAttributes attrs, ModelMap model) {
         attrs.addFlashAttribute("controlArea", controlArea);
         attrs.addFlashAttribute("org.springframework.validation.BindingResult.controlArea", result);
+        if (result.hasFieldErrors("dailyStartTimeInMinutes") && controlArea.getDailyStartTimeInMinutes() == null) {
+            attrs.addFlashAttribute("startTimeError", true);
+        }
+        if (result.hasFieldErrors("dailyStopTimeInMinutes") && controlArea.getDailyStopTimeInMinutes() == null) {
+            attrs.addFlashAttribute("stopTimeError", true);
+        }
         if (controlArea.getControlAreaId() == null) {
             return "redirect:/dr/setup/controlArea/create";
         }

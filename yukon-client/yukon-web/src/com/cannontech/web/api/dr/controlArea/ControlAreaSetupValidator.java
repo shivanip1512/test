@@ -65,10 +65,22 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
         YukonValidationUtils.checkRange(errors, "dailyStopTimeInMinutes", controlArea.getDailyStopTimeInMinutes(), 0, 1439, false);
 
         if (!errors.hasFieldErrors("dailyStartTimeInMinutes") && !errors.hasFieldErrors("dailyStopTimeInMinutes")) {
-            if(controlArea.getDailyStartTimeInMinutes() != null && controlArea.getDailyStopTimeInMinutes() != null) {
+            if (controlArea.getDailyStartTimeInMinutes() != null && controlArea.getDailyStopTimeInMinutes() != null) {
                 if (controlArea.getDailyStartTimeInMinutes() > controlArea.getDailyStopTimeInMinutes()) {
                     errors.reject(key + "invalid.startStopTimeRange");
                 }
+            } else if ((controlArea.getDailyStartTimeInMinutes() == null
+                && controlArea.getDailyStopTimeInMinutes() != null)
+                || (controlArea.getDailyStartTimeInMinutes() != null
+                    && controlArea.getDailyStopTimeInMinutes() == null)) {
+                if (controlArea.getDailyStartTimeInMinutes() == null) {
+                    lmValidatorHelper.checkIfFieldRequired("dailyStartTimeInMinutes", errors,
+                        controlArea.getDailyStartTimeInMinutes(), "Daily Start Time");
+                } else {
+                    lmValidatorHelper.checkIfFieldRequired("dailyStopTimeInMinutes", errors,
+                        controlArea.getDailyStopTimeInMinutes(), "Daily Stop Time");
+                }
+
             }
         }
 
