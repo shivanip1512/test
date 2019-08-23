@@ -117,7 +117,9 @@ public class ControlAreaSetupController {
             }
             model.addAttribute("controlArea", controlArea);
             controllerHelper.buildModelMap(model, controlArea);
-            populateTriggerCache(controlArea, model);
+            if (!model.containsAttribute("triggerIds")) {
+                populateTriggerCache(controlArea, model);
+            }
             return "dr/setup/controlArea/view.jsp";
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
@@ -331,15 +333,13 @@ public class ControlAreaSetupController {
     }
 
     private void populateTriggerCache(ControlArea controlArea, ModelMap model) {
-        if (!model.containsAttribute("triggerIds")) {
-            List<String> triggerIds = new ArrayList<>();
-            CollectionUtils.emptyIfNull(controlArea.getTriggers())
-                           .forEach(trigger -> {
-                               controlAreaTriggerCache.put(String.valueOf(trigger.getTriggerId()), trigger);
-                triggerIds.add(String.valueOf(trigger.getTriggerId()));
-            });
-            model.addAttribute("triggerIds", triggerIds);
-        }
+        List<String> triggerIds = new ArrayList<>();
+        CollectionUtils.emptyIfNull(controlArea.getTriggers())
+                       .forEach(trigger -> {
+                           controlAreaTriggerCache.put(String.valueOf(trigger.getTriggerId()), trigger);
+            triggerIds.add(String.valueOf(trigger.getTriggerId()));
+        });
+        model.addAttribute("triggerIds", triggerIds);
     }
     
     private void setTriggerErrors(BindingResult result, ControlArea controlArea, FlashScope flash,
