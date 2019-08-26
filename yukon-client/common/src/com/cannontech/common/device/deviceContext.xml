@@ -244,5 +244,8 @@
     <bean id="routeBroadcastService" class="com.cannontech.common.device.service.RouteBroadcastServiceImpl"/>
     
     <bean class="com.cannontech.common.device.streaming.dao.impl.DeviceBehaviorDaoImpl"/>
-        
+    
+    <bean class="com.cannontech.common.device.programming.dao.impl.MeterProgrammingDaoImpl"/>
+    
+    <bean class="com.cannontech.common.device.programming.service.impl.MeterProgrammingServiceImpl"/>    
 </beans>

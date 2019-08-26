@@ -142,6 +142,8 @@
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.CONFIGURE_DATA_STREAMING">Configure Data Streaming</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.READ_DATA_STREAMING_CONFIG">Read Data Streaming Config</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.REMOVE_DATA_STREAMING">Remove Data Streaming</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.METER_PROGRAM_UPLOAD_INITIATE">C&amp;I Meter Programming Initiation</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.METER_PROGRAM_STATUS_READ">C&amp;I Meter Programming Status Retrieval</entry>
     
     <!-- Collection Action Input Types -->
     <entry key="yukon.web.modules.tools.collectionActions.collectionActionInput.SELECTED_COMMAND">Selected Command</entry>

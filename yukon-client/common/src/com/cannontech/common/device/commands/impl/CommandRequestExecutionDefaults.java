@@ -84,6 +84,9 @@ public final class CommandRequestExecutionDefaults {
         b.put(ASSET_AVAILABILITY_READ,                            new ExecutionInfo(false, 8, false));
         b.put(LM_DEVICE_DETAILS_ATTRIBUTE_READ,                   new ExecutionInfo(false, 8, false));
         b.put(DATA_STREAMING_CONFIG,                              new ExecutionInfo(false, 7, false));
+        b.put(METER_PROGRAM_UPLOAD_INITIATE,                      new ExecutionInfo(false, 7, false));
+        b.put(METER_PROGRAM_STATUS_READ,                          new ExecutionInfo(false, 7, false));
+        b.put(METER_PROGRAM_UPLOAD_CANCEL,                        new ExecutionInfo(false, 8, false));
         infoLookup = b.build();
     }
 
