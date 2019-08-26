@@ -171,7 +171,7 @@
                     </div>
                 </tags:sectionContainer2>
                 <tags:sectionContainer2 nameKey="controlWindow">
-                    <c:set var="controlWindowEnabled" value="${controlArea.dailyStartTimeInMinutes > 0 || controlArea.dailyStopTimeInMinutes > 0}"/>
+                    <c:set var="controlWindowEnabled" value="${!empty controlArea.dailyStartTimeInMinutes || !empty controlArea.dailyStopTimeInMinutes}"/>
                     <tags:nameValueContainer2>
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
                             <div class="notes"><i:inline key=".controlWindow.note"/></div><br/>
