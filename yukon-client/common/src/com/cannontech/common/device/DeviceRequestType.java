@@ -49,7 +49,11 @@ public enum DeviceRequestType {
     MULTISPEAK_CONNECT_DISCONNECT("MultiSpeak Connect/Disconnect Event", "A 'control connect' or 'control disconnect' command sent to one to many meters.", false),
     ASSET_AVAILABILITY_READ("Asset Availability Read", "Command sent to two-way LCRs to determine their availability.", false),
     LM_DEVICE_DETAILS_ATTRIBUTE_READ("Load Management Details Attribute Read", "Command sent to read two-way LCRs." ,false),
-    DATA_STREAMING_CONFIG("Data Streaming Configuration Command", "Command sent to configure RFN data streaming.", false)
+    DATA_STREAMING_CONFIG("Data Streaming Configuration Command", "Command sent to configure RFN data streaming.", false),
+    
+    METER_PROGRAM_UPLOAD_INITIATE("Meter Programing Upload Initiation Command", "Command sent to initiate program upload to a meter.", false),
+    METER_PROGRAM_UPLOAD_CANCEL("Meter Programing Upload Cancel Command", "Command sent to cancel program upload to a meter.", false),
+    METER_PROGRAM_STATUS_READ("Meter Programming Status Read Command", "Command sent to retrieve program status for a meter.", false)
     ;
     
     private String shortName;

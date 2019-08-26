@@ -10,6 +10,7 @@ import com.cannontech.common.events.loggers.DemandResetEventLogService;
 import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.events.loggers.DisconnectEventLogService;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
+import com.cannontech.common.events.loggers.MeterProgrammingEventLogService;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -24,6 +25,7 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
     @Autowired private PointEventLogService pointEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DataStreamingEventLogService dataStreamingEventLogService;
+    @Autowired private MeterProgrammingEventLogService meterProgrammingEventLogService;
 
     @Override
     public void log(CollectionActionResult result){
@@ -84,6 +86,12 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
             break;
         case REMOVE_DATA_STREAMING:
             logRemoveDataStreaming(result);
+            break;
+        case METER_PROGRAM_UPLOAD_INITIATE:
+        	logMeterProgramUpload(result);
+            break;
+        case METER_PROGRAM_STATUS_READ:
+        	logMeterProgramStatusRead(result);
             break;
         default:
             throw new UnsupportedOperationException("Add event logger for collection action="+result.getAction());
@@ -609,6 +617,61 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
                                                            String.valueOf(result.getCacheKey()));
             break;
         }
+    }
+    
+    private void logMeterProgramUpload(CollectionActionResult result) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
 
+        switch (result.getStatus()) {
+        case STARTED:
+        	meterProgrammingEventLogService.meterProgramUploadInitiated(accessor.getMessage(result.getAction()), 
+                                                                      result.getInputString(), 
+                                                                      result.getCounts().getTotalCount(), 
+                                                                      result.getContext().getYukonUser(), 
+                                                                      String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+        	meterProgrammingEventLogService.meterProgramUploadCompleted(accessor.getMessage(result.getAction()),
+                                                                      result.getInputString(),
+                                                                      result.getResultStatsString(accessor), 
+                                                                      accessor.getMessage(result.getStatus()), 
+                                                                      String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+        	meterProgrammingEventLogService.meterProgramUploadCancelled(accessor.getMessage(result.getAction()), 
+                                                                      result.getInputString(),
+                                                                      result.getResultStatsString(accessor), 
+                                                                      result.getContext().getYukonUser(),
+                                                                      String.valueOf(result.getCacheKey()));
+            break;
+        }
+    }
+    
+    private void logMeterProgramStatusRead(CollectionActionResult result) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+
+        switch (result.getStatus()) {
+        case STARTED:
+        	meterProgrammingEventLogService.meterProgramStatusReadInitiated(accessor.getMessage(result.getAction()), 
+                                                                      result.getInputString(), 
+                                                                      result.getCounts().getTotalCount(), 
+                                                                      result.getContext().getYukonUser(), 
+                                                                      String.valueOf(result.getCacheKey()));
+            break;
+        case COMPLETE:
+        	meterProgrammingEventLogService.meterProgramStatusReadCompleted(accessor.getMessage(result.getAction()),
+                                                                      result.getInputString(),
+                                                                      result.getResultStatsString(accessor), 
+                                                                      accessor.getMessage(result.getStatus()), 
+                                                                      String.valueOf(result.getCacheKey()));
+            break;
+        case CANCELLED:
+        	meterProgrammingEventLogService.meterProgramStatusReadCancelled(accessor.getMessage(result.getAction()), 
+                                                                      result.getInputString(),
+                                                                      result.getResultStatsString(accessor), 
+                                                                      result.getContext().getYukonUser(),
+                                                                      String.valueOf(result.getCacheKey()));
+            break;
+        }
     }
 }

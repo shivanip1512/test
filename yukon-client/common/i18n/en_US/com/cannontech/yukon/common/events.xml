@@ -366,6 +366,19 @@
     <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceCompleted">Verify device configuration on device {1} {7,choice,0#failed|1#succeeded}.</entry>
     <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>
     
+     <!--  Meter Programming -->
+    <entry key="yukon.common.events.device.programming.initiateMeterProgramUploadInitiated">Meter program upload to device {1} initiated by {2}.</entry>
+    <entry key="yukon.common.events.device.programming.initiateMeterProgramUploadCompleted">Meter program upload to device {1} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.programming.initiateMeterProgramUploadCompleted.7">Success(1)/Fail(0)</entry>
+    
+    <entry key="yukon.common.events.device.programming.retrieveMeterProgrammingStatusInitiated">Retrieve meter programming status for device {1} initiated by {2}.</entry>
+    <entry key="yukon.common.events.device.programming.retrieveMeterProgrammingStatusCompleted">Retrieve meter programming status for device  {1} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.programming.retrieveMeterProgrammingStatusCompleted.7">Success(1)/Fail(0)</entry>
+    
+    <entry key="yukon.common.events.device.programming.cancelMeterProgramUploadInitiated">Meter program upload cancellation for device {1} initiated by {2}.</entry>
+    <entry key="yukon.common.events.device.programming.cancelMeterProgramUploadCompleted">Meter program upload cancellation for device {1} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.programming.cancelMeterProgramUploadCompleted.7">Success(1)/Fail(0)</entry>
+
     <!-- Demand Reset-->
     <entry key="yukon.common.events.amr.demand.reset.demandResetAttempted">Demand Reset attempted by {2}. (To Send:{7}, Unsupported:{8}, To Verify:{9}, Unsupported Verify:{10}). Key:{1}</entry>
     <entry key="yukon.common.events.amr.demand.reset.demandResetAttempted.7">To Reset</entry>
@@ -870,6 +883,13 @@
     <entry key="yukon.common.events.system.rfn.dataStreaming.removeDataStreamingInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.system.rfn.dataStreaming.removeDataStreamingCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
     <entry key="yukon.common.events.system.rfn.dataStreaming.removeDataStreamingCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
+   
+    <entry key="yukon.common.events.device.programming.meterProgramUploadInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.device.programming.meterProgramUploadCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.device.programming.meterProgramUploadCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
+    <entry key="yukon.common.events.device.programming.meterProgramStatusReadInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.device.programming.meterProgramStatusReadCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.device.programming.meterProgramStatusReadCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
     
     <!-- Itron -->
     <entry key="yukon.common.events.dr.itron.addHANDevice">Device {1} addition request with mac address {2}.</entry>
