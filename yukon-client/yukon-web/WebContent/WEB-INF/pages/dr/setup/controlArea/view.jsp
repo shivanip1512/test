@@ -176,18 +176,30 @@
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
                             <div class="notes"><i:inline key=".controlWindow.note"/></div><br/>
                         </cti:displayForPageEditModes>
-                        <tags:nameValue2 nameKey=".useControlWindow">
+                        <tags:nameValue2 nameClass="wsnw" nameKey=".useControlWindow">
                             <tags:switchButton classes="js-control-window" name="controlWindow" toggleGroup="controlWindow" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label" 
                                 checked="${controlWindowEnabled}"/>
                         </tags:nameValue2>
                         <c:set var="controlWindowClass" value="${controlWindowEnabled ? '' : 'dn'}"/>
                         <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindow" rowClass="${controlWindowClass}">
                             <input type="hidden" id="dailyStartTimeInMinutes" name="dailyStartTimeInMinutes" value="${controlArea.dailyStartTimeInMinutes}"/>
-                            <dt:time name="dailyStartTime" id="dailyStartTime" value="${dailyStartTime}"/>
+                            <dt:time name="dailyStartTime" id="dailyStartTime" value="${dailyStartTime}" cssClass="${startTimeError ? 'error' : ''}"/>
+                            <c:if test="${not empty startTimeError}">
+                                <div class="error">
+                                    <cti:msg2 var="invalidStartTime" key="yukon.web.modules.dr.setup.controlArea.error.invalid.startTime"/>
+                                    <i:inline key="yukon.web.modules.dr.setup.error.required" arguments="${invalidStartTime}"/>
+                                </div>
+                            </c:if>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindow" rowClass="${controlWindowClass}">
                             <input type="hidden" id="dailyStopTimeInMinutes" name="dailyStopTimeInMinutes" value="${controlArea.dailyStopTimeInMinutes}"/>
-                            <dt:time name="dailyStopTime" id="dailyStopTime" value="${dailyStopTime}"/>
+                            <dt:time name="dailyStopTime" id="dailyStopTime" value="${dailyStopTime}" cssClass="${stopTimeError ? 'error' : ''}"/>
+                            <c:if test="${not empty stopTimeError}">
+                                <div class="error">
+                                    <cti:msg2 var="invalidStopTime" key="yukon.web.modules.dr.setup.controlArea.error.invalid.StopTime"/>
+                                    <i:inline key="yukon.web.modules.dr.setup.error.required" arguments="${invalidStopTime}"/>
+                                </div>
+                            </c:if>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
