@@ -207,16 +207,17 @@ bool CtiFDR_Rdex::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, in
 
 CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 {
-    CHAR *buffer=NULL;
-    bool                 retVal = true;
-
    /**************************
-    * we allocate a valmet message here and it will be deleted
+    * we allocate a rdex message here and it will be deleted
     * inside of the write function on the connection
     ***************************
     */
-    buffer = new CHAR[sizeof (RdexInterface_t)];
-    RdexInterface_t *ptr = (RdexInterface_t *)buffer;
+    constexpr std::size_t bufferSize = sizeof RdexInterface_t;
+
+    CHAR * buffer = new CHAR[ bufferSize ];         // allocate
+    std::memset( buffer, '\0', bufferSize );        // zero initialize
+
+    RdexInterface_t * ptr = reinterpret_cast<RdexInterface_t *>( buffer );  // get a "more useful" representation
 
     // make sure we have all the pieces
     if (buffer != NULL)
@@ -359,30 +360,32 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 
 CHAR *CtiFDR_Rdex::buildForeignSystemHeartbeatMsg ()
 {
-    CHAR *buffer=NULL;
-
     // check registration here, we're not supposed to send if we haven't registered
-    if (isRegistered())
-    {
-        /**************************
-        * we allocate a rdex message here and it will be deleted
-        * inside of the write function on the connection
-        ***************************
-        */
-        buffer = new CHAR[sizeof (RdexInterface_t)];
-        RdexInterface_t *ptr = (RdexInterface_t *)buffer;
-        bool retVal = true;
-
-        if (buffer != NULL)
-        {
-            ptr->function = htonl (SINGLE_SOCKET_NULL);
-            strcpy (ptr->timestamp, YukonToForeignTime (CtiTime()).c_str());
-        }
-    }
-    else
+    if ( ! isRegistered() )
     {
         CTILOG_WARN(dout, "Not building heartbeat message, not registered");
+        return nullptr;
     }
+
+    /**************************
+    * we allocate a rdex message here and it will be deleted
+    * inside of the write function on the connection
+    ***************************
+    */
+
+    constexpr std::size_t bufferSize = sizeof RdexInterface_t;
+
+    CHAR * buffer = new CHAR[ bufferSize ];         // allocate
+    std::memset( buffer, '\0', bufferSize );        // zero initialize
+
+    RdexInterface_t * ptr = reinterpret_cast<RdexInterface_t *>( buffer );  // get a "more useful" representation
+
+    if (buffer != NULL)
+    {
+        ptr->function = htonl (SINGLE_SOCKET_NULL);
+        strcpy (ptr->timestamp, YukonToForeignTime (CtiTime()).c_str());
+    }
+
     return buffer;
 }
 
