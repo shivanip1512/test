@@ -1,0 +1,24 @@
+{
+    "LM_GROUP_EXPRESSCOMM": {
+        "name": "Auto_ExpressommGroup55",
+        "type": "LM_GROUP_EXPRESSCOMM",
+        "kWCapacity": 123,
+        "disableGroup": false,
+        "disableControl": false,
+        "routeId": 12815,
+        "serviceProvider": "100",
+        "geo": 223,
+        "zip": 3334,
+        "feeder": "1000000000000000",
+        "addressUsage": [
+            "LOAD",
+            "ZIP",
+            "FEEDER"
+        ],
+        "relayUsage": [
+            "Load_1",
+            "Load_2"
+        ],
+        "protocolPriority": "HIGH"
+    }
+}
