@@ -60,7 +60,7 @@ yukon.dr.setup.controlArea = (function() {
         return length;
     },
     
-    _validatePickerValues = function(thresholdType) {
+    _validatePickerValues = function(triggerType) {
         var errorFlag = false,
             nonSelected = "(none selected)",
             triggerPointName = $("#point-trigger-identification-name").val(),
@@ -70,13 +70,13 @@ yukon.dr.setup.controlArea = (function() {
             errorFlag = true;
             $(".js-trigger-identification-error").removeClass("dn");
         }
-        if (usePeakTracking) {
+        if (usePeakTracking && triggerType !== 'STATUS') {
             if (thresholdPointPeakTracking.selectionLabel.innerText.indexOf(nonSelected) != -1) {
                 errorFlag = true;
                 $(".js-peak-tracking-error").removeClass("dn");
             }
         }
-        if (thresholdType === "THRESHOLD_POINT") {
+        if (triggerType === "THRESHOLD_POINT") {
             if (thresholdPointThresholdSettings.selectionLabel.innerText.indexOf(nonSelected) != -1) {
                 errorFlag = true;
                 $(".js-threshold-setting-error").removeClass("dn");
@@ -204,7 +204,11 @@ yukon.dr.setup.controlArea = (function() {
                     triggerType = $("#js-trigger-type option:selected").val();
                 
                 container.find("#point-trigger-identification-name").val(triggerIdentification.selectionLabel.innerText);
-                
+
+                if(triggerType === undefined){
+                    triggerType = container.find("#triggerType").val();
+                }
+
                 if (_validatePickerValues(triggerType)) {
                     return;
                 }
