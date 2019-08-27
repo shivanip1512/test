@@ -1,6 +1,7 @@
 package com.cannontech.web.dr.setup;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,6 +90,11 @@ public class LoadProgramSetupController {
         }
         controllerHelper.buildProgramModelMap(model, userContext, request, loadProgram);
 
+        if (model.containsAttribute("gearInfos")) {
+            List<GearInfo> gearInfos = (List<GearInfo>) model.get("gearInfos");
+            model.addAttribute("gearInfos", gearInfos);
+        }
+
         return "dr/setup/loadProgram/loadProgramView.jsp";
     }
 
@@ -122,14 +128,8 @@ public class LoadProgramSetupController {
             model.addAttribute("selectedSwitchType", loadProgram.getType());
             model.addAttribute("loadProgram", loadProgram);
 
-            controllerHelper.buildGearInfo(model, loadProgram);
+            buildGearInfo(model, loadProgram);
             controllerHelper.buildNotificationModel(model, loadProgram);
-
-            if (CollectionUtils.isNotEmpty(loadProgram.getGears())) {
-                for (ProgramGear gear : loadProgram.getGears()) {
-                    gearCache.put(String.valueOf(gear.getGearId()), gear);
-                }
-            }
 
             return "dr/setup/loadProgram/loadProgramView.jsp";
         } catch (ApiCommunicationException e) {
@@ -157,6 +157,14 @@ public class LoadProgramSetupController {
             }
 
             controllerHelper.buildProgramModelMap(model, userContext, request, loadProgram);
+
+            if (model.containsAttribute("gearInfos")) {
+                List<GearInfo> gearInfos = (List<GearInfo>) model.get("gearInfos");
+                model.addAttribute("gearInfos", gearInfos);
+            } else {
+                buildGearInfo(model, loadProgram);
+            }
+
             return "dr/setup/loadProgram/loadProgramView.jsp";
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
@@ -397,6 +405,23 @@ public class LoadProgramSetupController {
         }
         return gearInfos;
     }
+
+    private void buildGearInfo(ModelMap model, LoadProgram loadProgram) {
+
+        if (CollectionUtils.isNotEmpty(loadProgram.getGears())) {
+            List<GearInfo> gearInfos = new ArrayList<>();
+            loadProgram.getGears().forEach(gear -> {
+                gearCache.put(String.valueOf(gear.getGearId()), gear);
+                GearInfo info = new GearInfo();
+                info.setId(gear.getGearId().toString());
+                info.setName(gear.getGearName());
+                info.setControlMethod(gear.getControlMethod());
+                gearInfos.add(info);
+            });
+            model.addAttribute("gearInfos", gearInfos);
+        }
+
+    }
     
     /**
      * Make a rest call for retrieving program
@@ -550,7 +575,7 @@ public class LoadProgramSetupController {
         }
 
         BindingResult result = gearErrorCache.asMap().get(id);
-        if (result != null && CollectionUtils.isNotEmpty(result.getFieldErrors())) {
+        if (mode != PageEditMode.VIEW && result != null && CollectionUtils.isNotEmpty(result.getFieldErrors())) {
             model.put("org.springframework.validation.BindingResult.programGear", result);
         }
 

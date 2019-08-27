@@ -107,31 +107,9 @@ public class LoadProgramSetupControllerHelper {
             loadProgram.getAssignedGroups().forEach(p -> selectedGroupIds.add(p.getGroupId()));
         }
         model.addAttribute("selectedGroupIds", selectedGroupIds);
-        
-        if (model.containsAttribute("gearInfos")) {
-            List<GearInfo> gearInfos = (List<GearInfo>) model.get("gearInfos");
-            model.addAttribute("gearInfos", gearInfos);
-        } else {
-            buildGearInfo(model, loadProgram);
-        }
 
     }
 
-    public void buildGearInfo(ModelMap model, LoadProgram loadProgram) {
-
-        if (CollectionUtils.isNotEmpty(loadProgram.getGears())) {
-            List<GearInfo> gearInfos = new ArrayList<>();
-            loadProgram.getGears().forEach(gear -> {
-                GearInfo info = new GearInfo();
-                info.setId(gear.getGearId().toString());
-                info.setName(gear.getGearName());
-                info.setControlMethod(gear.getControlMethod());
-                gearInfos.add(info);
-            });
-            model.addAttribute("gearInfos", gearInfos);
-        }
-
-    }
 
     /**
      * Retrieve ProgramConstraints
