@@ -70,7 +70,7 @@ yukon.dr.setup.controlArea = (function() {
             errorFlag = true;
             $(".js-trigger-identification-error").removeClass("dn");
         }
-        if (usePeakTracking) {
+        if (usePeakTracking && thresholdType !== 'STATUS') {
             if (thresholdPointPeakTracking.selectionLabel.innerText.indexOf(nonSelected) != -1) {
                 errorFlag = true;
                 $(".js-peak-tracking-error").removeClass("dn");
@@ -204,7 +204,11 @@ yukon.dr.setup.controlArea = (function() {
                     triggerType = $("#js-trigger-type option:selected").val();
                 
                 container.find("#point-trigger-identification-name").val(triggerIdentification.selectionLabel.innerText);
-                
+
+                if(triggerType === undefined){
+                    triggerType = container.find("#triggerType").val();
+                }
+
                 if (_validatePickerValues(triggerType)) {
                     return;
                 }
