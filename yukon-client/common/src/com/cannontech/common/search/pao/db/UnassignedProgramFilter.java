@@ -21,6 +21,7 @@ public class UnassignedProgramFilter implements SqlFilter {
             programFilter.append("    WHERE cap.DeviceId").neq(controlAreaId);
         }
         programFilter.append("  )");
+        programFilter.append("  AND lm.DeviceID > 0");
         programFilter.append(")");
         
         return programFilter;
