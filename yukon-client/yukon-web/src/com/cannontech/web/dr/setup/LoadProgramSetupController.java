@@ -337,7 +337,6 @@ public class LoadProgramSetupController {
         List<FieldError> errorList = result.getFieldErrors();
         List <Integer> gearPositionIndexes = errorList.stream()
                                                     .filter(fieldError -> fieldError.getField().contains("gears") 
-                                                        && !(fieldError.getField().contains("gearName")) 
                                                         && !(fieldError.getField().contains("controlMethod")))
                                                     .map(fieldError -> Integer.parseInt(fieldError.getField().replaceAll("[\\D]", "")))
                                                     .distinct()
