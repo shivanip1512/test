@@ -41,7 +41,6 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
 		return row;
 	};
 	
-	
 	private final YukonRowMapper<MeterProgramConfiguration> configurationRowMapper = rs -> {
 		MeterProgramConfiguration row = new MeterProgramConfiguration();
 		MeterProgramSource source = MeterProgramSource.getByPrefix(rs.getString("Source"));

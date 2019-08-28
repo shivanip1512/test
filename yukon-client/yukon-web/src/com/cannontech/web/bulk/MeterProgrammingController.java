@@ -108,7 +108,7 @@ public class MeterProgrammingController {
         }
         userInputs.put(CollectionActionInput.CONFIGURATION.name(), program.getName());
         
-        int key = meterProgrammingService.initiateMeterProgramUpload(deviceCollection, null, program.getGuid(), userContext);
+        int key = meterProgrammingService.initiateMeterProgramUpload(deviceCollection, program.getGuid(), userContext);
         
         return "redirect:/collectionActions/progressReport/detail?key=" + key;
     }

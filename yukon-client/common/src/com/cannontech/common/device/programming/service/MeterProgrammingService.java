@@ -1,10 +1,8 @@
 package com.cannontech.common.device.programming.service;
 
-import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.programming.model.MeterProgramUploadCancelResult;
-import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.user.YukonUserContext;
 
 public interface MeterProgrammingService {
@@ -12,8 +10,7 @@ public interface MeterProgrammingService {
 	/**
 	 * Retrieves meter programming status
 	 */
-	int retrieveMeterProgrammingStatus(DeviceCollection deviceCollection,
-			SimpleCallback<CollectionActionResult> callback, YukonUserContext context);
+	int retrieveMeterProgrammingStatus(DeviceCollection deviceCollection, YukonUserContext context);
 
 	/**
 	 * Cancels meter program upload
@@ -24,6 +21,5 @@ public interface MeterProgrammingService {
 	/**
 	 * Initiates meter program upload
 	 */
-	int initiateMeterProgramUpload(DeviceCollection deviceCollection, SimpleCallback<CollectionActionResult> callback,
-			String guid, YukonUserContext context);
+	int initiateMeterProgramUpload(DeviceCollection deviceCollection, String guid, YukonUserContext context);
 }
