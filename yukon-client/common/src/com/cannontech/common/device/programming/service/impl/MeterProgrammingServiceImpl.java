@@ -39,6 +39,7 @@ import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.events.loggers.MeterProgrammingEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -121,14 +122,20 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 
 		String command = "";
 		
-		MeterProgram program = meterProgrammingDao.getMeterProgram(guid);
-		
+		List<SimpleDevice> unsupportedDevices = new ArrayList<>(deviceCollection.getDeviceList());
+		LinkedHashMap<String, String> input = null;
+		try {
+			MeterProgram program = meterProgrammingDao.getMeterProgram(guid);
+			unsupportedDevices.removeIf(device -> device.getDeviceType() == program.getPaoType());
+			input = getInput(program);
+		} catch (NotFoundException e) {
+			log.error(e);
+		}
+
 		CollectionActionResult result = collectionActionService.createResult(
-				CollectionAction.METER_PROGRAM_UPLOAD_INITIATE, getInput(program.getName()), deviceCollection, CommandRequestType.DEVICE,
+				CollectionAction.METER_PROGRAM_UPLOAD_INITIATE, input, deviceCollection, CommandRequestType.DEVICE,
 				DeviceRequestType.METER_PROGRAM_UPLOAD_INITIATE, context);
 
-		List<SimpleDevice> unsupportedDevices = new ArrayList<>(deviceCollection.getDeviceList());
-		unsupportedDevices.removeIf(device -> device.getDeviceType() == program.getPaoType());
 		collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result, unsupportedDevices);
 		List<SimpleDevice> supportedDevices = new ArrayList<>(deviceCollection.getDeviceList());
 		supportedDevices.removeAll(unsupportedDevices);
@@ -175,9 +182,9 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 	/**
 	 * Returns configuration name to be displayed on collection actions page
 	 */
-	private LinkedHashMap<String, String> getInput(String configuration) {
+	private LinkedHashMap<String, String> getInput(MeterProgram program) {
 		LinkedHashMap<String, String> inputs = new LinkedHashMap<>();
-		inputs.put(CollectionActionInput.CONFIGURATION.name(), configuration);
+		inputs.put(CollectionActionInput.CONFIGURATION.name(), program.getName());
 		return inputs;
 	}
 	
