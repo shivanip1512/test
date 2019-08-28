@@ -198,7 +198,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
 
                             if (!errors.hasFieldErrors("gearName")) {
                                 YukonValidationUtils.checkExceedsMaxLength(errors, "gearName", gear.getGearName(), 60);
-                                if (!PaoUtils.isValidPaoName(gear.getGearName())) {
+                                if (!PaoUtils.isValidPaoName(gear.getGearName())
+                                    && !errors.hasFieldErrors("gearName")) {
                                     errors.rejectValue("gearName", "yukon.web.error.paoName.containsIllegalChars");
                                 }
                             }
