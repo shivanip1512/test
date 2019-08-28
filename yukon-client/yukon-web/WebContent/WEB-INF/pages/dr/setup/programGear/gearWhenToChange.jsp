@@ -11,8 +11,8 @@
     <tags:numeric path="fields.whenToChangeFields.changePriority" size="10" minValue="0" maxValue="9999" stepValue="1" />
 </tags:nameValue2>
 <tags:nameValue2 id="js-changeDurationInMinutes-row" nameKey=".changeDurationInMinutes" rowClass="dn">
-    <tags:numeric path="fields.whenToChangeFields.changeDurationInMinutes" size="10" minValue="0" maxValue="99999" stepValue="1" />
-    <i:inline key=".min" />
+    <cti:msg2 var="durationUnit" key="yukon.web.modules.dr.setup.gear.min"/>
+    <tags:numeric path="fields.whenToChangeFields.changeDurationInMinutes" units="${durationUnit}" size="10" minValue="0" maxValue="99999" stepValue="1" />
 </tags:nameValue2>
 <tags:nameValue2 id="js-triggerNumber-row" nameKey=".triggerNumber" rowClass="dn">
     <tags:numeric path="fields.whenToChangeFields.triggerNumber" size="10" minValue="0" maxValue="99999" stepValue="1" />

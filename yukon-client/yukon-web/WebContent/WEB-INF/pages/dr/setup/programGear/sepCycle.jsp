@@ -6,7 +6,8 @@
             <tags:sectionContainer2 nameKey="controlParameters">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".controlPercent">
-                        <tags:numeric path="fields.controlPercent" size="10" minValue="5" maxValue="100" />
+                        <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
+                        <tags:numeric path="fields.controlPercent" units="${percent}" size="10" minValue="5" maxValue="100" />
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".criticality">
                         <tags:numeric path="fields.criticality" size="10" minValue="1" maxValue="15" />
@@ -20,7 +21,8 @@
             <tags:sectionContainer2 nameKey="optionalAttributes">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".groupCapacityReduction">
-                        <tags:numeric path="fields.capacityReduction" size="10" minValue="0" maxValue="100" />
+                        <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
+                        <tags:numeric path="fields.capacityReduction" units="${percent}" size="10" minValue="0" maxValue="100" />
                     </tags:nameValue2>
                     <%@ include file="gearWhenToChange.jsp"%>
                 </tags:nameValueContainer2>

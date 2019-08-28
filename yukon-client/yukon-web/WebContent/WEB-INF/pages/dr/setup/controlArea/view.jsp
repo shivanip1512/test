@@ -244,7 +244,7 @@
                                                 <td>                                            
                                                     <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" data-id="${program.programId}"/>
                                                 </td>
-                                                <td class="vam">
+                                                <td>
                                                     <cti:deviceName deviceId="${program.programId}"/>
                                                 </td>
                                                 <td>
