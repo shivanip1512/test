@@ -3,6 +3,7 @@ package com.cannontech.common.search.pao.db;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.db.device.Device;
 
 
 public class UnassignedProgramFilter implements SqlFilter {
@@ -21,7 +22,7 @@ public class UnassignedProgramFilter implements SqlFilter {
             programFilter.append("    WHERE cap.DeviceId").neq(controlAreaId);
         }
         programFilter.append("  )");
-        programFilter.append("  AND lm.DeviceID > 0");
+        programFilter.append("  AND lm.DeviceID").gt(Device.SYSTEM_DEVICE_ID);
         programFilter.append(")");
         
         return programFilter;
