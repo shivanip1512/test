@@ -7671,6 +7671,45 @@ create table MeterHardwareBase (
 go
 
 /*==============================================================*/
+/* Table: MeterProgram                                          */
+/*==============================================================*/
+create table MeterProgram (
+   Guid                 varchar(40)          not null,
+   Name                 varchar(100)         not null,
+   PaoType              varchar(30)          not null,
+   Program              varbinary(Max)       not null,
+   constraint PK_MeterProgram primary key (Guid)
+)
+go
+
+alter table MeterProgram
+   add constraint AK_MeterProgram_Name unique (Name)
+go
+
+/*==============================================================*/
+/* Table: MeterProgramAssignment                                */
+/*==============================================================*/
+create table MeterProgramAssignment (
+   DeviceId             numeric              not null,
+   Guid                 varchar(40)          not null,
+   constraint PK_MeterProgramAssignment primary key (DeviceId)
+)
+go
+
+/*==============================================================*/
+/* Table: MeterProgramStatus                                    */
+/*==============================================================*/
+create table MeterProgramStatus (
+   DeviceId             numeric              not null,
+   ReportedGuid         varchar(40)          not null,
+   Source               varchar(1)           not null,
+   Status               varchar(20)          not null,
+   LastUpdate           datetime             not null,
+   constraint PK_MeterProgramStatus primary key (DeviceId)
+)
+go
+
+/*==============================================================*/
 /* Table: MspLMInterfaceMapping                                 */
 /*==============================================================*/
 create table MspLMInterfaceMapping (
@@ -14486,6 +14525,24 @@ go
 alter table MeterHardwareBase
    add constraint FK_METERHARD_YUKONLSTNTRY foreign key (MeterTypeID)
       references YukonListEntry (EntryID)
+go
+
+alter table MeterProgramAssignment
+   add constraint FK_MeterProgramAssignment_MeterProgram foreign key (Guid)
+      references MeterProgram (Guid)
+         on delete cascade
+go
+
+alter table MeterProgramAssignment
+   add constraint FK_MeterProgramAssignment_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+         on delete cascade
+go
+
+alter table MeterProgramStatus
+   add constraint FK_MeterProgramStatus_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+         on delete cascade
 go
 
 alter table MspLMInterfaceMapping
