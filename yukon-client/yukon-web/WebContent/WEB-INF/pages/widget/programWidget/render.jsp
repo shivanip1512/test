@@ -104,6 +104,9 @@
                     </table>
                     <br>
                 </c:forEach>
+                <c:if test="${showMessage}">
+                    <div class="notes" style="font-weight:bold"><i:inline key="yukon.web.widgets.programWidget.moreProgramFound"/></div>
+                </c:if>
                 <div class="PT20">
                     <cti:url value="/dr/program/activityDetails" var="activityDetailsUrl"/>
                     <a href="${activityDetailsUrl}" target="_blank"><i:inline key="yukon.common.viewDetails"/></a>

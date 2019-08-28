@@ -8,8 +8,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.Instant;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -222,5 +221,29 @@ public class TimeUtilTest {
         long expectedResult = 0;
         assertEquals("Remaining hours should have been " + expectedResult, expectedResult,
             TimeUtil.hoursRemainingAfterConveritngToDays(totalHours));
+    }
+    
+    @Test
+    public void test_isFutureDate_futureDate() {
+        DateTime futureDate = new DateTime().plusHours(24).withTimeAtStartOfDay();
+        assertEquals(futureDate + " is future date." , true , TimeUtil.isFutureDate(futureDate));
+    }
+
+    @Test
+    public void test_isFutureDate_currentDate() {
+        DateTime currentDate = new DateTime();
+        assertEquals(currentDate + " is not future date." , false , TimeUtil.isFutureDate(currentDate));
+    }
+    
+    @Test
+    public void test_isFutureDate_pastDate() {
+        DateTime currentDate = new DateTime().plusHours(-25);
+        assertEquals(currentDate + " is not future date." , false , TimeUtil.isFutureDate(currentDate));
+    }
+
+    @Test
+    public void test_isFutureDate_null() {
+        DateTime nullDate = null;
+        assertEquals(nullDate + " is not future date." , false , TimeUtil.isFutureDate(nullDate));
     }
 }

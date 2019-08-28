@@ -483,4 +483,14 @@ public static int differenceMinutes(Date from, Date to) {
         } else
             return 0;
     }
+
+    /**
+     * @return true , if passed dateTime object has future date. 
+   */
+    public static boolean isFutureDate(DateTime date) {
+        if (date == null) {
+            return false;
+        }
+        return !date.withTimeAtStartOfDay().isBefore(new DateTime().withTimeAtStartOfDay().plusHours(24));
+    }
 }
