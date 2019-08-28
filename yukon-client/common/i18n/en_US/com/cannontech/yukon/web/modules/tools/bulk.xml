@@ -200,6 +200,21 @@
     <entry key="yukon.common.device.bulk.verifyConfigResults.notSupported">Verification is not supported</entry>
     
     
+    <!-- METER PROGRAMMING -->
+    <!-- programmingInputs.jsp -->
+    <entry key="yukon.web.modules.tools.bulk.meterProgramming.header">C&amp;I Meter Programming</entry>
+    <entry key="yukon.web.modules.tools.bulk.meterProgramming.noteLabel">Note:</entry>
+    <entry key="yukon.web.modules.tools.bulk.meterProgramming.noteText">Select an existing configuration to assign to the selected devices or upload a new configuration.</entry>
+    <entry key="yukon.web.modules.tools.bulk.meterProgramming.configurationType">Configuration Type</entry>
+    <entry key="yukon.web.modules.tools.bulk.meterProgramming.configuration">Configuration</entry>
+    <entry key="yukon.web.modules.tools.bulk.meterProgramming.existingConfiguration">Existing</entry>
+    <entry key="yukon.web.modules.tools.bulk.meterProgramming.newConfiguration"><![CDATA[&nbsp;&nbsp;&nbsp;New&nbsp;&nbsp;&nbsp;]]></entry>
+    <entry key="yukon.web.modules.tools.bulk.meterProgramming.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.tools.bulk.meterProgramming.name">Name</entry>
+    <entry key="yukon.web.modules.tools.bulk.meterProgramming.noFileSelected">Please select a file to upload.</entry>
+    <entry key="yukon.web.modules.tools.bulk.meterProgramming.invalidFileSelected">There was a problem reading the configuration file.</entry>
+    
+    
     <!-- DATA STREAMING CONFIGURATION-->
     <!-- ******************************************************************************************************************** -->
     <!-- ******************************************************************************************************************** -->
