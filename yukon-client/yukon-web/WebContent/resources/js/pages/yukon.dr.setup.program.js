@@ -87,6 +87,22 @@ yukon.dr.setup.program = (function() {
         $('#js-program-' + action + '-span').toggleClass('dn', !checked);
     },
 
+    _handleTimeRefreshRampInFields = function() {
+        var rampInTimeRefresh= $("#js-timeRefresh-rampInSwitch").prop('checked');
+        if (rampInTimeRefresh === false) {
+            $("#js-timeRefresh-rampInPercent").val("");
+            $("#js-timeRefresh-rampInInterval").val("");
+        }
+    },
+
+    _handleMasterCycleRampInFields = function() {
+        var ramInMasterCycleRefresh= $("#js-masterCycle-rampInSwitch").prop('checked');
+        if (ramInMasterCycleRefresh === false) {
+            $("#js-masterCycle-rampInPercent").val("");
+            $("#js-masterCycle-rampInInterval").val("");
+        }
+    },
+
     _loadProgram = function() {
 
         var type = $('#type').val();
@@ -342,6 +358,17 @@ yukon.dr.setup.program = (function() {
                 controlMethodElement.toggleClass("error", isControlMethodBlank);
                 dialog.find("#gearTypeIsRequiredError").toggleClass("dn", !isControlMethodBlank);
                 
+                var selectedGearType = controlMethodElement.find("option:selected").val();
+                if(!selectedGearType) {
+                    selectedGearType = controlMethodElement.val();
+                }
+                
+                if(selectedGearType === 'TimeRefresh'){
+                    _handleTimeRefreshRampInFields(); 
+                }
+                if(selectedGearType === 'MasterCycle'){ 
+                    _handleMasterCycleRampInFields();
+                }
                 /*
                  * Find all fields in the form that use <dt:timeOffset/>. If any of these fields have invalid numeric value,
                  * set the field value to 0 for such fields. This is required since non-numeric value cannot be bind to an Integer

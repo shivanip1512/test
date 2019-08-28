@@ -67,16 +67,16 @@
                     value="${programGear.fields.rampInPercent > 0 || programGear.fields.rampInIntervalInSeconds > 0}" />
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".rampIn">
-                        <tags:switchButton name="rampIn" toggleGroup="rampInWindow" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label"
+                        <tags:switchButton id="js-timeRefresh-rampInSwitch" name="rampIn" toggleGroup="rampInWindow" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label"
                             checked="${rampInFieldEnabled}" />
                     </tags:nameValue2>
                     <c:set var="rampInFieldClass" value="${rampInFieldEnabled ? '' : 'dn'}" />
                     <tags:nameValue2 nameKey=".rampInPercent" data-toggle-group="rampInWindow" rowClass="${rampInFieldClass}">
-                        <tags:numeric path="fields.rampInPercent" size="10" minValue="0" maxValue="100"/>
+                        <tags:numeric id="js-timeRefresh-rampInPercent" path="fields.rampInPercent" size="10" minValue="0" maxValue="100"/>
                         <i:inline key="yukon.common.units.PERCENT" />
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".rampInInterval" data-toggle-group="rampInWindow" rowClass="${rampInFieldClass}">
-                        <tags:numeric path="fields.rampInIntervalInSeconds" size="10" minValue="-99999" maxValue="99999"/>
+                        <tags:numeric id="js-timeRefresh-rampInInterval" path="fields.rampInIntervalInSeconds" size="10" minValue="-99999" maxValue="99999"/>
                         <i:inline key=".sec" />
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
