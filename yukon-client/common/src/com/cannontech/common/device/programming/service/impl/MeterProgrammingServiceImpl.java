@@ -117,8 +117,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 	
 
 	@Override
-	public int initiateMeterProgramUpload(DeviceCollection deviceCollection,
-			SimpleCallback<CollectionActionResult> callback, String guid, YukonUserContext context) {
+	public int initiateMeterProgramUpload(DeviceCollection deviceCollection, String guid, YukonUserContext context) {
 
 		String command = "";
 		
@@ -140,22 +139,21 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 		List<SimpleDevice> supportedDevices = new ArrayList<>(deviceCollection.getDeviceList());
 		supportedDevices.removeAll(unsupportedDevices);
 
-		CommandCompletionCallback<CommandRequestDevice> execCallback = getExecutionCallback(callback, context, result);
+		CommandCompletionCallback<CommandRequestDevice> execCallback = getExecutionCallback(context, result);
 		meterProgrammingDao.assignDevicesToProgram(guid, supportedDevices);
 		execute(context, command, result, supportedDevices, execCallback);
 		return result.getCacheKey();
 	}
 	
 	@Override
-	public int retrieveMeterProgrammingStatus(DeviceCollection deviceCollection, SimpleCallback<CollectionActionResult> callback,
-			YukonUserContext context) {
+	public int retrieveMeterProgrammingStatus(DeviceCollection deviceCollection, YukonUserContext context) {
 
 		String command = "";
 		
 		CollectionActionResult result = collectionActionService.createResult(CollectionAction.METER_PROGRAM_STATUS_READ,
 				null, deviceCollection, CommandRequestType.DEVICE, DeviceRequestType.METER_PROGRAM_STATUS_READ, context);
 
-		CommandCompletionCallback<CommandRequestDevice> execCallback = getExecutionCallback(callback, context, result);
+		CommandCompletionCallback<CommandRequestDevice> execCallback = getExecutionCallback(context, result);
 		execute(context, command, result, deviceCollection.getDeviceList(), execCallback);
 		return result.getCacheKey();
 	}
@@ -188,8 +186,8 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 		return inputs;
 	}
 	
-	private CommandCompletionCallback<CommandRequestDevice> getExecutionCallback(
-			SimpleCallback<CollectionActionResult> callback, YukonUserContext context, CollectionActionResult result) {
+	private CommandCompletionCallback<CommandRequestDevice> getExecutionCallback(YukonUserContext context,
+			CollectionActionResult result) {
 		CommandCompletionCallback<CommandRequestDevice> execCallback = new CommandCompletionCallback<CommandRequestDevice>() {
 			MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 
@@ -222,11 +220,6 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 				collectionActionService.updateResult(result,
 						!result.isCanceled() ? CommandRequestExecutionStatus.COMPLETE
 								: CommandRequestExecutionStatus.CANCELLED);
-				try {
-					callback.handle(result);
-				} catch (Exception e) {
-					log.error(e);
-				}
 			}
 		};
 		return execCallback;
