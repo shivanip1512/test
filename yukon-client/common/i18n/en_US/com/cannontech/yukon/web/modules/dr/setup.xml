@@ -330,9 +330,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.howToStopControl">How To Stop Control</entry>
 <entry key="yukon.web.modules.dr.setup.gear.stopCommandRepeat">Stop command Repeat</entry>
 <entry key="yukon.web.modules.dr.setup.gear.sendRate">Command Resend Rate</entry>
-<entry key="yukon.web.modules.dr.setup.gear.groupCapacityReduction">Group Capacity Reduction</entry>
 <entry key="yukon.web.modules.dr.setup.gear.whenToChange">When to Change</entry>
-<entry key="yukon.web.modules.dr.setup.gear.groupCapacityReduction">Group Capacity Reduction %</entry>
 <entry key="yukon.web.modules.dr.setup.gear.triggerNumber">Trigger Number</entry>
 <entry key="yukon.web.modules.dr.setup.gear.triggerOffset">Trigger Offset</entry>
 <entry key="yukon.web.modules.dr.setup.gear.kWReduction">KW Reduction</entry>
@@ -346,7 +344,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.criticality">Criticality</entry>
 <entry key="yukon.web.modules.dr.setup.gear.mandatory">Mandatory</entry>
 <entry key="yukon.web.modules.dr.setup.gear.dutyCycleType">Duty Cycle Type</entry>
-<entry key="yukon.web.modules.dr.setup.gear.dutyCyclePercentage">Duty Cycle %</entry>
+<entry key="yukon.web.modules.dr.setup.gear.dutyCyclePercentage">Duty Cycle</entry>
 <entry key="yukon.web.modules.dr.setup.gear.dutyCyclePeriod">Duty Cycle Period</entry>
 <entry key="yukon.web.modules.dr.setup.gear.preparationLoadShaping">Preparation Load Shaping</entry>
 <entry key="yukon.web.modules.dr.setup.gear.peakLoadShaping">Peak Load Shaping</entry>
@@ -355,7 +353,6 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.commandResendRate">Command Resend Rate</entry>
 <entry key="yukon.web.modules.dr.setup.gear.groupSelectionMethod">Group Selection Method</entry>
 <entry key="yukon.web.modules.dr.setup.gear.stopControl">How To Stop Control</entry>
-<entry key="yukon.web.modules.dr.setup.gear.groupCapacityReduction">Group Capacity Reduction %</entry>
 <entry key="yukon.web.modules.dr.setup.gear.indicator">BTP LED Indicator</entry>
 <entry key="yukon.web.modules.dr.setup.gear.timeout">Max Indicator Timeout</entry>
 <entry key="yukon.web.modules.dr.setup.gear.resendRate">Resend Rate</entry>
@@ -418,7 +415,6 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.stopCommandRepeat">Stop command Repeat</entry>
 <entry key="yukon.web.modules.dr.setup.gear.groupCapacityReduction">Group Capacity Reduction</entry>
 <entry key="yukon.web.modules.dr.setup.gear.whenToChange">When to Change</entry>
-<entry key="yukon.web.modules.dr.setup.gear.groupCapacityReduction">Group Capacity Reduction %</entry>
 <entry key="yukon.web.modules.dr.setup.gear.changePriority">Change Priority</entry>
 <entry key="yukon.web.modules.dr.setup.gear.triggerNumber">Trigger Number</entry>
 <entry key="yukon.web.modules.dr.setup.gear.triggerOffset">Trigger Offset</entry>
@@ -429,7 +425,6 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.rampIn">Ramp In</entry>
 <entry key="yukon.web.modules.dr.setup.gear.rampOut">Ramp Out</entry>
 <entry key="yukon.web.modules.dr.setup.gear.trueCycle">True Cycle or adaptive algorithm </entry>
-<entry key="yukon.web.modules.dr.setup.gear.criticality">Criticality</entry>
 <entry key="yukon.web.modules.dr.setup.gear.groupSelectionMethod">Group Selection Method</entry>
 <entry key="yukon.web.modules.dr.setup.gear.rampInPercent">Ramp In Percent</entry>
 <entry key="yukon.web.modules.dr.setup.gear.rampInInterval">Ramp In Interval</entry>
@@ -442,6 +437,9 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.numberOfGroups">Groups Per Send</entry>
 <entry key="yukon.web.modules.dr.setup.gear.sec">sec.</entry>
 <entry key="yukon.web.modules.dr.setup.gear.NONE">(none)</entry>
+<entry key="yukon.web.modules.dr.setup.gear.rampPerHourRange">(-9.9 to 9.9)</entry>
+<entry key="yukon.web.modules.dr.setup.gear.maxDegreeDeltaRange">(0 to 20)</entry>
+<entry key="yukon.web.modules.dr.setup.gear.preOpTempRange">(-20 to 20)</entry>
 
 <entry key="yukon.web.modules.dr.setup.gear.mode">Mode</entry>
 <entry key="yukon.web.modules.dr.setup.gear.unit">Unit</entry>
@@ -476,7 +474,6 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.heatingOffset">Heating Offset</entry>
 <entry key="yukon.web.modules.dr.setup.gear.coolingOffset">Cooling Offset</entry>
 <entry key="yukon.web.modules.dr.setup.gear.ramp">Ramp</entry>
-<entry key="yukon.web.modules.dr.setup.gear.groupCapacityReductionPercentage">Group Capacity Reduction %</entry>
 
 <!-- Control Area -->
 <entry key="yukon.web.modules.dr.setup.controlArea.CREATE.pageName">Create Control Area</entry>

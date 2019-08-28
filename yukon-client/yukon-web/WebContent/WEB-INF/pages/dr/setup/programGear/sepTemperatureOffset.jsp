@@ -47,7 +47,7 @@
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".mode">
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
-                            <c:forEach var="tempreatureMode" items="${tempreatureModes}" varStatus="status">
+                            <c:forEach var="temperatureMode" items="${temperatureModes}" varStatus="status">
                                 <c:choose>
                                     <c:when test="${status.index == 0}">
                                         <c:set var="css" value="left yes ML0"/>
@@ -59,8 +59,8 @@
                                         <c:set var="css" value="middle yes"/>
                                     </c:otherwise>
                                 </c:choose>
-                                <tags:radio path="fields.mode" value="${tempreatureMode}" classes="${css}"
-                                            key=".${tempreatureMode}" inputClass="js-temperature-mode"/>
+                                <tags:radio path="fields.mode" value="${temperatureMode}" classes="${css}"
+                                            key=".${temperatureMode}" inputClass="js-temperature-mode"/>
                             </c:forEach>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
@@ -100,8 +100,9 @@
         <div class="column two nogutter"> 
             <tags:sectionContainer2 nameKey="optionalAttributes">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".groupCapacityReductionPercentage">
-                        <tags:numeric path="fields.capacityReduction" size="5" minValue="0" maxValue="100"/>
+                    <tags:nameValue2 nameKey=".groupCapacityReduction">
+                        <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
+                        <tags:numeric path="fields.capacityReduction" units="${percent}" size="5" minValue="0" maxValue="100"/>
                     </tags:nameValue2>
                     <c:if test="${not empty selectedGearType}">
                         <%@ include file="gearWhenToChange.jsp" %>

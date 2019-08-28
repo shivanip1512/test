@@ -54,7 +54,8 @@
             <tags:sectionContainer2 nameKey="optionalAttributes">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".groupCapacityReduction">
-                        <tags:numeric path="fields.capacityReduction" size="10" minValue="0" maxValue="100" />
+                        <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
+                        <tags:numeric path="fields.capacityReduction" units="${percent}" size="10" minValue="0" maxValue="100" />
                     </tags:nameValue2>
                     <%@ include file="gearWhenToChange.jsp"%>
                 </tags:nameValueContainer2>
@@ -72,12 +73,12 @@
                     </tags:nameValue2>
                     <c:set var="rampInFieldClass" value="${rampInFieldEnabled ? '' : 'dn'}" />
                     <tags:nameValue2 nameKey=".rampInPercent" data-toggle-group="rampInWindow" rowClass="${rampInFieldClass}">
-                        <tags:numeric id="js-timeRefresh-rampInPercent" path="fields.rampInPercent" size="10" minValue="0" maxValue="100"/>
-                        <i:inline key="yukon.common.units.PERCENT" />
+                        <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
+                        <tags:numeric id="js-timeRefresh-rampInPercent" path="fields.rampInPercent" units="${percent}" size="10" minValue="0" maxValue="100"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".rampInInterval" data-toggle-group="rampInWindow" rowClass="${rampInFieldClass}">
-                        <tags:numeric id="js-timeRefresh-rampInInterval" path="fields.rampInIntervalInSeconds" size="10" minValue="-99999" maxValue="99999"/>
-                        <i:inline key=".sec" />
+                        <cti:msg2 var="rampInIntervalUnit" key="yukon.web.modules.dr.setup.gear.sec"/>
+                        <tags:numeric id="js-timeRefresh-rampInInterval" path="fields.rampInIntervalInSeconds" units="${rampInIntervalUnit}" size="10" minValue="-99999" maxValue="99999"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
@@ -103,12 +104,12 @@
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 id="js-rampOutPercent-row" nameKey=".rampOutPercent" rowClass="dn">
-                        <tags:numeric path="fields.rampOutPercent" size="10" minValue="0" maxValue="100"/>
-                        <i:inline key="yukon.common.units.PERCENT" />
+                        <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
+                        <tags:numeric path="fields.rampOutPercent" units="${percent}" size="10" minValue="0" maxValue="100"/>
                     </tags:nameValue2>
                     <tags:nameValue2 id="js-rampOutInterval-row" nameKey=".rampOutInterval" rowClass="dn">
-                        <tags:numeric path="fields.rampOutIntervalInSeconds" size="10" minValue="-99999" maxValue="99999"/>
-                        <i:inline key=".sec" />
+                        <cti:msg2 var="rampOutIntervalUnit" key="yukon.web.modules.dr.setup.gear.sec"/>
+                        <tags:numeric path="fields.rampOutIntervalInSeconds" units="${rampOutIntervalUnit}" size="10" minValue="-99999" maxValue="99999"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".stopCommandRepeat">
                         <tags:numeric path="fields.stopCommandRepeat" size="10" minValue="0" maxValue="5"/>

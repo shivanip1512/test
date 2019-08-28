@@ -97,7 +97,7 @@
                     <%@ include file="simpleThermostatRamping.jsp" %>
                 </c:if>
                 <c:if test="${selectedGearType == 'SepTemperatureOffset'}">
-                    <%@ include file="sepTempreatureOffset.jsp" %>
+                    <%@ include file="sepTemperatureOffset.jsp" %>
                 </c:if>
                 <c:if test="${selectedGearType == 'Rotation'}">
                        <%@ include file="rotation.jsp" %>

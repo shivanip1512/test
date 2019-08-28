@@ -547,19 +547,18 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("postPeakLoadShaping", PostLoadShape.values());
             break;
         case ThermostatRamping:
-            model.addAttribute("tempreatureMode", true);
             model.addAttribute("units", TemperatureMeasureUnit.values());
             model.addAttribute("setpoints", AbsoluteOrDelta.values());
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
             break;
         case SimpleThermostatRamping:
-            model.addAttribute("tempreatureModes", Mode.values());
+            model.addAttribute("temperatureModes", Mode.values());
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
             break;
         case SepTemperatureOffset:
-            model.addAttribute("tempreatureModes", Mode.values());
+            model.addAttribute("temperatureModes", Mode.values());
             model.addAttribute("units", TemperatureMeasureUnit.values());
             model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
             model.addAttribute("whenToChangeFields", WhenToChange.values());

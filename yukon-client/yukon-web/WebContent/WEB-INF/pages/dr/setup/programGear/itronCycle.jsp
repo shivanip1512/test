@@ -14,7 +14,8 @@
                         </cti:displayForPageEditModes>
                     </tags:nameValue2> 
                     <tags:nameValue2 nameKey=".dutyCyclePercentage">
-                        <tags:numeric path="fields.dutyCyclePercent" size="10" minValue="0" maxValue="100"/>
+                        <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
+                        <tags:numeric path="fields.dutyCyclePercent" units="${percent}" size="10" minValue="0" maxValue="100"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".dutyCyclePeriod">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
@@ -40,7 +41,8 @@
             <tags:sectionContainer2 nameKey="optionalAttributes">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".groupCapacityReduction">
-                        <tags:numeric path="fields.capacityReduction" size="10" minValue="0" maxValue="100"/>
+                        <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
+                        <tags:numeric path="fields.capacityReduction" units="${percent}" size="10" minValue="0" maxValue="100"/>
                     </tags:nameValue2>
                     <c:if test="${not empty selectedGearType}">
                         <%@ include file="gearWhenToChange.jsp" %>

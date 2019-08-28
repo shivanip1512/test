@@ -143,8 +143,9 @@
         <div class="column two nogutter"> 
             <tags:sectionContainer2 nameKey="optionalAttributes">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".groupCapacityReductionPercentage">
-                        <tags:numeric path="fields.capacityReduction" size="5" minValue="0" maxValue="100" />
+                    <tags:nameValue2 nameKey=".groupCapacityReduction">
+                        <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
+                        <tags:numeric path="fields.capacityReduction" units="${percent}" size="5" minValue="0" maxValue="100" />
                     </tags:nameValue2>
                     <c:if test="${not empty selectedGearType}">
                         <%@ include file="gearWhenToChange.jsp" %>
