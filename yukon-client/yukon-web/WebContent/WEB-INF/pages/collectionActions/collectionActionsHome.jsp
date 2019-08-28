@@ -84,4 +84,5 @@
     <cti:includeScript link="/resources/js/pages/yukon.bulk.point.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.bulk.masschange.js" />
     <cti:includeScript link="/resources/js/pages/yukon.bulk.dataStreaming.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.bulk.meterProgramming.js"/>
 </cti:standardPage>
