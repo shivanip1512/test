@@ -50,7 +50,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    private static final int MAX_PROGRAM_TO_DISPLAY_ON_WIDGET = 10;
+    public static final int MAX_PROGRAM_TO_DISPLAY_ON_WIDGET = 10;
     private static final int PROGRAM_EVENT_SAFEGAURD_WINDOW = 15000; // 15 Seconds
     private final static String todayKey = "yukon.web.widgets.programWidget.today";
     private List<ProgramData> programsDataCache = new ArrayList<>();

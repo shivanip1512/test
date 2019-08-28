@@ -278,6 +278,7 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
 <!-- Program Widget -->
 <entry key="yukon.web.widgets.programWidget">Programs</entry>
 <entry key="yukon.web.widgets.programWidget.today">Today</entry>
+<entry key="yukon.web.widgets.programWidget.moreProgramFound">There could be more Active and Scheduled programs available. Click on the "View Details" link to view all.</entry>
 <entry key="yukon.web.widgets.programWidget.noProgramFound">No programs are currently running or scheduled to run in the next control day.</entry>
 <entry key="yukon.web.widgets.programWidget.helpText"><![CDATA[
         View program information for recent or scheduled control events. Information displayed includes program name, origin, gear used, start and stop time. 
