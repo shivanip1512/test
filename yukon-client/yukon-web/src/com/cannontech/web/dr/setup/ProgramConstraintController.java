@@ -164,7 +164,7 @@ public class ProgramConstraintController {
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error deleting program constraint : " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName()));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error.exception", ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;
