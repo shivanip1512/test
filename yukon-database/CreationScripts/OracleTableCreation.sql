@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/9/2019 10:37:35 AM                         */
+/* Created on:     8/27/2019 3:12:32 PM                         */
 /*==============================================================*/
 
 
@@ -7233,6 +7233,41 @@ create table MeterHardwareBase  (
 );
 
 /*==============================================================*/
+/* Table: MeterProgram                                          */
+/*==============================================================*/
+create table MeterProgram  (
+   Guid                 VARCHAR2(40)                    not null,
+   Name                 VARCHAR2(100)                   not null,
+   PaoType              VARCHAR2(30)                    not null,
+   Program              BLOB                            not null,
+   constraint PK_MeterProgram primary key (Guid)
+);
+
+alter table MeterProgram
+   add constraint AK_MeterProgram_Name unique (Name);
+
+/*==============================================================*/
+/* Table: MeterProgramAssignment                                */
+/*==============================================================*/
+create table MeterProgramAssignment  (
+   DeviceId             NUMBER                          not null,
+   Guid                 VARCHAR2(40)                    not null,
+   constraint PK_MeterProgramAssignment primary key (DeviceId)
+);
+
+/*==============================================================*/
+/* Table: MeterProgramStatus                                    */
+/*==============================================================*/
+create table MeterProgramStatus  (
+   DeviceId             NUMBER                          not null,
+   ReportedGuid         VARCHAR2(40)                    not null,
+   Source               VARCHAR2(1)                     not null,
+   Status               VARCHAR2(20)                    not null,
+   LastUpdate           DATE                            not null,
+   constraint PK_MeterProgramStatus primary key (DeviceId)
+);
+
+/*==============================================================*/
 /* Table: MspLMInterfaceMapping                                 */
 /*==============================================================*/
 create table MspLMInterfaceMapping  (
@@ -13332,6 +13367,21 @@ alter table MeterHardwareBase
 alter table MeterHardwareBase
    add constraint FK_METERHARD_YUKONLSTNTRY foreign key (MeterTypeID)
       references YukonListEntry (EntryID);
+
+alter table MeterProgramAssignment
+   add constraint FK_MeterProgramAssignment_MeterProgram foreign key (Guid)
+      references MeterProgram (Guid)
+      on delete cascade;
+
+alter table MeterProgramAssignment
+   add constraint FK_MeterProgramAssignment_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
+
+alter table MeterProgramStatus
+   add constraint FK_MeterProgramStatus_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
 
 alter table MspLMInterfaceMapping
    add constraint FK_MspLMInterMap_YukonPAObj foreign key (PAObjectId)
