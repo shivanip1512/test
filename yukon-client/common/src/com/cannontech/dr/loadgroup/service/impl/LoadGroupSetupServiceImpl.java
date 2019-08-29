@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -63,6 +64,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     }
 
     @Override
+    @Transactional
     public int create(LoadGroupBase loadGroup) {
         LMGroup lmGroup = getDBPersistent(loadGroup);
         loadGroup.buildDBPersistent(lmGroup);
@@ -75,6 +77,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     }
 
     @Override
+    @Transactional
     public int update(int loadGroupId, LoadGroupBase loadGroup) {
         Optional<LiteYukonPAObject> liteLoadGroup =
             dbCache.getAllLMGroups().stream().filter(group -> group.getLiteID() == loadGroupId).findFirst();
@@ -105,6 +108,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     }
 
     @Override
+    @Transactional
     public int delete(int loadGroupId, String loadGroupName) {
         Optional<LiteYukonPAObject> liteLoadGroup = dbCache.getAllLMGroups()
                                                            .stream()
@@ -121,6 +125,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     }
 
     @Override
+    @Transactional
     public int copy(int loadGroupId, LMCopy lmCopy) {
         Optional<LiteYukonPAObject> liteLoadGroup =dbCache.getAllLMGroups()
                                                           .stream()

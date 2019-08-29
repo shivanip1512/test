@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMPaoDto;
@@ -50,6 +51,7 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
     }
 
     @Override
+    @Transactional
     public int create(MacroLoadGroup macroLoadGroup) {
         LMGroup lmGroup = getMacroLoadGroupDBPersistent(macroLoadGroup, macroLoadGroup.getId());
         buildMacroLoadGroupDBPersistent(macroLoadGroup, lmGroup);
@@ -59,6 +61,7 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
     }
 
     @Override
+    @Transactional
     public int update(int loadGroupId, MacroLoadGroup macroLoadGroup) {
         Optional<LiteYukonPAObject> liteLoadGroup = getGroupFromCache(loadGroupId);
 
@@ -72,6 +75,7 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
     }
 
     @Override
+    @Transactional
     public int copy(int loadGroupId, LMCopy lmCopy) {
         Optional<LiteYukonPAObject> liteLoadGroup = getGroupFromCache(loadGroupId);
         if (liteLoadGroup.isEmpty()) {
@@ -89,6 +93,7 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
     }
 
     @Override
+    @Transactional
     public int delete(int loadGroupId, String loadGroupName) {
         Optional<LiteYukonPAObject> liteLoadGroup = dbCache.getAllLMGroups()
                                                            .stream()
