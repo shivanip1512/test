@@ -1,0 +1,20 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+== Retrieve Load group
+
+*Load Group Retrieve Request JSON* :
+
+include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Get/http-request.adoc[]
+
+*Load Group Retrieve Response Parameter* :
+
+include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Get/response-fields.adoc[]
+
+*Load Group Retrieve Response JSON* :
+
+include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Get/http-response.adoc[]

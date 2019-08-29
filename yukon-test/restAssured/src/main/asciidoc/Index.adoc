@@ -1,0 +1,11 @@
+= Demand Response API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+include::MeterDisconnectCreate.adoc[]
+include::MeterDisconnectGet.adoc[]
+

@@ -1,0 +1,28 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+== Create Load group
+
+*Load Group Creation Request Parameter* :
+
+include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/request-fields.adoc[]
+
+
+*Load Group Creation Request JSON* :
+
+include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/http-request.adoc[]
+
+
+*Load Group Creation Response Parameter* :
+
+include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/response-fields.adoc[]
+
+
+*Load Group Creation response JSON* :
+
+include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/http-response.adoc[]
+
