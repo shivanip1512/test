@@ -113,7 +113,6 @@ private:
 
   static const CHAR * KEY_FLAVOR;
   static const CHAR * KEY_DB_RELOAD_RATE;
-  static const CHAR * KEY_DEBUG_MODE;
   static const CHAR * KEY_APPLICATION_NAME;
   static const CHAR * KEY_SERVER_NODE_NAME;
   static const CHAR * KEY_SERVER_USERNAME;

@@ -126,7 +126,6 @@ bool DnpSlave::readConfig()
 {
     const char *KEY_LISTEN_PORT_NUMBER          = "FDR_DNPSLAVE_PORT_NUMBER";
     const char *KEY_DB_RELOAD_RATE              = "FDR_DNPSLAVE_DB_RELOAD_RATE";
-    const char *KEY_DEBUG_MODE                  = "FDR_DNPSLAVE_DEBUG_MODE";
     const char *KEY_FDR_DNPSLAVE_SERVER_NAMES   = "FDR_DNPSLAVE_SERVER_NAMES";
     const char *KEY_LINK_TIMEOUT                = "FDR_DNPSLAVE_LINK_TIMEOUT_SECONDS";
     const char *KEY_STALEDATA_TIMEOUT           = "FDR_DNPSLAVE_STALEDATA_TIMEOUT";
@@ -155,9 +154,6 @@ bool DnpSlave::readConfig()
 
     _porterPriority =
             gConfigParms.getValueAsInt(KEY_PORTER_PRIORITY, 14);
-
-    setInterfaceDebugMode(
-            gConfigParms.getValueAsString(KEY_DEBUG_MODE).length() > 0);
 
     const std::string serverNames =
             gConfigParms.getValueAsString(KEY_FDR_DNPSLAVE_SERVER_NAMES);
@@ -192,7 +188,6 @@ bool DnpSlave::readConfig()
         loglist.add(KEY_LISTEN_PORT_NUMBER) << getPortNumber();
         loglist.add(KEY_DB_RELOAD_RATE)     << getReloadRate();
         loglist.add(KEY_LINK_TIMEOUT)       << getLinkTimeout();
-        loglist.add(KEY_DEBUG_MODE)         << isInterfaceInDebugMode();
 
         CTILOG_INFO(dout, "FDRDnpSlave Configs"
                 << loglist);

@@ -74,9 +74,6 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
 
     protected:
 
-        Cti::WorkerThread   iThreadSendDebugData;
-        void threadFunctionSendDebugData( void );
-
         Cti::WorkerThread   iThreadConnection;
         void threadFunctionConnection( void );
 

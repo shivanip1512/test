@@ -53,7 +53,6 @@ class IM_EX_FDRCYGNET CtiFDRCygnet : public CtiFDRInterface
         static const CHAR * KEY_ANALOG_SERVICE_NAME;
         static const CHAR * KEY_STATUS_SERVICE_NAME;
         static const CHAR * KEY_HI_REASONABILITY_FILTER;
-        static const CHAR * KEY_DEBUG_MODE;
         static const CHAR * KEY_DB_RELOAD_RATE;
 
     protected:

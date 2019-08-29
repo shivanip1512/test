@@ -35,8 +35,7 @@ using std::endl;
 CtiFDRSingleSocket::CtiFDRSingleSocket(string &name)
 : CtiFDRSocketInterface(name),
     iLayer (NULL),
-    iThreadConnection   (Cti::WorkerThread::Function(&CtiFDRSingleSocket::threadFunctionConnection,    this).name("connection")),
-    iThreadSendDebugData(Cti::WorkerThread::Function(&CtiFDRSingleSocket::threadFunctionSendDebugData, this).name("sendDebugData"))
+    iThreadConnection   (Cti::WorkerThread::Function(&CtiFDRSingleSocket::threadFunctionConnection,    this).name("connection"))
 {
     // init these lists so they have something
     CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE));
@@ -141,11 +140,6 @@ BOOL CtiFDRSingleSocket::run( void )
         logEvent (desc,string());
     }
 
-    if (isInterfaceInDebugMode())
-    {
-        iThreadSendDebugData.start();
-    }
-
     // note:  RDEX will have a problem with this once it is written to handle muliple connections
     long linkID = getClientLinkStatusID (decodeClientName(NULL));
 
@@ -179,12 +173,6 @@ BOOL CtiFDRSingleSocket::stop( void )
 
     iThreadConnection.interrupt();
     iThreadConnection.tryJoinOrTerminateFor(Cti::Timing::Chrono::seconds(10));
-
-    if (isInterfaceInDebugMode())
-    {
-        iThreadSendDebugData.interrupt();
-        iThreadSendDebugData.tryJoinOrTerminateFor(Cti::Timing::Chrono::seconds(10));
-    }
 
     // stop the base class
     Inherited::stop();
@@ -709,81 +697,6 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
         setCurrentClientLinkStates();
 
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Thread for interface "<< getInterfaceName() <<" is dead!");
-    }
-}
-
-
-void CtiFDRSingleSocket::threadFunctionSendDebugData( void )
-{
-    CtiFDRPoint        point;
-    CtiPointDataMsg     *localMsg;
-    int quality = NormalQuality, index;
-    FLOAT value = 1.0;
-
-    CTILOG_INFO(dout, "Starting Debug Thread for "<< getInterfaceName());
-
-    // don't try to do anything until the layer is available
-    while (iLayer == NULL)
-    {
-        Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::milliseconds(1000));
-    }
-
-    try
-    {
-        for ( ; ; )
-        {
-            Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::milliseconds(1000));
-
-            if (iLayer->getOutBoundConnectionStatus() == CtiFDRSocketConnection::Ok)
-            {
-                index=0;
-                {
-                    // for debug lock this the whole time we're sending the list
-                    CtiFDRManager* mgrPtr = getSendToList().getPointList();
-
-                    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
-                    CtiFDRManager::readerLock guard(mgrPtr->getLock());
-
-                    CtiFDRManager::spiterator  myIterator = mgrPtr->getMap().begin();
-
-                    for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator )
-                    {
-                        // find the point id
-                        point = *((*myIterator).second);
-
-                        localMsg = new CtiPointDataMsg (point.getPointID(), value, quality);
-
-                        sendMessageToForeignSys (localMsg);
-
-                        if (value > 10000.0)
-                        {
-                            value = 1.0;
-                        }
-                        value++;
-                        index++;
-                        delete localMsg;
-                    }
-                }
-
-                if (quality == NormalQuality )
-                    quality = ManualQuality;
-                else
-                    quality = NormalQuality;
-            }
-        }
-    }
-
-    catch ( Cti::WorkerThread::Interrupted & )
-    {
-        CTILOG_INFO(dout, "CANCELLATION of Debug Thread");
-    }
-    // try and catch the thread death
-    catch ( ... )
-    {
-        iLayer->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-        iLayer->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "threadFunctionDebugData in "<< getInterfaceName() << " is dead!");
     }
 }
 

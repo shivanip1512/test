@@ -45,7 +45,6 @@ const CHAR * CtiFDRAcsMulti::KEY_LISTEN_PORT_NUMBER = "FDR_ACSMULTI_PORT_NUMBER"
 const CHAR * CtiFDRAcsMulti::KEY_TIMESTAMP_WINDOW = "FDR_ACSMULTI_TIMESTAMP_VALIDITY_WINDOW";
 const CHAR * CtiFDRAcsMulti::KEY_DB_RELOAD_RATE = "FDR_ACSMULTI_DB_RELOAD_RATE";
 const CHAR * CtiFDRAcsMulti::KEY_QUEUE_FLUSH_RATE = "FDR_ACSMULTI_QUEUE_FLUSH_RATE";
-const CHAR * CtiFDRAcsMulti::KEY_DEBUG_MODE = "FDR_ACSMULTI_DEBUG_MODE";
 const CHAR * CtiFDRAcsMulti::KEY_OUTBOUND_SEND_RATE = "FDR_ACSMULTI_SEND_RATE";
 const CHAR * CtiFDRAcsMulti::KEY_OUTBOUND_SEND_INTERVAL = "FDR_ACSMULTI_SEND_INTERVAL";
 const CHAR * CtiFDRAcsMulti::KEY_TIMESYNC_VARIATION = "FDR_ACSMULTI_MAXIMUM_TIMESYNC_VARIATION";
@@ -118,16 +117,6 @@ bool CtiFDRAcsMulti::readConfig()
         setUpdatePCTimeFlag (false);
     }
 
-    tempStr = gConfigParms.getValueAsString(KEY_DEBUG_MODE);
-    if (tempStr.length() > 0)
-    {
-        setInterfaceDebugMode (true);
-    }
-    else
-    {
-        setInterfaceDebugMode (false);
-    }
-
     tempStr = gConfigParms.getValueAsString(KEY_FDR_ACS_SERVER_NAMES);
     std::string serverNames = tempStr;
     typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
@@ -172,7 +161,6 @@ bool CtiFDRAcsMulti::readConfig()
         loglist.add(KEY_POINT_TIME_VARIATION)   << getPointTimeVariation();
         loglist.add(KEY_LINK_TIMEOUT)           << getLinkTimeout();
         loglist.add(KEY_TIMESYNC_UPDATE)        << shouldUpdatePCTime();
-        loglist.add(KEY_DEBUG_MODE)             << isInterfaceInDebugMode();
 
         CTILOG_INFO(dout, "FDR-ACS Configs"<<
                 loglist);

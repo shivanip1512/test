@@ -79,7 +79,6 @@ const CHAR * CtiFDRTelegyr::KEY_HI_REASONABILITY_FILTER  = "FDR_TELEGYR_HI_REASO
 const CHAR * CtiFDRTelegyr::KEY_DB_RELOAD_RATE           = "FDR_TELEGYR_DB_RELOAD_RATE";
 const CHAR * CtiFDRTelegyr::KEY_API_PATH                 = "FDR_TELEGYR_API_PATH";
 const CHAR * CtiFDRTelegyr::KEY_QUEUE_FLUSH_RATE         = "FDR_TELEGYR_QUEUE_FLUSH_RATE";
-const CHAR * CtiFDRTelegyr::KEY_DEBUG_MODE               = "FDR_TELEGYR_DEBUG_MODE";
 const CHAR * CtiFDRTelegyr::KEY_OPERATOR                 = "FDR_TELEGYR_OPERATOR";
 const CHAR * CtiFDRTelegyr::KEY_PASSWORD                 = "FDR_TELEGYR_PASSWORD";
 const CHAR * CtiFDRTelegyr::KEY_SYSTEM_NAME              = "FDR_TELEGYR_SYSTEM_NAME";
@@ -1622,7 +1621,6 @@ bool CtiFDRTelegyr::readConfig()
    //defaults
    //
    setReloadRate( 86400 );
-   setInterfaceDebugMode( false );
    setPath( "c:/yukon/telegyr/api/" );             //not sure what else would be appropriate
    _appName = "dev_yukon";
    _apiVersion = "v4_1";
@@ -1649,13 +1647,6 @@ bool CtiFDRTelegyr::readConfig()
    if( tempStr.length() > 0 )
    {
       setHiReasonabilityFilter( atof( tempStr.c_str() ) );
-   }
-
-   tempStr = getCparmValueAsString( KEY_DEBUG_MODE );
-
-   if( tempStr.length() > 0 )
-   {
-      setInterfaceDebugMode( true );
    }
 
    tempStr = getCparmValueAsString( KEY_API_PATH );
@@ -1736,7 +1727,6 @@ bool CtiFDRTelegyr::readConfig()
       loglist.add("Our Name")            << getCparmValueAsString( KEY_APPLICATION_NAME );
       loglist.add("Reload Rate")         << getCparmValueAsString( KEY_DB_RELOAD_RATE ) << " secs";
       loglist.add("Hi_Res")              << getCparmValueAsString( KEY_HI_REASONABILITY_FILTER );
-      loglist.add("Debug Mode")          << getCparmValueAsString( KEY_DEBUG_MODE );
       loglist.add("Api path")            << getCparmValueAsString( KEY_API_PATH );
       loglist.add("Api Version")         << getCparmValueAsString( KEY_API_VERSION );
       loglist.add("Operator")            << getCparmValueAsString( KEY_OPERATOR );

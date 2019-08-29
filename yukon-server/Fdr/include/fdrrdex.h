@@ -196,7 +196,6 @@ class IM_EX_FDRRDEX CtiFDR_Rdex : public CtiFDRSingleSocket
         static const CHAR * KEY_TIMESTAMP_WINDOW;
         static const CHAR * KEY_DB_RELOAD_RATE;
         static const CHAR * KEY_QUEUE_FLUSH_RATE;
-        static const CHAR * KEY_DEBUG_MODE;
         static const CHAR * KEY_OUTBOUND_SEND_RATE;
         static const CHAR * KEY_OUTBOUND_SEND_INTERVAL;
         static const CHAR * KEY_LINK_TIMEOUT;

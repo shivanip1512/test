@@ -42,7 +42,6 @@ class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
         static const CHAR * KEY_TIMESTAMP_WINDOW;
         static const CHAR * KEY_DB_RELOAD_RATE;
         static const CHAR * KEY_SOURCE_NAME;
-        static const CHAR * KEY_DEBUG_MODE;
         static const CHAR * KEY_BATCH_MARKER_NAME;
         static const CHAR * KEY_STANDALONE;
 

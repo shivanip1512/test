@@ -185,7 +185,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
 
                                 for (int i = 0; i < getParent()->getMessageSize(buffer); i++)
                                 {
-                                    outLog << " " << std::setw(2) << (unsigned)buffer[i];
+                                    outLog << " " << std::setw(2) << (unsigned char)buffer[i];
                                 }
 
                                 CTILOG_INFO(dout, outLog);

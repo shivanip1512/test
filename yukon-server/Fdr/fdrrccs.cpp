@@ -39,7 +39,6 @@ const CHAR * CtiFDR_Rccs::KEY_CONNECT_PORT_NUMBER = "FDR_RCCS_CONNECT_PORT_NUMBE
 const CHAR * CtiFDR_Rccs::KEY_TIMESTAMP_WINDOW = "FDR_RCCS_TIMESTAMP_VALIDITY_WINDOW";
 const CHAR * CtiFDR_Rccs::KEY_DB_RELOAD_RATE = "FDR_RCCS_DB_RELOAD_RATE";
 const CHAR * CtiFDR_Rccs::KEY_SOURCE_NAME = "FDR_RCCS_SOURCE_NAME";
-const CHAR * CtiFDR_Rccs::KEY_DEBUG_MODE = "FDR_RCCS_DEBUG_MODE";
 const CHAR * CtiFDR_Rccs::KEY_BATCH_MARKER_NAME = "FDR_RCCS_BATCH_MARKER_NAME";
 const CHAR * CtiFDR_Rccs::KEY_STANDALONE = "FDR_RCCS_STANDALONE";
 
@@ -570,12 +569,6 @@ bool CtiFDR_Rccs::readConfig()
         setSourceName (string("YUKON"));
     }
 
-    tempStr = getCparmValueAsString(KEY_DEBUG_MODE);
-    if (tempStr.length() > 0)
-        setInterfaceDebugMode (true);
-    else
-        setInterfaceDebugMode (false);
-
     tempStr = getCparmValueAsString(KEY_BATCH_MARKER_NAME);
     if (tempStr.length() > 0)
     {
@@ -610,15 +603,6 @@ bool CtiFDR_Rccs::readConfig()
         loglist.add("RCCS db reload rate")      << getReloadRate();
         loglist.add("RCCS source name")         << getSourceName();
         loglist.add("RCCS batch marker name")   << iBatchMarkerName;
-
-        if (isInterfaceInDebugMode())
-        {
-            loglist <<"RCCS running in debug mode";
-        }
-        else
-        {
-            loglist <<"RCCS running in normal mode";
-        }
 
         if (iStandalone)
         {

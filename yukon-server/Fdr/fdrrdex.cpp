@@ -37,7 +37,6 @@ const CHAR * CtiFDR_Rdex::KEY_LISTEN_PORT_NUMBER = "FDR_RDEX_PORT_NUMBER";
 const CHAR * CtiFDR_Rdex::KEY_TIMESTAMP_WINDOW = "FDR_RDEX_TIMESTAMP_VALIDITY_WINDOW";
 const CHAR * CtiFDR_Rdex::KEY_DB_RELOAD_RATE = "FDR_RDEX_DB_RELOAD_RATE";
 const CHAR * CtiFDR_Rdex::KEY_QUEUE_FLUSH_RATE = "FDR_RDEX_QUEUE_FLUSH_RATE";
-const CHAR * CtiFDR_Rdex::KEY_DEBUG_MODE = "FDR_RDEX_DEBUG_MODE";
 const CHAR * CtiFDR_Rdex::KEY_OUTBOUND_SEND_RATE = "FDR_RDEX_SEND_RATE";
 const CHAR * CtiFDR_Rdex::KEY_OUTBOUND_SEND_INTERVAL = "FDR_RDEX_SEND_INTERVAL";
 const CHAR * CtiFDR_Rdex::KEY_LINK_TIMEOUT = "FDR_RDEX_LINK_TIMEOUT_SECONDS";
@@ -121,13 +120,6 @@ bool CtiFDR_Rdex::readConfig()
         setQueueFlushRate (1);
     }
 
-    tempStr = getCparmValueAsString(KEY_DEBUG_MODE);
-    if (tempStr.length() > 0)
-        setInterfaceDebugMode (true);
-    else
-        setInterfaceDebugMode (false);
-
-
     tempStr = getCparmValueAsString(KEY_OUTBOUND_SEND_RATE);
     if (tempStr.length() > 0)
     {
@@ -159,11 +151,6 @@ bool CtiFDR_Rdex::readConfig()
         loglist.add("Rdex queue flush rate") << getQueueFlushRate() << " second(s)";
         loglist.add("Rdex send rate")        << getOutboundSendRate();
         loglist.add("Rdex send interval")    << getOutboundSendInterval() << " second(s)";
-
-        if (isInterfaceInDebugMode())
-            loglist <<"Rdex running in debug mode";
-        else
-            loglist <<"Rdex running in normal mode";
 
         CTILOG_DEBUG(dout, loglist);
     }

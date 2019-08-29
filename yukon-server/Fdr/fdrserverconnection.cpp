@@ -137,7 +137,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
 
                                     for (int i = 0; i < totalMsgSize; i++)
                                     {
-                                        outLog << " " << std::setw(2) << (unsigned)data[i];
+                                        outLog << " " << std::setw(2) << (unsigned char)data[i];
                                     }
 
                                     CTILOG_INFO(dout, outLog);

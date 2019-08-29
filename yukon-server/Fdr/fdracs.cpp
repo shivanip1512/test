@@ -36,7 +36,6 @@ const CHAR * CtiFDR_ACS::KEY_LISTEN_PORT_NUMBER = "FDR_ACS_PORT_NUMBER";
 const CHAR * CtiFDR_ACS::KEY_TIMESTAMP_WINDOW = "FDR_ACS_TIMESTAMP_VALIDITY_WINDOW";
 const CHAR * CtiFDR_ACS::KEY_DB_RELOAD_RATE = "FDR_ACS_DB_RELOAD_RATE";
 const CHAR * CtiFDR_ACS::KEY_QUEUE_FLUSH_RATE = "FDR_ACS_QUEUE_FLUSH_RATE";
-const CHAR * CtiFDR_ACS::KEY_DEBUG_MODE = "FDR_ACS_DEBUG_MODE";
 const CHAR * CtiFDR_ACS::KEY_OUTBOUND_SEND_RATE = "FDR_ACS_SEND_RATE";
 const CHAR * CtiFDR_ACS::KEY_OUTBOUND_SEND_INTERVAL = "FDR_ACS_SEND_INTERVAL";
 const CHAR * CtiFDR_ACS::KEY_TIMESYNC_VARIATION = "FDR_ACS_MAXIMUM_TIMESYNC_VARIATION";
@@ -178,13 +177,6 @@ bool CtiFDR_ACS::readConfig()
         }
     }
 
-    tempStr = getCparmValueAsString(KEY_DEBUG_MODE);
-    if (tempStr.length() > 0)
-        setInterfaceDebugMode (true);
-    else
-        setInterfaceDebugMode (false);
-
-
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
         Cti::FormattedList loglist;
@@ -204,15 +196,6 @@ bool CtiFDR_ACS::readConfig()
         else
         {
             loglist <<"ACS time sync will not reset PC clock";
-        }
-
-        if( isInterfaceInDebugMode() )
-        {
-            loglist <<"ACS running in debug mode";
-        }
-        else
-        {
-            loglist <<"ACS running in normal mode";
         }
 
         CTILOG_DEBUG(dout, loglist);

@@ -76,7 +76,6 @@ CtiFDRInterface::CtiFDRInterface(string & interfaceType) :
     iOutboundSendInterval(0),
     iTimeSyncVariation (30),
     iUpdatePCTimeFlag(true),
-    iDebugMode(false),
     iReloadRate(0),
     iDispatchConnected(false),
     iThreadFromDispatch(Cti::WorkerThread::Function(&CtiFDRInterface::threadFunctionReceiveFromDispatch, this).name("receiveFromDispatch")),
@@ -276,31 +275,6 @@ CtiFDRInterface &CtiFDRInterface::setDbReloadReason(FDRDbReloadReason aReason)
     iDbReloadReason = aReason;
     return *this;
 }
-
-/************************************************************************
-* Function Name: CtiFDRInterface::isInterfaceInDebugMode()
-*
-* Description: this is true when a debugging is needed
-*
-*************************************************************************
-*/
-bool CtiFDRInterface::isInterfaceInDebugMode() const
-{
-    return iDebugMode;
-}
-
-/************************************************************************
-* Function Name: CtiFDRInterface::setInterfaceDebugMode(BOOL)
-*
-* Description:
-*
-*************************************************************************
-*/
-void CtiFDRInterface::setInterfaceDebugMode(const bool aChangeFlag)
-{
-    iDebugMode = aChangeFlag;
-}
-
 
 /************************************************************************
 * Function Name: CtiFDRInterface::getReloadRate()

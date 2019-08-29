@@ -41,7 +41,6 @@ CtiFDRPiBase * myInterface;
 
 const CHAR * CtiFDRPiBase::KEY_FLAVOR                   = "FDR_PI_FLAVOR";
 const CHAR * CtiFDRPiBase::KEY_DB_RELOAD_RATE           = "FDR_PI_DB_RELOAD_RATE";
-const CHAR * CtiFDRPiBase::KEY_DEBUG_MODE               = "FDR_PI_DEBUG_MODE";
 const CHAR * CtiFDRPiBase::KEY_APPLICATION_NAME         = "FDR_PI_APPLICATION_NAME";
 const CHAR * CtiFDRPiBase::KEY_SERVER_NODE_NAME         = "FDR_PI_SERVER_NODE_NAME";
 const CHAR * CtiFDRPiBase::KEY_SERVER_USERNAME          = "FDR_PI_SERVER_USERNAME";
@@ -652,16 +651,4 @@ DLLEXPORT int StopInterface( void )
 #ifdef __cplusplus
 }
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
 

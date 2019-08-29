@@ -322,19 +322,13 @@ void CtiFDRSimple::handleNonUpdate(CtiFDRPoint *ctiPoint,
 void CtiFDRSimple::readThisConfig()
 {
   string  keyDbReloadRate = "FDR_" + getInterfaceName() + "_DB_RELOAD_RATE";
-  string  keyDebugMode = "FDR_" + getInterfaceName() + "_DB_DEBUG_MODE";
 
   setReloadRate( gConfigParms.getValueAsInt( keyDbReloadRate, 86400 ) );
-
-  string   tempStr = gConfigParms.getValueAsString( keyDebugMode );
-
-  setInterfaceDebugMode( tempStr.length() > 0 );
 
   if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
   {
       Cti::FormattedList loglist;
       loglist.add(keyDbReloadRate) << getReloadRate() <<" seconds";
-      loglist.add(keyDebugMode)    << isInterfaceInDebugMode();
 
       CTILOG_DEBUG(dout, "FDRSimple Configs:"<<
               loglist);

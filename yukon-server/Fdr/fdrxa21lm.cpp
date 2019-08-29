@@ -212,7 +212,6 @@ const CHAR * CtiFDR_XA21LM::KEY_LISTEN_PORT_NUMBER = "FDR_XA21LM_PORT_NUMBER";
 const CHAR * CtiFDR_XA21LM::KEY_TIMESTAMP_WINDOW = "FDR_XA21LM_TIMESTAMP_VALIDITY_WINDOW";
 const CHAR * CtiFDR_XA21LM::KEY_DB_RELOAD_RATE = "FDR_XA21LM_DB_RELOAD_RATE";
 const CHAR * CtiFDR_XA21LM::KEY_QUEUE_FLUSH_RATE = "FDR_XA21LM_QUEUE_FLUSH_RATE";
-const CHAR * CtiFDR_XA21LM::KEY_DEBUG_MODE = "FDR_XA21LM_DEBUG_MODE";
 const CHAR * CtiFDR_XA21LM::KEY_OUTBOUND_SEND_RATE = "FDR_XA21LM_SEND_RATE";
 const CHAR * CtiFDR_XA21LM::KEY_OUTBOUND_SEND_INTERVAL = "FDR_XA21LM_SEND_INTERVAL";
 const CHAR * CtiFDR_XA21LM::KEY_LINK_TIMEOUT = "FDR_XA21LM_LINK_TIMEOUT_SECONDS";
@@ -297,13 +296,6 @@ bool CtiFDR_XA21LM::readConfig()
         setQueueFlushRate (1);
     }
 
-    tempStr = getCparmValueAsString(KEY_DEBUG_MODE);
-    if (tempStr.length() > 0)
-        setInterfaceDebugMode (true);
-    else
-        setInterfaceDebugMode (false);
-
-
     tempStr = getCparmValueAsString(KEY_OUTBOUND_SEND_RATE);
     if (tempStr.length() > 0)
     {
@@ -334,11 +326,6 @@ bool CtiFDR_XA21LM::readConfig()
         loglist.add("xa21lm qubeue flush rate") << getQueueFlushRate() <<" second(s)";
         loglist.add("xa21lm send rate")         << getOutboundSendRate();
         loglist.add("xa21lm send interval")     << getOutboundSendInterval() <<" second(s)";
-
-        if (isInterfaceInDebugMode())
-            loglist <<" running in debug mode ";
-        else
-            loglist <<" running in normal mode ";
 
         CTILOG_DEBUG(dout, loglist);
     }

@@ -44,8 +44,7 @@ CtiFDR_Inet::CtiFDR_Inet(string aName) :
     iClientConnectionSemaphore(NULL),
     iThreadMonitor      (Cti::WorkerThread::Function([this]{ threadFunctionMonitor();} )        .name("monitor")),
     iThreadServer       (Cti::WorkerThread::Function([this]{ threadFunctionServerConnection();}).name("serverConnection")),
-    iThreadClient       (Cti::WorkerThread::Function([this]{ threadFunctionClientConnection();}).name("clientConnection")),
-    iThreadSendDebugData(Cti::WorkerThread::Function([this]{ threadFunctionSendDebugData();})   .name("sendDebugData"))
+    iThreadClient       (Cti::WorkerThread::Function([this]{ threadFunctionClientConnection();}).name("clientConnection"))
 {
     // init these lists so they have something
     CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE));
@@ -173,10 +172,6 @@ BOOL CtiFDR_Inet::run( void )
     iThreadMonitor.start();
     iThreadServer.start();
     iThreadClient.start();
-    if (isInterfaceInDebugMode())
-    {
-        iThreadSendDebugData.start();
-    }
 
     setCurrentClientLinkStates();
     return TRUE;
@@ -236,12 +231,6 @@ BOOL CtiFDR_Inet::stop( void )
     iThreadClient.tryJoinOrTerminateFor(Cti::Timing::Chrono::seconds(10));
     iThreadMonitor.tryJoinOrTerminateFor(Cti::Timing::Chrono::seconds(10));
     iThreadServer.tryJoinOrTerminateFor(Cti::Timing::Chrono::seconds(10));
-
-    if (isInterfaceInDebugMode())
-    {
-        iThreadSendDebugData.interrupt();
-        iThreadSendDebugData.tryJoinOrTerminateFor(Cti::Timing::Chrono::seconds(10));
-    }
 
     // stop the base class
     Inherited::stop();
@@ -530,7 +519,6 @@ bool CtiFDR_Inet::readConfig()
         KEY_DB_RELOAD_RATE     ( "FDR_INET_DB_RELOAD_RATE"              ),
         KEY_SOURCE_NAME        ( "FDR_INET_SOURCE_NAME"                 ),
         KEY_SERVER_LIST        ( "FDR_INET_SERVER_LIST"                 ),
-        KEY_DEBUG_MODE         ( "FDR_INET_DEBUG_MODE"                  ),
         KEY_QUEUE_FLUSH_RATE   ( "FDR_INET_QUEUE_FLUSH_RATE"            ),
         KEY_LINK_TIMEOUT       ( "FDR_INET_LINK_TIMEOUT_SECONDS"        );
 
@@ -549,8 +537,6 @@ bool CtiFDR_Inet::readConfig()
     setReloadRate( gConfigParms.getValueAsInt( KEY_DB_RELOAD_RATE, 86400 ) );
 
     setSourceName( gConfigParms.getValueAsString( KEY_SOURCE_NAME, "YUKON" ) );
-
-    setInterfaceDebugMode( gConfigParms.isTrue( KEY_DEBUG_MODE ) );
 
     setQueueFlushRate( gConfigParms.getValueAsInt( KEY_QUEUE_FLUSH_RATE, 1 ) );
 
@@ -572,8 +558,6 @@ bool CtiFDR_Inet::readConfig()
         {
             loglist << "INET receive only connections will be initialized";
         }
-
-        loglist << "INET running in " << ( isInterfaceInDebugMode() ? "debug" : "normal" ) << " mode";
 
         CTILOG_DEBUG(dout, loglist);
     }
@@ -1174,67 +1158,6 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
     catch ( ... )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "threadFunctionServerConnection is dead!");
-    }
-}
-
-void CtiFDR_Inet::threadFunctionSendDebugData( void )
-{
-    CtiFDRPointSPtr point;
-    CtiPointDataMsg     *localMsg;
-    int quality = NormalQuality;
-    FLOAT value = 1.0;
-
-    try
-    {
-        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-        {
-            CTILOG_DEBUG(dout, "Initializing threadFunctionSendDebugData");
-        }
-
-        for ( ; ; )
-        {
-            Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::milliseconds(1000));
-
-            {
-                CtiFDRManager* mgrPtr = getSendToList().getPointList();
-                CtiFDRManager::readerLock guard(mgrPtr->getLock());
-
-                CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
-                CtiFDRManager::spiterator myIterator = mgrPtr->getMap().begin();
-
-                for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator )
-                {
-                    // find the point id
-                    point = (*myIterator).second;
-
-                    localMsg = new CtiPointDataMsg (point->getPointID(), value, quality, point->getPointType());
-                    sendMessageToForeignSys (localMsg);
-
-                    if (value > 10000.0)
-                    {
-                        value = 1.0;
-                    }
-                    value++;
-                    delete localMsg;
-                }
-            }
-
-            if (quality == NormalQuality )
-                quality = ManualQuality;
-            else
-                quality = NormalQuality;
-        }
-
-    }
-
-    catch ( Cti::WorkerThread::Interrupted & )
-    {
-        CTILOG_INFO(dout, "CANCELLATION of threadFunctionSendDebugData");
-    }
-    // try and catch the thread death
-    catch ( ... )
-    {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "threadFunctionDebugData is dead!");
     }
 }
 

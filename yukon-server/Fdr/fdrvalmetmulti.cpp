@@ -45,7 +45,6 @@ const CHAR * CtiFDR_ValmetMulti::KEY_LISTEN_PORT_NUMBER = "FDR_VALMETMULTI_PORT_
 const CHAR * CtiFDR_ValmetMulti::KEY_TIMESTAMP_WINDOW = "FDR_VALMETMULTI_TIMESTAMP_VALIDITY_WINDOW";
 const CHAR * CtiFDR_ValmetMulti::KEY_DB_RELOAD_RATE = "FDR_VALMETMULTI_DB_RELOAD_RATE";
 const CHAR * CtiFDR_ValmetMulti::KEY_QUEUE_FLUSH_RATE = "FDR_VALMETMULTI_QUEUE_FLUSH_RATE";
-const CHAR * CtiFDR_ValmetMulti::KEY_DEBUG_MODE = "FDR_VALMETMULTI_DEBUG_MODE";
 const CHAR * CtiFDR_ValmetMulti::KEY_OUTBOUND_SEND_RATE = "FDR_VALMETMULTI_SEND_RATE";
 const CHAR * CtiFDR_ValmetMulti::KEY_OUTBOUND_SEND_INTERVAL = "FDR_VALMETMULTI_SEND_INTERVAL";
 const CHAR * CtiFDR_ValmetMulti::KEY_TIMESYNC_VARIATION = "FDR_VALMETMULTI_MAXIMUM_TIMESYNC_VARIATION";
@@ -187,9 +186,6 @@ bool CtiFDR_ValmetMulti::readConfig()
     bool updatePcTimeFlag = gConfigParms.isTrue(KEY_TIMESYNC_UPDATE, true);
     setUpdatePCTimeFlag(updatePcTimeFlag);
 
-    string tempStr = getCparmValueAsString(KEY_DEBUG_MODE);
-    setInterfaceDebugMode(tempStr.length() > 0);
-
     _scanDevicePointName = gConfigParms.getValueAsString(KEY_SCAN_DEVICE_POINTNAME, "DEVICE_SCAN");
     _sendAllPointsPointName = gConfigParms.getValueAsString(KEY_SEND_ALL_POINTS_POINTNAME, "SEND_ALL_POINTS");
 
@@ -218,7 +214,6 @@ bool CtiFDR_ValmetMulti::readConfig()
         loglist.add("Valmet Multi scan device compare string") << _scanDevicePointName;
 
         loglist <<"Valmet time sync will "<< string(shouldUpdatePCTime() ? "" : "not") <<" reset PC clock";
-        loglist <<"Valmet running in "<< string(isInterfaceInDebugMode() ? "debug" : "normal") <<" mode";
 
         if (_specificPortLoggingEnabled)
         {

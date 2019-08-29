@@ -53,9 +53,6 @@ class IM_EX_FDRBASE CtiFDRInterface
         CtiFDRInterface&    setDbReloadReason(FDRDbReloadReason aLevel=DbChange);
         void                processFDRPointChange(int pointId, bool deleteType);
 
-        bool                isInterfaceInDebugMode() const;
-        void                setInterfaceDebugMode(const bool aChangeFlag);
-
         ULONG               getDebugLevel();
 
         int                 getOutboundSendRate () const;
@@ -132,7 +129,6 @@ class IM_EX_FDRBASE CtiFDRInterface
         ULONG               iDebugLevel;
         int                 iReloadRate;
 
-        bool                iDebugMode;
         int                 iQueueFlushRate;
 
         int                 iOutboundSendRate;

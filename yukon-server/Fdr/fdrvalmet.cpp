@@ -39,7 +39,6 @@ const CHAR * CtiFDR_Valmet::KEY_LISTEN_PORT_NUMBER = "FDR_VALMET_PORT_NUMBER";
 const CHAR * CtiFDR_Valmet::KEY_TIMESTAMP_WINDOW = "FDR_VALMET_TIMESTAMP_VALIDITY_WINDOW";
 const CHAR * CtiFDR_Valmet::KEY_DB_RELOAD_RATE = "FDR_VALMET_DB_RELOAD_RATE";
 const CHAR * CtiFDR_Valmet::KEY_QUEUE_FLUSH_RATE = "FDR_VALMET_QUEUE_FLUSH_RATE";
-const CHAR * CtiFDR_Valmet::KEY_DEBUG_MODE = "FDR_VALMET_DEBUG_MODE";
 const CHAR * CtiFDR_Valmet::KEY_OUTBOUND_SEND_RATE = "FDR_VALMET_SEND_RATE";
 const CHAR * CtiFDR_Valmet::KEY_OUTBOUND_SEND_INTERVAL = "FDR_VALMET_SEND_INTERVAL";
 const CHAR * CtiFDR_Valmet::KEY_TIMESYNC_VARIATION = "FDR_VALMET_MAXIMUM_TIMESYNC_VARIATION";
@@ -174,12 +173,6 @@ bool CtiFDR_Valmet::readConfig()
     }
 
 
-    tempStr = getCparmValueAsString(KEY_DEBUG_MODE);
-    if (tempStr.length() > 0)
-        setInterfaceDebugMode (true);
-    else
-        setInterfaceDebugMode (false);
-
     scanDevicePointName = gConfigParms.getValueAsString(KEY_SCAN_DEVICE_POINTNAME, "DEVICE_SCAN");
     sendAllPointsPointName = gConfigParms.getValueAsString(KEY_SEND_ALL_POINTS_POINTNAME, "SEND_ALL_POINTS");
 
@@ -201,11 +194,6 @@ bool CtiFDR_Valmet::readConfig()
             loglist <<"Valmet time sync will reset PC clock";
         else
             loglist <<"Valmet time sync will not reset PC clock";
-
-        if (isInterfaceInDebugMode())
-            loglist <<"Valmet running in debug mode ";
-        else
-            loglist <<"Valmet running in normal mode ";
 
         CTILOG_DEBUG(dout, loglist);
     }

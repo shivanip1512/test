@@ -124,9 +124,6 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
 
     protected:
 
-        Cti::WorkerThread   iThreadSendDebugData;
-        void threadFunctionSendDebugData( void );
-
         Cti::WorkerThread   iThreadMonitor;
         void threadFunctionMonitor( void );
 

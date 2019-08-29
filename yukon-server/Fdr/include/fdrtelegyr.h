@@ -86,7 +86,6 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       static const CHAR * KEY_API_VERSION;
       static const CHAR * KEY_DB_RELOAD_RATE;
       static const CHAR * KEY_QUEUE_FLUSH_RATE;
-      static const CHAR * KEY_DEBUG_MODE;
       static const CHAR * KEY_API_PATH;
       static const CHAR * KEY_OPERATOR;
       static const CHAR * KEY_PASSWORD;

@@ -52,7 +52,6 @@ const CHAR * CtiFDRCygnet::KEY_SCAN_RATE_SECONDS = "FDR_CYGNET_SCAN_SECONDS";
 const CHAR * CtiFDRCygnet::KEY_ANALOG_SERVICE_NAME = "FDR_CYGNET_ANALOG_SERVICE";
 const CHAR * CtiFDRCygnet::KEY_STATUS_SERVICE_NAME = "FDR_CYGNET_STATUS_SERVICE";
 const CHAR * CtiFDRCygnet::KEY_HI_REASONABILITY_FILTER = "FDR_CYGNET_HI_FILTER";
-const CHAR * CtiFDRCygnet::KEY_DEBUG_MODE = "FDR_CYGNET_DEBUG_MODE";
 const CHAR * CtiFDRCygnet::KEY_DB_RELOAD_RATE = "FDR_CYGNET_DB_RELOAD_RATE";
 
 #pragma warning(push)
@@ -279,12 +278,6 @@ bool CtiFDRCygnet::readConfig( void )
         setHiReasonabilityFilter(atof(tempStr.c_str()));
     }
 
-    tempStr = getCparmValueAsString(KEY_DEBUG_MODE);
-    if (tempStr.length() > 0)
-        setInterfaceDebugMode (true);
-    else
-        setInterfaceDebugMode (false);
-
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
         if (getHiReasonabilityFilter() > 0)
@@ -410,16 +403,7 @@ bool CtiFDRCygnet::connectToAnalogService()
         if (getAnalogServiceName().length() > 0)
         {
             // there is a service define - try to connect
-            if (isInterfaceInDebugMode())
-            {
-                // pretend we have a cygnet interface
-                returnValue = 0;
-                CTILOG_INFO(dout, "Simulation of Cygnet Interface for debugging");
-            }
-            else
-            {
-                returnValue = DnaClientSvcDirConnect(getAnalogServiceName().c_str());
-            }
+            returnValue = DnaClientSvcDirConnect(getAnalogServiceName().c_str());
 
             if (returnValue != 0 )
             {
@@ -496,16 +480,7 @@ bool CtiFDRCygnet::connectToStatusService()
     {
         if (getStatusServiceName().length() > 0)
         {
-            if (isInterfaceInDebugMode())
-            {
-                // pretend we have a cygnet interface
-                returnValue = 0;
-                CTILOG_INFO(dout, "Simulation of Cygnet Status Interface for debugging");
-            }
-            else
-            {
-                returnValue = DnaClientSvcDirConnect( getStatusServiceName().c_str() );
-            }
+            returnValue = DnaClientSvcDirConnect( getStatusServiceName().c_str() );
 
             if (returnValue != 0 )
             {
@@ -644,37 +619,13 @@ bool CtiFDRCygnet::retrieveAnalogPoints()
                     // set the number of points (36 is max)
                     CygnetRequest.header.count = 1;
 
-                    if (isInterfaceInDebugMode())
-                    {
-                        // pretend we have a cygnet interface
-                        if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-                        {
-                            CTILOG_DEBUG(dout, "Getting Analog from Cygnet: "<< CygnetRequest.names[0]);
-                        }
-
-                        returnValue = 0;
-
-                        //returnValue = 1;  // test Nonupdated block
-
-                        // fake time
-                        ::time(reinterpret_cast<time_t *>(&CygnetResponse.recs[0].time));
-
-                        CygnetResponse.header.err = 0;
-                        CygnetResponse.header.count = 1;
-
-
-                        ltoa(rand(), CygnetResponse.recs[0].val, 10);
-                    }
-                    else
-                    {
-                        // need to get our data before continuing
-                        returnValue = DclCall(myAnalogServ.c_str(),
-                                              &CygnetRequest,
-                                              sizeof(RT_GET_NAMED_REC_REQ),
-                                              &CygnetResponse,
-                                              sizeof(RT_GET_NAMED_REC_RESP),
-                                              &bytesReceived);
-                    }
+                    // need to get our data before continuing
+                    returnValue = DclCall(myAnalogServ.c_str(),
+                                          &CygnetRequest,
+                                          sizeof(RT_GET_NAMED_REC_REQ),
+                                          &CygnetResponse,
+                                          sizeof(RT_GET_NAMED_REC_RESP),
+                                          &bytesReceived);
 
                     if (!returnValue && CygnetResponse.header.count == 1 && !CygnetResponse.header.err )
                     {
@@ -900,47 +851,13 @@ bool CtiFDRCygnet::retrieveStatusPoints()
                 // set the number of points (36 is max)
                 CygnetRequest.header.count = 1;
 
-                if (isInterfaceInDebugMode())
-                {
-                    // pretend we have a cygnet interface
-                    if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-                    {
-                        CTILOG_DEBUG(dout, "Getting Status from Cygnet: "<< CygnetRequest.names[0]);
-                    }
-
-                    returnValue = 0;
-                    char temp[32];
-                    //returnValue = 1;  // test Nonupdated block
-
-                    CygnetResponse.header.err = 0;
-                    CygnetResponse.header.count = 1;
-
-                    // fake time
-                    ::time(reinterpret_cast<time_t *>(&CygnetResponse.recs[0].time));
-
-                    //CygnetResponse.recs[0].time -= 300;  // test 5 minutes behind
-
-                    // some kind of Random status
-                    itoa(rand(), temp, 10);
-                    if (temp[0] >  '4')
-                    {
-                        itoa(1, CygnetResponse.recs[0].val, 10);
-                    }
-                    else
-                    {
-                        itoa(0, CygnetResponse.recs[0].val, 10);
-                    }
-                }
-                else
-                {
-                    // need to get our data before continuing
-                    returnValue = DclCall(myStatusServ.c_str(),
-                                          &CygnetRequest,
-                                          sizeof(RT_GET_NAMED_REC_REQ),
-                                          &CygnetResponse,
-                                          sizeof(RT_GET_NAMED_REC_RESP),
-                                          &bytesReceived);
-                }
+                // need to get our data before continuing
+                returnValue = DclCall(myStatusServ.c_str(),
+                                      &CygnetRequest,
+                                      sizeof(RT_GET_NAMED_REC_REQ),
+                                      &CygnetResponse,
+                                      sizeof(RT_GET_NAMED_REC_RESP),
+                                      &bytesReceived);
 
                 if (!returnValue && CygnetResponse.header.count == 1 && !CygnetResponse.header.err )
                 {
