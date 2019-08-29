@@ -54,23 +54,28 @@ public class ProgramWidget extends AdvancedWidgetControllerBase {
         json.put("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
         model.addAttribute("widgetUpdateDate", json);
         
-        int futureAndTodaysProgramDataCount = 0;
-        // Get the first entry from programData map, which is expected as future scheduled programData entry.
-        Entry<String, List<ProgramData>> firstProgramDataEntry = programsData.entrySet().iterator().next();
-        String key = firstProgramDataEntry.getKey();
-        Date date = null;
-        try {
-            date = new SimpleDateFormat("MM/dd/yyyy").parse(key);
-        } catch (ParseException e) {
-            // Do nothing here.
+        if (!programsData.isEmpty()) {
+            int futureAndTodaysProgramDataCount = 0;
+            // Get the first entry from programData map, which is expected as future scheduled programData entry.
+            Entry<String, List<ProgramData>> firstProgramDataEntry = programsData.entrySet().iterator().next();
+            String key = firstProgramDataEntry.getKey();
+            Date date = null;
+            try {
+                date = new SimpleDateFormat("MM/dd/yyyy").parse(key);
+            } catch (ParseException e) {
+                // Do nothing here.
+            }
+            if (date != null && TimeUtil.isFutureDate(new DateTime(date.getTime()))) {
+                // firstProgramDataEntry is future schedule programData. Get count of it.
+                futureAndTodaysProgramDataCount += firstProgramDataEntry.getValue().size();
+            }
+            String todayKey = accessor.getMessage(widgetKey + "programWidget.today");
+            if (programsData.containsKey(todayKey)) {
+                futureAndTodaysProgramDataCount += programsData.get(todayKey).size();
+            }
+            boolean showMessage = futureAndTodaysProgramDataCount >= ProgramWidgetServiceImpl.MAX_PROGRAM_TO_DISPLAY_ON_WIDGET;
+            model.addAttribute("showMessage", showMessage);
         }
-        if (date != null && TimeUtil.isFutureDate(new DateTime(date.getTime()))) {
-            // firstProgramDataEntry is future schedule programData. Get count of it. 
-            futureAndTodaysProgramDataCount += firstProgramDataEntry.getValue().size();
-        }
-        futureAndTodaysProgramDataCount += programsData.get(accessor.getMessage(widgetKey + "programWidget.today")).size();
-        boolean showMessage = futureAndTodaysProgramDataCount >= ProgramWidgetServiceImpl.MAX_PROGRAM_TO_DISPLAY_ON_WIDGET;
-        model.addAttribute("showMessage", showMessage);
         return "programWidget/render.jsp";
     }
 }
