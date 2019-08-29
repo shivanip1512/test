@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.dr.setup.ControlArea;
@@ -64,6 +65,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     }
 
     @Override
+    @Transactional
     public int create(ControlArea controlArea) {
         LMControlArea lmControlArea = getDBPersistent(controlArea.getControlAreaId());
         buildLMControlAreaDBPersistent(lmControlArea, controlArea);
@@ -79,6 +81,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     }
 
     @Override
+    @Transactional
     public int update(int controlAreaId, ControlArea controlArea) {
         dbCache.getAllLMControlAreas().stream()
                                       .filter(controlarea -> controlarea.getLiteID() == controlAreaId)
@@ -93,6 +96,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     }
 
     @Override
+    @Transactional
     public int delete(int areaId, String areaName) {
         LiteYukonPAObject controlArea = dbCache.getAllLMControlAreas()
                                                          .stream()

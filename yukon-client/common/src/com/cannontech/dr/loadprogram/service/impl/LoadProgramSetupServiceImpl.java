@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -75,8 +76,9 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ProgramDao programDao;
     @Autowired private LMGearDao lmGearDao;
-   
+
     @Override
+    @Transactional
     public int create(LoadProgram loadProgram) {
         LMProgramBase lmProgram = getDBPersistent(loadProgram.getProgramId(), loadProgram.getType());
         buildLMProgramBaseDBPersistent(lmProgram, loadProgram);
@@ -92,6 +94,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     }
 
     @Override
+    @Transactional
     public int update(int programId, LoadProgram loadProgram) {
         // Validate programId
         getProgramFromCache(programId);
@@ -115,6 +118,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     }
 
     @Override
+    @Transactional
     public int delete(int programId, String programName) {
         LiteYukonPAObject loadProgram = dbCache.getAllLMPrograms().stream()
                                                                   .filter( program -> program.getLiteID() == programId 
@@ -134,6 +138,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     }
 
     @Override
+    @Transactional
     public int copy(int programId, LoadProgramCopy loadProgramCopy) {
 
         LiteYukonPAObject lmProgram = getProgramFromCache(programId);
@@ -219,6 +224,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     /**
      *  Build  Gears DBPersistent object
      */
+
     private void buildGearsDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram) {
         LMProgramDirectBase prog = (LMProgramDirectBase) lmProgram;
 

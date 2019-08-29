@@ -2,6 +2,7 @@ package com.cannontech.dr.controlscenario.service.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.dr.setup.ControlScenario;
 import com.cannontech.common.dr.setup.LMCopy;
@@ -25,6 +26,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
     @Autowired private IDatabaseCache dbCache;
 
     @Override
+    @Transactional
     public int create(ControlScenario controlScenario) {
         if (CollectionUtils.isNotEmpty(controlScenario.getAllPrograms())) {
             lmServiceHelper.validateProgramsAndGear(controlScenario);
@@ -36,6 +38,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
     }
 
     @Override
+    @Transactional
     public int update(int controlScenarioId, ControlScenario controlScenario) {
         if (CollectionUtils.isNotEmpty(controlScenario.getAllPrograms())) {
             lmServiceHelper.validateProgramsAndGear(controlScenario);
@@ -63,6 +66,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
     }
 
     @Override
+    @Transactional
     public int delete(int controlScenarioId, String controlScenarioName) {
         LiteYukonPAObject controlScenario = dbCache.getAllLMScenarios().stream()
                                                                        .filter(scenario -> scenario.getLiteID() == controlScenarioId && scenario.getPaoName().equalsIgnoreCase(controlScenarioName))
@@ -88,6 +92,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
     }
 
     @Override
+    @Transactional
     public int copy(int id, LMCopy lmCopy) {
         throw new UnsupportedOperationException("Not supported copy operation");
     }
