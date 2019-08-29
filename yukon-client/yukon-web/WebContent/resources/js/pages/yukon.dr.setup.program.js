@@ -87,19 +87,11 @@ yukon.dr.setup.program = (function() {
         $('#js-program-' + action + '-span').toggleClass('dn', !checked);
     },
 
-    _handleTimeRefreshRampInFields = function() {
-        var rampInTimeRefresh= $("#js-timeRefresh-rampInSwitch").prop('checked');
-        if (rampInTimeRefresh === false) {
-            $("#js-timeRefresh-rampInPercent").val("");
-            $("#js-timeRefresh-rampInInterval").val("");
-        }
-    },
-
-    _handleMasterCycleRampInFields = function() {
-        var ramInMasterCycleRefresh= $("#js-masterCycle-rampInSwitch").prop('checked');
-        if (ramInMasterCycleRefresh === false) {
-            $("#js-masterCycle-rampInPercent").val("");
-            $("#js-masterCycle-rampInInterval").val("");
+    _handleRampInFields = function(gearType) {
+    	var isRampInSelected= $("#js-"+ gearType +"-rampInSwitch").prop('checked');
+        if (!isRampInSelected) {
+            $("#js-" + gearType +"-rampInPercent").val("");
+            $("#js-"+ gearType +"-rampInInterval").val("");
         }
     },
 
@@ -362,12 +354,8 @@ yukon.dr.setup.program = (function() {
                 if(!selectedGearType) {
                     selectedGearType = controlMethodElement.val();
                 }
-                
-                if(selectedGearType === 'TimeRefresh'){
-                    _handleTimeRefreshRampInFields(); 
-                }
-                if(selectedGearType === 'MasterCycle'){ 
-                    _handleMasterCycleRampInFields();
+                if(selectedGearType === 'TimeRefresh' || selectedGearType === 'MasterCycle'){
+                    _handleRampInFields(selectedGearType); 
                 }
                 /*
                  * Find all fields in the form that use <dt:timeOffset/>. If any of these fields have invalid numeric value,
