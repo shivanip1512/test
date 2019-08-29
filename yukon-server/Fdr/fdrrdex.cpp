@@ -212,24 +212,26 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
     * inside of the write function on the connection
     ***************************
     */
-    constexpr std::size_t bufferSize = sizeof RdexInterface_t;
-
-    CHAR * buffer = new CHAR[ bufferSize ];         // allocate
-    std::memset( buffer, '\0', bufferSize );        // zero initialize
-
-    RdexInterface_t * ptr = reinterpret_cast<RdexInterface_t *>( buffer );  // get a "more useful" representation
+    CHAR * buffer = new CHAR[ sizeof RdexInterface_t ];     // allocate
 
     // make sure we have all the pieces
     if (buffer != NULL)
     {
-        // set the timestamp, everything else is based on type of message
-        strcpy (ptr->timestamp,  YukonToForeignTime (aPoint.getLastTimeStamp()).c_str());
+        RdexInterface_t * ptr = reinterpret_cast<RdexInterface_t *>( buffer );  // get a "more useful" representation
+
+        *ptr = {};      // zero initialize 
 
         // Moved this out to catch the case where we don't find the destination.
         string translationName = aPoint.getTranslateName(getLayer()->getName());
 
         if (!translationName.empty())
         {
+            // set the timestamp, everything else is based on type of message
+            strcpy (ptr->timestamp,  YukonToForeignTime (aPoint.getLastTimeStamp()).c_str());
+
+            // set the translation name for all valid messages
+            strcpy (ptr->value.translation,translationName.c_str());
+
             switch (aPoint.getPointType())
             {
                 case AnalogPointType:
@@ -239,7 +241,6 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                     {
                         ptr->function = htonl (SINGLE_SOCKET_VALUE);
 
-                        strcpy (ptr->value.translation,translationName.c_str());
                         ptr->value.quality = YukonToForeignQuality (aPoint.getQuality());
                         ptr->value.longValue = htonieeef (aPoint.getValue());
 
@@ -259,7 +260,6 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                         if (aPoint.isControllable())
                         {
                             ptr->function = htonl (SINGLE_SOCKET_CONTROL);
-                            strcpy (ptr->value.translation,translationName.c_str());
 
                             // check for validity of the status, we only have open or closed for rdex
                             if ((aPoint.getValue() != STATE_OPENED) && (aPoint.getValue() != STATE_CLOSED))
@@ -299,7 +299,6 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
                         {
                             ptr->function = htonl (SINGLE_SOCKET_STATUS);
 
-                            strcpy (ptr->value.translation,translationName.c_str());
                             ptr->status.quality = YukonToForeignQuality (aPoint.getQuality());
 
                             // check for validity of the status, we only have open or closed for rdex
@@ -373,15 +372,14 @@ CHAR *CtiFDR_Rdex::buildForeignSystemHeartbeatMsg ()
     ***************************
     */
 
-    constexpr std::size_t bufferSize = sizeof RdexInterface_t;
-
-    CHAR * buffer = new CHAR[ bufferSize ];         // allocate
-    std::memset( buffer, '\0', bufferSize );        // zero initialize
-
-    RdexInterface_t * ptr = reinterpret_cast<RdexInterface_t *>( buffer );  // get a "more useful" representation
+    CHAR * buffer = new CHAR[ sizeof RdexInterface_t ];     // allocate
 
     if (buffer != NULL)
     {
+        RdexInterface_t * ptr = reinterpret_cast<RdexInterface_t *>( buffer );  // get a "more useful" representation
+
+        *ptr = {};      // zero initialize
+
         ptr->function = htonl (SINGLE_SOCKET_NULL);
         strcpy (ptr->timestamp, YukonToForeignTime (CtiTime()).c_str());
     }
@@ -472,19 +470,21 @@ int CtiFDR_Rdex::processRegistrationMessage(CHAR *aData)
     string           desc;
     string           action;
 
-
     getLayer()->setName (string (data->clientName));
-    CHAR *buffer=NULL;
+
     /**************************
     * we allocate a rdex message here and it will be deleted
     * inside of the write function on the connection
     ***************************
     */
-    buffer = new CHAR[sizeof (RdexInterface_t)];
-    Rdex_Acknowledgement *ptr = (Rdex_Acknowledgement *)buffer;
+    CHAR * buffer = new CHAR[ sizeof RdexInterface_t ];     // allocate
 
     if (buffer != NULL)
     {
+        Rdex_Acknowledgement * ptr = reinterpret_cast<Rdex_Acknowledgement *>( buffer );    // get a "more useful" representation
+
+        *ptr = {};      // zero initialize
+
         ptr->function = htonl (SINGLE_SOCKET_ACKNOWLEDGEMENT);
         strcpy (ptr->timestamp, YukonToForeignTime (CtiTime()).c_str());
         strcpy (ptr->serverName, "YUKON_RDEX");
