@@ -45,7 +45,7 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
 
         // SPID is mandatory and check for range
         lmValidatorHelper.checkIfFieldRequired("serviceProvider", errors, loadGroup.getServiceProvider(),
-            "Service Provider");
+            "SPID");
         if (!errors.hasFieldErrors("serviceProvider")) {
             YukonValidationUtils.checkRange(errors, "serviceProvider", loadGroup.getServiceProvider(), 1, 65534, true);
         }

@@ -25,7 +25,7 @@ public class LMProgramCopyValidator extends SimpleValidator<LoadProgramCopy> {
     @Override
     protected void doValidation(LoadProgramCopy loadProgramCopy, Errors errors) {
         //Name validation
-        lmValidatorHelper.validateCopyPaoName(loadProgramCopy.getName(), errors, "Program Name");
+        lmValidatorHelper.validateCopyPaoName(loadProgramCopy.getName(), errors, "Name");
 
         lmValidatorHelper.checkIfFieldRequired("operationalState", errors, loadProgramCopy.getOperationalState(), "Operational State");
         
@@ -33,7 +33,7 @@ public class LMProgramCopyValidator extends SimpleValidator<LoadProgramCopy> {
 
         if (!errors.hasFieldErrors("constraint")) {
             Integer constraintId = loadProgramCopy.getConstraint().getConstraintId();
-            lmValidatorHelper.checkIfFieldRequired("constraint.constraintId", errors, constraintId, "Constraint Id");
+            lmValidatorHelper.checkIfFieldRequired("constraint.constraintId", errors, constraintId, "Constraint");
             if (!errors.hasFieldErrors("constraint.constraintId")) {
                 Set<Integer> constraintIds = serverDatabaseCache.getAllLMProgramConstraints().stream()
                                                                                              .map(lmConstraint -> lmConstraint.getConstraintID())

@@ -60,8 +60,8 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
                 if (authToken != null) {
                     String userId = TokenHelper.getUserId(authToken); // validate token and get userId from
                                                                       // claim
-                    apiLog.debug("Recieved API request for " + request.getHeader("Host") + request.getContextPath()
-                        + " for" + userId);
+                    apiLog.debug("Received API request for " + request.getHeader("Host") + request.getContextPath()
+                        + " for " + userId);
 
                     if (userId != null) {
                         LiteYukonUser user = userDao.getLiteYukonUser(Integer.valueOf(userId));
@@ -113,7 +113,7 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
 
         String requestBody = getBody(requestWrapper);
         long after = System.currentTimeMillis();
-        apiLog.info("Request Uri: " + requestWrapper.getRequestURI() + " : " + (after - before)
+        apiLog.info("Request URI: " + requestWrapper.getRequestURI() + " : " + (after - before)
             + "ms : HTTP Status " + responseWrapper.getStatus());
         if (apiLog.isDebugEnabled()) {
             if (StringUtils.isNotEmpty(requestBody)) {

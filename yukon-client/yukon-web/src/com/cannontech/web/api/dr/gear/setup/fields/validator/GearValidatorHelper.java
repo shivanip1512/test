@@ -142,7 +142,7 @@ public class GearValidatorHelper {
 
                     // Check for Change Duration
                     lmValidatorHelper.checkIfFieldRequired("changeDurationInMinutes", errors,
-                        whenToChange.getChangeDurationInMinutes(), "Change Duration In Minutes");
+                        whenToChange.getChangeDurationInMinutes(), "Change Duration");
                     if (!errors.hasFieldErrors("changeDurationInMinutes")) {
                         YukonValidationUtils.checkRange(errors, "changeDurationInMinutes",
                             whenToChange.getChangeDurationInMinutes(), 0, 99999, false);

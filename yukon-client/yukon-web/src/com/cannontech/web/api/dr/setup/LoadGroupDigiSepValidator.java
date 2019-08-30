@@ -49,13 +49,13 @@ public class LoadGroupDigiSepValidator extends LoadGroupSetupValidator<LoadGroup
         }
 
         // Ramp In Time
-        lmValidatorHelper.checkIfFieldRequired("rampInMinutes", errors, loadGroup.getRampInMinutes(), "Ramp In Minutes" );
+        lmValidatorHelper.checkIfFieldRequired("rampInMinutes", errors, loadGroup.getRampInMinutes(), "Ramp In Time" );
         if (!errors.hasFieldErrors("rampInMinutes")) {
             YukonValidationUtils.checkRange(errors, "rampInMinutes", loadGroup.getRampInMinutes(), -99999, 99999, true);
         }
 
         // Ramp Out Time
-        lmValidatorHelper.checkIfFieldRequired("rampOutMinutes", errors, loadGroup.getRampOutMinutes(), "Ramp Out Minutes" );
+        lmValidatorHelper.checkIfFieldRequired("rampOutMinutes", errors, loadGroup.getRampOutMinutes(), "Ramp Out Time" );
         if (!errors.hasFieldErrors("rampOutMinutes")) {
             YukonValidationUtils.checkRange(errors, "rampOutMinutes", loadGroup.getRampOutMinutes(), -99999, 99999,
                 true);

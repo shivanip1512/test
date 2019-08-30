@@ -3,6 +3,7 @@ package com.cannontech.web.api.dr.gear.setup.fields.validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.dr.gear.setup.AbsoluteOrDelta;
 import com.cannontech.common.dr.gear.setup.fields.ThermostatSetbackGearFields;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
@@ -47,7 +48,7 @@ public class ThermostatSetbackGearFieldsValidator extends ProgramGearFieldsValid
 
         // Check for Min Value
         lmValidatorHelper.checkIfFieldRequired("minValue", errors, thermostatSetBackCycleGear.getMinValue(),
-            "Min Value");
+            "Minimum Temperature");
         if (!errors.hasFieldErrors("minValue")) {
             YukonValidationUtils.checkRange(errors, "minValue", thermostatSetBackCycleGear.getMinValue(), -2147483648,
                 2147483647, false);
@@ -55,77 +56,80 @@ public class ThermostatSetbackGearFieldsValidator extends ProgramGearFieldsValid
 
         // Check for Max Value
         lmValidatorHelper.checkIfFieldRequired("maxValue", errors, thermostatSetBackCycleGear.getMaxValue(),
-            "Max Value");
+            "Maximum Temperature");
         if (!errors.hasFieldErrors("maxValue")) {
             YukonValidationUtils.checkRange(errors, "maxValue", thermostatSetBackCycleGear.getMaxValue(), -2147483648,
                 2147483647, false);
         }
 
         // Check for Rand
-        lmValidatorHelper.checkIfFieldRequired("random", errors, thermostatSetBackCycleGear.getRandom(), "Random");
+        lmValidatorHelper.checkIfFieldRequired("random", errors, thermostatSetBackCycleGear.getRandom(), "Random Offset Time");
         if (!errors.hasFieldErrors("random")) {
             YukonValidationUtils.checkRange(errors, "random", thermostatSetBackCycleGear.getRandom(), -2147483648,
                 2147483647, false);
         }
 
         // Check for Abs or Delta B
-        lmValidatorHelper.checkIfFieldRequired("valueB", errors, thermostatSetBackCycleGear.getValueB(), "Value B");
+        lmValidatorHelper.checkIfFieldRequired("valueB", errors, thermostatSetBackCycleGear.getValueB(),
+            (thermostatSetBackCycleGear.getAbsoluteOrDelta() == AbsoluteOrDelta.DELTA) ? "Delta B" : "Abs B");
         if (!errors.hasFieldErrors("valueB")) {
             YukonValidationUtils.checkRange(errors, "valueB", thermostatSetBackCycleGear.getValueB(), -2147483648,
                 2147483647, false);
         }
 
         // Check for Abs or Delta D
-        lmValidatorHelper.checkIfFieldRequired("valueD", errors, thermostatSetBackCycleGear.getValueD(), "Value D");
+        lmValidatorHelper.checkIfFieldRequired("valueD", errors, thermostatSetBackCycleGear.getValueD(),
+            (thermostatSetBackCycleGear.getAbsoluteOrDelta() == AbsoluteOrDelta.DELTA) ? "Delta D" : "Abs D");
         if (!errors.hasFieldErrors("valueD")) {
             YukonValidationUtils.checkRange(errors, "valueD", thermostatSetBackCycleGear.getValueD(), -2147483648,
                 2147483647, false);
         }
 
         // Check for Abs or Delta F
-        lmValidatorHelper.checkIfFieldRequired("valueF", errors, thermostatSetBackCycleGear.getValueF(), "Value F");
+        lmValidatorHelper.checkIfFieldRequired("valueF", errors, thermostatSetBackCycleGear.getValueF(),
+            (thermostatSetBackCycleGear.getAbsoluteOrDelta() == AbsoluteOrDelta.DELTA) ? "Delta F" : "Abs F");
         if (!errors.hasFieldErrors("valueF")) {
             YukonValidationUtils.checkRange(errors, "valueF", thermostatSetBackCycleGear.getValueF(), -2147483648,
                 2147483647, false);
         }
 
         // Check for Ta
-        lmValidatorHelper.checkIfFieldRequired("valueTa", errors, thermostatSetBackCycleGear.getValueTa(), "Value Ta");
+        lmValidatorHelper.checkIfFieldRequired("valueTa", errors, thermostatSetBackCycleGear.getValueTa(), "Ta");
         if (!errors.hasFieldErrors("valueTa")) {
             YukonValidationUtils.checkRange(errors, "valueTa", thermostatSetBackCycleGear.getValueTa(), -2147483648,
                 2147483647, false);
         }
 
         // Check for Tb
-        lmValidatorHelper.checkIfFieldRequired("valueTb", errors, thermostatSetBackCycleGear.getValueTb(), "Value Tb");
+        lmValidatorHelper.checkIfFieldRequired("valueTb", errors, thermostatSetBackCycleGear.getValueTb(), "Tb");
         if (!errors.hasFieldErrors("valueTb")) {
             YukonValidationUtils.checkRange(errors, "valueTb", thermostatSetBackCycleGear.getValueTb(), -2147483648,
                 2147483647, false);
         }
 
         // Check for Tc
-        lmValidatorHelper.checkIfFieldRequired("valueTc", errors, thermostatSetBackCycleGear.getValueTc(), "Value Tc");
+        lmValidatorHelper.checkIfFieldRequired("valueTc", errors, thermostatSetBackCycleGear.getValueTc(), "Tc");
         if (!errors.hasFieldErrors("valueTc")) {
             YukonValidationUtils.checkRange(errors, "valueTc", thermostatSetBackCycleGear.getValueTc(), -2147483648,
                 2147483647, false);
         }
 
         // Check for Td
-        lmValidatorHelper.checkIfFieldRequired("valueTd", errors, thermostatSetBackCycleGear.getValueTd(), "Value Td");
+        lmValidatorHelper.checkIfFieldRequired("valueTd", errors, thermostatSetBackCycleGear.getValueTd(), "Td");
         if (!errors.hasFieldErrors("valueTd")) {
             YukonValidationUtils.checkRange(errors, "valueTd", thermostatSetBackCycleGear.getValueTd(), -2147483648,
                 2147483647, false);
         }
 
         // Check for Te
-        lmValidatorHelper.checkIfFieldRequired("valueTe", errors, thermostatSetBackCycleGear.getValueTe(), "Value Te");
+        lmValidatorHelper.checkIfFieldRequired("valueTe", errors, thermostatSetBackCycleGear.getValueTe(), "Te");
         if (!errors.hasFieldErrors("valueTe")) {
             YukonValidationUtils.checkRange(errors, "valueTe", thermostatSetBackCycleGear.getValueTe(), -2147483648,
                 2147483647, false);
         }
 
         // Check for Tf
-        lmValidatorHelper.checkIfFieldRequired("valueTf", errors, thermostatSetBackCycleGear.getValueTf(), "Value Tf");
+        lmValidatorHelper.checkIfFieldRequired("valueTf", errors, thermostatSetBackCycleGear.getValueTf(), "Tf");
         if (!errors.hasFieldErrors("valueTf")) {
             YukonValidationUtils.checkRange(errors, "valueTf", thermostatSetBackCycleGear.getValueTf(), -2147483648,
                 2147483647, false);
