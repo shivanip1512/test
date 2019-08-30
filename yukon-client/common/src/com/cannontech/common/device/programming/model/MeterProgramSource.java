@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public enum MeterProgramSource {
+import com.cannontech.common.i18n.DisplayableEnum;
+
+public enum MeterProgramSource implements DisplayableEnum {
 	YUKON("Y"), 
 	OPTICAL("P"), 
 	NEW("N"), 
@@ -36,4 +38,9 @@ public enum MeterProgramSource {
 	public boolean isNotYukon() {
 		return !isYukon();
 	}
+
+    @Override
+    public String getFormatKey() {
+        return null;
+    }
 }

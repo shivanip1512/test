@@ -54,7 +54,7 @@
     <entry key="yukon.web.modules.tools.collectionActions.deviceConfigsLabel">Device Configs</entry>
     <entry key="yukon.web.modules.tools.collectionActions.deviceConfigsDescription">Assign, Unassign, Send, Read or Verify a config for a collection of devices.</entry>
     <entry key="yukon.web.modules.tools.collectionActions.meterProgrammingLabel">C&amp;I Meter Programming</entry>
-    <entry key="yukon.web.modules.tools.collectionActions.meterProgrammingDescription">Assign meter programming configurations to a collection of devices.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.meterProgrammingDescription">Assign meter programming to a collection of devices.</entry>
     <entry key="yukon.web.modules.tools.collectionActions.configureDataStreamingLabel">Configure Data Streaming</entry>
     <entry key="yukon.web.modules.tools.collectionActions.configureDataStreamingDescription">Configure data streaming for a collection of devices.</entry>
     <entry key="yukon.web.modules.tools.collectionActions.removeDataStreamingLabel">Remove Data Streaming</entry>
@@ -154,6 +154,7 @@
     <entry key="yukon.web.modules.tools.collectionActions.collectionActionInput.SELECTED_ROUTES">Selected Routes</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionActionInput.AUTOMATICALLY_UPDATE_ROUTE">Automatically Update Route</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionActionInput.CONFIGURATION">Configuration</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionActionInput.METER_PROGRAM">Meter Program</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionActionInput.INTERVAL">Interval</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionActionInput.CHANGE">Change</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionActionInput.DEVICE_TYPE">Device Type</entry>

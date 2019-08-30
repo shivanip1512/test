@@ -182,7 +182,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 	 */
 	private LinkedHashMap<String, String> getInput(MeterProgram program) {
 		LinkedHashMap<String, String> inputs = new LinkedHashMap<>();
-		inputs.put(CollectionActionInput.CONFIGURATION.name(), program.getName());
+		inputs.put(CollectionActionInput.METER_PROGRAM.name(), program.getName());
 		return inputs;
 	}
 	

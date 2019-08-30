@@ -315,4 +315,19 @@
 
     <!-- allMonitorsWidget/render.jsp -->
     <entry key="yukon.web.modules.amr.mapViolations">Map Violations</entry>
+    
+    <!-- METER PROGRAMMING SOURCES -->
+    <entry key="yukon.web.modules.amr.meterProgramming.source.YUKON">Yukon programmed</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.source.OPTICAL">Optically programmed</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.source.NEW">Newly Programmed</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.source.UNPROGRAMMED">Unprogrammed</entry>
+    
+    <!-- meterProgramming/home.jsp -->
+    <entry key="yukon.web.modules.amr.meterProgramming.pageName">C&amp;I Meter Programming</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.summaryLink">Meter Programming Summary</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.programOtherDevices">Program Other Devices</entry>
+    
+    <!-- meterProgramming/summary.jsp -->
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.pageName">C&amp;I Meter Programming Summary</entry>
+    
 </properties>

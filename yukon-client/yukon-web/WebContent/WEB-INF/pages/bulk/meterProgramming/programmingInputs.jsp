@@ -12,29 +12,29 @@
             <div class="user-message error stacked">${errorMsg}</div>
         </c:if>
         
-        <cti:url var="programUrl" value="/bulk/config/meterProgramming" />
-        <form:form method="post" action="${programUrl}" modelAttribute="programmingConfiguration">
+        <cti:url var="programUrl" value="/bulk/meterProgramming/send" />
+        <form:form method="post" action="${programUrl}" modelAttribute="programModel">
             <cti:csrfToken/>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             
             <tags:nameValueContainer2>
                 <cti:msg2 var="pleaseSelect" key="yukon.common.pleaseSelect"/>
-                <tags:nameValue2 nameKey=".configurationType">
-                     <tags:switchButton path="newConfiguration" offNameKey=".existingConfiguration" onNameKey=".newConfiguration" classes="js-programming-type" color="false"
-                        toggleGroup="existingConfiguration" toggleAction="hide" toggleInverse="true" checked="${programmingConfiguration.newConfiguration}"/>
+                <tags:nameValue2 nameKey=".meterProgramType">
+                     <tags:switchButton path="newProgram" offNameKey=".existingMeterProgram" onNameKey=".newMeterProgram" classes="js-programming-type" color="false"
+                        toggleGroup="existingMeterProgram" toggleAction="hide" toggleInverse="true" checked="${programModel.newProgram}"/>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".configuration" data-toggle-group="existingConfiguration">
-                    <tags:selectWithItems id="selectedConfiguration" path="existingConfigurationGuid" items="${existingConfigurations}" itemValue="guid" itemLabel="name"
+                <tags:nameValue2 nameKey=".meterProgram" data-toggle-group="existingMeterProgram">
+                    <tags:selectWithItems id="selectedProgram" path="existingProgramGuid" items="${existingConfigurations}" itemValue="guid" itemLabel="name"
                         defaultItemLabel="${pleaseSelect}"/>
                 </tags:nameValue2>
-                <c:set var="newConfigurationDisplay" value="${programmingConfiguration.newConfiguration ? '' : 'dn'}"/>
-                <tags:nameValue2 nameKey=".deviceType" rowClass="js-new-configuration ${newConfigurationDisplay}">
+                <c:set var="newProgramDisplay" value="${programModel.newProgram ? '' : 'dn'}"/>
+                <tags:nameValue2 nameKey=".deviceType" rowClass="js-new-program ${newProgramDisplay}">
                     <tags:selectWithItems path="paoType" items="${availableTypes}" defaultItemLabel="${pleaseSelect}"/>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".name" rowClass="js-new-configuration ${newConfigurationDisplay}">
+                <tags:nameValue2 nameKey=".name" rowClass="js-new-program ${newProgramDisplay}">
                     <tags:input path="name"/>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".configuration" rowClass="js-new-configuration ${newConfigurationDisplay}">
+                <tags:nameValue2 nameKey=".meterProgram" rowClass="js-new-program ${newProgramDisplay}">
                     <tags:file buttonKey="yukon.common.upload"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>

@@ -94,7 +94,7 @@
                                 
                                 <%-- C&I Meter Programming - CHECK FOR LICENSE--%>
                                 <tags:collectionActionTr linkKey=".meterProgrammingLabel" descriptionKey=".meterProgrammingDescription" 
-                                    icon="icon-app icon-app-32-cog-with-meter" action="/bulk/config/meterProgrammingInputs" 
+                                    icon="icon-app icon-app-32-cog-with-meter" action="/bulk/meterProgramming/inputs" 
                                     deviceCollection="${deviceCollection}" ajaxSubmit="true"/>
                                         
                                 <%--DATA STREAMING - check for CPARM and ROLE PROPERTY--%>

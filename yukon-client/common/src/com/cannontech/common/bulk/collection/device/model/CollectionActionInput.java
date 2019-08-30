@@ -13,6 +13,7 @@ public enum CollectionActionInput implements DisplayableEnum {
     SELECTED_ROUTES,                //Used for Locate Route
     AUTOMATICALLY_UPDATE_ROUTE,     //Used for Locate Route
     CONFIGURATION,                  //Used for Device Configs/Assign
+    METER_PROGRAM,                  //Used for Meter Programming
     INTERVAL,                       //Used for Configure Data Streaming
     CHANGE,                         //Used for Mass Change
     DEVICE_TYPE,                    //Used for Change Device Type
