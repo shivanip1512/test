@@ -145,6 +145,7 @@ public class DBUpdater extends MessageFrameAdaptor {
                     getIMessageFrame().finish("Database Update Completed Successfully");
                 } else {
                     getIMessageFrame().addOutput("Database update was unsuccessfully executed");
+                    System.exit(1);
                 }
             } else {
                 throw new StarsNotCreatedException("STARS tables not present in this database");
@@ -156,9 +157,11 @@ public class DBUpdater extends MessageFrameAdaptor {
                         + "\r\nContact Technical Support or TSSL immediately to get the STARS Database Creation script\r\n before continuing with this tool.";
             getIMessageFrame().addOutput(errorString);
             CTILogger.error(errorString, e);
+            System.exit(1);
         } catch (Exception e) {
             getIMessageFrame().addOutput("Database update was unsuccessfully executed");
             CTILogger.warn("A problem occurred in the execution", e);
+            System.exit(1);
         }
 
     }
