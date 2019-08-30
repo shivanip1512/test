@@ -14,13 +14,10 @@
                 <tags:input path="name" />
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".operationalState">
-                <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl" />
-                <tags:selectWithItems items="${operationalStates}" id="operationalState" path="operationalState" defaultItemLabel="${selectLbl}" defaultItemValue="" />
+                <tags:selectWithItems items="${operationalStates}" id="operationalState" path="operationalState"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".constraint">
-                <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl" />
-                <tags:selectWithItems items="${constraints}" id="constraint" path="constraint.constraintId" defaultItemLabel="${selectLbl}" itemLabel="name" itemValue="id"
-                    defaultItemValue="" />
+                <tags:selectWithItems items="${constraints}" id="constraint" path="constraint.constraintId"  itemLabel="name" itemValue="id"/>
             </tags:nameValue2>
             <cti:checkRolesAndProperties value="ALLOW_MEMBER_PROGRAMS">
                 <tags:nameValue2 nameKey=".copyMemberControl">
