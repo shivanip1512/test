@@ -5,6 +5,7 @@ import java.util.HashMap;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
@@ -18,10 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.dr.setup.ControlScenario;
+import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.dr.controlscenario.service.impl.ControlScenarioServiceImpl;
+import com.cannontech.dr.setup.service.LMSetupService;
 import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
@@ -29,7 +31,8 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 @RequestMapping("/dr/setup/controlScenario")
 public class ControlScenarioSetupApiController {
 
-    @Autowired private ControlScenarioServiceImpl controlScenarioService;
+    @Autowired @Qualifier("controlScenario") private LMSetupService <ControlScenario, LMCopy> controlScenarioService;
+    
     @Autowired private ControlScenarioSetupValidator controlScenarioSetupValidator;
     @Autowired private LMDeleteValidator lmDeleteValidator;
 

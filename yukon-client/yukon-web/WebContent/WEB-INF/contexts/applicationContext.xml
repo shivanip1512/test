@@ -1391,7 +1391,9 @@
 
     <bean class="com.cannontech.dr.loadprogram.service.impl.LoadProgramSetupServiceImpl"/>
 
-    <bean class="com.cannontech.dr.macro.service.impl.MacroLoadGroupSetupServiceImpl"/>
+    <bean class="com.cannontech.dr.macro.service.impl.MacroLoadGroupSetupServiceImpl">
+        <qualifier value="macroLoadGroup" />
+    </bean>
 
     <bean class="com.cannontech.dr.area.service.impl.ControlAreaSetupServiceImpl"/>
 
@@ -1406,7 +1408,9 @@
     <bean class="com.cannontech.web.api.token.TokenHelper"/>
     <bean class="com.cannontech.web.api.ApiRequestHelper"/>
     <bean class="com.cannontech.web.api.dr.setup.LMValidatorHelper"/>
-    <bean class="com.cannontech.dr.controlscenario.service.impl.ControlScenarioServiceImpl"/>
+    <bean class="com.cannontech.dr.controlscenario.service.impl.ControlScenarioServiceImpl">
+        <qualifier value="controlScenario" />
+    </bean>
     <bean id="controlScenarioSetupValidator" class="com.cannontech.web.api.dr.controlscenario.ControlScenarioSetupValidator"/>
     <bean class="com.cannontech.common.dr.setup.LMServiceHelper"/>
     <bean class="com.cannontech.web.api.dr.constraint.ProgramConstraintValidator"/>
