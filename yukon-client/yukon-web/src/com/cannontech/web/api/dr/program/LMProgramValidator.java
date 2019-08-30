@@ -321,8 +321,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
             Integer availableStopTimeInMinutes) {
         if (availableStartTimeInMinutes != null && availableStopTimeInMinutes != null) {
             errors.pushNestedPath(nestedPath);
-            YukonValidationUtils.checkRange(errors, "availableStartTimeInMinutes", availableStartTimeInMinutes, 0, 1439, false);
-            YukonValidationUtils.checkRange(errors, "availableStopTimeInMinutes", availableStopTimeInMinutes, 0, 1439, false);
+            YukonValidationUtils.checkRange(errors, "availableStartTimeInMinutes", availableStartTimeInMinutes, 0, 1440, false);
+            YukonValidationUtils.checkRange(errors, "availableStopTimeInMinutes", availableStopTimeInMinutes, 0, 1440, false);
             errors.popNestedPath();
         }
 
