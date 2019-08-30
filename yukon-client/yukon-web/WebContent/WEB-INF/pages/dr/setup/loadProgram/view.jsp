@@ -308,7 +308,14 @@
                                     <c:forEach var="group" items="${loadProgram.assignedGroups}">
                                         <tr>
                                             <td>
-                                                <cti:url var="viewUrl" value="/dr/setup/loadGroup/${group.groupId}"/> 
+                                                <c:choose>
+                                                    <c:when test="${group.type == 'MACRO_GROUP'}">
+                                                        <cti:url var="viewUrl" value="/dr/setup/macroLoadGroup/${group.groupId}"/>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <cti:url var="viewUrl" value="/dr/setup/loadGroup/${group.groupId}"/>
+                                                    </c:otherwise>
+                                                </c:choose> 
                                                 <a href="${viewUrl}"><cti:deviceName deviceId="${group.groupId}"/></a>
                                             </td>
                                             <td><i:inline key="${group.type}" /></td>
