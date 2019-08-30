@@ -1,7 +1,6 @@
 package com.cannontech.web.bulk;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,14 +13,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.collection.device.model.CollectionActionInput;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.device.programming.dao.MeterProgrammingDao;
@@ -36,7 +35,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.ImmutableSet;
 
 @Controller
-@RequestMapping("/config/*")
+@RequestMapping("/meterProgramming/*")
 @CheckRoleProperty(YukonRoleProperty.MASS_CHANGE)
 public class MeterProgrammingController {
     private final static Logger log = YukonLogManager.getLogger(MeterProgrammingController.class);
@@ -46,12 +45,12 @@ public class MeterProgrammingController {
     @Autowired private MeterProgrammingDao meterProgrammingDao;
     @Autowired private MeterProgrammingService meterProgrammingService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private MeterProgrammingConfigurationValidator validator;
+    @Autowired private MeterProgrammingModelValidator validator;
 
-    @RequestMapping(value = "meterProgrammingInputs", method = RequestMethod.GET)
+    @GetMapping("inputs")
     public String meterProgrammingInputs(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
         setupModel(deviceCollection, model);
-        model.addAttribute("programmingConfiguration", new MeterProgrammingConfiguration());
+        model.addAttribute("programModel", new MeterProgrammingModel());
         return "meterProgramming/programmingInputs.jsp";
     }
     
@@ -63,21 +62,20 @@ public class MeterProgrammingController {
                                                              PaoType.RFN430SL0, PaoType.RFN430SL1, PaoType.RFN430SL2, PaoType.RFN430SL3, PaoType.RFN430SL4));
     }
     
-    @RequestMapping(value = "meterProgramming", method = RequestMethod.POST)
-    public String postMeterProgramming(@ModelAttribute("programmingConfiguration") MeterProgrammingConfiguration programmingConfiguration, BindingResult result, 
+    @PostMapping("send")
+    public String send(@ModelAttribute("programModel") MeterProgrammingModel programModel, BindingResult result, 
                                        DeviceCollection deviceCollection, YukonUserContext userContext, ModelMap model,
                                        HttpServletRequest request, HttpServletResponse response) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        validator.validate(programmingConfiguration, result);
+        validator.validate(programModel, result);
 
         if (result.hasErrors()) {
             return errorView(response, model, deviceCollection);
         }
         
         //Get name or upload new file
-        LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
         MeterProgram program;
-        if (programmingConfiguration.isNewConfiguration()) {
+        if (programModel.isNewProgram()) {
             program = new MeterProgram();
             MultipartFile dataFile = null;
             boolean isMultipart = ServletFileUpload.isMultipartContent(request);
@@ -97,16 +95,13 @@ public class MeterProgrammingController {
                 return errorView(response, model, deviceCollection);
             }
             //save
-            program.setName(programmingConfiguration.getName());
-            program.setPaoType(programmingConfiguration.getPaoType());
-            //TODO Get Guid from Save?
-            meterProgrammingDao.saveMeterProgram(program);
-            String guid = meterProgrammingDao.getAllMeterPrograms().get(0).getGuid();
+            program.setName(programModel.getName());
+            program.setPaoType(programModel.getPaoType());
+            String guid = meterProgrammingDao.saveMeterProgram(program);
             program.setGuid(guid);
         } else {
-            program = meterProgrammingDao.getMeterProgram(programmingConfiguration.getExistingConfigurationGuid());
+            program = meterProgrammingDao.getMeterProgram(programModel.getExistingProgramGuid());
         }
-        userInputs.put(CollectionActionInput.CONFIGURATION.name(), program.getName());
         
         int key = meterProgrammingService.initiateMeterProgramUpload(deviceCollection, program.getGuid(), userContext);
         

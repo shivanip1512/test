@@ -14,12 +14,12 @@ yukon.bulk.meterProgramming = (function () {
     enableDisableProgramming = function () {
 
         var toggle = $('.js-programming-type'),
-            configTypeRow = toggle.closest('tr'),
-            newConfig = configTypeRow.find('.switch-btn-checkbox').prop('checked');
-        if (newConfig) {
-            $('.js-new-configuration').toggleClass('dn', false);
+            programTypeRow = toggle.closest('tr'),
+            newProgram = programTypeRow.find('.switch-btn-checkbox').prop('checked');
+        if (newProgram) {
+            $('.js-new-program').toggleClass('dn', false);
         } else {
-            $('.js-new-configuration').toggleClass('dn', true);
+            $('.js-new-program').toggleClass('dn', true);
         }
     };
 
@@ -33,7 +33,7 @@ yukon.bulk.meterProgramming = (function () {
                 
                 if (_initialized) return;
 
-//              show/hide information based on New or Existing Configuration selection
+//              show/hide information based on New or Existing Program selection
                 $(document).on('click', '.js-programming-type', function () {
                     enableDisableProgramming();
                 });

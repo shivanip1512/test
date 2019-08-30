@@ -7,21 +7,21 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 
 @Service
-public class MeterProgrammingConfigurationValidator extends SimpleValidator<MeterProgrammingConfiguration> {
+public class MeterProgrammingModelValidator extends SimpleValidator<MeterProgrammingModel> {
 
 
-    public MeterProgrammingConfigurationValidator() {
-        super(MeterProgrammingConfiguration.class);
+    public MeterProgrammingModelValidator() {
+        super(MeterProgrammingModel.class);
     }
 
     @Override
-    public void doValidation(MeterProgrammingConfiguration config, Errors errors) {
+    public void doValidation(MeterProgrammingModel config, Errors errors) {
         
-        if (config.isNewConfiguration()) {
+        if (config.isNewProgram()) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "paoType", "yukon.web.error.isBlank");
         } else {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "existingConfigurationGuid", "yukon.web.error.isBlank");
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "existingProgramGuid", "yukon.web.error.isBlank");
         }
 
     }
