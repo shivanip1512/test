@@ -414,7 +414,7 @@
                         <table class="compact-results-table no-stripes">
                             <tr>
                                 <td>
-                                    <input type="checkbox" id="js-program-start-check" <c:if test="${loadProgram.notification.programStartInMinutes > -1}">checked="checked" </c:if>
+                                    <input type="checkbox" id="js-program-start-check" <c:if test="${not empty loadProgram.notification.programStartInMinutes}">checked="checked" </c:if>
                                     <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if> />
                                     <i:inline key=".programStart"/>&nbsp;
                                     <span id="js-program-start-span">
@@ -424,7 +424,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="checkbox" id="js-program-stop-check" <c:if test="${loadProgram.notification.programStopInMinutes > -1}">checked="checked"</c:if>
+                                    <input type="checkbox" id="js-program-stop-check" <c:if test="${not empty loadProgram.notification.programStopInMinutes}">checked="checked"</c:if>
                                         <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if> />
                                     <i:inline key=".programStop"/>&nbsp;
                                     <span id="js-program-stop-span">
