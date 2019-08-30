@@ -41,7 +41,7 @@ public class ItronCycleGearFieldsValidator extends ProgramGearFieldsValidator<It
 
         // Check Duty Cycle Percent
         lmValidatorHelper.checkIfFieldRequired("dutyCyclePercent", errors, itronCycleGear.getDutyCyclePercent(),
-            "Duty Cycle Percent");
+            "Duty Cycle");
         if (!errors.hasFieldErrors("dutyCyclePercent")) {
             YukonValidationUtils.checkRange(errors, "dutyCyclePercent", itronCycleGear.getDutyCyclePercent(), 0, 100,
                 false);

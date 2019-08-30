@@ -220,7 +220,7 @@ public class LoadProgramSetupController {
                 }
 
                 if (result.hasFieldErrors()) {
-                    setValidationErrorsForGears(result, flash, loadProgram, baseKey , selectedGearsIds);
+                    setValidationErrorsForGears(result, flash, loadProgram, baseKey , selectedGearsIds, userContext);
                 }
                 return bindAndForward(loadProgram, selectedGearsIds, result, redirectAttributes);
             }
@@ -332,7 +332,7 @@ public class LoadProgramSetupController {
         return "dr/setup/loadProgram/copyLoadProgram.jsp";
     }
 
-    public void setValidationErrorsForGears(BindingResult result, FlashScope flash, LoadProgram loadProgram , String baseKey , List<String> selectedGearsIds){
+    public void setValidationErrorsForGears(BindingResult result, FlashScope flash, LoadProgram loadProgram, String baseKey, List<String> selectedGearsIds, YukonUserContext userContext){
         List<FieldError> errorList = result.getFieldErrors();
         List <Integer> gearPositionIndexes = errorList.stream()
                                                     .filter(fieldError -> fieldError.getField().contains("gears") 
@@ -367,7 +367,8 @@ public class LoadProgramSetupController {
 
             filteredErrors.stream().forEach(fieldError -> {
                 String fieldName = StringUtils.substringAfter(fieldError.getField(), "gears[" + index + "].");
-                String errorMessage = fieldError.getDefaultMessage();
+                String errorMessage =
+                    getFieldErrorMessage(fieldName, programGear.getControlMethod(), userContext, fieldError);
                 bindingResult.rejectValue(fieldName, "", errorMessage);
             });
 
@@ -375,6 +376,18 @@ public class LoadProgramSetupController {
         });
 
     }
+
+    private String getFieldErrorMessage(String fieldName, GearControlMethod controlMethod, YukonUserContext userContext,
+            FieldError fieldError) {
+
+        if (controlMethod == GearControlMethod.SimpleThermostatRamping
+            && fieldName.equals("fields.maxRuntimeInMinutes")) {
+            MessageSourceAccessor messageAccessor = messageResolver.getMessageSourceAccessor(userContext);
+            return messageAccessor.getMessage(baseKey + "error.timeRange", "4:00", "23:59");
+        } else
+            return fieldError.getDefaultMessage();
+    }
+
     private String bindAndForward(LoadProgram loadProgram, List<String> selectedGearsIds, BindingResult result, RedirectAttributes attrs) {
         attrs.addFlashAttribute("loadProgram", loadProgram);
         

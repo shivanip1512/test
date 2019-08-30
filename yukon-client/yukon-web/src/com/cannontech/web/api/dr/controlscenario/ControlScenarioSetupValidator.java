@@ -23,7 +23,7 @@ public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenar
     @Override
     protected void doValidation(ControlScenario scenario, Errors errors) {
 
-        lmValidatorHelper.validateNewPaoName(scenario.getName(), PaoType.LM_SCENARIO, errors, "Scenario Name");
+        lmValidatorHelper.validateNewPaoName(scenario.getName(), PaoType.LM_SCENARIO, errors, "Name");
 
         if (CollectionUtils.isNotEmpty(scenario.getAllPrograms())) {
             for (int i = 0; i < scenario.getAllPrograms().size(); i++) {

@@ -72,13 +72,16 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
         
         // serialAddress
         if (loadGroup.getAddressUsage().contains(VersacomAddressUsage.SERIAL)) {
-            try {
-                Integer serialAddress = Integer.valueOf(loadGroup.getSerialAddress());
-                lmValidatorHelper.checkIfFieldRequired("serialAddress", errors, serialAddress, "Serial Address");
-                YukonValidationUtils.checkRange(errors, "serialAddress", serialAddress, 1, 99999, true);
-            } catch (NumberFormatException e) {
-                // Reject value with invalid format message
-                errors.rejectValue("serialAddress", key + "invalidValue");
+            lmValidatorHelper.checkIfFieldRequired("serialAddress", errors, loadGroup.getSerialAddress(),
+                "Serial Address");
+            if (!errors.hasFieldErrors("serialAddress")) {
+                try {
+                    Integer serialAddress = Integer.valueOf(loadGroup.getSerialAddress());
+                    YukonValidationUtils.checkRange(errors, "serialAddress", serialAddress, 1, 99999, true);
+                } catch (NumberFormatException e) {
+                    // Reject value with invalid format message
+                    errors.rejectValue("serialAddress", key + "invalidValue");
+                }
             }
         }
     }

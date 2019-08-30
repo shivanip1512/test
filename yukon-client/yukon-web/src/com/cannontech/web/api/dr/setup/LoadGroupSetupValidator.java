@@ -26,7 +26,7 @@ public class LoadGroupSetupValidator<T extends LoadGroupBase> extends SimpleVali
         // Type 
         lmValidatorHelper.checkIfFieldRequired("type", errors, loadGroup.getType(), "Type");
         // Group Name
-        lmValidatorHelper.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Group Name");
+        lmValidatorHelper.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Name");
         // kWCapacity
         lmValidatorHelper.checkIfFieldRequired("kWCapacity", errors, loadGroup.getkWCapacity(), "kW Capacity");
         if (!errors.hasFieldErrors("kWCapacity")) {

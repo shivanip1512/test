@@ -3,6 +3,7 @@ package com.cannontech.web.api.dr.gear.setup.fields.validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.dr.gear.setup.Mode;
 import com.cannontech.common.dr.gear.setup.TemperatureMeasureUnit;
 import com.cannontech.common.dr.gear.setup.fields.SepTemperatureOffsetGearFields;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -44,7 +45,8 @@ public class SepTemperatureOffsetGearFieldsValidator
         lmValidatorHelper.checkIfFieldRequired("mode", errors, sepTemperatureOffsetCycleGear.getMode(), "Mode");
 
         // Check Heating offset or Cooling Offset
-        lmValidatorHelper.checkIfFieldRequired("offset", errors, sepTemperatureOffsetCycleGear.getOffset(), "Offset");
+        lmValidatorHelper.checkIfFieldRequired("offset", errors, sepTemperatureOffsetCycleGear.getOffset(),
+            (sepTemperatureOffsetCycleGear.getMode() == Mode.HEAT) ? "Heating Offset" : "Cooling Offset");
         if (!errors.hasFieldErrors("offset")) {
             if (sepTemperatureOffsetCycleGear.getCelsiusOrFahrenheit() == TemperatureMeasureUnit.FAHRENHEIT) {
                 YukonValidationUtils.checkRange(errors, "offset", sepTemperatureOffsetCycleGear.getOffset(), 0.1, 77.7,

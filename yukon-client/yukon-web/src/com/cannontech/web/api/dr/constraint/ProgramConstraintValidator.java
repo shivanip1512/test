@@ -22,7 +22,7 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
     @Override
     protected void doValidation(ProgramConstraint programConstraint, Errors errors) {
         // Mandatory, max length(60) and special character check for name.
-        lmValidatorHelper.validateName(programConstraint.getName(), errors, "Constraint name");
+        lmValidatorHelper.validateName(programConstraint.getName(), errors, "Name");
         
         if (programConstraint.getSeasonSchedule() == null || programConstraint.getSeasonSchedule().getId() == null) {
             errors.rejectValue("seasonSchedule", requiredKey, new Object[] { "Season Schedule" }, "");

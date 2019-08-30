@@ -13,6 +13,7 @@ public class SimpleThermostatRampingGearFieldsValidator
 
     @Autowired private LMValidatorHelper lmValidatorHelper;
     @Autowired private GearValidatorHelper gearValidatorHelper;
+    private String baseKey = "yukon.web.modules.dr.setup.gear";
 
     public SimpleThermostatRampingGearFieldsValidator() {
         super(SimpleThermostatRampingGearFields.class);
@@ -43,7 +44,7 @@ public class SimpleThermostatRampingGearFieldsValidator
 
         // Check Pre-op (Cool or Heat) Temp
         lmValidatorHelper.checkIfFieldRequired("preOpTemp", errors, simpleThermostatRampingCycleGear.getPreOpTemp(),
-            "Pre-op Temp");
+            "Temp");
         if (!errors.hasFieldErrors("preOpTemp")) {
             YukonValidationUtils.checkRange(errors, "preOpTemp", simpleThermostatRampingCycleGear.getPreOpTemp(), -20,
                 20, false);
@@ -51,7 +52,7 @@ public class SimpleThermostatRampingGearFieldsValidator
 
         // Check Pre-op (Cool or Heat) Time
         lmValidatorHelper.checkIfFieldRequired("preOpTimeInMinutes", errors,
-            simpleThermostatRampingCycleGear.getPreOpTimeInMinutes(), "Pre-op Time");
+            simpleThermostatRampingCycleGear.getPreOpTimeInMinutes(), "Time");
         if (!errors.hasFieldErrors("preOpTimeInMinutes")) {
             YukonValidationUtils.checkRange(errors, "preOpTimeInMinutes",
                 simpleThermostatRampingCycleGear.getPreOpTimeInMinutes(), 0, 300, false);
@@ -59,7 +60,7 @@ public class SimpleThermostatRampingGearFieldsValidator
 
         // Check Pre-op (Cool or Heat) Hold
         lmValidatorHelper.checkIfFieldRequired("preOpHoldInMinutes", errors,
-            simpleThermostatRampingCycleGear.getPreOpHoldInMinutes(), "Pre-op Hold");
+            simpleThermostatRampingCycleGear.getPreOpHoldInMinutes(), "Hold");
         if (!errors.hasFieldErrors("preOpHoldInMinutes")) {
             YukonValidationUtils.checkRange(errors, "preOpHoldInMinutes",
                 simpleThermostatRampingCycleGear.getPreOpHoldInMinutes(), 0, 300, false);
@@ -67,7 +68,7 @@ public class SimpleThermostatRampingGearFieldsValidator
 
         // Check Ramp degree F/Hour
         lmValidatorHelper.checkIfFieldRequired("rampPerHour", errors, simpleThermostatRampingCycleGear.getRampPerHour(),
-            "Ramp Per Hour");
+            "Ramp °F/Hour");
         if (!errors.hasFieldErrors("rampPerHour")) {
             YukonValidationUtils.checkRange(errors, "rampPerHour", simpleThermostatRampingCycleGear.getRampPerHour(),
                 (float) -9.9, (float) 9.9, false);
@@ -75,7 +76,7 @@ public class SimpleThermostatRampingGearFieldsValidator
 
         // Check Max degree delta
         lmValidatorHelper.checkIfFieldRequired("max", errors, simpleThermostatRampingCycleGear.getMax(),
-            "Max degree delta");
+            "Max °\u0394");
         if (!errors.hasFieldErrors("max")) {
             YukonValidationUtils.checkRange(errors, "max", simpleThermostatRampingCycleGear.getMax(), 0, 20, false);
         }

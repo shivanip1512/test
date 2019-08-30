@@ -64,7 +64,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         lmValidatorHelper.checkIfFieldRequired("type", errors, loadProgram.getType(), "Type");
 
         if (!errors.hasFieldErrors("type")) {
-            lmValidatorHelper.validateNewPaoName(loadProgram.getName(), loadProgram.getType(), errors, "Program Name");
+            lmValidatorHelper.validateNewPaoName(loadProgram.getName(), loadProgram.getType(), errors, "Name");
             if (!loadProgram.getType().isDirectProgram()) {
                 errors.reject(key + "notSupportedProgramType", new Object[] { loadProgram.getType() }, "");
             }
@@ -81,7 +81,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         if (!errors.hasFieldErrors("constraint")) {
             Integer constraintId = loadProgram.getConstraint().getConstraintId();
             errors.pushNestedPath("constraint");
-            lmValidatorHelper.checkIfFieldRequired("constraintId", errors, constraintId, "Constraint Id");
+            lmValidatorHelper.checkIfFieldRequired("constraintId", errors, constraintId, "Constraint");
             if (!errors.hasFieldErrors("constraintId")) {
                 Set<Integer> constraintIds = cache.getAllLMProgramConstraints().stream()
                                                                                .map(lmConstraint -> lmConstraint.getConstraintID())

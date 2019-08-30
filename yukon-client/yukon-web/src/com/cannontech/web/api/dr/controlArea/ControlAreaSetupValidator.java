@@ -43,7 +43,7 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
     @Override
     protected void doValidation(ControlArea controlArea, Errors errors) {
 
-        lmValidatorHelper.validateNewPaoName(controlArea.getName(), PaoType.LM_CONTROL_AREA, errors, "Control Area Name");
+        lmValidatorHelper.validateNewPaoName(controlArea.getName(), PaoType.LM_CONTROL_AREA, errors, "Name");
         lmValidatorHelper.checkIfFieldRequired("allTriggersActiveFlag", errors, controlArea.getAllTriggersActiveFlag(), "All Triggers Active Flag");
         lmValidatorHelper.checkIfFieldRequired("controlInterval", errors, controlArea.getControlInterval(), "Control Interval");
         if (!errors.hasFieldErrors("controlInterval")) {

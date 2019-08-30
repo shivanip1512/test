@@ -14,10 +14,10 @@ public class LMCopyValidator extends SimpleValidator<LMCopy>{
     }
 
     @Override
-    protected void doValidation(LMCopy loadGroup, Errors errors) {
+    protected void doValidation(LMCopy lmCopy, Errors errors) {
 
         // Group Name
-        lmValidatorHelper.validateCopyPaoName(loadGroup.getName(), errors, "Group Name");
+        lmValidatorHelper.validateCopyPaoName(lmCopy.getName(), errors, "Name");
 
     }
 }
