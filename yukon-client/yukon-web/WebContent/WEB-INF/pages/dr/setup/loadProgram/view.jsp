@@ -88,9 +88,7 @@
                         <c:if test="${not empty selectedSwitchType}">
                             <tags:nameValue2 nameKey=".operationalState" rowClass="noswitchtype">
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                    <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl" />
-                                    <tags:selectWithItems items="${operationalStates}" id="operationalState" path="operationalState" defaultItemLabel="${selectLbl}"
-                                        defaultItemValue="" />
+                                    <tags:selectWithItems items="${operationalStates}" id="operationalState" path="operationalState"/>
                                 </cti:displayForPageEditModes>
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <i:inline key="${loadProgram.operationalState}" />
@@ -98,9 +96,7 @@
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".constraint" rowClass="noswitchtype">
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                    <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl" />
-                                    <tags:selectWithItems items="${constraints}" id="constraint" path="constraint.constraintId" defaultItemLabel="${selectLbl}" itemLabel="name"
-                                        itemValue="id" defaultItemValue="" />
+                                    <tags:selectWithItems items="${constraints}" id="constraint" path="constraint.constraintId" itemLabel="name" itemValue="id"/>
                                 </cti:displayForPageEditModes>
                                 <cti:displayForPageEditModes modes="VIEW">
                                     ${fn:escapeXml(loadProgram.constraint.constraintName)}
