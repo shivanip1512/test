@@ -23,10 +23,10 @@ public class LMServiceHelper {
         List<LiteGear> allGears = Lists.newArrayList();
         allGears.addAll(lmGearDao.getAllLiteGears(programId));
         
-        Integer gearId = (gears != null && gears.size() == 1) ? gears.get(0).getId() : null;
-        if(gearId != null) {
+        Integer gearNumber = (gears != null && gears.size() == 1) ? gears.get(0).getId() : null;
+        if(gearNumber != null) {
             return allGears.stream()
-                           .filter(liteGear -> liteGear.getGearID() == gearId.intValue())
+                           .filter(liteGear -> liteGear.getGearNumber() == gearNumber.intValue())
                            .map(liteGear -> buildGear(liteGear))
                            .collect(Collectors.toList());
         }
@@ -38,7 +38,7 @@ public class LMServiceHelper {
     }
 
     private LMDto buildGear(LiteGear liteGear) {
-        return new LMDto(liteGear.getGearID(), liteGear.getGearName());
+        return new LMDto(liteGear.getGearNumber(), liteGear.getGearName());
     }
     
     public void validateProgramsAndGear(ControlScenario controlScenario) {
