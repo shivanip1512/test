@@ -95,6 +95,10 @@ yukon.dr.setup.program = (function() {
         }
     },
 
+    _initFocus = function() {
+        $("#name").focus();
+    },
+
     _loadProgram = function() {
 
         var type = $('#type').val();
@@ -149,6 +153,7 @@ yukon.dr.setup.program = (function() {
                 return;
             
             _initCss();
+            _initFocus();
             _toggleProgramStartStop('start');
             _toggleProgramStartStop('stop');
             
@@ -301,6 +306,11 @@ yukon.dr.setup.program = (function() {
 
             $(document).on('change', '#type', function(event) {
                 _loadProgram();
+            });
+
+            $(document).on('click', '#createButton', function() {
+                $("#name").blur();
+                $("#gearName").focus();
             });
 
             $(document).on('change', '#controlMethod', function(event) {
