@@ -31,7 +31,7 @@ public class ApiCallHelper {
     public static String getProperty(String key) {
         try {
             FileReader reader = new FileReader(
-                userDirectory + File.separatorChar + "configs" + File.separatorChar + "configuration.properties");
+                userDirectory + File.separatorChar + "src" + File.separatorChar+ "main" + File.separatorChar+ "resources" + File.separatorChar + "configuration.properties");
             Properties properties = new Properties();
             properties.load(reader);
             return properties.getProperty(key);

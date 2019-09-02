@@ -22,7 +22,7 @@ public class LoadGroupExpressComAPITest {
 
     private final static String expcomPaoTypeStr = "LM_GROUP_EXPRESSCOMM";
     private final static String expcomPayloadFile = "loadgroup\\lmGroupExpresscomCreate.json";
-    public static String filePath = System.getProperty("user.dir") + "\\resources\\testDataFiles\\LoadGroupData.xlsx";
+    public static String filePath = System.getProperty("user.dir") + "\\src\\test\\resources\\testDataFiles\\LoadGroupData.xlsx";
     public static String sheetName = "Expresscom";
 
     /**

@@ -30,7 +30,7 @@ public class AutomationSetup {
         
         // Log4j configuration
         basicConfiguration.setlog4jPath(
-            System.getProperty("user.dir") + File.separatorChar + "configs" + File.separatorChar + "log4j2.properties");
+            System.getProperty("user.dir") + File.separatorChar + "src" + File.separatorChar+ "main" + File.separatorChar+ "resources" + File.separatorChar + "log4j2.properties");
 
         Date Date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
@@ -39,8 +39,7 @@ public class AutomationSetup {
 
         System.setProperty("logDir", testLog);
         basicConfiguration.setTestLogPath(testLog);
-        basicConfiguration.setconfigPropertyFilePath(System.getProperty("user.dir") + File.separatorChar + "configs"
-            + File.separatorChar + "configuration.properties");
+        basicConfiguration.setconfigPropertyFilePath(System.getProperty("user.dir") + File.separatorChar + "src" + File.separatorChar + "main" + File.separatorChar+ "resources" + File.separatorChar + "configuration.properties");
         basicConfiguration.setEndpoint(
             ReadPropertyFile.getPropertyValue("baseURI", basicConfiguration.getconfigPropertyFilePath()));
         

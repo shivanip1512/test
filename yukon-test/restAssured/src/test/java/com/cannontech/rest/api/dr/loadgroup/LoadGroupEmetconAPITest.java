@@ -20,7 +20,7 @@ public class LoadGroupEmetconAPITest {
 
     private final static String emetconPaoTypeStr = "LM_GROUP_EMETCON";
     private final static String emetconPayloadFile = "loadgroup\\lmGroupEmetconCreate.json";
-    private final static String filePath = System.getProperty("user.dir") + "\\resources\\testDataFiles\\LoadGroupData.xlsx";
+    private final static String filePath = System.getProperty("user.dir") + "\\src\\test\\resources\\testDataFiles\\LoadGroupData.xlsx";
     private final static String sheetName = "Emetcon";
 
     /**

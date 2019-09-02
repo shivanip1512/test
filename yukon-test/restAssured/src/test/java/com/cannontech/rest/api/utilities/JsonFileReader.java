@@ -14,7 +14,7 @@ import org.json.simple.parser.ParseException;
 
 public class JsonFileReader {
 
-    static String payloadBaseDir = System.getProperty("user.dir") + "\\resources\\payload\\";
+    static String payloadBaseDir = System.getProperty("user.dir") + "\\src\\test\\resources\\payload\\";
 
     /**
      * This method reads Json file, and returns data as JSONObject

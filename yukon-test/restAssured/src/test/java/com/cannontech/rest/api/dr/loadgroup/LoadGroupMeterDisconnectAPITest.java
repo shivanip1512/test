@@ -15,7 +15,7 @@ import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupMeterDisconnectAPITest {
     private final static String meterDisconnectPaoTypeStr = "LM_GROUP_NEST";
-    private final static String meterDisconnectpayloadfile = "loadgroup\\\\lmGroupMeterDisconnectCreate.json";
+    private final static String meterDisconnectpayloadfile = "loadgroup\\lmGroupMeterDisconnectCreate.json";
 
     @Test(priority = 0)
     public void Test01_LmGroupMeterDisconnect_Create(ITestContext context) {
