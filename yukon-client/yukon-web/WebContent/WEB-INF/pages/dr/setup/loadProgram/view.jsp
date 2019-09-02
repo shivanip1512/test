@@ -73,7 +73,7 @@
                 <tags:sectionContainer2 nameKey="general">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".name">
-                            <tags:input id="name" path="name" size="25" maxlength="60" autofocus="autofocus" />
+                            <tags:input id="name" path="name" size="25" maxlength="60"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".type">
                             <cti:displayForPageEditModes modes="CREATE">
@@ -156,7 +156,7 @@
                                 </div>
                             </div>
                             <div class="action-area">
-                                <cti:button icon="icon-add" nameKey="create" data-popup="#gear-create-popup-${selectedSwitchType}" />
+                                <cti:button icon="icon-add" id="createButton" nameKey="create" data-popup="#gear-create-popup-${selectedSwitchType}" />
                                 <cti:url var="createGearUrl" value="/dr/setup/loadProgram/createGearPopup/${selectedSwitchType}" />
                             </div>
                             <cti:msg2 var="programGearCreation" key="yukon.web.modules.dr.setup.gear.title" />
