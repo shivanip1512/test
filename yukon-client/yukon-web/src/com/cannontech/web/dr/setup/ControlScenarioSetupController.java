@@ -286,6 +286,6 @@ public class ControlScenarioSetupController {
         return liteGears;
     }
     private LMDto buildGear(LiteGear liteGear) {
-        return new LMDto(liteGear.getGearID(), liteGear.getGearName());
+        return new LMDto(liteGear.getGearNumber(), liteGear.getGearName());
     }
 }
