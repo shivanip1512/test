@@ -1,7 +1,9 @@
 package com.cannontech.web.api.dr.setup;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.setup.AddressUsage;
@@ -32,11 +34,8 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
             lmValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
         }
 
-        // Address Usage should have atleast one field
-        YukonValidationUtils.checkIfListRequired("addressUsage", errors, loadGroup.getAddressUsage(), "Address Usage");
-
         // Address Usage should have atleast Load, program or splinter
-        if (!errors.hasFieldErrors("addressUsage")) {
+        if (loadGroup.getAddressUsage() != null || CollectionUtils.isNotEmpty(loadGroup.getAddressUsage())) {
             boolean loadAddressUsage = loadGroup.getAddressUsage().stream().anyMatch(e -> e.isLoadAddressUsage());
             if (!loadAddressUsage) {
                 errors.rejectValue("addressUsage", key + "loadRequired", new Object[] { "Load Address" }, "");
@@ -98,8 +97,12 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
 
             if (loadGroup.getAddressUsage().contains(AddressUsage.FEEDER)) {
                 // validate Feeder
-                lmValidatorHelper.checkIfFieldRequired("feeder", errors, loadGroup.getFeeder(), "Feeder");
-                YukonValidationUtils.checkExactLength("feeder", errors, loadGroup.getFeeder(), "Feeder", 16);
+                if (loadGroup.getFeeder() == null || !StringUtils.hasText(loadGroup.getFeeder().toString())) {
+                    errors.rejectValue("feeder", key + "feederAddressRequired");
+                }
+                if (!errors.hasFieldErrors("feeder")) {
+                    YukonValidationUtils.checkExactLength("feeder", errors, loadGroup.getFeeder(), "Feeder", 16);
+                }
             } else {
                 loadGroup.setFeeder("0");
             }
@@ -143,8 +146,9 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
             }
             if (loadGroup.getAddressUsage().contains(AddressUsage.LOAD)) {
                 // validate Loads
-                YukonValidationUtils.checkIfListRequired("relayUsage", errors, loadGroup.getRelayUsage(),
-                    "Load Address");
+                if (loadGroup.getRelayUsage() == null || CollectionUtils.isEmpty(loadGroup.getRelayUsage())) {
+                    errors.rejectValue("relayUsage", key + "loadAddressingRequired");
+                }
             }
         }
     }
