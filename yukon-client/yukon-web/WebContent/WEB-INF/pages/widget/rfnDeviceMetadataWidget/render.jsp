@@ -14,8 +14,6 @@
         </c:forEach>
         <c:if test="${!empty wifiSuperMeterData}">
             <cti:msgScope paths="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData">
-                <cti:msg2 var="label" key=".channelNum"/>
-                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.channelNum)}</tags:nameValue>
                 <cti:msg2 var="dBm" key=".rssi.dBm"/>
                 <cti:msg2 var="label" key=".rssi"/>
                 <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.rssi)} ${dBm}</tags:nameValue>
