@@ -254,6 +254,21 @@
                     </div>
                 </tags:boxContainer2>
             </cti:checkRolesAndProperties>
+            <tags:boxContainer2 nameKey="itronKeyBox">
+                <c:set var="keyGeneratedClass" value="${!empty itronKeyGeneratedDateTime ? '' : 'dn'}"/>
+                <span class="js-itron-key-generated ${keyGeneratedClass}">
+                    <i:inline key=".itronKeyGenerated"/>&nbsp;<span class="js-itron-key-date-time">${itronKeyGeneratedDateTime}</span>
+                </span>
+                <c:set var="keyNotGeneratedClass" value="${!empty itronKeyGeneratedDateTime ? 'dn' : ''}"/>
+                <span class="js-itron-key-not-generated ${keyNotGeneratedClass}"><i:inline key=".itronNoKeyGenerated"/></span>
+                <div class="page-action-area">
+                    <form:form method="GET" action="downloadItronKey">
+                        <cti:button nameKey="downloadItronKey" type="submit" />
+                    </form:form>
+                    <cti:button id="generateItronKey" nameKey="generateItronKey" data-ok-event="yukon:admin:security:generateItronKey"/>
+                    <d:confirm on="#generateItronKey" nameKey="confirmGenerateItronKey" />
+                </div>
+            </tags:boxContainer2>
         </div>
     </div>
 

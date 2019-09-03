@@ -258,6 +258,16 @@
     ]]></entry>
     <entry key="yukon.web.modules.adminSetup.security.ecobeeKeyPair.generationFailed">Error occurred generating the PGP Public and Private Key. Check logs for more information.</entry>
     
+    <entry key="yukon.web.modules.adminSetup.security.itronKeyBox.title">Itron Encryption Keys</entry>
+    <entry key="yukon.web.modules.adminSetup.security.itronKeyBox.helpText"><![CDATA[Encryption keys are used by Itron to encrypt things]]></entry>
+    <entry key="yukon.web.modules.adminSetup.security.itronKeyGenerated">Itron Encryption Keys were generated:</entry>
+    <entry key="yukon.web.modules.adminSetup.security.itronNoKeyGenerated">No Itron Encryption Keys have been generated.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.downloadItronKey.label">Download Public Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.generateItronKey.label">Generate New Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmGenerateItronKey.title">Confirm Generate Itron Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmGenerateItronKey.message">Are you sure you want to generate new Itron encryption keys?</entry>
+    <entry key="yukon.web.modules.adminSetup.security.itronKeyPair.generationFailed">Error occurred generating the Itron Public and Private Key. Check logs for more information.</entry>
+    
     <!-- jobs/active.jsp --> 
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.active.pageName">Active Jobs</entry>
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.active.contextualPageName">Active</entry>

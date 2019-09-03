@@ -71,6 +71,8 @@ import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.EncryptedRouteDao;
 import com.cannontech.encryption.EncryptionKeyType;
+import com.cannontech.encryption.ItronSecurityKeyPair;
+import com.cannontech.encryption.ItronSecurityService;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
@@ -112,6 +114,7 @@ public class DeveloperController {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private YukonListDao listDao;
     @Autowired private EncryptedRouteDao encryptedRouteDao;
+    @Autowired private ItronSecurityService itronSecurityService;
 
     private final Map<String, Integer> databaseFields;
     private final Map<String, String> categoryFields;
@@ -315,12 +318,38 @@ public class DeveloperController {
         final String homeKey = "yukon.web.modules.dev.ecobeePGPKeyPair.";
         Instant timestamp = Instant.now();
         if (!pgpKeyPair.getPgpPublicKey().isBlank() && !pgpKeyPair.getPgpPrivateKey().isBlank()) {
-            saveEncryptionKey(pgpKeyPair.getPgpPublicKey(), pgpKeyPair.getPgpPrivateKey(), timestamp);
+            saveEncryptionKey(pgpKeyPair.getPgpPublicKey(), pgpKeyPair.getPgpPrivateKey(), timestamp, EncryptionKeyType.Ecobee);
             flash.setConfirm(new YukonMessageSourceResolvable(homeKey + "save.success"));
             return "redirect:getEcobeePGPKeyPair";
         }
         flash.setError(new YukonMessageSourceResolvable(homeKey + "save.failed"));
         return "ecobeePGPKeyPair.jsp";
+    }
+    
+    @GetMapping("/getItronKeyPair")
+    public ModelAndView itronKeyPair(ModelMap model) throws Exception {
+        ItronSecurityKeyPair keyPair = itronSecurityService.getItronSshRsaKeyPair();
+        model.addAttribute("decryptFailed", keyPair.isPrivateKeyEncrypted());
+        ModelAndView itronKeys = new ModelAndView("itronKeyPair.jsp", "keyPair", keyPair);
+        return itronKeys;
+    }
+
+    @PostMapping(path = "/saveItronKeyPair")
+    public String saveItronKeyPair(@ModelAttribute("keyPair") ItronSecurityKeyPair keyPair,
+            FlashScope flash) throws CryptoException, IOException, JDOMException {
+        final String homeKey = "yukon.web.modules.dev.itronKeyPair.";
+        Instant timestamp = Instant.now();
+        if (!keyPair.getPublicKey().isBlank() && !keyPair.getPrivateKey().isBlank()) {
+            // if password is provided for private key encryption
+            if (true) {
+                // encrypt the private key before passing on to save
+            }
+            saveEncryptionKey(keyPair.getPublicKey(), keyPair.getPrivateKey(), timestamp, EncryptionKeyType.Itron);
+            flash.setConfirm(new YukonMessageSourceResolvable(homeKey + "save.success"));
+            return "redirect:getItronKeyPair";
+        }
+        flash.setError(new YukonMessageSourceResolvable(homeKey + "save.failed"));
+        return "itronKeyPair.jsp";
     }
 
     @RequestMapping("/jmsApiDirectory")
@@ -393,7 +422,7 @@ public class DeveloperController {
         return filename;
     }
 
-    private void saveEncryptionKey(String pgpPublicKey, String pgpPrivateKey, Instant timestamp)
+    private void saveEncryptionKey(String pgpPublicKey, String pgpPrivateKey, Instant timestamp, EncryptionKeyType encryptionKeyType)
             throws CryptoException, IOException, JDOMException {
         char[] password = CryptoUtils.getSharedPasskey();
         AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
@@ -402,7 +431,7 @@ public class DeveloperController {
         String aesBasedCryptoPrivateKey = new String(Hex.encodeHex(encrypter.encrypt(pgpPrivateKey.getBytes())));
         log.debug("AES based crypto Private key [" + aesBasedCryptoPrivateKey + "]");
         encryptedRouteDao.saveOrUpdateEncryptionKey(aesBasedCryptoPrivateKey, aesBasedCryptoPublicKey,
-            EncryptionKeyType.Ecobee, timestamp);
+            encryptionKeyType, timestamp);
     }
     
     public static enum UberLogComponent {

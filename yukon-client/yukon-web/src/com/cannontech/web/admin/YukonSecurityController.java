@@ -66,6 +66,7 @@ import com.cannontech.encryption.EcobeeSecurityService;
 import com.cannontech.encryption.EncryptedRouteDao;
 import com.cannontech.encryption.EncryptionKeyType;
 import com.cannontech.encryption.HoneywellSecurityService;
+import com.cannontech.encryption.ItronSecurityService;
 import com.cannontech.encryption.RSAKeyfileService;
 import com.cannontech.encryption.SecurityKeyPair;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
@@ -91,6 +92,7 @@ public class YukonSecurityController {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private EcobeeSecurityService ecobeeSecurityService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ItronSecurityService itronSecurityService;
 
     private static final int KEYNAME_MAX_LENGTH = 50;
     private static final int KEYHEX_DIGITS_LENGTH = 32;
@@ -253,12 +255,21 @@ public class YukonSecurityController {
         }
 
         try {
-            Instant keyCreationTime = ecobeeSecurityService.getEcobeeKeyPairCreationTime();
-            String dateGenerated = dateFormattingService.format(keyCreationTime,
+            Instant ecobeeKeyCreationTime = ecobeeSecurityService.getEcobeeKeyPairCreationTime();
+            String ecobeeDateGenerated = dateFormattingService.format(ecobeeKeyCreationTime,
                 DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
-            model.put("ecobeeKeyGeneratedDateTime", dateGenerated);
+            model.put("ecobeeKeyGeneratedDateTime", ecobeeDateGenerated);
         } catch (NoSuchElementException e) {
             log.debug("Ecobee PGP Key Creation time is not available, may be it is not generated yet.");
+        }
+        
+        try {
+            Instant itronKeyCreationTime = itronSecurityService.getItronKeyPairCreationTime();
+            String itronDateGenerated = dateFormattingService.format(itronKeyCreationTime,
+                DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
+            model.put("itronKeyGeneratedDateTime", itronDateGenerated);
+        } catch (NoSuchElementException e) {
+            log.debug("Itron Key Creation time is not available, may be it is not generated yet.");
         }
         model.addAttribute("encryptionKeys", encryptionKeys);
 
@@ -635,6 +646,45 @@ public class YukonSecurityController {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             String errMsg = accessor.getMessage(baseKey + ".ecobeeKeyPair.generationFailed");
             json.put("ecobeeKeyGeneratedDateTime", errMsg);
+        }
+        return json;
+    }
+    
+    @GetMapping(value = "/config/security/downloadItronKey")
+    public void downloadItronKey(HttpServletResponse response) {
+        try (OutputStream stream = response.getOutputStream()) {
+            String publicKey = itronSecurityService.getItronPublicSshRsaKey();
+            response.setContentType("text/plain");
+            response.setHeader("Content-Type", "application/force-download");
+            String fileName = ServletUtil.makeWindowsSafeFileName("itronPublicKey.txt");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+            stream.write(publicKey.getBytes());
+        } catch (Exception e) {
+            log.error("Exception getting the itron Public Key", e);
+        }
+    }
+    
+
+    @GetMapping(value = "/config/security/generateItronKey")
+    public @ResponseBody Map<String, Object> generateItronKey(YukonUserContext userContext, FlashScope flashScope) throws CryptoException {
+        Map<String, Object> json = new HashMap<>();
+        // The comment is optional, I think it will just stay as null
+        // TODO the PassPhrase is going to be passed from a global variable so user can encrypt private key
+        String comment = null;
+        String passPhrase = null;
+        try {
+            Instant keyCreationTime = itronSecurityService.generateItronSshRsaPublicPrivateKeys(comment, passPhrase);
+            String dateGenerated = dateFormattingService.format(keyCreationTime,
+                DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
+            json.put("itronKeyGeneratedDateTime", dateGenerated);
+        } catch (EcobeePGPException epe) {
+            log.error("Exception while generating Itron Public and Private Key ", epe);
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String errMsg = accessor.getMessage(baseKey + ".itronKeyPair.generationFailed");
+            json.put("itronKeyGeneratedDateTime", errMsg);
+        } catch (Exception e) {
+            log.warn("caught exception in generateItronKey", e);
         }
         return json;
     }

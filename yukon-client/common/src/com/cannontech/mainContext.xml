@@ -391,6 +391,7 @@
     <bean id="rsaKeyfileService" class="com.cannontech.encryption.impl.RSAKeyfileServiceImpl"/>
     <bean id="honeywellSecurityService" class="com.cannontech.encryption.impl.HoneywellSecurityServiceImpl"/>
     <bean id="ecobeeSecurityService" class="com.cannontech.encryption.impl.EcobeeSecurityServiceImpl"/>
+    <bean id="itronSecurityService" class="com.cannontech.encryption.impl.ItronSecurityServiceImpl"/>
 
     <bean id="yukonTextMessageDao" class="com.cannontech.message.activemq.impl.YukonTextMessageDaoImpl"/>
 
