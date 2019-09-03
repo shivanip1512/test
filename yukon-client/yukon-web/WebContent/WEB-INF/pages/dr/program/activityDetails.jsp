@@ -37,7 +37,7 @@
                             <c:param name="programId" value="${programData.programId}"/>
                         </c:url>
                         <td><a href="${programURL}">${fn:escapeXml(programData.programName)}</a></td>
-                        <td><cti:msg key="${programData.originSource.formatKey}"/></td>
+                        <td class="${programData.statusCssClass}"><cti:msg key="${programData.originSource.formatKey}"/></td>
                         <c:choose>
                             <c:when test="${empty programData.gears}">
                                 <td><cti:dataUpdaterValue identifier="${programData.programId}/CURRENT_GEAR" type="DR_PROGRAM"/></td>
