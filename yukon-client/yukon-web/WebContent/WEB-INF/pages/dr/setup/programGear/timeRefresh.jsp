@@ -77,7 +77,7 @@
                         <tags:numeric id="js-TimeRefresh-rampInPercent" path="fields.rampInPercent" units="${percent}" size="10" minValue="0" maxValue="100"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".rampInInterval" data-toggle-group="rampInWindow" rowClass="${rampInFieldClass}">
-                        <cti:msg2 var="rampInIntervalUnit" key="yukon.web.modules.dr.setup.gear.sec"/>
+                        <cti:msg2 var="rampInIntervalUnit" key="yukon.common.units.SECONDS"/>
                         <tags:numeric id="js-TimeRefresh-rampInInterval" path="fields.rampInIntervalInSeconds" units="${rampInIntervalUnit}" size="10" minValue="-99999" maxValue="99999"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
@@ -108,7 +108,7 @@
                         <tags:numeric path="fields.rampOutPercent" units="${percent}" size="10" minValue="0" maxValue="100"/>
                     </tags:nameValue2>
                     <tags:nameValue2 id="js-rampOutInterval-row" nameKey=".rampOutInterval" rowClass="dn">
-                        <cti:msg2 var="rampOutIntervalUnit" key="yukon.web.modules.dr.setup.gear.sec"/>
+                        <cti:msg2 var="rampOutIntervalUnit" key="yukon.common.units.SECONDS"/>
                         <tags:numeric path="fields.rampOutIntervalInSeconds" units="${rampOutIntervalUnit}" size="10" minValue="-99999" maxValue="99999"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".stopCommandRepeat">

@@ -34,10 +34,12 @@
 <tags:sectionContainer2 nameKey="digisepTiming">
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".digisep.rampIn">
-            <tags:input path="rampInMinutes"/>
+            <cti:msg2 var="rampInMinutesUnit" key="yukon.common.units.MINUTES"/>
+            <tags:input path="rampInMinutes" units="${rampInMinutesUnit}"/>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".digisep.rampOut">
-            <tags:input path="rampOutMinutes"/>
+            <cti:msg2 var="rampOutMinutesUnit" key="yukon.common.units.MINUTES"/>
+            <tags:input path="rampOutMinutes" units="${rampOutMinutesUnit}"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 </tags:sectionContainer2>
