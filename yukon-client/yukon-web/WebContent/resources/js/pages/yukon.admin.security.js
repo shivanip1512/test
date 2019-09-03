@@ -140,6 +140,20 @@ yukon.admin.security = (function () {
                 });
             });
             
+            $(document).on('yukon:admin:security:generateItronKey', function(otherEvent) {
+                $.ajax({ 
+                    url: "generateItronKey", 
+                    type: "GET",
+                }).done(function(data) {
+                    $('.js-itron-key-generated').hide();
+                    $('.js-itron-key-not-generated').hide();
+                    if (data.itronKeyGeneratedDateTime) {
+                        $('.js-itron-key-date-time').html(data.itronKeyGeneratedDateTime);
+                        $('.js-itron-key-generated').show();
+                    }
+                });
+            });
+            
             _initialized = true;
         }
         

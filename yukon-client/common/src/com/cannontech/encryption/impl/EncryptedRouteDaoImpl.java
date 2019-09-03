@@ -156,7 +156,8 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
         sql.append("INSERT INTO EncryptionKey");
         sql.append("(EncryptionKeyId, Name, PrivateKey");
         if (encryptionKeyType == EncryptionKeyType.Honeywell ||
-                encryptionKeyType == EncryptionKeyType.Ecobee) {
+                encryptionKeyType == EncryptionKeyType.Ecobee ||
+                encryptionKeyType == EncryptionKeyType.Itron) {
             sql.append(", PublicKey, EncryptionKeyType, Timestamp)");
             sql.values(encryptionKeyId, name, privateKey, publicKey, encryptionKeyType, timestamp);
         } else {
