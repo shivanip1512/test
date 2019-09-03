@@ -537,7 +537,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         superMeterData.setConfiguredApBssid("12:34:56:78:90:ab");
         superMeterData.setConnectedApBssid("ab:cd:ef:01:23:45");
         superMeterData.setApSsid("ExampleUtilityISP");
-        superMeterData.setChannelNum(8);
         superMeterData.setRssi(-64D);
         superMeterData.setSecurityType(WifiSecurityType.WPA2_PERSONAL);
         superMeterData.setVirtualGatewayIpv6Address("FD30:0000:0000:0001:0214:08FF:FE0A:BF91");
