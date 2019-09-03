@@ -6,7 +6,7 @@ public class MeterProgram {
 	private String guid;
 	private String name;
 	private PaoType paoType;
-	private String program;
+	private byte[] program;
 	public PaoType getPaoType() {
 		return paoType;
 	}
@@ -26,10 +26,10 @@ public class MeterProgram {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getProgram() {
+	public byte[] getProgram() {
 		return program;
 	}
-	public void setProgram(String program) {
+	public void setProgram(byte[] program) {
 		this.program = program;
 	}
 }
