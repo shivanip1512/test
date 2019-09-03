@@ -90,8 +90,12 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
             var thisFeederValue = (this.checked ? "1" : "0");
             feederValue = feederValue + thisFeederValue;
         });
-        $("#feederValueString").val(feederValue);
-    }, 
+        if(feederValue.indexOf("1") !== -1){
+            $("#feederValueString").val(feederValue);
+        }else{
+            $("#feederValueString").val("");
+        }
+    },
     _setFeederValue = function() {
         var feederValue = $("#feederValueString").val();
         var i=0;
