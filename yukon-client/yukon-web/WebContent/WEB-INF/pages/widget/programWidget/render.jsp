@@ -27,7 +27,7 @@
                                         <td width="300" class="db wrbw">
                                             <a href="${programURL}">${fn:escapeXml(program.programName)}</a>
                                         </td>
-                                        <td class="tar"><cti:msg key="${program.originSource.formatKey}"/></td>
+                                        <td class="tar ${program.statusCssClass}"><cti:msg key="${program.originSource.formatKey}"/></td>
                                     </tr>
                                     <c:choose>
                                         <c:when test="${empty program.gears}">

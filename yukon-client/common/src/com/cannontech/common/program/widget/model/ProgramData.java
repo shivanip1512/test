@@ -13,6 +13,7 @@ public class ProgramData {
     private DateTime startDateTime;
     private ProgramOriginSource originSource;
     private int programHistoryId;
+    private String statusCssClass;
 
     private List<GearData> gears;
 
@@ -48,6 +49,11 @@ public class ProgramData {
     public int getProgramHistoryId() {
         return programHistoryId;
     }
+
+    public String getStatusCssClass() {
+        return statusCssClass;
+    }
+
     /**
      * It is not recommended to add setter in Builder design pattern.
      * Adding it exceptionally.
@@ -58,6 +64,10 @@ public class ProgramData {
 
     public void setOriginSource(ProgramOriginSource originSource) {
         this.originSource = originSource;
+    }
+
+    public void setStatusCssClass(String statusCssClass) {
+        this.statusCssClass = statusCssClass;
     }
 
     public static class ProgramDataBuilder {

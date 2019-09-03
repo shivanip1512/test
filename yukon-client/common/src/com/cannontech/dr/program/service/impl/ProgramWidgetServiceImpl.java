@@ -30,6 +30,7 @@ import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.service.ProgramWidgetService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
+import com.cannontech.loadcontrol.ProgramUtils;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.dynamic.receive.LMGroupChanged;
@@ -56,6 +57,8 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
     private List<ProgramData> programsDataCache = new ArrayList<>();
     private List<ProgramData> todaysProgramsDataCache = new ArrayList<>();
     private long tomorrowStartInMillis = 0L;
+    private final static String ACTIVE_CSS_CLASS = "green";
+    private final static String SCHEDULED_CSS_CLASS = "orange";
     
     @PostConstruct
     public void initialize() {
@@ -280,12 +283,14 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
      *  Build ProgramData object from passed LMProgramBase object
      */
     private ProgramData buildProgramData(LMProgramBase lmProgramBase) {
-       return new ProgramData.ProgramDataBuilder(lmProgramBase.getYukonID().intValue())
+       ProgramData programData = new ProgramData.ProgramDataBuilder(lmProgramBase.getYukonID().intValue())
                              .setProgramName(lmProgramBase.getYukonName())
                              .setStartDateTime(new DateTime(lmProgramBase.getStartTime()
                                                                          .getTimeInMillis()))
                              .setOriginSource(ProgramOriginSource.getProgramOriginSource(lmProgramBase.getOriginSource()))
                              .build();
+       addStatusCssClass(programData);
+       return programData;
     }
 
     /**
@@ -349,6 +354,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
                                                  .setProgramName(programHistory.getProgramName())
                                                  .setProgramHistoryId(programHistory.getProgramHistoryId())
                                                  .build();
+        addStatusCssClass(programData);
         updateProgramGearInfo(gears, programData);
         return programData;
     }
@@ -563,5 +569,31 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
             }
         }
         return todaysProgramsDataCache;
+    }
+
+    /**
+     * Add CSS class to the programData. Based on this we will show the Origin value on widget and detail page 
+     * with color, indicating if the program is active, scheduled or completed.
+     */
+    private void addStatusCssClass(ProgramData programData) {
+        try {
+            Set<LMProgramBase> allLMProgramBase = loadControlClientConnection.getAllProgramsSet();
+            for (LMProgramBase lmpb : allLMProgramBase) {
+                ProgramData program = new ProgramData.ProgramDataBuilder(lmpb.getYukonID().intValue())
+                                                     .setStartDateTime(new DateTime(lmpb.getStartTime().getTimeInMillis()))
+                                                     .build();
+                if (isSameProgramEvent(program, programData)) {
+                    if (ProgramUtils.isActive(lmpb)) {
+                        programData.setStatusCssClass(ACTIVE_CSS_CLASS);
+                        break;
+                    } else if (ProgramUtils.isScheduled(lmpb)) {
+                        programData.setStatusCssClass(SCHEDULED_CSS_CLASS);
+                        break;
+                    }
+                }
+            }
+        } catch (ConnectionException e) {
+            log.warn(e.getMessage());
+        }
     }
 }
