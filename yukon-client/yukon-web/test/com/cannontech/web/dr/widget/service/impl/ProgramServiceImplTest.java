@@ -110,7 +110,7 @@ public class ProgramServiceImplTest {
     
     @Test
     public void test_getTodaysProgram() {
-        EasyMock.expect(loadControlClientConnection.getAllProgramsSet()).andReturn(programs);
+        EasyMock.expect(loadControlClientConnection.getAllProgramsSet()).andStubReturn(programs);
         EasyMock.replay(loadControlClientConnection);
         List<ProgramData> todaysPrograms = ReflectionTestUtils.invokeMethod(programWidgetServiceImpl, "getAllTodaysPrograms");
         // todaysPrograms should contain program which will execute today i.e todaysProgram
@@ -128,7 +128,7 @@ public class ProgramServiceImplTest {
     
     @Test
     public void test_getSchedulePrograms() {
-        EasyMock.expect(loadControlClientConnection.getAllProgramsSet()).andReturn(programs);
+        EasyMock.expect(loadControlClientConnection.getAllProgramsSet()).andStubReturn(programs);
         EasyMock.replay(loadControlClientConnection);
         List<ProgramData> futurePrograms = ReflectionTestUtils.invokeMethod(programWidgetServiceImpl, "getProgramsScheduledForNextControlDayAfterToday");
         // futurePrograms should contain program which will execute on 1st in future i.e futureProgram1
@@ -168,6 +168,8 @@ public class ProgramServiceImplTest {
 
     @Test
     public void test_buildProgramData_with_multiple_gear() {
+        EasyMock.expect(loadControlClientConnection.getAllProgramsSet()).andReturn(programs);
+        EasyMock.replay(loadControlClientConnection);
         ProgramData program = ReflectionTestUtils.invokeMethod(programWidgetServiceImpl, "buildProgramData", programControlHistory);
         assertNotNull(program);
         assertTrue(program.getGears().size() == 2);
@@ -175,6 +177,8 @@ public class ProgramServiceImplTest {
 
     @Test
     public void test_buildProgramData_single_gear() {
+        EasyMock.expect(loadControlClientConnection.getAllProgramsSet()).andReturn(programs);
+        EasyMock.replay(loadControlClientConnection);
         ProgramControlHistory pch1 = new ProgramControlHistory(90, 56);
         pch1.setGearName("Ecobee Program");
         pch1.setStartDateTime(new Date());
