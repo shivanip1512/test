@@ -1,10 +1,12 @@
 package com.cannontech.common.device.programming.dao;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.model.MeterProgramConfiguration;
+import com.cannontech.common.device.programming.model.MeterProgramStatus;
 
 public interface MeterProgrammingDao {
 
@@ -13,7 +15,7 @@ public interface MeterProgrammingDao {
 	 * 
 	 * @throws NotFoundException
 	 */
-	MeterProgram getMeterProgram(String guid);
+	 MeterProgram getMeterProgram(UUID guid);
 
 	/**
 	 * Saves program
@@ -21,7 +23,7 @@ public interface MeterProgrammingDao {
 	 * 
 	 * @throw DuplicateException - if description is used by another program
 	 */
-	String saveMeterProgram(MeterProgram program);
+	UUID saveMeterProgram(MeterProgram program);
 
 	/**
 	 * Returns all programs
@@ -32,7 +34,7 @@ public interface MeterProgrammingDao {
 	 * Assigns device to programs
 	 * @param guid - program guid
 	 */
-	void assignDevicesToProgram(String guid, List<SimpleDevice> devices);
+	void assignDevicesToProgram(UUID guid, List<SimpleDevice> devices);
 
 	/**
 	 * Unassigns device from programs
@@ -42,7 +44,7 @@ public interface MeterProgrammingDao {
 	/**
 	 * Deletes meter program
 	 */
-	void deleteMeterProgram(String guid);
+	void deleteMeterProgram(UUID guid);
 	
 	/**
 	 * Returns program by device id
@@ -55,4 +57,19 @@ public interface MeterProgrammingDao {
 	 * @throws NotFoundException
 	 */
 	MeterProgramConfiguration getProgramConfigurationByDeviceId(int deviceId);
+
+	/**
+	 * Returns status by device id
+	 */
+	MeterProgramStatus getMeterProgramStatus(int deviceId);
+
+	/**
+	 * Creates status
+	 */
+	void createMeterProgramStatus(MeterProgramStatus status);
+
+	/**
+	 * Updates status
+	 */
+	void updateMeterProgramStatus(MeterProgramStatus status);
 }

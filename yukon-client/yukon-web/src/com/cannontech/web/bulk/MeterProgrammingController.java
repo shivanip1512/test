@@ -3,6 +3,7 @@ package com.cannontech.web.bulk;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -104,14 +105,14 @@ public class MeterProgrammingController {
             program.setName(programModel.getName());
             program.setPaoType(programModel.getPaoType());
             try {
-                String guid = meterProgrammingDao.saveMeterProgram(program);
+                UUID guid = meterProgrammingDao.saveMeterProgram(program);
                 program.setGuid(guid);
             } catch (DuplicateException e) {
                 model.addAttribute("errorMsg", accessor.getMessage(baseKey + "duplicateName"));
                 return errorView(response, model, deviceCollection);
             }
         } else {
-            program = meterProgrammingDao.getMeterProgram(programModel.getExistingProgramGuid());
+            program = meterProgrammingDao.getMeterProgram(UUID.fromString(programModel.getExistingProgramGuid()));
         }
         
         int key = meterProgrammingService.initiateMeterProgramUpload(deviceCollection, program.getGuid(), userContext);

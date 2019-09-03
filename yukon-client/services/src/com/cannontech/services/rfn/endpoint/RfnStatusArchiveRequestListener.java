@@ -22,6 +22,9 @@ import com.cannontech.amr.rfn.message.status.type.MeterInfoStatus;
 import com.cannontech.amr.rfn.message.status.type.RfnMeterDisconnectMeterMode;
 import com.cannontech.amr.rfn.message.status.type.RfnMeterDisconnectStateType;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest;
+import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest.Source;
+import com.cannontech.common.device.programming.model.ProgramStatus;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -119,30 +122,51 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
                 }
             } else if (request.getStatus() instanceof MeterInfoStatus) {
                 MeterInfoStatus status = (MeterInfoStatus) request.getStatus();
-                try {
-                    if (status.getData() != null && status.getData().getMeterDisconnectStatus() != null) {
-                        Pair<RfnMeterDisconnectMeterMode, RfnMeterDisconnectStateType> key =
-                            Pair.of(status.getData().getMeterDisconnectStatus().getMeterMode(),
-                                status.getData().getMeterDisconnectStatus().getRelayStatus());
-                        RfnMeterDisconnectState state = disconnectStates.get(key);
-                        if (state != null) {
-                            publishPointData(state.getRawState(), BuiltInAttribute.DISCONNECT_STATUS,
-                                request.getRfnIdentifier(), status.getTimeStamp(), processor);
-                        } else {
-                            log.info(
-                                "Attempt to publish point data for disconnect status {} failed. Disconnect state doesn't exist for combination {}",
-                                status, key);
-                        }
-                    }
-                } catch (Exception e) {
-                    // the data doesn't have disconnect status information
-                    log.error("Attempt to publish point data for disconnect status {} failed", status, e);
-                }
+				updateDisconnectInfo(request, processor, status);
+				archiveProgramStatus(status);
             }
-
         }
         sendAcknowledgement(request, processor);
     }
+
+    /**
+     * Attempts to publish disconnect point data
+     */
+	private void updateDisconnectInfo(RfnStatusArchiveRequest request, String processor, MeterInfoStatus status) {
+		if (status.getData() != null && status.getData().getMeterDisconnectStatus() != null) {
+			Pair<RfnMeterDisconnectMeterMode, RfnMeterDisconnectStateType> key = Pair.of(
+					status.getData().getMeterDisconnectStatus().getMeterMode(),
+					status.getData().getMeterDisconnectStatus().getRelayStatus());
+			RfnMeterDisconnectState state = disconnectStates.get(key);
+			if (state != null) {
+				publishPointData(state.getRawState(), BuiltInAttribute.DISCONNECT_STATUS,
+						request.getRfnIdentifier(), status.getTimeStamp(), processor);
+			} else {
+				log.info(
+						"Attempt to publish point data for disconnect status {} failed. Disconnect state doesn't exist for combination {}",
+						status, key);
+			}
+		}
+	}
+    
+    /**
+     * Sends status update message to SM to update MeterProgramStatus table
+     */
+	private void archiveProgramStatus(MeterInfoStatus status) {
+		 if (status.getData() != null && status.getData().getMeterConfigurationID() != null) {
+			MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
+			request.setSource(Source.SM_STATUS_ARCHIVE);
+			request.setRfnIdentifier(status.getRfnIdentifier());
+			request.setConfigurationId(status.getData().getMeterConfigurationID());
+			request.setStatus(ProgramStatus.IDLE);
+			request.setTimeStamp(status.getTimeStamp());
+			log.debug("Sending {} on queue {}", request, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName());
+			jmsTemplate.convertAndSend(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(), request);
+		} else {
+			log.info("Attempt to update meter programming status {} failed. MeterConfigurationID doesn't exist",
+					status);
+		}
+	}
 
     /**
      * Attempts to publish point data for the device. If unable to lookup device in cache the exception will

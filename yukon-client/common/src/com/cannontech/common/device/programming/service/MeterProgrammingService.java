@@ -1,5 +1,7 @@
 package com.cannontech.common.device.programming.service;
 
+import java.util.UUID;
+
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.programming.model.MeterProgramUploadCancelResult;
@@ -21,5 +23,5 @@ public interface MeterProgrammingService {
 	/**
 	 * Initiates meter program upload
 	 */
-	int initiateMeterProgramUpload(DeviceCollection deviceCollection, String guid, YukonUserContext context);
+	int initiateMeterProgramUpload(DeviceCollection deviceCollection, UUID guid, YukonUserContext context);
 }

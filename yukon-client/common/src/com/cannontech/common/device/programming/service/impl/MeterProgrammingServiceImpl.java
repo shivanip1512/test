@@ -3,14 +3,20 @@ package com.cannontech.common.device.programming.service.impl;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
+
+import javax.jms.ConnectionFactory;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
@@ -33,12 +39,18 @@ import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallb
 import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.programming.dao.MeterProgrammingDao;
+import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest;
+import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest.Source;
 import com.cannontech.common.device.programming.model.MeterProgram;
+import com.cannontech.common.device.programming.model.MeterProgramSource;
 import com.cannontech.common.device.programming.model.MeterProgramUploadCancelResult;
+import com.cannontech.common.device.programming.model.ProgramStatus;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.events.loggers.MeterProgrammingEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -58,6 +70,8 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     @Autowired private IDatabaseCache dbCache;
     @Autowired private WaitableCommandCompletionCallbackFactory waitableFactory;
     @Autowired private MeterProgrammingDao meterProgrammingDao;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
+    private JmsTemplate jmsTemplate;
 	
 	@Override
 	public boolean isCancellable(CollectionAction action) {
@@ -82,7 +96,6 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 			public void receivedLastResultString(CommandRequestDevice command, String value) {
 				logCompleted(command.getDevice(), DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL, true);
 				result.setSuccess(true);
-				meterProgrammingDao.unassignDeviceFromProgram(device.getDeviceId());
 			}
 
 			@Override
@@ -117,7 +130,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 	
 
 	@Override
-	public int initiateMeterProgramUpload(DeviceCollection deviceCollection, String guid, YukonUserContext context) {
+	public int initiateMeterProgramUpload(DeviceCollection deviceCollection, UUID guid, YukonUserContext context) {
 
 		String command = "";
 		
@@ -141,8 +154,27 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 
 		CommandCompletionCallback<CommandRequestDevice> execCallback = getExecutionCallback(context, result);
 		meterProgrammingDao.assignDevicesToProgram(guid, supportedDevices);
+		archiveProgramStatus(supportedDevices, guid);
 		execute(context, command, result, supportedDevices, execCallback);
 		return result.getCacheKey();
+	}
+	
+    /**
+     * Sends status update message to SM to update MeterProgramStatus table
+     */
+	private void archiveProgramStatus(List<SimpleDevice> supportedDevices, UUID guid) {
+        Map<? extends YukonPao, RfnIdentifier> meterIdentifiersByPao =
+                rfnDeviceDao.getRfnIdentifiersByPao(supportedDevices);
+		supportedDevices.forEach(device -> {
+			MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
+			request.setSource(Source.WS_COLLECTION_ACTION);
+			request.setRfnIdentifier(meterIdentifiersByPao.get(device));
+			request.setConfigurationId(MeterProgramSource.YUKON.getPrefix() + guid.toString());
+			request.setStatus(ProgramStatus.INITIATING);
+			request.setTimeStamp(System.currentTimeMillis());
+			log.debug("Sending {} on queue {}", request, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName());
+			jmsTemplate.convertAndSend(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(), request);
+		});
 	}
 	
 	@Override
@@ -255,4 +287,11 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 			}
 		}
 	}
+	
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
+    }
 }

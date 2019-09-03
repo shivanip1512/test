@@ -35,6 +35,7 @@ import com.cannontech.amr.rfn.message.status.RfnStatusArchiveResponse;
 import com.cannontech.broker.message.request.BrokerSystemMetricsRequest;
 import com.cannontech.common.device.data.collection.message.CollectionRequest;
 import com.cannontech.common.device.data.collection.message.RecalculationRequest;
+import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
@@ -1025,6 +1026,18 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
+    public static final JmsApi<MeterProgramStatusArchiveRequest,?,?> METER_PROGRAM_STATUS_ARCHIVE =
+            JmsApi.builder(MeterProgramStatusArchiveRequest.class)
+                  .name("Meter Program Status Archive")
+                  .description("A notification to archive program status.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.MeterProgramStatusArchiveRequest"))
+                  .requestMessage(MeterProgramStatusArchiveRequest.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
     public static JmsApi<RfnNodeCommArchiveRequest,?,RfnNodeCommArchiveResponse> RFN_NODE_COMM_ARCHIVE =
             JmsApi.builder(RfnNodeCommArchiveRequest.class, RfnNodeCommArchiveResponse.class)
                   .name("RFN Node Comm Archive")
@@ -1083,7 +1096,8 @@ public final class JmsApiDirectory {
                 RFN_METER_DEMAND_RESET, 
                 RFN_METER_DISCONNECT,
                 RFN_METER_READ,
-                RFN_METER_READ_ARCHIVE);
+                RFN_METER_READ_ARCHIVE,
+                METER_PROGRAM_STATUS_ARCHIVE);
         
         addApis(jmsApis, RF_GATEWAY, 
                 RF_GATEWAY_ARCHIVE, 
