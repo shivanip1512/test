@@ -1,6 +1,9 @@
 package com.cannontech.web.bulk;
 
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -28,11 +31,13 @@ import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.collect.ImmutableSet;
 
 @Controller
 @RequestMapping("/meterProgramming/*")
@@ -46,6 +51,7 @@ public class MeterProgrammingController {
     @Autowired private MeterProgrammingService meterProgrammingService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private MeterProgrammingModelValidator validator;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     @GetMapping("inputs")
     public String meterProgrammingInputs(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
@@ -57,9 +63,10 @@ public class MeterProgrammingController {
     private void setupModel(DeviceCollection deviceCollection, ModelMap model) {
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("existingConfigurations", meterProgrammingDao.getAllMeterPrograms());
-        //TODO Get these from Pao Tag??
-        model.addAttribute("availableTypes", ImmutableSet.of(PaoType.RFN430A3D, PaoType.RFN430A3T, PaoType.RFN430A3K, PaoType.RFN430A3R, PaoType.RFN530S4X,
-                                                             PaoType.RFN430SL0, PaoType.RFN430SL1, PaoType.RFN430SL2, PaoType.RFN430SL3, PaoType.RFN430SL4));
+        List<PaoType> programmableTypes = paoDefinitionDao.getPaosThatSupportTag(PaoTag.METER_PROGRAMMING).stream().map(t -> t.getType())
+                                                                                    .sorted(Comparator.naturalOrder())
+                                                                                    .collect(Collectors.toList());
+        model.addAttribute("availableTypes", programmableTypes);
     }
     
     @PostMapping("send")
@@ -83,8 +90,7 @@ public class MeterProgrammingController {
                 MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
                 dataFile = mRequest.getFile("dataFile");
                 try {
-                    String programData = new String(dataFile.getBytes());
-                    program.setProgram(programData);
+                    program.setProgram(dataFile.getBytes());
                 } catch (IOException e) {
                     log.warn("Exception trying to read C&I Meter Programming", e);
                     model.addAttribute("errorMsg", accessor.getMessage(baseKey + "invalidFileSelected"));
@@ -97,8 +103,13 @@ public class MeterProgrammingController {
             //save
             program.setName(programModel.getName());
             program.setPaoType(programModel.getPaoType());
-            String guid = meterProgrammingDao.saveMeterProgram(program);
-            program.setGuid(guid);
+            try {
+                String guid = meterProgrammingDao.saveMeterProgram(program);
+                program.setGuid(guid);
+            } catch (DuplicateException e) {
+                model.addAttribute("errorMsg", accessor.getMessage(baseKey + "duplicateName"));
+                return errorView(response, model, deviceCollection);
+            }
         } else {
             program = meterProgrammingDao.getMeterProgram(programModel.getExistingProgramGuid());
         }
