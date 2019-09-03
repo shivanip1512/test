@@ -13,9 +13,9 @@
                 <tr>
                     <th width="5%"/>
                     <th width="40%"><i:inline key=".name"/></th>
-                    <th width="15%"><i:inline key=".startOffset"/></th>
-                    <th width="15%"><i:inline key=".stopOffset"/></th>
-                    <th width="25%"><i:inline key=".startGear"/></th>
+                    <th width="20%"><i:inline key=".startOffset"/></th>
+                    <th width="20%"><i:inline key=".stopOffset"/></th>
+                    <th width="15%"><i:inline key=".startGear"/></th>
                 </tr>
             </thead>
             <tbody>
