@@ -20,7 +20,8 @@
         <cti:msg2 key=".trigger.thresholdPointSettings.required"/>
     </div>
     <cti:url var="action" value="/dr/setup/controlArea/trigger/save"/>
-    <div class="js-trigger-controls">
+    <c:set var="triggerClass" value="${mode == 'VIEW' ? '' : 'js-edit-trigger'}"/>
+    <div class="js-trigger-controls ${triggerClass}">
         <form:form modelAttribute="controlAreaTrigger" action="${action}" method="post" id="js-controlArea-trigger-form">
             <cti:csrfToken/>
             <form:hidden path="triggerId"/>
