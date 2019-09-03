@@ -18,6 +18,7 @@
 <%@ attribute name="stepHour" type="java.lang.Integer" description="Steps when incrementing/decrementing hours." %>
 <%@ attribute name="stepMinute" type="java.lang.Integer" description="Steps when incrementing/decrementing minutes." %>
 <%@ attribute name="wrapClass" type="java.lang.String" description="Class added to the wrapper of the widget." %>
+<%@ attribute name="rangeText" type="java.lang.String" description="Text to be displayed besides the offset text field." %>
 
 <cti:msg2 var="timeOffsetChooseText" key="yukon.common.timeOffsetChoose"/>
 <cti:msg2 var="timeOffsetText" key="yukon.common.timeOffset"/>
@@ -68,12 +69,17 @@
                 ${displayValue}
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
+                <c:set var="errorCssClass" value=""/>
+                <c:if test="${status.error}">
+                    <c:set var="errorCssClass" value="error"/>
+                </c:if>
+                
                 <span class="datetimeEntry_wrap timeOffsetWrap ${wrapClass}">
                     <form:input type="hidden" path="${path}"/>
                     <input id="${id}" 
                         name="${path}_inputField"
                         value="${displayValue}"
-                        class="js-timeOffsetPicker js-timeOffsetPickerUI timeOffsetPicker ${cssClass}"
+                        class="js-timeOffsetPicker js-timeOffsetPickerUI timeOffsetPicker ${cssClass} ${errorCssClass}"
                         <c:if test="${disabled}">disabled="true"</c:if>
                         data-date-time-format="${jsDateTimeFormat}"
                         data-step-hour="${pageScope.stepHour}"
@@ -88,10 +94,13 @@
                         data-min-value="${minFormattedValue}"
                         autocomplete="off" />
                 </span>
+                <c:if test="${not empty rangeText}">
+                    <span class="vam">&nbsp;${rangeText}</span>
+                </c:if>
             </cti:displayForPageEditModes>
             <c:if test="${status.error}">
                 <br>
-                <form:errors path="${path}" cssClass="error" />
+                <form:errors path="${path}" cssClass="error"/>
             </c:if>
         </spring:bind>
     </c:when>
@@ -120,6 +129,9 @@
                     data-min-value="${minFormattedValue}"
                     autocomplete="off" />
             </span>
+            <c:if test="${not empty rangeText}">
+                <span class="vam">&nbsp;${rangeText}</span>
+            </c:if>
         </cti:displayForPageEditModes>
     </c:otherwise>
 </c:choose>

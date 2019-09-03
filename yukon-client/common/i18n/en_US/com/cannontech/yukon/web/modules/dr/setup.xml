@@ -53,8 +53,8 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.digisep.ELECTRIC_VEHICLE">Electric Vehicle</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.digisep.GENERATION_SYSTEMS">Generation Systems</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.digisep.utilityEnrollmentGroup">Utility Enrollment Group</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.digisep.rampIn">Ramp In Time (min)</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.digisep.rampOut">Ramp Out Time (min)</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.digisep.rampIn">Ramp In Time</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.digisep.rampOut">Ramp Out Time</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.retrieve.error">Load Group could not be retrieved.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.copy">Copy Load Group</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.route">Communication Route</entry>
@@ -396,7 +396,6 @@ Are you sure you want do this?</entry>
 
 <!-- Program Gear -->
 <entry key="yukon.web.modules.dr.setup.gear.criticality">Criticality</entry>
-<entry key="yukon.web.modules.dr.setup.gear.min">(min.)</entry>
 <entry key="yukon.web.modules.dr.setup.gear.title">Gear Creation</entry>
 <entry key="yukon.web.modules.dr.setup.gear.general.title">General</entry>
 <entry key="yukon.web.modules.dr.setup.gear.whenToChange.title">When To Change</entry>
@@ -437,11 +436,8 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.fixedShedTime">Fixed Shed Time</entry>
 <entry key="yukon.web.modules.dr.setup.gear.maxShedTime">Max Shed Time</entry>
 <entry key="yukon.web.modules.dr.setup.gear.numberOfGroups">Groups Per Send</entry>
-<entry key="yukon.web.modules.dr.setup.gear.sec">sec.</entry>
 <entry key="yukon.web.modules.dr.setup.gear.NONE">(none)</entry>
-<entry key="yukon.web.modules.dr.setup.gear.rampPerHourRange">(-9.9 to 9.9)</entry>
-<entry key="yukon.web.modules.dr.setup.gear.maxDegreeDeltaRange">(0 to 20)</entry>
-<entry key="yukon.web.modules.dr.setup.gear.preOpTempRange">(-20 to 20)</entry>
+<entry key="yukon.web.modules.dr.setup.gear.range">({0} to {1})</entry>
 
 <entry key="yukon.web.modules.dr.setup.gear.mode">Mode</entry>
 <entry key="yukon.web.modules.dr.setup.gear.unit">Unit</entry>

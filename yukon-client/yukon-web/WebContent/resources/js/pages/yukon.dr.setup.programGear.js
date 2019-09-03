@@ -51,7 +51,7 @@ yukon.dr.setup.programGear = (function() {
     },
 
     _initCss = function () {
-        $("#js-program-gear-form").find(".timeOffsetWrap").css({"margin-left" : "-5px"});
+        $("#js-program-gear-form").find(".timeOffsetWrap").css({"margin-left" : "0px"});
         var selectedGearType = $("#controlMethod option:selected").val();
         $(".js-help-btn-span").toggleClass("dn", selectedGearType != 'ThermostatRamping' && selectedGearType != 'SimpleThermostatRamping');
         yukon.ui.initDateTimePickers().ancestorInit('.js-simple-thermostat-ramping-gear');
