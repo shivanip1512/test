@@ -111,6 +111,8 @@
             <arg value="${yukon.build.details}" />
         </exec>
 
+        <antcall target="sourceIndexing"/>
+
         <fail message="yukon-server build FAILED">
             <condition>
                 <isfailure code="${serverbuilderrorcode}" />
@@ -393,12 +395,14 @@
         </exec>
     </target>
     
-    <target name="symstore">
+    <target name="sourceIndexing">
         <!-- Push a command to retreive the matching source code from svn into the pdb -->
         <exec failonerror="true" dir="yukon-build/srcsrv/" executable="cmd.exe">
         <arg line='/c svnindex.cmd /debug /symbols=${basedir}\yukon-server /source=${basedir}\yukon-server'/>
         </exec>   
+    </target>
 
+    <target name="symstore">
         <!-- Now put these PDB files into the Symbol Store -->
         <property name="symbol_server" value="p:\YukonSWBuild\SYMBOLS" />
         <exec failonerror="true" dir="yukon-build/symbolserver/" executable="cmd.exe">
