@@ -127,7 +127,7 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
             $('#feederValueString').val(0);	
         }
         if (!($('#ZIP_chk').is(':checked'))) {
-            $('#js-zip').val(0);
+            $('#js-zip').val('');
         }
         if (!($('#USER_chk').is(':checked'))) {
             $('#js-user').val(0);
@@ -136,7 +136,7 @@ yukon.dr.setup.loadGroup.expresscom = (function() {
             $('#js-serial').val(0);
         }
         if (!($('#PROGRAM_chk').is(':checked'))) {
-            $('#js-program').val(0);
+            $('#js-program').val('');
         }
         if (!($('#SPLINTER_chk').is(':checked'))) {
             $('#js-splinter').val(0);

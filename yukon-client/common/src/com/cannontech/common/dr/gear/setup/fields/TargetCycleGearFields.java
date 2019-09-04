@@ -21,9 +21,6 @@ public class TargetCycleGearFields extends TrueCycleGearFields {
     private Double kWReduction;
 
     public Double getkWReduction() {
-        if (kWReduction == null) {
-            kWReduction = 0.0;
-        }
         return kWReduction;
     }
 

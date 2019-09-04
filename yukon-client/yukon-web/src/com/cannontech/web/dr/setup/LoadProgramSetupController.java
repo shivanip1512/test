@@ -549,6 +549,7 @@ public class LoadProgramSetupController {
             programGear.setGearName(gearName);
             programGear.setControlMethod(gearType);
             controllerHelper.setDefaultGearFieldValues(programGear);
+            controllerHelper.populateDefaultValuesForDependentFields(programGear);
             model.addAttribute("showGearTypeOptions", true);
         }
         model.addAttribute("programGear", programGear);
@@ -603,6 +604,7 @@ public class LoadProgramSetupController {
         if (mode != PageEditMode.VIEW && result != null && CollectionUtils.isNotEmpty(result.getFieldErrors())) {
             model.put("org.springframework.validation.BindingResult.programGear", result);
         }
+        controllerHelper.populateDefaultValuesForDependentFields(programGear);
 
         return "dr/setup/programGear/view.jsp";
     }

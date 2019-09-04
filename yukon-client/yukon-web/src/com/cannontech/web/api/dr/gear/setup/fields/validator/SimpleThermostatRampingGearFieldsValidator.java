@@ -13,7 +13,6 @@ public class SimpleThermostatRampingGearFieldsValidator
 
     @Autowired private LMValidatorHelper lmValidatorHelper;
     @Autowired private GearValidatorHelper gearValidatorHelper;
-    private String baseKey = "yukon.web.modules.dr.setup.gear";
 
     public SimpleThermostatRampingGearFieldsValidator() {
         super(SimpleThermostatRampingGearFields.class);

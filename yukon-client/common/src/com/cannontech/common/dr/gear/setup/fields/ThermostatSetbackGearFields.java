@@ -196,52 +196,18 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
         setHowToStopControl(HowToStopControl.valueOf(thermostatSetbackGear.getMethodStopType()));
         setCapacityReduction(thermostatSetbackGear.getPercentReduction());
 
-        if (thermostatSetbackGear.getValueB().intValue() != 0) {
-            setValueB(thermostatSetbackGear.getValueB());
-        }
-
-        if (thermostatSetbackGear.getValueD().intValue() != 0) {
-            setValueD(thermostatSetbackGear.getValueD());
-        }
-
-        if (thermostatSetbackGear.getValueF().intValue() != 0) {
-            setValueF(thermostatSetbackGear.getValueF());
-        }
-
-        if (thermostatSetbackGear.getRandom().intValue() != 0) {
-            setRandom(thermostatSetbackGear.getRandom());
-        }
-        if (thermostatSetbackGear.getMaxValue().intValue() != 0) {
-            setMaxValue(thermostatSetbackGear.getMaxValue());
-        }
-
-        if (thermostatSetbackGear.getMinValue().intValue() != 0) {
-            setMinValue(thermostatSetbackGear.getMinValue());
-        }
-
-        if (thermostatSetbackGear.getValueTa().intValue() != 0) {
-            setValueTa(thermostatSetbackGear.getValueTa());
-        }
-
-        if (thermostatSetbackGear.getValueTb().intValue() != 0) {
-            setValueTb(thermostatSetbackGear.getValueTb());
-        }
-
-        if (thermostatSetbackGear.getValueTc().intValue() != 0) {
-            setValueTc(thermostatSetbackGear.getValueTc());
-        }
-
-        if (thermostatSetbackGear.getValueTd().intValue() != 0) {
-            setValueTd(thermostatSetbackGear.getValueTd());
-        }
-
-        if (thermostatSetbackGear.getValueTe().intValue() != 0) {
-            setValueTe(thermostatSetbackGear.getValueTe());
-        }
-
-        if (thermostatSetbackGear.getValueTf().intValue() != 0) {
-            setValueTf(thermostatSetbackGear.getValueTf());
-        }
+        setValueB(thermostatSetbackGear.getValueB());
+        setValueD(thermostatSetbackGear.getValueD());
+        setValueF(thermostatSetbackGear.getValueF());
+        setRandom(thermostatSetbackGear.getRandom());
+        setMaxValue(thermostatSetbackGear.getMaxValue());
+        setMinValue(thermostatSetbackGear.getMinValue());
+        setValueTa(thermostatSetbackGear.getValueTa());
+        setValueTb(thermostatSetbackGear.getValueTb());
+        setValueTc(thermostatSetbackGear.getValueTc());
+        setValueTd(thermostatSetbackGear.getValueTd());
+        setValueTe(thermostatSetbackGear.getValueTe());
+        setValueTf(thermostatSetbackGear.getValueTf());
 
         if (thermostatSetbackGear.getSettings().charAt(0) == 'A') {
             setAbsoluteOrDelta(AbsoluteOrDelta.ABSOLUTE);

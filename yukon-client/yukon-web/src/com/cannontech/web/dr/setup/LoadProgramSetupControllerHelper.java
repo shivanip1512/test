@@ -212,8 +212,6 @@ public class LoadProgramSetupControllerHelper {
      * Default values for object should be set here.
      */
     public void setDefaultGearFieldValues(ProgramGear programGear) {
-        WhenToChangeFields whenToChange = new WhenToChangeFields();
-        whenToChange.setWhenToChange(WhenToChange.None);
         switch (programGear.getControlMethod()) {
         case MagnitudeCycle:
         case TrueCycle:
@@ -270,9 +268,6 @@ public class LoadProgramSetupControllerHelper {
             LatchingGearFields latchingGearFields = (LatchingGearFields) programGear.getFields();
             latchingGearFields.setCapacityReduction(100);
             break;
-        case NoControl:
-            NoControlGearFields noControlGearFields = (NoControlGearFields) programGear.getFields();
-            noControlGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
         }
     }
 
@@ -280,13 +275,11 @@ public class LoadProgramSetupControllerHelper {
         rotationGearFields.setShedTime(5);
         rotationGearFields.setSendRate(TimeIntervals.MINUTES_30.getSeconds());
         rotationGearFields.setCapacityReduction(100);
-        rotationGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
     }
 
     private void setDefaultBeatThePeakGearFields(BeatThePeakGearFields rotationGearFields) {
         rotationGearFields.setResendInMinutes(0);
         rotationGearFields.setTimeoutInMinutes(0);
-        rotationGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
     }
 
     private void setSmartCycleGearFieldsDefaultValue(SmartCycleGearFields smartCycleGearFields) {
@@ -303,7 +296,6 @@ public class LoadProgramSetupControllerHelper {
             TargetCycleGearFields targetCycleGearFields = (TargetCycleGearFields) smartCycleGearFields;
             targetCycleGearFields.setkWReduction(0.0);
         }
-        smartCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
     }
 
     private void setSepCycleGearFieldsDefaultValues(SepCycleGearFields sepCycleGearFields) {
@@ -314,7 +306,6 @@ public class LoadProgramSetupControllerHelper {
         sepCycleGearFields.setCriticality(6);
         sepCycleGearFields.setHowToStopControl(HowToStopControl.TimeIn);
         sepCycleGearFields.setCapacityReduction(100);
-        sepCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
     }
 
     private void setMasterCycleGearFieldsDefaultValues(MasterCycleGearFields masterCycleGearFields) {
@@ -324,7 +315,6 @@ public class LoadProgramSetupControllerHelper {
         masterCycleGearFields.setHowToStopControl(HowToStopControl.TimeIn);
         masterCycleGearFields.setStopOrder(StopOrder.RANDOM);
         masterCycleGearFields.setCapacityReduction(100);
-        masterCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
     }
 
     private void setTimeRefreshGearFieldsDefaultValues(TimeRefreshGearFields timeRefreshGearFields) {
@@ -335,7 +325,8 @@ public class LoadProgramSetupControllerHelper {
         timeRefreshGearFields.setStopOrder(StopOrder.RANDOM);
         timeRefreshGearFields.setStopCommandRepeat(0);
         timeRefreshGearFields.setCapacityReduction(100);
-        timeRefreshGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
+        timeRefreshGearFields.setRampInPercent(0);
+        timeRefreshGearFields.setRampOutPercent(0);
     }
 
     private void setEcobeeCycleGearFieldsDefaultValues(EcobeeCycleGearFields ecobeeCycleGearFields) {
@@ -344,14 +335,12 @@ public class LoadProgramSetupControllerHelper {
         ecobeeCycleGearFields.setRampOut(true);
         ecobeeCycleGearFields.setControlPercent(50);
         ecobeeCycleGearFields.setCapacityReduction(100);
-        ecobeeCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
     }
 
     private void setHoneywellCycleGearFieldsDefaultValues(HoneywellCycleGearFields honeywellCycleGearFields) {
         honeywellCycleGearFields.setRampInOut(true);
         honeywellCycleGearFields.setControlPercent(50);
         honeywellCycleGearFields.setCapacityReduction(100);
-        honeywellCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
     }
 
     private void setItronCycleGearFieldsDefaultValues(ItronCycleGearFields itronCycleGearFields) {
@@ -360,55 +349,24 @@ public class LoadProgramSetupControllerHelper {
         itronCycleGearFields.setCapacityReduction(100);
         itronCycleGearFields.setDutyCyclePercent(50);
         itronCycleGearFields.setCriticality(100);
-        itronCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
     }
 
     private void setThermostatCycleGearFieldsDefaultValues(ThermostatSetbackGearFields thermostatCycleGearFields) {
-        if (thermostatCycleGearFields.getRandom() == null) {
-            thermostatCycleGearFields.setRandom(0);
-        }
-        if (thermostatCycleGearFields.getCapacityReduction() == null) {
-            thermostatCycleGearFields.setCapacityReduction(100);
-        }
-        if (thermostatCycleGearFields.getWhenToChangeFields() == null) {
-            thermostatCycleGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
-        }
-        if (thermostatCycleGearFields.getHowToStopControl() == null) {
-            thermostatCycleGearFields.setHowToStopControl(HowToStopControl.TimeIn);
-        }
-        if (thermostatCycleGearFields.getValueTa() == null) {
-            thermostatCycleGearFields.setValueTa(0);
-        }
-        if (thermostatCycleGearFields.getValueTb() == null) {
-            thermostatCycleGearFields.setValueTb(0);
-        }
-        if (thermostatCycleGearFields.getValueTc() == null) {
-            thermostatCycleGearFields.setValueTc(0);
-        }
-        if (thermostatCycleGearFields.getValueTd() == null) {
-            thermostatCycleGearFields.setValueTd(0);
-        }
-        if (thermostatCycleGearFields.getValueTe() == null) {
-            thermostatCycleGearFields.setValueTe(0);
-        }
-        if (thermostatCycleGearFields.getValueTf() == null) {
-            thermostatCycleGearFields.setValueTf(0);
-        }
-        if (thermostatCycleGearFields.getValueD() == null) {
-            thermostatCycleGearFields.setValueD(0);
-        }
-        if (thermostatCycleGearFields.getValueB() == null) {
-            thermostatCycleGearFields.setValueB(0);
-        }
-        if (thermostatCycleGearFields.getValueF() == null) {
-            thermostatCycleGearFields.setValueF(0);
-        }
-        if (thermostatCycleGearFields.getMinValue() == null) {
-            thermostatCycleGearFields.setMinValue(0);
-        }
-        if (thermostatCycleGearFields.getMaxValue() == null) {
-            thermostatCycleGearFields.setMaxValue(0);
-        }
+        thermostatCycleGearFields.setRandom(0);
+        thermostatCycleGearFields.setCapacityReduction(100);
+        thermostatCycleGearFields.setHowToStopControl(HowToStopControl.TimeIn);
+        thermostatCycleGearFields.setValueTa(0);
+        thermostatCycleGearFields.setValueTb(0);
+        thermostatCycleGearFields.setValueTc(0);
+        thermostatCycleGearFields.setValueTd(0);
+        thermostatCycleGearFields.setValueTe(0);
+        thermostatCycleGearFields.setValueTf(0);
+        thermostatCycleGearFields.setValueD(0);
+        thermostatCycleGearFields.setValueB(0);
+        thermostatCycleGearFields.setValueF(0);
+        thermostatCycleGearFields.setMinValue(0);
+        thermostatCycleGearFields.setMaxValue(0);
+
         if (thermostatCycleGearFields.getIsCoolMode() == null) {
             thermostatCycleGearFields.setIsCoolMode(false);
         }
@@ -443,9 +401,6 @@ public class LoadProgramSetupControllerHelper {
         if (simpleThermostatRampingGearFields.getMaxRuntimeInMinutes() == null) {
             simpleThermostatRampingGearFields.setMaxRuntimeInMinutes(480);
         }
-        if (simpleThermostatRampingGearFields.getWhenToChangeFields() == null) {
-            simpleThermostatRampingGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
-        }
         if (simpleThermostatRampingGearFields.getMax() == null) {
             simpleThermostatRampingGearFields.setMax(0);
         }
@@ -469,16 +424,122 @@ public class LoadProgramSetupControllerHelper {
         sepTemperatureOffsetGearFields.setCriticality(6);
         sepTemperatureOffsetGearFields.setHowToStopControl(HowToStopControl.TimeIn);
         sepTemperatureOffsetGearFields.setCapacityReduction(100);
-        sepTemperatureOffsetGearFields.setWhenToChangeFields(getWhenToChangeDefaultValues());
+    }
+    
+    public void populateDefaultValuesForDependentFields(ProgramGear programGear) {
+        switch (programGear.getControlMethod()) {
+        case MagnitudeCycle:
+        case TrueCycle:
+        case SmartCycle:
+        case TargetCycle:
+            SmartCycleGearFields smartCycleGearFields = (SmartCycleGearFields) programGear.getFields();
+            smartCycleGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(smartCycleGearFields.getWhenToChangeFields()));
+            break;
+        case SepCycle:
+            SepCycleGearFields sepCycleGearFields = (SepCycleGearFields) programGear.getFields();
+            sepCycleGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(sepCycleGearFields.getWhenToChangeFields()));
+            break;
+        case MasterCycle:
+            MasterCycleGearFields masterCycleGearFields = (MasterCycleGearFields) programGear.getFields();
+            masterCycleGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(masterCycleGearFields.getWhenToChangeFields()));
+            
+            if (masterCycleGearFields.getRampInPercent() == null) {
+                masterCycleGearFields.setRampInPercent(0);
+            }
+            if (masterCycleGearFields.getRampOutPercent() == null) {
+                masterCycleGearFields.setRampOutPercent(0);
+            }
+            break;
+        case TimeRefresh:
+            TimeRefreshGearFields timeRefreshGearFields = (TimeRefreshGearFields) programGear.getFields();
+            timeRefreshGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(timeRefreshGearFields.getWhenToChangeFields()));
+            
+            if (timeRefreshGearFields.getRampInPercent() == null) {
+                timeRefreshGearFields.setRampInPercent(0);
+            }
+            if (timeRefreshGearFields.getRampOutPercent() == null) {
+                timeRefreshGearFields.setRampOutPercent(0);
+            }
+            break;
+        case EcobeeCycle:
+            EcobeeCycleGearFields ecobeeCycleGearFields = (EcobeeCycleGearFields) programGear.getFields();
+            ecobeeCycleGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(ecobeeCycleGearFields.getWhenToChangeFields()));
+            break;
+        case HoneywellCycle:
+            HoneywellCycleGearFields honeywellCycleGearFields = (HoneywellCycleGearFields) programGear.getFields();
+            honeywellCycleGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(honeywellCycleGearFields.getWhenToChangeFields()));
+            break;
+        case ItronCycle:
+            ItronCycleGearFields itronCycleGearFields = (ItronCycleGearFields) programGear.getFields();
+            itronCycleGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(itronCycleGearFields.getWhenToChangeFields()));
+            break;
+        case ThermostatRamping:
+            ThermostatSetbackGearFields thermostatCycleGearFields =
+                (ThermostatSetbackGearFields) programGear.getFields();
+            thermostatCycleGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(thermostatCycleGearFields.getWhenToChangeFields()));
+            break;
+        case SimpleThermostatRamping:
+            SimpleThermostatRampingGearFields simpleThermostatRampingGearFields =
+                (SimpleThermostatRampingGearFields) programGear.getFields();
+            simpleThermostatRampingGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(simpleThermostatRampingGearFields.getWhenToChangeFields()));
+            break;
+        case SepTemperatureOffset:
+            SepTemperatureOffsetGearFields sepTemperatureOffsetGearFields =
+                (SepTemperatureOffsetGearFields) programGear.getFields();
+            sepTemperatureOffsetGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(sepTemperatureOffsetGearFields.getWhenToChangeFields()));
+            break;
+        case Rotation:
+            RotationGearFields rotationGearFields = (RotationGearFields) programGear.getFields();
+            rotationGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(rotationGearFields.getWhenToChangeFields()));
+            break;
+        case BeatThePeak:
+            BeatThePeakGearFields beatThePeakGearFields = (BeatThePeakGearFields) programGear.getFields();
+            beatThePeakGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(beatThePeakGearFields.getWhenToChangeFields()));
+            break;
+        case NoControl:
+            NoControlGearFields noControlGearFields = (NoControlGearFields) programGear.getFields();
+            noControlGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(noControlGearFields.getWhenToChangeFields()));
+        }
     }
 
-    private WhenToChangeFields getWhenToChangeDefaultValues() {
-        WhenToChangeFields whenToChange = new WhenToChangeFields();
-        whenToChange.setWhenToChange(WhenToChange.None);
-        whenToChange.setChangeDurationInMinutes(0);
-        whenToChange.setChangePriority(0);
-        whenToChange.setTriggerNumber(1);
-        whenToChange.setTriggerOffset(0.0);
+    /**
+     * This method set the default value for WhenToChange fields if the field value is null. 
+     * @param result */
+    private WhenToChangeFields setWhenToChangeDefaultValues(WhenToChangeFields fields) {
+        WhenToChangeFields whenToChange = null;
+        if (fields == null) {
+            whenToChange = new WhenToChangeFields();
+        } else {
+            whenToChange = fields;
+        }
+        if (whenToChange.getWhenToChange() == null) {
+            whenToChange.setWhenToChange(WhenToChange.None);
+        }
+        if (whenToChange.getChangeDurationInMinutes() == null) {
+            whenToChange.setChangeDurationInMinutes(0);
+        }
+        if (whenToChange.getChangePriority() == null) {
+            whenToChange.setChangePriority(0);
+        }
+        if (whenToChange.getTriggerNumber() == null) {
+            whenToChange.setTriggerNumber(1);
+        }
+        if (whenToChange.getTriggerOffset() == null) {
+            whenToChange.setTriggerOffset(0.0);
+        }
         return whenToChange;
     }
 

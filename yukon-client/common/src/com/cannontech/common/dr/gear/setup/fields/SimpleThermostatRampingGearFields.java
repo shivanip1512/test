@@ -141,24 +141,16 @@ public class SimpleThermostatRampingGearFields implements ProgramGearFields {
         }
 
         Integer random = rampingGear.getRandom();
-        if (random != null && random.intValue() != 0) {
-            setRandomStartTimeInMinutes(random);
-        }
+        setRandomStartTimeInMinutes(random);
 
         Integer preCoolTemp = rampingGear.getValueB();
-        if (preCoolTemp != null && preCoolTemp.intValue() != 0) {
-            setPreOpTemp(preCoolTemp);
-        }
+        setPreOpTemp(preCoolTemp);
 
         Integer preCoolTime = rampingGear.getValueTb();
-        if (preCoolTime != null && preCoolTime.intValue() != 0) {
-            setPreOpTimeInMinutes(preCoolTime);
-        }
+        setPreOpTimeInMinutes(preCoolTime);
 
         Integer preCoolHold = rampingGear.getValueTc();
-        if (preCoolHold != null && preCoolHold.intValue() != 0) {
-            setPreOpHoldInMinutes(preCoolHold);
-        }
+        setPreOpHoldInMinutes(preCoolHold);
 
         Float rampRate = rampingGear.getRampRate();
         if (rampRate != null) {
@@ -166,19 +158,13 @@ public class SimpleThermostatRampingGearFields implements ProgramGearFields {
         }
 
         Integer maxRampTemp = rampingGear.getValueD();
-        if (maxRampTemp != null && maxRampTemp.intValue() != 0) {
-            setMax(maxRampTemp);
-        }
+        setMax(maxRampTemp);
 
         Integer restoreTime = rampingGear.getValueTf();
-        if (restoreTime != null && restoreTime.intValue() != 0) {
-            setRampOutTimeInMinutes(restoreTime);
-        }
+        setRampOutTimeInMinutes(restoreTime);
 
         Integer maxRuntime = rampingGear.getValueTa();
-        if (maxRuntime != null && maxRuntime.intValue() != 0) {
-            setMaxRuntimeInMinutes(maxRuntime);
-        }
+        setMaxRuntimeInMinutes(maxRuntime);
 
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
         whenToChangeFields.buildModel(gear);
@@ -199,18 +185,29 @@ public class SimpleThermostatRampingGearFields implements ProgramGearFields {
         char coolChar = (getMode() == Mode.COOL) ? coolChar = 'I' : '-';
         lmThermostatGear.getSettings().setCharAt(3, coolChar);
 
-        lmThermostatGear.setRandom(getRandomStartTimeInMinutes());
-        lmThermostatGear.setValueB(getPreOpTemp());
-        lmThermostatGear.setValueTb(getPreOpTimeInMinutes());
-        lmThermostatGear.setValueTc(getPreOpHoldInMinutes());
-        lmThermostatGear.setRampRate(getRampPerHour());
-        lmThermostatGear.setValueD(getMax());
-        lmThermostatGear.setValueTf(getRampOutTimeInMinutes());
+        if (getRandomStartTimeInMinutes() != null) {
+            lmThermostatGear.setRandom(getRandomStartTimeInMinutes());
+        }
+        if (getPreOpTemp() != null) {
+            lmThermostatGear.setValueB(getPreOpTemp());
+        }
+        if (getPreOpTimeInMinutes() != null) {
+            lmThermostatGear.setValueTb(getPreOpTimeInMinutes());
+        }
+        if (getPreOpHoldInMinutes() != null) {
+            lmThermostatGear.setValueTc(getPreOpHoldInMinutes());
+        }
+        if (getMax() != null) {
+            lmThermostatGear.setValueD(getMax());
+        }
+        if (getRampOutTimeInMinutes() != null) {
+            lmThermostatGear.setValueTf(getRampOutTimeInMinutes());
+        }
+        
         lmThermostatGear.setValueTa(getMaxRuntimeInMinutes());
+        lmThermostatGear.setRampRate(getRampPerHour());
         lmThermostatGear.setMethodRate(0);
-
         whenToChangeFields.buildDBPersistent(programDirectGear);
-
     }
 
 }
