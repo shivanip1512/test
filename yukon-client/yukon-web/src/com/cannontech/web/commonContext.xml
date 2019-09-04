@@ -412,4 +412,6 @@
     <bean class="com.cannontech.web.stars.scheduledDataImport.dao.impl.ScheduledDataImportDaoImpl"/>
     <bean class="com.cannontech.web.scheduledDataImport.service.impl.ScheduledDataImportHelper"/>
     <bean class="com.cannontech.web.scheduledDataImport.service.impl.AssetScheduledImportServiceImpl"/>
+    
+    <bean class="com.cannontech.web.tools.device.programming.dao.impl.MeterProgrammingSummaryDaoImpl"/>
 </beans>
