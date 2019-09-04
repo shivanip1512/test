@@ -41,7 +41,9 @@
 
         <!-- Copy loadGroup dialog -->
         <cti:msg2 var="copyloadGroupPopUpTitle" key="yukon.web.modules.dr.setup.loadGroup.copy"/>
-        <cti:url var="renderCopyloadGroupUrl" value="/dr/setup/loadGroup/${loadGroup.id}/rendercopyloadGroup"/>
+        <cti:url var="renderCopyloadGroupUrl" value="/dr/setup/loadGroup/${loadGroup.id}/rendercopyloadGroup">
+            <cti:param name="routeId" value="${loadGroup.routeId}" />
+        </cti:url>
         <cti:msg2 var="copyText" key="components.button.copy.label"/>
         <div class="dn" id="copy-loadGroup-popup" data-title="${copyloadGroupPopUpTitle}" data-dialog data-ok-text="${copyText}" 
              data-event="yukon:loadGroup:copy" data-url="${renderCopyloadGroupUrl}"></div>

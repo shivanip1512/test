@@ -17,7 +17,8 @@
                 <tags:selectWithItems items="${operationalStates}" id="operationalState" path="operationalState"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".constraint">
-                <tags:selectWithItems items="${constraints}" id="constraint" path="constraint.constraintId"  itemLabel="name" itemValue="id"/>
+                <tags:selectWithItems items="${constraints}" id="constraint" path="constraint.constraintId" itemLabel="name"
+                    itemValue="id" defaultItemLabel="${constraint.name}" defaultItemValue="${constraint.id}" />
             </tags:nameValue2>
             <cti:checkRolesAndProperties value="ALLOW_MEMBER_PROGRAMS">
                 <tags:nameValue2 nameKey=".copyMemberControl">

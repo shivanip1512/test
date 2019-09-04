@@ -15,7 +15,7 @@
             </tags:nameValue2>
             <c:if test="${not empty routes}">
                 <tags:selectNameValue items="${routes}" itemLabel="paoName" itemValue="liteID" 
-                nameKey=".route" path="routeId" defaultItemLabel="${none}" defaultItemValue="-1"/>
+                nameKey=".route" path="routeId" defaultItemLabel="${route.paoName}" defaultItemValue="${route.liteID}"/>
             </c:if>
         </tags:nameValueContainer2>
     </form:form>

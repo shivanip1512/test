@@ -206,7 +206,6 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("operationalStates", OperationalState.values());
         }
         model.addAttribute("loadProgramId", lmProgram.getLiteID());
-        model.addAttribute("programCopy", programCopy);
         model.addAttribute("selectedSwitchType", lmProgram.getPaoType());
     }
     /**
