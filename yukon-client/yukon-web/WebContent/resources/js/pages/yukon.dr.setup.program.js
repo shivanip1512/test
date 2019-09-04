@@ -95,10 +95,6 @@ yukon.dr.setup.program = (function() {
         }
     },
 
-    _initFocus = function() {
-        $("#name").focus();
-    },
-
     _loadProgram = function() {
 
         var type = $('#type').val();
@@ -151,12 +147,14 @@ yukon.dr.setup.program = (function() {
 
             if (_initialized)
                 return;
-            
+
             _initCss();
-            _initFocus();
             _toggleProgramStartStop('start');
             _toggleProgramStartStop('stop');
-            
+
+            // This will set focus on program name
+            $("#name").focus();
+
             $(document).on('click', '#js-program-cancel-btn', function(event) {
                 window.history.back();
             });
@@ -308,7 +306,7 @@ yukon.dr.setup.program = (function() {
                 _loadProgram();
             });
 
-            $(document).on('click', '#createButton', function() {
+            $(document).on('dialogopen', '.js-gearPopup', function() {
                 $("#name").blur();
                 $("#gearName").focus();
             });
