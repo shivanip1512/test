@@ -28,7 +28,6 @@ public class MeterProgramStatusArchiveRequest implements Serializable {
 
     private RfnIdentifier rfnIdentifier;
     private String configurationId;
-    //IDLE, UPLOADING, CONFIRMING, FAILED
     private ProgramStatus status;
     private DeviceError error;
     private long timeStamp;

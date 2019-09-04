@@ -35,10 +35,10 @@ public class MeterProgramStatistics {
 	public boolean displayDelete() {
 		return programInfo.getGuid() != null && deviceTotal == 0;
 	}
-	
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            + System.getProperty("line.separator");
-    }
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+				+ System.getProperty("line.separator");
+	}
 }

@@ -4,13 +4,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.amr.errors.dao.DeviceError;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.programming.dao.MeterProgrammingDao;
 import com.cannontech.common.device.programming.model.MeterProgram;
@@ -28,28 +26,24 @@ import com.cannontech.database.YukonRowMapper;
 import com.google.common.collect.Lists;
 
 public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
-	private final static Logger log = YukonLogManager.getLogger(MeterProgrammingDaoImpl.class);
-	@Autowired
-	private YukonJdbcTemplate jdbcTemplate;
+	@Autowired private YukonJdbcTemplate jdbcTemplate;
 
-	private final YukonRowMapper<MeterProgramStatus> programStatusRowMapper = rs -> {
+	private static final YukonRowMapper<MeterProgramStatus> programStatusRowMapper = rs -> {
 		MeterProgramStatus row = new MeterProgramStatus();
 		row.setDeviceId(rs.getInt("DeviceId"));
 		row.setReportedGuid(UUID.fromString(rs.getStringSafe("ReportedGuid")));
-		row.setLastUpdate(rs.getInstant("Name"));
+		row.setLastUpdate(rs.getInstant("LastUpdate"));
 		row.setSource(MeterProgramSource.getByPrefix(rs.getStringSafe("Source")));
-		try {
-			row.setStatus(rs.getEnum("MeterProgramStatus", ProgramStatus.class));
-		} catch (Exception e) {
-			// The value contains STATUS/ERROR
-			String[] parts = rs.getStringSafe("MeterProgramStatus").split("/");
-			row.setStatus(ProgramStatus.valueOf(parts[0]));
+		String[] parts = rs.getStringSafe("MeterProgramStatus").split("/");
+		var status = ProgramStatus.valueOf(parts[0]);
+		row.setStatus(status);
+		if (status == ProgramStatus.FAILED && parts.length > 1) {
 			row.setError(DeviceError.valueOf(parts[1]));
 		}
 		return row;
 	};
 
-	private final YukonRowMapper<MeterProgram> programRowMapper = rs -> {
+	private static final YukonRowMapper<MeterProgram> programRowMapper = rs -> {
 		MeterProgram row = new MeterProgram();
 		row.setGuid(UUID.fromString(rs.getStringSafe("Guid")));
 		row.setName(rs.getStringSafe("Name"));
@@ -57,37 +51,6 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
 		// we are not getting the program as we will not display it to the user
 		return row;
 	};
-
-	/*private final YukonRowMapper<MeterProgramConfiguration> configurationRowMapper = rs -> {
-		MeterProgramConfiguration row = new MeterProgramConfiguration();
-		MeterProgramSource source = MeterProgramSource.getByPrefix(rs.getString("Source"));
-
-		row.setSource(source);
-
-		String programGuid = rs.getStringSafe("ProgramGuid");
-		String reportedGuid = rs.getStringSafe("ReportedGuid");
-		String name = rs.getStringSafe("Name");
-
-		if (source.isYukon() && programGuid.equals(reportedGuid) && !name.isEmpty()) {
-			row.setName(name);
-		}
-
-		if (source.isNotYukon()) {
-			try {
-				UUID guid = UUID.fromString(reportedGuid);
-				if (guid.version() == 1) {
-					row.setTimestamp(new Instant(guid.timestamp()));
-				}
-			} catch (Exception e) {
-				Log.error("Unable to parse time for none-Yukon guid:" + reportedGuid);
-			}
-		}
-
-		row.setGuid(reportedGuid);
-		row.setDeviceId(rs.getInt("DeviceId"));
-		log.debug("Created configuration {} ", row);
-		return row;
-	};*/
 
 	@Override
 	public UUID saveMeterProgram(MeterProgram program) {
@@ -174,8 +137,7 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
 	public MeterProgram getProgramByDeviceId(int deviceId) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT program.Guid, program.Name, program.PaoType");
-		sql.append(
-				"FROM  MeterProgram program JOIN MeterProgramAssignment assignment ON program.Guid = assignment.Guid");
+		sql.append("FROM  MeterProgram program JOIN MeterProgramAssignment assignment ON program.Guid = assignment.Guid");
 		sql.append("WHERE DeviceID").eq(deviceId);
 		try {
 			return jdbcTemplate.queryForObject(sql, programRowMapper);
@@ -183,21 +145,6 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
 			throw new NotFoundException("Meter Program not found :" + deviceId, e);
 		}
 	}
-
-/*	@Override
-	public MeterProgramConfiguration getProgramConfigurationByDeviceId(int deviceId) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append(
-				"SELECT program.Guid as ProgramGuid, status.ReportedGuid as ReportedGuid, program.Name, status.Source, status.deviceId");
-		sql.append(
-				"FROM  MeterProgram program FULL JOIN MeterProgramStatus status ON program.Guid = status.reportedGuid");
-		sql.append("WHERE status.DeviceID").eq(deviceId);
-		try {
-			return jdbcTemplate.queryForObject(sql, configurationRowMapper);
-		} catch (EmptyResultDataAccessException e) {
-			throw new NotFoundException("Program configuration for device id:" + deviceId, e);
-		}
-	}*/
 
 	@Override
 	public void assignDevicesToProgram(UUID guid, List<SimpleDevice> devices) {

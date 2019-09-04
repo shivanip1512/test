@@ -52,13 +52,6 @@ public interface MeterProgrammingDao {
 	MeterProgram getProgramByDeviceId(int deviceId);
 
 	/**
-	 * Returns program configuration by device id, throws exception if no program found
-	 *
-	 * @throws NotFoundException
-	 */
-	//MeterProgramConfiguration getProgramConfigurationByDeviceId(int deviceId);
-
-	/**
 	 * Returns status by device id
 	 */
 	MeterProgramStatus getMeterProgramStatus(int deviceId);

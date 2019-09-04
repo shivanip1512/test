@@ -15,53 +15,65 @@ public class MeterProgramSummaryDetail {
 	private DisplayableStatus status;
 	private DeviceError error;
 	private Instant lastUpdate;
+
 	public DisplayableDevice getDevice() {
 		return device;
 	}
+
 	public void setDevice(DisplayableDevice device) {
 		this.device = device;
 	}
+
 	public String getMeterNumber() {
 		return meterNumber;
 	}
+
 	public void setMeterNumber(String meterNumber) {
 		this.meterNumber = meterNumber;
 	}
+
 	public MeterProgramInfo getProgramInfo() {
 		return programInfo;
 	}
+
 	public void setProgramInfo(MeterProgramInfo programInfo) {
 		this.programInfo = programInfo;
 	}
+
 	public Instant getLastUpdate() {
 		return lastUpdate;
 	}
+
 	public void setLastUpdate(Instant lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
+
 	public DisplayableStatus getStatus() {
 		return status;
 	}
+
 	public void setStatus(DisplayableStatus status) {
 		this.status = status;
 	}
-	
+
 	public DeviceError getError() {
 		return error;
 	}
+
 	public void setError(DeviceError error) {
 		this.error = error;
 	}
+
 	public boolean displayCancel() {
-		return true;
+		return status == DisplayableStatus.IN_PROGRESS;
 	}
-	
+
 	public boolean displayRead() {
-		return true;
+		return status == DisplayableStatus.CONFIRMING;
 	}
-	
-    public boolean displaySend() {
-		return true;
+
+	public boolean displaySend() {
+		return status == DisplayableStatus.FAILURE;
 	}
 
 	@Override
