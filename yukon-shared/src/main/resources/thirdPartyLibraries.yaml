@@ -5324,12 +5324,12 @@ C++ :
     project URL : "https://github.com/obgm/libcoap"
     license : BSD 2-clause
     license URLs : "https://github.com/obgm/libcoap/blob/develop/LICENSE"
-    md5 : 99003cee9b4e4bea8ce0f4fa1ba9909c
-    sha1 : ce9672e911bde593d05d90ccd55f3406e172c9f4
+    md5 : 9286b9797f4382373061bd56a92fb9af
+    sha1 : f341d617026ba4cf5596e0d293fd1e518b175232
     fileCount : 27
     totalSize : 1273396
-    updated : 2016-04-12  
-    jira : YUK-14919
+    updated : 2019-06-21  
+    jira : YUK-19654
     notes : Modifications to allow operation as E2E
     
   - project : Apache log4cxx 
