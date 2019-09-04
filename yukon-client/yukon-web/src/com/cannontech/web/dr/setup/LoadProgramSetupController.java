@@ -38,10 +38,12 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.dr.gear.setup.OperationalState;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
 import com.cannontech.common.dr.program.setup.model.LoadProgramCopy;
 import com.cannontech.common.dr.setup.LMDelete;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
@@ -315,7 +317,7 @@ public class LoadProgramSetupController {
      * Load Program - Copy Popup functionality.
      */
     @GetMapping("/{id}/rendercopyloadProgram")
-    public String renderCopyLoadProgram(@PathVariable int id, ModelMap model, YukonUserContext userContext,
+    public String renderCopyLoadProgram(@PathVariable int id, OperationalState operationalState, Integer constraintId, ModelMap model, YukonUserContext userContext,
             HttpServletRequest request) {
 
         LoadProgramCopy programCopy = null;
@@ -327,7 +329,18 @@ public class LoadProgramSetupController {
             programCopy = new LoadProgramCopy();
             programCopy.setName(messageSourceAccessor.getMessage("yukon.common.copyof", lmProgram.getPaoName()));
         }
+        programCopy.setOperationalState(operationalState);
         controllerHelper.buildProgramCopyModelMap(model, userContext, request, programCopy, lmProgram);
+
+        if (model.containsAttribute("constraints")) {
+            List<LMDto> constraints = (List<LMDto>) model.get("constraints");
+            LMDto constraint =  constraints.stream()
+                                           .filter(lmDto -> lmDto.getId().intValue() == constraintId)
+                                           .findFirst()
+                                           .get();
+            model.addAttribute("constraint", constraint);
+        }
+        model.addAttribute("programCopy", programCopy);
 
         return "dr/setup/loadProgram/copyLoadProgram.jsp";
     }
@@ -501,7 +514,7 @@ public class LoadProgramSetupController {
         model.addAttribute("org.springframework.validation.BindingResult.loadProgramCopy", result);
         LiteYukonPAObject lmProgram = getProgramFromCache(id);
         controllerHelper.buildProgramCopyModelMap(model, userContext, request, programCopy, lmProgram);
-
+        model.addAttribute("programCopy", programCopy);
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         return "dr/setup/loadProgram/copyLoadProgram.jsp";
     }
