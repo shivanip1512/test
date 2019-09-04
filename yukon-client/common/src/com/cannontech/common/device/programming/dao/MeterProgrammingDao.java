@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.programming.model.MeterProgram;
-import com.cannontech.common.device.programming.model.MeterProgramConfiguration;
 import com.cannontech.common.device.programming.model.MeterProgramStatus;
+import com.cannontech.core.dao.NotFoundException;
 
 public interface MeterProgrammingDao {
 
@@ -56,7 +56,7 @@ public interface MeterProgrammingDao {
 	 *
 	 * @throws NotFoundException
 	 */
-	MeterProgramConfiguration getProgramConfigurationByDeviceId(int deviceId);
+	//MeterProgramConfiguration getProgramConfigurationByDeviceId(int deviceId);
 
 	/**
 	 * Returns status by device id
