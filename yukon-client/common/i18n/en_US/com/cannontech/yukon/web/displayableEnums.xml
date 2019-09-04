@@ -433,6 +433,14 @@
     <entry key="yukon.common.setting.ITRON_HCM_PASSWORD.description">Password to authenticate with the Itron HCM service.</entry>
     <entry key="yukon.common.setting.ITRON_HCM_DATA_COLLECTION_HOURS">Itron HCM Data Collection Interval</entry>
     <entry key="yukon.common.setting.ITRON_HCM_DATA_COLLECTION_HOURS.description">The interval, in hours, at which to request data from the Itron HCM service if there are Itron devices created in Yukon.</entry>
+    <entry key="yukon.common.setting.ITRON_SFTP_URL">Itron SFTP URL</entry>
+    <entry key="yukon.common.setting.ITRON_SFTP_URL.description">URL to connect to the Itron SFTP service.</entry>
+    <entry key="yukon.common.setting.ITRON_SFTP_USERNAME">Itron SFTP Username</entry>
+    <entry key="yukon.common.setting.ITRON_SFTP_USERNAME.description">Username to authenticate with the Itron SFTP service.</entry>
+    <entry key="yukon.common.setting.ITRON_SFTP_PASSWORD">Itron SFTP Password</entry>
+    <entry key="yukon.common.setting.ITRON_SFTP_PASSWORD.description">Password to authenticate with the Itron SFTP service.</entry>
+    <entry key="yukon.common.setting.ITRON_SFTP_PRIVATE_KEY_PASSWORD">Itron SFTP Private Key Password</entry>
+    <entry key="yukon.common.setting.ITRON_SFTP_PRIVATE_KEY_PASSWORD.description">Optional password to encrypt the generated SFTP Private Key.</entry>
     
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE">Producer Window Size</entry>
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE.description">The size, in kilobytes, of messages that a producer can send before it is blocked to await a ProducerAck from the broker that frees enough memory to allow another message to be sent. (Requires restart to take effect.)</entry>
