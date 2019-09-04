@@ -46,8 +46,11 @@ yukon.dr.setup.programGear = (function() {
 
     _refreshShedType= function() {
         var refreshShedType = $("#refreshShedType").val();
-        $('#js-fixedShedTime-row').toggleClass('dn', refreshShedType != 'FixedShedTime');
-        $('#js-maxShedTime-row').toggleClass('dn', refreshShedType != 'DynamicShedTime');
+        if(refreshShedType === 'FixedShedTime') {
+            $("#js-shedTime-row").find(".name").text($("#fixedShedTime").val());
+        } else {
+            $("#js-shedTime-row").find(".name").text($("#maxShedTime").val());
+        }
     },
 
     _initCss = function () {
