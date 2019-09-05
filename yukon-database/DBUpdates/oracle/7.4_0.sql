@@ -2,7 +2,37 @@
 /****     Oracle DBupdates             ****/ 
 /******************************************/ 
 
-/* @start YUK-19063 */
+/* @start YUK-19063-1 if YUK-19063 */
+ALTER TABLE MeterProgramAssignment
+DROP CONSTRAINT FK_MeterProgramAssignment_Device;
+
+ALTER TABLE MeterProgramAssignment
+DROP CONSTRAINT FK_MeterProgramAssignment_MeterProgram;
+
+ALTER TABLE MeterProgramStatus
+DROP CONSTRAINT FK_MeterProgramStatus_Device;
+
+ALTER TABLE MeterProgramAssignment
+    ADD CONSTRAINT FK_MeterProgramAssignment_DeviceMG FOREIGN KEY (DeviceId)
+    REFERENCES DEVICEMETERGROUP (DEVICEID)
+    ON DELETE CASCADE;
+
+ALTER TABLE MeterProgramAssignment
+    ADD CONSTRAINT FK_MeterProgramAssignment_MeterProgram FOREIGN KEY (Guid)
+    REFERENCES MeterProgram (Guid)
+    ON DELETE CASCADE;
+
+ALTER TABLE MeterProgramStatus
+    ADD CONSTRAINT FK_MeterProgramStatus_DeviceMG FOREIGN KEY (DeviceId)
+    REFERENCES DEVICEMETERGROUP (DEVICEID)
+    ON DELETE CASCADE;
+
+INSERT INTO DBUpdates VALUES ('YUK-19063-1', '7.4.0', SYSDATE);
+/* @end YUK-19063-1 */
+
+/* @start YUK-19063-1 */
+/* errors are ignored for an edge case where the tables had been added already */
+/* @error ignore-begin */
 CREATE TABLE MeterProgram  (
     Guid            VARCHAR2(40)        NOT NULL,
     Name            VARCHAR2(100)       NOT NULL,
@@ -22,15 +52,14 @@ CREATE TABLE MeterProgramAssignment  (
 );
 
 ALTER TABLE MeterProgramAssignment
-    ADD CONSTRAINT FK_MeterProgramAssignment_MeterProgram FOREIGN KEY (Guid)
-    REFERENCES MeterProgram (Guid)
+    ADD CONSTRAINT FK_MeterProgramAssignment_DeviceMG FOREIGN KEY (DeviceId)
+    REFERENCES DEVICEMETERGROUP (DEVICEID)
     ON DELETE CASCADE;
 
 ALTER TABLE MeterProgramAssignment
-    ADD CONSTRAINT FK_MeterProgramAssignment_Device FOREIGN KEY (DeviceId)
-    REFERENCES DEVICE (DEVICEID)
+    ADD CONSTRAINT FK_MeterProgramAssignment_MeterProgram FOREIGN KEY (Guid)
+    REFERENCES MeterProgram (Guid)
     ON DELETE CASCADE;
-
 
 CREATE TABLE MeterProgramStatus  (
     DeviceId        NUMBER              NOT NULL,
@@ -42,12 +71,13 @@ CREATE TABLE MeterProgramStatus  (
 );
 
 ALTER TABLE MeterProgramStatus
-    ADD CONSTRAINT FK_MeterProgramStatus_Device FOREIGN KEY (DeviceId)
-    REFERENCES DEVICE (DEVICEID)
+    ADD CONSTRAINT FK_MeterProgramStatus_DeviceMG FOREIGN KEY (DeviceId)
+    REFERENCES DEVICEMETERGROUP (DEVICEID)
     ON DELETE CASCADE;
 
-INSERT INTO DBUpdates VALUES ('YUK-19063', '7.4.0', SYSDATE);
-/* @end YUK-19063 */
+INSERT INTO DBUpdates VALUES ('YUK-19063-1', '7.4.0', SYSDATE);
+/* @error ignore-end */
+/* @end YUK-19063-1 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

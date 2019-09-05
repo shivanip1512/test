@@ -1,7 +1,7 @@
-/*==============================================================*/
+ï»¿/*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/27/2019 3:12:32 PM                         */
+/* Created on:     9/5/2019 10:11:14 AM                         */
 /*==============================================================*/
 
 
@@ -6060,7 +6060,7 @@ create table JOB  (
 );
 
 
-/* Skipping entry with jobId=-3 for oracle because ‘spSmartIndexMaintanenceJobDefinition’ bean job entry is there with jobId=-3 and that is SqlServer specific only */
+/* Skipping entry with jobId=-3 for oracle because â€˜spSmartIndexMaintanenceJobDefinitionâ€™ bean job entry is there with jobId=-3 and that is SqlServer specific only */
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-4, 'deviceConfigVerificationJobDefinition', 'N', -4);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-2, 'rfnPerformanceVerificationEmailJobDefinition', 'N', -2);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-1, 'rfnPerformanceVerificationJobDefinition', 'N', -1);
@@ -13369,18 +13369,18 @@ alter table MeterHardwareBase
       references YukonListEntry (EntryID);
 
 alter table MeterProgramAssignment
+   add constraint FK_MeterProgramAssignment_DeviceMG foreign key (DeviceId)
+      references DEVICEMETERGROUP (DEVICEID)
+      on delete cascade;
+
+alter table MeterProgramAssignment
    add constraint FK_MeterProgramAssignment_MeterProgram foreign key (Guid)
       references MeterProgram (Guid)
       on delete cascade;
 
-alter table MeterProgramAssignment
-   add constraint FK_MeterProgramAssignment_Device foreign key (DeviceId)
-      references DEVICE (DEVICEID)
-      on delete cascade;
-
 alter table MeterProgramStatus
-   add constraint FK_MeterProgramStatus_Device foreign key (DeviceId)
-      references DEVICE (DEVICEID)
+   add constraint FK_MeterProgramStatus_DeviceMG foreign key (DeviceId)
+      references DEVICEMETERGROUP (DEVICEID)
       on delete cascade;
 
 alter table MspLMInterfaceMapping

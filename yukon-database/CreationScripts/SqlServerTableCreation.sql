@@ -1,7 +1,7 @@
-/*==============================================================*/
+﻿/*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/27/2019 3:11:04 PM                         */
+/* Created on:     9/5/2019 10:12:20 AM                         */
 /*==============================================================*/
 
 
@@ -14528,20 +14528,20 @@ alter table MeterHardwareBase
 go
 
 alter table MeterProgramAssignment
+   add constraint FK_MeterProgramAssignment_DeviceMG foreign key (DeviceId)
+      references DEVICEMETERGROUP (DEVICEID)
+         on delete cascade
+go
+
+alter table MeterProgramAssignment
    add constraint FK_MeterProgramAssignment_MeterProgram foreign key (Guid)
       references MeterProgram (Guid)
          on delete cascade
 go
 
-alter table MeterProgramAssignment
-   add constraint FK_MeterProgramAssignment_Device foreign key (DeviceId)
-      references DEVICE (DEVICEID)
-         on delete cascade
-go
-
 alter table MeterProgramStatus
-   add constraint FK_MeterProgramStatus_Device foreign key (DeviceId)
-      references DEVICE (DEVICEID)
+   add constraint FK_MeterProgramStatus_DeviceMG foreign key (DeviceId)
+      references DEVICEMETERGROUP (DEVICEID)
          on delete cascade
 go
 
