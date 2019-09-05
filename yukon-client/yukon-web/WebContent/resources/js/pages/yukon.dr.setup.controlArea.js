@@ -85,17 +85,8 @@ yukon.dr.setup.controlArea = (function() {
         return errorFlag;
     },
     _enableDisableTriggerCreate = function (){
-        var triggerCount = 0;
-        $('.js-trigger-container > div').get().forEach(function(item){
-            if ($(item).data('trigger-id')){
-                triggerCount++;
-            }
-        });
-        if(triggerCount < 2){
-            $(".js-create-trigger").prop('disabled', false);
-        }else{
-            $(".js-create-trigger").prop('disabled', true);
-        }
+        var disableCreateButton = $('.js-trigger-container > div[data-trigger-id]').length < 2 ? false : true;
+        $(".js-create-trigger").prop('disabled', disableCreateButton);
     }
 
     mod = {
