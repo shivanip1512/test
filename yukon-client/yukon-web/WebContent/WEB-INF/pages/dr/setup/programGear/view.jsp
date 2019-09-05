@@ -35,7 +35,7 @@
             <tags:sectionContainer2 nameKey="general">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".gearName">
-                        <tags:input id="gearName" path="gearName" size="25" maxlength="60"/>
+                        <tags:input id="gearName" path="gearName" size="25" maxlength="30"/>
                         <br>
                         <cti:msg2 var="gearNameLbl" key=".gearName"/>
                         <span id="gearNameIsBlankError" class="error dn">
