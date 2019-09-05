@@ -118,7 +118,7 @@
             </cti:displayForPageEditModes>
             
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:url var="setupUrl" value="/dr/setup/list" />
+                <cti:url var="setupUrl" value="/dr/setup/filter?filterByType=CONTROL_SCENARIO" />
                 <cti:button nameKey="cancel" href="${setupUrl}" />
             </cti:displayForPageEditModes>
         </div>

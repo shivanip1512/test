@@ -164,7 +164,7 @@
                 <cti:button nameKey="cancel" href="${viewUrl}"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:url var="setupUrl" value="/dr/setup/list" />
+                <cti:url var="setupUrl" value="/dr/setup/filter?filterByType=PROGRAM_CONSTRAINT" />
                 <cti:button nameKey="cancel" href="${setupUrl}" />
             </cti:displayForPageEditModes>
         </div>
