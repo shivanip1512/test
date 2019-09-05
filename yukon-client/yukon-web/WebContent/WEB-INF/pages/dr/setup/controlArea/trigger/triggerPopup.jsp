@@ -20,7 +20,7 @@
         <cti:msg2 key=".trigger.thresholdPointSettings.required"/>
     </div>
     <cti:url var="action" value="/dr/setup/controlArea/trigger/save"/>
-    <c:set var="triggerClass" value="${mode == 'VIEW' ? '' : 'js-edit-trigger'}"/>
+    <c:set var="triggerClass" value="${mode == 'VIEW' ? '' : 'spaced-form-controls'}"/>
     <div class="js-trigger-controls ${triggerClass}">
         <form:form modelAttribute="controlAreaTrigger" action="${action}" method="post" id="js-controlArea-trigger-form">
             <cti:csrfToken/>
@@ -76,7 +76,7 @@
                 <tags:nameValue2 nameKey=".trigger.ahead" rowClass="js-threshold js-threshold-ahead-row ${projectionClass}">
                     <tags:intervalDropdown path="controlAreaProjection.projectAheadDuration" intervals="${projectAheadDurations}" id="js-threshold-ahead"/>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".trigger.usePeakTracking" rowClass="js-threshold js-threshold-point ${thresholdOrThresholdPointClass}">
+                <tags:nameValue2 nameKey=".trigger.usePeakTracking" rowClass="js-threshold js-threshold-point ${thresholdOrThresholdPointClass}" valueClass="vam">
                     <tags:switchButton name="usePeak" onNameKey=".yes.label" offNameKey=".no.label" checked="${!empty controlAreaTrigger.peakPointId}" id="js-use-peak-tracking"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.peakTracking" rowClass="js-threshold js-threshold-point ${peakTrackClass} js-peak-tracking" valueClass="vam">
