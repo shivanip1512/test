@@ -63,10 +63,6 @@ yukon.dr.setup.loadGroup = (function() {
             
             _initCheckboxes();
              
-            $(document).on('click', '#js-cancel-btn', function (event) {
-                window.history.back();
-            });
-            
             $(document).on("yukon:loadGroup:delete", function () {
                 yukon.ui.blockPage();
                 $('#delete-loadGroup-form').submit();

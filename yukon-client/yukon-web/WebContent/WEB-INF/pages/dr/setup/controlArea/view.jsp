@@ -323,7 +323,8 @@
             </cti:displayForPageEditModes>
             
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:button id="js-cancel-btn" nameKey="cancel" />
+                <cti:url var="setupUrl" value="/dr/setup/list" />
+                <cti:button nameKey="cancel" href="${setupUrl}" />
             </cti:displayForPageEditModes>
         </div>
         

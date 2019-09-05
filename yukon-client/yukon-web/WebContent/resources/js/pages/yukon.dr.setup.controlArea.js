@@ -272,9 +272,6 @@ yukon.dr.setup.controlArea = (function() {
             	$('#js-controlArea-trigger-form').html('');
                 event.preventDefault();
             });
-            $(document).on('click', '#js-cancel-btn', function (event) {
-                window.history.back();
-            });
             _initialized = true;
         }
     };

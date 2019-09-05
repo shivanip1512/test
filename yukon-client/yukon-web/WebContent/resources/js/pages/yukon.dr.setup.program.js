@@ -155,10 +155,6 @@ yukon.dr.setup.program = (function() {
             // This will set focus on program name
             $("#name").focus();
 
-            $(document).on('click', '#js-program-cancel-btn', function(event) {
-                window.history.back();
-            });
-
             $(document).on("yukon:load-program:delete", function () {
                 yukon.ui.blockPage();
                 $('#js-delete-load-program-form').submit();

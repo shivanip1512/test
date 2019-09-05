@@ -34,10 +34,6 @@ yukon.dr.setup.constraint = (function() {
             
             $(document).ready(_enableHolidayUsage(false));
             
-            $(document).on('click', '#js-cancel-btn', function (event) {
-                window.history.back();
-            });
-            
             $(document).on("yukon:constraint:delete", function () {
                 yukon.ui.blockPage();
                 $('#delete-constraint-form').submit();
