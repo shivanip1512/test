@@ -66,10 +66,6 @@ yukon.dr.setup.programGear = (function() {
             if (_initialized)
                 return;
 
-            $(document).on('click', '#js-cancel-btn', function(event) {
-                window.history.back();
-            });
-
             $(document).on('change', '.js-when-to-change', function(event) {
                 _whenToChange();
             });
