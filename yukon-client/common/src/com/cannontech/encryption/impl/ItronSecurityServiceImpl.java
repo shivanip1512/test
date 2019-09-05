@@ -19,6 +19,8 @@ import com.cannontech.encryption.EncryptedRouteDao;
 import com.cannontech.encryption.EncryptionKeyType;
 import com.cannontech.encryption.ItronSecurityKeyPair;
 import com.cannontech.encryption.ItronSecurityService;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.impl.GlobalSettingDaoImpl;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
 
@@ -26,13 +28,15 @@ public class ItronSecurityServiceImpl implements ItronSecurityService{
 
     private Logger log = YukonLogManager.getLogger(ItronSecurityServiceImpl.class);
     @Autowired private EncryptedRouteDao encryptedRouteDao;
+    @Autowired private GlobalSettingDaoImpl globalSettingDaoImpl;
     
     @Override
-    public Instant generateItronSshRsaPublicPrivateKeys(String comment, String passPhrase) {
+    public Instant generateItronSshRsaPublicPrivateKeys(String comment) {
         Instant timestamp = Instant.now();
         JSch jsch = new JSch();
         ByteArrayOutputStream privateKeyBuff = new ByteArrayOutputStream(2048);
         ByteArrayOutputStream publicKeyBuff = new ByteArrayOutputStream(2048);
+        String passPhrase = getPrivateKeyPassword();
         
         try {
             KeyPair keyPair = KeyPair.genKeyPair(jsch, KeyPair.RSA);
@@ -55,11 +59,7 @@ public class ItronSecurityServiceImpl implements ItronSecurityService{
         
         try {
             savePublicAndPrivateItronKey(privateKeyBuff.toString(), publicKeyBuff.toString(), timestamp);
-        } catch (CryptoException e) {
-            log.warn("caught exception in generateItronSshRsaPublicPrivateKeys", e);
-        } catch (IOException e) {
-            log.warn("caught exception in generateItronSshRsaPublicPrivateKeys", e);
-        } catch (JDOMException e) {
+        } catch (CryptoException | IOException | JDOMException e) {
             log.warn("caught exception in generateItronSshRsaPublicPrivateKeys", e);
         }
         
@@ -67,13 +67,15 @@ public class ItronSecurityServiceImpl implements ItronSecurityService{
     }
     
     @Override
-    public ItronSecurityKeyPair getItronSshRsaKeyPair() throws Exception {
-        //TODO Get global Itron private key encryption variable, else set to null. Currently setting to NULL as default
-        String privateKeyPassword = null;
-        
+    public ItronSecurityKeyPair getItronSshRsaKeyPair() throws Exception { 
+        String privateKeyPassword = getPrivateKeyPassword();
         char[] password = CryptoUtils.getSharedPasskey();
         AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
         Optional<EncryptionKey> encryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.Itron);
+        if(encryptionKey.isEmpty()) {
+            log.debug("Encryption Key is empty, generate a new key");
+            throw new Exception ("Empty Encryption Key, generate a new key");
+        }
         String sshRsaPrivatekey = encrypter.decryptHexStr(encryptionKey.get().getPrivateKey());
         String sshRsaPublickey = encrypter.decryptHexStr(encryptionKey.get().getPublicKey());
         ItronSecurityKeyPair itronKeyPair;
@@ -97,7 +99,7 @@ public class ItronSecurityServiceImpl implements ItronSecurityService{
         else {
             itronKeyPair = new ItronSecurityKeyPair(sshRsaPrivatekey, sshRsaPublickey, false);
         }
-        
+        keyPair.dispose();
         return itronKeyPair;
     }
     
@@ -122,6 +124,26 @@ public class ItronSecurityServiceImpl implements ItronSecurityService{
         Optional<EncryptionKey> encryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.Itron);
         return encryptionKey.map(EncryptionKey :: getTimestamp)
                             .orElseThrow();
+    }
+    
+    public String encryptPrivateKey(String privateKey) throws Exception {
+        JSch jsch = new JSch();
+        String passPhrase = getPrivateKeyPassword();
+        if(passPhrase != null && !passPhrase.isBlank()) {
+                    ByteArrayOutputStream privateKeyBuff = new ByteArrayOutputStream(2048);
+        KeyPair keyPair = KeyPair.load(jsch, privateKey.getBytes(), privateKey.getBytes());
+        keyPair.writePrivateKey(privateKeyBuff, passPhrase.getBytes());
+        keyPair.dispose();
+        return privateKeyBuff.toString();
+        }
+        else {
+            return privateKey;
+        }
+    }
+    
+    private String getPrivateKeyPassword() {
+        String passPhrase = globalSettingDaoImpl.getString(GlobalSettingType.ITRON_SFTP_PRIVATE_KEY_PASSWORD);
+        return passPhrase;
     }
     
     private void savePublicAndPrivateItronKey(String privateKey, String publicKey, Instant timestamp)
