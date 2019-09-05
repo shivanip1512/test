@@ -100,7 +100,7 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
 	private void populateProgramNameForUnknownPrograms(YukonUserContext context, MeterProgramInfo programInfo) {
 		if (programInfo.getName() == null) {
 			MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-			programInfo.setName(accessor.getMessage(programInfo.getSource()));
+			programInfo.setName(accessor.getMessage(programInfo.getSource().getFormatKey()));
 		}
 	}
 	

@@ -174,7 +174,7 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
 	public void deleteMeterProgram(UUID guid) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("DELETE FROM MeterProgram");
-		sql.append("WHERE Guid").eq(guid);
+		sql.append("WHERE Guid").eq(guid.toString());
 		jdbcTemplate.update(sql);
 	}
 }

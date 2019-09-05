@@ -30,6 +30,9 @@
         </permissions>
         <link>/billing/home</link>
       </option>
+      <option name="meterProgramming">
+        <link>/amr/meterProgramming/home</link>
+      </option>
       <option name="import" section="true">
         <permissions>
           <roleProperty name="BULK_IMPORT_OPERATION" />
