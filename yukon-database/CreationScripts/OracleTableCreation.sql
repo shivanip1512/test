@@ -13369,18 +13369,18 @@ alter table MeterHardwareBase
       references YukonListEntry (EntryID);
 
 alter table MeterProgramAssignment
+   add constraint FK_MeterProgramAssignment_DeviceMG foreign key (DeviceId)
+      references DEVICEMETERGROUP (DEVICEID)
+      on delete cascade;
+
+alter table MeterProgramAssignment
    add constraint FK_MeterProgramAssignment_MeterProgram foreign key (Guid)
       references MeterProgram (Guid)
       on delete cascade;
 
-alter table MeterProgramAssignment
-   add constraint FK_MeterProgramAssignment_Device foreign key (DeviceId)
-      references DEVICE (DEVICEID)
-      on delete cascade;
-
 alter table MeterProgramStatus
-   add constraint FK_MeterProgramStatus_Device foreign key (DeviceId)
-      references DEVICE (DEVICEID)
+   add constraint FK_MeterProgramStatus_DeviceMG foreign key (DeviceId)
+      references DEVICEMETERGROUP (DEVICEID)
       on delete cascade;
 
 alter table MspLMInterfaceMapping
