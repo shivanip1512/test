@@ -44,7 +44,7 @@ import com.cannontech.common.device.programming.message.MeterProgramStatusArchiv
 import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.model.MeterProgramSource;
 import com.cannontech.common.device.programming.model.MeterProgramUploadCancelResult;
-import com.cannontech.common.device.programming.model.ProgramStatus;
+import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.events.loggers.MeterProgrammingEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -170,7 +170,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 			request.setSource(Source.WS_COLLECTION_ACTION);
 			request.setRfnIdentifier(meterIdentifiersByPao.get(device));
 			request.setConfigurationId(MeterProgramSource.YUKON.getPrefix() + guid.toString());
-			request.setStatus(ProgramStatus.INITIATING);
+			request.setStatus(ProgrammingStatus.INITIATING);
 			request.setTimeStamp(System.currentTimeMillis());
 			log.debug("Sending {} on queue {}", request, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName());
 			jmsTemplate.convertAndSend(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(), request);

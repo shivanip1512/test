@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.cannontech.amr.errors.dao.DeviceError;
-import com.cannontech.common.device.programming.model.ProgramStatus;
+import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
@@ -28,7 +28,7 @@ public class MeterProgramStatusArchiveRequest implements Serializable {
 
     private RfnIdentifier rfnIdentifier;
     private String configurationId;
-    private ProgramStatus status;
+    private ProgrammingStatus status;
     private DeviceError error;
     private long timeStamp;
     private Source source;
@@ -39,10 +39,10 @@ public class MeterProgramStatusArchiveRequest implements Serializable {
 	public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
 		this.rfnIdentifier = rfnIdentifier;
 	}
-	public ProgramStatus getStatus() {
+	public ProgrammingStatus getStatus() {
 		return status;
 	}
-	public void setStatus(ProgramStatus status) {
+	public void setStatus(ProgrammingStatus status) {
 		this.status = status;
 	}
 	public long getTimeStamp() {

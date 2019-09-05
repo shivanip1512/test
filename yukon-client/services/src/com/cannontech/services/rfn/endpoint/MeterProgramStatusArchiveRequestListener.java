@@ -14,7 +14,7 @@ import com.cannontech.common.device.programming.message.MeterProgramStatusArchiv
 import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.model.MeterProgramSource;
 import com.cannontech.common.device.programming.model.MeterProgramStatus;
-import com.cannontech.common.device.programming.model.ProgramStatus;
+import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.services.rfn.RfnArchiveProcessor;
 import com.cannontech.services.rfn.RfnArchiveQueueHandler;
@@ -70,18 +70,18 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
     		}
     			
     		//If a send is in progress, a failure event should not interrupt the current upload.  Only when the upload is complete (in Waiting Verification) should failure events be recorded
-    		if(newStatus.getStatus() == ProgramStatus.FAILED && oldStatus.getStatus() == ProgramStatus.UPLOADING) {
+    		if(newStatus.getStatus() == ProgrammingStatus.FAILED && oldStatus.getStatus() == ProgrammingStatus.UPLOADING) {
     			log.info("Status recieved is failure but existing status is uploading. Discarding the record. \nNew Status {} \nExisting status {}", newStatus, oldStatus);
     			return;
     		}    		
     		MeterProgram program = meterProgrammingDao.getProgramByDeviceId(deviceId);
     		if(!program.getGuid().equals(newStatus.getReportedGuid())) {
-    			if(newStatus.getStatus() == ProgramStatus.FAILED) {
+    			if(newStatus.getStatus() == ProgrammingStatus.FAILED) {
     				log.info("Status recieved is failure and guids are mismatched. Discarding the record. \nNew Status {} \nExisting status {}", newStatus, oldStatus);
     				return;
     			} else {
     				log.info("Status recieved is failure and guids are mismatched. Updating status to mismatched");
-    				newStatus.setStatus(ProgramStatus.MISMATCHED);
+    				newStatus.setStatus(ProgrammingStatus.MISMATCHED);
     			}
     		}
     		log.info("Updating meter program status.  \nNew Status {} \nExisting status {}", newStatus, oldStatus);

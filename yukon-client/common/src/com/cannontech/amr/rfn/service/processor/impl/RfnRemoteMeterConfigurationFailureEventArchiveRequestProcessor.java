@@ -22,7 +22,7 @@ import com.cannontech.amr.rfn.service.processor.RfnEventConditionDataProcessorHe
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest;
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest.Source;
-import com.cannontech.common.device.programming.model.ProgramStatus;
+import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
@@ -93,9 +93,9 @@ public class RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor exte
 			request.setRfnIdentifier(device.getRfnIdentifier());
 			request.setConfigurationId(meterConfigurationId);
 			if (status == Status.SUCCESS) {
-				request.setStatus(ProgramStatus.IDLE);
+				request.setStatus(ProgrammingStatus.IDLE);
 			} else {
-				request.setStatus(ProgramStatus.FAILED);
+				request.setStatus(ProgrammingStatus.FAILED);
 				request.setError(statusCodesToErrors.get(status));
 			}
 			request.setTimeStamp(System.currentTimeMillis());

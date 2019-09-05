@@ -24,7 +24,7 @@ import com.cannontech.amr.rfn.message.status.type.RfnMeterDisconnectStateType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest;
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest.Source;
-import com.cannontech.common.device.programming.model.ProgramStatus;
+import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -158,7 +158,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
 			request.setSource(Source.SM_STATUS_ARCHIVE);
 			request.setRfnIdentifier(status.getRfnIdentifier());
 			request.setConfigurationId(status.getData().getMeterConfigurationID());
-			request.setStatus(ProgramStatus.IDLE);
+			request.setStatus(ProgrammingStatus.IDLE);
 			request.setTimeStamp(status.getTimeStamp());
 			log.debug("Sending {} on queue {}", request, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName());
 			jmsTemplate.convertAndSend(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(), request);

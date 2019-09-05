@@ -3,20 +3,20 @@ package com.cannontech.web.tools.device.programming.model;
 import java.util.Collections;
 import java.util.List;
 
-import com.cannontech.common.device.programming.model.ProgramStatus;
+import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.google.common.collect.Lists;
 
 public class MeterProgrammingSummaryFilter {
 	public enum DisplayableStatus {
-		SUCCESS(ProgramStatus.IDLE), 
-		FAILURE(ProgramStatus.FAILED, ProgramStatus.CANCELED, ProgramStatus.MISMATCHED), 
-		IN_PROGRESS(ProgramStatus.INITIATING,ProgramStatus.UPLOADING), 
-		CONFIRMING(ProgramStatus.CONFIRMING);
-		private List<ProgramStatus> programStatuses= null;
-		private DisplayableStatus(ProgramStatus... statuses) {
+		SUCCESS(ProgrammingStatus.IDLE), 
+		FAILURE(ProgrammingStatus.FAILED, ProgrammingStatus.CANCELED, ProgrammingStatus.MISMATCHED), 
+		IN_PROGRESS(ProgrammingStatus.INITIATING,ProgrammingStatus.UPLOADING), 
+		CONFIRMING(ProgrammingStatus.CONFIRMING);
+		private List<ProgrammingStatus> programStatuses= null;
+		private DisplayableStatus(ProgrammingStatus... statuses) {
 			  programStatuses = Collections.unmodifiableList(Lists.newArrayList(statuses));
 		}
-		public List<ProgramStatus> getProgramStatuses() {
+		public List<ProgrammingStatus> getProgramStatuses() {
 			return programStatuses;
 		}
 	}
