@@ -108,19 +108,19 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
 	public List<MeterProgramStatistics> getProgramStatistics(YukonUserContext context) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT Name, ReportedGuid, Source,");
-		sql.append("count(*) Total,");
-		sql.append("sum(CASE WHEN Status").in_k(DisplayableStatus.IN_PROGRESS.getProgramStatuses()).append("THEN 1 ELSE 0 END) InProgress");
-		sql.append("FROM MeterProgramStatus status JOIN MeterProgram program ON program.Guid = status.ReportedGuid");
-		sql.append("GROUP BY ReportedGuid, Name, Source");
+		sql.append("	COUNT(*) Total,");
+		sql.append("	SUM(CASE WHEN Status").in_k(DisplayableStatus.IN_PROGRESS.getProgramStatuses()).append("THEN 1 ELSE 0 END) InProgress");
+		sql.append("		FROM MeterProgramStatus status JOIN MeterProgram program ON program.Guid = status.ReportedGuid");
+		sql.append("		GROUP BY ReportedGuid, Name, Source");
 		sql.append("UNION");
 		sql.append("SELECT NULL, NULL, Source,");
-		sql.append("count(*) Total,");
-		sql.append("sum(CASE WHEN Status").in_k(DisplayableStatus.IN_PROGRESS.getProgramStatuses()).append("THEN 1 ELSE 0 END) InProgress");
-		sql.append("FROM MeterProgramStatus");
-		sql.append("WHERE ReportedGuid NOT IN (SELECT Guid FROM MeterProgram)");
-		sql.append("GROUP BY Source");
+		sql.append("	COUNT(*) Total,");
+		sql.append("	SUM(CASE WHEN Status").in_k(DisplayableStatus.IN_PROGRESS.getProgramStatuses()).append("THEN 1 ELSE 0 END) InProgress");
+		sql.append("	FROM MeterProgramStatus");
+		sql.append("		WHERE ReportedGuid NOT IN (SELECT Guid FROM MeterProgram)");
+		sql.append("	GROUP BY Source");
 		List<MeterProgramStatistics> statistics = jdbcTemplate.query(sql, statisticsMapper);
-		statistics.forEach(statictic -> populateProgramNameForUnknownPrograms(context, statictic.getProgramInfo()));
+		statistics.forEach(statistic -> populateProgramNameForUnknownPrograms(context, statistic.getProgramInfo()));
 		Collections.sort(statistics, (s1, s2) -> s1.getProgramInfo().getName().compareTo(s2.getProgramInfo().getName()));
 		return statistics;
 	}

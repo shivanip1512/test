@@ -14,7 +14,7 @@ import com.cannontech.common.device.programming.dao.MeterProgrammingDao;
 import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.model.MeterProgramSource;
 import com.cannontech.common.device.programming.model.MeterProgramStatus;
-import com.cannontech.common.device.programming.model.ProgramStatus;
+import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.SqlStatementBuilder.SqlBatchUpdater;
@@ -35,9 +35,9 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
 		row.setLastUpdate(rs.getInstant("LastUpdate"));
 		row.setSource(MeterProgramSource.getByPrefix(rs.getStringSafe("Source")));
 		String[] parts = rs.getStringSafe("MeterProgramStatus").split("/");
-		var status = ProgramStatus.valueOf(parts[0]);
+		var status = ProgrammingStatus.valueOf(parts[0]);
 		row.setStatus(status);
-		if (status == ProgramStatus.FAILED && parts.length > 1) {
+		if (status == ProgrammingStatus.FAILED && parts.length > 1) {
 			row.setError(DeviceError.valueOf(parts[1]));
 		}
 		return row;
@@ -90,7 +90,7 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
 	private void addMeterProgramStatusFields(MeterProgramStatus status, SqlParameterSink params) {
 		params.addValue("ReportedGuid", status.getReportedGuid().toString());
 		params.addValue("Source", status.getSource().getPrefix());
-		if (status.getStatus() == ProgramStatus.FAILED && status.getError() != null) {
+		if (status.getStatus() == ProgrammingStatus.FAILED && status.getError() != null) {
 			params.addValue("Status", status.getStatus() + "/" + status.getError().name());
 		} else {
 			params.addValue("Status", status.getStatus());

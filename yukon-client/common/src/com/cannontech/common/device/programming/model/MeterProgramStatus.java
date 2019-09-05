@@ -11,7 +11,7 @@ import com.cannontech.amr.errors.dao.DeviceError;
 public class MeterProgramStatus {
 	private int deviceId;
 	private UUID reportedGuid;
-	private ProgramStatus status;
+	private ProgrammingStatus status;
 	private MeterProgramSource source;
 	private Instant lastUpdate;
 	private DeviceError error;
@@ -21,10 +21,10 @@ public class MeterProgramStatus {
 	public void setDeviceId(int deviceId) {
 		this.deviceId = deviceId;
 	}
-	public ProgramStatus getStatus() {
+	public ProgrammingStatus getStatus() {
 		return status;
 	}
-	public void setStatus(ProgramStatus status) {
+	public void setStatus(ProgrammingStatus status) {
 		this.status = status;
 	}
 	public UUID getReportedGuid() {
