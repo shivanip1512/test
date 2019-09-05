@@ -9,8 +9,8 @@
 #include "cms/Session.h"
 #include "cms/TemporaryQueue.h"
 #include "activemq/commands/DestinationInfo.h"
-#include "boost/thread/mutex.hpp"
-#include "boost/thread/condition_variable.hpp"
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/condition_variable.hpp>
 
 namespace Cti {
 namespace Messaging {

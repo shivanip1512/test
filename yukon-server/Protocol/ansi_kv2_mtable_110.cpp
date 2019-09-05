@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#include "boost/lexical_cast.hpp"
+#include <boost/lexical_cast.hpp>
 #include "logger.h"
 #include "ansi_kv2_mtable_110.h"
 

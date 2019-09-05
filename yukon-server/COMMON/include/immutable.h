@@ -3,9 +3,9 @@
 #include "critical_section.h"
 #include "guard.h"
 
-#include "boost/shared_ptr.hpp"
-#include "boost/scoped_ptr.hpp"
-#include "boost/ptr_container/ptr_deque.hpp"
+#include <boost/shared_ptr.hpp>
+#include <boost/scoped_ptr.hpp>
+#include <boost/ptr_container/ptr_deque.hpp>
 
 #include <atomic>
 

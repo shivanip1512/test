@@ -11,7 +11,7 @@
 #include "log4cxx/spi/loggingevent.h"
 #include <log4cxx/mdc.h>
 
-#include "boost/algorithm/string/replace.hpp"
+#include <boost/algorithm/string/replace.hpp>
 
 #include <atomic>
 

@@ -8,7 +8,7 @@
 #include "utility.h"
 #include "socket_helper.h"
 
-#include "boost/scoped_array.hpp"
+#include <boost/scoped_array.hpp>
 
 using namespace boost;
 using std::string;

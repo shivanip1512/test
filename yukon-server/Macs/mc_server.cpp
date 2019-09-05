@@ -15,7 +15,7 @@
 #include <utility.h>
 
 #include "tbl_devicereadjoblog.h"
-#include "boost/scoped_array.hpp"
+#include <boost/scoped_array.hpp>
 
 using Cti::WorkerThread;
 using namespace std;

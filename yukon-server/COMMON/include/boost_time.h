@@ -1,7 +1,7 @@
 #pragma once
 
-#include "boost/date_time/posix_time/posix_time.hpp"
-#include "boost/date_time/gregorian/greg_date.hpp"
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/gregorian/greg_date.hpp>
 
 inline unsigned long ptime_to_utc_seconds(const boost::posix_time::ptime &p)
 {

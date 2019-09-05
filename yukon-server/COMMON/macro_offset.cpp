@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#include "boost/lexical_cast.hpp"
+#include <boost/lexical_cast.hpp>
 #include "macro_offset.h"
 
 namespace Cti {

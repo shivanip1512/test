@@ -4,7 +4,7 @@
 #include <vector>
 #include <queue>
 
-#include "boost/crc.hpp"
+#include <boost/crc.hpp>
 using boost::crc_16_type;
 
 #include "dlldefs.h"

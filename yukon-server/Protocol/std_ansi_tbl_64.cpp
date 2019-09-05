@@ -11,7 +11,7 @@
 *-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
-#include "boost/lexical_cast.hpp"
+#include <boost/lexical_cast.hpp>
 #include "logger.h"
 #include "ctitime.h"
 #include "std_ansi_tbl_64.h"

@@ -4,7 +4,7 @@
 #include "dbmemobject.h"
 #include "database_connection.h"
 #include "row_reader.h"
-#include "boost/optional.hpp"
+#include <boost/optional.hpp>
 #include "loggable.h"
 
 #include <string>

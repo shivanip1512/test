@@ -9,7 +9,6 @@
 #include <map>
 #include "ctidate.h"
 #include "ctitime.h"
-#include "boost/assign.hpp"
 #include "std_helper.h"
 #include "boostutil.h"
 

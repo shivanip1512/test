@@ -1,6 +1,6 @@
 #pragma once
 
-#include "boost/ptr_container/ptr_vector.hpp"
+#include <boost/ptr_container/ptr_vector.hpp>
 #include "strategyLoader.h"
 #include "StrategyManager.h"
 

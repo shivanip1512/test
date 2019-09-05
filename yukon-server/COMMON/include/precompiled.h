@@ -33,42 +33,42 @@
 //  for boost/bimap.hpp
 #define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION
 
-#include "boost/assert.hpp"
-#include "boost/assign/ptr_map_inserter.hpp"
-#include "boost/bimap.hpp"
-#include "boost/bind.hpp"
-#include "boost/config.hpp"
-#include "boost/crc.hpp"
-#include "boost/mem_fn.hpp"
-#include "boost/noncopyable.hpp"
-#include "boost/ptr_container/ptr_map.hpp"
-#include "boost/ptr_container/ptr_vector.hpp"
-#include "boost/scoped_array.hpp"
-#include "boost/scoped_ptr.hpp"
-#include "boost/shared_ptr.hpp"
-#include "boost/tokenizer.hpp"
-#include "boost/utility.hpp"
-#include "boost/weak_ptr.hpp"
+#include <boost/assert.hpp>
+#include <boost/assign/ptr_map_inserter.hpp>
+#include <boost/bimap.hpp>
+#include <boost/bind.hpp>
+#include <boost/config.hpp>
+#include <boost/crc.hpp>
+#include <boost/mem_fn.hpp>
+#include <boost/noncopyable.hpp>
+#include <boost/ptr_container/ptr_map.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/scoped_array.hpp>
+#include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/tokenizer.hpp>
+#include <boost/utility.hpp>
+#include <boost/weak_ptr.hpp>
 
 //  The Boost libraries listed below all attempt to auto-link with their libraries.
 //    This does not work for the Service/ directory, and we probably don't want to try to link with them by default anyway.
 
-//#include "boost/date_time/gregorian/greg_date.hpp"
-//#include "boost/date_time/gregorian/gregorian.hpp"
-//#include "boost/date_time/microsec_time_clock.hpp"
-//#include "boost/date_time/posix_time/posix_time.hpp"
-//#include "boost/date_time/posix_time/posix_time_types.hpp"
+//#include <boost/date_time/gregorian/greg_date.hpp>
+//#include <boost/date_time/gregorian/gregorian.hpp>
+//#include <boost/date_time/microsec_time_clock.hpp>
+//#include <boost/date_time/posix_time/posix_time.hpp>
+//#include <boost/date_time/posix_time/posix_time_types.hpp>
 
-//#include "boost/regex.hpp"
+//#include <boost/regex.hpp>
 
-//#include "boost/test/auto_unit_test.hpp"
-//#include "boost/test/floating_point_comparison.hpp"
-//#include "boost/test/unit_test.hpp"
+//#include <boost/test/auto_unit_test.hpp>
+//#include <boost/test/floating_point_comparison.hpp>
+//#include <boost/test/unit_test.hpp>
 
-//#include "boost/thread/condition.hpp"
-//#include "boost/thread/mutex.hpp"
-//#include "boost/thread/shared_mutex.hpp"
-//#include "boost/thread/thread.hpp"
-//#include "boost/thread/tss.hpp"
-//#include "boost/thread/xtime.hpp"
+//#include <boost/thread/condition.hpp>
+//#include <boost/thread/mutex.hpp>
+//#include <boost/thread/shared_mutex.hpp>
+//#include <boost/thread/thread.hpp>
+//#include <boost/thread/tss.hpp>
+//#include <boost/thread/xtime.hpp>
 

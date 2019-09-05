@@ -13,7 +13,7 @@
 #include "logger.h"
 #include "math.h"
 #include "std_ansi_tbl_62.h"
-#include "boost/lexical_cast.hpp"
+#include <boost/lexical_cast.hpp>
 
 using std::string;
 using std::endl;

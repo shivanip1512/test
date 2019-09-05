@@ -1,6 +1,6 @@
 #pragma once
 
-#include "boost/optional/optional.hpp"
+#include <boost/optional/optional.hpp>
 #include "dlldefs.h"
 #include "loggable.h"
 

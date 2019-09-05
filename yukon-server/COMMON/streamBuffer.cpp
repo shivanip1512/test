@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#include "boost/lexical_cast.hpp"
+#include <boost/lexical_cast.hpp>
 #include "string_util.h"
 #include "ctidate.h"
 #include "ctitime.h"

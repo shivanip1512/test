@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#include "boost/scoped_ptr.hpp"
+#include <boost/scoped_ptr.hpp>
 
 #include "logger.h"
 #include "utility.h"

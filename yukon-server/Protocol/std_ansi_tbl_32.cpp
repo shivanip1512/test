@@ -18,7 +18,7 @@
 
 #include "logger.h"
 #include "std_ansi_tbl_32.h"
-#include "boost/lexical_cast.hpp"
+#include <boost/lexical_cast.hpp>
 
 using std::string;
 using std::endl;

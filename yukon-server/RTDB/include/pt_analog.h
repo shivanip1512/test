@@ -9,7 +9,7 @@
 #include "tbl_pt_control.h"
 #include "logger.h"
 
-#include "boost/optional.hpp"
+#include <boost/optional.hpp>
 
 class IM_EX_PNTDB CtiPointAnalog : public CtiPointNumeric
 {

@@ -7,7 +7,7 @@
 #include <time.h>
 
 #include "ctitime.h"
-#include "boost/date_time/posix_time/posix_time.hpp"
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include "timeperiod.h"
 
 using boost::posix_time::ptime;

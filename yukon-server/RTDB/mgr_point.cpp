@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#include "boost/mem_fn.hpp"
+#include <boost/mem_fn.hpp>
 
 #include "ctidbgmem.h"  // CTIDBG_new
 #include "pt_base.h"

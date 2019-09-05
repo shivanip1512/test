@@ -3,7 +3,7 @@
 #include "utility.h"
 #include "streamBuffer.h"
 
-#include "boost/optional/optional.hpp"
+#include <boost/optional/optional.hpp>
 #include <boost/range/iterator_range.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <boost/range/algorithm_ext/insert.hpp>
