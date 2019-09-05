@@ -36,8 +36,8 @@ public:
     CtiLockGuard(T& resource);
     CtiLockGuard(T& resource, unsigned long millis);
     CtiLockGuard(T& resource, Cti::CallSite callSite);
-    CtiLockGuard(T& resource, char *resourceName, Cti::CallSite callSite);
-    CtiLockGuard(T& resource, unsigned long millis, char *resourceName, Cti::CallSite callSite);
+    CtiLockGuard(T& resource, const char *resourceName, Cti::CallSite callSite);
+    CtiLockGuard(T& resource, unsigned long millis, const char *resourceName, Cti::CallSite callSite);
     ~CtiLockGuard();
 
     bool isAcquired() const;
@@ -49,7 +49,7 @@ private:
 
     bool _acquired;
     T& _res;
-    char *_resourceName;
+    const char *_resourceName;
     Cti::CallSite _callSite;
 };
 

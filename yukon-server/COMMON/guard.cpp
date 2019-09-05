@@ -42,7 +42,7 @@ CtiLockGuard<T>::CtiLockGuard(T& resource, Cti::CallSite callSite) : CtiLockGuar
 }
 
 template<class T>
-CtiLockGuard<T>::CtiLockGuard( T& resource, char *resourceName, Cti::CallSite callSite ) : _res( resource ), _resourceName( resourceName ), _callSite( callSite )
+CtiLockGuard<T>::CtiLockGuard( T& resource, const char *resourceName, Cti::CallSite callSite ) : _res( resource ), _resourceName( resourceName ), _callSite( callSite )
 {
     static bool hasDumped = false;
 
@@ -66,7 +66,7 @@ CtiLockGuard<T>::CtiLockGuard( T& resource, char *resourceName, Cti::CallSite ca
 }
 
 template<class T>
-CtiLockGuard<T>::CtiLockGuard( T& resource, unsigned long millis, char *resourceName, Cti::CallSite callSite ) : _res( resource ), _resourceName(resourceName), _callSite(callSite)
+CtiLockGuard<T>::CtiLockGuard( T& resource, unsigned long millis, const char *resourceName, Cti::CallSite callSite ) : _res( resource ), _resourceName(resourceName), _callSite(callSite)
 {
     acquireLock(millis);
 }
@@ -112,7 +112,7 @@ template class CtiLockGuard<Cti::readers_writer_lock_t>;
 //  Specialization for CtiCriticalSection
 
 template<>
-CtiLockGuard<CtiCriticalSection>::CtiLockGuard( CtiCriticalSection& resource, char *resourceName, Cti::CallSite callSite ) : _res( resource ), _callSite( callSite )
+CtiLockGuard<CtiCriticalSection>::CtiLockGuard( CtiCriticalSection& resource, const char *resourceName, Cti::CallSite callSite ) : _res( resource ), _callSite( callSite )
 {
     //  CtiCriticalSection has an internal timeout controlled by
     //        HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\CriticalSectionTimeout

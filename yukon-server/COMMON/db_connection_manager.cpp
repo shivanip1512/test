@@ -20,17 +20,6 @@ ConnectionManager::ConnectionInfo::ConnectionInfo( const std::unique_ptr<SAConne
         serverVersion { connection ? connection->ServerVersion() : 0 }
 { }
 
-std::string ConnectionManager::ConnectionInfo::toString() const
-{
-    return Cti::FormattedList::of(
-        "Connection instance",  instance,
-        "Creation time",        created,
-        "Client major version", clientVersion >> 16,
-        "Client minor version", clientVersion & 0xffff,
-        "Server major version", serverVersion >> 16,
-        "Server minor version", serverVersion & 0xffff);
-}
-
 std::atomic_size_t ConnectionManager::ConnectionInfo::instanceCount{};
 
 ConnectionManager::ConnectionDescriptor::ConnectionDescriptor( std::unique_ptr<SAConnection>&& conn )
@@ -38,9 +27,24 @@ ConnectionManager::ConnectionDescriptor::ConnectionDescriptor( std::unique_ptr<S
         info { connection }
 { }
 
+std::string ConnectionManager::ConnectionDescriptor::toString() const
+{
+    return Cti::FormattedList::of(
+        "Connection instance", info.instance,
+        "Creation time", info.created,
+        "Last borrowed", lastBorrowed,
+        "Last returned", lastReturned,
+        "Client major version", info.clientVersion >> 16,
+        "Client minor version", info.clientVersion & 0xffff,
+        "Server major version", info.serverVersion >> 16,
+        "Server minor version", info.serverVersion & 0xffff);
+}
+
 void ConnectionManager::ConnectionReleaser::operator()(ConnectionDescriptor *desc)
 {
     CtiLockGuard<CtiCriticalSection> guard(idleConnectionMutex);
+
+    desc->lastReturned = CtiTime::now();
 
     //  Convert the LoanedConnecton back into an IdleConnection
     idleConnections.emplace(desc);
@@ -62,18 +66,20 @@ auto ConnectionManager::borrowConnection() -> LoanedConnection
                 {
                     if( descriptor->connection->isAlive() )
                     {
-                        CTILOG_TRACE(dout, "Existing database connection retrieved:" << descriptor->info);
+                        CTILOG_TRACE(dout, "Existing database connection retrieved:" << *descriptor);
+
+                        descriptor->lastBorrowed = CtiTime::now();
 
                         return LoanedConnection { descriptor.release() };
                     }
                     else
                     {
-                        CTILOG_INFO(dout, "Existing database connection was not alive, releasing" << descriptor->info);
+                        CTILOG_INFO(dout, "Existing database connection was not alive, releasing" << *descriptor);
                     }
                 }
                 else
                 {
-                    CTILOG_WARN(dout, "Existing database connection was null, releasing" << descriptor->info);
+                    CTILOG_WARN(dout, "Existing database connection was null, releasing" << *descriptor);
                 }
             }
             else
@@ -88,7 +94,7 @@ auto ConnectionManager::borrowConnection() -> LoanedConnection
     {
         LoanedConnection descriptor { new ConnectionDescriptor(std::unique_ptr<SAConnection>(dbConnection)) };
 
-        CTILOG_INFO(dout, "New database connection created:" << descriptor->info);
+        CTILOG_INFO(dout, "New database connection created:" << *descriptor);
 
         return descriptor;
     }

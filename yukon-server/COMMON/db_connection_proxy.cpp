@@ -17,7 +17,7 @@ ConnectionProxy::ConnectionProxy()
         instance(++instanceCount)
 {
     CTILOG_TRACE(dout, "Connection proxy " << instance << " created:" << 
-        (descriptor ? descriptor->info.toString() : "<empty>"));
+        (descriptor ? descriptor->toString() : "<empty>"));
 }
 
 ConnectionProxy::~ConnectionProxy() = default;

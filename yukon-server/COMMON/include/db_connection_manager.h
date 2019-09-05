@@ -17,7 +17,7 @@ class ConnectionManager
 {
 public:
 
-    struct ConnectionInfo : Cti::Loggable
+    struct ConnectionInfo
     {
         ConnectionInfo(const std::unique_ptr<SAConnection>& connection);
 
@@ -27,16 +27,18 @@ public:
         const CtiTime created;
 
         static std::atomic_size_t instanceCount;
-
-        std::string toString() const override;
     };
 
-    struct ConnectionDescriptor
+    struct ConnectionDescriptor : Cti::Loggable
     {
         ConnectionDescriptor(std::unique_ptr<SAConnection>&& conn);
             
         const std::unique_ptr<SAConnection> connection;
         const ConnectionInfo info;
+        CtiTime lastBorrowed { CtiTime::not_a_time };
+        CtiTime lastReturned { CtiTime::not_a_time };
+
+        std::string toString() const override;
     };
 
     struct ConnectionReleaser
