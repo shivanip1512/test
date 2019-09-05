@@ -31,10 +31,6 @@ yukon.dr.setup.macroloadGroup = (function() {
                 $("#js-assigned-load-groups-table").scrollTableBody({rowsToDisplay: 20});
             }
             
-            $(document).on('click', '#js-cancel-btn', function (event) {
-                window.history.back();
-            });
-            
             $(document).on('click', '#js-save', function (event) {
                 var selectedLoadGroups = [];
                 $("#js-assigned-load-groups").find('.select-box-item').each(function (idx, item) {

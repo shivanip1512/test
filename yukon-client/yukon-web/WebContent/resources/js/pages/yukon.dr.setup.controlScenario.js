@@ -27,10 +27,6 @@ yukon.dr.setup.controlScenario = (function() {
                 $("#js-assigned-programs-table").scrollTableBody({rowsToDisplay: 20});
             }
             
-            $(document).on('click', '#js-cancel-btn', function (event) {
-                window.history.back();
-            });
-            
             $(document).on("yukon:control-scenario:delete", function () {
                 yukon.ui.blockPage();
                 $("#js-delete-control-scenario-form").submit();
