@@ -595,10 +595,6 @@ public class LoadProgramSetupController {
         if (mode == PageEditMode.EDIT || mode == PageEditMode.CREATE) {
             controllerHelper.buildGearModelMap(programGear.getControlMethod(), model, request, userContext);
         }
-        if ((programGear.getControlMethod() == GearControlMethod.ThermostatRamping
-            || programGear.getControlMethod() == GearControlMethod.SimpleThermostatRamping)) {
-            controllerHelper.setDefaultGearFieldValues(programGear);
-        }
 
         BindingResult result = gearErrorCache.asMap().get(id);
         if (mode != PageEditMode.VIEW && result != null && CollectionUtils.isNotEmpty(result.getFieldErrors())) {
