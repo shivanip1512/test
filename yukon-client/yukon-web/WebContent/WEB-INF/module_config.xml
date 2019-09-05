@@ -173,6 +173,8 @@
           </page>
           <page name="waterLeakReport.jobs" type="BASIC"/>
           <page name="billing" type="BASIC"/>
+          <page name="meterProgramming" type="BASIC"/>
+          <page name="meterProgramming.summary" type="BASIC"/>
           <page name="dataCollection.detail" type="BASIC"/>
           <page name="usageThresholdReport.report" type="BASIC"/>
           <page name="usageThresholdReport.results" type="BASIC" hideFavorite="true"/>

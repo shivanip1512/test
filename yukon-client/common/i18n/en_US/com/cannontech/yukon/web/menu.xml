@@ -24,6 +24,7 @@
 <entry key="yukon.web.menu.ami">AMI</entry>
 <entry key="yukon.web.menu.ami.dashboard">Dashboard</entry>
 <entry key="yukon.web.menu.ami.billing">Billing</entry>
+<entry key="yukon.web.menu.ami.meterProgramming">Meter Programming</entry>
 <entry key="yukon.web.menu.ami.import">Bulk Import</entry>
 <entry key="yukon.web.menu.ami.legacyImport">Legacy Importer</entry>
 

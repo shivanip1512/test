@@ -41,6 +41,6 @@ public enum MeterProgramSource implements DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return null;
+        return "yukon.web.modules.amr.meterProgramming.source." + name();
     }
 }
