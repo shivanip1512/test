@@ -57,6 +57,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
     private List<ProgramData> programsDataCache = new ArrayList<>();
     private List<ProgramData> todaysProgramsDataCache = new ArrayList<>();
     private long tomorrowStartInMillis = 0L;
+    private int todaysAndScheduledProgramDataCount = 0;
     private final static String ACTIVE_CSS_CLASS = "green";
     private final static String SCHEDULED_CSS_CLASS = "orange";
     
@@ -136,9 +137,11 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
 
     @Override
     public Map<String, List<ProgramData>> buildProgramWidgetData(YukonUserContext userContext) {
+        todaysAndScheduledProgramDataCount = 0;
         Map<String, List<ProgramData>> programWidgetData = new LinkedHashMap<>();
         List<ProgramData> todaysPrograms = getTodaysProgramData();
         int todaysProgramsCount = todaysPrograms.size();
+        todaysAndScheduledProgramDataCount += todaysProgramsCount;
         // List of Programs which are scheduled to execute for next control day after today
         List<ProgramData> futureProgramsToDisplay = new ArrayList<>();
         if (todaysProgramsCount >= MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
@@ -147,6 +150,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
             if (todaysProgramsCount < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
                 List<ProgramData> futurePrograms = getProgramsScheduledForNextControlDayAfterToday();
                 if (!futurePrograms.isEmpty()) {
+                    todaysAndScheduledProgramDataCount += futurePrograms.size();
                     int maxFutureProgramsCount = MAX_PROGRAM_TO_DISPLAY_ON_WIDGET - todaysProgramsCount;
                     futureProgramsToDisplay = limitData(futurePrograms, maxFutureProgramsCount);
                     String date = dateFormattingService.format(futureProgramsToDisplay.get(0).getStartDateTime(),
@@ -199,11 +203,15 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
         return programDetailData;
     }
     
+    @Override
+    public int getTodaysAndScheduledProgramDataCount() {
+        return todaysAndScheduledProgramDataCount;
+    }
+
     /**
      * Returns list of all program which are executed today or scheduled to execute today 
      * 
      */
-
     private List<ProgramData> getAllTodaysPrograms() {
         List<ProgramData> todaysProgram = new ArrayList<>();
         try {
