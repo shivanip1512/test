@@ -49,7 +49,7 @@ public:
 
    CtiPointDataMsg& operator=(const CtiPointDataMsg& aRef);
 
-   virtual CtiMessage* replicateMessage() const;
+   CtiMessage* replicateMessage() const override;
 
    long  getId() const;
    CtiPointDataMsg& setId( const long a_id );
@@ -85,7 +85,7 @@ public:
 
    virtual std::string toString() const override;
 
-   virtual bool isValid();
+   bool isValid() override;
    static unsigned int getInstanceCount() { return _instanceCount; }
 };
 

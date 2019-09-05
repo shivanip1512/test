@@ -35,7 +35,7 @@ public:
 
     void insert(int i);
 
-    CtiMessage*       replicateMessage() const;
+    CtiMessage* replicateMessage() const override;
 
     virtual std::string toString() const override;
 

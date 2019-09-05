@@ -26,9 +26,9 @@ public:
    CtiRegistrationMsg(const CtiRegistrationMsg &aRef);
    virtual ~CtiRegistrationMsg();
    // Assignement operator
-   CtiRegistrationMsg& CtiRegistrationMsg::operator=(const CtiRegistrationMsg& aRef);
+   CtiRegistrationMsg& operator=(const CtiRegistrationMsg& aRef);
 
-   virtual CtiMessage* replicateMessage() const;
+   CtiMessage* replicateMessage() const override;
 
    std::string   getAppName() const;
    std::string&  getAppName();

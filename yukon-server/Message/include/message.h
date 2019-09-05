@@ -46,7 +46,7 @@ public:
 
    virtual ~CtiMessage() = default;
 
-   CtiMessage& CtiMessage::operator=(const CtiMessage& aRef);
+   CtiMessage& operator=(const CtiMessage& aRef);
    bool operator==(const CtiMessage &aRef) const;
    bool virtual operator<(const CtiMessage& aRef) const;
    bool virtual operator>(const CtiMessage& aRef) const;

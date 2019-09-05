@@ -23,7 +23,7 @@ public:
 
    CtiMultiMsg& operator=(const CtiMultiMsg& aRef);
 
-   virtual CtiMessage* replicateMessage() const;
+   CtiMessage* replicateMessage() const override;
 
    int  getCount() const;
 

@@ -34,7 +34,7 @@ public:
    std::string  getObjectType() const;
    INT          getTypeOfChange() const;
 
-   CtiMessage* replicateMessage() const;
+   CtiMessage* replicateMessage() const override;
 
    virtual std::string toString() const override;
 };

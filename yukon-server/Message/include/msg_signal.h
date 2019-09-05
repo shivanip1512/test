@@ -82,9 +82,9 @@ public:
    double getPointValue() const;
    CtiSignalMsg& setPointValue(double pval);
 
-   virtual CtiMessage* replicateMessage() const;
+   CtiMessage* replicateMessage() const override;
 
-   virtual std::string toString() const override;
+   std::string toString() const override;
 
    BOOL isAlarm() const;
    BOOL isEvent() const;
