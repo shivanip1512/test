@@ -106,7 +106,7 @@
                     </table>
                     <br>
                 </c:forEach>
-                <c:if test="${showMessage}">
+                <c:if test="${showTooManyProgramsMessage}">
                     <div class="notes" style="font-weight:bold"><i:inline key="yukon.web.widgets.programWidget.moreProgramFound"/></div>
                 </c:if>
                 <div class="PT20">

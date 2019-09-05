@@ -17,4 +17,9 @@ public interface ProgramWidgetService {
      * previous 7 days.
      */
     public Map<String, List<ProgramData>> buildProgramDetailsData(YukonUserContext userContext);
+
+    /**
+     * Return total number of Todays and Scheduled program data count.
+     */
+    public int getTodaysAndScheduledProgramDataCount();
 }

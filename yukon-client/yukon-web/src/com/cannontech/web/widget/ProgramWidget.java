@@ -1,13 +1,8 @@
 package com.cannontech.web.widget;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.program.widget.model.ProgramData;
-import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.dr.program.service.ProgramWidgetService;
 import com.cannontech.dr.program.service.impl.ProgramWidgetServiceImpl;
@@ -53,29 +47,9 @@ public class ProgramWidget extends AdvancedWidgetControllerBase {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         json.put("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
         model.addAttribute("widgetUpdateDate", json);
-
-        if (!programsData.isEmpty()) {
-            int futureAndTodaysProgramDataCount = 0;
-            // Get the first entry from programData map, which is expected as future scheduled programData entry.
-            Entry<String, List<ProgramData>> firstProgramDataEntry = programsData.entrySet().iterator().next();
-            String key = firstProgramDataEntry.getKey();
-            Date date = null;
-            try {
-                date = new SimpleDateFormat("MM/dd/yyyy").parse(key);
-            } catch (ParseException e) {
-                // Do nothing here.
-            }
-            if (date != null && TimeUtil.isFutureDate(new DateTime(date.getTime()))) {
-                // firstProgramDataEntry is future schedule programData. Get count of it.
-                futureAndTodaysProgramDataCount += firstProgramDataEntry.getValue().size();
-            }
-            String todayKey = accessor.getMessage(widgetKey + "programWidget.today");
-            if (programsData.containsKey(todayKey)) {
-                futureAndTodaysProgramDataCount += programsData.get(todayKey).size();
-            }
-            boolean showMessage = futureAndTodaysProgramDataCount >= ProgramWidgetServiceImpl.MAX_PROGRAM_TO_DISPLAY_ON_WIDGET;
-            model.addAttribute("showMessage", showMessage);
-        }
+        int todaysAndScheduledProgramDataCount = programWidgetService.getTodaysAndScheduledProgramDataCount();
+        boolean showTooManyProgramsMessage = todaysAndScheduledProgramDataCount > ProgramWidgetServiceImpl.MAX_PROGRAM_TO_DISPLAY_ON_WIDGET;
+        model.addAttribute("showTooManyProgramsMessage", showTooManyProgramsMessage);
         return "programWidget/render.jsp";
     }
 }
