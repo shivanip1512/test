@@ -174,7 +174,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.error.invalid">Invalid {0} value.</entry>
 <entry key="yukon.web.modules.dr.setup.error.routeId.doesNotExist">Route Id does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.error.pointId.doesNotExist">{0} does not exist.</entry>
-<entry key="yukon.web.modules.dr.setup.error.timeRange">Must be between {0} and {1}</entry>
+<entry key="yukon.web.modules.dr.setup.error.timeRange">Must be between {0} and {1}.</entry>
 
 <!-- Control Scenario Validation -->
 <entry key="yukon.web.modules.dr.setup.controlScenario.general.title">General</entry>
