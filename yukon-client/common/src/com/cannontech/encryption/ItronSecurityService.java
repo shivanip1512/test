@@ -10,9 +10,10 @@ public interface ItronSecurityService {
     /**
      * This method generate the SSH RSA private and public key for Itron.
      * The private key is encrypted depending on if a password is specified.
+     * Password is optional and can be specified in Admin Configuration
      * This returns the creation date.
      */
-    Instant generateItronSshRsaPublicPrivateKeys(String comment, String passPhrase) throws Exception;
+    Instant generateItronSshRsaPublicPrivateKeys(String comment) throws Exception;
 
     /**
      * This method creates a basic ItronSecuurityKeyPair object with the keys in String format. If the private key
@@ -40,4 +41,12 @@ public interface ItronSecurityService {
      * If no Key Pair is present it will throw an Exception.
      */
     Instant getItronKeyPairCreationTime() throws NoSuchElementException;
+
+    /**
+     * This method takes a string for a privateKey and encrypts it if a password is provided.
+     * This returns the privateKey encrypted with the privateKeyPassword 
+     * or just the privateKey if no password is specified
+     * @throws Exception 
+     */
+    String encryptPrivateKey(String privateKey) throws Exception;
 }

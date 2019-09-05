@@ -336,15 +336,11 @@ public class DeveloperController {
 
     @PostMapping(path = "/saveItronKeyPair")
     public String saveItronKeyPair(@ModelAttribute("keyPair") ItronSecurityKeyPair keyPair,
-            FlashScope flash) throws CryptoException, IOException, JDOMException {
+            FlashScope flash) throws Exception {
         final String homeKey = "yukon.web.modules.dev.itronKeyPair.";
         Instant timestamp = Instant.now();
         if (!keyPair.getPublicKey().isBlank() && !keyPair.getPrivateKey().isBlank()) {
-            // if password is provided for private key encryption
-            if (true) {
-                // encrypt the private key before passing on to save
-            }
-            saveEncryptionKey(keyPair.getPublicKey(), keyPair.getPrivateKey(), timestamp, EncryptionKeyType.Itron);
+            saveEncryptionKey(keyPair.getPublicKey(), itronSecurityService.encryptPrivateKey(keyPair.getPrivateKey()), timestamp, EncryptionKeyType.Itron);
             flash.setConfirm(new YukonMessageSourceResolvable(homeKey + "save.success"));
             return "redirect:getItronKeyPair";
         }

@@ -73,6 +73,8 @@ import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.DREncryption;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.impl.GlobalSettingDaoImpl;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -93,6 +95,7 @@ public class YukonSecurityController {
     @Autowired private EcobeeSecurityService ecobeeSecurityService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ItronSecurityService itronSecurityService;
+    @Autowired private GlobalSettingDaoImpl globalSettingDaoImpl;
 
     private static final int KEYNAME_MAX_LENGTH = 50;
     private static final int KEYHEX_DIGITS_LENGTH = 32;
@@ -670,16 +673,14 @@ public class YukonSecurityController {
     public @ResponseBody Map<String, Object> generateItronKey(YukonUserContext userContext, FlashScope flashScope) throws CryptoException {
         Map<String, Object> json = new HashMap<>();
         // The comment is optional, I think it will just stay as null
-        // TODO the PassPhrase is going to be passed from a global variable so user can encrypt private key
         String comment = null;
-        String passPhrase = null;
         try {
-            Instant keyCreationTime = itronSecurityService.generateItronSshRsaPublicPrivateKeys(comment, passPhrase);
+            Instant keyCreationTime = itronSecurityService.generateItronSshRsaPublicPrivateKeys(comment);
             String dateGenerated = dateFormattingService.format(keyCreationTime,
                 DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
             json.put("itronKeyGeneratedDateTime", dateGenerated);
-        } catch (EcobeePGPException epe) {
-            log.error("Exception while generating Itron Public and Private Key ", epe);
+        } catch (RuntimeException e) {
+            log.error("Exception while generating Itron Public and Private Key ", e);
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             String errMsg = accessor.getMessage(baseKey + ".itronKeyPair.generationFailed");
             json.put("itronKeyGeneratedDateTime", errMsg);
