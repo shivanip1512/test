@@ -294,14 +294,14 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
             <li><b>Automatic</b> - Program started via control area trigger and timed start program.</li>
             <li><b>Unknown</b> - Origin not known.</li>
         </ul>
-        Origin value with color indicate the following:
+        Origin color indicates program state:
         <ul>
-            <li><span class="fwb green txt-color-white">(Green)</span> - 
+            <li><span class="fwb green txt-color-white">Active (Green)</span> - 
                 Program is currently active and running.</li>
-            <li><span class="fwb orange txt-color-white">(Orange)</span> - 
-                Program is scheduled to run in future.</li>
-            <li><span class="fwb black">(Black)</span> - 
-                Program is in complete / inactive state.</li>
+            <li><span class="fwb orange txt-color-white">Scheduled (Orange)</span> - 
+                Program is scheduled to run in the future.</li>
+            <li><span class="fwb black">Inactive (Black)</span> - 
+                Program is complete or inactive.</li>
         </ul>
         
         Click on the "View Details" link to view all scheduled, current day and previous 7 days program events.
