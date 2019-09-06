@@ -261,7 +261,9 @@ static const std::map<std::string, DeviceTypes> device_lookups
 
     { "rfn-410cl",          TYPE_RFN410CL },
     { "rfn-420cl",          TYPE_RFN420CL },
+    { "rfn-420clw",         TYPE_RFN420CLW },
     { "rfn-420cd",          TYPE_RFN420CD },
+    { "rfn-420cdw",         TYPE_RFN420CDW },
 
     { "rfn-430a3d",         TYPE_RFN430A3D },
     { "rfn-430a3t",         TYPE_RFN430A3T },
@@ -716,7 +718,9 @@ bool resolveIsDeviceTypeSingle(INT Type)
         TYPE_RFN420FRD,
         TYPE_RFN410CL,
         TYPE_RFN420CL,
+        TYPE_RFN420CLW,
         TYPE_RFN420CD,
+        TYPE_RFN420CDW,
         TYPE_RFN430A3D,
         TYPE_RFN430A3T,
         TYPE_RFN430A3K,
