@@ -13,6 +13,7 @@ import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.MeterProgrammingEventLogService;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 
 public class CollectionActionLoggingHelperServiceImpl implements CollectionActionLoggingHelperService {
@@ -88,589 +89,331 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
             logRemoveDataStreaming(result);
             break;
         case METER_PROGRAM_UPLOAD_INITIATE:
-        	logMeterProgramUpload(result);
+            logMeterProgramUpload(result);
             break;
         case METER_PROGRAM_STATUS_READ:
-        	logMeterProgramStatusRead(result);
+            logMeterProgramStatusRead(result);
             break;
         default:
             throw new UnsupportedOperationException("Add event logger for collection action="+result.getAction());
         }
     }
 
-    private void logConfigDataStreaming(CollectionActionResult result) {
+    @FunctionalInterface
+    private interface LogInitiated {
+        public void log(String action, String input, Integer numDevices, LiteYukonUser username, String resultKey);
+    }
+    
+    @FunctionalInterface
+    private interface LogCompleted {
+        public void log(String action, String input, String statistics, String creStatus, String resultKey);
+    }
+    
+    @FunctionalInterface
+    private interface LogCancelled {
+        public void log(String action, String input, String statistics, LiteYukonUser user, String resultKey);
+    }
+    
+    private void log(LogInitiated logInitiated, CollectionActionResult result) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
+        
+        logInitiated.log(accessor.getMessage(result.getAction()), 
+                         result.getInputString(), 
+                         result.getCounts().getTotalCount(), 
+                         result.getContext().getYukonUser(), 
+                         String.valueOf(result.getCacheKey()));
+    }
+    
+    private void log(LogCompleted logCompleted, CollectionActionResult result) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+        
+        logCompleted.log(accessor.getMessage(result.getAction()),
+                         result.getInputString(),
+                         result.getResultStatsString(accessor), 
+                         accessor.getMessage(result.getStatus()), 
+                         String.valueOf(result.getCacheKey()));
+    }
+    
+    private void log(LogCancelled logCancelled, CollectionActionResult result) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
+        
+        logCancelled.log(accessor.getMessage(result.getAction()), 
+                         result.getInputString(),
+                         result.getResultStatsString(accessor), 
+                         result.getContext().getYukonUser(),
+                         String.valueOf(result.getCacheKey()));
+    }
+    
+    private void logConfigDataStreaming(CollectionActionResult result) {
         switch (result.getStatus()) {
         case STARTED:
-            dataStreamingEventLogService.configDataStreamingInitiated(accessor.getMessage(result.getAction()), 
-                                                                      result.getInputString(), 
-                                                                      result.getCounts().getTotalCount(), 
-                                                                      result.getContext().getYukonUser(), 
-                                                                      String.valueOf(result.getCacheKey()));
+            log(dataStreamingEventLogService::configDataStreamingInitiated, result);
             break;
         case COMPLETE:
-            dataStreamingEventLogService.configDataStreamingCompleted(accessor.getMessage(result.getAction()),
-                                                                      result.getInputString(),
-                                                                      result.getResultStatsString(accessor), 
-                                                                      accessor.getMessage(result.getStatus()), 
-                                                                      String.valueOf(result.getCacheKey()));
+            log(dataStreamingEventLogService::configDataStreamingCompleted, result);
             break;
         case CANCELLED:
-            dataStreamingEventLogService.configDataStreamingCancelled(accessor.getMessage(result.getAction()), 
-                                                                      result.getInputString(),
-                                                                      result.getResultStatsString(accessor), 
-                                                                      result.getContext().getYukonUser(),
-                                                                      String.valueOf(result.getCacheKey()));
+            log(dataStreamingEventLogService::configDataStreamingCancelled, result);
             break;
         }
     }
 
     private void logRemoveDataStreaming(CollectionActionResult result) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            dataStreamingEventLogService.removeDataStreamingInitiated(accessor.getMessage(result.getAction()), 
-                                                                      result.getInputString(), 
-                                                                      result.getCounts().getTotalCount(), 
-                                                                      result.getContext().getYukonUser(), 
-                                                                      String.valueOf(result.getCacheKey()));
+            log(dataStreamingEventLogService::removeDataStreamingInitiated, result);
             break;
         case COMPLETE:
-            dataStreamingEventLogService.removeDataStreamingCompleted(accessor.getMessage(result.getAction()),
-                                                                      result.getInputString(),
-                                                                      result.getResultStatsString(accessor), 
-                                                                      accessor.getMessage(result.getStatus()), 
-                                                                      String.valueOf(result.getCacheKey()));
+            log(dataStreamingEventLogService::removeDataStreamingCompleted, result);
             break;
         case CANCELLED:
-            dataStreamingEventLogService.removeDataStreamingCancelled(accessor.getMessage(result.getAction()), 
-                                                                      result.getInputString(),
-                                                                      result.getResultStatsString(accessor), 
-                                                                      result.getContext().getYukonUser(),
-                                                                      String.valueOf(result.getCacheKey()));
+            log(dataStreamingEventLogService::removeDataStreamingCancelled, result);
             break;
         }
     }
 
     private void logLocateRoute(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            commanderEventLogService.locateRouteInitiated(accessor.getMessage(result.getAction()), 
-                                                          result.getInputString(), 
-                                                          result.getCounts().getTotalCount(), 
-                                                          result.getContext().getYukonUser(), 
-                                                          String.valueOf(result.getCacheKey()));
+            log(commanderEventLogService::locateRouteInitiated, result);
             break;
         case COMPLETE:
-            commanderEventLogService.locateRouteCompleted(accessor.getMessage(result.getAction()),
-                                                          result.getInputString(),
-                                                          result.getResultStatsString(accessor), 
-                                                          accessor.getMessage(result.getStatus()), 
-                                                          String.valueOf(result.getCacheKey()));
+            log(commanderEventLogService::locateRouteCompleted, result);
             break;
         case CANCELLED:
-            commanderEventLogService.locateRouteCancelled(accessor.getMessage(result.getAction()), 
-                                                          result.getInputString(),
-                                                          result.getResultStatsString(accessor), 
-                                                          result.getContext().getYukonUser(),
-                                                          String.valueOf(result.getCacheKey()));
+            log(commanderEventLogService::locateRouteCancelled, result);
             break;
         }
-
     }
 
     private void logDisconnect(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            disconnectEventLogService.disconnectInitiated(accessor.getMessage(result.getAction()), 
-                                                          result.getInputString(), 
-                                                          result.getCounts().getTotalCount(), 
-                                                          result.getContext().getYukonUser(), 
-                                                          String.valueOf(result.getCacheKey()));
+            log((LogInitiated)disconnectEventLogService::disconnectInitiated, result);
             break;
         case COMPLETE:
-            disconnectEventLogService.disconnectCompleted(accessor.getMessage(result.getAction()),
-                                                          result.getInputString(),
-                                                          result.getResultStatsString(accessor), 
-                                                          accessor.getMessage(result.getStatus()), 
-                                                          String.valueOf(result.getCacheKey()));
+            log(disconnectEventLogService::disconnectCompleted, result);
             break;
         case CANCELLED:
-            disconnectEventLogService.disconnectCancelled(accessor.getMessage(result.getAction()), 
-                                                          result.getInputString(),
-                                                          result.getResultStatsString(accessor), 
-                                                          result.getContext().getYukonUser(),
-                                                          String.valueOf(result.getCacheKey()));
+            log(disconnectEventLogService::disconnectCancelled, result);
             break;
         }
-
     }
 
     private void logDemandReset(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            demandResetEventLogService.demandResetInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getInputString(), 
-                                                            result.getCounts().getTotalCount(), 
-                                                            result.getContext().getYukonUser(), 
-                                                            String.valueOf(result.getCacheKey()));
+            log(demandResetEventLogService::demandResetInitiated, result);
             break;
         case COMPLETE:
-            demandResetEventLogService.demandResetCompleted(accessor.getMessage(result.getAction()), 
-                                                            result.getInputString(), 
-                                                            result.getResultStatsString(accessor),
-                                                            accessor.getMessage(result.getStatus()), 
-                                                            String.valueOf(result.getCacheKey()));
+            log(demandResetEventLogService::demandResetCompleted, result);
             break;
         case CANCELLED:
-            demandResetEventLogService.demandResetCancelled(accessor.getMessage(result.getAction()), 
-                                                            result.getInputString(), 
-                                                            result.getResultStatsString(accessor),
-                                                            result.getContext().getYukonUser(),
-                                                            String.valueOf(result.getCacheKey()));
+            log(demandResetEventLogService::demandResetCancelled, result);
             break;
         }
-
     }
 
     private void logSendConfig(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            deviceConfigEventLogService.sendConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getInputString(), 
-                                                            result.getCounts().getTotalCount(), 
-                                                            result.getContext().getYukonUser(), 
-                                                            String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::sendConfigInitiated, result);
             break;
         case COMPLETE:
-            deviceConfigEventLogService.sendConfigCompleted(accessor.getMessage(result.getAction()), 
-                                                            result.getInputString(), 
-                                                            result.getResultStatsString(accessor),
-                                                            accessor.getMessage(result.getStatus()), 
-                                                            String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::sendConfigCompleted, result);
             break;
         case CANCELLED:
-            deviceConfigEventLogService.sendConfigCancelled(accessor.getMessage(result.getAction()), 
-                                                            result.getInputString(), 
-                                                            result.getResultStatsString(accessor),
-                                                            result.getContext().getYukonUser(),
-                                                            String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::sendConfigCancelled, result);
             break;
         }
-
     }
 
     private void logReadConfig(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            deviceConfigEventLogService.readConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getInputString(), 
-                                                            result.getCounts().getTotalCount(), 
-                                                            result.getContext().getYukonUser(), 
-                                                            String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::readConfigInitiated, result);
             break;
         case COMPLETE:
-            deviceConfigEventLogService.readConfigCompleted(accessor.getMessage(result.getAction()), 
-                                                            result.getInputString(), 
-                                                            result.getResultStatsString(accessor),
-                                                            accessor.getMessage(result.getStatus()), 
-                                                            String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::readConfigCompleted, result);
             break;
         case CANCELLED:
-            deviceConfigEventLogService.readConfigCancelled(accessor.getMessage(result.getAction()), 
-                                                            result.getInputString(), 
-                                                            result.getResultStatsString(accessor),
-                                                            result.getContext().getYukonUser(),
-                                                            String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::readConfigCancelled, result);
             break;
         }
-
     }
 
     private void logVerifyConfig(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            deviceConfigEventLogService.verifyConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                              result.getInputString(), 
-                                                              result.getCounts().getTotalCount(), 
-                                                              result.getContext().getYukonUser(), 
-                                                              String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::verifyConfigInitiated, result);
             break;
         case COMPLETE:
-            deviceConfigEventLogService.verifyConfigCompleted(accessor.getMessage(result.getAction()),
-                                                              result.getInputString(),
-                                                              result.getResultStatsString(accessor), 
-                                                              accessor.getMessage(result.getStatus()), 
-                                                              String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::verifyConfigCompleted, result);
             break;
         case CANCELLED:
-            deviceConfigEventLogService.verifyConfigCancelled(accessor.getMessage(result.getAction()), 
-                                                              result.getInputString(),
-                                                              result.getResultStatsString(accessor), 
-                                                              result.getContext().getYukonUser(),
-                                                              String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::verifyConfigCancelled, result);
             break;
         }
-
     }
 
     private void logMassChange(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            endpointEventLogService.changeInitiated(accessor.getMessage(result.getAction()), 
-                                                    result.getInputString(), 
-                                                    result.getCounts().getTotalCount(), 
-                                                    result.getContext().getYukonUser(), 
-                                                    String.valueOf(result.getCacheKey()));
+            log(endpointEventLogService::changeInitiated, result);
             break;
         case COMPLETE:
-            endpointEventLogService.changeCompleted(accessor.getMessage(result.getAction()),
-                                                    result.getInputString(),
-                                                    result.getResultStatsString(accessor), 
-                                                    accessor.getMessage(result.getStatus()), 
-                                                    String.valueOf(result.getCacheKey()));
+            log(endpointEventLogService::changeCompleted, result);
             break;
         case CANCELLED:
-            endpointEventLogService.changeCancelled(accessor.getMessage(result.getAction()), 
-                                                    result.getInputString(),
-                                                    result.getResultStatsString(accessor), 
-                                                    result.getContext().getYukonUser(),
-                                                    String.valueOf(result.getCacheKey()));
+            log(endpointEventLogService::changeCancelled, result);
             break;
         }
-
     }
 
     private void logChangeType(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            endpointEventLogService.changeTypeInitiated(accessor.getMessage(result.getAction()), 
-                                                        result.getInputString(), 
-                                                        result.getCounts().getTotalCount(), 
-                                                        result.getContext().getYukonUser(), 
-                                                        String.valueOf(result.getCacheKey()));
+            log(endpointEventLogService::changeTypeInitiated, result);
             break;
         case COMPLETE:
-            endpointEventLogService.changeTypeCompleted(accessor.getMessage(result.getAction()),
-                                                        result.getInputString(),
-                                                        result.getResultStatsString(accessor), 
-                                                        accessor.getMessage(result.getStatus()), 
-                                                        String.valueOf(result.getCacheKey()));
+            log(endpointEventLogService::changeTypeCompleted, result);
             break;
         case CANCELLED:
-            endpointEventLogService.changeTypeCancelled(accessor.getMessage(result.getAction()), 
-                                                        result.getInputString(),
-                                                        result.getResultStatsString(accessor), 
-                                                        result.getContext().getYukonUser(),
-                                                        String.valueOf(result.getCacheKey()));
+            log(endpointEventLogService::changeTypeCancelled, result);
             break;
         }
-
     }
 
     private void logMassDelete(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            endpointEventLogService.deleteInitiated(accessor.getMessage(result.getAction()), 
-                                                    result.getInputString(), 
-                                                    result.getCounts().getTotalCount(), 
-                                                    result.getContext().getYukonUser(), 
-                                                    String.valueOf(result.getCacheKey()));
+            log(endpointEventLogService::deleteInitiated, result);
             break;
         case COMPLETE:
-            endpointEventLogService.deleteCompleted(accessor.getMessage(result.getAction()),
-                                                    result.getInputString(),
-                                                    result.getResultStatsString(accessor), 
-                                                    accessor.getMessage(result.getStatus()), 
-                                                    String.valueOf(result.getCacheKey()));
+            log(endpointEventLogService::deleteCompleted, result);
             break;
         case CANCELLED:
-            endpointEventLogService.deleteCancelled(accessor.getMessage(result.getAction()), 
-                                                    result.getInputString(),
-                                                    result.getResultStatsString(accessor), 
-                                                    result.getContext().getYukonUser(),
-                                                    String.valueOf(result.getCacheKey()));
+            log(endpointEventLogService::deleteCancelled, result);
             break;
         }
-
     }
 
     private void logAddPoints(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            pointEventLogService.pointsCreateInitiated(accessor.getMessage(result.getAction()), 
-                                                       result.getInputString(), 
-                                                       result.getCounts().getTotalCount(), 
-                                                       result.getContext().getYukonUser(), 
-                                                       String.valueOf(result.getCacheKey()));
+            log(pointEventLogService::pointsCreateInitiated, result);
             break;
         case COMPLETE:
-            pointEventLogService.pointsCreateCompleted(accessor.getMessage(result.getAction()),
-                                                       result.getInputString(),
-                                                       result.getResultStatsString(accessor), 
-                                                       accessor.getMessage(result.getStatus()), 
-                                                       String.valueOf(result.getCacheKey()));
+            log(pointEventLogService::pointsCreateCompleted, result);
             break;
         case CANCELLED:
-            pointEventLogService.pointsCreateCancelled(accessor.getMessage(result.getAction()), 
-                                                       result.getInputString(),
-                                                       result.getResultStatsString(accessor), 
-                                                       result.getContext().getYukonUser(),
-                                                       String.valueOf(result.getCacheKey()));
+            log(pointEventLogService::pointsCreateCancelled, result);
             break;
         }
-
     }
 
     private void logUpdatePoints(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            pointEventLogService.pointsUpdateInitiated(accessor.getMessage(result.getAction()), 
-                                                       result.getInputString(), 
-                                                       result.getCounts().getTotalCount(), 
-                                                       result.getContext().getYukonUser(), 
-                                                       String.valueOf(result.getCacheKey()));
+            log(pointEventLogService::pointsUpdateInitiated, result);
             break;
         case COMPLETE:
-            pointEventLogService.pointsUpdateCompleted(accessor.getMessage(result.getAction()),
-                                                       result.getInputString(),
-                                                       result.getResultStatsString(accessor), 
-                                                       accessor.getMessage(result.getStatus()), 
-                                                       String.valueOf(result.getCacheKey()));
+            log(pointEventLogService::pointsUpdateCompleted, result);
             break;
         case CANCELLED:
-            pointEventLogService.pointsUpdateCancelled(accessor.getMessage(result.getAction()), 
-                                                       result.getInputString(),
-                                                       result.getResultStatsString(accessor), 
-                                                       result.getContext().getYukonUser(),
-                                                       String.valueOf(result.getCacheKey()));
+            log(pointEventLogService::pointsUpdateCancelled, result);
             break;
         }
-
     }
 
     private void logRemovePoints(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            pointEventLogService.pointsDeleteInitiated(accessor.getMessage(result.getAction()), 
-                                                       result.getInputString(), 
-                                                       result.getCounts().getTotalCount(), 
-                                                       result.getContext().getYukonUser(), 
-                                                       String.valueOf(result.getCacheKey()));
+            log(pointEventLogService::pointsDeleteInitiated, result);
             break;
         case COMPLETE:
-            pointEventLogService.pointsDeleteCompleted(accessor.getMessage(result.getAction()),
-                                                       result.getInputString(),
-                                                       result.getResultStatsString(accessor), 
-                                                       accessor.getMessage(result.getStatus()), 
-                                                       String.valueOf(result.getCacheKey()));
+            log(pointEventLogService::pointsDeleteCompleted, result);
             break;
         case CANCELLED:
-            pointEventLogService.pointsDeleteCancelled(accessor.getMessage(result.getAction()), 
-                                                       result.getInputString(),
-                                                       result.getResultStatsString(accessor), 
-                                                       result.getContext().getYukonUser(),
-                                                       String.valueOf(result.getCacheKey()));
+            log(pointEventLogService::pointsDeleteCancelled, result);
             break;
         }
-
     }
 
     private void logAssignConfig(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            deviceConfigEventLogService.assignConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                              result.getInputString(), 
-                                                              result.getCounts().getTotalCount(), 
-                                                              result.getContext().getYukonUser(), 
-                                                              String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::assignConfigInitiated, result);
             break;
         case COMPLETE:
-            deviceConfigEventLogService.assignConfigCompleted(accessor.getMessage(result.getAction()),
-                                                              result.getInputString(),
-                                                              result.getResultStatsString(accessor), 
-                                                              accessor.getMessage(result.getStatus()), 
-                                                              String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::assignConfigCompleted, result);
             break;
         }
-
     }
 
     private void logUnassignConfig(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            deviceConfigEventLogService.unassignConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                                result.getInputString(), 
-                                                                result.getCounts().getTotalCount(), 
-                                                                result.getContext().getYukonUser(), 
-                                                                String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::unassignConfigInitiated, result);
             break;
         case COMPLETE:
-            deviceConfigEventLogService.unassignConfigCompleted(accessor.getMessage(result.getAction()),
-                                                                result.getInputString(),
-                                                                result.getResultStatsString(accessor), 
-                                                                accessor.getMessage(result.getStatus()), 
-                                                                String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::unassignConfigCompleted, result);
             break;
         }
-
     }
 
     private void logReadAttribute(CollectionActionResult result) {
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            deviceConfigEventLogService.readConfigInitiated(accessor.getMessage(result.getAction()), 
-                                                            result.getInputString(), 
-                                                            result.getCounts().getTotalCount(), 
-                                                            result.getContext().getYukonUser(), 
-                                                            String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::readConfigInitiated, result);
             break;
         case COMPLETE:
-            deviceConfigEventLogService.readConfigCompleted(accessor.getMessage(result.getAction()), 
-                                                            result.getInputString(), 
-                                                            result.getResultStatsString(accessor),
-                                                            accessor.getMessage(result.getStatus()), 
-                                                            String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::readConfigCompleted, result);
             break;
         case CANCELLED:
-            deviceConfigEventLogService.readConfigCancelled(accessor.getMessage(result.getAction()), 
-                                                            result.getInputString(), 
-                                                            result.getResultStatsString(accessor),
-                                                            result.getContext().getYukonUser(),
-                                                            String.valueOf(result.getCacheKey()));
+            log(deviceConfigEventLogService::readConfigCancelled, result);
             break;
         }
-
     }
 
     private void logSendCommand(CollectionActionResult result){
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-            commanderEventLogService.groupCommandInitiated(accessor.getMessage(result.getAction()), 
-                                                           result.getInputString(), 
-                                                           result.getCounts().getTotalCount(), 
-                                                           result.getContext().getYukonUser(), 
-                                                           String.valueOf(result.getCacheKey()));
+            log(commanderEventLogService::groupCommandInitiated, result);
             break;
         case COMPLETE:
-            commanderEventLogService.groupCommandCompleted(accessor.getMessage(result.getAction()),
-                                                           result.getInputString(),
-                                                           result.getResultStatsString(accessor), 
-                                                           accessor.getMessage(result.getStatus()), 
-                                                           String.valueOf(result.getCacheKey()));
+            log(commanderEventLogService::groupCommandCompleted, result);
             break;
         case CANCELLED:
-            commanderEventLogService.groupCommandCancelled(accessor.getMessage(result.getAction()), 
-                                                           result.getInputString(),
-                                                           result.getResultStatsString(accessor), 
-                                                           result.getContext().getYukonUser(),
-                                                           String.valueOf(result.getCacheKey()));
+            log(commanderEventLogService::groupCommandCancelled, result);
             break;
         }
     }
     
     private void logMeterProgramUpload(CollectionActionResult result) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-        	meterProgrammingEventLogService.meterProgramUploadInitiated(accessor.getMessage(result.getAction()), 
-                                                                      result.getInputString(), 
-                                                                      result.getCounts().getTotalCount(), 
-                                                                      result.getContext().getYukonUser(), 
-                                                                      String.valueOf(result.getCacheKey()));
+            log(meterProgrammingEventLogService::meterProgramUploadInitiated, result);
             break;
         case COMPLETE:
-        	meterProgrammingEventLogService.meterProgramUploadCompleted(accessor.getMessage(result.getAction()),
-                                                                      result.getInputString(),
-                                                                      result.getResultStatsString(accessor), 
-                                                                      accessor.getMessage(result.getStatus()), 
-                                                                      String.valueOf(result.getCacheKey()));
+            log(meterProgrammingEventLogService::meterProgramUploadCompleted, result);
             break;
         case CANCELLED:
-        	meterProgrammingEventLogService.meterProgramUploadCancelled(accessor.getMessage(result.getAction()), 
-                                                                      result.getInputString(),
-                                                                      result.getResultStatsString(accessor), 
-                                                                      result.getContext().getYukonUser(),
-                                                                      String.valueOf(result.getCacheKey()));
+            log(meterProgrammingEventLogService::meterProgramUploadCancelled, result);
             break;
         }
     }
     
     private void logMeterProgramStatusRead(CollectionActionResult result) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
         switch (result.getStatus()) {
         case STARTED:
-        	meterProgrammingEventLogService.meterProgramStatusReadInitiated(accessor.getMessage(result.getAction()), 
-                                                                      result.getInputString(), 
-                                                                      result.getCounts().getTotalCount(), 
-                                                                      result.getContext().getYukonUser(), 
-                                                                      String.valueOf(result.getCacheKey()));
+            log(meterProgrammingEventLogService::meterProgramStatusReadInitiated, result);
             break;
         case COMPLETE:
-        	meterProgrammingEventLogService.meterProgramStatusReadCompleted(accessor.getMessage(result.getAction()),
-                                                                      result.getInputString(),
-                                                                      result.getResultStatsString(accessor), 
-                                                                      accessor.getMessage(result.getStatus()), 
-                                                                      String.valueOf(result.getCacheKey()));
+            log(meterProgrammingEventLogService::meterProgramStatusReadCompleted, result);
             break;
         case CANCELLED:
-        	meterProgrammingEventLogService.meterProgramStatusReadCancelled(accessor.getMessage(result.getAction()), 
-                                                                      result.getInputString(),
-                                                                      result.getResultStatsString(accessor), 
-                                                                      result.getContext().getYukonUser(),
-                                                                      String.valueOf(result.getCacheKey()));
+            log(meterProgrammingEventLogService::meterProgramStatusReadCancelled, result);
             break;
         }
     }

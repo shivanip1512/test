@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.util.CollectionUtils;
 
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.clientutils.YukonLogManager;
@@ -38,6 +42,8 @@ import com.cannontech.web.tools.device.programming.model.MeterProgramSummaryDeta
 import com.cannontech.web.tools.device.programming.model.MeterProgramWidgetDisplay;
 import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter;
 import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter.DisplayableStatus;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 
 public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDao{
 	
@@ -180,7 +186,7 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         int start = paging.getStartIndex();
         int count = paging.getItemsPerPage();
 
-        PagingResultSetExtractor<MeterProgramSummaryDetail> rse = new PagingResultSetExtractor<>(start, count, programSummaryDetail);
+        var rse = new PagingResultSetExtractor<>(start, count, programSummaryDetail);
         jdbcTemplate.query(allRowsSql, rse);
 
         SearchResults<MeterProgramSummaryDetail> searchResult = new SearchResults<>();
@@ -193,23 +199,19 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
     private SqlStatementBuilder buildDetailSelect(MeterProgrammingSummaryFilter filter, SortBy sortBy, Direction direction,
             boolean selectCount, YukonUserContext context) {
         
-        List<MeterProgramInfo> programs = CollectionUtils.isEmpty(filter.getPrograms()) ? getMeterProgramInfos(context)
-                : filter.getPrograms();
-        List<DisplayableStatus> statuses = CollectionUtils.isEmpty(filter.getStatuses()) ? Arrays.asList(DisplayableStatus.values())
-                : filter.getStatuses();
+        List<MeterProgramInfo> programs = coalesce(filter.getPrograms(), () -> getMeterProgramInfos(context));
+        List<DisplayableStatus> statuses = coalesce(filter.getStatuses(), () -> Arrays.asList(DisplayableStatus.values()));
         List<String> guids = programs.stream()
-                .filter(program -> program.getGuid() != null && !program.getGuid().isBlank())
+                .filter(program -> StringUtils.isNotBlank(program.getGuid()))
                 .map(MeterProgramInfo::getGuid)
                 .collect(Collectors.toList());
-        List<String> prefixes = programs.stream()
-                .filter(program -> program.getGuid() == null || program.getGuid().isBlank())
-                .map(program -> program.getSource().getPrefix())
-                .collect(Collectors.toList());
+        Set<MeterProgramSource> sources = programs.stream()
+                .filter(program -> StringUtils.isBlank(program.getGuid()))
+                .map(program -> program.getSource())
+                .collect(Collectors.toSet());
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        List<Pair<String, String>> pairs = prefixes.stream()
-                .map(prefix -> Pair.of(prefix, accessor.getMessage(MeterProgramSource.getByPrefix(prefix).getFormatKey())))
-                .collect(Collectors.toList());
+        Map<MeterProgramSource, String> translatedSources = Maps.asMap(sources, source -> accessor.getMessage(source.getFormatKey()));
 
         List<ProgrammingStatus> programmingStatuses = new ArrayList<>();
         statuses.forEach(status -> programmingStatuses.addAll(status.getProgramStatuses()));
@@ -222,7 +224,7 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
             sql.append("    CASE");
             sql.append("        WHEN Name IS NULL THEN");
             sql.append("            CASE");
-            pairs.forEach(pair -> sql.append("WHEN Source").eq(pair.getKey()).append("THEN").appendArgument(pair.getValue()));
+            translatedSources.forEach((source, translated) -> sql.append("WHEN Source").eq(source.getPrefix()).append("THEN").appendArgument(translated));
             sql.append("            END");
             sql.append("        ELSE Name");
             sql.append("    END as ProgramName");
@@ -231,15 +233,13 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         sql.append("FROM MeterProgramStatus status FULL JOIN MeterProgram program ON program.Guid = status.reportedGuid");
         sql.append("JOIN YukonPAObject ypo ON status.DeviceId = ypo.PAObjectID");
         sql.append("LEFT JOIN DeviceMeterGroup dmg ON status.DeviceId = dmg.DeviceId");
-        sql.append("WHERE (ReportedGuid").in(guids).append("OR").append("Source").in(prefixes).append(")");
-        if(programmingStatuses.contains(ProgrammingStatus.FAILED)) {
-            programmingStatuses.remove(ProgrammingStatus.FAILED);
-            sql.append("AND status.Status LIKE 'FAILED%'");
-            if(!programmingStatuses.isEmpty()) {
-                sql.append("OR status.Status").in_k(programmingStatuses);
-            }
-        } else {
+        sql.append("WHERE (ReportedGuid").in(guids).append("OR").append("Source").in(Iterables.transform(sources, s -> s.getPrefix())).append(")");
+        if(programmingStatuses.remove(ProgrammingStatus.FAILED) == false) {
             sql.append("AND status.Status").in_k(programmingStatuses);
+        } else if(programmingStatuses.isEmpty()) {
+            sql.append("AND status.Status LIKE 'FAILED%'");
+        } else {
+            sql.append("AND (status.Status LIKE 'FAILED%' OR status.Status").in_k(programmingStatuses).append(")");
         }
         if (!CollectionUtils.isEmpty(filter.getGroups())) {
             sql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(filter.getGroups(), "status.DeviceId"));
@@ -250,6 +250,12 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
             sql.append(direction);
         }
         return sql;
+    }
+
+    private <T> List<T> coalesce(List<T> items, Supplier<List<T>> defaults) {
+        return Optional.of(items)
+                    .filter(CollectionUtils::isNotEmpty)
+                    .orElseGet(defaults);
     }
 }
 
