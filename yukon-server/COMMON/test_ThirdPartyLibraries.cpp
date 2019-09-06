@@ -10,29 +10,6 @@
 
 BOOST_AUTO_TEST_SUITE(test_third_party_libraries)
 
-template <size_t Size>
-std::string arrayToHexString(std::array<unsigned char, Size>& buf)
-{
-    std::string hex;
-
-    for( unsigned char c : buf )
-    {
-        auto nibble = c / 16;
-
-        hex += (nibble > 9)
-            ? nibble + 'a' - 10 
-            : nibble + '0';
-
-        nibble = c % 16;
-
-        hex += (nibble > 9)
-            ? nibble + 'a' - 10
-            : nibble + '0';
-    }
-
-    return hex;
-}
-
 BOOST_AUTO_TEST_CASE(test_library_environments)
 {
     namespace fs = std::filesystem;
@@ -45,13 +22,11 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
         {
             std::array<char, MAX_PATH> libraryPath;
 
-            GetEnvironmentVariable(library.path.c_str(), libraryPath.data(), libraryPath.size());
-
-            const auto pathLen = strnlen_s(libraryPath.data(), libraryPath.size());
-
-            if( pathLen == 0 )
+            auto pathLen = GetEnvironmentVariable(library.path.c_str(), libraryPath.data(), libraryPath.size());
+            
+            if( ! pathLen )
             {
-                BOOST_ERROR("No path");
+                BOOST_ERROR("No environment variable for " << library.path);
 
                 continue;
             }
