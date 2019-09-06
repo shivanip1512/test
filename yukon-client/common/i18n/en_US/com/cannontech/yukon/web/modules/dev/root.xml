@@ -641,6 +641,6 @@
     <entry key="yukon.web.modules.dev.username">Username</entry>
     <entry key="yukon.web.modules.dev.password">Password</entry>
     <entry key="yukon.web.modules.dev.filename">Save to</entry>
-    
+    <entry key="yukon.web.modules.dev.sftp.error">An error occurred in SFTP file transfer: {0}</entry>
     
 </properties>
