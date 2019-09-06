@@ -9,7 +9,7 @@
 #include "guard.h"
 
 #include <boost/algorithm/string.hpp>
-#include "boost/optional/optional.hpp"
+#include <boost/optional/optional.hpp>
 
 /** Public string accessor. */
 static CtiMutex g_mux;
