@@ -10,59 +10,57 @@ import com.cannontech.core.dao.NotFoundException;
 
 public interface MeterProgrammingDao {
 
-	/**
-	 * Returns program by guid
-	 * 
-	 * @throws NotFoundException
-	 */
-	 MeterProgram getMeterProgram(UUID guid);
+    /**
+     * Returns program by guid
+     * @throws NotFoundException
+     */
+    MeterProgram getMeterProgram(UUID guid);
 
-	/**
-	 * Saves program
-	 * @return guid created
-	 * 
-	 * @throw DuplicateException - if description is used by another program
-	 */
-	UUID saveMeterProgram(MeterProgram program);
+    /**
+     * Saves program
+     * @return guid created
+     * @throw DuplicateException - if description is used by another program
+     */
+    UUID saveMeterProgram(MeterProgram program);
 
-	/**
-	 * Returns all programs
-	 */
-	List<MeterProgram> getAllMeterPrograms();
+    /**
+     * Returns all programs
+     */
+    List<MeterProgram> getAllMeterPrograms();
 
-	/**
-	 * Assigns device to programs
-	 * @param guid - program guid
-	 */
-	void assignDevicesToProgram(UUID guid, List<SimpleDevice> devices);
+    /**
+     * Assigns device to programs
+     * @param guid - program guid
+     */
+    void assignDevicesToProgram(UUID guid, List<SimpleDevice> devices);
 
-	/**
-	 * Unassigns device from programs
-	 */
-	void unassignDeviceFromProgram(int deviceId);
+    /**
+     * Unassigns device from programs
+     */
+    void unassignDeviceFromProgram(int deviceId);
 
-	/**
-	 * Deletes meter program
-	 */
-	void deleteMeterProgram(UUID guid);
-	
-	/**
-	 * Returns program by device id
-	 */
-	MeterProgram getProgramByDeviceId(int deviceId);
+    /**
+     * Deletes meter program
+     */
+    void deleteMeterProgram(UUID guid);
 
-	/**
-	 * Returns status by device id
-	 */
-	MeterProgramStatus getMeterProgramStatus(int deviceId);
+    /**
+     * Returns program by device id
+     */
+    MeterProgram getProgramByDeviceId(int deviceId);
 
-	/**
-	 * Creates status
-	 */
-	void createMeterProgramStatus(MeterProgramStatus status);
+    /**
+     * Returns status by device id
+     */
+    MeterProgramStatus getMeterProgramStatus(int deviceId);
 
-	/**
-	 * Updates status
-	 */
-	void updateMeterProgramStatus(MeterProgramStatus status);
+    /**
+     * Creates status
+     */
+    void createMeterProgramStatus(MeterProgramStatus status);
+
+    /**
+     * Updates status
+     */
+    void updateMeterProgramStatus(MeterProgramStatus status);
 }
