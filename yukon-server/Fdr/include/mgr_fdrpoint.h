@@ -18,8 +18,8 @@ class IM_EX_FDRBASE CtiFDRManager
         DEBUG_INSTRUMENTATION;
 
         // constructors, destructor
-        CtiFDRManager(const std::string & InterfaceName);
-        CtiFDRManager(const std::string & InterfaceName, std::string & aWhereSelectStr);
+        CtiFDRManager(const std::string InterfaceName);
+        CtiFDRManager(const std::string InterfaceName, std::string aWhereSelectStr);
 
         virtual ~CtiFDRManager();
 
