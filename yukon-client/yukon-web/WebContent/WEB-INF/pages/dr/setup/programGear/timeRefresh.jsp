@@ -17,10 +17,10 @@
                     </tags:nameValue2>
 
                     <cti:msg2 key=".fixedShedTime" var="fixedShedTime" />
-                    <input type=hidden id="fixedShedTime" value="${fixedShedTime}"/>
+                    <input type=hidden id="fixedShedTime" value="${fixedShedTime}:"/>
 
                     <cti:msg2 key=".maxShedTime" var="maxShedTime" />
-                    <input type=hidden id="maxShedTime" value="${maxShedTime}"/>
+                    <input type=hidden id="maxShedTime" value="${maxShedTime}:"/>
 
                     <tags:nameValue2 id="js-shedTime-row" nameKey=".fixedShedTime">
                         <tags:intervalDropdown path="fields.shedTime" intervals="${shedTime}" />
