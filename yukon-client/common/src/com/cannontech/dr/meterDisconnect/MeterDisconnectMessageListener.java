@@ -154,6 +154,7 @@ public class MeterDisconnectMessageListener {
 
                 int programId = loadGroupDao.getProgramIdByGroupId(groupId);
                 Optional<Integer> eventId = drStatusService.findActiveEventForProgram(programId);
+                log.debug("Event " + eventId + " found during lookup");
                 eventId.ifPresentOrElse(id -> drStatusService.restoreSent(new Instant(restoreTime), id),
                                         () -> log.error("No active dr disconnect event found for program ID " + programId));
                 
@@ -175,10 +176,10 @@ public class MeterDisconnectMessageListener {
                 if (eventId.isPresent()) {
                     statusCallback = new DrDisconnectStatusCallback(RESTORE, eventId.get(), drStatusService, 
                             smartNotificationEventCreationService, getProgramName(programId));
-
+                }
+                log.debug("Sending Disconnect Command to collection " + collection);
                 disconnectService.execute(DisconnectCommand.CONNECT, collection, doNothingCallback,
                                           statusCallback, YukonUserContext.system);
-                }
                 controlHistoryService.sendControlHistoryRestoreMessage(groupId, Instant.now());
             } catch (JMSException e) {
                 log.error("Error parsing Meter Disconnect restore message from LM", e);
