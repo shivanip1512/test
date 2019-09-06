@@ -1,4 +1,4 @@
-package com.cannontech.rest.api.dr.setup;
+package com.cannontech.rest.api.documentation;
 
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
