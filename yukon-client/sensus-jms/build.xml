@@ -116,7 +116,7 @@
           <fileset file="../third-party/commons-lang-2.6.jar"/>
           <fileset file="../third-party/commons-lang3-3.4.jar"/>
           <fileset file="../third-party/commons-logging-1.1.3.jar"/>
-          <fileset file="../third-party/commons-vfs2-2.0.jar"/>
+          <fileset file="../third-party/commons-vfs2-2.4.1.jar"/>
           <fileset file="../third-party/jna-4.5.0.jar"/>
           <fileset file="../third-party/netty-all-4.0.47.Final.jar"/>
           <fileset file="../third-party/jna-platform-4.5.0.jar"/>

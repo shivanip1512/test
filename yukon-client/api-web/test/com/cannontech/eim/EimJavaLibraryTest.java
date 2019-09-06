@@ -1,6 +1,6 @@
 package com.cannontech.eim;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Arrays;
@@ -56,7 +56,7 @@ public class EimJavaLibraryTest {
         "commons-discovery-0.5.jar",
         "commons-lang-2.6.jar",
         "commons-validator-1.4.0.jar",
-        "commons-vfs2-2.0.jar",
+        "commons-vfs2-2.4.1.jar",
         "easymock-3.0.jar",
         "ecj-4.10.jar",
         "el-api.jar",
