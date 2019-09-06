@@ -74,7 +74,7 @@ yukon.dr.setup.program = (function() {
             'on': '#js-remove-gear-' + gearId,
             'strings':{
                 'title': yg.text.confirmRemoveTitle,
-                'message': yg.text.confirmRemoveMessage.replace("{0}", gearName),
+                'message': yg.text.confirmRemoveMessage.replace("{0}", $('<span />').text(gearName).html()),
                 'ok': yg.text.remove,
                 'cancel': yg.text.cancel
             }
