@@ -379,6 +379,7 @@
          	   <arg value="-Dsrc_path=C:/Yukon/YukonMisc/YukonDatabase/DatabaseUpdates/SqlServer"/>
                <arg value="-Dverbose=false"/>
                <arg value="-DignoreError=true"/>
+               <arg value="-DexitOnException=true"/>
                <jvmarg value="-Dcatalina.base=C:\Yukon\Server\web"/>
                <jvmarg value="-Dcatalina.home=C:\Yukon\Server\web"/>
                <jvmarg value="-Djava.io.tmpdir=C:\Yukon\Server\web\temp"/>
@@ -399,6 +400,7 @@
                    <arg value="-Dsrc_path=C:/Yukon/YukonMisc/YukonDatabase/DatabaseUpdates/Oracle"/>
                    <arg value="-Dverbose=false"/>
                    <arg value="-DignoreError=true"/>
+                   <arg value="-DexitOnException=true"/>
                    <jvmarg value="-Dcatalina.base=C:\Yukon\Server\web"/>
                    <jvmarg value="-Dcatalina.home=C:\Yukon\Server\web"/>
                    <jvmarg value="-Djava.io.tmpdir=C:\Yukon\Server\web\temp"/>
