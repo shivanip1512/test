@@ -105,7 +105,7 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
         sql.append("FROM DrDisconnectEvent");
         sql.append("WHERE ProgramId").eq(programId);
         sql.append("AND StartTime").lt(now);
-        sql.append("AND EndTime").gt(now);
+        sql.append("AND DATEADD (day, 1, EndTime)").gte(now);
         
         // This will error if there are multiple active events
         Integer eventId = jdbcTemplate.queryForObject(sql, TypeRowMapper.INTEGER_NULLABLE);
