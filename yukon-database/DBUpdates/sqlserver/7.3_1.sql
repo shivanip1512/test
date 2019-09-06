@@ -32,7 +32,7 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-19063-1', '7.4.0', GETDATE());
 /* @end YUK-19063-1 */
 
-/* @start YUK-19063 */
+/* @start YUK-19063-1 */
 CREATE TABLE MeterProgram (
     Guid            VARCHAR(40)         NOT NULL,
     Name            VARCHAR(100)        NOT NULL,
@@ -81,8 +81,8 @@ ALTER TABLE MeterProgramStatus
     ON DELETE CASCADE;
 GO
 
-INSERT INTO DBUpdates VALUES ('YUK-19063', '7.3.1', GETDATE());
-/* @end YUK-19063 */
+INSERT INTO DBUpdates VALUES ('YUK-19063-1', '7.3.1', GETDATE());
+/* @end YUK-19063-1 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
