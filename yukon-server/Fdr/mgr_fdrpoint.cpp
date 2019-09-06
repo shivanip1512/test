@@ -17,13 +17,13 @@ using std::endl;
 
 // constructors, destructors, operators first
 
-CtiFDRManager::CtiFDRManager(const string & aInterfaceName):
+CtiFDRManager::CtiFDRManager(const string aInterfaceName):
 iInterfaceName(aInterfaceName),
 iWhereSelectStr()
 {
 }
 
-CtiFDRManager::CtiFDRManager(const string & aInterfaceName, string & aWhereSelectStr):
+CtiFDRManager::CtiFDRManager(const string aInterfaceName, string aWhereSelectStr):
 iInterfaceName(aInterfaceName),
 iWhereSelectStr(aWhereSelectStr)
 {
