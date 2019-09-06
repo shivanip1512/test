@@ -91,6 +91,8 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
 
         virtual LitePoint lookupPointById(long pointid);
 
+        bool shouldIgnoreOldData() const override;
+
     private:
         DnpId ForeignToYukonId(const CtiFDRDestination &pointDestination);
         bool  YukonToForeignQuality(const int aQuality, const CtiTime lastTimeStamp, const CtiTime Now);

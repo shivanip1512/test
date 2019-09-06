@@ -1295,6 +1295,11 @@ LitePoint DnpSlave::lookupPointById(long pointId)
     return _attributeService.getLitePointById(pointId);
 }
 
+bool DnpSlave::shouldIgnoreOldData() const
+{
+    return true;  //  This should be removed when we implement event (class 123) data
+}
+
 
 ControlStatus DnpSlave::waitForResponse(const long userMessageId)
 {
