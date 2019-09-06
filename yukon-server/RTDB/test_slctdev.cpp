@@ -9,7 +9,6 @@
 
 #include <boost/assign/list_of.hpp>
 
-#include <bitset>
 
 BOOST_AUTO_TEST_SUITE( test_slctdev )
 
@@ -43,30 +42,30 @@ BOOST_AUTO_TEST_CASE(test_is_carrier_lp_device_type)
 
 BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
 {
-    constexpr auto MaxDeviceTypes = 200;
+    const bool X = true, _ = false;
 
-    const std::bitset<MaxDeviceTypes> expected {
-        "__________"  //   0
-        "__________"  //  10
-        "__________"  //  20
-        "__________"  //  30
-        "______XX_X"  //  40
-        "__________"  //  50
-        "__________"  //  60
-        "__________"  //  70
-        "__________"  //  80
-        "____X_____"  //  90
-        "__________"  //  100
-        , '_', 'X' };
+    const std::vector<bool> expected = boost::assign::list_of
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //   0
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  10
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  20
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  30
+        (_)(_)(_)(_)(_) (_)(_)(_)(X)(X)  //  40
+        (_)(X)(_)(_)(_) (_)(_)(_)(_)(_)  //  50
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  60
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
+        (_)(_)(_)(_)(_) (_)(X)(_)(_)(_)  //  90
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  100
+        .repeat(90, _);
 
-    std::bitset<MaxDeviceTypes> results;
+    std::vector<bool> results;
 
-    for ( int type = 0; type < MaxDeviceTypes; ++type )
+    for ( int type = 0; type < 200; ++type )
     {
-        results.set(type, isDnpDeviceType(type));
+        results.push_back(isDnpDeviceType(type));
     }
 
-    BOOST_CHECK_EQUAL( expected, results );
+    BOOST_CHECK_EQUAL_RANGES( expected, results );
 }
 
 
@@ -147,8 +146,8 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class Cti::Devices::Rfn410CentronDevice")
         ("class Cti::Devices::Rfn420CentronDevice")
         ("class Cti::Devices::Rfn420CentronDevice")
-        ("class Cti::Devices::RfnCommercialDevice")
-        ("class Cti::Devices::RfnCommercialDevice")
+        ("class Cti::Devices::Rfn420CentronDevice")
+        ("class Cti::Devices::Rfn420CentronDevice")
         //  70
         ("class Cti::Devices::RfnCommercialDevice")
         ("class Cti::Devices::RfnCommercialDevice")
@@ -164,14 +163,16 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class Cti::Devices::RfnCommercialDevice")
         ("class Cti::Devices::RfnCommercialDevice")
         ("class Cti::Devices::RfnCommercialDevice")
+        ("class Cti::Devices::RfnCommercialDevice")
+        ("class Cti::Devices::RfnCommercialDevice")
         ("class Cti::Devices::RfDaDevice")
         ("class Cti::Devices::RfBatteryNodeDevice")
         ("class Cti::Devices::RfBatteryNodeDevice")
         ("class Cti::Devices::RfBatteryNodeDevice")
         ("class CtiDeviceCCU710")
+        //  90
         ("class CtiDeviceCCU710")
         ("class CtiDeviceCCU")
-        //  90
         ("class Cti::Devices::Ccu721Device")
         ("class CtiDeviceILEX")
         ("class CtiDeviceWelco")
@@ -180,9 +181,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class Cti::Devices::DnpRtuDevice")
         ("class CtiDeviceION")
         ("class CtiDeviceION")
+        //  100
         ("class CtiDeviceION")
         ("class CtiDeviceLCU")
-        //  100
         ("class CtiDeviceLCU")
         ("class CtiDeviceLCU")
         ("class CtiDeviceLCU")
@@ -191,9 +192,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceMarkV")
         ("class CtiDeviceDavis")
         ("class CtiDeviceAlphaPPlus")
+        //  110
         ("class CtiDeviceFulcrum")
         ("class CtiDeviceLandisGyrS4")
-        //  110
         ("class CtiDeviceVectron")
         ("class CtiDeviceAlphaA1")
         ("class CtiDeviceDR87")
@@ -202,9 +203,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class Cti::Devices::CtiDeviceSentinel")
         ("class Cti::Devices::CtiDeviceFocus")
         ("class CtiDeviceKV2")
+        //  120
         ("class CtiDeviceSixnet")
         ("class Cti::Devices::Ipc410ALDevice")
-        //  120
         ("class Cti::Devices::Ipc420ADDevice")
         ("class CtiDeviceLandisGyrS4")
         ("class Cti::Devices::CtiDeviceSentinel")
@@ -213,9 +214,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class Cti::Devices::RDSTransmitter")
         ("class CtiDeviceSnppPagingTerminal")
         ("class CtiDevicePagingReceiver")
+        //  130
         ("class CtiDeviceTnppPagingTerminal")
         ("class CtiDeviceRTC")
-        //  130
         ("class CtiDeviceRTM")
         ("class CtiDeviceSeriesV")
         ("class CtiDeviceLMI")
@@ -224,26 +225,27 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceGridAdvisor")
         ("class CtiDeviceGroupEmetcon")
         ("class CtiDeviceGroupVersacom")
+        //  140
         ("class CtiDeviceGroupRipple")
         ("class CtiDeviceGroupPoint")
-        //  140
         ("class CtiDeviceGroupExpresscom")
         ("class CtiDeviceGroupRfnExpresscom")
         .repeat(6, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        //  150
         ("class CtiDeviceGroupMCT")
         ("class CtiDeviceGroupGolay")
-        //  150
         ("class CtiDeviceGroupSADigital")
         ("class CtiDeviceGroupSA105")
         ("class CtiDeviceGroupSA205")
         ("class CtiDeviceGroupSA305")
         ("class Cti::Devices::MctBroadcastDevice")
-        .repeat(5, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        .repeat(3, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         //  160
-        .repeat(8, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        .repeat(10, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        //  170
         ("class CtiDeviceMacro")
         ("class CtiDeviceSystem")
-        .repeat(9830, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        .repeat(9828, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
             ;
 
     std::vector<std::string> results;
@@ -281,7 +283,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "cbc 7022",                       "class Cti::Devices::Cbc7020Device" },
         { "cbc 7023",                       "class Cti::Devices::Cbc7020Device" },
         { "cbc 7024",                       "class Cti::Devices::Cbc7020Device" },
-        //  10
         { "cbc 7030",                       "class Cti::Devices::Cbc7020Device" },
         { "cbc 8020",                       "class Cti::Devices::Cbc8020Device" },
         { "cbc 8024",                       "class Cti::Devices::Cbc8020Device" },
@@ -292,7 +293,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "ccu-700",                        "class CtiDeviceCCU710" },
         { "ccu-710a",                       "class CtiDeviceCCU710" },
         { "ccu-711",                        "class CtiDeviceCCU" },
-        //  20
         { "ccu-721",                        "class Cti::Devices::Ccu721Device" },
         { "lcr-3102",                       "class Cti::Devices::Lcr3102Device" },
         { "lmt-2",                          "class Cti::Devices::Lmt2Device" },
@@ -303,7 +303,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "mct-224",                        "class Cti::Devices::Mct22xDevice" },
         { "mct-226",                        "class Cti::Devices::Mct22xDevice" },
         { "mct-240",                        "class Cti::Devices::Mct24xDevice" },
-        //  30
         { "mct-242",                        "class Cti::Devices::Mct24xDevice" },
         { "mct-248",                        "class Cti::Devices::Mct24xDevice" },
         { "mct-250",                        "class Cti::Devices::Mct24xDevice" },
@@ -314,7 +313,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "mct-310il",                      "class Cti::Devices::Mct310Device" },
         { "mct-318",                        "class Cti::Devices::Mct31xDevice" },
         { "mct-318l",                       "class Cti::Devices::Mct31xDevice" },
-        //  40
         { "mct-360",                        "class Cti::Devices::Mct31xDevice" },
         { "mct-370",                        "class Cti::Devices::Mct31xDevice" },
         { "mct-410cl",                      "class Cti::Devices::Mct410Device" },
@@ -325,7 +323,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "mct-420cd",                      "class Cti::Devices::Mct420Device" },
         { "mct-420fl",                      "class Cti::Devices::Mct420Device" },
         { "mct-420fd",                      "class Cti::Devices::Mct420Device" },
-        //  50
         { "mct-430a",                       "class Cti::Devices::Mct470Device" },
         { "mct-430a3",                      "class Cti::Devices::Mct470Device" },
         { "mct-430s4",                      "class Cti::Devices::Mct470Device" },
@@ -336,7 +333,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "mct-440-2133b",                  "class Cti::Devices::Mct440_2133BDevice" },
         { "repeater 800",                   "class Cti::Devices::Repeater800Device" },
         { "repeater 801",                   "class Cti::Devices::Repeater800Device" },
-        //  60
         { "repeater 850",                   "class Cti::Devices::Repeater850Device" },
         { "repeater 902",                   "class Cti::Devices::Repeater900Device" },
         { "repeater 921",                   "class Cti::Devices::Repeater900Device" },
@@ -347,18 +343,18 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "rfn-410fd",                      "class Cti::Devices::RfnResidentialDevice" },
         { "rfn-420fl",                      "class Cti::Devices::RfnLgyrFocusAlDevice" },
         { "rfn-420fx",                      "class Cti::Devices::RfnResidentialVoltageDevice" },
-        //  70
         { "rfn-420fd",                      "class Cti::Devices::RfnResidentialVoltageDevice" },
         { "rfn-420frx",                     "class Cti::Devices::RfnResidentialVoltageDevice" },
         { "rfn-420frd",                     "class Cti::Devices::RfnResidentialVoltageDevice" },
         { "rfn-410cl",                      "class Cti::Devices::Rfn410CentronDevice" },
         { "rfn-420cl",                      "class Cti::Devices::Rfn420CentronDevice" },
+        { "rfn-420clw",                     "class Cti::Devices::Rfn420CentronDevice" },
         { "rfn-420cd",                      "class Cti::Devices::Rfn420CentronDevice" },
+        { "rfn-420cdw",                     "class Cti::Devices::Rfn420CentronDevice" },
         { "rfn-430a3d",                     "class Cti::Devices::RfnCommercialDevice" },
         { "rfn-430a3t",                     "class Cti::Devices::RfnCommercialDevice" },
         { "rfn-430a3k",                     "class Cti::Devices::RfnCommercialDevice" },
         { "rfn-430a3r",                     "class Cti::Devices::RfnCommercialDevice" },
-        //  80
         { "rfn-430kv",                      "class Cti::Devices::RfnCommercialDevice" },
         { "rfn-430sl0",                     "class Cti::Devices::RfnCommercialDevice" },
         { "rfn-430sl1",                     "class Cti::Devices::RfnCommercialDevice" },
@@ -369,7 +365,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "rfn-520fax",                     "class Cti::Devices::RfnResidentialVoltageDevice" },
         { "rfn-520frx",                     "class Cti::Devices::RfnResidentialVoltageDevice" },
         { "rfn-520faxd",                    "class Cti::Devices::RfnResidentialVoltageDevice" },
-        //  90
         { "rfn-520frxd",                    "class Cti::Devices::RfnResidentialVoltageDevice" },
         { "rfn-530s4x",                     "class Cti::Devices::RfnCommercialDevice" },
         { "rfn-530s4eax",                   "class Cti::Devices::RfnCommercialDevice" },
@@ -381,7 +376,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "rtu-dnp",                        "class Cti::Devices::DnpRtuDevice" },
         { "rtu-ilex",                       "class CtiDeviceILEX" },
         { "rtu-lmi",                        "class CtiDeviceLMI" },
-        //  100
         { "rtu-modbus",                     "class Cti::Devices::ModbusDevice" },
         { "rtu-ses92",                      "class CtiDeviceRemote" },
         { "rtu-welco",                      "class CtiDeviceWelco" },
@@ -392,7 +386,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "sa-205 group",                   "class CtiDeviceGroupSA205" },
         { "sa-305 group",                   "class CtiDeviceGroupSA305" },
         { "sa-digital group",               "class CtiDeviceGroupSADigital" },
-        //  110
         { "ci customer",                    "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "lm control area",                "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "lm curtail program",             "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
@@ -403,7 +396,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "emetcon group",                  "class CtiDeviceGroupEmetcon" },
         { "expresscom group",               "class CtiDeviceGroupExpresscom" },
         { "rfn expresscom group",           "class CtiDeviceGroupRfnExpresscom" },
-        //  120
         { "mct group",                      "class CtiDeviceGroupMCT" },
         { "point group",                    "class CtiDeviceGroupPoint" },
         { "ripple group",                   "class CtiDeviceGroupRipple" },
@@ -414,7 +406,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "system",                         "class CtiDeviceSystem" },
         { "virtual system",                 "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "lcu-415",                        "class CtiDeviceLCU" },
-        //  130
         { "lcu-eastriver",                  "class CtiDeviceLCU" },
         { "lcu-lg",                         "class CtiDeviceLCU" },
         { "lcu-t3026",                      "class CtiDeviceLCU" },
@@ -425,7 +416,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "tcu-5500",                       "class CtiDeviceTCU" },
         { "tnpp terminal",                  "class CtiDeviceTnppPagingTerminal" },
         { "wctp terminal",                  "class CtiDeviceWctpTerminal" },
-        //  140
         { "alpha a1",                       "class CtiDeviceAlphaA1" },
         { "alpha a3",                       "class CtiDeviceKV2" },
         { "alpha power plus",               "class CtiDeviceAlphaPPlus" },
@@ -436,7 +426,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "ipc-410fl",                      "class Cti::Devices::Ipc410ALDevice" },
         { "ipc-420fd",                      "class Cti::Devices::Ipc420ADDevice" },
         { "ipc-430s4e",                     "class CtiDeviceLandisGyrS4" },
-        //  150
         { "ipc-430sl",                      "class Cti::Devices::CtiDeviceSentinel" },
         { "fulcrum",                        "class CtiDeviceFulcrum" },
         { "ion-7330",                       "class CtiDeviceION" },
@@ -447,7 +436,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "landis-gyr s4",                  "class CtiDeviceLandisGyrS4" },
         { "quantum",                        "class CtiDeviceQuantum" },
         { "sentinel",                       "class Cti::Devices::CtiDeviceSentinel" },
-        //  160
         { "sixnet",                         "class CtiDeviceSixnet" },
         { "transdata mark-v",               "class CtiDeviceMarkV" },
         { "vectron",                        "class CtiDeviceVectron" },
@@ -458,7 +446,6 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "giraffe",                        "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "ecobee program",                 "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "ecobee group",                   "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
-        //  170
         { "ltc",                            "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "go_regulator",                   "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "po_regulator",                   "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
