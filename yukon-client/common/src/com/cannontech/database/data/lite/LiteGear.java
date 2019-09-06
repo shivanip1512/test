@@ -87,6 +87,6 @@ public class LiteGear extends LiteBase {
         if (!(obj instanceof LiteGear))
             return false;
         LiteGear other = (LiteGear) obj;
-        return getGearID() == other.getGearID() && ownerID == other.ownerID;
+        return getGearNumber() == other.getGearNumber() && ownerID == other.ownerID;
     }
 }

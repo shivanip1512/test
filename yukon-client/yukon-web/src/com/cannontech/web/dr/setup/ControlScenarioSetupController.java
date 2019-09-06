@@ -256,7 +256,7 @@ public class ControlScenarioSetupController {
             if (CollectionUtils.isNotEmpty(assignedProgram.getGears())) {
                 LiteGear selectGear = new LiteGear();
                 if (assignedProgram.getGears().get(0).getId() != null) {
-                    selectGear.setGearID(assignedProgram.getGears().get(0).getId());
+                    selectGear.setGearNumber(assignedProgram.getGears().get(0).getId());
                     selectGear.setOwnerID(assignedProgram.getProgramId());
                     int index = allGears.indexOf(selectGear);
                     if (index != -1) {
