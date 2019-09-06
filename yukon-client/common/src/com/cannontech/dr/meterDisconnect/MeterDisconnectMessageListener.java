@@ -153,7 +153,12 @@ public class MeterDisconnectMessageListener {
                 }
 
                 int programId = loadGroupDao.getProgramIdByGroupId(groupId);
-                Optional<Integer> eventId = drStatusService.findActiveEventForProgram(programId);
+                Optional<Integer> eventId = Optional.empty();
+                try {
+                    eventId = drStatusService.findActiveEventForProgram(programId);
+                } catch (Exception e) {
+                    log.warn("caught exception looking up eventId ", e);
+                }
                 log.debug("Event " + eventId + " found during lookup");
                 eventId.ifPresentOrElse(id -> drStatusService.restoreSent(new Instant(restoreTime), id),
                                         () -> log.error("No active dr disconnect event found for program ID " + programId));
