@@ -79,7 +79,9 @@ enum DeviceTypes {
     //  RFN Centron
     TYPE_RFN410CL,
     TYPE_RFN420CL,
+    TYPE_RFN420CLW,
     TYPE_RFN420CD,
+    TYPE_RFN420CDW,
     //  RFN A3
     TYPE_RFN430A3D,
     TYPE_RFN430A3T,

@@ -215,18 +215,16 @@ BOOST_AUTO_TEST_CASE(test_csv_output_iterator)
 BOOST_AUTO_TEST_CASE(test_isExpresscomGroup)
 {
     //True cases
-    bool ret = isExpresscomGroup(TYPE_LMGROUP_EXPRESSCOM);
-    BOOST_CHECK_EQUAL(ret, true);
-    ret = isExpresscomGroup(TYPE_LMGROUP_RFN_EXPRESSCOM);
-    BOOST_CHECK_EQUAL(ret, true);
+    BOOST_CHECK(isExpresscomGroup(TYPE_LMGROUP_EXPRESSCOM));
+    BOOST_CHECK(isExpresscomGroup(TYPE_LMGROUP_RFN_EXPRESSCOM));
 
     //False cases
     for (int i = 0; i < 3000; ++i)
     {
         if( i != TYPE_LMGROUP_EXPRESSCOM && i != TYPE_LMGROUP_RFN_EXPRESSCOM )
+        BOOST_TEST_CONTEXT(i)
         {
-            ret = isExpresscomGroup(i);
-            BOOST_CHECK_EQUAL(ret, false);
+            BOOST_CHECK( ! isExpresscomGroup(i));
         }
     }
 }

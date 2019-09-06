@@ -9,6 +9,7 @@
 
 #include <boost/assign/list_of.hpp>
 
+#include <bitset>
 
 BOOST_AUTO_TEST_SUITE( test_slctdev )
 
@@ -42,30 +43,30 @@ BOOST_AUTO_TEST_CASE(test_is_carrier_lp_device_type)
 
 BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
 {
-    const bool X = true, _ = false;
+    constexpr auto MaxDeviceTypes = 200;
 
-    const std::vector<bool> expected = boost::assign::list_of
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //   0
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  10
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  20
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  30
-        (_)(_)(_)(_)(_) (_)(X)(X)(_)(X)  //  40
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  50
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  60
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
-        (_)(_)(_)(_)(X) (_)(_)(_)(_)(_)  //  90
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  100
-        .repeat(90, _);
+    const std::bitset<MaxDeviceTypes> expected {
+        "__________"  //   0
+        "__________"  //  10
+        "__________"  //  20
+        "__________"  //  30
+        "______XX_X"  //  40
+        "__________"  //  50
+        "__________"  //  60
+        "__________"  //  70
+        "__________"  //  80
+        "____X_____"  //  90
+        "__________"  //  100
+        , '_', 'X' };
 
-    std::vector<bool> results;
+    std::bitset<MaxDeviceTypes> results;
 
-    for ( int type = 0; type < 200; ++type )
+    for ( int type = 0; type < MaxDeviceTypes; ++type )
     {
-        results.push_back(isDnpDeviceType(type));
+        results.set(type, isDnpDeviceType(type));
     }
 
-    BOOST_CHECK_EQUAL_RANGES( expected, results );
+    BOOST_CHECK_EQUAL( expected, results );
 }
 
 

@@ -33,8 +33,10 @@ protected:
 };
 
 
-typedef Rfn420CentronDevice Rfn420clDevice;
-typedef Rfn420CentronDevice Rfn420cdDevice;
+using Rfn420clDevice  = Rfn420CentronDevice;
+using Rfn420clwDevice = Rfn420CentronDevice;
+using Rfn420cdDevice  = Rfn420CentronDevice;
+using Rfn420cdwDevice = Rfn420CentronDevice;
 
 }
 }
