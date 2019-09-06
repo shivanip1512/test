@@ -375,8 +375,7 @@ public class ControlAreaSetupController {
                                                        .filter(fieldError -> fieldError.getField().contains("triggers[" + index + "]"))
                                                        .collect(Collectors.toList());
             filteredErrors.stream().forEach(fieldError -> {
-                String fieldName = fieldError.getField().substring(fieldError.getField().lastIndexOf(".") + 1,
-                    fieldError.getField().length());
+                String fieldName = StringUtils.substringAfter(fieldError.getField(), "triggers[" + index + "].");
                 String errorMessage = fieldError.getDefaultMessage();
                 bindingResult.rejectValue(fieldName, "", errorMessage);
             });
