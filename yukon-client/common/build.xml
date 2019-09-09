@@ -19,6 +19,8 @@
 			<classpath>
 				<fileset dir="${yukon.lib}">
 					<include name="**/*.jar"/>
+					<!-- This is used by Yet Another Java Service Wrapper, but conflicts with the 2.4.1 jar -->
+					<exclude name="commons-vfs2-2.0.jar"/>
 				</fileset>
 			</classpath>
 		</javac>

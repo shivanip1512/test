@@ -817,7 +817,7 @@ Java :
     sha1 : b5af3b9c96b060d77c68fa5ac9384b402dd58013
     updated : 2015-03-24
     jira : YUK-13411
-    notes : YAJSW dependency
+    notes : YAJSW dependency (excluded from build path - see common/build.xml 22)
   
   - filename : commons-vfs2-2.4.1.jar
     yukon group : Apache Commons
