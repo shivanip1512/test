@@ -12,9 +12,9 @@
             <thead>
                 <tr>
                     <th width="5%"/>
-                    <th width="40%"><i:inline key=".name"/></th>
-                    <th width="20%"><i:inline key=".startOffset"/></th>
-                    <th width="20%"><i:inline key=".stopOffset"/></th>
+                    <th width="36%"><i:inline key=".name"/></th>
+                    <th width="22%"><i:inline key=".startOffset"/></th>
+                    <th width="22%"><i:inline key=".stopOffset"/></th>
                     <th width="15%"><i:inline key=".startGear"/></th>
                 </tr>
             </thead>
