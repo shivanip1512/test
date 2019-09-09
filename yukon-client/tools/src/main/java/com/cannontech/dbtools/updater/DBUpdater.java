@@ -81,6 +81,7 @@ public class DBUpdater extends MessageFrameAdaptor {
     
     private boolean isIgnoreAllErrors = false;
     private boolean isIgnoreBlockErrors = false;
+    private boolean exitOnError = false;
 
     private boolean skipFlag = false;
     private static final SimpleDateFormat frmt = new SimpleDateFormat("_MM-dd-yyyy_HH-mm-ss");
@@ -89,12 +90,20 @@ public class DBUpdater extends MessageFrameAdaptor {
     private static final String FS = System.getProperty("file.separator");
     private static final String LF = System.getProperty("line.separator");
 
-    public final static String[] CMD_LINE_PARAM_NAMES = { IRunnableDBTool.PROP_VALUE, "verbose", "nightly", "exitOnException" };
+    public final static String[] CMD_LINE_PARAM_NAMES = { IRunnableDBTool.PROP_VALUE, "verbose", "nightly"};
     private static final String oracleDBPath = "/Client/DBScripts/oracle";
     private static final String sqlServerDBPath = "/Client/DBScripts/sqlserver";
     
     public DBUpdater() {
         super();
+    }
+
+    public boolean isExitOnError() {
+        return exitOnError;
+    }
+
+    public void setExitOnError(boolean exitOnError) {
+        this.exitOnError = exitOnError;
     }
 
     @Override
@@ -127,9 +136,6 @@ public class DBUpdater extends MessageFrameAdaptor {
     public void run() {
         updateDB = new UpdateDB(getIMessageFrame());
 
-        final boolean exitOnException = (System.getProperty(CMD_LINE_PARAM_NAMES[3]) != null)
-            ? Boolean.parseBoolean(System.getProperty(CMD_LINE_PARAM_NAMES[3]).trim()) : false;
-
         try {
             CTIDatabase db = VersionTools.getDBVersionRefresh();
             getIMessageFrame().addOutput("CONNECTING TO THE FOLLOWING DATABASE:");
@@ -147,9 +153,8 @@ public class DBUpdater extends MessageFrameAdaptor {
                 if (executeCommands()) {
                     getIMessageFrame().finish("Database Update Completed Successfully");
                 } else {
+                    setExitOnError(true);
                     getIMessageFrame().addOutput("Database update was unsuccessfully executed");
-                    if (exitOnException)
-                        System.exit(1);
                 }
             } else {
                 throw new StarsNotCreatedException("STARS tables not present in this database");
@@ -161,13 +166,11 @@ public class DBUpdater extends MessageFrameAdaptor {
                         + "\r\nContact Technical Support or TSSL immediately to get the STARS Database Creation script\r\n before continuing with this tool.";
             getIMessageFrame().addOutput(errorString);
             CTILogger.error(errorString, e);
-            if (exitOnException)
-                System.exit(1);
+            setExitOnError(true);
         } catch (Exception e) {
             getIMessageFrame().addOutput("Database update was unsuccessfully executed");
             CTILogger.warn("A problem occurred in the execution", e);
-            if (exitOnException)
-                System.exit(1);
+            setExitOnError(true);
         }
 
     }
@@ -185,7 +188,7 @@ public class DBUpdater extends MessageFrameAdaptor {
             System.out.println("An intermediate file is generated in the " + CtiUtilities.getClientLogDir());
             System.out.println("directory for each DBUpdate file found.");
             System.out.println("");
-            System.out.println(" DBUpdater " + IRunnableDBTool.PROP_VALUE + "=<SRC_PATH> [verbose= true | false][ignoreError= true | false][exitOnException= true | false]");
+            System.out.println(" DBUpdater " + IRunnableDBTool.PROP_VALUE + "=<SRC_PATH> [verbose= true | false][ignoreError= true | false]");
             System.out.println("");
             System.out.println("   " + IRunnableDBTool.PROP_VALUE
                     + "   : directory that contains the script files for updating the DB");
@@ -200,6 +203,12 @@ public class DBUpdater extends MessageFrameAdaptor {
         initApp(args);
 
         updater.run();
+        //When some error occurred in DBUpdater, this flag will be used to terminate the current process.
+        //main() method will get called from deployment process(we are calling this method with command line arguments). 
+        //For DBToolFrame, main() method will not get executed hence the pop-up will not get closed even if there are some errors. 
+        if (updater.isExitOnError()) {
+            System.exit(1);
+        }
 
     }
 

@@ -95,7 +95,7 @@ Function Update-YukonDatabase () {
     Write-Host "Database Update Beginning"
 
     Remove-Item -Path "C:\yukon\server\log\DBUpdater.log" -ErrorAction SilentlyContinue
-    $p = Start-Process C:\Yukon\Runtime\bin\java.exe -ArgumentList "-cp C:/Yukon/Client/bin/tools.jar com.cannontech.dbtools.updater.DBUpdater -Dverbose=false -DignoreError=true -DexitOnException=true" -Wait -PassThru -NoNewWindow
+    $p = Start-Process C:\Yukon\Runtime\bin\java.exe -ArgumentList "-cp C:/Yukon/Client/bin/tools.jar com.cannontech.dbtools.updater.DBUpdater -Dverbose=false -DignoreError=true" -Wait -PassThru -NoNewWindow
     Write-Host "Database Update Log"
     Get-Content c:\yukon\server\log\dbupdater.log | foreach {Write-Output $_}
 
