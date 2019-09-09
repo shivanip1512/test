@@ -2,6 +2,7 @@ package com.cannontech.web.tools.device.programming.dao;
 
 import java.util.List;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
@@ -14,7 +15,7 @@ import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummary
 
 public interface MeterProgrammingSummaryDao {
 
-	public enum SortBy{
+	public enum SortBy implements DisplayableEnum {
         DEVICE_NAME("DeviceName"),
         METER_NUMBER("DeviceNumber"),
         DEVICE_TYPE("Type"),
@@ -29,6 +30,11 @@ public interface MeterProgrammingSummaryDao {
 
         public String getDbString() {
             return dbString;
+        }
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.amr.meterProgramming.summary." + name();
         }
     }
 	
