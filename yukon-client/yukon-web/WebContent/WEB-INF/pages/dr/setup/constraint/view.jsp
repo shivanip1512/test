@@ -70,7 +70,7 @@
                     <tags:numeric path="maxActivateSeconds" size="5" maxlength="5" units="${seconds}" minValue="0" maxValue="99999"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".maxDailyOps">
-                    <tags:numeric path="maxDailyOpsSeconds" size="5" maxlength="5" minValue="0" maxValue="99999"/>
+                    <tags:numeric path="maxDailyOps" size="5" maxlength="5" minValue="0" maxValue="99999"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".minActivate">
                     <tags:numeric path="minActivateSeconds" size="5" maxlength="5" units="${seconds}" minValue="0" maxValue="99999"/>

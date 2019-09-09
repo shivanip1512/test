@@ -48,9 +48,9 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
         if (!errors.hasFieldErrors("maxActivateSeconds")) {
             YukonValidationUtils.checkRange(errors, "maxActivateSeconds", programConstraint.getMaxActivateSeconds(), 0, 99999, false);
         }
-        lmValidatorHelper.checkIfFieldRequired("maxDailyOpsSeconds", errors, programConstraint.getMaxDailyOpsSeconds(), "Max Daily Ops");
-        if (!errors.hasFieldErrors("maxDailyOpsSeconds")) {
-            YukonValidationUtils.checkRange(errors, "maxDailyOpsSeconds", programConstraint.getMaxDailyOpsSeconds(), 0, 99999, false);
+        lmValidatorHelper.checkIfFieldRequired("maxDailyOps", errors, programConstraint.getMaxDailyOps(), "Max Daily Ops");
+        if (!errors.hasFieldErrors("maxDailyOps")) {
+            YukonValidationUtils.checkRange(errors, "maxDailyOps", programConstraint.getMaxDailyOps(), 0, 99999, false);
         }
         lmValidatorHelper.checkIfFieldRequired("minActivateSeconds", errors, programConstraint.getMinActivateSeconds(), "Min Activate");
         if (!errors.hasFieldErrors("minActivateSeconds")) {
