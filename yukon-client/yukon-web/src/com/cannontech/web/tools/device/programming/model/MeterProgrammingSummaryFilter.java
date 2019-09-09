@@ -6,10 +6,11 @@ import java.util.List;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.Lists;
 
 public class MeterProgrammingSummaryFilter {
-    public enum DisplayableStatus {
+    public enum DisplayableStatus implements DisplayableEnum {
         SUCCESS(ProgrammingStatus.IDLE), 
         FAILURE(ProgrammingStatus.FAILED, ProgrammingStatus.CANCELED, ProgrammingStatus.MISMATCHED), 
         IN_PROGRESS(ProgrammingStatus.INITIATING, ProgrammingStatus.UPLOADING), 
@@ -28,6 +29,11 @@ public class MeterProgrammingSummaryFilter {
             return Arrays.asList(DisplayableStatus.values())
                 .stream().filter(displayableStatus -> displayableStatus.getProgramStatuses().contains(status))
                 .findFirst().get();  
+        }
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.amr.meterProgramming.status." + name();
         }
     }
 

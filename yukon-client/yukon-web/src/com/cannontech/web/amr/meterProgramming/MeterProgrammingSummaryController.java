@@ -1,6 +1,7 @@
 package com.cannontech.web.amr.meterProgramming;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -23,14 +25,21 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.tools.device.programming.dao.MeterProgrammingSummaryDao;
+import com.cannontech.web.tools.device.programming.dao.MeterProgrammingSummaryDao.SortBy;
+import com.cannontech.web.tools.device.programming.model.MeterProgramInfo;
 import com.cannontech.web.tools.device.programming.model.MeterProgramStatistics;
+import com.cannontech.web.tools.device.programming.model.MeterProgramSummaryDetail;
+import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter;
+import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter.DisplayableStatus;
 
 @Controller
 @RequestMapping("/meterProgramming/*")
@@ -39,7 +48,7 @@ public class MeterProgrammingSummaryController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private MeterProgrammingSummaryDao meterProgrammingSummaryDao;
     @Autowired private MeterProgrammingDao meterProgrammingDao;
-    
+
     private final static String baseKey = "yukon.web.modules.amr.meterProgramming.";
 
     @GetMapping("home")
@@ -104,9 +113,38 @@ public class MeterProgrammingSummaryController {
     }
     
     @GetMapping("summary")
-    public String summary(ModelMap model, YukonUserContext userContext) {
-
+    public String summary(@DefaultSort(dir=Direction.asc, sort="DEVICE_NAME") SortingParameters sorting, PagingParameters paging, 
+                          ModelMap model, YukonUserContext userContext) {
+        MeterProgrammingSummaryFilter filter = new MeterProgrammingSummaryFilter();
+        filter.setStatuses(Arrays.asList(DisplayableStatus.values()));
+        List<MeterProgramInfo> programs = meterProgrammingSummaryDao.getMeterProgramInfos(userContext);
+        filter.setPrograms(programs);
+        model.addAttribute("filter", filter);
+        getFilteredResults(filter, sorting, paging, model, userContext);
+        model.addAttribute("programList", programs);
+        model.addAttribute("statusList", DisplayableStatus.values());
         return "meterProgramming/summary.jsp";
+    }
+    
+    @GetMapping("summaryFilter")
+    public String summaryFilter(@ModelAttribute("filter") MeterProgrammingSummaryFilter filter, @DefaultSort(dir=Direction.asc, sort="DEVICE_NAME") SortingParameters sorting,
+                                PagingParameters paging, ModelMap model, YukonUserContext userContext) {
+        getFilteredResults(filter, sorting, paging, model, userContext);
+        return "meterProgramming/summaryResults.jsp";
+    }
+    
+    private void getFilteredResults(MeterProgrammingSummaryFilter filter, SortingParameters sorting, PagingParameters paging, ModelMap model, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        SortBy sortBy = SortBy.valueOf(sorting.getSort());
+        Direction dir = sorting.getDirection();
+        for (SortBy column : SortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), col);
+        }
+
+        SearchResults<MeterProgramSummaryDetail> detail = meterProgrammingSummaryDao.getSummary(filter, paging, sortBy, dir, userContext);
+        model.addAttribute("searchResults", detail);
     }
 
 }
