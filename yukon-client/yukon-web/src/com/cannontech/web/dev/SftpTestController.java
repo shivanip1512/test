@@ -43,8 +43,6 @@ public class SftpTestController {
             "7XcVkchFa4SSog9TZ5dgVdf6xRVH0aqeDcubisPaHyw=\r\n" + 
             "-----END RSA PRIVATE KEY-----";
     
-    private static final String publicKey ="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCH8jSyTs8ZwCOIWDEmkmzVrX+u94+eAwJxiMIill3kUGzR32bkcHoHtz7wQfNXo3f58xWNf6/I0vf7DtvlDzTtfjyTAWSyarPyVfBHgyWI/q9xEk0phUNmYR2v4W/DeYdbsQaDV4UFlFMxkV0fK79A47XsHUYcDZbU+xuvsKKX0Q== \r\n";
-    
     @GetMapping("sftpTest")
     public String sftpTest(ModelMap model) {
         SftpTest sftp = new SftpTest();
@@ -61,14 +59,13 @@ public class SftpTestController {
     @PostMapping("execute")
     public String execute(@ModelAttribute("sftp") SftpTest sftp, FlashScope flash) {
         
-        try {
-            //TODO: get privateKey and publicKey from the database once YUK-20458 is done
-            //TODO: consider re-using connection
+        try (
+            //TODO: get publicKey from the database once YUK-20458 is done
             SftpConnection sftpService = new SftpConnection(sftp.getDomain(), sftp.getPort(), 
                                                       YukonHttpProxy.fromGlobalSetting(globalSettingDao),
                                                       sftp.getUsername(), sftp.getPassword(),
-                                                      privateKey, publicKey);
-            
+                                                      privateKey);
+        ) {
             sftpService.copyRemoteFile(sftp.getSftpPath(), sftp.getFilename());
             flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Copied " + sftp.getDomain() + "//" 
                     + sftp.getSftpPath() + " to " + sftp.getFilename()));
