@@ -805,20 +805,6 @@ Java :
     jira : YUK-12040
     notes : 
   
-  - filename : commons-vfs2-2.0.jar
-    yukon group : Apache Commons
-    project : Apache Commons Virtual File System
-    version : 2.0
-    project URL : "https://commons.apache.org/proper/commons-vfs/"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2/2.0"
-    md5 : a2cabc6a91a9de9e3d5d460b06d65b45
-    sha1 : b5af3b9c96b060d77c68fa5ac9384b402dd58013
-    updated : 2015-03-24
-    jira : YUK-13411
-    notes : YAJSW dependency
-  
   - filename : commons-vfs2-2.4.1.jar
     yukon group : Apache Commons
     project : Apache Commons Virtual File System
