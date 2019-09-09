@@ -30,7 +30,9 @@ public class TargetCycleGearFieldsValidator extends TrueCycleGearFieldsValidator
         // Check for kWReduction
         lmValidatorHelper.checkIfFieldRequired("kWReduction", errors, targetCycleGearFields.getkWReduction(),
                 "KW Reduction");
-        YukonValidationUtils.checkRange(errors, "kWReduction", targetCycleGearFields.getkWReduction(), 0.0, 99999.999,
-            true);
+        if (!errors.hasFieldErrors("kWReduction")) {
+            YukonValidationUtils.checkRange(errors, "kWReduction", targetCycleGearFields.getkWReduction(), 0.0, 99999.999,
+                true);
+        }
     }
 }
