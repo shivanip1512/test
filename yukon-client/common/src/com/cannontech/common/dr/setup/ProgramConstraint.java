@@ -9,7 +9,7 @@ public class ProgramConstraint {
     private String name;
     private LMDto seasonSchedule;
     private Integer maxActivateSeconds;
-    private Integer maxDailyOpsSeconds;
+    private Integer maxDailyOps;
     private Integer minActivateSeconds;
     private Integer minRestartSeconds;
     private List<DayOfWeek> daySelection;
@@ -52,12 +52,12 @@ public class ProgramConstraint {
         this.maxActivateSeconds = maxActivateSeconds;
     }
 
-    public Integer getMaxDailyOpsSeconds() {
-        return maxDailyOpsSeconds;
+    public Integer getMaxDailyOps() {
+        return maxDailyOps;
     }
 
-    public void setMaxDailyOpsSeconds(Integer maxDailyOpsSeconds) {
-        this.maxDailyOpsSeconds = maxDailyOpsSeconds;
+    public void setMaxDailyOps(Integer maxDailyOps) {
+        this.maxDailyOps = maxDailyOps;
     }
 
     public Integer getMinActivateSeconds() {
@@ -146,7 +146,7 @@ public class ProgramConstraint {
         setMaxHoursAnnually(lMProgramConstraint.getMaxHoursAnnually());
         setMinActivateSeconds(lMProgramConstraint.getMinActivateTime());
         setMinRestartSeconds(lMProgramConstraint.getMinRestartTime());
-        setMaxDailyOpsSeconds(lMProgramConstraint.getMaxDailyOps());
+        setMaxDailyOps(lMProgramConstraint.getMaxDailyOps());
         setMaxActivateSeconds(lMProgramConstraint.getMaxActivateTime());
         Integer holidayScheduleId = lMProgramConstraint.getHolidayScheduleID();
         LMDto holidaySchedule = new LMDto();
@@ -171,7 +171,7 @@ public class ProgramConstraint {
         lMProgramConstraint.setMaxHoursAnnually(getMaxHoursAnnually());
         lMProgramConstraint.setMinActivateTime(getMinActivateSeconds());
         lMProgramConstraint.setMinRestartTime(getMinRestartSeconds());
-        lMProgramConstraint.setMaxDailyOps(getMaxDailyOpsSeconds());
+        lMProgramConstraint.setMaxDailyOps(getMaxDailyOps());
         lMProgramConstraint.setMaxActivateTime(getMaxActivateSeconds());
         lMProgramConstraint.setHolidayScheduleID(getHolidaySchedule().getId());
         lMProgramConstraint.setSeasonScheduleID(getSeasonSchedule().getId());

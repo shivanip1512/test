@@ -16,7 +16,7 @@ public class ProgramConstraintControllerHelper {
 
     public void setDefaultValues(ProgramConstraint programConstraint) {
             programConstraint.setMaxActivateSeconds(0);
-            programConstraint.setMaxDailyOpsSeconds(0);
+            programConstraint.setMaxDailyOps(0);
             programConstraint.setMinActivateSeconds(0);
             programConstraint.setMinRestartSeconds(0);
             programConstraint.setMaxHoursDaily(0);
