@@ -24,6 +24,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.program.widget.model.GearData;
 import com.cannontech.common.program.widget.model.ProgramData;
+import com.cannontech.common.program.widget.model.ProgramWidgetData;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.dr.model.ProgramOriginSource;
@@ -57,7 +58,6 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
     private List<ProgramData> programsDataCache = new ArrayList<>();
     private List<ProgramData> todaysProgramsDataCache = new ArrayList<>();
     private long tomorrowStartInMillis = 0L;
-    private int todaysAndScheduledProgramDataCount = 0;
     private final static String ACTIVE_CSS_CLASS = "green";
     private final static String SCHEDULED_CSS_CLASS = "orange";
     
@@ -136,28 +136,25 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
     }
 
     @Override
-    public Map<String, List<ProgramData>> buildProgramWidgetData(YukonUserContext userContext) {
-        todaysAndScheduledProgramDataCount = 0;
+    public ProgramWidgetData buildProgramWidgetData(YukonUserContext userContext) {
         Map<String, List<ProgramData>> programWidgetData = new LinkedHashMap<>();
+        int todaysAndScheduledProgramDataCount = 0;
         List<ProgramData> todaysPrograms = getTodaysProgramData();
         int todaysProgramsCount = todaysPrograms.size();
         todaysAndScheduledProgramDataCount += todaysProgramsCount;
         // List of Programs which are scheduled to execute for next control day after today
         List<ProgramData> futureProgramsToDisplay = new ArrayList<>();
-        if (todaysProgramsCount >= MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
+        if (todaysProgramsCount > MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
             todaysPrograms = limitData(todaysPrograms, MAX_PROGRAM_TO_DISPLAY_ON_WIDGET);
-        } else {
-            if (todaysProgramsCount < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
-                List<ProgramData> futurePrograms = getProgramsScheduledForNextControlDayAfterToday();
-                if (!futurePrograms.isEmpty()) {
-                    todaysAndScheduledProgramDataCount += futurePrograms.size();
-                    int maxFutureProgramsCount = MAX_PROGRAM_TO_DISPLAY_ON_WIDGET - todaysProgramsCount;
-                    futureProgramsToDisplay = limitData(futurePrograms, maxFutureProgramsCount);
-                    String date = dateFormattingService.format(futureProgramsToDisplay.get(0).getStartDateTime(),
-                        DateFormatEnum.DATE, userContext);
-                    programWidgetData.put(date, futureProgramsToDisplay);
-                }
-            }
+        }
+        List<ProgramData> futurePrograms = getProgramsScheduledForNextControlDayAfterToday();
+        todaysAndScheduledProgramDataCount += futurePrograms.size();
+        if (!futurePrograms.isEmpty() && todaysProgramsCount < MAX_PROGRAM_TO_DISPLAY_ON_WIDGET) {
+            int maxFutureProgramsCount = MAX_PROGRAM_TO_DISPLAY_ON_WIDGET - todaysProgramsCount;
+            futureProgramsToDisplay = limitData(futurePrograms, maxFutureProgramsCount);
+            String date = dateFormattingService.format(futureProgramsToDisplay.get(0).getStartDateTime(),
+                DateFormatEnum.DATE, userContext);
+            programWidgetData.put(date, futureProgramsToDisplay);
         }
         if (!todaysPrograms.isEmpty()) {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -173,7 +170,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
                     groupProgramsByStartDate(limitProgramData, userContext);
             programWidgetData.putAll(limitedProgramsToDisplay);
         }
-        return programWidgetData; 
+        return new ProgramWidgetData(programWidgetData, todaysAndScheduledProgramDataCount);
     }
 
     /**
@@ -202,12 +199,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
         programDetailData.putAll(programsToDisplay);
         return programDetailData;
     }
-    
-    @Override
-    public int getTodaysAndScheduledProgramDataCount() {
-        return todaysAndScheduledProgramDataCount;
-    }
-    
+
     /**
      * Returns list of all program which are executed today or scheduled to execute today 
      * 

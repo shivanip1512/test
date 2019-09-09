@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.program.widget.model.ProgramData;
+import com.cannontech.common.program.widget.model.ProgramWidgetData;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.dr.program.service.ProgramWidgetService;
 import com.cannontech.dr.program.service.impl.ProgramWidgetServiceImpl;
@@ -35,7 +36,8 @@ public class ProgramWidget extends AdvancedWidgetControllerBase {
     @GetMapping("render")
     public String render(ModelMap model, YukonUserContext userContext) {
 
-        Map<String, List<ProgramData>> programsData = programWidgetService.buildProgramWidgetData(userContext);
+        ProgramWidgetData programWidgetData = programWidgetService.buildProgramWidgetData(userContext);
+        Map<String, List<ProgramData>> programsData = programWidgetData.getData();
         model.addAttribute("programsData", programsData);
 
         Map<String, Object> json = Maps.newHashMap();
@@ -47,7 +49,7 @@ public class ProgramWidget extends AdvancedWidgetControllerBase {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         json.put("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
         model.addAttribute("widgetUpdateDate", json);
-        int todaysAndScheduledProgramDataCount = programWidgetService.getTodaysAndScheduledProgramDataCount();
+        int todaysAndScheduledProgramDataCount = programWidgetData.getProgramDataCount();
         boolean showTooManyProgramsMessage = todaysAndScheduledProgramDataCount > ProgramWidgetServiceImpl.MAX_PROGRAM_TO_DISPLAY_ON_WIDGET;
         model.addAttribute("showTooManyProgramsMessage", showTooManyProgramsMessage);
         return "programWidget/render.jsp";
