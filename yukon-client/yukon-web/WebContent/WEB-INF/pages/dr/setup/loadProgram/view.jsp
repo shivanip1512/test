@@ -529,7 +529,7 @@
 
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <cti:button nameKey="save" type="submit" classes="primary action" id="js-program-save" busy="true"/>
+                <cti:button nameKey="save" type="submit" classes="primary action" id="js-program-save"/>
             </cti:displayForPageEditModes>
 
             <cti:displayForPageEditModes modes="EDIT">
