@@ -170,6 +170,7 @@ public class ProgramWidgetServiceImpl implements ProgramWidgetService, MessageLi
                     groupProgramsByStartDate(limitProgramData, userContext);
             programWidgetData.putAll(limitedProgramsToDisplay);
         }
+        // Return ProgramWidgetData object with programWidgetData and exact count for todays and future scheduled program data.
         return new ProgramWidgetData(programWidgetData, todaysAndScheduledProgramDataCount);
     }
 
