@@ -17,7 +17,7 @@ public interface MeterProgrammingSummaryDao {
 
 	public enum SortBy implements DisplayableEnum {
         DEVICE_NAME("DeviceName"),
-        METER_NUMBER("DeviceNumber"),
+        METER_NUMBER("MeterNumber"),
         DEVICE_TYPE("Type"),
         PROGRAM("ProgramName"),
         STATUS("Status"),

@@ -105,7 +105,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
         status.setReportedGuid(UUID.fromString(request.getConfigurationId()));
         status.setSource(prefix);
         status.setError(request.getError());
-        status.setStatus(request.getStatus());
+        status.setStatus(prefix != MeterProgramSource.OLD_FIRMWARE ? request.getStatus() : ProgrammingStatus.FAILED);
         return status;
     }
 }

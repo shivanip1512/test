@@ -224,7 +224,8 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
             sql.append("    CASE");
             sql.append("        WHEN Name IS NULL THEN");
             sql.append("            CASE");
-            translatedSources.forEach((source, translated) -> sql.append("WHEN Source").eq(source.getPrefix()).append("THEN").appendArgument(translated));
+            translatedSources.forEach((source, translated) -> sql.append("WHEN Source").eq(source.getPrefix())
+                                      .append("THEN").appendArgument(translated));
             sql.append("            END");
             sql.append("        ELSE Name");
             sql.append("    END as ProgramName");
