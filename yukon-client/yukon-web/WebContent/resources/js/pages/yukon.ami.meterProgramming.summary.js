@@ -53,6 +53,52 @@ yukon.ami.meterProgramming.summary = (function () {
                         }
                     });   
                 });
+                
+                $(document).on('click', '.js-download', function () {
+                    var form = $('#filter-form');
+                    var data = form.serialize();
+                    window.location = yukon.url('/amr/meterProgramming/summaryDownload?' + data);
+                });
+                
+                $(document).on('click', '.js-read', function () {
+                    var id = $(this).data('id');
+                    $.ajax({
+                        type: 'POST',
+                        url: yukon.url('/amr/meterProgramming/' + id + '/readProgramming')
+                    }).done(function(data) {
+                        yukon.ui.alertSuccess(data.successMsg);
+                       // window.open(yukon.url('/collectionActions/progressReport/view?key=' + data.key), '_blank');
+                    });
+                });
+                
+                $(document).on('click', '.js-resend', function () {
+                    var id = $(this).data('id'),
+                        guid = $(this).data('guid');
+                    $.ajax({
+                        type: 'POST',
+                        data: {
+                            guid: guid
+                        },
+                        url: yukon.url('/amr/meterProgramming/' + id + '/resendProgramming')
+                    }).done(function(data) {
+                        yukon.ui.alertSuccess(data.successMsg);
+                        //window.open(yukon.url('/collectionActions/progressReport/view?key=' + data.key), '_blank');
+                    });
+                });
+                
+                $(document).on('click', '.js-cancel', function () {
+                    var id = $(this).data('id');
+                    $.ajax({
+                        type: 'POST',
+                        url: yukon.url('/amr/meterProgramming/' + id + '/cancelProgramming')
+                    }).done(function(data) {
+                        if (data.result.success) {
+                            yukon.ui.alertSuccess(data.successMsg);
+                        } else {
+                            yukon.ui.alertError(data.result.errorText);
+                        }
+                    });
+                });
 
                 _initialized = true;
 
