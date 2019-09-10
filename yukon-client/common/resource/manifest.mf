@@ -141,4 +141,4 @@ Class-Path: ./
  stax-ex-1.8.jar 
  commons-compress-1.18.jar 
  opencsv-4.5.jar 
- commons-vfs2-2.4.1.jar 
+ commons-vfs2-2.0.jar 
