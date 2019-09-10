@@ -18,7 +18,7 @@ yukon.ami.meterProgramming.summary = (function () {
                                 
                 if (_initialized) return;
                 
-                $('.js-selected-programs').chosen({width: "450px"});
+                $('.js-selected-programs').chosen({width: "300px"});
                 
                 $(document).on('click', '.js-delete-program', function() {
                     var guid = $(this).data('programGuid');
@@ -35,16 +35,16 @@ yukon.ami.meterProgramming.summary = (function () {
                         length = selectedOptions.length,
                         tableContainer = $('#results-container'),
                         form = $('#filter-form');
-                    //remove all hidden fields first
-                    form.find('input:hidden').remove();
+                    //remove any existing program fields
+                    form.find('.js-program-fields').remove();
                     for (var i = 0; i < length; i++) {
                         var program =  selectedOptions[i],
                             guid = program.dataset.guid,
                             source = program.dataset.source,
                             name = program.text;
-                        form.append('<input type="hidden" name="programs[' + i + '].guid" value="' + guid + '" />');
-                        form.append('<input type="hidden" name="programs[' + i + '].name" value="' + name + '" />');
-                        form.append('<input type="hidden" name="programs[' + i + '].source" value="' + source + '" />');
+                        form.append('<input type="hidden" class="js-program-fields" name="programs[' + i + '].guid" value="' + guid + '" />');
+                        form.append('<input type="hidden" class="js-program-fields" name="programs[' + i + '].name" value="' + name + '" />');
+                        form.append('<input type="hidden" class="js-program-fields" name="programs[' + i + '].source" value="' + source + '" />');
                     }
                     form.ajaxSubmit({
                         success: function(data, status, xhr, $form) {

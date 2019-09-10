@@ -28,9 +28,26 @@
             <tbody>
                 <c:forEach var="program" items="${programs}">
                     <tr>
-                        <td>${fn:escapeXml(program.programInfo.name)}</td>
-                        <td>${program.deviceTotal}</td>
-                        <td>${program.inProgressTotal}</td>
+                        <cti:url var="programUrl" value="/amr/meterProgramming/summary">
+                            <cti:param name="programs[0].guid" value="${program.programInfo.guid}"/>
+                            <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
+                            <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
+                        </cti:url>
+                        <td><a href="${programUrl}">${fn:escapeXml(program.programInfo.name)}</a></td>
+                        <cti:url var="programDevicesUrl" value="/amr/meterProgramming/summary">
+                            <cti:param name="programs[0].guid" value="${program.programInfo.guid}"/>
+                            <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
+                            <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
+                            <cti:param name="statuses" value="SUCCESS"/>
+                        </cti:url>
+                        <td><a href="${programDevicesUrl}">${program.deviceTotal}</a></td>
+                        <cti:url var="programInProgressUrl" value="/amr/meterProgramming/summary">
+                            <cti:param name="programs[0].guid" value="${program.programInfo.guid}"/>
+                            <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
+                            <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
+                            <cti:param name="statuses" value="IN_PROGRESS"/>
+                        </cti:url>
+                        <td><a href="${programInProgressUrl}">${program.inProgressTotal}</a></td>
                         <td>
                             <c:if test="${program.displayDelete()}">
                                 <cm:dropdown icon="icon-cog">

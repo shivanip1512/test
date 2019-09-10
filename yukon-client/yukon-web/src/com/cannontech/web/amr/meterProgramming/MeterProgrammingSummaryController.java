@@ -6,9 +6,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.programming.dao.MeterProgrammingDao;
 import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -48,6 +52,7 @@ public class MeterProgrammingSummaryController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private MeterProgrammingSummaryDao meterProgrammingSummaryDao;
     @Autowired private MeterProgrammingDao meterProgrammingDao;
+    @Autowired private DeviceGroupService deviceGroupService;
 
     private final static String baseKey = "yukon.web.modules.amr.meterProgramming.";
 
@@ -113,13 +118,16 @@ public class MeterProgrammingSummaryController {
     }
     
     @GetMapping("summary")
-    public String summary(@DefaultSort(dir=Direction.asc, sort="DEVICE_NAME") SortingParameters sorting, PagingParameters paging, 
-                          ModelMap model, YukonUserContext userContext) {
-        MeterProgrammingSummaryFilter filter = new MeterProgrammingSummaryFilter();
-        filter.setStatuses(Arrays.asList(DisplayableStatus.values()));
+    public String summary(MeterProgrammingSummaryFilter filter, @DefaultSort(dir=Direction.asc, sort="DEVICE_NAME") SortingParameters sorting, 
+                          PagingParameters paging, ModelMap model, YukonUserContext userContext) {
         List<MeterProgramInfo> programs = meterProgrammingSummaryDao.getMeterProgramInfos(userContext);
-        filter.setPrograms(programs);
-        model.addAttribute("filter", filter);
+        if (filter.getPrograms() != null) {
+            List<String> selectedProgramNames = filter.getPrograms().stream()
+                    .map(MeterProgramInfo::getName)
+                    .collect(Collectors.toList());
+            model.addAttribute("selectedPrograms", selectedProgramNames);
+        }
+
         getFilteredResults(filter, sorting, paging, model, userContext);
         model.addAttribute("programList", programs);
         model.addAttribute("statusList", DisplayableStatus.values());
@@ -127,8 +135,13 @@ public class MeterProgrammingSummaryController {
     }
     
     @GetMapping("summaryFilter")
-    public String summaryFilter(@ModelAttribute("filter") MeterProgrammingSummaryFilter filter, @DefaultSort(dir=Direction.asc, sort="DEVICE_NAME") SortingParameters sorting,
+    public String summaryFilter(@ModelAttribute("filter") MeterProgrammingSummaryFilter filter, String deviceGroupName, 
+                                @DefaultSort(dir=Direction.asc, sort="DEVICE_NAME") SortingParameters sorting,
                                 PagingParameters paging, ModelMap model, YukonUserContext userContext) {
+        if (!StringUtils.isBlank(deviceGroupName)) {
+            DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroupName);
+            filter.setGroups(Arrays.asList(group));
+        }
         getFilteredResults(filter, sorting, paging, model, userContext);
         return "meterProgramming/summaryResults.jsp";
     }
@@ -142,6 +155,16 @@ public class MeterProgrammingSummaryController {
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
+        
+        if (filter.getPrograms() == null || filter.getPrograms().isEmpty()) {
+            List<MeterProgramInfo> programs = meterProgrammingSummaryDao.getMeterProgramInfos(userContext);
+            filter.setPrograms(programs);
+        }
+        if (filter.getStatuses() == null || filter.getStatuses().isEmpty()) {
+            filter.setStatuses(Arrays.asList(DisplayableStatus.values()));
+        }
+        
+        model.addAttribute("filter", filter);
 
         SearchResults<MeterProgramSummaryDetail> detail = meterProgrammingSummaryDao.getSummary(filter, paging, sortBy, dir, userContext);
         model.addAttribute("searchResults", detail);
