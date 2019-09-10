@@ -157,7 +157,7 @@
         </tags:sectionContainer2>
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <cti:button nameKey="save" type="submit" classes="primary action" />
+                <cti:button nameKey="save" type="submit" classes="primary action" busy="true"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:url var="viewUrl" value="/dr/setup/constraint/${programConstraint.id}"/>
