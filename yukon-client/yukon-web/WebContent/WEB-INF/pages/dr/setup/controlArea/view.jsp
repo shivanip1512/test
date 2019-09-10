@@ -248,10 +248,10 @@
                                                     <cti:deviceName deviceId="${program.programId}"/>
                                                 </td>
                                                 <td>
-                                                    <tags:numeric path="programAssignment[${status.index}].startPriority" size="4" minValue="1" maxValue="2147483647"/>
+                                                    <tags:numeric path="programAssignment[${status.index}].startPriority" size="4" maxlength="4" minValue="1" maxValue="1024"/>
                                                 </td>
                                                 <td>
-                                                    <tags:numeric path="programAssignment[${status.index}].stopPriority" size="4" minValue="1" maxValue="2147483647"/>
+                                                    <tags:numeric path="programAssignment[${status.index}].stopPriority" size="4" maxlength="4" minValue="1" maxValue="1024"/>
                                                 </td>
                                             </tr>
                                         </c:forEach>
@@ -269,10 +269,10 @@
                                     </td>
                                     <td class="js-program-name vam"></td>
                                     <td>
-                                        <input type="text" name="programAssignment[0].startPriority" size="4" data-min-value="1" data-max-value="2147483647" disabled="true" class="js-start-priority"/>
+                                        <input type="text" name="programAssignment[0].startPriority" size="4" data-min-value="1" data-max-value="1024" maxlength="4" disabled="true" class="js-start-priority"/>
                                     </td>
                                     <td>
-                                        <input type="text" name="programAssignment[0].stopPriority" size="4" data-min-value="1" data-max-value="2147483647" disabled="true" class="js-stop-priority"/>
+                                        <input type="text" name="programAssignment[0].stopPriority" size="4" data-min-value="1" data-max-value="1024" maxlength="4" disabled="true" class="js-stop-priority"/>
                                     </td>
                                 </tr>
                             </table>

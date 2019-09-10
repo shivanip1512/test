@@ -181,11 +181,11 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
 
                 lmValidatorHelper.checkIfFieldRequired("startPriority", errors, programAssignment.getStartPriority(), "Start Priority");
                 if (!errors.hasFieldErrors("startPriority")) {
-                    YukonValidationUtils.checkRange(errors, "startPriority", programAssignment.getStartPriority(), 1, 2147483647, false);
+                    YukonValidationUtils.checkRange(errors, "startPriority", programAssignment.getStartPriority(), 1, 1024, false);
                 }
                 lmValidatorHelper.checkIfFieldRequired("stopPriority", errors, programAssignment.getStopPriority(), "Stop Priority");
                 if (!errors.hasFieldErrors("stopPriority")) {
-                    YukonValidationUtils.checkRange(errors, "stopPriority", programAssignment.getStopPriority(), 1,2147483647, false);
+                    YukonValidationUtils.checkRange(errors, "stopPriority", programAssignment.getStopPriority(), 1,1024, false);
                 }
                 errors.popNestedPath();
             }
