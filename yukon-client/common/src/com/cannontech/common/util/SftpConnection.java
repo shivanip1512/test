@@ -8,13 +8,13 @@ import java.nio.file.Files;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.Selectors;
 import org.apache.commons.vfs2.VFS;
-import org.apache.commons.vfs2.provider.sftp.IdentityInfo;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.logging.log4j.core.Logger;
 
@@ -36,10 +36,14 @@ public class SftpConnection implements AutoCloseable {
     private File publicKeyFile;
     
     public SftpConnection(String domain, String port, Optional<YukonHttpProxy> proxy, String username, String password, 
-                       String privateKey, String publicKey) throws IOException {
+                       String privateKey) throws IOException {
         
         // Save the connection info
-        domainPort = domain + ":" + port;
+        if (StringUtils.isEmpty(port)) {
+            domainPort = domain;
+        } else {
+            domainPort = domain + ":" + port;
+        }
         this.username = username;
         this.password = password;
         
@@ -53,13 +57,13 @@ public class SftpConnection implements AutoCloseable {
         });
         
         // Handle public/private authentication key configuration
-        if (privateKey != null && publicKey != null) {
+        if (privateKey != null) {
             String randomId = UUID.randomUUID().toString();
             privateKeyFile = createTempFile("sftpPrivate-" + randomId, privateKey);
-            publicKeyFile = createTempFile("sftpPublic-" + randomId, publicKey);
-            // This assumes that the password for key is the same as the auth credentials
-            IdentityInfo identity = new IdentityInfo(privateKeyFile, publicKeyFile, password.getBytes());
-            fscBuilder.setIdentityProvider(fsOptions, identity);
+            // Password-protected private key only seems to be supported via the VFS 2.4+ syntax. e.g.s
+            // IdentityInfo identity = new IdentityInfo(privateKeyFile, publicKeyFile, password.getBytes());
+            // fscBuilder.setIdentityProvider(fsOptions, identity);
+            fscBuilder.setIdentities(fsOptions, new File[] {privateKeyFile});
         }
         
         fscBuilder.setUserDirIsRoot(fsOptions, true);
