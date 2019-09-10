@@ -81,7 +81,7 @@ public class DBUpdater extends MessageFrameAdaptor {
     
     private boolean isIgnoreAllErrors = false;
     private boolean isIgnoreBlockErrors = false;
-    private boolean exitOnError = false;
+    private boolean errorOccurred = false;
 
     private boolean skipFlag = false;
     private static final SimpleDateFormat frmt = new SimpleDateFormat("_MM-dd-yyyy_HH-mm-ss");
@@ -98,12 +98,12 @@ public class DBUpdater extends MessageFrameAdaptor {
         super();
     }
 
-    public boolean isExitOnError() {
-        return exitOnError;
+    private boolean isErrorOccurred() {
+        return errorOccurred;
     }
 
-    public void setExitOnError(boolean exitOnError) {
-        this.exitOnError = exitOnError;
+    private void setErrorOccurred(boolean errorOccurred) {
+        this.errorOccurred = errorOccurred;
     }
 
     @Override
@@ -135,6 +135,7 @@ public class DBUpdater extends MessageFrameAdaptor {
     @Override
     public void run() {
         updateDB = new UpdateDB(getIMessageFrame());
+        setErrorOccurred(false);
 
         try {
             CTIDatabase db = VersionTools.getDBVersionRefresh();
@@ -153,7 +154,7 @@ public class DBUpdater extends MessageFrameAdaptor {
                 if (executeCommands()) {
                     getIMessageFrame().finish("Database Update Completed Successfully");
                 } else {
-                    setExitOnError(true);
+                    setErrorOccurred(true);
                     getIMessageFrame().addOutput("Database update was unsuccessfully executed");
                 }
             } else {
@@ -166,11 +167,11 @@ public class DBUpdater extends MessageFrameAdaptor {
                         + "\r\nContact Technical Support or TSSL immediately to get the STARS Database Creation script\r\n before continuing with this tool.";
             getIMessageFrame().addOutput(errorString);
             CTILogger.error(errorString, e);
-            setExitOnError(true);
+            setErrorOccurred(true);
         } catch (Exception e) {
             getIMessageFrame().addOutput("Database update was unsuccessfully executed");
             CTILogger.warn("A problem occurred in the execution", e);
-            setExitOnError(true);
+            setErrorOccurred(true);
         }
 
     }
@@ -206,7 +207,7 @@ public class DBUpdater extends MessageFrameAdaptor {
         //When some error occurred in DBUpdater, this flag will be used to terminate the current process.
         //main() method will get called from deployment process(we are calling this method with command line arguments). 
         //For DBToolFrame, main() method will not get executed hence the pop-up will not get closed even if there are some errors. 
-        if (updater.isExitOnError()) {
+        if (updater.isErrorOccurred()) {
             System.exit(1);
         }
 
