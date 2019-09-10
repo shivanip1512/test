@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.amr.errors.dao.DeviceError;
+import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.programming.dao.MeterProgrammingDao;
 import com.cannontech.common.device.programming.model.MeterProgram;
@@ -16,6 +17,7 @@ import com.cannontech.common.device.programming.model.MeterProgramSource;
 import com.cannontech.common.device.programming.model.MeterProgramStatus;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.SqlStatementBuilder.SqlBatchUpdater;
 import com.cannontech.core.dao.DuplicateException;
@@ -51,6 +53,7 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
         // we are not getting the program as we will not display it to the user
         return row;
     };
+    
 
     @Override
     public UUID saveMeterProgram(MeterProgram program) {
@@ -98,6 +101,21 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
         params.addValue("LastUpdate", status.getLastUpdate());
     }
 
+    @Override
+    public List<SimpleDevice> getMetersWithOldFirmware(List<SimpleDevice> devices) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        return template.query(rs -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT PAObjectID, type");
+            sql.append("FROM  MeterProgramStatus JOIN YukonPAObject ypo ON DeviceId = ypo.PAObjectID");
+            sql.append("WHERE Source").eq(MeterProgramSource.OLD_FIRMWARE.getPrefix());
+            sql.append("AND DeviceId").in(devices.stream()
+                                          .map(SimpleDevice::getDeviceId)
+                                          .collect(Collectors.toList()));
+            return sql;
+        }, devices, new YukonDeviceRowMapper());
+    }
+    
     @Override
     public MeterProgramStatus getMeterProgramStatus(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();

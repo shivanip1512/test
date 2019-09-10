@@ -63,4 +63,9 @@ public interface MeterProgrammingDao {
      * Updates status
      */
     void updateMeterProgramStatus(MeterProgramStatus status);
+
+    /**
+     * Returns subset of devices that have old firmware.
+     */
+    List<SimpleDevice> getMetersWithOldFirmware(List<SimpleDevice> devices);
 }

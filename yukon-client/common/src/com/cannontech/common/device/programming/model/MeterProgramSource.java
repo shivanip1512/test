@@ -8,7 +8,12 @@ import java.util.stream.Collectors;
 import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum MeterProgramSource implements DisplayableEnum {
-    YUKON("Y"), OPTICAL("P"), NEW("N"), UNPROGRAMMED("U");
+    YUKON("Y"), 
+    OPTICAL("P"), 
+    NEW("N"), 
+    UNPROGRAMMED("U"),
+    OLD_FIRMWARE("X")
+    ;
 
     private static Map<String, MeterProgramSource> prefixToSource = Arrays.stream(MeterProgramSource.values())
             .collect(Collectors.toMap(MeterProgramSource::getPrefix,Function.identity()));
