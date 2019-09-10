@@ -726,12 +726,12 @@ error_t Ccu721::extractIdlcHeader(const bytes &message, idlc_header &header) con
         {
             header.control_command = IdlcLink_ResetAcknowledge;
         }
-        else if( control_octet & HdlcLink_RejectMask == HdlcLink_Rej )
+        else if( (control_octet & HdlcLink_RejectMask) == HdlcLink_Rej )
         {
             header.control_command = IdlcLink_RejectWithRestart;
             header.control_sequence_expected = control_octet >> 5;
         }
-        else if( control_octet & HdlcLink_RejectMask == HdlcLink_Srej )
+        else if( (control_octet & HdlcLink_RejectMask) == HdlcLink_Srej )
         {
             header.control_command = IdlcLink_RetransmitRequest;
             header.control_sequence_expected = control_octet >> 5;
