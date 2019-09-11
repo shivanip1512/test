@@ -95,7 +95,7 @@ public class CollectionActionsController {
         String view = "collectionActions.jsp";
         
         //check if meter programming should be visible
-        boolean enableMeterProgramming = MasterConfigLicenseKey.METER_PROGRAMMING_ENABLED.getKey().equals(configurationSource.getString("METER_PROGRAMMING_ENABLED"));
+        boolean enableMeterProgramming = configurationSource.isLicenseEnabled(MasterConfigLicenseKey.METER_PROGRAMMING_ENABLED);
         model.addAttribute("enableMeterProgramming", enableMeterProgramming);
         
         try {
@@ -109,7 +109,7 @@ public class CollectionActionsController {
             model.addAttribute("deviceErrors", collection.getErrorDevices());
             model.addAttribute("deviceErrorCount", collection.getDeviceErrorCount());
             if (collection.getErrorDevices().size() > 0) {
-                String totalErrors = new Integer(collection.getErrorDevices().size()).toString();
+                String totalErrors = Integer.toString(collection.getErrorDevices().size());
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".deviceUploadFailed", totalErrors));
             }
         } catch (ObjectMappingException | UnsupportedOperationException e) {

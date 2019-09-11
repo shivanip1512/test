@@ -98,4 +98,9 @@ public class MockConfigurationSource implements ConfigurationSource {
     public Optional<String> getOptionalString(MasterConfigString key) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public boolean isLicenseEnabled(MasterConfigLicenseKey key) {
+        throw new UnsupportedOperationException();
+    }
 }

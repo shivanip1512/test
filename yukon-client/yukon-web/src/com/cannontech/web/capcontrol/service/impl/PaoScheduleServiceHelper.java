@@ -15,8 +15,7 @@ public class PaoScheduleServiceHelper {
 
     public List<PaoScheduleAssignment> getAssignmentsByDMVFilter(List<PaoScheduleAssignment> assignments) {
 
-        boolean usesDmvTest = MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED.getKey().equals(
-            configurationSource.getString("DEMAND_MEASUREMENT_VERIFICATION_ENABLED"));
+        boolean usesDmvTest = configurationSource.isLicenseEnabled(MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED);
 
         if (!usesDmvTest) {
             assignments = assignments.stream().filter(

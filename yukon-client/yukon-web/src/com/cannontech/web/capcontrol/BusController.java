@@ -194,8 +194,7 @@ public class BusController {
         
         List<PaoSchedule> schedules = paoScheduleDao.getAll();
         model.addAttribute("allSchedules", schedules);
-        boolean usesDmvTest = MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED.getKey().equals(
-            configurationSource.getString("DEMAND_MEASUREMENT_VERIFICATION_ENABLED"));
+        boolean usesDmvTest = configurationSource.isLicenseEnabled(MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED);
         if (usesDmvTest) {
             model.addAttribute("scheduleCommands", ScheduleCommand.values());
         } else {
@@ -295,8 +294,7 @@ public class BusController {
         model.addAttribute("bus", bus);
         model.addAttribute("allSchedules", paoScheduleDao.getAll());
 
-        boolean usesDmvTest = MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED.getKey().equals(
-            configurationSource.getString("DEMAND_MEASUREMENT_VERIFICATION_ENABLED"));
+        boolean usesDmvTest = configurationSource.isLicenseEnabled(MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED);
         if (usesDmvTest) {
             List<String> testNames= bus.getSchedules().stream()
                                                             .filter(c-> c.getCommand().startsWith(ScheduleCommand.DmvTest.getCommandName()))

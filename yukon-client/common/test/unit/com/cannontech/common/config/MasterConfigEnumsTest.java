@@ -1,58 +1,41 @@
 package com.cannontech.common.config;
 
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class MasterConfigEnumsTest {
 
-    private static final Set<String> deprecatedKeys = new HashSet<>();
-    private static final Set<String> stringKeys = new HashSet<>();
-    private static final Set<String> booleanKeys = new HashSet<>();
-    private static final Set<String> doubleKeys = new HashSet<>();
-
-    @Before
-    public void setup() {
-        for (MasterConfigDeprecatedKey key : MasterConfigDeprecatedKey.values()) {
-            deprecatedKeys.add(key.name());
-        }
-
-        for (MasterConfigString key : MasterConfigString.values()) {
-            stringKeys.add(key.name());
-        }
-
-        for (MasterConfigBoolean key : MasterConfigBoolean.values()) {
-            booleanKeys.add(key.name());
-        }
-
-        for (MasterConfigDouble key : MasterConfigDouble.values()) {
-            doubleKeys.add(key.name());
-        }
-    }
+    private static final Set<Class<? extends Enum<?>>> keyClasses = ImmutableSet.of(
+                 MasterConfigDeprecatedKey.class,
+                 MasterConfigString.class,
+                 MasterConfigBoolean.class,
+                 MasterConfigDouble.class,
+                 MasterConfigLicenseKey.class);
 
     @Test
     public void testAllEnumsAreDisjoint() {
-        assertDisjoint(deprecatedKeys, stringKeys);
-        assertDisjoint(deprecatedKeys, booleanKeys);
-        assertDisjoint(deprecatedKeys, doubleKeys);
-
-        assertDisjoint(stringKeys, deprecatedKeys);
-        assertDisjoint(stringKeys, booleanKeys);
-        assertDisjoint(stringKeys, doubleKeys);
-
-        assertDisjoint(booleanKeys, deprecatedKeys);
-        assertDisjoint(booleanKeys, stringKeys);
-        assertDisjoint(booleanKeys, doubleKeys);
-
-        assertDisjoint(doubleKeys, deprecatedKeys);
-        assertDisjoint(doubleKeys, booleanKeys);
-        assertDisjoint(doubleKeys, stringKeys);
+        var enumNames = Maps.newHashMap(
+                            Maps.asMap(keyClasses, keyClass -> Arrays.stream(keyClass.getEnumConstants())
+                                                                     .map(Enum::name)
+                                                                     .collect(Collectors.toSet())));
+        for (var myClass : keyClasses) {
+            //  Remove the current class's enum names from the map...
+            var myNames = enumNames.remove(myClass);
+            
+            //  ... and test them against each of the the remaining sets of names.
+            //  This tests all possible combinations of 2 from the set.
+            enumNames.forEach((theirClass, theirNames) ->
+                assertDisjoint(myNames, theirNames));
+        }
     }
 
     @Test
@@ -78,5 +61,4 @@ public class MasterConfigEnumsTest {
     public static boolean isDisjoint(Set<String> setA, Set<String> setB) {
         return Sets.intersection(setA, setB).isEmpty();
     }
-
 }

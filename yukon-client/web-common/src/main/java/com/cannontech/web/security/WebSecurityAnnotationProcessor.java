@@ -15,7 +15,7 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.security.annotation.CheckAccessLevel;
 import com.cannontech.web.security.annotation.CheckCapControlCommandsAccessLevel;
 import com.cannontech.web.security.annotation.CheckCparm;
-import com.cannontech.web.security.annotation.CheckCparmString;
+import com.cannontech.web.security.annotation.CheckCparmLicense;
 import com.cannontech.web.security.annotation.CheckEnergyCompanySetting;
 import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 import com.cannontech.web.security.annotation.CheckGlobalSetting;
@@ -31,7 +31,7 @@ public class WebSecurityAnnotationProcessor {
 
     public void processMethod(Method method) throws Exception {
         check(AnnotationUtils.findAnnotation(method, CheckCparm.class));
-        check(AnnotationUtils.findAnnotation(method, CheckCparmString.class));
+        check(AnnotationUtils.findAnnotation(method, CheckCparmLicense.class));
         check(AnnotationUtils.findAnnotation(method, CheckRole.class));
         check(AnnotationUtils.findAnnotation(method, CheckGlobalSetting.class));
         check(AnnotationUtils.findAnnotation(method, CheckGlobalSettingStringExist.class));
@@ -45,7 +45,7 @@ public class WebSecurityAnnotationProcessor {
 
     public void processClass(Class<?> clazz) throws Exception {
         check(AnnotationUtils.findAnnotation(clazz, CheckCparm.class));
-        check(AnnotationUtils.findAnnotation(clazz, CheckCparmString.class));
+        check(AnnotationUtils.findAnnotation(clazz, CheckCparmLicense.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckRole.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckGlobalSetting.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckGlobalSettingStringExist.class));
@@ -65,11 +65,9 @@ public class WebSecurityAnnotationProcessor {
         }
     }
 
-    private void check(CheckCparmString annotation) {
+    private void check(CheckCparmLicense annotation) {
         if (annotation != null) {
-            MasterConfigString configKey = annotation.config();
-            MasterConfigLicenseKey expecting = annotation.expecting();
-            webSecurityChecker.authorizeByCparm(configKey, expecting);
+            webSecurityChecker.authorizeByLicense(annotation.license());
         }
     }
     

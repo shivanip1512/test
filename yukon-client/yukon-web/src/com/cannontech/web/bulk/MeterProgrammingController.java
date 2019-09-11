@@ -28,7 +28,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.config.MasterConfigLicenseKey;
-import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.programming.dao.MeterProgrammingDao;
 import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
@@ -40,13 +39,13 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.CheckCparmString;
+import com.cannontech.web.security.annotation.CheckCparmLicense;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
 @RequestMapping("/meterProgramming/*")
 @CheckRoleProperty(YukonRoleProperty.MASS_CHANGE)
-@CheckCparmString(config = MasterConfigString.METER_PROGRAMMING_ENABLED, expecting = MasterConfigLicenseKey.METER_PROGRAMMING_ENABLED)
+@CheckCparmLicense(license = MasterConfigLicenseKey.METER_PROGRAMMING_ENABLED)
 public class MeterProgrammingController {
     private final static Logger log = YukonLogManager.getLogger(MeterProgrammingController.class);
     private final static String baseKey = "yukon.web.modules.tools.bulk.meterProgramming.";

@@ -5,7 +5,6 @@ public enum MasterConfigString {
     AUTHENTICATION_TIMEOUT_STYLE,
     CAP_CONTROL_AMFM_DB_USERNAME(Encryption.ENCRYPTED),
     CAP_CONTROL_AMFM_DB_PASSWORD(Encryption.ENCRYPTED),
-    DEMAND_MEASUREMENT_VERIFICATION_ENABLED(Encryption.ENCRYPTED),
     CMEP_UNITS,
     CYME_DIST_BASE_URL,
     CYME_INTEGRATION_SUBBUS,
@@ -35,8 +34,6 @@ public enum MasterConfigString {
     MAP_DEVICES_HYBRID_URL,
     MAP_DEVICES_ELEVATION_URL,
     MAP_DEVICES_KEY(Encryption.ENCRYPTED),
-    
-    METER_PROGRAMMING_ENABLED(Encryption.ENCRYPTED),
     
     MSP_ALTGROUP_EXTENSION, //YUK-10787
     MSP_SUBSTATIONNAME_EXTENSION, //YUK-10787
@@ -80,7 +77,7 @@ public enum MasterConfigString {
      * @return true if {@code key} is a sensitive value which is (or should be) encrypted, false otherwise.
      * 
      */
-    public static boolean isEncryptedKey(MasterConfigString key) {
+    static boolean isEncryptedKey(MasterConfigString key) {
         return key.encryption == Encryption.ENCRYPTED;
     }
     
