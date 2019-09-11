@@ -178,7 +178,7 @@ yukon.dr.setup.program = (function() {
                 _loadGroupPicker();
             }
 
-            $(document).on('click', '#js-program-save', function(event) {
+            $(document).on('click', '#js-program-save', function (event) {
                 var selectedGroups = [];
                 var selectedMembers = [];
                 var selectedNotificationGroups = [];
@@ -204,6 +204,19 @@ yukon.dr.setup.program = (function() {
                 $('#js-selected-gear-ids').val(selectedGears.join(','));
                 $('#js-selected-member-ids').val(selectedMembers.join(','));
                 $('#js-selected-notification-group-ids').val(selectedNotificationGroups.join(','));
+
+                if (($('#js-program-start-check').is(':checked'))) {
+                    if(!$('#js-program-start').val()) {
+                        $('#js-program-start').val(0);
+                    }
+                }
+                if (($('#js-program-stop-check').is(':checked'))) {
+                    if(!$('#js-program-stop').val()) {
+                        $('#js-program-stop').val(0);
+                    }
+                }
+
+                $("#js-load-program-form").submit();
             });
 
             $(document).on("yukon:loadProgram:copy", function () {
@@ -455,19 +468,6 @@ yukon.dr.setup.program = (function() {
 
             $(document).on('change', '#stopTimeWindowTwo', function () {
                 _updateStopTimeWindowTwo();
-            });
-
-            $(document).on('click', '#js-program-save', function (event) {
-                if (($('#js-program-start-check').is(':checked'))) {
-                    if(!$('#js-program-start').val()) {
-                        $('#js-program-start').val(0);
-                    }
-                }
-                if (($('#js-program-stop-check').is(':checked'))) {
-                    if(!$('#js-program-stop').val()) {
-                        $('#js-program-stop').val(0);
-                    }
-                }
             });
 
             $(document).on("yukon:dr:setup:program:gearRemoved", function (event) {
