@@ -162,12 +162,12 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         sql.append("        WHERE ReportedGuid NOT IN (SELECT Guid FROM MeterProgram)");
         sql.append("    GROUP BY Source");
         sql.append("UNION");
-        sql.append("SELECT Name, NULL, NULL,");
+        sql.append("SELECT Name, Guid, NULL,");
         sql.append("    0 as Total,");
         sql.append("    0 as InProgress");
         sql.append("    FROM MeterProgram");
         sql.append("        WHERE Guid NOT IN (SELECT Guid FROM MeterProgramAssignment)");
-        sql.append("    GROUP BY Name");
+        sql.append("    GROUP BY Name, Guid");
         List<MeterProgramStatistics> statistics = jdbcTemplate.query(sql, statisticsMapper);
         statistics.forEach(statistic -> populateProgramNameForUnknownPrograms(context, statistic.getProgramInfo()));
         Collections.sort(statistics, (s1, s2) -> s1.getProgramInfo().getName().compareTo(s2.getProgramInfo().getName()));
@@ -219,6 +219,7 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
                 .filter(program -> StringUtils.isBlank(program.getGuid()))
                 .map(program -> program.getSource())
                 .collect(Collectors.toSet());
+        Iterable<String> prefixes = Iterables.transform(sources, s -> s.getPrefix());
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         Map<MeterProgramSource, String> translatedSources = Maps.asMap(sources, source -> accessor.getMessage(source.getFormatKey()));
@@ -248,7 +249,13 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         sql.append("FROM MeterProgramStatus status FULL JOIN MeterProgram program ON program.Guid = status.reportedGuid");
         sql.append("JOIN YukonPAObject ypo ON status.DeviceId = ypo.PAObjectID");
         sql.append("LEFT JOIN DeviceMeterGroup dmg ON status.DeviceId = dmg.DeviceId");
-        sql.append("WHERE (ReportedGuid").in(guids).append("OR").append("Source").in(Iterables.transform(sources, s -> s.getPrefix())).append(")");
+        if(guids != null && prefixes != null) {
+            sql.append("WHERE (ReportedGuid").in(guids).append("OR").append("Source").in(prefixes).append(")");
+        } else if (guids != null){
+            sql.append("WHERE ReportedGuid").in(guids); 
+        } else if (prefixes != null){
+            sql.append("WHERE Source").in(prefixes); 
+        }
         if(programmingStatuses.remove(ProgrammingStatus.FAILED) == false) {
             sql.append("AND status.Status").in_k(programmingStatuses);
         } else if(programmingStatuses.isEmpty()) {
