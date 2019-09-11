@@ -67,7 +67,6 @@ yukon.ami.meterProgramming.summary = (function () {
                         url: yukon.url('/amr/meterProgramming/' + id + '/readProgramming')
                     }).done(function(data) {
                         yukon.ui.alertSuccess(data.successMsg);
-                       // window.open(yukon.url('/collectionActions/progressReport/view?key=' + data.key), '_blank');
                     });
                 });
                 
@@ -82,7 +81,6 @@ yukon.ami.meterProgramming.summary = (function () {
                         url: yukon.url('/amr/meterProgramming/' + id + '/resendProgramming')
                     }).done(function(data) {
                         yukon.ui.alertSuccess(data.successMsg);
-                        //window.open(yukon.url('/collectionActions/progressReport/view?key=' + data.key), '_blank');
                     });
                 });
                 
