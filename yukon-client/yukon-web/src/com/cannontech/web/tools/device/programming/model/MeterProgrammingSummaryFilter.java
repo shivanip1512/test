@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -63,5 +66,10 @@ public class MeterProgrammingSummaryFilter {
 
     public void setGroups(List<DeviceGroup> groups) {
         this.groups = groups;
+    }
+    
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }
