@@ -31,6 +31,9 @@
         <link>/billing/home</link>
       </option>
       <option name="meterProgramming">
+        <permissions>
+            <masterConfig name="METER_PROGRAMMING_ENABLED" />
+        </permissions>
         <link>/amr/meterProgramming/home</link>
       </option>
       <option name="import" section="true">
