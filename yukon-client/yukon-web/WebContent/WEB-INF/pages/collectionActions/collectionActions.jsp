@@ -92,10 +92,12 @@
                                         deviceCollection="${deviceCollection}" ajaxSubmit="true"/>
                                 </cti:checkRolesAndProperties>
                                 
-                                <%-- C&I Meter Programming - CHECK FOR LICENSE--%>
-                                <tags:collectionActionTr linkKey=".meterProgrammingLabel" descriptionKey=".meterProgrammingDescription" 
-                                    icon="icon-app icon-app-32-cog-with-meter" action="/bulk/meterProgramming/inputs" 
-                                    deviceCollection="${deviceCollection}" ajaxSubmit="true"/>
+                                <%-- C&I Meter Programming --%>
+                                <c:if test="${enableMeterProgramming}">
+                                    <tags:collectionActionTr linkKey=".meterProgrammingLabel" descriptionKey=".meterProgrammingDescription" 
+                                        icon="icon-app icon-app-32-cog-with-meter" action="/bulk/meterProgramming/inputs" 
+                                        deviceCollection="${deviceCollection}" ajaxSubmit="true"/>
+                                </c:if>
                                         
                                 <%--DATA STREAMING - check for CPARM and ROLE PROPERTY--%>
                                 <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">

@@ -1,27 +1,24 @@
 package com.cannontech.common.config;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public enum MasterConfigString {
 
     AUTHENTICATION_TIMEOUT_STYLE,
-    CAP_CONTROL_AMFM_DB_USERNAME,
-    CAP_CONTROL_AMFM_DB_PASSWORD,
-    DEMAND_MEASUREMENT_VERIFICATION_ENABLED,
+    CAP_CONTROL_AMFM_DB_USERNAME(Encryption.ENCRYPTED),
+    CAP_CONTROL_AMFM_DB_PASSWORD(Encryption.ENCRYPTED),
+    DEMAND_MEASUREMENT_VERIFICATION_ENABLED(Encryption.ENCRYPTED),
     CMEP_UNITS,
     CYME_DIST_BASE_URL,
     CYME_INTEGRATION_SUBBUS,
     CYME_REPORT_NAME,
     CYME_SIM_FILE,
 
-    DB_USERNAME,
-    DB_PASSWORD,
-    DB_SQLSERVER,
-    DB_SQLSERVER_HOST,
+    DB_USERNAME(Encryption.ENCRYPTED),
+    DB_PASSWORD(Encryption.ENCRYPTED),
+    DB_SQLSERVER(Encryption.ENCRYPTED),
+    DB_SQLSERVER_HOST(Encryption.ENCRYPTED),
     DB_TYPE,
     DB_JAVA_DRIVER,
-    DB_JAVA_URL,
+    DB_JAVA_URL(Encryption.ENCRYPTED),
     DB_JAVA_VALIDATION_QUERY,
 
     EXCLUDED_POINT_QUALITIES, //YUK-11910
@@ -37,7 +34,9 @@ public enum MasterConfigString {
     MAP_DEVICES_SATELLITE_URL,
     MAP_DEVICES_HYBRID_URL,
     MAP_DEVICES_ELEVATION_URL,
-    MAP_DEVICES_KEY,
+    MAP_DEVICES_KEY(Encryption.ENCRYPTED),
+    
+    METER_PROGRAMMING_ENABLED(Encryption.ENCRYPTED),
     
     MSP_ALTGROUP_EXTENSION, //YUK-10787
     MSP_SUBSTATIONNAME_EXTENSION, //YUK-10787
@@ -52,59 +51,54 @@ public enum MasterConfigString {
     
     SMART_NOTIFICATION_INTERVALS,
     
-    SUPPORT_BUNDLE_FTP_UPLOAD_USER,
-    SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD,
-    SUPPORT_BUNDLE_FTP_UPLOAD_HOST,
+    SUPPORT_BUNDLE_FTP_UPLOAD_USER(Encryption.ENCRYPTED),
+    SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD(Encryption.ENCRYPTED),
+    SUPPORT_BUNDLE_FTP_UPLOAD_HOST(Encryption.ENCRYPTED),
     
     YUKON_EXTERNAL_URL,
     ;
+
+    private static enum Encryption {
+        NONE,
+        ENCRYPTED
+    };
     
-    private static final Set<MasterConfigString> sensitiveData;
+    private final Encryption encryption;
     
-    /**
-     * If you add to this list, update the MasterConfigCryptoUtilsTest as well.
-     */
-    static {
-        sensitiveData = new HashSet<>();
-        sensitiveData.add(CAP_CONTROL_AMFM_DB_USERNAME);
-        sensitiveData.add(CAP_CONTROL_AMFM_DB_PASSWORD);
-        sensitiveData.add(DEMAND_MEASUREMENT_VERIFICATION_ENABLED);
-        sensitiveData.add(DB_USERNAME);
-        sensitiveData.add(DB_PASSWORD);
-        sensitiveData.add(DB_SQLSERVER);
-        sensitiveData.add(DB_SQLSERVER_HOST);
-        sensitiveData.add(DB_JAVA_URL);
-        sensitiveData.add(MAP_DEVICES_KEY);
-        sensitiveData.add(SUPPORT_BUNDLE_FTP_UPLOAD_USER);
-        sensitiveData.add(SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD);
-        sensitiveData.add(SUPPORT_BUNDLE_FTP_UPLOAD_HOST);
+    MasterConfigString() {
+        this(Encryption.NONE);
+    }
+    
+    MasterConfigString(Encryption encryption) {
+        this.encryption = encryption;
     }
     
     /**
-     * Returns true if the CPARM key is an encrypted value for example: DB_PASSWORD.
+     * Returns true if the CPARM key is an encrypted value, such as DB_PASSWORD.
      * 
      * @param key
-     * @return true if key is a sensitive value which will be or is encrypted false otherwise
+     * @return true if {@code key} is a sensitive value which is (or should be) encrypted, false otherwise.
      * 
      */
     public static boolean isEncryptedKey(MasterConfigString key) {
-        return sensitiveData.contains(key);
+        return key.encryption == Encryption.ENCRYPTED;
     }
     
     /**
      * Returns true if the CPARM key is an encrypted value for example: DB_PASSWORD.
+     * <br>This should only be used by low-level loading code, e.g. MasterConfigMap.
      * 
-     * It is prefered to use {@link #isEncryptedKey(MasterConfigString)}
+     * <p>All other code should use {@link #isEncryptedKey(MasterConfigString)}
      * 
      * @param key
-     * @return true if key is a sensitive value which will be or is encrypted false otherwise
+     * @return true if {@code key} is a sensitive value which is (or should be) encrypted, false otherwise.
      * 
-     * Throws NullPointerException if key sent in is null
+     * Throws NullPointerException if {@code key} is null
      */
-    public static boolean isEncryptedKey(String key) {
+    static boolean isEncryptedKey(String key) {
         try {
             return isEncryptedKey(valueOf(key));
-        } catch (IllegalArgumentException  e) {
+        } catch (@SuppressWarnings("unused") IllegalArgumentException e) {
             return false; // Some valid CPARMS might pass through this method that are not in this enum
         }
     }

@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.config.MasterConfigLicenseKey;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -53,6 +55,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.security.annotation.CheckCparmString;
 import com.cannontech.web.tools.device.programming.dao.MeterProgrammingSummaryDao;
 import com.cannontech.web.tools.device.programming.dao.MeterProgrammingSummaryDao.SortBy;
 import com.cannontech.web.tools.device.programming.model.MeterProgramInfo;
@@ -66,6 +69,7 @@ import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/meterProgramming/*")
+@CheckCparmString(config = MasterConfigString.METER_PROGRAMMING_ENABLED, expecting = MasterConfigLicenseKey.METER_PROGRAMMING_ENABLED)
 public class MeterProgrammingSummaryController {
     
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;

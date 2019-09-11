@@ -1,13 +1,14 @@
 package com.cannontech.common.config;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 public enum MasterConfigLicenseKey {
     
-    
     /*
-     * This class exist to check the value of a MasterConfigString with a gUID like key.
+     * This class exists to check the value of a MasterConfigString with a GUID key.
      * We can then use the string to lock access to certain links/menu items/classes.
      * Please look at the annotation CheckCparmString if you would like Lock out access to a method or class.
      * 
@@ -16,13 +17,13 @@ public enum MasterConfigLicenseKey {
      * The value of the key will be obfuscated by combining the key from five separate parts.
      */
     
-    DEMAND_MEASUREMENT_VERIFICATION_ENABLED("452C3B88", 7122, 18058, 28002, "FDFB58B528B5"), //452C3B88-1BD2/7122-468A/18058-6D62/28002-FDFB58B528B5
+    DEMAND_MEASUREMENT_VERIFICATION_ENABLED("452C3B88", 7122, 18058, 28002, "FDFB58B528B5"), //452C3B88-1BD2-468A-6D62-FDFB58B528B5
+    METER_PROGRAMMING_ENABLED("130A06FD", 55770, 19918, 46271, "837A991F5383"), //130A06FD-D9DA-4DCE-B4BF-837A991F5383
     ;
     
     
-    public static final Map<String, MasterConfigLicenseKey> configMap = new HashMap<String, MasterConfigLicenseKey>() {{
-        put("DEMAND_MEASUREMENT_VERIFICATION_ENABLED", DEMAND_MEASUREMENT_VERIFICATION_ENABLED);
-    }};
+    public static final Map<String, MasterConfigLicenseKey> configMap = 
+            Maps.uniqueIndex(Arrays.asList(values()), MasterConfigLicenseKey::name);
     
     private String key1;
     private int key2;

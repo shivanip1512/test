@@ -12,7 +12,7 @@ import com.cannontech.encryption.MasterConfigCryptoUtils;
 public class MasterConfigCryptoUtilsTest {
     private static Set<MasterConfigString> sensitiveData;
     static {
-        sensitiveData = new HashSet<MasterConfigString>();
+        sensitiveData = new HashSet<>();
         sensitiveData.add(MasterConfigString.CAP_CONTROL_AMFM_DB_USERNAME);
         sensitiveData.add(MasterConfigString.CAP_CONTROL_AMFM_DB_PASSWORD);
         sensitiveData.add(MasterConfigString.DEMAND_MEASUREMENT_VERIFICATION_ENABLED);
@@ -22,6 +22,7 @@ public class MasterConfigCryptoUtilsTest {
         sensitiveData.add(MasterConfigString.DB_SQLSERVER_HOST);
         sensitiveData.add(MasterConfigString.DB_JAVA_URL);
         sensitiveData.add(MasterConfigString.MAP_DEVICES_KEY);
+        sensitiveData.add(MasterConfigString.METER_PROGRAMMING_ENABLED);
         sensitiveData.add(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_USER);
         sensitiveData.add(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD);
         sensitiveData.add(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_HOST);
