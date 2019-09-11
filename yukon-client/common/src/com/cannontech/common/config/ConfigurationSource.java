@@ -179,4 +179,9 @@ public interface ConfigurationSource {
      * the key did not exist in the file.
      */
     public int getInteger(MasterConfigInteger key, int defaultValue);
+    
+    /**
+     * Indicates whether the specified license is enabled on this system.
+     */
+    public boolean isLicenseEnabled(MasterConfigLicenseKey key);
 }

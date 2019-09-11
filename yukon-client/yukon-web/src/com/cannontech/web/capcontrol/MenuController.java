@@ -323,8 +323,8 @@ public class MenuController {
                 model.addAttribute("localControlTypeCBC", true);
             }
             if (allowLocalControl && !is702xDevice) {
-                if (cbcPaoObject != null && (cbcPaoObject.getPaoIdentifier().getPaoType() == PaoType.CBC_8020
-                    || cbcPaoObject.getPaoIdentifier().getPaoType() == PaoType.CBC_8024)) {
+                if (cbcPaoObject.getPaoIdentifier().getPaoType() == PaoType.CBC_8020
+                    || cbcPaoObject.getPaoIdentifier().getPaoType() == PaoType.CBC_8024) {
                     Set<Attribute> attributes = Sets.newHashSet(BuiltInAttribute.ENABLE_OVUV_CONTROL);
                     Set<Attribute> allExistingAttributes = attributeService.getExistingAttributes(cbcPaoObject, attributes);
                     String disabledTextKey = "yukon.web.modules.capcontrol.menu.pointNotFound";
@@ -459,7 +459,7 @@ public class MenuController {
         String title = accessor.getMessage("yukon.web.modules.capcontrol.create.title");
         model.addAttribute("title", title);
         
-        boolean usesDmvTest = MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED.getKey().equals(configurationSource.getString("DEMAND_MEASUREMENT_VERIFICATION_ENABLED"));
+        boolean usesDmvTest = configurationSource.isLicenseEnabled(MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED);
         model.addAttribute("usesDmvTest", usesDmvTest);
         
         return "tier/popupmenu/create.jsp";

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -22,7 +21,6 @@ import org.springframework.core.io.Resource;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -221,17 +219,14 @@ public class StandardMenuRenderer {
             if (ecDao.isEnergyCompanyOperator(user)) {
                 return true;
             }
+        } else if (type == Permission.license) {
+            String value = permission.getAttributeValue("name");
+
+            return configurationSource.isLicenseEnabled(MasterConfigLicenseKey.valueOf(value));
         } else if (type == Permission.masterConfig) {
             String value = permission.getAttributeValue("name");
             
-            if (!MasterConfigLicenseKey.configMap.containsKey(value)) {
-                if (configurationSource.getBoolean(value, false)) {
-                      return true;
-                }
-            }
-            else {
-                return MasterConfigLicenseKey.configMap.get(value).getKey().equals(configurationSource.getString(value));
-            }
+            return configurationSource.getBoolean(value, false);
         } else {
             /* Not used yet and only supporting booleans, add 'value' to globalSetting element in schema if needed */
             if (gsDao.getBoolean(GlobalSettingType.valueOf(permission.getAttributeValue("name")))) {
@@ -279,6 +274,7 @@ public class StandardMenuRenderer {
         role,
         roleProperty,
         ecOperator,
+        license,
         masterConfig,
         globalSetting
     }

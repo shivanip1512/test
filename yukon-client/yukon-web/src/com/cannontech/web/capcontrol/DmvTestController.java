@@ -16,19 +16,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cannontech.capcontrol.dao.DmvTestDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigLicenseKey;
-import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.db.capcontrol.DmvTest;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.validators.DmvTestValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckCparmString;
+import com.cannontech.web.security.annotation.CheckCparmLicense;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
-@CheckCparmString(config = MasterConfigString.DEMAND_MEASUREMENT_VERIFICATION_ENABLED, expecting = MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED)
+@CheckCparmLicense(license = MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED)
 public class DmvTestController {
     private static Logger log = YukonLogManager.getLogger(DmvTestController.class);
     private static final String baseKey = "yukon.web.modules.capcontrol.dmvTest";

@@ -48,6 +48,10 @@
         <xsd:attribute name="name" type="xsd:string" use="required"/>
     </xsd:complexType>
 
+    <xsd:complexType name="License">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
     <xsd:complexType name="MasterConfig">
         <xsd:attribute name="name" type="xsd:string" use="required"/>
     </xsd:complexType>
@@ -66,6 +70,7 @@
             <xsd:element name="roleProperty" type="m:RoleProperty"/>
             <xsd:element name="globalSetting" type="m:GlobalSetting"/>
             <xsd:element name="masterConfig" type="m:MasterConfig"/>
+            <xsd:element name="license" type="m:License"/>
             <xsd:element name="ecOperator" type="m:EmptyElement"/>
         </xsd:choice>
         <xsd:attribute name="mode" type="m:AnyOrAll"/>

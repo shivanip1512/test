@@ -136,8 +136,7 @@ public class MasterConfigMap implements ConfigurationSource {
         if (MasterConfigDeprecatedKey.isDeprecated(key)) {
             log.warn("Line " + lineNum + ": Not loading deprecated key " + key + ".");
         } else {
-            if (MasterConfigString.isEncryptedKey(key)
-                    && !MasterConfigCryptoUtils.isEncrypted(value)) {
+            if (isEncryptedKey(key) && !MasterConfigCryptoUtils.isEncrypted(value)) {
                 // Found a value that needs to be encrypted
                 value = MasterConfigCryptoUtils.encryptValue(value);
                 modifiedEntry = Pair.of(key, value);
@@ -148,13 +147,17 @@ public class MasterConfigMap implements ConfigurationSource {
             }
             configMap.put(key, value);
 
-            if (MasterConfigString.isEncryptedKey(key)) {
+            if (isEncryptedKey(key)) {
                 log.debug("Found line match: " + key + " [encrypted value]"); // Do not log entire line here because it contains sensitive data
             } else {
                 log.debug("Found line match: " + key + " : " + value);
             }
         }
         return modifiedEntry;
+    }
+
+    static boolean isEncryptedKey(String key) {
+        return MasterConfigString.isEncryptedKey(key) || MasterConfigLicenseKey.isLicenseKey(key);
     }
 
     /**
@@ -314,8 +317,7 @@ public class MasterConfigMap implements ConfigurationSource {
      */
     private String getValueFromMap(String key) {
         String value = configMap.get(key);
-        if (MasterConfigString.isEncryptedKey(key) &&
-                MasterConfigCryptoUtils.isEncrypted(value)) {
+        if (isEncryptedKey(key) && MasterConfigCryptoUtils.isEncrypted(value)) {
             // Found an encrypted value
             value = MasterConfigCryptoUtils.decryptValue(value);
             log.debug("Returning [encrypted value] for '" + key + "'"); // Do not log entire line here because it contains sensitive data
@@ -342,5 +344,10 @@ public class MasterConfigMap implements ConfigurationSource {
             return defaultValue;
         }
         return Integer.parseInt(string);
+    }
+    
+    @Override
+    public boolean isLicenseEnabled(MasterConfigLicenseKey key) {
+        return key != null && key.isEnabledValue(getString(key.name()));
     }
 }

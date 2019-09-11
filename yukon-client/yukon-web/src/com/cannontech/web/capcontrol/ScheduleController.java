@@ -475,8 +475,7 @@ public class ScheduleController {
     }
 
     private void setDMVTestCommand(ModelMap map) {
-        boolean usesDmvTest = MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED.getKey().equals(
-            configurationSource.getString("DEMAND_MEASUREMENT_VERIFICATION_ENABLED"));
+        boolean usesDmvTest = configurationSource.isLicenseEnabled(MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED);
 
         if (usesDmvTest) {
             map.addAttribute("dmvTestCommand", ScheduleCommand.DmvTest);

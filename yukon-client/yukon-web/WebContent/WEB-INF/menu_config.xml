@@ -32,7 +32,7 @@
       </option>
       <option name="meterProgramming">
         <permissions>
-            <masterConfig name="METER_PROGRAMMING_ENABLED" />
+            <license name="METER_PROGRAMMING_ENABLED" />
         </permissions>
         <link>/amr/meterProgramming/home</link>
       </option>
@@ -165,7 +165,7 @@
       </option>
     <option name="dmvTest">
         <permissions>
-            <masterConfig name="DEMAND_MEASUREMENT_VERIFICATION_ENABLED" />
+            <license name="DEMAND_MEASUREMENT_VERIFICATION_ENABLED" />
         </permissions>
         <link>/capcontrol/dmvTestList</link>
       </option>
