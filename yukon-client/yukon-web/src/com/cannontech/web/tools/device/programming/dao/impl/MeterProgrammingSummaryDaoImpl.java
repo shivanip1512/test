@@ -95,7 +95,7 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         String name = rs.getStringSafe("Name");
         if (name != null) {
             programInfo.setName(name);
-            programInfo.setGuid(rs.getString("ReportedGuid"));
+            programInfo.setGuid(rs.getString("Guid"));
         }
         row.setProgramInfo(programInfo);
         row.setDeviceTotal(rs.getInt("Total"));
@@ -149,7 +149,7 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
     @Override
     public List<MeterProgramStatistics> getProgramStatistics(YukonUserContext context) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Name, ReportedGuid, Source,");
+        sql.append("SELECT Name, ReportedGuid as Guid, Source,");
         sql.append("    COUNT(*) Total,");
         sql.append("    SUM(CASE WHEN Status").in_k(DisplayableStatus.IN_PROGRESS.getProgramStatuses()).append("THEN 1 ELSE 0 END) InProgress");
         sql.append("        FROM MeterProgramStatus status JOIN MeterProgram program ON program.Guid = status.ReportedGuid");
@@ -161,6 +161,13 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         sql.append("    FROM MeterProgramStatus");
         sql.append("        WHERE ReportedGuid NOT IN (SELECT Guid FROM MeterProgram)");
         sql.append("    GROUP BY Source");
+        sql.append("UNION");
+        sql.append("SELECT Name, NULL, NULL,");
+        sql.append("    0 as Total,");
+        sql.append("    0 as InProgress");
+        sql.append("    FROM MeterProgram");
+        sql.append("        WHERE Guid NOT IN (SELECT Guid FROM MeterProgramAssignment)");
+        sql.append("    GROUP BY Name");
         List<MeterProgramStatistics> statistics = jdbcTemplate.query(sql, statisticsMapper);
         statistics.forEach(statistic -> populateProgramNameForUnknownPrograms(context, statistic.getProgramInfo()));
         Collections.sort(statistics, (s1, s2) -> s1.getProgramInfo().getName().compareTo(s2.getProgramInfo().getName()));
@@ -170,6 +177,7 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
     @Override
     public List<MeterProgramInfo> getMeterProgramInfos(YukonUserContext context) {
         return getProgramStatistics(context).stream()
+                .filter(program -> program.getDeviceTotal() > 0)
                 .map(MeterProgramStatistics::getProgramInfo)
                 .collect(Collectors.toList());
     }
@@ -199,6 +207,8 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
     private SqlStatementBuilder buildDetailSelect(MeterProgrammingSummaryFilter filter, SortBy sortBy, Direction direction,
             boolean selectCount, YukonUserContext context) {
         
+        log.debug("Filter {}", filter);
+        
         List<MeterProgramInfo> programs = coalesce(filter.getPrograms(), () -> getMeterProgramInfos(context));
         List<DisplayableStatus> statuses = coalesce(filter.getStatuses(), () -> Arrays.asList(DisplayableStatus.values()));
         List<String> guids = programs.stream()
@@ -220,15 +230,19 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         if (selectCount) {
             sql.append("SELECT count(status.DeviceId)");
         }else {
-            sql.append("SELECT");
-            sql.append("    CASE");
-            sql.append("        WHEN Name IS NULL THEN");
-            sql.append("            CASE");
-            translatedSources.forEach((source, translated) -> sql.append("WHEN Source").eq(source.getPrefix())
-                                      .append("THEN").appendArgument(translated));
-            sql.append("            END");
-            sql.append("        ELSE Name");
-            sql.append("    END as ProgramName");
+            if(translatedSources.isEmpty()) {
+                sql.append("SELECT Name as ProgramName");
+            } else {
+                sql.append("SELECT");
+                sql.append("    CASE");
+                sql.append("        WHEN Name IS NULL THEN");
+                sql.append("            CASE");
+                translatedSources.forEach((source, translated) -> sql.append("WHEN Source").eq(source.getPrefix())
+                                          .append("THEN").appendArgument(translated));
+                sql.append("            END");
+                sql.append("        ELSE Name");
+                sql.append("    END as ProgramName");
+            }
             sql.append(", status.DeviceId, LastUpdate, Source, Status, PaoName as DeviceName, Type, MeterNumber, program.Guid");
         }
         sql.append("FROM MeterProgramStatus status FULL JOIN MeterProgram program ON program.Guid = status.reportedGuid");
@@ -250,6 +264,9 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
             sql.append(sortBy.getDbString());
             sql.append(direction);
         }
+        
+        log.debug("Debug Sql {}", sql.getDebugSql());
+        
         return sql;
     }
 
