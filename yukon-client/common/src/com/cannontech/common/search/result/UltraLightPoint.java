@@ -6,4 +6,5 @@ public interface UltraLightPoint {
     public int getPointId();
     public int getDeviceId();
     public String getPointType();
+    public String getCategory();
 }

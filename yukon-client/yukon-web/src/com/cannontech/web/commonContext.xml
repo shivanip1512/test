@@ -156,6 +156,11 @@
         <property name="criteria">
             <bean class="com.cannontech.web.search.lucene.criteria.StatusPointCriteria"/>
         </property>
+    </bean>
+    <bean name="devicePointPicker" parent="abstractPointPicker" class="com.cannontech.web.picker.PointPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.web.search.lucene.criteria.DevicePointCriteria"/>
+        </property>
     </bean> 
     
     <bean name="availableCapBankPicker" class="com.cannontech.web.picker.AvailableCapBankPicker"/>
