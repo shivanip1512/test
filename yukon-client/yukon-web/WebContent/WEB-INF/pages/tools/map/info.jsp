@@ -53,9 +53,6 @@
         <tags:nameValue2 nameKey=".nodeSN">${fn:escapeXml(nodeSN)}</tags:nameValue2>
     </c:if>
     <cti:msgScope paths="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData">
-        <c:if test="${!empty rssi}">
-            <tags:nameValue2 nameKey=".rssi">${fn:escapeXml(rssi)}</tags:nameValue2>
-        </c:if>
         <c:if test="${!empty configuredApBssid}">
             <tags:nameValue2 nameKey=".configuredApBssid">${fn:escapeXml(configuredApBssid)}</tags:nameValue2>
         </c:if>

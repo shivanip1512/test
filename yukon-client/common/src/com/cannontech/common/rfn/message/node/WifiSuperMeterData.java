@@ -5,8 +5,6 @@ import java.io.Serializable;
 public class WifiSuperMeterData implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private Double rssi;
     
     private String apSsid;
     
@@ -19,14 +17,6 @@ public class WifiSuperMeterData implements Serializable {
     // A string represents an ipv6 address, e.x., "FD30:0000:0000:0001:0214:08FF:FE0A:BF91"
     // Yukon UI can display it directly without adding colons.
     private String virtualGatewayIpv6Address;
-
-    public Double getRssi() {
-        return rssi;
-    }
-
-    public void setRssi(Double rssi) {
-        this.rssi = rssi;
-    }
 
     public String getApSsid() {
         return apSsid;
@@ -75,7 +65,6 @@ public class WifiSuperMeterData implements Serializable {
         result = prime * result + ((apSsid == null) ? 0 : apSsid.hashCode());
         result = prime * result + ((configuredApBssid == null) ? 0 : configuredApBssid.hashCode());
         result = prime * result + ((connectedApBssid == null) ? 0 : connectedApBssid.hashCode());
-        result = prime * result + ((rssi == null) ? 0 : rssi.hashCode());
         result = prime * result + ((securityType == null) ? 0 : securityType.hashCode());
         result = prime * result
             + ((virtualGatewayIpv6Address == null) ? 0 : virtualGatewayIpv6Address.hashCode());
@@ -106,11 +95,6 @@ public class WifiSuperMeterData implements Serializable {
                 return false;
         } else if (!connectedApBssid.equals(other.connectedApBssid))
             return false;
-        if (rssi == null) {
-            if (other.rssi != null)
-                return false;
-        } else if (!rssi.equals(other.rssi))
-            return false;
         if (securityType != other.securityType)
             return false;
         if (virtualGatewayIpv6Address == null) {
@@ -124,8 +108,7 @@ public class WifiSuperMeterData implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("WifiSuperMeterData [rssi=%s, apSsid=%s, configuredApBssid=%s, connectedApBssid=%s, securityType=%s, virtualGatewayIpv6Address=%s]",
-                    rssi,
+            .format("WifiSuperMeterData [apSsid=%s, configuredApBssid=%s, connectedApBssid=%s, securityType=%s, virtualGatewayIpv6Address=%s]",
                     apSsid,
                     configuredApBssid,
                     connectedApBssid,
