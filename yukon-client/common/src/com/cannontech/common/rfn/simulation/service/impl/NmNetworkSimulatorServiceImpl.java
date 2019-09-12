@@ -475,8 +475,10 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                 if (multi == RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM) {
                     populateDeviceToGatewayMapping(allGateways, devicesToGateways);
                     RfnMetadataMultiQueryResult result = getResult(results, device, multi);
-                    result.getMetadatas().put(multi,
-                        getNodeComm(device, devicesToGateways.get(device).getRfnIdentifier()));
+                    RfnGateway gateway = devicesToGateways.get(device);
+                    if(gateway != null) {
+                        result.getMetadatas().put(multi, getNodeComm(device, gateway.getRfnIdentifier()));
+                    }
                 } else if (multi == RfnMetadataMulti.NODE_DATA) {
                     NodeData node = new NodeData();
                     node.setFirmwareVersion("Simulated Firmware Version");
@@ -537,7 +539,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         superMeterData.setConfiguredApBssid("12:34:56:78:90:ab");
         superMeterData.setConnectedApBssid("ab:cd:ef:01:23:45");
         superMeterData.setApSsid("ExampleUtilityISP");
-        superMeterData.setRssi(-64D);
         superMeterData.setSecurityType(WifiSecurityType.WPA2_PERSONAL);
         superMeterData.setVirtualGatewayIpv6Address("FD30:0000:0000:0001:0214:08FF:FE0A:BF91");
         return superMeterData;

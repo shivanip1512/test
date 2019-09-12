@@ -263,8 +263,6 @@ public class MapController {
                             model.addAttribute("macAddress", nodeData.getMacAddress());
                             model.addAttribute("nodeSN", nodeData.getNodeSerialNumber());
                             if (nodeData.getWifiSuperMeterData() != null) {
-                                String dBm = accessor.getMessage("yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData.rssi.dBm");
-                                model.addAttribute("rssi", nodeData.getWifiSuperMeterData().getRssi() + " " + dBm);
                                 model.addAttribute("configuredApBssid", nodeData.getWifiSuperMeterData().getConfiguredApBssid());
                                 model.addAttribute("connectedApBssid", nodeData.getWifiSuperMeterData().getConnectedApBssid());
                                 model.addAttribute("apSsid", nodeData.getWifiSuperMeterData().getApSsid());
