@@ -118,4 +118,9 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     public void saveDynamicRfnDeviceData(List<NodeComm> nodes) {
         throw new MethodNotImplementedException();
     }
+
+	@Override
+	public Set<Long> saveDynamicRfnDeviceData(Map<Long, NodeComm> nodes) {
+		 throw new MethodNotImplementedException();
+	}
 }
