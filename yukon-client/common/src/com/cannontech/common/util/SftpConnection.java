@@ -57,7 +57,7 @@ public class SftpConnection implements AutoCloseable {
         });
         
         // Handle public/private authentication key configuration
-        if (privateKey != null) {
+        if (StringUtils.isNotEmpty(privateKey)) {
             String randomId = UUID.randomUUID().toString();
             privateKeyFile = createTempFile("sftpPrivate-" + randomId, privateKey);
             // Password-protected private key only seems to be supported via the VFS 2.4+ syntax. e.g.s
