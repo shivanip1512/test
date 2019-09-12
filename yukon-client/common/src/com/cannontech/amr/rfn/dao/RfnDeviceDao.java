@@ -98,6 +98,11 @@ public interface RfnDeviceDao {
     void saveDynamicRfnDeviceData(List<NodeComm> nodes);
     
     /**
+     * Creates mappings for gateway to device. Returns reference ids to be send to NM for acknowledgement
+     */
+    Set<Long> saveDynamicRfnDeviceData(Map<Long, NodeComm> nodes);
+    
+    /**
      * Returns list of devices for gateway
      */
     List<RfnDevice> getDevicesForGateway(int gatewayId);

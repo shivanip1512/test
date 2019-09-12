@@ -1,6 +1,6 @@
 package com.cannontech.services.rfn.endpoint;
 
-import java.util.ArrayList;
+import java.util.Set;
 
 import javax.jms.ConnectionFactory;
 
@@ -17,7 +17,6 @@ import com.cannontech.common.rfn.message.node.RfnNodeCommArchiveResponse;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.services.rfn.RfnArchiveProcessor;
 import com.cannontech.services.rfn.RfnArchiveQueueHandler;
-import com.google.common.collect.Sets;
 
 @ManagedResource
 public class RfnNodeCommArchiveRequestListener implements RfnArchiveProcessor {
@@ -48,16 +47,16 @@ public class RfnNodeCommArchiveRequestListener implements RfnArchiveProcessor {
      * Persists gateway to device mapping.
      */
     private void processRequest(RfnNodeCommArchiveRequest request, String processor) {
-       rfnDeviceDao.saveDynamicRfnDeviceData(new ArrayList<>(request.getNodeComms().values()));
-       sendAcknowledgement(request, processor);
+       Set<Long> referenceIds = rfnDeviceDao.saveDynamicRfnDeviceData(request.getNodeComms());
+       sendAcknowledgement(referenceIds, processor);
     }
     
     /**
      * Sends acknowledgement to NM
      */
-    private void sendAcknowledgement(RfnNodeCommArchiveRequest request, String processor) {
+    private void sendAcknowledgement(Set<Long> referenceIds, String processor) {
         RfnNodeCommArchiveResponse response = new RfnNodeCommArchiveResponse();
-        response.setReferenceIDs(Sets.newHashSet(request.getNodeComms().keySet()));
+        response.setReferenceIDs(referenceIds);
         log.debug("{} acknowledged ids {}", processor, response.getReferenceIDs());
         jmsTemplate.convertAndSend(JmsApiDirectory.RFN_NODE_COMM_ARCHIVE.getResponseQueue().get().getName(), response);
     }
