@@ -215,6 +215,16 @@
     </attribute>    
   </tag>
   
+  <tag>
+    <name>checkLicenseKey</name>
+    <tag-class>com.cannontech.web.taglib.CheckLicenseKeyTag</tag-class>
+    <attribute>
+        <name>keyName</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>   
+  </tag>
+  
 <tag>
     <name>checkEnergyCompanySetting</name>
     <tag-class>com.cannontech.web.taglib.CheckEnergyCompanySettingTag</tag-class>
