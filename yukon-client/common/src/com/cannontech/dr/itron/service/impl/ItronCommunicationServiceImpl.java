@@ -2,8 +2,7 @@ package com.cannontech.dr.itron.service.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.net.URLConnection;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -11,6 +10,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -22,7 +22,6 @@ import javax.xml.bind.JAXBElement;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Sets;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +37,7 @@ import com.cannontech.common.events.loggers.ItronEventLogService;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SftpConnection;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.core.dao.DeviceDao;
@@ -74,6 +74,9 @@ import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.dr.itron.service.ItronEditDeviceException;
 import com.cannontech.dr.itron.service.ItronEventNotFoundException;
+import com.cannontech.encryption.ItronSecurityKeyPair;
+import com.cannontech.encryption.ItronSecurityService;
+import com.cannontech.encryption.impl.ItronSecurityException;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.AccountDto;
@@ -104,6 +107,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private ItronDao itronDao;
     @Autowired private ItronEventLogService itronEventLogService;
+    @Autowired private ItronSecurityService itronSecurityService;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private List<SoapFaultParser> soapFaultParsers;
     
@@ -501,48 +505,99 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * Zips the copied files and stores them in \Yukon\ExportArchive\Itron, the name of the zipped file is [READ/ALL]_timestamp_commandId.zip. 
      * Returns a zip file
      */
-    private ZipFile downloadAndZipReportFiles(List<String> fileURLs, long commandId, ExportType type) {
-        List<File> files = new ArrayList<>();
+    private ZipFile downloadAndZipReportFiles(List<String> fileUrls, long commandId, ExportType type) throws ItronSecurityException, IOException {
+        // Create some file strings
         String timestamp = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
         String zipName = type + "_" + timestamp + "_" + commandId + ".zip";
         
-        for (int i = 0; i < fileURLs.size(); i++) {
-            String fileURL = fileURLs.get(i);
-            try {
-                URLConnection conn =  YukonHttpProxy.getURLConnection(fileURL, settingDao);
-                String fileName =
-                    (i + 1) + "_" + timestamp + "_" + commandId + ".csv";
-                File file = new File(FILE_PATH, fileName);
-                OutputStream out = new FileOutputStream(file);
-                IOUtils.copy(conn.getInputStream(), out);
-                IOUtils.closeQuietly(out);
-                files.add(file);
-                log.debug("ITRON-downoladed Itron file:{} created file:{} commandId: {}.", fileURL, fileName,
-                    commandId);
-            } catch (Exception e) {
-                log.error("Unable to download file: " + fileURL, e);
-            }
+        // Assemble the info needed for SFTP connection
+        Optional<YukonHttpProxy> proxy = YukonHttpProxy.fromGlobalSetting(settingDao);
+        String domain = settingDao.getString(GlobalSettingType.ITRON_SFTP_URL);
+        String port = domain.contains(":") ? "" : "22"; //Use default if port isn't specified in domain string
+        String user = settingDao.getString(GlobalSettingType.ITRON_SFTP_USERNAME);
+        String password = settingDao.getString(GlobalSettingType.ITRON_SFTP_PASSWORD);
+        ItronSecurityKeyPair keys;
+        
+        try {
+            keys = itronSecurityService.getItronSshRsaKeyPair();
+        } catch (ItronSecurityException e) {
+            log.error("No SFTP public/private key defined.");
+            throw e;
         }
+        
+        // Copy the files over SFTP
+        List<File> files;
+        
+        try (SftpConnection sftp = new SftpConnection(domain, port, proxy, user, password, keys.getPrivateKey())) {
+            files = copySftpFiles(sftp, fileUrls, commandId, timestamp);
+        }
+        
+        // Check and possibly clean up old files
         if (lastItronFileDeletionDate.isBefore(DateTime.now().withTimeAtStartOfDay())) {
             deleteOldItronFiles();
         }
+        
         return zipFiles(zipName, files);
     }
     
+    /**
+     * Use an SFTP connection to copy a list of files from the SFTP server to the local file system.
+     */
+    private List<File> copySftpFiles(SftpConnection sftp, List<String> fileUrls, long commandId, String timestamp) {
+        List<File> files = new ArrayList<>();
+        for (int i = 0; i < fileUrls.size(); i++) {
+            String fileUrl = fileUrls.get(i);
+            fileUrl = trimItronSftpFilePathToReports(fileUrl);
+            
+            try {
+                // Determine the local file name/path
+                String fileName = (i + 1) + "_" + timestamp + "_" + commandId + ".csv";
+                File file = new File(FILE_PATH, fileName);
+                String localFilePath = file.getAbsolutePath();
+                
+                // Perform the copy from SFTP server
+                sftp.copyRemoteFile(fileUrl, localFilePath);
+                files.add(file);
+                log.debug("ITRON-downloaded Itron file: {} created file: {} commandId: {}.", fileUrl, fileName, commandId);
+            } catch (Exception e) {
+                log.error("Unable to download file: " + fileUrl, e);
+            }
+        }
+        return files;
+    }
+    
+    /**
+     * If the file path root is above "reports", trim it up to that directory. This is the default "home"
+     * directory for the Itron SFTP connection, at least in the Dakota Electric dev system.
+     * For example:
+     * Path reported by API: "/usr/ssn/home/ssn/.drm/reports/filename.csv"
+     * Actual path needed by SFTP connection: "reports/filename.csv"
+     */
+    private String trimItronSftpFilePathToReports(String filePath) {
+        int reportsPathSegmentIndex = filePath.indexOf("reports/");
+        if (reportsPathSegmentIndex >= 0) {
+            return filePath.substring(reportsPathSegmentIndex);
+        }
+        return filePath;
+    }
+    
+    /**
+     * Zip a list of files into a single zip with the specified name.
+     */
     private ZipFile zipFiles(String zipName, List<File> files) {
-        try {
-            FileOutputStream fos = new FileOutputStream(new File(FILE_PATH, zipName));
-            ZipOutputStream zos = new ZipOutputStream(fos);
+        try (FileOutputStream fos = new FileOutputStream(new File(FILE_PATH, zipName));
+             ZipOutputStream zos = new ZipOutputStream(fos);) {
+            
             for (File file : files) {
                 zos.putNextEntry(new ZipEntry(file.getName()));
                 byte[] bytes = Files.readAllBytes(Paths.get(file.getPath()));
                 zos.write(bytes, 0, bytes.length);
                 zos.closeEntry();
             }
-            zos.close();
+            
             String zip = FILE_PATH + System.getProperty("file.separator") + zipName;
-            log.debug("Created zip file:"+zip);
-            files.forEach(file -> file.delete());
+            log.debug("Created zip file: " + zip);
+            files.forEach(File::delete);
             return new ZipFile(zip);
         } catch (Exception e) {
             log.error("Unable to zip files", e);
@@ -550,33 +605,48 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         }
     }
     
+    /**
+     * Delete Itron files older than the configured days to keep.
+     */
     private void deleteOldItronFiles() {
+        // Determine the retention date
         int daysToKeep = settingDao.getInteger(GlobalSettingType.HISTORY_CLEANUP_DAYS_TO_KEEP);
-        if (daysToKeep > 0) {
-            DateTime retentionDate = new DateTime().minusDays(daysToKeep);
-            log.info("Itron archive file cleanup started. Deleting files last used before " + retentionDate.toDate().toString() + ".");
-            File dir = new File(CtiUtilities.getItronDirPath());
-            File[] directoryListing = dir.listFiles();
+        if (daysToKeep <= 0) {
+            log.info("Itron archive file cleanup is disabled. No files were deleted.");
+            return;
+        }
+        DateTime retentionDate = DateTime.now().minusDays(daysToKeep);
+        log.info("Itron archive file cleanup started. Deleting files last used before " + retentionDate.toDate().toString() + ".");
+        
+        // Get the files to check
+        File dir = new File(CtiUtilities.getItronDirPath());
+        File[] directoryListing = dir.listFiles();
+        
+        // Check for old files and delete them
+        try {
             int filesDeleted = 0;
-            try {
-                for (File itronZip : directoryListing) {
-                    if (itronZip.exists()) {
-                        DateTime lastUsedDate = new DateTime(itronZip.lastModified());
-                        if (lastUsedDate.isBefore(retentionDate)) {
-                            if (itronZip.delete()) {
-                                filesDeleted++;
-                                log.info("Deleted itron archive file: " + itronZip.getPath());
-                            }
-                        }
-                    }   
-                }
-            } catch (Exception e) {
-                log.error("Unable to delete old file archives", e);
+            for (File itronZip : directoryListing) {
+                filesDeleted += deleteIfOldFile(itronZip, retentionDate);
             }
             log.info("Itron archive file cleanup is complete. " + filesDeleted + " log files were deleted.");
-        } else {
-            log.info("Itron archive file cleanup is disabled. No files were deleted.");
-        }        
+        } catch (Exception e) {
+            log.error("Unable to delete old file archives", e);
+        }
+    }
+    
+    /**
+     * Delete the specified file if it's older than the retention date.
+     * @return The number of files deleted (either 1 or 0)
+     */
+    private int deleteIfOldFile(File file, DateTime retentionDate) {
+        DateTime lastUsedDate = new DateTime(file.lastModified());
+        if (file.exists() && lastUsedDate.isBefore(retentionDate)) {
+            if (file.delete()) {
+                log.info("Deleted itron archive file: " + file.getPath());
+                return 1;
+            }
+        }
+        return 0;
     }
     
     /**

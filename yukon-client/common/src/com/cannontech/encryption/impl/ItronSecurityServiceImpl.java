@@ -24,7 +24,7 @@ import com.cannontech.system.dao.impl.GlobalSettingDaoImpl;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
 
-public class ItronSecurityServiceImpl implements ItronSecurityService{
+public class ItronSecurityServiceImpl implements ItronSecurityService {
 
     private Logger log = YukonLogManager.getLogger(ItronSecurityServiceImpl.class);
     @Autowired private EncryptedRouteDao encryptedRouteDao;
@@ -67,44 +67,46 @@ public class ItronSecurityServiceImpl implements ItronSecurityService{
     }
     
     @Override
-    public ItronSecurityKeyPair getItronSshRsaKeyPair() throws Exception { 
-        String privateKeyPassword = getPrivateKeyPassword();
-        char[] password = CryptoUtils.getSharedPasskey();
-        AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
-        Optional<EncryptionKey> encryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.Itron);
-        if(encryptionKey.isEmpty()) {
-            log.debug("Encryption Key is empty, generate a new key");
-            throw new Exception ("Empty Encryption Key, generate a new key");
-        }
-        String sshRsaPrivatekey = encrypter.decryptHexStr(encryptionKey.get().getPrivateKey());
-        String sshRsaPublickey = encrypter.decryptHexStr(encryptionKey.get().getPublicKey());
-        ItronSecurityKeyPair itronKeyPair;
-        JSch jsch = new JSch();
-        ByteArrayOutputStream privateKeyBuff = new ByteArrayOutputStream(2048);
-        KeyPair keyPair = KeyPair.load(jsch, sshRsaPrivatekey.getBytes(), sshRsaPublickey.getBytes());
-        // Change this check to see if its encrypted and there is a global password specified
-        if(keyPair.isEncrypted()) {
-            log.debug("Private Key is encrypted, attempting to decrypt");
-            keyPair.decrypt(privateKeyPassword);
-            // This checks if the decryption was successful, if not it will pass on the encrypted privateKey
+    public ItronSecurityKeyPair getItronSshRsaKeyPair() throws ItronSecurityException { 
+        try {
+            String privateKeyPassword = getPrivateKeyPassword();
+            char[] password = CryptoUtils.getSharedPasskey();
+            AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
+            Optional<EncryptionKey> encryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.Itron);
+            if(encryptionKey.isEmpty()) {
+                log.debug("Encryption Key is empty, generate a new key");
+                throw new Exception ("Empty Encryption Key, generate a new key");
+            }
+            String sshRsaPrivatekey = encrypter.decryptHexStr(encryptionKey.get().getPrivateKey());
+            String sshRsaPublickey = encrypter.decryptHexStr(encryptionKey.get().getPublicKey());
+            ItronSecurityKeyPair itronKeyPair;
+            JSch jsch = new JSch();
+            ByteArrayOutputStream privateKeyBuff = new ByteArrayOutputStream(2048);
+            KeyPair keyPair = KeyPair.load(jsch, sshRsaPrivatekey.getBytes(), sshRsaPublickey.getBytes());
+            // Change this check to see if its encrypted and there is a global password specified
             if(keyPair.isEncrypted()) {
-                log.debug("Private Key decryption was not successful");
-                itronKeyPair = new ItronSecurityKeyPair(sshRsaPrivatekey, sshRsaPublickey, true);
+                log.debug("Private Key is encrypted, attempting to decrypt");
+                keyPair.decrypt(privateKeyPassword);
+                // This checks if the decryption was successful, if not it will pass on the encrypted privateKey
+                if(keyPair.isEncrypted()) {
+                    log.debug("Private Key decryption was not successful");
+                    itronKeyPair = new ItronSecurityKeyPair(sshRsaPrivatekey, sshRsaPublickey, true);
+                } else {
+                    keyPair.writePrivateKey(privateKeyBuff);
+                    itronKeyPair = new ItronSecurityKeyPair(privateKeyBuff.toString(), sshRsaPublickey, false);
+                }
+            } else {
+                itronKeyPair = new ItronSecurityKeyPair(sshRsaPrivatekey, sshRsaPublickey, false);
             }
-            else {
-                keyPair.writePrivateKey(privateKeyBuff);
-                itronKeyPair = new ItronSecurityKeyPair(privateKeyBuff.toString(), sshRsaPublickey, false);
-            }
+            keyPair.dispose();
+            return itronKeyPair;
+        } catch (Exception e) {
+            throw new ItronSecurityException("Error retrieving Itron keys.", e);
         }
-        else {
-            itronKeyPair = new ItronSecurityKeyPair(sshRsaPrivatekey, sshRsaPublickey, false);
-        }
-        keyPair.dispose();
-        return itronKeyPair;
     }
     
     @Override
-    public String getItronPublicSshRsaKey() throws Exception {
+    public String getItronPublicSshRsaKey() throws ItronSecurityException {
         log.info("Getting Itron Public Key");
         ItronSecurityKeyPair keyPair = getItronSshRsaKeyPair();
         log.info(keyPair.getPublicKey());
@@ -112,7 +114,7 @@ public class ItronSecurityServiceImpl implements ItronSecurityService{
     }
     
     @Override
-    public String getItronPrivateSshRsaKey() throws Exception {
+    public String getItronPrivateSshRsaKey() throws ItronSecurityException {
         log.info("Getting Itron Private Key");
         ItronSecurityKeyPair keyPair = getItronSshRsaKeyPair();
         log.info(keyPair.getPrivateKey());
@@ -126,18 +128,21 @@ public class ItronSecurityServiceImpl implements ItronSecurityService{
                             .orElseThrow();
     }
     
-    public String encryptPrivateKey(String privateKey) throws Exception {
-        JSch jsch = new JSch();
-        String passPhrase = getPrivateKeyPassword();
-        if(passPhrase != null && !passPhrase.isBlank()) {
-                    ByteArrayOutputStream privateKeyBuff = new ByteArrayOutputStream(2048);
-        KeyPair keyPair = KeyPair.load(jsch, privateKey.getBytes(), privateKey.getBytes());
-        keyPair.writePrivateKey(privateKeyBuff, passPhrase.getBytes());
-        keyPair.dispose();
-        return privateKeyBuff.toString();
-        }
-        else {
+    @Override
+    public String encryptPrivateKey(String privateKey) throws ItronSecurityException {
+        try {
+            JSch jsch = new JSch();
+            String passPhrase = getPrivateKeyPassword();
+            if(passPhrase != null && !passPhrase.isBlank()) {
+                        ByteArrayOutputStream privateKeyBuff = new ByteArrayOutputStream(2048);
+                KeyPair keyPair = KeyPair.load(jsch, privateKey.getBytes(), privateKey.getBytes());
+                keyPair.writePrivateKey(privateKeyBuff, passPhrase.getBytes());
+                keyPair.dispose();
+                return privateKeyBuff.toString();
+            }
             return privateKey;
+        } catch (Exception e) {
+            throw new ItronSecurityException("Error retrieving Itron keys.", e);
         }
     }
     

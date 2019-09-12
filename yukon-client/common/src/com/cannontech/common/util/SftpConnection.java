@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
@@ -38,7 +39,11 @@ public class SftpConnection implements AutoCloseable {
                        String privateKey) throws IOException {
         
         // Save the connection info
-        domainPort = domain + ":" + port;
+        if (StringUtils.isEmpty(port)) {
+            domainPort = domain;
+        } else {
+            domainPort = domain + ":" + port;
+        }
         this.username = username;
         this.password = password;
         
@@ -52,7 +57,7 @@ public class SftpConnection implements AutoCloseable {
         });
         
         // Handle public/private authentication key configuration
-        if (privateKey != null) {
+        if (StringUtils.isNotEmpty(privateKey)) {
             String randomId = UUID.randomUUID().toString();
             privateKeyFile = createTempFile("sftpPrivate-" + randomId, privateKey);
             // Password-protected private key only seems to be supported via the VFS 2.4+ syntax. e.g.s

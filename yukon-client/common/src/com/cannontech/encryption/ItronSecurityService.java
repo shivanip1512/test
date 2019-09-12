@@ -4,6 +4,8 @@ import java.util.NoSuchElementException;
 
 import org.joda.time.Instant;
 
+import com.cannontech.encryption.impl.ItronSecurityException;
+
 
 public interface ItronSecurityService {
 
@@ -13,20 +15,20 @@ public interface ItronSecurityService {
      * Password is optional and can be specified in Admin Configuration
      * This returns the creation date.
      */
-    Instant generateItronSshRsaPublicPrivateKeys(String comment) throws Exception;
+    Instant generateItronSshRsaPublicPrivateKeys(String comment) throws ItronSecurityException;
 
     /**
      * This method creates a basic ItronSecuurityKeyPair object with the keys in String format. If the private key
      * has encryption, it will attempt to decrypt it with the global PW.
      * This returns the keyPair
      */
-    ItronSecurityKeyPair getItronSshRsaKeyPair() throws Exception;
+    ItronSecurityKeyPair getItronSshRsaKeyPair() throws ItronSecurityException;
 
     /**
      * This method will return the Itron Public key as a String.
      * @throws Exception 
      */
-    String getItronPublicSshRsaKey() throws Exception;
+    String getItronPublicSshRsaKey() throws ItronSecurityException;
     
     /**
      * This method will return the Itron Private key as a String.
@@ -34,7 +36,7 @@ public interface ItronSecurityService {
      *  to decrypt before returning
      * @throws Exception 
      */
-    String getItronPrivateSshRsaKey() throws Exception;
+    String getItronPrivateSshRsaKey() throws ItronSecurityException;
 
     /**
      * This method will return the Itron Key Pair creation time.
@@ -48,5 +50,5 @@ public interface ItronSecurityService {
      * or just the privateKey if no password is specified
      * @throws Exception 
      */
-    String encryptPrivateKey(String privateKey) throws Exception;
+    String encryptPrivateKey(String privateKey) throws ItronSecurityException;
 }

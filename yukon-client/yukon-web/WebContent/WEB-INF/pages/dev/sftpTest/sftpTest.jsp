@@ -16,6 +16,7 @@
                         <tags:inputNameValue nameKey=".username" path="sftp.username" size="30"/>
                         <tags:inputNameValue nameKey=".password" path="sftp.password" size="30"/>
                         <tags:inputNameValue nameKey=".filename" path="sftp.filename" size="30"/>
+                        <tags:inputNameValue nameKey=".privateKey" path="sftp.privateKey" size="30"/>
                     </tags:nameValueContainer2>
                     <div class="page-action-area">
                         <cti:button nameKey="submit" name="submit" type="submit" classes="primary action fr"/>

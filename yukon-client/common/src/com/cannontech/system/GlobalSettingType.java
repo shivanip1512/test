@@ -126,7 +126,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     ITRON_HCM_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_HCM_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_HCM_DATA_COLLECTION_HOURS(GlobalSettingSubCategory.DR, integerType(), 4),    
-    ITRON_SFTP_URL(GlobalSettingSubCategory.DR, stringType(), "https://fake.itronurl.com", GlobalSettingTypeValidators.urlValidator),
+    ITRON_SFTP_URL(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.urlValidator),
     ITRON_SFTP_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PRIVATE_KEY_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
