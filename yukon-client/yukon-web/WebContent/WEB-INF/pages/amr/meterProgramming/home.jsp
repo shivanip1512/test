@@ -28,26 +28,46 @@
             <tbody>
                 <c:forEach var="program" items="${programs}">
                     <tr>
-                        <cti:url var="programUrl" value="/amr/meterProgramming/summary">
-                            <cti:param name="programs[0].guid" value="${program.programInfo.guid}"/>
-                            <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
-                            <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
-                        </cti:url>
-                        <td><a href="${programUrl}">${fn:escapeXml(program.programInfo.name)}</a></td>
-                        <cti:url var="programDevicesUrl" value="/amr/meterProgramming/summary">
-                            <cti:param name="programs[0].guid" value="${program.programInfo.guid}"/>
-                            <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
-                            <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
-                            <cti:param name="statuses" value="SUCCESS"/>
-                        </cti:url>
-                        <td><a href="${programDevicesUrl}">${program.deviceTotal}</a></td>
-                        <cti:url var="programInProgressUrl" value="/amr/meterProgramming/summary">
-                            <cti:param name="programs[0].guid" value="${program.programInfo.guid}"/>
-                            <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
-                            <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
-                            <cti:param name="statuses" value="IN_PROGRESS"/>
-                        </cti:url>
-                        <td><a href="${programInProgressUrl}">${program.inProgressTotal}</a></td>
+                        <td>
+                            <cti:url var="programUrl" value="/amr/meterProgramming/summary">
+                                <cti:param name="programs[0].guid" value="${program.programInfo.guid}"/>
+                                <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
+                                <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
+                            </cti:url>
+                            <a href="${programUrl}">${fn:escapeXml(program.programInfo.name)}</a>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${program.deviceTotal > 0}">
+                                    <cti:url var="programDevicesUrl" value="/amr/meterProgramming/summary">
+                                        <cti:param name="programs[0].guid" value="${program.programInfo.guid}"/>
+                                        <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
+                                        <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
+                                        <cti:param name="statuses" value="SUCCESS"/>
+                                    </cti:url>
+                                    <a href="${programDevicesUrl}">${program.deviceTotal}</a>
+                                </c:when>
+                                <c:otherwise>
+                                    ${program.deviceTotal}
+                                </c:otherwise>
+                            </c:choose>
+                       </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${program.inProgressTotal > 0}">
+                                    <cti:url var="programInProgressUrl" value="/amr/meterProgramming/summary">
+                                        <cti:param name="programs[0].guid" value="${program.programInfo.guid}"/>
+                                        <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
+                                        <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
+                                        <cti:param name="statuses" value="IN_PROGRESS"/>
+                                    </cti:url>
+                                    <a href="${programInProgressUrl}">${program.inProgressTotal}</a>
+                                </c:when>
+                                <c:otherwise>
+                                    ${program.inProgressTotal}
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
                         <td>
                             <c:if test="${program.displayDelete()}">
                                 <cm:dropdown icon="icon-cog">
