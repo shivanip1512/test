@@ -20,8 +20,6 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationExce
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -35,7 +33,6 @@ public class CollectionActionsController {
     private static final Logger log = YukonLogManager.getLogger(CollectionActionsController.class);
     
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
-    @Autowired private ConfigurationSource configurationSource;
     
     private static final String baseKey ="yukon.web.modules.tools.collectionActions";
     
@@ -93,10 +90,6 @@ public class CollectionActionsController {
             throws ServletRequestBindingException {
 
         String view = "collectionActions.jsp";
-        
-        //check if meter programming should be visible
-        boolean enableMeterProgramming = configurationSource.isLicenseEnabled(MasterConfigLicenseKey.METER_PROGRAMMING_ENABLED);
-        model.addAttribute("enableMeterProgramming", enableMeterProgramming);
         
         try {
         

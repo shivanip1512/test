@@ -93,11 +93,11 @@
                                 </cti:checkRolesAndProperties>
                                 
                                 <%-- C&I Meter Programming --%>
-                                <c:if test="${enableMeterProgramming}">
+                                <cti:checkLicenseKey keyName="METER_PROGRAMMING_ENABLED">
                                     <tags:collectionActionTr linkKey=".meterProgrammingLabel" descriptionKey=".meterProgrammingDescription" 
                                         icon="icon-app icon-app-32-cog-with-meter" action="/bulk/meterProgramming/inputs" 
                                         deviceCollection="${deviceCollection}" ajaxSubmit="true"/>
-                                </c:if>
+                                </cti:checkLicenseKey>
                                         
                                 <%--DATA STREAMING - check for CPARM and ROLE PROPERTY--%>
                                 <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
