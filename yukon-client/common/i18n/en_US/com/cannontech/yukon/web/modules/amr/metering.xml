@@ -165,6 +165,8 @@
     <entry key="yukon.web.widgets.meterOutagesWidget.duration">Duration</entry>
 
     <!-- configWidget/render.jsp -->
+    <entry key="yukon.web.widgets.configWidget.meterProgramming">Meter Programming</entry>
+    <entry key="yukon.web.widgets.configWidget.program.label">Program</entry>
     <entry key="yukon.web.widgets.configWidget.currentConfigurations">Current Configuration</entry>
     <entry key="yukon.web.widgets.configWidget.deviceConfigurations">Device Configurations</entry>
     <entry key="yukon.web.widgets.configWidget.unassign.label">Unassign</entry>

@@ -10,6 +10,32 @@
 }
 </style>
 
+<!-- Meter Programming -->
+<c:if test="${showMeterProgramming}">
+    <tags:nameValueContainer2 naturalWidth="true">
+        <tags:nameValue2 nameKey=".meterProgramming">
+            <c:choose>
+                <c:when test="${!empty meterProgram}">
+                    <cti:url var="summaryUrl" value="/amr/meterProgramming/summary">
+                        <cti:param name="programs[0].guid" value="${meterProgram.programInfo.guid}"/>
+                        <cti:param name="programs[0].name" value="${meterProgram.programInfo.name}"/>
+                        <cti:param name="programs[0].source" value="${meterProgram.programInfo.source}"/>
+                    </cti:url>
+                    <a href="${summaryUrl}">${fn:escapeXml(meterProgram.programInfo.name)}</a>
+                </c:when>
+                <c:otherwise>
+                    <i:inline key="yukon.common.none.choice"/>
+                    <cti:url var="programUrl" value="/bulk/meterProgramming/program">
+                        <cti:param name="collectionType" value="idList"/>
+                        <cti:param name="idList.ids" value="${deviceId}"/>
+                    </cti:url>
+                    <cti:button nameKey="program" href="${programUrl}" classes="fr"/>
+                </c:otherwise>
+            </c:choose>
+        </tags:nameValue2>
+    </tags:nameValueContainer2>
+</c:if>
+
 <c:if test="${configurableDevice}">
     <tags:nameValueContainer2 naturalWidth="true">
         <tags:nameValue2 nameKey=".currentConfigurations">${fn:escapeXml(currentConfigName)}</tags:nameValue2>
