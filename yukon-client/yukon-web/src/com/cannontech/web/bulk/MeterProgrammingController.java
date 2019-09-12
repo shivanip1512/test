@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.config.MasterConfigLicenseKey;
@@ -56,6 +57,15 @@ public class MeterProgrammingController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private MeterProgrammingModelValidator validator;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    
+    @GetMapping("program")
+    public String program(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
+        setupModel(deviceCollection, model);
+        model.addAttribute("programModel", new MeterProgrammingModel());
+        model.addAttribute("action", CollectionAction.METER_PROGRAM_UPLOAD_INITIATE);
+        model.addAttribute("actionInputs", "/WEB-INF/pages/bulk/meterProgramming/programmingInputs.jsp");
+        return "../collectionActions/collectionActionsHome.jsp";
+    }
 
     @GetMapping("inputs")
     public String meterProgrammingInputs(DeviceCollection deviceCollection, ModelMap model) throws ServletException {

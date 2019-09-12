@@ -19,6 +19,7 @@ import com.cannontech.amr.rfn.dataStreaming.model.DiscrepancyResult;
 import com.cannontech.amr.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
@@ -29,14 +30,19 @@ import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.tools.device.programming.dao.MeterProgrammingSummaryDao;
+import com.cannontech.web.tools.device.programming.model.MeterProgramWidgetDisplay;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -53,6 +59,8 @@ public class ConfigWidget extends WidgetControllerBase {
     @Autowired private DataStreamingService dataStreamingService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
+    @Autowired private MeterProgrammingSummaryDao meterProgrammingSummaryDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private IDatabaseCache dbCache;
@@ -110,6 +118,21 @@ public class ConfigWidget extends WidgetControllerBase {
                 && !dataStreamingAttributeHelper.getSupportedAttributes(device.getPaoIdentifier().getPaoType()).isEmpty();
         mav.addObject("configurableDevice", configurableDevice);
         mav.addObject("streamableDevice", streamableDevice);
+        
+        //check for meter programming
+        boolean enableMeterProgramming = configurationSource.isLicenseEnabled(MasterConfigLicenseKey.METER_PROGRAMMING_ENABLED);
+        if (enableMeterProgramming) {
+            boolean deviceSupported = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), PaoTag.METER_PROGRAMMING);
+            if (deviceSupported) {
+                mav.addObject("showMeterProgramming", true);
+                try {
+                    MeterProgramWidgetDisplay program = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(deviceId, userContext);
+                    mav.addObject("meterProgram", program);
+                } catch (NotFoundException e) {
+                    //not programmed yet
+                }
+            }
+        }
 
         return mav;
     }
