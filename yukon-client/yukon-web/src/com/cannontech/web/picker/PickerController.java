@@ -118,31 +118,35 @@ public class PickerController {
         
         SearchResults<?> searchResult;
         String url = helper.findWebServerUrl(request, context, ApiURL.pickerSearchUrl);
-        try {
-            ResponseEntity<? extends Object> apiResponse =
-                apiRequestHelper.callAPIForObject(context, request, url, HttpMethod.POST, SearchResults.class, searchCriteria);
+        synchronized (this) {
+            try {
+                ResponseEntity<? extends Object> apiResponse = apiRequestHelper.callAPIForObject(context, request, url,
+                    HttpMethod.POST, SearchResults.class, searchCriteria);
 
-            if (apiResponse.getStatusCode() == HttpStatus.OK) {
-                searchResult = (SearchResults<?>) apiResponse.getBody();
-                json.put("hits", searchResult);
-                
-                MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
-                MessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.common.paging.viewing",
-                    searchResult.getStartIndex() + 1, searchResult.getEndIndex(), searchResult.getHitCount());
-                json.put("pages", messageSourceAccessor.getMessage(resolvable));
+                if (apiResponse.getStatusCode() == HttpStatus.OK) {
+                    searchResult = (SearchResults<?>) apiResponse.getBody();
+                    json.put("hits", searchResult);
 
-                resolvable =  new YukonMessageSourceResolvable("yukon.web.picker.selectAllPages", searchResult.getHitCount());
-                json.put("selectAllPages", messageSourceAccessor.getMessage(resolvable));
+                    MessageSourceAccessor messageSourceAccessor =
+                        messageSourceResolver.getMessageSourceAccessor(context);
+                    MessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.common.paging.viewing",
+                        searchResult.getStartIndex() + 1, searchResult.getEndIndex(), searchResult.getHitCount());
+                    json.put("pages", messageSourceAccessor.getMessage(resolvable));
 
-                resolvable = new YukonMessageSourceResolvable("yukon.web.picker.allPagesSelected", searchResult.getHitCount());
-                json.put("allPagesSelected", messageSourceAccessor.getMessage(resolvable));
-                json.put("hits", searchResult);
+                    resolvable =
+                        new YukonMessageSourceResolvable("yukon.web.picker.selectAllPages", searchResult.getHitCount());
+                    json.put("selectAllPages", messageSourceAccessor.getMessage(resolvable));
+
+                    resolvable = new YukonMessageSourceResolvable("yukon.web.picker.allPagesSelected",
+                        searchResult.getHitCount());
+                    json.put("allPagesSelected", messageSourceAccessor.getMessage(resolvable));
+                    json.put("hits", searchResult);
+                }
+
+            } catch (RestClientException ex) {
+                log.error("Error retrieving search results for picker: " + ex.getMessage());
             }
-
-        } catch (RestClientException ex) {
-            log.error("Error retrieving search results for picker: " + ex.getMessage());
         }
-        
 
         return json;
     }
