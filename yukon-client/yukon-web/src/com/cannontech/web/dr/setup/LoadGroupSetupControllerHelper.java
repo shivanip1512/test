@@ -3,6 +3,7 @@ package com.cannontech.web.dr.setup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -74,6 +75,7 @@ public class LoadGroupSetupControllerHelper {
                 }
                 if (loadGroup.getAddressUsage().contains(AddressUsage.FEEDER)) {
                     model.addAttribute("displayFeeder", true);
+                    loadGroup.setFeeder(getFormattedAddress(loadGroup.getFeeder()));
                 }
                 if (loadGroup.getAddressUsage().contains(AddressUsage.ZIP)) {
                     model.addAttribute("displayZip", true);
@@ -125,10 +127,12 @@ public class LoadGroupSetupControllerHelper {
                 // Class Address
                 if (addressUsage.contains(VersacomAddressUsage.CLASS)) { 
                     model.addAttribute("showClassAddress", true);
+                    loadGroup.setClassAddress(getFormattedAddress(loadGroup.getClassAddress()));
                 }
                 // Division Address
                 if (addressUsage.contains(VersacomAddressUsage.DIVISION)) { 
                     model.addAttribute("showDivisionAddress", true);
+                    loadGroup.setDivisionAddress(getFormattedAddress(loadGroup.getDivisionAddress()));
                 }
                 // Serial Address
                 setVersacomSerialAddressUsage(loadGroup, model);
@@ -235,5 +239,16 @@ public class LoadGroupSetupControllerHelper {
         } catch (Exception e) {
             // This will be handle inside validator with proper message.
         }
+    }
+
+    /**
+     * Returns formatted address after converting the input string.
+     */
+    private static String getFormattedAddress(String address) {
+        return IntStream.range(0, address.length())
+                        .filter(index -> address.charAt(index) == '1')
+                        .boxed()
+                        .map(addressIndex -> Integer.toString(addressIndex + 1))
+                        .collect(Collectors.joining(", "));
     }
 }
