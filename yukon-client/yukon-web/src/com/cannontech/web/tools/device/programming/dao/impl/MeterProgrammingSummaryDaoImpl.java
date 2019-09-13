@@ -42,7 +42,6 @@ import com.cannontech.web.tools.device.programming.model.MeterProgramSummaryDeta
 import com.cannontech.web.tools.device.programming.model.MeterProgramWidgetDisplay;
 import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter;
 import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter.DisplayableStatus;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
 public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDao{
@@ -219,7 +218,6 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
                 .filter(program -> StringUtils.isBlank(program.getGuid()))
                 .map(program -> program.getSource())
                 .collect(Collectors.toSet());
-        Iterable<String> prefixes = Iterables.transform(sources, s -> s.getPrefix());
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         Map<MeterProgramSource, String> translatedSources = Maps.asMap(sources, source -> accessor.getMessage(source.getFormatKey()));
@@ -238,7 +236,7 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
                 sql.append("    CASE");
                 sql.append("        WHEN Name IS NULL THEN");
                 sql.append("            CASE");
-                translatedSources.forEach((source, translated) -> sql.append("WHEN Source").eq(source.getPrefix())
+                translatedSources.forEach((source, translated) -> sql.append("WHEN Source").eq(source)
                                           .append("THEN").appendArgument(translated));
                 sql.append("            END");
                 sql.append("        ELSE Name");
@@ -249,12 +247,12 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         sql.append("FROM MeterProgramStatus status FULL JOIN MeterProgram program ON program.Guid = status.reportedGuid");
         sql.append("JOIN YukonPAObject ypo ON status.DeviceId = ypo.PAObjectID");
         sql.append("LEFT JOIN DeviceMeterGroup dmg ON status.DeviceId = dmg.DeviceId");
-        if(guids != null && prefixes != null) {
-            sql.append("WHERE (ReportedGuid").in(guids).append("OR").append("Source").in(prefixes).append(")");
+        if(guids != null && !sources.isEmpty()) {
+            sql.append("WHERE (ReportedGuid").in(guids).append("OR").append("Source").in(sources).append(")");
         } else if (guids != null){
             sql.append("WHERE ReportedGuid").in(guids); 
-        } else if (prefixes != null){
-            sql.append("WHERE Source").in(prefixes); 
+        } else if (!sources.isEmpty()){
+            sql.append("WHERE Source").in(sources); 
         }
         if(programmingStatuses.remove(ProgrammingStatus.FAILED) == false) {
             sql.append("AND status.Status").in_k(programmingStatuses);
