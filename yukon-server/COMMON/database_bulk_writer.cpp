@@ -423,7 +423,7 @@ std::string DatabaseBulkAccumulator<ColumnCount>::getFinalizeSql() const
                 "DECLARE @maxId NUMERIC;"
                 "SELECT @maxId = COALESCE(MAX(" + _destIdColumn + "), 0) FROM " + _destTable + ";"
                 "MERGE " + _destTable + " d"
-                " USING (SELECT @maxId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)) AS Temp_maxID, " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
+                " USING (SELECT DISTINCT @maxId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)) AS Temp_maxID, " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
                 " ON " + matchConditions +
                 " WHEN MATCHED THEN"
                 " UPDATE SET " + mergeUpdates +
@@ -438,7 +438,7 @@ std::string DatabaseBulkAccumulator<ColumnCount>::getFinalizeSql() const
                 "BEGIN "
                 "SELECT COALESCE(MAX(" + _destIdColumn + "), 0) INTO maxId FROM " + _destTable + ";"
                 "MERGE INTO " + _destTable + " d"
-                " USING (SELECT maxId + (ROW_NUMBER() OVER (ORDER BY (SELECT 1 FROM DUAL))) AS Temp_maxID, " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
+                " USING (SELECT DISTINCT maxId + (ROW_NUMBER() OVER (ORDER BY (SELECT 1 FROM DUAL))) AS Temp_maxID, " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
                 " ON (" + matchConditions + ")"
                 " WHEN MATCHED THEN"
                 " UPDATE SET " + mergeUpdates +
