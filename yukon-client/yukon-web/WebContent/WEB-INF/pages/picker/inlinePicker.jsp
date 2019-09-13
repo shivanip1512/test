@@ -6,15 +6,26 @@
 <cti:msgScope paths="picker">
 
 <div id="${id}" data-picker="${id}">
-        <label class="dib M0"> 
-            <i:inline key="yukon.common.search" /> 
-            <input type="text" id="picker-${id}-ss" name="ss" class="js-picker-search-field">
-            <cti:button renderMode="buttonImage" icon="icon-cross-gray"
-                classes="dn fr right vat M0 js-picker-show-all" id="picker-${id}-show-all-link" />
-        </label>
-
-        <tags:nextPrevLinks previousUrl="javascript:yukon.pickers['${id}'].previous()"
-            nextUrl="javascript:yukon.pickers['${id}'].next()" />
+    <label class="dib M0"> 
+        <i:inline key="yukon.common.search" /> 
+        <input type="text" id="picker-${id}-ss" name="ss" class="js-picker-search-field" style="width:150px;">
+        <cti:button renderMode="buttonImage" icon="icon-cross-gray"
+            classes="dn fr right vat M0 js-picker-show-all" id="picker-${id}-show-all-link" />
+    </label>
+    
+    <span id="inline-picker-paging" class="fr" style="font-size:12px;padding-top:5px;" data-current-page="${currentPage}">
+        <a href="javascript:yukon.pickers['${id}'].previous()" class="previous-page" style="margin-right:5px;">
+            <cti:icon icon="icon-resultset-previous-gray" classes="PR0 MR0"/>
+            <span class="fl"><cti:msg2 key="yukon.common.paging.previous"/></span>
+        </a>
+        <span class="page-num-text"></span>
+        <span class="fr" style="margin-left:5px;">
+            <a href="javascript:yukon.pickers['${id}'].next()" class="next-page">
+                <span class="fl"><cti:msg2 key="yukon.common.paging.next"/></span>
+                <cti:icon icon="icon-resultset-next-gray" classes="PL0 ML0"/>
+            </a>
+        </span>
+    </span>
 
     <div id="picker-${id}-nothing-selected" style="display:none" class="error"><i:inline key=".nothingSelected"/></div>
     <div id="picker-${id}-too-many-selections" style="display:none;" class="error"><i:inline key=".tooManySelections" arguments="${maxNumSelections}"/></div>
