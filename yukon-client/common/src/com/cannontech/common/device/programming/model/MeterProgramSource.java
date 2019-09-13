@@ -6,8 +6,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.util.DatabaseRepresentationSource;
 
-public enum MeterProgramSource implements DisplayableEnum {
+public enum MeterProgramSource implements DisplayableEnum, DatabaseRepresentationSource {
     YUKON("Y"), 
     OPTICAL("P"), 
     NEW("N"), 
@@ -43,5 +44,10 @@ public enum MeterProgramSource implements DisplayableEnum {
     @Override
     public String getFormatKey() {
         return "yukon.web.modules.amr.meterProgramming.source." + name();
+    }
+
+    @Override
+    public Object getDatabaseRepresentation() {
+        return getPrefix();
     }
 }

@@ -92,7 +92,7 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
 
     private void addMeterProgramStatusFields(MeterProgramStatus status, SqlParameterSink params) {
         params.addValue("ReportedGuid", status.getReportedGuid().toString());
-        params.addValue("Source", status.getSource().getPrefix());
+        params.addValue("Source", status.getSource());
         if (status.getStatus() == ProgrammingStatus.FAILED && status.getError() != null) {
             params.addValue("Status", status.getStatus() + "/" + status.getError().name());
         } else {
@@ -108,7 +108,7 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT PAObjectID, type");
             sql.append("FROM  MeterProgramStatus JOIN YukonPAObject ypo ON DeviceId = ypo.PAObjectID");
-            sql.append("WHERE Source").eq(MeterProgramSource.OLD_FIRMWARE.getPrefix());
+            sql.append("WHERE Source").eq_k(MeterProgramSource.OLD_FIRMWARE);
             sql.append("AND DeviceId").in(devices.stream()
                                           .map(SimpleDevice::getDeviceId)
                                           .collect(Collectors.toList()));
