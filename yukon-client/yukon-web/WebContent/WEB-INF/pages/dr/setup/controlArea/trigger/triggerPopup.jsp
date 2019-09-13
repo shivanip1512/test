@@ -48,7 +48,7 @@
                     <form:hidden id="trigger-point-id" path="triggerPointId"/>
                     <tags:pickerDialog 
                         id="triggerIdentification"
-                        type="notSystemPointPicker"
+                        type="devicePointPicker"
                         linkType="selection"
                         selectionProperty="paoPoint"
                         buttonStyleClass="M0"
@@ -83,7 +83,7 @@
                     <form:hidden id="peak-point-id" path="peakPointId"/>
                     <tags:pickerDialog
                         id="thresholdPointPeakTracking"
-                        type="notSystemPointPicker"
+                        type="devicePointPicker"
                         linkType="selection"
                         selectionProperty="paoPoint"
                         buttonStyleClass="M0"
@@ -96,7 +96,7 @@
                     <form:hidden id="threshold-point-id" path="thresholdPointId"/>
                     <tags:pickerDialog
                         id="thresholdPointThresholdSettings"
-                        type="notSystemPointPicker"
+                        type="devicePointPicker"
                         linkType="selection"
                         selectionProperty="paoPoint"
                         buttonStyleClass="M0"

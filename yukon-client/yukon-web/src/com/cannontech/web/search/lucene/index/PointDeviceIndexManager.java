@@ -78,6 +78,7 @@ public class PointDeviceIndexManager extends SimpleIndexManager {
         String deviceid = Integer.toString(rs.getInt("paobjectid"));
         String stateGroupID = Integer.toString(stateGrpID);
         String all = pointName + " " + paoName + " " + pointid + " " + deviceid;
+        String category = rs.getString("category");
         doc.add(new TextField("point", pointName, Field.Store.YES));
         doc.add(new TextField("device", paoName, Field.Store.YES));
         doc.add(new TextField("all", all, Field.Store.NO));
@@ -91,6 +92,7 @@ public class PointDeviceIndexManager extends SimpleIndexManager {
         doc.add(new Field("paotype", paoType, TYPE_NOT_STORED));
         doc.add(new Field("pointName", pointName, TYPE_NOT_STORED));
         doc.add(new Field("pointoffset", Integer.toString(pointOffset), TYPE_NOT_STORED));
+        doc.add(new Field("category", category, TYPE_STORED));
 
         return doc;
     }

@@ -34,7 +34,10 @@ public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLight
             }
 
             public String getPointType() {
-            	return doc.get("pointtype");
+                return doc.get("pointtype");
+            }
+            public String getCategory() {
+                return doc.get("category");
             }
         };
         return ultra;
