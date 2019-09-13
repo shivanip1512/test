@@ -1,10 +1,15 @@
 package com.cannontech.web.api.dr.macro;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.MacroLoadGroup;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
@@ -38,6 +43,24 @@ public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
                 errors.rejectValue("assignedLoadGroups", key + "assignedLoadGroup.required");
             }
         }
+
+        if (CollectionUtils.isNotEmpty(loadGroup.getAssignedLoadGroups())) {
+            Set<Integer> duplicateLoadGroupsIds = getDuplicateLoadGroupsIds(loadGroup.getAssignedLoadGroups());
+            if (CollectionUtils.isNotEmpty(duplicateLoadGroupsIds)) {
+                errors.reject(key + "assignedLoadGroup.duplicate.notAllowed", new Object[] { duplicateLoadGroupsIds },
+                    "");
+            }
+        }
     }
 
+    /**
+     * Returns set of duplicate load group ids.
+     */
+    private Set<Integer> getDuplicateLoadGroupsIds(List<LMPaoDto> assignedLoadGroups) {
+       List<Integer> groupIds =assignedLoadGroups.stream()
+                                                 .map(LMPaoDto::getId)
+                                                 .collect(Collectors.toList());
+       return lmValidatorHelper.findDuplicates(groupIds);
+
+    }
 }

@@ -315,6 +315,13 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
             }
         }
 
+        if (CollectionUtils.isNotEmpty(loadProgram.getAssignedGroups())) {
+            Set<Integer> duplicateLoadGroupsIds = getDuplicateLoadGroupsIds(loadProgram.getAssignedGroups());
+            if (CollectionUtils.isNotEmpty(duplicateLoadGroupsIds)) {
+                errors.reject("yukon.web.modules.dr.setup.loadGroup.error.assignedLoadGroup.duplicate.notAllowed",
+                    new Object[] { duplicateLoadGroupsIds }, "");
+            }
+        }
     }
     
     private void validateControlWindowTime(String nestedPath, Errors errors, Integer availableStartTimeInMinutes,
@@ -340,6 +347,17 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
 
         gearFieldsValidatorsList.stream()
                                 .forEach(gearFields -> gearFieldsValidatorMap.put(gearFields.getControlMethod(), gearFields));
+
+    }
+
+    /**
+     * Returns set of duplicate load group ids.
+     */
+    private Set<Integer> getDuplicateLoadGroupsIds(List<ProgramGroup> assignedLoadGroups) {
+        List<Integer> groupIds = assignedLoadGroups.stream()
+                                                   .map(ProgramGroup::getGroupId)
+                                                   .collect(Collectors.toList());
+        return lmValidatorHelper.findDuplicates(groupIds);
 
     }
 

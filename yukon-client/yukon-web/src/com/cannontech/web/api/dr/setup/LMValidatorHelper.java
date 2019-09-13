@@ -1,6 +1,9 @@
 package com.cannontech.web.api.dr.setup;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -95,5 +98,15 @@ public class LMValidatorHelper {
         } catch (NotFoundException ex) {
             errors.rejectValue(field, key + "pointId.doesNotExist", new Object[] { field }, "");
         }
+    }
+
+    /**
+     * Find duplicate entries from list
+     * 
+     * @returns Set of entries which are duplicate.
+     */
+    public Set<Integer> findDuplicates(List<Integer> list) {
+        Set<Integer> uniques = new HashSet<>();
+        return list.stream().filter(e -> !uniques.add(e)).collect(Collectors.toSet());
     }
 }

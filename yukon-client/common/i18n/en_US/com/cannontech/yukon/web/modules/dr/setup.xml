@@ -208,6 +208,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.error.invalid.StopTime">Stop Time</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.error.invalid.startStopTimeRange">The Start Time must be before the Stop Time.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.retrieve.error">Control Area could not be retrieved.</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.error.assignedLoadPrograms.duplicate.notAllowed">Duplicate load programs are not allowed, duplicate program ids: {0}.</entry>
 
 <!-- Load Group Validation -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.utilityEnrollmentGroup.rangeCheck">Utility Enrollment Group must be between 1 and 255; (use 0 to specify all devices in the group).</entry>
@@ -218,6 +219,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.invalidValue">Invalid value.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.utilityAddress.doesNotExist">Address Usage must contain Utility Address.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.assignedLoadGroup.required">At least one load group must be assigned.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.assignedLoadGroup.duplicate.notAllowed">Duplicate load groups are not allowed, duplicate group ids: {0}.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.type.invalid">Invalid {0} type.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.deviceClassSet.required">At least one device class set must be assigned.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.loadAddress.required">At least usage type should be selected.</entry>

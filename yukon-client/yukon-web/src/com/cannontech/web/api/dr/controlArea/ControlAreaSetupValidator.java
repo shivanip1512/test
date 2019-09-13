@@ -1,8 +1,10 @@
 package com.cannontech.web.api.dr.controlArea;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -190,5 +192,24 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                 errors.popNestedPath();
             }
         }
+
+        if (CollectionUtils.isNotEmpty(controlArea.getProgramAssignment())) {
+            Set<Integer> duplicatesLoadProgramsIds = getDuplicateLoadProgramsIds(controlArea.getProgramAssignment());
+            if (CollectionUtils.isNotEmpty(duplicatesLoadProgramsIds)) {
+                errors.reject(key + "assignedLoadPrograms.duplicate.notAllowed",
+                    new Object[] { duplicatesLoadProgramsIds }, "");
+            }
+        }
+    }
+
+    /**
+     * Returns set of duplicate load programs ids.
+     */
+    private Set<Integer> getDuplicateLoadProgramsIds(List<ControlAreaProgramAssignment> programAssignment) {
+        List<Integer> programsIds = programAssignment.stream()
+                                                     .map(ControlAreaProgramAssignment::getProgramId)
+                                                     .collect(Collectors.toList());
+        return lmValidatorHelper.findDuplicates(programsIds);
+
     }
 }
