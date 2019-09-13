@@ -126,7 +126,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     ITRON_HCM_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_HCM_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_HCM_DATA_COLLECTION_HOURS(GlobalSettingSubCategory.DR, integerType(), 4),
-    ITRON_SFTP_URL(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.urlValidator),
+    ITRON_SFTP_URL(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PRIVATE_KEY_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
@@ -246,8 +246,8 @@ public enum GlobalSettingType implements DisplayableEnum {
         this.type = type;
         this.category = category;
         this.defaultValue = defaultValue;
-        this.validator = null;
-        this.validationValue = null;
+        validator = null;
+        validationValue = null;
     }
     
     private <T> GlobalSettingType(GlobalSettingSubCategory category, InputType<T> type, Object defaultValue, TypeValidator<T> validator) {
@@ -255,7 +255,7 @@ public enum GlobalSettingType implements DisplayableEnum {
         this.category = category;
         this.defaultValue = defaultValue;
         this.validator = validator;
-        this.validationValue = null;
+        validationValue = null;
     }
 
 /*  TODO  
@@ -271,11 +271,11 @@ public enum GlobalSettingType implements DisplayableEnum {
      * Constructor for integerType
      */
     private GlobalSettingType(GlobalSettingSubCategory category, Integer defaultValue, Range<Integer> integerRange) {
-        this.type = integerType();
+        type = integerType();
         this.category = category;
         this.defaultValue = defaultValue;
-        this.validator = GlobalSettingTypeValidators.integerRangeValidator;
-        this.validationValue = integerRange;
+        validator = GlobalSettingTypeValidators.integerRangeValidator;
+        validationValue = integerRange;
     }
     
     public InputType<?> getType() {
