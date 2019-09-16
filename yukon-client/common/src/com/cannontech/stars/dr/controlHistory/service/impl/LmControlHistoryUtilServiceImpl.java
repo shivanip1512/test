@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.controlHistory.service.impl;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
@@ -10,6 +11,7 @@ import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.MutableDuration;
 import com.cannontech.common.util.OpenInterval;
 import com.cannontech.common.util.TimeUtil;
@@ -35,6 +37,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilService {
+    private static final Logger log = YukonLogManager.getLogger(LmControlHistoryUtilServiceImpl.class);
 
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private StarsDatabaseCache starsDatabaseCache;
@@ -302,6 +305,7 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
         
         List<ControlHistoryEntry> result = Lists.newArrayListWithCapacity(intersection.size());
         for (OpenInterval openInterval : intersection) {
+            log.debug(openInterval);
             ControlHistoryEntry controlHistoryEntry = new ControlHistoryEntry(openInterval);
             result.add(controlHistoryEntry);
         }
