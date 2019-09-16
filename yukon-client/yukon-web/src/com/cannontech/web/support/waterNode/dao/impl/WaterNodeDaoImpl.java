@@ -33,7 +33,7 @@ public class WaterNodeDaoImpl implements WaterNodeDao {
         sql.append(  "AND p.PointOffset").eq(5);
         sql.append(  "AND rph.Timestamp").lte(stopTime);
         sql.append(  "AND rph.Timestamp").gte(startTime);
-        sql.append("ORDER BY rph.PointId, rph.Timestamp;");
+        sql.append("ORDER BY rph.PointId, rph.Timestamp");
 
         final List<WaterNodeDetails> results = new ArrayList<WaterNodeDetails>();
         yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
