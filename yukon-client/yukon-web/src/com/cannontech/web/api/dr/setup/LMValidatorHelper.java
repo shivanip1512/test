@@ -1,6 +1,6 @@
 package com.cannontech.web.api.dr.setup;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -101,12 +101,9 @@ public class LMValidatorHelper {
     }
 
     /**
-     * Find duplicate entries from list
-     * 
-     * @returns Set of entries which are duplicate.
+     * Find duplicate entries from list and returns set of entries which are duplicate.
      */
     public Set<Integer> findDuplicates(List<Integer> list) {
-        Set<Integer> uniques = new HashSet<>();
-        return list.stream().filter(e -> !uniques.add(e)).collect(Collectors.toSet());
+        return list.stream().filter(e -> Collections.frequency(list, e) >1).collect(Collectors.toSet());
     }
 }
