@@ -33,8 +33,8 @@ for /f "tokens=4 delims=_" %%p in ("%my_version%") do (
 )
 
 rem Get the SVN global revison number
-FOR /F "tokens=* USEBACKQ" %%F IN (`svnversion %~dp0`) DO (
-SET my_version_svn=%%F
+FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-parse --short HEAD`) DO (
+SET my_version_git=%%F
 )
 
 rem Use this file for communicating revision stuff to the .cpp and .rc build
@@ -45,7 +45,7 @@ echo ^|
 echo ^| Build version : %my_version_maj%.%my_version_min% ^(build %my_version_build%^)
 echo ^| Build details : %my_version_details%
 echo ^| Build mode    : %build_mode%
-echo ^| Build SVN revision: %my_version_svn%
+echo ^| Build Git revision: %my_version_git%
 echo ^|
 echo +---------------------------------------
 
@@ -61,17 +61,17 @@ if "%updateVersion%" == "0" (
   for /f "tokens=2* delims== " %%p in (%versionFileName%) do (
     if "%%p" == "D_FILE_VERSION_STR" (
       call :trim %%q rev
-      if not "!rev!" == "%my_version_maj%.%my_version_min%.%my_version_rev%.%my_version_svn%" set updateVersion=1
+      if not "!rev!" == "%my_version_maj%.%my_version_min%.%my_version_rev%.%my_version_git%" set updateVersion=1
     )
   )
 )
 
 if "%updateVersion%" == "1" (
   echo Updating %versionFileName%
-  echo #define D_FILE_VERSION %my_version_maj%,%my_version_min%,%my_version_rev%,%my_version_svn% >%versionFileName%
-  echo #define D_FILE_VERSION_STR %my_version_maj%.%my_version_min%.%my_version_rev%.%my_version_svn% >>%versionFileName%
-  echo #define D_PRODUCT_VERSION %my_version_maj%,%my_version_min%,%my_version_rev%,%my_version_svn% >>%versionFileName%
-  echo #define D_PRODUCT_VERSION_STR %my_version_maj%.%my_version_min%.%my_version_rev%.%my_version_svn% >>%versionFileName%
+  echo #define D_FILE_VERSION %my_version_maj%,%my_version_min%,%my_version_rev%,%my_version_git% >%versionFileName%
+  echo #define D_FILE_VERSION_STR %my_version_maj%.%my_version_min%.%my_version_rev%.%my_version_git% >>%versionFileName%
+  echo #define D_PRODUCT_VERSION %my_version_maj%,%my_version_min%,%my_version_rev%,%my_version_git% >>%versionFileName%
+  echo #define D_PRODUCT_VERSION_STR %my_version_maj%.%my_version_min%.%my_version_rev%.%my_version_git% >>%versionFileName%
   echo.>>%versionFileName%
 
   echo #define BUILD_VERSION %my_version_maj%.%my_version_min% ^(build %my_version_build%^) >>%versionFileName%
