@@ -74,10 +74,10 @@
 
         <div class="column-12-12 clearfix">
             <div class="column one">
-                <tags:sectionContainer2 nameKey="general">
+                <tags:sectionContainer2 nameKey="general" styleClass="wbba">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".name">
-                            <tags:input id="name" path="name" size="25" maxlength="60" inputClass="wbba"/>
+                            <tags:input id="name" path="name" maxlength="60" inputClass="pao-name-width"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".type">
                             <cti:displayForPageEditModes modes="CREATE">
@@ -100,7 +100,8 @@
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".constraint" rowClass="noswitchtype">
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                    <tags:selectWithItems items="${constraints}" id="constraint" path="constraint.constraintId"  itemLabel="name" itemValue="id"/>
+                                    <tags:selectWithItems items="${constraints}" id="constraint" path="constraint.constraintId" itemLabel="name" 
+                                                          itemValue="id" inputClass="pao-name-width"/>
                                 </cti:displayForPageEditModes>
                                 <cti:displayForPageEditModes modes="VIEW">
                                     ${fn:escapeXml(loadProgram.constraint.constraintName)}
@@ -130,7 +131,7 @@
                             <div style="min-height:60px;max-height:120px;" class="bordered-div select-box">
                                 <div id="js-assigned-gear" class="select-box-selected js-with-movables" data-item-selector=".select-box-item">
                                     <c:forEach var="item" items="${gearInfos}" varStatus="status">
-                                        <div id="${item.id}" class="select-box-item cm js-assigned-gear" data-id="${item.id}">
+                                        <div id="${item.id}" class="select-box-item cm js-assigned-gear wbba" data-id="${item.id}">
                                             <cti:url var="viewUrl" value="/dr/setup/loadProgram/gear/${item.id}?mode=${mode}"/> 
                                             <a href="javascript:void(0)" data-popup="#gear-quick-view-${item.id}">
                                                 ${fn:escapeXml(item.name)}
@@ -150,7 +151,7 @@
                                     </c:forEach>
                                 </div>
                                 <div class="select-box-item cm js-assigned-gear js-template-gears-row dn" data-id="0">
-                                    <span class="js-gear-name"></span>
+                                    <span class="js-gear-name wbba"></span>
                                     <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-gear-remove"
                                                 data-ok-event="yukon:dr:setup:program:gearRemoved"/>
                                     <div class="select-box-item-movers">
@@ -252,7 +253,7 @@
                                 <h3>
                                     <i:inline key="yukon.common.available" />
                                 </h3>
-                                <div id="js-inline-group-picker-container" style="height: 300px;" class="oa"></div>
+                                <div id="js-inline-group-picker-container" style="height: 300px;" class="oa wbba"></div>
                                 <tags:pickerDialog id="js-avaliable-groups-picker" 
                                                    type="loadGroupPicker" 
                                                    container="js-inline-group-picker-container"
@@ -272,7 +273,7 @@
                                 <div style="height: 346px;" class="oa">
                                     <div id="js-assigned-groups" class="select-box-selected js-with-movables" style="min-height: 150px;" data-item-selector=".select-box-item">
                                         <c:forEach var="item" items="${loadProgram.assignedGroups}" varStatus="status">
-                                            <div class="select-box-item cm js-assigned-groups" data-id="${item.groupId}">
+                                            <div class="select-box-item cm js-assigned-groups wbba" data-id="${item.groupId}">
                                                 <cti:deviceName deviceId="${item.groupId}" />
 
                                                 <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-group-remove" />
@@ -341,7 +342,7 @@
                                         <h3>
                                             <i:inline key="yukon.common.available" />
                                         </h3>
-                                        <div id="js-inline-member-picker-container" style="height: 300px;" class="oa"></div>
+                                        <div id="js-inline-member-picker-container" style="height: 300px;" class="oa wbba"></div>
                                         <tags:pickerDialog id="js-avaliable-members-picker" 
                                                            type="memberControlPicker" 
                                                            container="js-inline-member-picker-container"

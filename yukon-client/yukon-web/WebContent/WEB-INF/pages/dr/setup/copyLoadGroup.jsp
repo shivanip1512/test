@@ -11,7 +11,7 @@
         <input type="hidden" name="lmCopy" value="${selectedSwitchType}"> 
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".name">
-                <tags:input path="name" />
+                <tags:input path="name" maxlength="60" inputClass="pao-name-width"/>
             </tags:nameValue2>
             <c:if test="${not empty routes}">
                 <tags:selectNameValue items="${routes}" itemLabel="paoName" itemValue="liteID" 
