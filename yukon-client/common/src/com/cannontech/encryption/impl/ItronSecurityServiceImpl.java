@@ -47,10 +47,10 @@ public class ItronSecurityServiceImpl implements ItronSecurityService {
                 keyPair.writePrivateKey(privateKeyBuff, passPhrase.getBytes());
             }
             keyPair.writePublicKey(publicKeyBuff, comment);
-            System.out.println("Finger print: " + keyPair.getFingerPrint());
+            log.debug("Finger print: " + keyPair.getFingerPrint());
             keyPair.dispose();
         } catch (Exception e) {
-            System.out.println(e);
+            log.debug("Error generating key pair", e);
         }
         
         log.debug("Time Stamp: " + timestamp.toString());
@@ -60,7 +60,7 @@ public class ItronSecurityServiceImpl implements ItronSecurityService {
         try {
             savePublicAndPrivateItronKey(privateKeyBuff.toString(), publicKeyBuff.toString(), timestamp);
         } catch (CryptoException | IOException | JDOMException e) {
-            log.warn("caught exception in generateItronSshRsaPublicPrivateKeys", e);
+            log.error("caught exception in generateItronSshRsaPublicPrivateKeys", e);
         }
         
         return timestamp;
@@ -147,8 +147,7 @@ public class ItronSecurityServiceImpl implements ItronSecurityService {
     }
     
     private String getPrivateKeyPassword() {
-        String passPhrase = globalSettingDaoImpl.getString(GlobalSettingType.ITRON_SFTP_PRIVATE_KEY_PASSWORD);
-        return passPhrase;
+        return globalSettingDaoImpl.getString(GlobalSettingType.ITRON_SFTP_PRIVATE_KEY_PASSWORD);
     }
     
     private void savePublicAndPrivateItronKey(String privateKey, String publicKey, Instant timestamp)
