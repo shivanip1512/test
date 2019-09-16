@@ -104,7 +104,7 @@ public class WaterNodeAnalysisController {
             MultipartFile dataFile = null;
             boolean isMultipart = ServletFileUpload.isMultipartContent(request);
 
-            File temp = new File(CtiUtilities.getImportArchiveDirPath(), "dataFile.csv");
+            File temp = File.createTempFile("tempDataFile", ".csv");
             OutputStream os = Files.newOutputStream(temp.toPath());
             
             if(isMultipart) {
@@ -113,6 +113,7 @@ public class WaterNodeAnalysisController {
                 
                 try {
                     os.write(dataFile.getBytes());
+                    os.close();
                     List<WaterNodeDetails> analyzedNodes = waterNodeService.getCsvAnalyzedNodes(intervalStart, intervalEnd, temp);
                     String[] headerRow = getReportHeaderRow(userContext);
                     List<String[]> dataRows = getReportDataRows(analyzedNodes, userContext);
@@ -127,7 +128,7 @@ public class WaterNodeAnalysisController {
                 return "redirect:view";
             }
             temp.delete();
-            return null;
+            return "redirect:view";
         }
         
         @GetMapping("view")
