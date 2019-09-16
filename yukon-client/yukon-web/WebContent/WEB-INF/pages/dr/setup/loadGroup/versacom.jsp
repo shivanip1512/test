@@ -45,7 +45,14 @@
                     </c:forEach>
                 </cti:displayForPageEditModes>
                 <cti:displayForPageEditModes modes="VIEW">
-                    <c:if test="${not empty loadGroup.classAddress}">${loadGroup.classAddress}</c:if>
+                    <c:choose>
+                        <c:when test="${empty loadGroup.classAddress}">
+                            <i:inline key=".none"/>
+                        </c:when>
+                        <c:otherwise>
+                            ${loadGroup.classAddress}
+                        </c:otherwise>
+                    </c:choose>
                 </cti:displayForPageEditModes>
             </div>
         </tags:nameValue2>
@@ -58,7 +65,14 @@
                     </c:forEach>
                 </cti:displayForPageEditModes>
                 <cti:displayForPageEditModes modes="VIEW">
-                    <c:if test="${not empty loadGroup.divisionAddress}">${loadGroup.divisionAddress}</c:if>
+                <c:choose>
+                        <c:when test="${empty loadGroup.divisionAddress}">
+                            <i:inline key=".none"/>
+                        </c:when>
+                        <c:otherwise>
+                            ${loadGroup.divisionAddress}
+                        </c:otherwise>
+                    </c:choose>
                 </cti:displayForPageEditModes>
             </div>
         </tags:nameValue2>

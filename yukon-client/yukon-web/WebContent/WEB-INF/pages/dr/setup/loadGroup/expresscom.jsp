@@ -52,7 +52,14 @@
               </div>
           </cti:displayForPageEditModes>
           <cti:displayForPageEditModes modes="VIEW">
-             <c:if test="${not empty loadGroup.feeder}">${loadGroup.feeder}</c:if>
+              <c:choose>
+                  <c:when test="${empty loadGroup.feeder}">
+                      <i:inline key=".none" />
+                  </c:when>
+                  <c:otherwise>
+                      ${loadGroup.feeder}
+                  </c:otherwise>
+              </c:choose>
           </cti:displayForPageEditModes>
       </tags:nameValue2>
       <tags:nameValue2 id="js-zipRow" nameKey=".zip" rowClass="${displayZip == true ? '' : 'dn'}">
