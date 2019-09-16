@@ -595,6 +595,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 zos.closeEntry();
             }
             
+            zos.close(); // Manually, to ensure we close the output stream before using the file.
             String zip = FILE_PATH + System.getProperty("file.separator") + zipName;
             log.debug("Created zip file: " + zip);
             files.forEach(File::delete);
