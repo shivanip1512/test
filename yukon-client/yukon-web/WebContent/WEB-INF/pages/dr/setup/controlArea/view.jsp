@@ -100,7 +100,9 @@
                                     data-event="yukon:dr:setup:controlArea:saveTrigger"
                                     data-width="600"
                                     data-height="auto"
-                                    data-title="${fn:escapeXml(triggerName)}">
+                                    data-title="${fn:escapeXml(triggerName)}"
+                                    data-ok-text="<cti:msg2 key="yukon.common.save"/>">
+                                    
                                 </div>
                             </c:forEach>
                         </div>
@@ -161,7 +163,8 @@
                         data-event="yukon:dr:setup:controlArea:saveTrigger"
                         data-width="600"
                         data-height="auto"
-                        data-title="<cti:msg2 key="yukon.web.modules.dr.setup.controlArea.trigger.title"/>" class="dn">
+                        data-title="<cti:msg2 key="yukon.web.modules.dr.setup.controlArea.trigger.title"/>" class="dn"
+                        data-ok-text="<cti:msg2 key="yukon.common.save"/>">
                     </div>
                     <div data-dialog
                         data-event="yukon:dr:setup:controlArea:saveTrigger"
