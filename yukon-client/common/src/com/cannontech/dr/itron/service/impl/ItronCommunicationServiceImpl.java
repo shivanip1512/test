@@ -586,7 +586,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      */
     private ZipFile zipFiles(String zipName, List<File> files) {
         try (FileOutputStream fos = new FileOutputStream(new File(FILE_PATH, zipName));
-             ZipOutputStream zos = new ZipOutputStream(fos);) {
+            ZipOutputStream zos = new ZipOutputStream(fos);) {
             
             for (File file : files) {
                 zos.putNextEntry(new ZipEntry(file.getName()));
@@ -595,6 +595,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 zos.closeEntry();
             }
             
+            zos.close(); // Manually, to ensure we close the output stream before using the file.
             String zip = FILE_PATH + System.getProperty("file.separator") + zipName;
             log.debug("Created zip file: " + zip);
             files.forEach(File::delete);
