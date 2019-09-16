@@ -55,8 +55,8 @@ yukon.ami.meterProgramming.summary = (function () {
                 });
                 
                 $(document).on('click', '.js-download', function () {
-                    var form = $('#filter-form');
-                    var data = form.serialize();
+                    var form = $('#filter-form'),
+                        data = form.serialize();
                     window.location = yukon.url('/amr/meterProgramming/summaryDownload?' + data);
                 });
                 

@@ -71,9 +71,9 @@
                     </c:forEach>
                 </c:when>
                 <c:otherwise>
-                    <tr><td colspan="6">
-                        <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
-                    </td></tr>
+                    <tr>
+                        <td colspan="6"><span class="empty-list"><i:inline key="yukon.common.search.noResultsFound" /></span></td>
+                    </tr>
                 </c:otherwise>
             </c:choose>
         </tbody>

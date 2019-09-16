@@ -79,9 +79,9 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty programs}">
-                     <tr><td colspan="4">
-                        <span class="empty-list"><i:inline key=".noProgramsFound"/></span>
-                    </td></tr>
+                    <tr>
+                        <td colspan="4"><span class="empty-list"><i:inline key=".noProgramsFound" /></span></td>
+                    </tr>
                 </c:if>
             </tbody>
         </table>
