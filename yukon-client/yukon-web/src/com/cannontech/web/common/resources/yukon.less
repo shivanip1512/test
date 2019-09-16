@@ -1467,6 +1467,7 @@ hr.dashed,
 .datetimeEntry_wrap.date { width: 147px; }
 .datetimeEntry_wrap.dateTime { min-width: 182px; }
 .datetimeEntry_wrap.time { width: 107px; }
+.datetimeEntry_wrap.timeOffset { width: 90px; }
 .datetimeEntry_wrap input {
     padding: 2px;
     float: left;
@@ -1475,7 +1476,10 @@ hr.dashed,
     font-size: 14px !important; /* jquery ui is messing up the font-size */
 }
 .datetimeEntry_wrap img { margin: 5px; }
-.timeOffsetWrap img { margin-top: 4px; }
+.timeOffsetWrap img {
+    margin-top: 4px;
+    margin-left: 6px;
+}
 .datetimeEntry_wrap .datetimeEntry_control { display: none !important; }
 
 .datetimeEntry_wrap input[disabled] { color: #999; }

@@ -242,7 +242,7 @@ yukon.ui.dateTimePickers = function () {
                     timeSteps: _getTimeSteps(self),
                     spinnerImage: ''
                 });
-            }).removeClass('js-timeOffsetPicker');
+            }).removeClass('js-timeOffsetPicker').closest('.datetimeEntry_wrap').addClass('timeOffset');
             
             $(ancestor + 'input.js-timeOffsetPickerUI').each(function () {
                 var self = $(this);
