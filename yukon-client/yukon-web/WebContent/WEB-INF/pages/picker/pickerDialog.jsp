@@ -10,16 +10,15 @@
         <div class="fl">
             <div class="stacked">
                 <label>
-                    <i:inline key="yukon.common.search"/>
-                    <input type="text" id="picker-${id}-ss" name="ss" class="js-picker-search-field"
-                    ><cti:button renderMode="buttonImage" icon="icon-cross-gray" classes="dn fn vat right M0 js-picker-show-all"
+                    <i:inline key="yukon.common.search"/>:
+                    <input type="text" id="picker-${id}-ss" name="ss" class="js-picker-search-field">
+                    <cti:button renderMode="buttonImage" icon="icon-cross-gray" classes="dn fn vat right M0 js-picker-show-all"
                             id="picker-${id}-show-all-link"/>
                 </label>
             </div>
         </div>
-        <div class="fr paging-area">
-            <tags:nextPrevLinks previousUrl="javascript:yukon.pickers['${id}'].previous()" nextUrl="javascript:yukon.pickers['${id}'].next()"/>
-        </div>
+        <tags:nextPrevLinks previousUrl="javascript:yukon.pickers['${id}'].previous()" nextUrl="javascript:yukon.pickers['${id}'].next()"/>
+
     </div>
     
     <div id="picker-${id}-nothing-selected" style="display:none;" class="error"><i:inline key=".nothingSelected"/></div>

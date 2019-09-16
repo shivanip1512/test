@@ -5,16 +5,16 @@
 <%@ attribute name="previousUrl" %>
 <%@ attribute name="nextUrl" %>
 
-<span class="paging-area clearfix" data-current-page="${currentPage}">
-    <cti:url var="previousUrl" value="${previousUrl}"/>
-    <a href="${previousUrl}" class="previous-page">
-        <cti:icon icon="icon-resultset-previous-gray"/>
+<span class="fr detail PB10" style="padding-top:5px;" data-current-page="${currentPage}">
+    <a href="${previousUrl}" class="previous-page" style="margin-right:5px;">
+        <cti:icon icon="icon-resultset-previous-gray" classes="PR0 MR0"/>
         <span class="fl"><cti:msg2 key="yukon.common.paging.previous"/></span>
     </a>
     <span class="page-num-text"></span>
-    <cti:url var="nextUrl" value="${nextUrl}"/>
-    <a href="${nextUrl}" class="next-page">
-        <span class="fl"><cti:msg2 key="yukon.common.paging.next"/></span>
-        <cti:icon icon="icon-resultset-next-gray"/>
-    </a>
+    <span class="fr" style="margin-left:5px;">
+        <a href="${nextUrl}" class="next-page">
+            <span class="fl"><cti:msg2 key="yukon.common.paging.next"/></span>
+            <cti:icon icon="icon-resultset-next-gray" classes="PL0 ML0"/>
+        </a>
+    </span>
 </span>
