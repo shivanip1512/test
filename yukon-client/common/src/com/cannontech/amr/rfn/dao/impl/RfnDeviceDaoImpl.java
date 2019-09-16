@@ -482,12 +482,15 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                    // .peek(value -> log.debug(value.deviceId+" "+ value.gatewayId+" "+ oracleLastTransferTimeFormat.format(value.transferTime.toDate())))
                     .flatMap(value -> Stream.of(value.deviceId, value.gatewayId, oracleLastTransferTimeFormat.format(value.transferTime.toDate())))
                     .toArray();
-            referenceIds.addAll(updateOrRetry3TimesOnError(sql, values, setNumber.incrementAndGet(), part));
+            referenceIds.addAll(update(sql, values, setNumber.incrementAndGet(), part));
         });
         return referenceIds;
     }
 
-    private Set<Long> updateOrRetry3TimesOnError(SqlStatementBuilder sql, Object[] values, long setNumber,
+    /**
+     * Inserts the data in the table, retries 3 times on failure
+     */
+    private Set<Long> update(SqlStatementBuilder sql, Object[] values, long setNumber,
             List<DynamicRfnDeviceData> part) {           
             int retryCount = 1; 
             while (retryCount <= 3) {
@@ -553,7 +556,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             Object[] values = part.stream()
                     .flatMap(value -> Stream.of(value.deviceId, value.gatewayId, value.transferTime.toString()))
                     .toArray();
-            referenceIds.addAll(updateOrRetry3TimesOnError(sql, values, setNumber.incrementAndGet(), part));
+            referenceIds.addAll(update(sql, values, setNumber.incrementAndGet(), part));
         });
         return referenceIds;
     }
