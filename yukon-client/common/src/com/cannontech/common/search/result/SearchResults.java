@@ -18,18 +18,15 @@ public class SearchResults<T> {
     private int lastStartIndex = 0; // index of last page of results
     private int numberOfPages = 0;  // total number of result pages 
 
-    private final static SearchResults<Object> emptyResult = new SearchResults<>();
-    static {
+    @SuppressWarnings("unchecked")
+    @JsonCreator
+    public static <T> SearchResults<T> emptyResult() {
+        SearchResults<Object> emptyResult = new SearchResults<>();
         List<Object> empty = Collections.emptyList();
         emptyResult.setEndIndex(0);
         emptyResult.setHitCount(0);
         emptyResult.setResultList(empty);
         emptyResult.setStartIndex(0);
-    }
-
-    @SuppressWarnings("unchecked")
-    @JsonCreator
-    public static <T> SearchResults<T> emptyResult() {
         return (SearchResults<T>) emptyResult;
     }
 
