@@ -18,6 +18,8 @@ import com.cannontech.common.device.programming.model.MeterProgramStatus;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.SqlStatementBuilder.SqlBatchUpdater;
 import com.cannontech.core.dao.DuplicateException;
@@ -104,15 +106,19 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
     @Override
     public List<SimpleDevice> getMetersWithOldFirmware(List<SimpleDevice> devices) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-        return template.query(rs -> {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT PAObjectID, type");
-            sql.append("FROM  MeterProgramStatus JOIN YukonPAObject ypo ON DeviceId = ypo.PAObjectID");
-            sql.append("WHERE Source").eq_k(MeterProgramSource.OLD_FIRMWARE);
-            sql.append("AND DeviceId").in(devices.stream()
-                                          .map(SimpleDevice::getDeviceId)
-                                          .collect(Collectors.toList()));
-            return sql;
+        
+        return template.query(new SqlFragmentGenerator<SimpleDevice>() {
+            @Override
+            public SqlFragmentSource generate(List<SimpleDevice> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT PAObjectID, type");
+                sql.append("FROM  MeterProgramStatus JOIN YukonPAObject ypo ON DeviceId = ypo.PAObjectID");
+                sql.append("WHERE Source").eq_k(MeterProgramSource.OLD_FIRMWARE);
+                sql.append("AND DeviceId").in(subList.stream()
+                                              .map(SimpleDevice::getDeviceId)
+                                              .collect(Collectors.toList()));
+                return sql;
+            }
         }, devices, new YukonDeviceRowMapper());
     }
     
