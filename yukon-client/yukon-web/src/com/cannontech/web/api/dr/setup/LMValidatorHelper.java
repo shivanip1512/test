@@ -101,9 +101,7 @@ public class LMValidatorHelper {
     }
 
     /**
-     * Find duplicate entries from list
-     * 
-     * @returns Set of entries which are duplicate.
+     * Find duplicate entries from list and returns set of entries which are duplicate.
      */
     public Set<Integer> findDuplicates(List<Integer> list) {
         Set<Integer> uniques = new HashSet<>();
