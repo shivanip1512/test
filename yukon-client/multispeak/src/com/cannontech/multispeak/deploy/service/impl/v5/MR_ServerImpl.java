@@ -715,7 +715,7 @@ public class MR_ServerImpl implements MR_Server {
 
         MRServerDemandResetCallback callback =
             new MRServerDemandResetCallback(mspObjectDao, multispeakEventLogService, vendor, meterNumbersByPaoId,
-                responseURL, transactionId);
+                actualResponseUrl, transactionId);
         
         demandResetService.sendDemandResetAndVerify(validMeters, callback, UserUtils.getYukonUser());
         errors.addAll(callback.getErrors());
