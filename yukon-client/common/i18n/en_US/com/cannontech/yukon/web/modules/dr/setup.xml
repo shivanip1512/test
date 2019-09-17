@@ -111,7 +111,6 @@
 By including load in your address usage, you are requiring the load to be configured
 with the specified program address for it to respond to the request for control.
 Are you sure you want do this?</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.none">None</entry>
 
 <entry key="yukon.web.modules.dr.setup.loadProgram.CREATE.pageName">Create Load Program</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.CREATE.pageDescription">Create Load Program</entry>

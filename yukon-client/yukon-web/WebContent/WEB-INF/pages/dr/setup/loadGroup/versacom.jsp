@@ -47,7 +47,7 @@
                 <cti:displayForPageEditModes modes="VIEW">
                     <c:choose>
                         <c:when test="${empty loadGroup.classAddress}">
-                            <i:inline key=".none"/>
+                            <i:inline key="yukon.common.none"/>
                         </c:when>
                         <c:otherwise>
                             ${loadGroup.classAddress}
@@ -67,7 +67,7 @@
                 <cti:displayForPageEditModes modes="VIEW">
                 <c:choose>
                         <c:when test="${empty loadGroup.divisionAddress}">
-                            <i:inline key=".none"/>
+                            <i:inline key="yukon.common.none"/>
                         </c:when>
                         <c:otherwise>
                             ${loadGroup.divisionAddress}
