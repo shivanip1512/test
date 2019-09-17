@@ -17,7 +17,7 @@
             <ul>
                 <li><b>Excellent</b> - Indicates a high success rate of communications between the node and its primary forward neighbor (Link cost of 1 or 2).</li>
                 <li><b>Average</b> - Indicates a normal success rate of communications between the node and its primary forward neighbor (Link cost = 3).</li>
-                <li><b>Below Average</b> - Indicates a less than average rate of communications between the node and its primary forward neighbor (Link cost > 4).</li>
+                <li><b>Below Average</b> - Indicates a less than average rate of communications between the node and its primary forward neighbor (Link cost >= 4).</li>
                 <li><b>Evaluating</b> - Indicates a valid link quality cannot be calculated due to the limited number of attempts by the node to communicate with its primary forward neighbor.  Once a minimum of 50 attempts have been completed, a link quality will be calculated.</li>
             </ul>
             <li><b>Color Code By</b> - Select whether to color code the pins by primary gateway or by link quality category.</li>
