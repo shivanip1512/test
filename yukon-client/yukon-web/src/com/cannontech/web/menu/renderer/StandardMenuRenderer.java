@@ -21,6 +21,7 @@ import org.springframework.core.io.Resource;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -206,34 +207,28 @@ public class StandardMenuRenderer {
      */
     private boolean checkPermission(Element permission, LiteYukonUser user) {
         Permission type = Permission.valueOf(permission.getName());
-        
         if (type == Permission.role) {
-            if (rpDao.checkRole(YukonRole.valueOf(permission.getAttributeValue("name")), user)) {
-                return true;
-            }
+            return rpDao.checkRole(YukonRole.valueOf(permission.getAttributeValue("name")), user);
         } else if (type == Permission.roleProperty) {
-            if (rpDao.checkProperty(YukonRoleProperty.valueOf(permission.getAttributeValue("name")), user)) {
-                return true;
+            String level = permission.getAttributeValue("level");
+            YukonRoleProperty property = YukonRoleProperty.valueOf(permission.getAttributeValue("name"));
+            if(level == null) {
+                return rpDao.checkProperty(property, user);
+            } else {
+                return rpDao.checkLevel(property, HierarchyPermissionLevel.valueOf(level), user);
             }
         } else if (type == Permission.ecOperator) {
-            if (ecDao.isEnergyCompanyOperator(user)) {
-                return true;
-            }
+             return ecDao.isEnergyCompanyOperator(user);
         } else if (type == Permission.license) {
             String value = permission.getAttributeValue("name");
-
             return configurationSource.isLicenseEnabled(MasterConfigLicenseKey.valueOf(value));
         } else if (type == Permission.masterConfig) {
             String value = permission.getAttributeValue("name");
-            
             return configurationSource.getBoolean(value, false);
         } else {
             /* Not used yet and only supporting booleans, add 'value' to globalSetting element in schema if needed */
-            if (gsDao.getBoolean(GlobalSettingType.valueOf(permission.getAttributeValue("name")))) {
-                return true;
-            }
+            return gsDao.getBoolean(GlobalSettingType.valueOf(permission.getAttributeValue("name")));
         }
-        return false;
     }
     
     /**
@@ -270,9 +265,11 @@ public class StandardMenuRenderer {
         return StringEscapeUtils.escapeHtml4(ServletUtil.createSafeUrl(req, url));
     }
     
+    
     private enum Permission {
         role,
         roleProperty,
+        level,
         ecOperator,
         license,
         masterConfig,

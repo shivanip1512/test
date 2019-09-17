@@ -22,15 +22,13 @@ import com.cannontech.common.dr.setup.ControlArea;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.area.service.ControlAreaSetupService;
 import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.cannontech.web.security.annotation.CheckRole;
 
 @RestController
-@CheckRole(YukonRole.DEMAND_RESPONSE)
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.RESTRICTED)
 @RequestMapping("/dr/setup/controlArea")
 public class ControlAreaSetupApiController {
 

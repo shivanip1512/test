@@ -3,6 +3,7 @@ package com.cannontech.core.roleproperties;
 
 import static com.cannontech.core.roleproperties.InputTypeFactory.*;
 import static com.cannontech.core.roleproperties.YukonRole.*;
+import static com.cannontech.core.roleproperties.HierarchyPermissionLevel.*;
 import static com.google.common.base.Preconditions.*;
 
 
@@ -158,7 +159,7 @@ public enum YukonRoleProperty {
     SHOW_ECOBEE(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 46, booleanType()),
     ALLOW_CHANGE_GEARS(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 48, booleanType()),
     ENABLE_DISABLE_PROGRAM(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 47, booleanType()),
-    DR_SETUP_PERMISSION(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 49, InputTypeFactory.enumType(HierarchyPermissionLevel.class)),
+    DR_SETUP_PERMISSION(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 49, InputTypeFactory.permissionType(OWNER, CREATE, UPDATE, RESTRICTED, NO_ACCESS)),
     
     ALLOW_LOAD_GROUP_CONTROL(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 45, booleanType()),
     DR_VIEW_CONTROL_AREA_TRIGGER_INFO(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 21, booleanType()),
@@ -289,10 +290,10 @@ public enum YukonRoleProperty {
     INFRASTRUCTURE_DELETE(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 1, booleanType()),
     INFRASTRUCTURE_ADMIN(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 2, booleanType()),
     INFRASTRUCTURE_VIEW(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 3, booleanType()),
-    ENDPOINT_PERMISSION(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 4, InputTypeFactory.enumType(HierarchyPermissionLevel.class)),
-    MANAGE_POINT_DATA(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 5, InputTypeFactory.enumType(HierarchyPermissionLevel.class)),
-    MANAGE_POINTS(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 6, InputTypeFactory.enumType(HierarchyPermissionLevel.class)),
-    MANAGE_NOTES(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 7, InputTypeFactory.enumType(AccessLevel.class)),
+    ENDPOINT_PERMISSION(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 4, InputTypeFactory.permissionType(OWNER, CREATE, UPDATE, RESTRICTED, LIMITED)),
+    MANAGE_POINT_DATA(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 5, InputTypeFactory.permissionType(RESTRICTED, UPDATE, OWNER)),
+    MANAGE_POINTS(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 6, InputTypeFactory.permissionType(OWNER, CREATE, UPDATE, RESTRICTED, NO_ACCESS)),
+    MANAGE_NOTES(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 7, InputTypeFactory.enumType(AccessLevel.class))
     ;
     
     private final YukonRole role;

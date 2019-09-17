@@ -38,6 +38,7 @@
 
     <xsd:complexType name="RoleProperty">
         <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="level" type="xsd:string"/>
     </xsd:complexType>
 
     <xsd:complexType name="Role">

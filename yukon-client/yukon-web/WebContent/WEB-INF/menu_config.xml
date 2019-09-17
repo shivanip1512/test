@@ -115,7 +115,7 @@
       </option>
       <option name="setup">
         <permissions>
-            <role name="DEMAND_RESPONSE" />
+            <roleProperty name="DR_SETUP_PERMISSION" level="RESTRICTED" />
         </permissions>
         <link>/dr/setup/list</link>
       </option>
@@ -325,7 +325,7 @@
       </option>
       <option name="scripts">
         <permissions>
-          <role name="SCHEDULER" />
+          <roleProperty name="MACS_SCRIPTS" level="RESTRICTED" />
         </permissions>
         <link>/macsscheduler/schedules/view</link>
       </option>
