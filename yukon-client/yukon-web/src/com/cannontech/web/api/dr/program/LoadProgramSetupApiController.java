@@ -27,17 +27,15 @@ import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
 import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @RestController
-@CheckRole(YukonRole.DEMAND_RESPONSE)
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.RESTRICTED)
 @RequestMapping("/dr/setup/loadProgram")
 public class LoadProgramSetupApiController {
     @Autowired private LoadProgramSetupService loadProgramService;

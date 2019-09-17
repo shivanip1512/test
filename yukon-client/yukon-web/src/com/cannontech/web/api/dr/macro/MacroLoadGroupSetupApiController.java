@@ -29,6 +29,7 @@ import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.RESTRICTED)
 @RequestMapping("/dr/setup/macroLoadGroup")
 public class MacroLoadGroupSetupApiController {
 

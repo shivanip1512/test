@@ -64,11 +64,10 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
-@CheckRole(YukonRole.SCHEDULER)
+@CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.RESTRICTED)
 @Controller
 @RequestMapping("/schedules/*")
 public class MACSScheduleController {
@@ -94,6 +93,7 @@ public class MACSScheduleController {
     }
    
     @RequestMapping(value="innerView", method = RequestMethod.GET)
+    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.RESTRICTED)
     public String innerView(ModelMap model, LiteYukonUser user, @DefaultSort(dir=Direction.asc, sort="scheduleName") SortingParameters sorting, 
             PagingParameters paging, @ModelAttribute("filter") MacsScriptFilter filter, YukonUserContext userContext) {
  

@@ -1,6 +1,7 @@
 package com.cannontech.core.roleproperties;
 
 import java.beans.PropertyEditor;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -73,6 +74,43 @@ public class InputTypeFactory {
             @Override
             public String toString() {
                 return "EnumType[" + enumClass.getSimpleName() + "]";
+            }
+            
+        };
+        return type;
+    }
+    
+    public static <T extends Enum<T>> EnumInputType<T> permissionType(HierarchyPermissionLevel... levels) {
+        BaseEnumType<T> type = new BaseEnumType<T>() {
+            private ImmutableList<InputOptionProvider> optionList;
+            {
+                Builder<InputOptionProvider> builder = ImmutableList.builder();
+                for (HierarchyPermissionLevel entry :  Arrays.asList(levels)) {
+                    InputOption inputOption = new InputOption(entry);
+                    builder.add(inputOption);
+                }
+                optionList = builder.build();
+            }
+
+            @Override
+            public List<InputOptionProvider> getOptionList() {
+                return optionList;
+            }
+
+            @Override
+            public PropertyEditor getPropertyEditor() {
+                PropertyEditor enumPropertyEditor = new EnumPropertyEditor<HierarchyPermissionLevel>(HierarchyPermissionLevel.class);
+                return enumPropertyEditor;
+            }
+
+            @Override
+            public Class<T> getTypeClass() {
+                return (Class<T>) HierarchyPermissionLevel.class;
+            }
+            
+            @Override
+            public String toString() {
+                return "EnumType[" + levels + "]";
             }
             
         };

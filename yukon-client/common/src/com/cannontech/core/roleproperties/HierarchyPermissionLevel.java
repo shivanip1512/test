@@ -5,8 +5,9 @@ public enum HierarchyPermissionLevel {
     OWNER(1), //access to everything
     CREATE(2), // access to CREATE, UPDATE, LIMITED 
     UPDATE(3), // access to UPDATE, LIMITED 
-    LIMITED(4), // access to LIMITED 
-    RESTRICTED(5);   // no access
+    LIMITED(4), // access to LIMITED (adds a few interactions on top of View mode)
+    RESTRICTED(5), // view
+    NO_ACCESS(6);   // no view
     
     int level;
     HierarchyPermissionLevel(int level) {
