@@ -21,7 +21,10 @@ yukon.smart.notifications = (function () {
             meterDisconnect = type === 'METER_DR';
         popup.find('.js-monitor').toggleClass('dn', !deviceDataMonitor);
         popup.find('.js-import-result').toggleClass('dn', !assetImport);
-        popup.find('.js-frequency').val('IMMEDIATE').prop('disabled', meterDisconnect);
+        if (meterDisconnect) {
+            popup.find('.js-frequency').val('IMMEDIATE');
+        }
+        popup.find('.js-frequency').prop('disabled', meterDisconnect);
         popup.find('.js-frequency-hidden').prop('disabled', !meterDisconnect);
         updateFrequencyFields(popup);
         /* We need to disable these fields even if it is hidden to prevent this value for 
