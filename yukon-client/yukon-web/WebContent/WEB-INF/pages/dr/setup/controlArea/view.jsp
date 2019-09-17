@@ -102,7 +102,6 @@
                                     data-height="auto"
                                     data-title="${fn:escapeXml(triggerName)}"
                                     data-ok-text="<cti:msg2 key="yukon.common.save"/>">
-                                    
                                 </div>
                             </c:forEach>
                         </div>
