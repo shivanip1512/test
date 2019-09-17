@@ -54,7 +54,7 @@
           <cti:displayForPageEditModes modes="VIEW">
               <c:choose>
                   <c:when test="${empty loadGroup.feeder}">
-                      <i:inline key=".none" />
+                      <i:inline key="yukon.common.none" />
                   </c:when>
                   <c:otherwise>
                       ${loadGroup.feeder}
