@@ -325,9 +325,9 @@
 <entry key="yukon.common.timestamp.format.millisecond.result">181</entry>
 <entry key="yukon.common.timestamp.format.millisecond.description">Millisecond of the second</entry>
 <entry key="yukon.common.timestamp.format.timezone.name.result">CDT; Central Daylight Time</entry>
-<entry key="yukon.common.timestamp.format.timezone.name.description">Timezone name</entry>
+<entry key="yukon.common.timestamp.format.timezone.name.description">Time zone name</entry>
 <entry key="yukon.common.timestamp.format.timezone.offset.result">-0800</entry>
-<entry key="yukon.common.timestamp.format.timezone.offset.description">Timezone offset</entry>
+<entry key="yukon.common.timestamp.format.timezone.offset.description">Time zone offset</entry>
 <entry key="yukon.common.To">To</entry>
 <entry key="yukon.common.to">to</entry>
 <entry key="yukon.common.true">True</entry>

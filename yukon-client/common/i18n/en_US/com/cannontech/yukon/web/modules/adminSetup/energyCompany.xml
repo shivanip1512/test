@@ -54,7 +54,7 @@
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.wrongEcId">The Energy Company Id cannot be set.</entry>
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.email.invalid">Not a valid email address.</entry>
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.timezone.invalid">Not a valid time zone.</entry>
-    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.timezone.invalidJodaTimeZone">Invalid TimeZone. Must be exact case (e.g. America/Chicago not america/chicago)</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.timezone.invalidJodaTimeZone">Invalid time zone. Must be exact case (e.g. America/Chicago not america/chicago)</entry>
     
     <!-- generalInfo.jsp -->
     <entry key="yukon.web.modules.adminSetup.generalInfo.EDIT.pageName">Edit General Info</entry>

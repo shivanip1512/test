@@ -149,8 +149,8 @@
 <entry key="yukon.common.roleProperty.THEME_NAME.description">The name of the theme file which defines custom web page text and formatting.</entry>
 <entry key="yukon.common.roleProperty.VIEW_ALARMS_AS_ALERTS">View Alarms Alerts</entry>
 <entry key="yukon.common.roleProperty.VIEW_ALARMS_AS_ALERTS.description">Controls access to receive and display point alarms as alerts.</entry>
-<entry key="yukon.common.roleProperty.DEFAULT_TIMEZONE">Default TimeZone</entry>
-<entry key="yukon.common.roleProperty.DEFAULT_TIMEZONE.description">The default timeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York).</entry>
+<entry key="yukon.common.roleProperty.DEFAULT_TIMEZONE">Default Time Zone</entry>
+<entry key="yukon.common.roleProperty.DEFAULT_TIMEZONE.description">The default time zone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York).</entry>
 <entry key="yukon.common.roleProperty.SESSION_TIMEOUT">Session Timeout</entry>
 <entry key="yukon.common.roleProperty.SESSION_TIMEOUT.description">The time in minutes before a user's session will expire.</entry>
 

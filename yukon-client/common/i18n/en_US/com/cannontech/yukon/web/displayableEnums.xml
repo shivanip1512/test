@@ -200,12 +200,12 @@
     <!-- GlobalSettings -->
     <entry key="yukon.common.setting.OPT_OUTS_COUNT">Opt Out Count</entry>
     <entry key="yukon.common.setting.OPT_OUTS_COUNT.description">Determines whether new opt outs count against the opt out limits.</entry>
-    <entry key="yukon.common.setting.SYSTEM_TIMEZONE">System TimeZone</entry>
-    <entry key="yukon.common.setting.SYSTEM_TIMEZONE.description">System Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)</entry>
+    <entry key="yukon.common.setting.SYSTEM_TIMEZONE">System Time Zone</entry>
+    <entry key="yukon.common.setting.SYSTEM_TIMEZONE.description">System default time zone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York).</entry>
     <entry key="yukon.common.setting.CUSTOMER_INFO_IMPORTER_FILE_LOCATION">Customer Info Importer File Location</entry>
     <entry key="yukon.common.setting.CUSTOMER_INFO_IMPORTER_FILE_LOCATION.description">File location of the automated consumer information import process.</entry>
     <entry key="yukon.common.setting.ALERT_TIMEOUT_HOURS">Alert Timeout Hours</entry>
-    <entry key="yukon.common.setting.ALERT_TIMEOUT_HOURS.description">The number of hours that an alert should be held (zero = forever, decimal numbers are okay)</entry>
+    <entry key="yukon.common.setting.ALERT_TIMEOUT_HOURS.description">The number of hours that an alert should be held (zero = forever, decimal numbers are okay).</entry>
     <entry key="yukon.common.setting.DEVICE_DISPLAY_TEMPLATE">Device Display Template</entry>
     <entry key="yukon.common.setting.DEVICE_DISPLAY_TEMPLATE.description">Defines the format for displaying devices. Available placeholders: DEVICE_NAME, METER_NUMBER</entry>
     <entry key="yukon.common.setting.MSP_EXCLUDE_DISABLED_METERS">Exclude Disabled Meters</entry>
@@ -217,7 +217,7 @@
     <entry key="yukon.common.setting.MSP_LM_MAPPING_SETUP">LM Mapping Setup</entry>
     <entry key="yukon.common.setting.MSP_LM_MAPPING_SETUP.description">Controls access to setup the MultiSpeak LM interface mappings.</entry>
     <entry key="yukon.common.setting.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP">Billing Cycle Parent Device Group</entry>
-    <entry key="yukon.common.setting.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP.description">The Device Group parent group name for the MultiSpeak billingCycle element. Valid values are '/Meters/Billing/', '/Meters/Collection', '/Meters/Alternate'</entry>
+    <entry key="yukon.common.setting.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP.description">The Device Group parent group name for the MultiSpeak billingCycle element. Valid values are '/Meters/Billing/', '/Meters/Collection', '/Meters/Alternate'.</entry>
     <entry key="yukon.common.setting.MSP_PRIMARY_CB_VENDORID">Primary CIS Vendor</entry>
     <entry key="yukon.common.setting.MSP_PRIMARY_CB_VENDORID.description">The primary CIS vendor for CB_Server interfaces. Used for CIS Account Information widget and Meter Search functionality.</entry>
     <entry key="yukon.common.setting.MSP_PAONAME_ALIAS">PAO Name Alias</entry>
@@ -233,7 +233,7 @@
     <entry key="yukon.common.setting.CIS_DETAIL_TYPE">CIS Information Type</entry>
     <entry key="yukon.common.setting.CIS_DETAIL_TYPE.description">Defines the type of CIS Information widget to display.</entry>
     <entry key="yukon.common.setting.DEFAULT_ROUNDING_MODE">Default Rounding Mode</entry>
-    <entry key="yukon.common.setting.DEFAULT_ROUNDING_MODE.description">Rounding Mode used when formatting value data in billing formats. Available placeholders: HALF_EVEN, CEILING, FLOOR, UP, DOWN, HALF_DOWN, HALF_UP</entry>
+    <entry key="yukon.common.setting.DEFAULT_ROUNDING_MODE.description">Rounding Mode used when formatting value data in billing formats. Available placeholders: HALF_EVEN, CEILING, FLOOR, UP, DOWN, HALF_DOWN, HALF_UP.</entry>
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS">Available File Extensions</entry>
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS.description">Comma separated list of file extensions allowed to override the default file extension for scheduled reports.</entry>
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_IMPORT_PATH">Allowable Import Path Directories</entry>
@@ -297,7 +297,7 @@
     <entry key="yukon.common.setting.DEFAULT_AUTH_TYPE">Default Auth Type</entry>
     <entry key="yukon.common.setting.DEFAULT_AUTH_TYPE.description">Default authentication type, possible values: Active Directory, Encrypted, LDAP, Radius, No Login.</entry>
     <entry key="yukon.common.setting.AUTH_TIMEOUT">Radius Authentication Timeout</entry>
-    <entry key="yukon.common.setting.AUTH_TIMEOUT.description">Number of seconds before the authentication process times out</entry>
+    <entry key="yukon.common.setting.AUTH_TIMEOUT.description">Number of seconds before the authentication process times out.</entry>
     <entry key="yukon.common.setting.SECRET_KEY">Radius Secret Key</entry>
     <entry key="yukon.common.setting.SECRET_KEY.description">Client machine secret key value, defined by the server.</entry>
     <entry key="yukon.common.setting.ACCT_PORT">Radius Accounting Port</entry>
@@ -305,25 +305,25 @@
     <entry key="yukon.common.setting.AUTH_PORT">Radius Authentication Port</entry>
     <entry key="yukon.common.setting.AUTH_PORT.description">Authentication port.</entry>
     <entry key="yukon.common.setting.SERVER_ADDRESS">Radius Authentication Server Address</entry>
-    <entry key="yukon.common.setting.SERVER_ADDRESS.description">Authentication server machine address</entry>
+    <entry key="yukon.common.setting.SERVER_ADDRESS.description">Authentication server machine address.</entry>
     <entry key="yukon.common.setting.BULK_IMPORTER_COMMUNICATIONS_ENABLED">Bulk Importer Communications Enabled</entry>
     <entry key="yukon.common.setting.BULK_IMPORTER_COMMUNICATIONS_ENABLED.description">Specifies whether communications will be allowed by the bulk importer.</entry>
     <entry key="yukon.common.setting.BATCHED_SWITCH_COMMAND_TOGGLE">Batched Switch Command Toggle</entry>
-    <entry key="yukon.common.setting.BATCHED_SWITCH_COMMAND_TOGGLE.description">Specifies whether the STARS application should automatically process batched switch commands</entry>
+    <entry key="yukon.common.setting.BATCHED_SWITCH_COMMAND_TOGGLE.description">Specifies whether the STARS application should automatically process batched switch commands.</entry>
     <entry key="yukon.common.setting.NETWORK_MANAGER_ADDRESS">Network Manager Address</entry>
-    <entry key="yukon.common.setting.NETWORK_MANAGER_ADDRESS.description">Name or IP address of the Network Manager web server</entry>
+    <entry key="yukon.common.setting.NETWORK_MANAGER_ADDRESS.description">Name or IP address of the Network Manager web server.</entry>
     <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER">RFN Firmware Update Server Address</entry>
-    <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER.description">Name or IP address of the RFN Firmware update server</entry>
+    <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER.description">Name or IP address of the RFN Firmware update server.</entry>
     <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER_USER">RFN Firmware Update Server User</entry>
-    <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER_USER.description">Name of the update server user</entry>
+    <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER_USER.description">Name of the update server user.</entry>
     <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD">RFN Firmware Update Server User Password</entry>
-    <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD.description">Password of the update server user</entry>
+    <entry key="yukon.common.setting.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD.description">Password of the update server user.</entry>
     <entry key="yukon.common.setting.WEB_LOGO_URL">Web Logo URL</entry>
-    <entry key="yukon.common.setting.WEB_LOGO_URL.description">The logo that is used for the yukon web applications</entry>
+    <entry key="yukon.common.setting.WEB_LOGO_URL.description">The logo that is used for the yukon web applications.</entry>
     <entry key="yukon.common.setting.STARS_PRELOAD_DATA">STARS Preload Data</entry>
     <entry key="yukon.common.setting.STARS_PRELOAD_DATA.description">Controls whether the STARS application should preload data into the cache.</entry>
     <entry key="yukon.common.setting.MAIL_FROM_ADDRESS">Mail From Address</entry>
-    <entry key="yukon.common.setting.MAIL_FROM_ADDRESS.description">Name of the FROM email address the mail server will use</entry>
+    <entry key="yukon.common.setting.MAIL_FROM_ADDRESS.description">Name of the FROM email address the mail server will use.</entry>
     <entry key="yukon.common.setting.JMS_BROKER_HOST">Message Broker Host</entry>
     <entry key="yukon.common.setting.JMS_BROKER_HOST.description">Name or IP address of Yukon Message Broker Service. Requires Message Broker, Web Server, Service Manager, and any running Yukon Applications to restart for changes to take effect.</entry>
     <entry key="yukon.common.setting.JMS_BROKER_PORT">Message Broker Port</entry>
@@ -373,19 +373,19 @@
     <entry key="yukon.common.setting.OADR_TRUSTSTORE_PASSWORD">Truststore Password</entry>
     <entry key="yukon.common.setting.OADR_TRUSTSTORE_PASSWORD.description">The truststore's password.</entry>
     <entry key="yukon.common.setting.OADR_REPLY_LIMIT">Reply Limit</entry>
-    <entry key="yukon.common.setting.OADR_REPLY_LIMIT.description">The maximum number of distribute events to receive from the VTN (No limit if 0.)</entry>
+    <entry key="yukon.common.setting.OADR_REPLY_LIMIT.description">The maximum number of distribute events to receive from the VTN. (No limit if 0.)</entry>
     <entry key="yukon.common.setting.OADR_VTN_THUMBPRINT">VTN Thumbprint</entry>
     <entry key="yukon.common.setting.OADR_VTN_THUMBPRINT.description">The certificate thumbprint of the VTN.</entry>
     <entry key="yukon.common.setting.OADR_YUKON_USER">OpenADR Yukon User</entry>
     <entry key="yukon.common.setting.OADR_YUKON_USER.description">The Yukon User for which the load management requests will be executed.</entry>
     <entry key="yukon.common.setting.OADR_OPEN_ENDED_CONTROL_DURATION">Open-Ended Control Duration</entry>
-    <entry key="yukon.common.setting.OADR_OPEN_ENDED_CONTROL_DURATION.description">The duration to be used for open-ended control events, specified by a number and a character indicating weeks, days, hours, or minutes (i.e. "1.5d".)</entry>
+    <entry key="yukon.common.setting.OADR_OPEN_ENDED_CONTROL_DURATION.description">The duration to be used for open-ended control events, specified by a number and a character indicating weeks, days, hours, or minutes (i.e. "1.5d").</entry>
 
     <entry key="yukon.common.setting.DATABASE_MIGRATION_FILE_LOCATION">Database Migration File Location</entry>
     <entry key="yukon.common.setting.DATABASE_MIGRATION_FILE_LOCATION.description">File location of the database migration export process.</entry>
     <entry key="yukon.common.setting.TEMP_DEVICE_GROUP_DELETION_IN_DAYS">Temporary Device Group Deletion Period</entry>
     <entry key="yukon.common.setting.TEMP_DEVICE_GROUP_DELETION_IN_DAYS.description">The time period to be used for temporary device group deletion.</entry>
-    <entry key="yukon.common.setting.HTTP_PROXY">System HTTP proxy</entry>
+    <entry key="yukon.common.setting.HTTP_PROXY">System HTTP Proxy</entry>
     <entry key="yukon.common.setting.HTTP_PROXY.description">System wide HTTP proxy settings. Used to facilitate HTTP requests which require a proxy server. (values = ip:port or 'none')</entry>
     <entry key="yukon.common.setting.CONTACT_EMAIL">Contact Email</entry>
     <entry key="yukon.common.setting.CONTACT_EMAIL.description">Email address displayed in the 'Contact Us' section of login page.</entry>
@@ -404,7 +404,7 @@
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL">ecobee API URL</entry>
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL.description">URL to connect to the ecobee service.</entry>
     <entry key="yukon.common.setting.ECOBEE_SEND_NOTIFICATIONS">ecobee email notification</entry>
-    <entry key="yukon.common.setting.ECOBEE_SEND_NOTIFICATIONS.description">Enables/Disables notifications being sent by ecobee when a DR request is made through yukon</entry>
+    <entry key="yukon.common.setting.ECOBEE_SEND_NOTIFICATIONS.description">Enables/Disables notifications being sent by ecobee when a DR request is made through Yukon.</entry>
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING">Honeywell Wifi Connection</entry>
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING.description">Connection string for the Honeywell wifi service bus.</entry>
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_QUEUE">Honeywell Wifi Queue</entry>
