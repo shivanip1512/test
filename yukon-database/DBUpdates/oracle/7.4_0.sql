@@ -79,51 +79,39 @@ INSERT INTO DBUpdates VALUES ('YUK-19063-1', '7.4.0', SYSDATE);
 /* @error ignore-end */
 /* @end YUK-19063-1 */
 
-/* @start YUK-20568 */
+/* @start YUK-20568-1 */
+UPDATE YukonRoleProperty
+SET DefaultValue = 'NO_ACCESS'
+WHERE DefaultValue = 'RESTRICTED'
+AND RolePropertyID IN (-90049, -21406);
+
 UPDATE YukonRoleProperty
 SET DefaultValue = 'RESTRICTED'
 WHERE DefaultValue = 'LIMITED'
-AND KeyName IN ('Manage Point Data', 'Manage Points', 'DR Setup Permission');
+AND RolePropertyID IN (-90049, -21406, -21405);
 
 UPDATE YukonRoleProperty
 SET DefaultValue = 'UPDATE'
 WHERE DefaultValue = 'CREATE'
-AND KeyName = 'Manage Point Data';
-
-UPDATE YukonRoleProperty
-SET DefaultValue = 'NO_ACCESS'
-WHERE DefaultValue = 'RESTRICTED'
-AND KeyName IN ('Manage Points', 'DR Setup Permission');
-
-UPDATE YukonGroupRole
-SET Value = 'RESTRICTED'
-WHERE Value = 'LIMITED'
-AND RolePropertyID IN (
-    SELECT RolePropertyId
-    FROM YukonRoleProperty
-    WHERE KeyName IN ('Manage Point Data', 'Manage Points', 'DR Setup Permission')
-);
-
-UPDATE YukonGroupRole
-SET Value = 'UPDATE'
-WHERE Value = 'CREATE'
-AND RolePropertyID IN (
-    SELECT RolePropertyId
-    FROM YukonRoleProperty
-    WHERE KeyName = 'Manage Point Data'
-);
+AND RolePropertyID = -21405;
 
 UPDATE YukonGroupRole
 SET Value = 'NO_ACCESS'
 WHERE Value = 'RESTRICTED'
-AND RolePropertyID IN (
-    SELECT RolePropertyId
-    FROM YukonRoleProperty
-    WHERE KeyName IN ('Manage Points', 'DR Setup Permission')
-);
+AND RolePropertyID IN (-90049, -21406);
 
-INSERT INTO DBUpdates VALUES ('YUK-20568', '7.4.0', SYSDATE);
-/* @end YUK-20568 */
+UPDATE YukonGroupRole
+SET Value = 'RESTRICTED'
+WHERE Value = 'LIMITED'
+AND RolePropertyID IN (-90049, -21406, -21405);
+
+UPDATE YukonGroupRole
+SET Value = 'UPDATE'
+WHERE Value = 'CREATE'
+AND RolePropertyID = -21405;
+
+INSERT INTO DBUpdates VALUES ('YUK-20568-1', '7.4.0', SYSDATE);
+/* @end YUK-20568-1 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
