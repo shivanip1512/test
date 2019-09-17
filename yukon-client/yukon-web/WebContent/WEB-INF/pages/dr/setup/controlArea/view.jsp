@@ -169,7 +169,8 @@
                         data-event="yukon:dr:setup:controlArea:saveTrigger"
                         data-width="600" data-height="auto"
                         data-title="<cti:msg2 key="yukon.web.modules.dr.setup.controlArea.trigger.title"/>"
-                        class="dn js-trigger-dialog-template">
+                        class="dn js-trigger-dialog-template"
+                        data-ok-text="<cti:msg2 key="yukon.common.save"/>">
                     </div>
                 </tags:sectionContainer2>
                 <tags:sectionContainer2 nameKey="controlWindow">
