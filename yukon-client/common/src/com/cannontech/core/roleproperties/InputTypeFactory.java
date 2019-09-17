@@ -2,7 +2,9 @@ package com.cannontech.core.roleproperties;
 
 import java.beans.PropertyEditor;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -84,8 +86,13 @@ public class InputTypeFactory {
         BaseEnumType<T> type = new BaseEnumType<T>() {
             private ImmutableList<InputOptionProvider> optionList;
             {
+                List<HierarchyPermissionLevel> selectedLevels = Arrays.asList(levels).stream()
+                        .distinct()
+                        .collect(Collectors.toList());
+                selectedLevels.sort(Comparator.comparing(HierarchyPermissionLevel::getLevel));
+                
                 Builder<InputOptionProvider> builder = ImmutableList.builder();
-                for (HierarchyPermissionLevel entry :  Arrays.asList(levels)) {
+                for (HierarchyPermissionLevel entry :  selectedLevels) {
                     InputOption inputOption = new InputOption(entry);
                     builder.add(inputOption);
                 }

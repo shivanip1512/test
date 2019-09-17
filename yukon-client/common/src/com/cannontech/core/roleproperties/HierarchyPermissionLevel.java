@@ -9,8 +9,8 @@ public enum HierarchyPermissionLevel {
     RESTRICTED(5), // view
     NO_ACCESS(6);   // no view
     
-    int level;
-    HierarchyPermissionLevel(int level) {
+    private int level;
+    private HierarchyPermissionLevel(int level) {
         this.level = level;
     }
     
@@ -24,5 +24,9 @@ public enum HierarchyPermissionLevel {
      */
     public boolean grantAccess(HierarchyPermissionLevel minLevel) {
         return this.level <= minLevel.level;
+    }
+    
+    public int getLevel() {
+        return level;
     }
 }
