@@ -12,16 +12,18 @@ yukon.dr.setup.programGear = (function() {
     'use strict';
 
     var _initialized = false, 
-    
-    _whenToChange = function() {
+
+    _whenToChange = function (event) {
         var whenToChangeElement = null,
             whenToChange = "";
         if ($(".js-when-to-change").is(":visible")) {
-           whenToChangeElement = $(".js-when-to-change:visible");
-           whenToChange = $(".js-when-to-change:visible option:selected").val();
+            whenToChangeElement = $(".js-when-to-change:visible");
+            whenToChange = $(".js-when-to-change:visible option:selected").val();
         } else {
-           whenToChangeElement = $("#whenToChange");
-           whenToChange = $("#whenToChange").val();
+            var dialog = $(event.target),
+                gearForm = dialog.find('#js-program-gear-form');
+            whenToChangeElement = gearForm.find('#whenToChange');
+            whenToChange = whenToChangeElement.val();
         }
         whenToChangeElement.closest(".name-value-table").find('#js-changePriority-row').toggleClass('dn', whenToChange != 'Priority');
         whenToChangeElement.closest(".name-value-table").find('#js-changeDurationInMinutes-row').toggleClass('dn', whenToChange != 'Duration');
@@ -29,15 +31,17 @@ yukon.dr.setup.programGear = (function() {
         whenToChangeElement.closest(".name-value-table").find('#js-triggerOffset-row').toggleClass('dn', whenToChange != 'TriggerOffset');
     },
 
-    _howToStopControl= function() {
+    _howToStopControl = function (event) {
         var value = "",
             element = null;
         if ($(".js-how-to-stop-control").is(":visible")) {
             element = $(".js-how-to-stop-control:visible");
             value = $(".js-how-to-stop-control:visible option:selected").val();
         } else {
-            element = $("#howToStopControl");
-            value = $("#howToStopControl").val();
+            var dialog = $(event.target),
+                gearForm = dialog.find('#js-program-gear-form');
+            element = gearForm.find('#howToStopControl');
+            value = element.val();
         }
         element.closest(".name-value-table").find('#js-stopOrder-row').toggleClass('dn', (value != 'RampOutTimeIn' && value != 'RampOutRestore'));
         element.closest(".name-value-table").find('#js-rampOutPercent-row').toggleClass('dn', (value != 'RampOutTimeIn' && value != 'RampOutRestore'));
@@ -66,12 +70,12 @@ yukon.dr.setup.programGear = (function() {
             if (_initialized)
                 return;
 
-            $(document).on('change', '.js-when-to-change', function(event) {
-                _whenToChange();
+            $(document).on('change', '.js-when-to-change', function (event) {
+                _whenToChange(event);
             });
 
             $(document).on('change', '.js-how-to-stop-control', function (event) {
-                _howToStopControl();
+                _howToStopControl(event);
             });
 
             $(document).on('change', '#refreshShedType', function (event) {
@@ -88,16 +92,16 @@ yukon.dr.setup.programGear = (function() {
                 $(".js-thermostat-ramping-alert-box").toggleClass("dn", selectedGearType !== 'ThermostatRamping');
             });
 
-            $(document).on("yukon:dr:setup:gear:viewMode", function (event){
-                _whenToChange();
-                _howToStopControl();
+            $(document).on("yukon:dr:setup:gear:viewMode", function (event) {
+                _whenToChange(event);
+                _howToStopControl(event);
                 _refreshShedType();
                 _initCss();
             });
             
             $(document).on("yukon:dr:setup:program:gearRendered", function (event) {
-                _whenToChange();
-                _howToStopControl();
+                _whenToChange(event);
+                _howToStopControl(event);
                 _refreshShedType();
                 _initCss();
             });
