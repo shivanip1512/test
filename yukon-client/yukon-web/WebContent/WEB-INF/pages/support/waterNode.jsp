@@ -81,7 +81,7 @@
                     <li><i:inline key="yukon.web.modules.support.waterNode.time"/></li>
                 </ul>
                 <div class="MT30">
-                    <tags:file classes="js-file" buttonKey="yukon.web.modules.support.waterNode.upload"/>
+                    <tags:file name="uploadedFile" classes="js-file" buttonKey="yukon.web.modules.support.waterNode.upload"/>
                 </div>
                 <div class="MT30">
                     <i:inline key=".intervalEnd"/>

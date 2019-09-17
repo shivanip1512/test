@@ -2,8 +2,7 @@ package com.cannontech.web.support;
 
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.lang3.StringUtils;
-import org.jfree.util.Log;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
@@ -30,13 +29,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.dr.meterDisconnect.MeterDisconnectMessageListener;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
 import com.cannontech.web.support.waterNode.model.BatteryAnalysisModel;
@@ -48,6 +50,7 @@ import com.cannontech.web.util.WebFileUtils;
 @RequestMapping("/waterNode/*")
 @CheckRole(YukonRole.METERING)
 public class WaterNodeAnalysisController {
+    private static final Logger log = YukonLogManager.getLogger(MeterDisconnectMessageListener.class);
         
         @Autowired private DateFormattingService dateFormattingService;
         @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -55,16 +58,15 @@ public class WaterNodeAnalysisController {
         
         @GetMapping("generateReport")
         public void downloadWaterNodeReport(@RequestParam("analysisEnd") String analysisEnd, ModelMap model, HttpServletResponse response, YukonUserContext userContext) throws IOException {
-            BatteryAnalysisModel batteryAnalysisModel = new BatteryAnalysisModel();
             DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
             DateTimeZone timeZone = userContext.getJodaTimeZone();
+            Instant timestampEnd = formatter.parseDateTime(analysisEnd).withTimeAtStartOfDay().withZone(timeZone).toInstant();
+            Instant intervalEnd = timestampEnd.plus(Duration.standardDays(1));
+            //interval lasts six days and starts at 00:00:01
+            Instant intervalStart = timestampEnd.minus(Duration.standardDays(6)).plus(Duration.standardSeconds(1));
             
-            Instant intervalEnd = formatter.parseDateTime(analysisEnd).withTimeAtStartOfDay().withZone(timeZone).toInstant();
-            Instant timestampEnd = intervalEnd;
-            intervalEnd = intervalEnd.plus(Duration.standardDays(1));
+            BatteryAnalysisModel batteryAnalysisModel = new BatteryAnalysisModel();
             batteryAnalysisModel.setAnalysisEnd(intervalEnd);
-            Instant intervalStart =  intervalEnd.minus(Duration.standardDays(6)).plus(Duration.standardSeconds(1));//interval lasts six days and starts at 00:00:01
-            
             List<WaterNodeDetails> analyzedNodes = waterNodeService.getAnalyzedNodes(intervalStart, intervalEnd);
             String[] headerRow = getReportHeaderRow(userContext);
             List<String[]> dataRows = getReportDataRows(analyzedNodes, userContext);
@@ -77,12 +79,11 @@ public class WaterNodeAnalysisController {
         @GetMapping("generateVoltageReport")
         public void downloadVoltageReport(@RequestParam("lastCreatedReport") String lastReport, ModelMap model, HttpServletResponse response, YukonUserContext userContext) throws IOException {
             DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
-            DateTimeZone timeZone = userContext.getJodaTimeZone();
-            
-            Instant intervalEnd = formatter.parseDateTime(lastReport).withTimeAtStartOfDay().withZone(timeZone).toInstant();
-            Instant timestampEnd = intervalEnd;
-            intervalEnd = intervalEnd.plus(Duration.standardDays(1));
-            Instant intervalStart =  intervalEnd.minus(Duration.standardDays(6)).plus(Duration.standardSeconds(1));//interval lasts six days and starts at 00:00:01
+            DateTimeZone timeZone = userContext.getJodaTimeZone();           
+            Instant timestampEnd = formatter.parseDateTime(lastReport).withTimeAtStartOfDay().withZone(timeZone).toInstant();
+            Instant intervalEnd = timestampEnd.plus(Duration.standardDays(1));
+            //interval lasts six days and starts at 00:00:01
+            Instant intervalStart =  timestampEnd.minus(Duration.standardDays(6)).plus(Duration.standardSeconds(1));
             
             List<WaterNodeDetails> voltageDetails =  waterNodeService.getVoltageDetails(intervalStart, intervalEnd);
             String[] headerRow = getVoltageHeaderRow(userContext);
@@ -92,42 +93,38 @@ public class WaterNodeAnalysisController {
         }
         
         @RequestMapping(value = "generateCSVReport", method = RequestMethod.POST)
-        public String fileUploadAndAnalyze(@RequestParam("csvEndDate") String csvEndDate, ModelMap model, HttpServletResponse response, HttpServletRequest request, YukonUserContext userContext) throws IOException {
+        public String fileUploadAndAnalyze(@RequestParam("csvEndDate") String csvEndDate, ModelMap model, HttpServletResponse response, 
+                                         HttpServletRequest request, YukonUserContext userContext, FlashScope flash) throws IOException {
             DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
             DateTimeZone timeZone = userContext.getJodaTimeZone();
-            Instant intervalEnd = formatter.parseDateTime(csvEndDate).withTimeAtStartOfDay().withZone(timeZone).toInstant();
-            Instant timestampEnd = intervalEnd;
+            Instant timestampEnd = formatter.parseDateTime(csvEndDate).withTimeAtStartOfDay().withZone(timeZone).toInstant();
+            Instant intervalEnd = timestampEnd.plus(Duration.standardDays(1));
+            //interval lasts six days and starts at 00:00:01
+            Instant intervalStart =  timestampEnd.minus(Duration.standardDays(6)).plus(Duration.standardSeconds(1));
             
-            intervalEnd = intervalEnd.plus(Duration.standardDays(1));
-            Instant intervalStart =  intervalEnd.minus(Duration.standardDays(6)).plus(Duration.standardSeconds(1));//interval lasts six days and starts at 00:00:01
-            
-            MultipartFile dataFile = null;
-            boolean isMultipart = ServletFileUpload.isMultipartContent(request);
-
-            File temp = File.createTempFile("tempDataFile", ".csv");
-            OutputStream os = Files.newOutputStream(temp.toPath());
-            
-            if(isMultipart) {
+            if(ServletFileUpload.isMultipartContent(request)) {
                 MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
-                dataFile = mRequest.getFile("dataFile");
-                
-                try {
-                    os.write(dataFile.getBytes());
-                    os.close();
-                    List<WaterNodeDetails> analyzedNodes = waterNodeService.getCsvAnalyzedNodes(intervalStart, intervalEnd, temp);
-                    String[] headerRow = getReportHeaderRow(userContext);
-                    List<String[]> dataRows = getReportDataRows(analyzedNodes, userContext);
-                    writeToCSV(headerRow, dataRows, response, userContext, timestampEnd, "BatteryAnalysisFromCSV");
-                } catch(Exception e) {
-                    Log.error("Unable to read csv file");
+                // Create MultiPartFile from the uploadedFile
+                MultipartFile uploadedFile = mRequest.getFile("uploadedFile");
+                if(!uploadedFile.isEmpty()) {
+                    // Create temp local file for storing the data to be processed
+                    File temp = File.createTempFile("tempDataFile", ".csv");
+                    try (OutputStream os = Files.newOutputStream(temp.toPath())) {
+                        os.write(uploadedFile.getBytes());
+                        List<WaterNodeDetails> analyzedNodes = waterNodeService.getCsvAnalyzedNodes(intervalStart, intervalEnd, temp);
+                        String[] headerRow = getReportHeaderRow(userContext);
+                        List<String[]> dataRows = getReportDataRows(analyzedNodes, userContext);
+                        writeToCSV(headerRow, dataRows, response, userContext, timestampEnd, "BatteryAnalysisFromCSV");
+                    } catch(Exception e) {
+                        flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.support.waterNode.unableToReadCsvFile"));
+                        log.warn("Unable to read csv file ", e);
+                    }
                 }
-                
+                else {
+                    flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.support.waterNode.noFileUploaded"));
+                    return "redirect:view";
+                }
             }
-            else {
-                temp.delete();
-                return "redirect:view";
-            }
-            temp.delete();
             return "redirect:view";
         }
         
