@@ -288,6 +288,8 @@
     <entry key="yukon.web.modules.support.waterNode.deviceCategory">Device Category</entry>
     <entry key="yukon.web.modules.support.waterNode.currentIndicator">High Sleeping Current Indicator</entry>
     <entry key="yukon.web.modules.support.waterNode.recentReading">Most Recent Reading</entry>
+    <entry key="yukon.web.modules.support.waterNode.noFileUploaded">No file was selected or the file is empty, please try a different file.</entry>
+    <entry key="yukon.web.modules.support.waterNode.unableToReadCsvFile">The CSV file was unable to be read, please check the data and try again.</entry>
     
     <entry key="yukon.web.modules.support.waterNode.date">Date</entry>
     <entry key="yukon.web.modules.support.waterNode.time">Time</entry>

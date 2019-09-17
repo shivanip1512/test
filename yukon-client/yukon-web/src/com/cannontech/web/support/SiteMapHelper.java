@@ -46,7 +46,7 @@ public class SiteMapHelper {
 
         List<SiteMapPage> excludePages = Lists.newArrayList();
         // Check if there are any devices that support battery analysis ( currently only supports water nodes )
-        if(!serverDatabaseCache.getAllPaoTypes().stream().anyMatch(PaoType::supportsBatteryAnalysis)) {
+        if(serverDatabaseCache.getAllPaoTypes().stream().noneMatch(PaoType::supportsBatteryAnalysis)) {
             excludePages.add(SiteMapPage.WATER_NODE_BATTERY_ANALYSIS);
         }
         
