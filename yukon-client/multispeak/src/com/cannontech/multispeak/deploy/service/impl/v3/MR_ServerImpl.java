@@ -663,7 +663,7 @@ public class MR_ServerImpl implements MR_Server{
                                                              "InitiateConnectDisconnect", vendor.getCompanyName());
 
         MRServerDemandResetCallback callback =
-                new MRServerDemandResetCallback(mspObjectDao, multispeakEventLogService, vendor, meterNumbersByPaoId, responseURL, transactionId);
+                new MRServerDemandResetCallback(mspObjectDao, multispeakEventLogService, vendor, meterNumbersByPaoId, actualResponseUrl, transactionId);
         
         demandResetService.sendDemandResetAndVerify(validMeters, callback, UserUtils.getYukonUser());
         errors.addAll(callback.getErrors());
