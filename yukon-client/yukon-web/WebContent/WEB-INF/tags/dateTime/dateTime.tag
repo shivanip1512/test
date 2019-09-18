@@ -99,9 +99,7 @@
                 </span>
             </cti:displayForPageEditModes>
             <c:if test="${status.error}">
-                <br>
-                <%-- TODO: <br> doesn't work here. Since this date/time element will be taller than
-                     than line height, a <br> will only bump you down line height. Need figure out best way to fix. --%>
+                <br/><br/>
                 <form:errors path="${pageScope.path}" cssClass="${cssErrorClass} error" />
             </c:if>
         </spring:bind>

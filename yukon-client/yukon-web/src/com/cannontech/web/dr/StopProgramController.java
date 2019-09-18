@@ -64,9 +64,11 @@ public class StopProgramController extends ProgramControllerBase {
                 Errors errors) {
             if (!stopProgram.isStopNow()) {
                 ValidationUtils.rejectIfEmpty(errors, "stopDate", "required");
-                Date now = new Date();
-                if (now.after(stopProgram.getStopDate())) {
-                    errors.reject("stopTimeBeforeNow");
+                if (!errors.hasFieldErrors("stopDate")) {
+                    Date now = new Date();
+                    if (now.after(stopProgram.getStopDate())) {
+                        errors.reject("stopTimeBeforeNow");
+                    }
                 }
             }
         }

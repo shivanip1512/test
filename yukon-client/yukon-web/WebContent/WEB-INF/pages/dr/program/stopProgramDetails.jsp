@@ -8,7 +8,7 @@
 <cti:msgScope paths="modules.dr.program.stopProgram">
 
 <script type="text/javascript">
-submitForm = function() {
+ submitForm = function() {
     var url = '<cti:url value="/dr/program/stop/stop"/>';
     <c:if test="${stopGearAllowed}">
         if (!document.getElementById('stopNowCheckbox').checked && document.getElementById('useStopGearCheckbox').checked) {
@@ -19,10 +19,6 @@ submitForm = function() {
 }
 
 updateComponentAvailability = function() {
-    // reset date value to now if checkbox checked, since it may have been changed
-    if (true === $('#stopNowCheckbox').prop('checked')) {
-        $('#stopDate').val(yukon.ui.initialNowVal);
-    }
     $('#stopDate').prop('disabled', $('#stopNowCheckbox').prop('checked'));
     <c:if test="${stopGearAllowed}">
     document.getElementById('useStopGearCheckbox').disabled = document.getElementById('stopNowCheckbox').checked;
@@ -41,8 +37,6 @@ updateComponentAvailability = function() {
 $( function () {
     // init dateTime fields dynamically brought onto page after initial page load
     yukon.ui.initDateTimePickers();
-    // save off initial value of date in case we must reinstate later
-    yukon.ui.initialNowVal = $('#stopDate').val();
 });
 </script>
 
