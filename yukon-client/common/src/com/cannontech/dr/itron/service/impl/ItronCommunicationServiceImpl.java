@@ -483,15 +483,15 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 throw exception;
             }
             
-            log.debug("ITRON-getReport url:{} commandId:{} files:{} result:{}.", url, commandId,
-                response.getReportFileNames(), "success");
+            List<String> fileNames = response.getReportFileNames();
+            log.debug("ITRON-getReport url:{} commandId:{} files:{} result:{}.", url, commandId, fileNames, "success");
             
-            if(response.getReportFileNames().isEmpty()) {
-                // no files to parse, we got all the data
+            if(fileNames.isEmpty()) {
+                log.debug("No report file to parse.");
                 return null;    
             }
             
-            return downloadAndZipReportFiles(response.getReportFileNames(), commandId, type);
+            return downloadAndZipReportFiles(fileNames, commandId, type);
 
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.REPORT);
