@@ -93,7 +93,6 @@ public class MACSScheduleController {
     }
    
     @RequestMapping(value="innerView", method = RequestMethod.GET)
-    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.RESTRICTED)
     public String innerView(ModelMap model, LiteYukonUser user, @DefaultSort(dir=Direction.asc, sort="scheduleName") SortingParameters sorting, 
             PagingParameters paging, @ModelAttribute("filter") MacsScriptFilter filter, YukonUserContext userContext) {
  

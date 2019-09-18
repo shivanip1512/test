@@ -269,7 +269,6 @@ public class StandardMenuRenderer {
     private enum Permission {
         role,
         roleProperty,
-        level,
         ecOperator,
         license,
         masterConfig,
