@@ -82,10 +82,6 @@ yukon.dr.setup.programGear = (function() {
                 _refreshShedType();
             });
 
-            $(document).on('click', '#rampIn', function (event) {
-                _handleRampInField();
-            });
-
             $(document).on('click', '.js-help-btn', function () {
                 var selectedGearType = $("#controlMethod option:selected").val();
                 $(".js-simple-thermostat-ramping-alert-box").toggleClass("dn", selectedGearType !== 'SimpleThermostatRamping');

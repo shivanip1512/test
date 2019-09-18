@@ -75,13 +75,13 @@
                 </c:set>
                 
                 <c:set var="rampInFieldEnabled"
-                       value="${(programGear.fields.rampInPercent > 0 || programGear.fields.rampInIntervalInSeconds > 0) ||
+                       value="${(programGear.fields.rampInPercent > 0 && programGear.fields.rampInIntervalInSeconds != 0) ||
                                 (not empty rampInFieldErrors)}" />
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".rampIn">
                         <tags:switchButton id="js-TimeRefresh-rampInSwitch" name="rampIn" toggleGroup="rampInWindow"
                                            toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label"
-                                           checked="${rampInFieldEnabled}" />
+                                           checked="${rampInFieldEnabled}" classes="js-rampIn-switch"/>
                     </tags:nameValue2>
                     <c:set var="rampInFieldClass" value="${rampInFieldEnabled ? '' : 'dn'}" />
                     <tags:nameValue2 nameKey=".rampInPercent" data-toggle-group="rampInWindow" rowClass="${rampInFieldClass}">

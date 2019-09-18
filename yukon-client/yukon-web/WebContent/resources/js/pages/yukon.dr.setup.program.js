@@ -87,11 +87,18 @@ yukon.dr.setup.program = (function() {
         $('#js-program-' + action + '-span').toggleClass('dn', !checked);
     },
 
-    _handleRampInFields = function(gearType) {
-    	var isRampInSelected= $("#js-"+ gearType +"-rampInSwitch").prop('checked');
-        if (!isRampInSelected) {
-            $("#js-" + gearType +"-rampInPercent").val("");
-            $("#js-"+ gearType +"-rampInInterval").val("");
+    _handleRampInFields = function() {
+        var controlMethod = $("#controlMethod"),
+            gearType = controlMethod.find("option:selected").val();
+        if(!gearType) {
+            gearType = controlMethod.val();
+        }
+        var isRampInSelected = $("#js-" + gearType + "-rampInSwitch").prop('checked');
+        if (isRampInSelected) {
+            $("#js-" + gearType + "-rampInPercent").val("1");
+        } else {
+            $("#js-" + gearType + "-rampInPercent").val("");
+            $("#js-" + gearType + "-rampInInterval").val("");
         }
     },
 
@@ -367,13 +374,6 @@ yukon.dr.setup.program = (function() {
                 controlMethodElement.toggleClass("error", isControlMethodBlank);
                 dialog.find("#gearTypeIsRequiredError").toggleClass("dn", !isControlMethodBlank);
                 
-                var selectedGearType = controlMethodElement.find("option:selected").val();
-                if(!selectedGearType) {
-                    selectedGearType = controlMethodElement.val();
-                }
-                if(selectedGearType === 'TimeRefresh' || selectedGearType === 'MasterCycle'){
-                    _handleRampInFields(selectedGearType); 
-                }
                 /*
                  * Find all fields in the form that use <dt:timeOffset/>. If any of these fields have invalid numeric value,
                  * set the field value to 0 for such fields. This is required since non-numeric value cannot be bind to an Integer
@@ -473,6 +473,10 @@ yukon.dr.setup.program = (function() {
             $(document).on("yukon:dr:setup:program:gearRemoved", function (event) {
                 $(event.target).closest("div.js-assigned-gear").remove();
                 $('#js-assigned-gear').closest('.select-box').find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+            });
+
+            $(document).on('change', '.js-rampIn-switch', function () {
+                _handleRampInFields();
             });
 
             _initialized = true;
