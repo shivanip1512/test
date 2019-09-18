@@ -7,7 +7,7 @@
 
 ==== Macro LaodGroup Retrieve
 
-*Retrieve Request JSON* :
+*Retrieve Response JSON* :
 
 include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Get/http-request.adoc[]
 
