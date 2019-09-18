@@ -446,9 +446,6 @@ public class LoadProgramSetupControllerHelper {
             masterCycleGearFields.setWhenToChangeFields(
                 setWhenToChangeDefaultValues(masterCycleGearFields.getWhenToChangeFields()));
             
-            if (masterCycleGearFields.getRampInPercent() == null) {
-                masterCycleGearFields.setRampInPercent(0);
-            }
             if (masterCycleGearFields.getRampOutPercent() == null) {
                 masterCycleGearFields.setRampOutPercent(0);
             }
@@ -458,9 +455,6 @@ public class LoadProgramSetupControllerHelper {
             timeRefreshGearFields.setWhenToChangeFields(
                 setWhenToChangeDefaultValues(timeRefreshGearFields.getWhenToChangeFields()));
             
-            if (timeRefreshGearFields.getRampInPercent() == null) {
-                timeRefreshGearFields.setRampInPercent(0);
-            }
             if (timeRefreshGearFields.getRampOutPercent() == null) {
                 timeRefreshGearFields.setRampOutPercent(0);
             }

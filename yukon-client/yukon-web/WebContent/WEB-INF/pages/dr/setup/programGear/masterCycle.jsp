@@ -36,12 +36,18 @@
 
          <div class="column two nogutter"> 
              <tags:sectionContainer2 nameKey="rampIn">
+                 <!-- Check if any of the RampIn fields has errors -->
+                <c:set var="rampInFieldErrors">
+                    <form:errors path="fields.rampInPercent"/>
+                    <form:errors path="fields.rampInIntervalInSeconds"/>
+                </c:set>
                  <c:set var="rampInFieldEnabled"
-                    value="${programGear.fields.rampInPercent > 0 || programGear.fields.rampInIntervalInSeconds > 0}" />
+                       value="${(programGear.fields.rampInPercent > 0 && programGear.fields.rampInIntervalInSeconds != 0) ||
+                                (not empty rampInFieldErrors)}"/>
                  <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".rampIn">
                         <tags:switchButton id="js-MasterCycle-rampInSwitch" name="rampIn" toggleGroup="rampInWindow" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label"
-                            checked="${rampInFieldEnabled}" />
+                            checked="${rampInFieldEnabled}" classes="js-rampIn-switch"/>
                      </tags:nameValue2>
                      <c:set var="rampInFieldClass" value="${rampInFieldEnabled ? '' : 'dn'}" />
                      <tags:nameValue2 nameKey=".rampInPercent" data-toggle-group="rampInWindow" rowClass="${rampInFieldClass}">
