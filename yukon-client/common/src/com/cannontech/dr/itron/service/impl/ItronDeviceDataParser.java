@@ -2,6 +2,7 @@ package com.cannontech.dr.itron.service.impl;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
@@ -49,9 +50,9 @@ public class ItronDeviceDataParser {
     private static final Logger log = YukonLogManager.getLogger(ItronDeviceDataParser.class);
 
     public Multimap<PaoIdentifier, PointValueHolder> parseAndSend(ZipFile zip) throws EmptyImportFileException {
+        log.debug("Parsing Itron data file.");
         if(zip == null) {
-            log.error("Unable to parse Itron file, no file found");
-            //nothing to parse
+            log.error("Unable to parse data, Itron file is null.");
             return null;
         }
         boolean hasData = false;
@@ -63,6 +64,8 @@ public class ItronDeviceDataParser {
                 InputStream stream = zip.getInputStream(file);
                 try {
                     Multimap<PaoIdentifier, PointData> pointValues = parseData(stream);
+                    log.debug("Parsed " + pointValues.values().size() + " point values for " + 
+                              pointValues.keySet().size() + " devices.");
                     dataSource.putValues(pointValues.values());
                     allPointValues.putAll(pointValues);
                     hasData = true;
@@ -116,6 +119,10 @@ public class ItronDeviceDataParser {
      * @param pointValues - return pointValues using this object
      */
     public Multimap<PaoIdentifier, PointData> generatePointData(String[] rowData) {
+        if (log.isTraceEnabled()) {
+            log.trace("Parsing row data: [" + String.join(",", Arrays.asList(rowData)) + "]");
+        }
+        
         Multimap<PaoIdentifier, PointData> pointValues = HashMultimap.create();
         ItronDataCategory category = ItronDataCategory.valueOf(rowData[1]);
         String eventTime = rowData[3];//ISO 8601 YYYY-MM-DD

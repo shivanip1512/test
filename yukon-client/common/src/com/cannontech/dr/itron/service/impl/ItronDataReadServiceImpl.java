@@ -49,12 +49,13 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
                 Range<Long> range = getRecordRange();
                 ZipFile zip = communicationService.exportDeviceLogs(range.getMin(), range.getMax());
                 if (zip == null) {
+                    log.debug("Data zip file is null. File parsing will be skipped.");
                     break;
                 }
                 try {
                     itronDeviceDataParser.parseAndSend(zip);
                 } catch (EmptyImportFileException e) {
-                    log.info(e);
+                    log.debug(e);
                     break;
                 }
             }
@@ -100,6 +101,6 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
     private Range<Long> getRecordRange() {
         long startRecordId = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.ITRON_DATA_LAST_RECORD_ID) + 1;
         long endRecordId = startRecordId + recordsPerRead;
-        return new Range<Long>(startRecordId, true, endRecordId, true);
+        return new Range<>(startRecordId, true, endRecordId, true);
     }
 }
