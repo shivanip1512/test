@@ -60,7 +60,7 @@
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".name">
-                    <tags:input path="name" size="25" maxlength="60" autofocus="autofocus"/>
+                    <tags:input path="name" maxlength="60" autofocus="autofocus" inputClass="w300"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
@@ -83,7 +83,7 @@
                     <div class="column two nogutter bordered-div">
                         <h3><i:inline key="yukon.common.assigned"/></h3>
                         <div style="height:515px;" class="oa">
-                            <div id="js-assigned-load-groups" class="select-box-selected js-with-movables" style="min-height:150px;" data-item-selector=".select-box-item">
+                            <div id="js-assigned-load-groups" class="select-box-selected js-with-movables wrbw" style="min-height:150px;" data-item-selector=".select-box-item">
                                 <c:forEach var="item" items="${macroLoadGroup.assignedLoadGroups}" varStatus="status">
                                     <div class="select-box-item cm js-assigned-load-group" data-id="${item.id}">
                                         <cti:deviceName deviceId="${item.id}"/>

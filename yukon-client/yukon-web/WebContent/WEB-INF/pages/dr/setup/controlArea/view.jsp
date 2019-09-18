@@ -51,7 +51,7 @@
                 <tags:sectionContainer2 nameKey="general">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".name">
-                            <tags:input id="name" path="name" size="25" maxlength="60"/>
+                            <tags:input id="name" path="name" maxlength="60" inputClass="w300 wrbw dib"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".controlInterval">
                             <tags:intervalDropdown path="controlInterval" intervals="${controlIntervals}" noneKey=".newDataOnly"/>
@@ -215,11 +215,9 @@
             
                     <div class="column-12-12 clearfix select-box bordered-div">
                         <!-- Available Programs -->
-                        <div class="column one">
-                            <h3><i:inline key="yukon.common.available"/></h3>
-                            <div class="column one bordered-div">
-                            
-                                <div id="js-inline-picker-container" style="height:470px;" class="oa">
+                            <div class="column one">
+                                <h3><i:inline key="yukon.common.available"/></h3>
+                                <div id="js-inline-picker-container" style="height:470px;" class="bordered-div oa">
                                     <tags:pickerDialog id="js-avaliable-programs-picker" type="unassignedProgramPicker" container="js-inline-picker-container"
                                                        multiSelectMode="${true}" disabledIds="${assignedProgramIds}" extraArgs="${controlArea.controlAreaId}"/>
                                 </div>
@@ -227,8 +225,7 @@
                                     <cti:button nameKey="add" classes="fr js-add-program" icon="icon-add"/>
                                 </div>
                             </div>
-                        </div>
-                    
+
                         <!-- Assigned Programs -->
                         <div class="column two nogutter" style="height:560px;">
                             <h3 class="dib"><i:inline key="yukon.common.assigned"/></h3>

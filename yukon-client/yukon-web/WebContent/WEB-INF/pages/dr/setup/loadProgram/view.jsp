@@ -57,7 +57,7 @@
                         data-dialog data-ok-text="${copyText}" 
                         data-event="yukon:loadProgram:copy"
                         data-url="${renderCopyloadProgramUrl}"
-                        data-width="400"
+                        data-width="500"
                         data-height="auto">
         </div>
     </cti:displayForPageEditModes>
@@ -77,7 +77,7 @@
                 <tags:sectionContainer2 nameKey="general">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".name">
-                            <tags:input id="name" path="name" size="25" maxlength="60" inputClass="wbba"/>
+                            <tags:input id="name" path="name" maxlength="60" inputClass="w300 wrbw dib"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".type">
                             <cti:displayForPageEditModes modes="CREATE">
@@ -100,10 +100,11 @@
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".constraint" rowClass="noswitchtype">
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                    <tags:selectWithItems items="${constraints}" id="constraint" path="constraint.constraintId" itemLabel="name" itemValue="id"/>
+                                    <tags:selectWithItems items="${constraints}" id="constraint" path="constraint.constraintId" itemLabel="name" 
+                                                          itemValue="id" inputClass="w300"/>
                                 </cti:displayForPageEditModes>
                                 <cti:displayForPageEditModes modes="VIEW">
-                                    ${fn:escapeXml(loadProgram.constraint.constraintName)}
+                                    <div class="w300 wrbw dib">${fn:escapeXml(loadProgram.constraint.constraintName)}</div>
                                 </cti:displayForPageEditModes>
                             </tags:nameValue2>
                         </c:if>
@@ -130,7 +131,7 @@
                             <div style="min-height:60px;max-height:120px;" class="bordered-div select-box">
                                 <div id="js-assigned-gear" class="select-box-selected js-with-movables" data-item-selector=".select-box-item">
                                     <c:forEach var="item" items="${gearInfos}" varStatus="status">
-                                        <div id="${item.id}" class="select-box-item cm js-assigned-gear" data-id="${item.id}">
+                                        <div id="${item.id}" class="select-box-item cm js-assigned-gear wrbw" data-id="${item.id}">
                                             <cti:url var="viewUrl" value="/dr/setup/loadProgram/gear/${item.id}?mode=${mode}"/> 
                                             <a href="javascript:void(0)" data-popup="#gear-quick-view-${item.id}">
                                                 ${fn:escapeXml(item.name)}
@@ -149,7 +150,7 @@
                                         </div>
                                     </c:forEach>
                                 </div>
-                                <div class="select-box-item cm js-assigned-gear js-template-gears-row dn" data-id="0">
+                                <div class="select-box-item cm js-assigned-gear js-template-gears-row dn wrbw" data-id="0">
                                     <span class="js-gear-name"></span>
                                     <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-gear-remove"
                                                 data-ok-event="yukon:dr:setup:program:gearRemoved"/>
@@ -272,7 +273,7 @@
                                 <div style="height: 346px;" class="oa">
                                     <div id="js-assigned-groups" class="select-box-selected js-with-movables" style="min-height: 150px;" data-item-selector=".select-box-item">
                                         <c:forEach var="item" items="${loadProgram.assignedGroups}" varStatus="status">
-                                            <div class="select-box-item cm js-assigned-groups" data-id="${item.groupId}">
+                                            <div class="select-box-item cm js-assigned-groups wrbw" data-id="${item.groupId}">
                                                 <cti:deviceName deviceId="${item.groupId}" />
 
                                                 <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-group-remove" />
@@ -287,7 +288,7 @@
                                             </div>
                                         </c:forEach>
                                     </div>
-                                    <div class="select-box-item cm js-assigned-groups js-template-group-row dn" data-id="0">
+                                    <div class="select-box-item cm js-assigned-groups js-template-group-row dn wrbw" data-id="0">
                                         <span class="js-group-name"></span>
                                         <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-group-remove" />
                                         <div class="select-box-item-movers">
@@ -362,7 +363,7 @@
                                             <div id="js-assigned-members" class="select-box-selected js-with-movables" style="min-height: 150px;"
                                                 data-item-selector=".select-box-item">
                                                 <c:forEach var="item" items="${loadProgram.memberControl}" varStatus="status">
-                                                    <div class="select-box-item cm js-assigned-members" data-id="${item.subordinateProgId}">
+                                                    <div class="select-box-item cm js-assigned-members wrbw" data-id="${item.subordinateProgId}">
                                                         <cti:deviceName deviceId="${item.subordinateProgId}" />
                                                         <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-member-remove" />
                                                         <div class="select-box-item-movers">
@@ -376,7 +377,7 @@
                                                     </div>
                                                 </c:forEach>
                                             </div>
-                                            <div class="select-box-item cm js-assigned-members js-template-member-row dn" data-id="0">
+                                            <div class="select-box-item cm js-assigned-members js-template-member-row dn wrbw" data-id="0">
                                                 <span class="js-member-name"></span>
                                                 <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-member-remove" />
                                                 <div class="select-box-item-movers">

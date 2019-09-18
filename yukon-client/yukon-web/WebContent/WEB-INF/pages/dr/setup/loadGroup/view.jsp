@@ -60,7 +60,7 @@
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".name">
-                    <tags:input id="name" path="name" size="25" maxlength="60" autofocus="autofocus"/>
+                    <tags:input id="name" path="name" maxlength="60" autofocus="autofocus" inputClass="w300"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".type">
                     <cti:displayForPageEditModes modes="CREATE">

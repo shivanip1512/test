@@ -49,7 +49,7 @@
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".name">
-                    <tags:input path="name" size="25" maxlength="60" autofocus="autofocus"/>
+                    <tags:input path="name" maxlength="60" autofocus="autofocus" inputClass="w300"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
@@ -82,10 +82,10 @@
                 <table id="js-assigned-programs-table" class="compact-results-table dashed">
                     <thead>
                         <tr>
-                            <th><i:inline key=".name"/></th>
-                            <th><i:inline key=".startOffset"/></th>
-                            <th><i:inline key=".stopOffset"/></th>
-                            <th><i:inline key=".startGear"/></th>
+                            <th width="45%"><i:inline key=".name"/></th>
+                            <th width="15%"><i:inline key=".startOffset"/></th>
+                            <th width="15%"><i:inline key=".stopOffset"/></th>
+                            <th width="25%"><i:inline key=".startGear"/></th>
                         </tr>
                     </thead>
                     <tbody>
