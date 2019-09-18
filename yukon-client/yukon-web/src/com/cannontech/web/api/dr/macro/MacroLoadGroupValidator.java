@@ -47,8 +47,8 @@ public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
         if (CollectionUtils.isNotEmpty(loadGroup.getAssignedLoadGroups())) {
             Set<Integer> duplicateLoadGroupsIds = getDuplicateLoadGroupsIds(loadGroup.getAssignedLoadGroups());
             if (CollectionUtils.isNotEmpty(duplicateLoadGroupsIds)) {
-                errors.rejectValue("assignedLoadGroups", key + "assignedLoadGroup.duplicate.notAllowed",
-                        new Object[] { duplicateLoadGroupsIds }, "");
+                errors.reject(key + "assignedLoadGroup.duplicate.notAllowed", new Object[] { duplicateLoadGroupsIds },
+                    "");
             }
         }
     }
