@@ -27,7 +27,7 @@
                         <c:if test="${fn:contains(selectedPrograms, program.name)}">
                             <c:set var="selectedText" value="selected='selected'"/>
                         </c:if>
-                        <option value="${program}" data-guid="${program.guid}" data-source="${program.source}" ${selectedText}>${program.name}</option>
+                        <option value="${program}" data-guid="${program.guid}" data-source="${program.source}" ${selectedText}>${fn:escapeXml(program.name)}</option>
                     </c:forEach>
                 </select>
                 
