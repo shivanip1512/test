@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -71,8 +72,9 @@
                         <td>
                             <c:if test="${program.displayDelete()}">
                                 <cm:dropdown icon="icon-cog">
-                                    <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-delete-program" 
-                                        data-program-guid="${program.programInfo.guid}"/>
+                                    <cm:dropdownOption id="deleteProgram-${program.programInfo.guid}" icon="icon-cross" key="yukon.web.components.button.delete.label"
+                                        data-program-guid="${program.programInfo.guid}" data-ok-event="yukon:program:delete"/>
+                                    <d:confirm on="#deleteProgram-${program.programInfo.guid}" nameKey="confirmDelete" argument="${program.programInfo.name}"/>
                                 </cm:dropdown>
                             </c:if>
                         </td>
