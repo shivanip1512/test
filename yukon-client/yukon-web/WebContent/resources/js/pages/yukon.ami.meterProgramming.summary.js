@@ -20,14 +20,15 @@ yukon.ami.meterProgramming.summary = (function () {
                 
                 $('.js-selected-programs').chosen({width: "300px"});
                 
-                $(document).on('click', '.js-delete-program', function() {
-                    var guid = $(this).data('programGuid');
+                $(document).on("yukon:program:delete", function(event) {
+                    var dropdownOption = $(event.target),
+                        guid = dropdownOption.data('programGuid');
                     $.ajax({
                         url: yukon.url('/amr/meterProgramming/' + guid + '/delete'),
                         type: 'delete'
                     }).done(function () {
                         window.location.reload();
-                    });    
+                    });
                 });
                 
                 $(document).on('click', '.js-filter-programs', function() {
