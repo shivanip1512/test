@@ -1,0 +1,28 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Macro LoadGroup Create
+
+*Request Properties* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Create/request-fields.adoc[]
+
+
+*Create Request JSON* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Create/http-request.adoc[]
+
+
+*Response Properties* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Create/response-fields.adoc[]
+
+
+*Create Response JSON* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Create/http-response.adoc[]
+

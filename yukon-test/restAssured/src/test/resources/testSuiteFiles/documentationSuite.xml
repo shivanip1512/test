@@ -4,7 +4,8 @@
 <suite name="Demand Response Setup Documentation Suite">
     <test name="DR Setup Documentation Test">
         <classes>       
-            <class name = "com.cannontech.rest.api.documentation.LoadGroupSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.LoadGroupSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.macroloadgroup.MacroLoadGroupSetupApiControllerTest" />
         </classes>
     </test>
 </suite>

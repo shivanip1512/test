@@ -1,0 +1,20 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Macro LaodGroup Retrieve
+
+*Retrieve Request JSON* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Get/http-request.adoc[]
+
+*Response Parameter's* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Get/response-fields.adoc[]
+
+*Retrieve Response JSON* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Get/http-response.adoc[]

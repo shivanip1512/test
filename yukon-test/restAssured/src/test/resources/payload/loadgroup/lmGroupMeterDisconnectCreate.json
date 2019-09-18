@@ -1,6 +1,6 @@
 {
    "LM_GROUP_METER_DISCONNECT": {
-		 "name": "Test Meter Disconnet123",
+         "name": "TestLMObject23",
          "type": "LM_GROUP_METER_DISCONNECT",
          "kWCapacity": 163,
          "disableGroup": false,

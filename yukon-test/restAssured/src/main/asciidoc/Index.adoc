@@ -4,8 +4,66 @@
 :source-highlighter: highlightjs
 :toc: left
 :toclevels: 4
+:sectnums:
 :sectlinks:
 
+== Load Group
+=== Create
 include::MeterDisconnectCreate.adoc[]
+
+=== Retrieve
 include::MeterDisconnectGet.adoc[]
+
+=== Update
+
+=== Copy
+
+=== Delete
+include::MeterDisconnectDelete.adoc[]
+
+== Macro LoadGroup
+=== Create
+include::MacroLoadGroupCreate.adoc[]
+
+=== Retrieve
+include::MacroLoadGroupGet.adoc[]
+
+=== Update
+include::MacroLoadGroupUpdate.adoc[]
+
+=== Copy
+include::MacroLoadGroupCopy.adoc[]
+
+=== Delete
+include::MacroLoadGroupDelete.adoc[]
+
+== Load Program
+=== Create
+=== Retrieve
+=== Update
+=== Copy
+=== Delete
+
+== Control Area
+=== Create
+=== Retrieve
+=== Update
+=== Delete
+=== GetNormalState
+
+== Control Scenario
+=== Create
+=== Retrieve
+=== Update
+=== Copy
+=== Delete
+=== GetAllPrograms
+
+== ProgramConstraint
+=== Create
+=== Retrieve
+=== Update
+=== Delete
+=== GetSeasonsSchedules
+=== GetHolidaySchedules
 

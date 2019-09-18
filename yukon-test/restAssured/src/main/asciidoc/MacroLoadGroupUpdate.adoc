@@ -1,0 +1,28 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Macro LoadGroup Update 
+
+*Request Properties* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Update/request-fields.adoc[]
+
+
+*Update Request JSON* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Update/http-request.adoc[]
+
+
+*Response Properties* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Update/response-fields.adoc[]
+
+
+*Update Response JSON* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Update/http-response.adoc[]
+

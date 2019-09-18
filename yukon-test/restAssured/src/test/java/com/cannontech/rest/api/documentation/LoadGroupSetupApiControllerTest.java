@@ -12,7 +12,6 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 
 import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.http.HttpDocumentation;
@@ -24,7 +23,6 @@ import org.testng.annotations.Test;
 import com.cannontech.rest.api.common.ApiCallHelper;
 
 import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
@@ -69,7 +67,7 @@ public class LoadGroupSetupApiControllerTest {
         this.restDocumentation.afterTest();
     }
 
-    @Test
+    @Test(priority=1)
     public void Test_LmGroupMeterDisconnect_Create() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", requestFields(
@@ -95,7 +93,7 @@ public class LoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-   @Test
+   @Test(priority=2)
     public void Test_LmGroupMeterDisconnect_Get() {
 
         Response response = given(documentationSpec)
@@ -114,20 +112,26 @@ public class LoadGroupSetupApiControllerTest {
                 .then()
                 .extract()
                 .response();
+        
         assertTrue("Status code should be 200", response.statusCode() == 200);
-
-        JsonPath jsonPath = response.jsonPath();
-        HashMap loadGroupData = jsonPath.get("LM_GROUP_METER_DISCONNECT");
-        String name = (String) loadGroupData.get("name");
-        assertTrue("Name Should be : Meter_disconnect_get", "Test Meter Disconnet123".equals(name));
-        String type = (String) loadGroupData.get("type");
-        assertTrue("Type Should be : LM_GROUP_METER_DISCONNECT", "LM_GROUP_METER_DISCONNECT".equals(type));
-        float kWCapacity = (float) loadGroupData.get("kWCapacity");
-        assertTrue("kWCapacity Should be : 123", 163 == kWCapacity);
-        boolean disableGroup = (boolean) loadGroupData.get("disableGroup");
-        assertTrue("Group Should be disabled : ", !disableGroup);
-        boolean disableControl = (boolean) loadGroupData.get("disableControl");
-        assertTrue("Control Should be disabled : ", !disableControl);
     }
-
+   
+   @Test(priority=3)
+   public void Test_LmGroupMeterDisconnect_Delete() {
+       Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
+           requestFields(
+               fieldWithPath("name").type(JsonFieldType.STRING).description("Load Group Name")), 
+               responseFields(fieldWithPath("groupId").type(JsonFieldType.NUMBER).description("Load Group Id"))))
+           .accept("application/json")
+           .contentType("application/json")
+           .header("Authorization","Bearer " + ApiCallHelper.authToken)
+           .body(ApiCallHelper.getInputFile("loadgroup\\LoadGroupDelete.json"))
+           .when()
+           .delete(ApiCallHelper.getProperty("deleteloadgroup") + paoId)
+           .then()
+           .extract()
+           .response();
+    
+       assertTrue("Status code should be 200", response.statusCode() == 200);
+   }
 }

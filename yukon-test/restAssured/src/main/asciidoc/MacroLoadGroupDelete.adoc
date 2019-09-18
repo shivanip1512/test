@@ -1,0 +1,28 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Macro LoadGroup Delete
+
+*Request Properties* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Delete/request-fields.adoc[]
+
+
+*Delete Request JSON* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Delete/http-request.adoc[]
+
+
+*Response Properties* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Delete/response-fields.adoc[]
+
+
+*Delete response JSON* :
+
+include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Delete/http-response.adoc[]
+

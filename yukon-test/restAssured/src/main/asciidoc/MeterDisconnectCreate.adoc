@@ -5,24 +5,20 @@
 :toclevels: 4
 :sectlinks:
 
-== Create Load group
+==== Meter Disconnect
 
-*Load Group Creation Request Parameter* :
+*Request Properties* :
 
 include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/request-fields.adoc[]
 
-
-*Load Group Creation Request JSON* :
+*Create Request JSON* :
 
 include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/http-request.adoc[]
 
-
-*Load Group Creation Response Parameter* :
+*Response Properties* :
 
 include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/response-fields.adoc[]
 
-
-*Load Group Creation response JSON* :
+*Create response JSON* :
 
 include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/http-response.adoc[]
-
