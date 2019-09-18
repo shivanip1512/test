@@ -113,6 +113,16 @@ AND RolePropertyID = -21405;
 INSERT INTO DBUpdates VALUES ('YUK-20568-1', '7.4.0', SYSDATE);
 /* @end YUK-20568-1 */
 
+/* @start YUK-20645 */
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyID = -20164;
+
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyID = -20164;
+
+INSERT INTO DBUpdates VALUES ('YUK-20645', '7.4.0', SYSDATE);
+/* @end YUK-20645 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
