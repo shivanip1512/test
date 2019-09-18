@@ -48,10 +48,10 @@
         <input id="js-trigger-ids" name="triggerIds" type="hidden"/>
         <div class="column-12-12 clearfix">
             <div class="column one">
-                <tags:sectionContainer2 nameKey="general" styleClass="wbba">
+                <tags:sectionContainer2 nameKey="general">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".name">
-                            <tags:input id="name" path="name" maxlength="60" inputClass="pao-name-width"/>
+                            <tags:input id="name" path="name" maxlength="60" inputClass="w300 wrbw dib"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".controlInterval">
                             <tags:intervalDropdown path="controlInterval" intervals="${controlIntervals}" noneKey=".newDataOnly"/>
@@ -217,7 +217,7 @@
                         <!-- Available Programs -->
                             <div class="column one">
                                 <h3><i:inline key="yukon.common.available"/></h3>
-                                <div id="js-inline-picker-container" style="height:470px;" class="bordered-div oa wbba">
+                                <div id="js-inline-picker-container" style="height:470px;" class="bordered-div oa">
                                     <tags:pickerDialog id="js-avaliable-programs-picker" type="unassignedProgramPicker" container="js-inline-picker-container"
                                                        multiSelectMode="${true}" disabledIds="${assignedProgramIds}" extraArgs="${controlArea.controlAreaId}"/>
                                 </div>
@@ -244,7 +244,7 @@
                                                 <td>                                            
                                                     <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" data-id="${program.programId}"/>
                                                 </td>
-                                                <td class="wbba">
+                                                <td>
                                                     <cti:deviceName deviceId="${program.programId}"/>
                                                 </td>
                                                 <td>
@@ -267,7 +267,7 @@
                                     <td>                                            
                                         <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" data-id="0"/>
                                     </td>
-                                    <td class="js-program-name vam wbba"></td>
+                                    <td class="js-program-name vam"></td>
                                     <td>
                                         <input type="text" name="programAssignment[0].startPriority" size="4" data-min-value="1" data-max-value="1024" maxlength="4" disabled="true" class="js-start-priority"/>
                                     </td>

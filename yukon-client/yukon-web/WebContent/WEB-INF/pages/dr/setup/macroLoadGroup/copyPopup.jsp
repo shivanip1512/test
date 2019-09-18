@@ -7,7 +7,7 @@
     <cti:csrfToken />
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey="yukon.web.modules.dr.setup.macroLoadGroup.name">
-            <tags:input path="name" maxlength="60" inputClass="pao-name-width"/>
+            <tags:input path="name" maxlength="60" inputClass="w300"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 </form:form>

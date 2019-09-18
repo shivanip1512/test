@@ -49,7 +49,7 @@
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".name">
-                    <tags:input path="name" maxlength="60" autofocus="autofocus" inputClass="pao-name-width"/>
+                    <tags:input path="name" maxlength="60" autofocus="autofocus" inputClass="w300"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
@@ -61,7 +61,7 @@
                     <div class="column one">
                         <h3><i:inline key=".availablePrograms.title"/></h3>
                         <span class="detail empty-list"><i:inline key=".availablePrograms.description"/></span><br/>
-                        <div id="js-inline-picker-container" style="height:470px;" class="bordered-div oa wbba"></div>
+                        <div id="js-inline-picker-container" style="height:470px;" class="bordered-div oa"></div>
                         <tags:pickerDialog type="availableLoadProgramPicker" id="js-available-programs-picker" 
                                            container="js-inline-picker-container" multiSelectMode="true" 
                                            disabledIds="${selectedProgramIds}" />
@@ -79,7 +79,7 @@
         
         <cti:displayForPageEditModes modes="VIEW">
             <tags:sectionContainer2 nameKey="assignedPrograms" styleClass="select-box">
-                <table id="js-assigned-programs-table" class="compact-results-table dashed wbba">
+                <table id="js-assigned-programs-table" class="compact-results-table dashed">
                     <thead>
                         <tr>
                             <th width="45%"><i:inline key=".name"/></th>

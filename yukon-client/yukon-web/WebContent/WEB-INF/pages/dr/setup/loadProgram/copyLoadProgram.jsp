@@ -11,14 +11,14 @@
         <input type="hidden" id="js-selected-copy-program" value="${selectedSwitchType}"/>
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".name">
-                <tags:input path="name" maxlength="60" inputClass="pao-name-width"/>
+                <tags:input path="name" maxlength="60" inputClass="w300 wrbw dib"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".operationalState">
                 <tags:selectWithItems items="${operationalStates}" id="operationalState" path="operationalState"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".constraint">
                 <tags:selectWithItems items="${constraints}" id="constraint" path="constraint.constraintId" itemLabel="name"
-                    itemValue="id" defaultItemLabel="${constraint.name}" defaultItemValue="${constraint.id}" inputClass="pao-name-width"/>
+                    itemValue="id" defaultItemLabel="${constraint.name}" defaultItemValue="${constraint.id}" inputClass="w300 wrbw dib"/>
             </tags:nameValue2>
             <cti:checkRolesAndProperties value="ALLOW_MEMBER_PROGRAMS">
                 <tags:nameValue2 nameKey=".copyMemberControl">
