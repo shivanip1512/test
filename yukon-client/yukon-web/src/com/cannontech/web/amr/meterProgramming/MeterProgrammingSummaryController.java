@@ -209,7 +209,7 @@ public class MeterProgrammingSummaryController {
     @GetMapping("summaryDownload")
     public void download(@ModelAttribute("filter") MeterProgrammingSummaryFilter filter, String deviceGroupName, 
                          @DefaultSort(dir=Direction.asc, sort="DEVICE_NAME") SortingParameters sorting,
-                         YukonUserContext userContext, ModelMap model, HttpServletResponse response) throws IOException {
+                         YukonUserContext userContext, HttpServletResponse response) throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String[] headerRow = new String[6];
 
