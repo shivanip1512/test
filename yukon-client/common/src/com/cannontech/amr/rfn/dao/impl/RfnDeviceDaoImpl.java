@@ -16,6 +16,8 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -398,22 +400,45 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     }
     
    private boolean isValidNodeComm(NodeComm comm) {
-       return comm.getDeviceRfnIdentifier() != null && !comm.getDeviceRfnIdentifier().is_Empty_() && comm.getGatewayRfnIdentifier() != null
+       boolean isValid = comm.getDeviceRfnIdentifier() != null && !comm.getDeviceRfnIdentifier().is_Empty_() && comm.getGatewayRfnIdentifier() != null
                && !comm.getGatewayRfnIdentifier().is_Empty_();
+       
+       if(!isValid) {
+           return false;
+       }
+       Integer deviceId = rfnIdentifierCache.getPaoIdFor(comm.getDeviceRfnIdentifier());
+       if(deviceId == null) {
+           log.error("Unable to find {} in rfnIdentifier cache", comm.getDeviceRfnIdentifier());
+       }
+       Integer gatewayId = rfnIdentifierCache.getPaoIdFor(comm.getGatewayRfnIdentifier());
+       if(gatewayId == null) {
+           log.error("Unable to find {} in rfnIdentifier cache", comm.getGatewayRfnIdentifier());
+       }
+       
+       if(deviceId == null || gatewayId == null) {
+           return false;
+       }
+       
+       return true;
    }
    
    
     @Override
     public void saveDynamicRfnDeviceData(List<NodeComm> nodes) {
-        List<DynamicRfnDeviceData> data = nodes.stream()
-                .filter(node -> isValidNodeComm(node))
-                .map(node -> getDynamicRfnDeviceData(node, null))
-                .collect(Collectors.toList());
-        chunkAndSaveDynamicRfnDeviceData(data);
+        if(CollectionUtils.isNotEmpty(nodes)) {
+            List<DynamicRfnDeviceData> data = nodes.stream()
+                    .filter(node -> isValidNodeComm(node))
+                    .map(node -> getDynamicRfnDeviceData(node, null))
+                    .collect(Collectors.toList());
+            chunkAndSaveDynamicRfnDeviceData(data);
+        }
     }
     
     @Override
     public Set<Long> saveDynamicRfnDeviceData(Map<Long, NodeComm> nodes) {
+        if(MapUtils.isEmpty(nodes)) {
+            return new HashSet<>();
+        }
         List<DynamicRfnDeviceData> data = nodes.entrySet().stream()
                 .filter(node -> isValidNodeComm(node.getValue()))
                 .map(node -> getDynamicRfnDeviceData(node.getValue(), node.getKey()))
