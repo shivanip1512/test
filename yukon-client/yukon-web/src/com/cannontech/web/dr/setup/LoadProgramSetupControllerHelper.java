@@ -325,7 +325,6 @@ public class LoadProgramSetupControllerHelper {
         timeRefreshGearFields.setStopOrder(StopOrder.RANDOM);
         timeRefreshGearFields.setStopCommandRepeat(0);
         timeRefreshGearFields.setCapacityReduction(100);
-        timeRefreshGearFields.setRampInPercent(0);
         timeRefreshGearFields.setRampOutPercent(0);
     }
 
