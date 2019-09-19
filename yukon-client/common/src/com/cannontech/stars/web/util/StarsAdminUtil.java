@@ -748,12 +748,13 @@ public class StarsAdminUtil {
             new LiteYukonUser(userDB.getUserID().intValue(), userDB.getUsername(), userDB.getLoginStatus());
         handleDBChange(liteUser, DbChangeType.ADD);
 
-        AuthenticationCategory defaultAuthenticationCategory = authenticationService.getDefaultAuthenticationCategory();
-        if (authenticationService.supportsPasswordSet(defaultAuthenticationCategory) || !StringUtils.isBlank(password)) {
+        // EC Operators are always created as Encrypted
+        AuthenticationCategory authenticationCategory = AuthenticationCategory.ENCRYPTED;
+        if (authenticationService.supportsPasswordSet(authenticationCategory) || !StringUtils.isBlank(password)) {
             if (StringUtils.isBlank(password)) {
                 throw new IllegalArgumentException("password cannot be blank");
             }
-            authenticationService.setPasswordWithDefaultAuthCat(liteUser, password, user);
+            authenticationService.setPassword(liteUser, authenticationCategory, password, user);
         }
 
         return liteUser;

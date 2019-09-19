@@ -750,9 +750,7 @@ public class OperatorAccountController {
             systemEventLogService.loginChangeAttempted(userContext.getYukonUser(), residentialUser.getUsername(), 
                     EventSource.OPERATOR);
         }
-        LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(residentialUser);
-        LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(residentialUser);
-        
+
         /* Validate and Update */
         try {
             accountGeneralValidator.validate(accountGeneral, bindingResult);
@@ -762,9 +760,12 @@ public class OperatorAccountController {
                     || StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword2())
                     || StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getUsername()))) {
                 bindingResult.pushNestedPath("loginBackingBean");
+                LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(null);
                 usernameValidator.validate(accountGeneral.getLoginBackingBean(),bindingResult);
-                passwordValidator.validate(accountGeneral.getLoginBackingBean(),
-                                bindingResult);
+                
+                // creating a new user, so we don't have an actual userId, use null for user
+                LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(null);
+                passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
                 bindingResult.popNestedPath();
             } else if (!ignoreLogin) {
                 // edit login validation
@@ -775,9 +776,11 @@ public class OperatorAccountController {
                 // won't change the password, so here we don't want to do validation. 
                 if (StringUtils.isNotBlank(accountGeneral.getLoginBackingBean().getPassword1()) 
                         || StringUtils.isNotBlank(accountGeneral.getLoginBackingBean().getPassword2())) {
+                    LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(residentialUser);
                     passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
                 }
                 
+                LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(residentialUser);
                 usernameValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
                 bindingResult.popNestedPath();
                 
