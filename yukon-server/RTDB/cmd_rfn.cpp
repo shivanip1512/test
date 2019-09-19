@@ -48,7 +48,7 @@ auto RfnCommand::getApplicationServiceId() const -> ASID
 }
 
 
-std::unique_ptr<RfnConfigNotificationCommand> RfnCommand::handleUnsolicitedReport(const CtiTime now, RfnResponsePayload payload)
+std::unique_ptr<RfnConfigNotificationCommand> RfnCommand::handleNodeOriginated(const CtiTime now, RfnResponsePayload payload)
 {
     validate( Condition( ! payload.empty(), ClientErrors::DataMissing ) << "Empty payload");
 

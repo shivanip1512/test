@@ -22,8 +22,7 @@ using Cti::Messaging::Rfn::E2eMessenger;
 
 using namespace std::chrono_literals;
 
-namespace Cti {
-namespace Pil {
+namespace Cti::Pil {
 
 enum
 {
@@ -113,9 +112,9 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
                 if( message.nodeOriginated )
                 {
-                    CTILOG_INFO(dout, "Unsolicited report received for device " << indication.rfnIdentifier);
+                    CTILOG_INFO(dout, "Node-originated indication received for device " << indication.rfnIdentifier);
 
-                    if( auto command = handleUnsolicitedReport(Now, indication.rfnIdentifier, message) )
+                    if( auto command = handleNodeOriginated(Now, indication.rfnIdentifier, message) )
                     {
                         _unsolicitedReportsPerTick.emplace_back(indication.rfnIdentifier, std::move(command));
                     }
@@ -125,7 +124,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                     CTILOG_INFO(dout, "Results for device " << indication.rfnIdentifier << " token " << message.token << std::endl
                          << boost::join(response->commandResults
                               | boost::adaptors::transformed([](const RfnCommandResult & result) {
-                                    return std::to_string(result.status) + ": " + result.description;  }), 
+                                    return result.description + ", status " + std::to_string(result.status);  }),
                               "\n"));
 
                     _resultsPerTick.emplace_back(std::move(*response));
@@ -144,11 +143,11 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 }
 
 
-auto RfnRequestManager::handleUnsolicitedReport(const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message) -> ConfigNotificationPtr
+auto RfnRequestManager::handleNodeOriginated(const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message) -> ConfigNotificationPtr
 {
     try
     {
-        if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedReport(Now, message.data) )
+        if( auto command = Devices::Commands::RfnCommand::handleNodeOriginated(Now, message.data) )
         {
             if( ! message.ack.empty() )
             {
@@ -460,7 +459,7 @@ void RfnRequestManager::handleNewRequests(const RfnIdentifierSet &recentCompleti
         _submittedRequests.clear();
     }
 
-    for each( const RfnIdentifier &rfnId in recentlyActive )
+    for( const RfnIdentifier &rfnId : recentlyActive )
     {
         checkForNewRequest(rfnId);
     }
@@ -470,6 +469,11 @@ void RfnRequestManager::handleNewRequests(const RfnIdentifierSet &recentCompleti
 std::vector<unsigned char>  RfnRequestManager::sendE2eDtRequest(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token)
 {
     return _e2edt.sendRequest(payload, endpointId, token);
+}
+
+std::vector<unsigned char>  RfnRequestManager::sendE2eDtReply(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token)
+{
+    return _e2edt.sendReply(payload, endpointId, token);
 }
 
 
@@ -846,5 +850,4 @@ void RfnRequestManager::reportStatistics()
     stats.nodeStatistics.clear();
 }
 
-}
 } //namespace Cti::Pil
