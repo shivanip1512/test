@@ -50,11 +50,12 @@ public class ItronDeviceDataParser {
     private static final Logger log = YukonLogManager.getLogger(ItronDeviceDataParser.class);
 
     public Multimap<PaoIdentifier, PointValueHolder> parseAndSend(ZipFile zip) throws EmptyImportFileException {
-        log.debug("Parsing Itron data file.");
         if(zip == null) {
             log.error("Unable to parse data, Itron file is null.");
             return null;
         }
+        log.info("Parsing Itron data file {}", zip.getName());
+        
         boolean hasData = false;
         Multimap<PaoIdentifier, PointValueHolder> allPointValues = HashMultimap.create();
         Enumeration<? extends ZipEntry> entries = zip.entries();

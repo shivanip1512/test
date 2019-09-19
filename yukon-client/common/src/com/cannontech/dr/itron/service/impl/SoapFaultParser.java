@@ -39,5 +39,6 @@ interface SoapFaultParser {
             log.error(exception);
             throw exception;
         }
+        log.debug("Ignored soap fault: " + errorCode + ":" + errorMessage);
     }
 }
