@@ -189,7 +189,7 @@ public enum SiteMapPage implements DisplayableEnum {
     SCHEDULES(SiteMapCategory.TOOLS, "yukon.web.modules.amr.billing.jobs.title", "/group/scheduledGroupRequestExecutionResults/jobs",
             MatchStyle.all, YukonRole.SCHEDULER),
     SCRIPTS(SiteMapCategory.TOOLS, "yukon.web.menu.config.amr.scheduler", "/macsscheduler/schedules/view",
-            MatchStyle.all, YukonRole.SCHEDULER),
+            MatchStyle.all, YukonRoleProperty.MACS_SCRIPTS),
     TDC(SiteMapCategory.TOOLS, "yukon.web.modules.tools.tdc.home.pageName", "/tools/data-viewer",
             MatchStyle.all, YukonRole.TABULAR_DISPLAY_CONSOLE),
     PAO_NOTE_SEARCH(SiteMapCategory.TOOLS, "yukon.web.modules.tools.paoNotesSearch.pageName", "/tools/paoNotes/search",
