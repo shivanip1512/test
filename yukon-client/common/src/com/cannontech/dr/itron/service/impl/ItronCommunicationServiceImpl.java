@@ -509,6 +509,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         // Create some file strings
         String timestamp = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
         String zipName = type + "_" + timestamp + "_" + commandId + ".zip";
+        log.debug("Zip File Name: " + zipName);
         
         // Assemble the info needed for SFTP connection
         Optional<YukonHttpProxy> proxy = YukonHttpProxy.fromGlobalSetting(settingDao);
@@ -516,8 +517,9 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         String port = domain.contains(":") ? "" : "22"; //Use default if port isn't specified in domain string
         String user = settingDao.getString(GlobalSettingType.ITRON_SFTP_USERNAME);
         String password = settingDao.getString(GlobalSettingType.ITRON_SFTP_PASSWORD);
-        ItronSecurityKeyPair keys;
+        log.debug("SFTP Connection Params - Domain: {}, Port: {}, User: {}", domain, port, user);
         
+        ItronSecurityKeyPair keys;
         try {
             keys = itronSecurityService.getItronSshRsaKeyPair();
         } catch (ItronSecurityException e) {
@@ -529,6 +531,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         List<File> files = new ArrayList<>();
         
         try (SftpConnection sftp = new SftpConnection(domain, port, proxy, user, password, keys.getPrivateKey())) {
+            log.debug("Copying data files over SFTP");
             files = copySftpFiles(sftp, fileUrls, commandId, timestamp);
         } catch (Exception e) {
             log.debug("Error copying data files over SFTP", e);
