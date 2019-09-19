@@ -19,24 +19,15 @@ BOOST_CHECK_EQUAL_COLLECTIONS((x).begin(), (x).end(), (y).begin(), (y).end())
 #define BOOST_REQUIRE_EQUAL_RANGES(x, y) \
 BOOST_REQUIRE_EQUAL_COLLECTIONS((x).begin(), (x).end(), (y).begin(), (y).end())
 
-namespace Test {
+}
 
+namespace Cti::Test {
 struct use_in_unit_tests_only {};
-
-namespace {
-
-char fromAscii(char c)
-{
-    if( c >= 'a' && c <= 'f' )  return c - 'a' + 10;
-
-    if( c >= 'A' && c <= 'F' )  return c - 'A' + 10;
-
-    if( c >= '0' && c <= '9' )  return c - '0';
-
-    return 0;
 }
 
-}
+extern Cti::Test::use_in_unit_tests_only test_tag;
+
+namespace Cti::Test {
 
 struct byte_str
 {
@@ -48,37 +39,17 @@ struct byte_str
 
     byte_str(const char *str)
     {
-        if( ! str )
+        for( char* pos; *str;  )
         {
-            return;
-        }
-
-        boost::optional<unsigned char> byte;
-
-        while( *str )
-        {
-            if( *str != ' ' )
+            if( *str == ' ' )
             {
-                if( byte )
-                {
-                    *byte <<= 4;
-                    *byte |= fromAscii(*str);
-                }
-                else
-                {
-                    byte = fromAscii(*str);
-                }
+                ++str;
             }
-
-            ++str;
-
-            if( *str == ' ' || ! *str )
+            else
             {
-                if( byte )
-                {
-                    bytes.push_back(*byte);
-                    byte.reset();
-                }
+                bytes.push_back(strtoul(str, &pos, 16));
+
+                str = pos;
             }
         }
 
@@ -94,7 +65,24 @@ struct byte_str
     const char          *char_data() const  {  return reinterpret_cast<const char *>(data());  }
 };
 
-namespace {  //  hack to get around multiple linkages when included in multiple translation units
+namespace {  //  internal linkage so we can include it in multiple translation units
+
+class Override_CtiTime_TimeZoneInformation
+{
+    TIME_ZONE_INFORMATION _newTzi;
+
+public:
+    Override_CtiTime_TimeZoneInformation(TIME_ZONE_INFORMATION newTzi) :
+        _newTzi(newTzi)
+    {
+        Cti::Time::overrideTimeZoneInformation(&_newTzi, test_tag);
+    }
+
+    ~Override_CtiTime_TimeZoneInformation()
+    {
+        Cti::Time::overrideTimeZoneInformation(nullptr, test_tag);
+    }
+};
 
 class Override_CtiTime_Now
 {
@@ -146,16 +134,11 @@ class Override_CtiDate_Now
 
     CtiDate _newNow;
 
-    CtiDate MakeNow()
-    {
-        return _newNow;
-    }
-
 public:
     Override_CtiDate_Now(CtiDate newEpoch) :
         _newNow(newEpoch)
     {
-        _oldMakeNow = [this]{ return MakeNow(); };
+        _oldMakeNow = [this]{ return _newNow; };
 
         std::swap(_oldMakeNow, Cti::Date::MakeNowDate);
     }
@@ -189,6 +172,3 @@ struct PreventDatabaseConnections
 
 }
 }
-}
-
-extern Cti::Test::use_in_unit_tests_only test_tag;

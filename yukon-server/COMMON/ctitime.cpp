@@ -1,16 +1,19 @@
 #include "precompiled.h"
 
-#include <time.h>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/tss.hpp>
-#include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <utility>
-#include <sstream>
-#include <map>
 #include "ctidate.h"
 #include "ctitime.h"
 #include "std_helper.h"
 #include "boostutil.h"
+
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/tss.hpp>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+
+#include <time.h>
+
+#include <utility>
+#include <sstream>
+#include <map>
 
 using std::string;
 using namespace std;
@@ -20,6 +23,12 @@ const int SECONDS_PER_MINUTE = 60;
 const int MINUTES_PER_HOUR = 60;
 
 const int HOURS_PER_DAY = 24;
+
+namespace Cti::Time {
+    namespace {  //  internal linkage
+        TIME_ZONE_INFORMATION GetTZI();
+    }
+}
 
 typedef boost::date_time::us_dst_rules<boost::gregorian::date, boost::posix_time::time_duration> us_dst_rules;
 
@@ -342,8 +351,7 @@ ctitime_t CtiTime::seconds() const
  */
 CtiTime CtiTime::fromLocalSeconds(const unsigned long local_seconds)
 {
-    _TIME_ZONE_INFORMATION tzinfo;
-    GetTimeZoneInformation(&tzinfo);
+    auto tzinfo = Cti::Time::GetTZI();
 
     //  attempt a rough estimate of GMT time from local time by using the standard time offset
     ctitime_t gmt_seconds = local_seconds + (tzinfo.Bias + tzinfo.StandardBias) * SECONDS_PER_MINUTE;
@@ -358,8 +366,7 @@ CtiTime CtiTime::fromLocalSeconds(const unsigned long local_seconds)
 
 CtiTime CtiTime::fromLocalSecondsNoDst(const unsigned long local_seconds)
 {
-    _TIME_ZONE_INFORMATION tzinfo;
-    GetTimeZoneInformation(&tzinfo);
+    auto tzinfo = Cti::Time::GetTZI();
 
     return local_seconds + (tzinfo.Bias + tzinfo.StandardBias) * SECONDS_PER_MINUTE;
 }
@@ -462,8 +469,7 @@ static const std::map<std::wstring, std::string> timeZoneAbbrevMap {
  */
 string CtiTime::getTZ() const
 {
-    _TIME_ZONE_INFORMATION tzinfo;
-    GetTimeZoneInformation(&tzinfo);
+    auto tzinfo = Cti::Time::GetTZI();
 
     ctitime_t display_seconds = _seconds;
 
@@ -501,8 +507,7 @@ string CtiTime::asString(DisplayOffset offset, DisplayTimezone timezone) const
         return string("pos-infinity");
     }
 
-    _TIME_ZONE_INFORMATION tzinfo;
-    GetTimeZoneInformation(&tzinfo);
+    auto tzinfo = Cti::Time::GetTZI();
 
     ctitime_t display_seconds = _seconds;
 
@@ -604,16 +609,40 @@ struct tm* CtiTime::localtime_r(const time_t *tod){
     return tm_value->ctm;
 }
 
+const TIME_ZONE_INFORMATION *overrideTzi = nullptr;
 
 CtiTime makeNowTime()
 {
     return CtiTime();
 }
 
-namespace Cti {
-namespace Time {
+namespace Cti::Time {
 
-    IM_EX_CTIBASE std::function<CtiTime()> MakeNowTime = makeNowTime;
+IM_EX_CTIBASE std::function<CtiTime()> MakeNowTime = makeNowTime;
+
+IM_EX_CTIBASE void overrideTimeZoneInformation(const TIME_ZONE_INFORMATION* tzi, Cti::Test::use_in_unit_tests_only&)
+{
+    overrideTzi = tzi;
+}
+
+namespace {  //  internal linkage
+
+TIME_ZONE_INFORMATION GetTZI()
+{
+    if( overrideTzi )
+    {
+        return *overrideTzi;
+    }
+
+    TIME_ZONE_INFORMATION tzinfo;
+
+    if( GetTimeZoneInformation(&tzinfo) == TIME_ZONE_ID_INVALID )
+    {
+        throw std::invalid_argument("Invalid time zone information");
+    }
+
+    return tzinfo;
+}
 
 }
 }
@@ -704,8 +733,7 @@ long CtiTime::secondOffsetToGMT() const
 {
     tm ctm = *localtime(&_seconds);
 
-    _TIME_ZONE_INFORMATION tzinfo;
-    GetTimeZoneInformation(&tzinfo);
+    auto tzinfo = Cti::Time::GetTZI();
 
     return (tzinfo.Bias + (ctm.tm_isdst ? tzinfo.DaylightBias : tzinfo.StandardBias)) * SECONDS_PER_MINUTE;
 }

@@ -631,6 +631,7 @@
     <ClInclude Include="include\string_util.h" />
     <ClInclude Include="include\test_cmdparse_input.h" />
     <ClInclude Include="include\test_cmdparse_output.h" />
+    <ClInclude Include="include\test_fwd.h" />
     <ClInclude Include="include\test_reader.h" />
     <ClInclude Include="include\ThirdPartyLibraries.h" />
     <ClInclude Include="include\thread.h" />

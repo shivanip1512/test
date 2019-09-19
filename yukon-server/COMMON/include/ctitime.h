@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dlldefs.h"
+#include "test_fwd.h"  //  for Cti::Test::use_in_unit_tests_only
 
 #include <string>
 #include <ostream>
@@ -9,9 +10,10 @@
 #include <functional>
 
 class CtiDate;
+struct _TIME_ZONE_INFORMATION;
+using TIME_ZONE_INFORMATION = _TIME_ZONE_INFORMATION;
 
 typedef time_t ctitime_t;
-
 
 class IM_EX_CTIBASE CtiTime
 {
@@ -103,15 +105,12 @@ public:
     friend bool IM_EX_CTIBASE operator == (const CtiTime& t1, const CtiTime& t2);
     friend bool IM_EX_CTIBASE operator != (const CtiTime& t1, const CtiTime& t2);
 
-
     friend IM_EX_CTIBASE std::ostream&  operator<<(std::ostream& s, const CtiTime& t);
 };
 
-namespace Cti {
-namespace Time {
+namespace Cti::Time {
 
     extern IM_EX_CTIBASE std::function<CtiTime()> MakeNowTime;
-
+    //  Pass a pointer to override, set to nullptr to reset behavior
+    extern IM_EX_CTIBASE void overrideTimeZoneInformation(const TIME_ZONE_INFORMATION*, Cti::Test::use_in_unit_tests_only&);
 }
-}
-

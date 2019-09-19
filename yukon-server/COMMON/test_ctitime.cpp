@@ -2,7 +2,6 @@
 
 #include "ctitime.h"
 #include "ctidate.h"
-#include <boost/assign/list_of.hpp>
 
 #include "boost_test_helpers.h"
 
@@ -681,6 +680,18 @@ BOOST_AUTO_TEST_CASE(test_ctitime_get_local_seconds)
 {
 	Cti::Test::set_to_central_timezone();
 
+    Cti::Test::Override_CtiTime_TimeZoneInformation overrideTzi({
+            6 * 60,                     // LONG       Bias;
+            L"Central Standard Time",   // WCHAR      StandardName[32];
+            //  unused by CtiTime, just leaving it blank
+            {},                         // SYSTEMTIME StandardDate;
+            0,                          // LONG       StandardBias;
+            L"Central Daylight Time",   // WCHAR      DaylightName[32];
+            //  unused by CtiTime, just leaving it blank
+            {},                         // SYSTEMTIME DaylightDate;
+            -60                         // LONG       DaylightBias;
+        });
+    
     // In Central time, localtime in seconds is a smaller number than GST in seconds.
     // If you are in CST, for GMT 1970 6am as CST = GMT-6.
     // .seconds = 21600, .getLocalTimeSeconds = 0

@@ -9,6 +9,7 @@
 #include "dlldefs.h"
 #include "numstr.h"
 #include "module_util.h"
+#include "test_fwd.h"
 
 #include <algorithm>
 #include <numeric>
@@ -31,13 +32,6 @@ class CtiOutMessage;
 using OUTMESS = CtiOutMessage;
 class CtiMutex;
 enum CtiPointType_t;
-
-namespace Cti {
-namespace Test {
-struct use_in_unit_tests_only;  //  tag to prevent unit-test-specific code from being run in production code
-}
-}
-
 
 IM_EX_CTIBASE LONG GetMaxLMControl(long pao);
 

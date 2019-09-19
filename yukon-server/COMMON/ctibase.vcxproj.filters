@@ -668,6 +668,9 @@
     <ClInclude Include="include\ThirdPartyLibraries.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\test_fwd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc">
