@@ -145,7 +145,7 @@ public class WaterNodeAnalysisController {
             headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.meterNumber");
             headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.serialNumber");
             headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.deviceType");
-            headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.deviceCategory");
+            headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.depletionCategory");
             headerRow[5] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.currentIndicator");
             headerRow[6] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.recentReading");
             headerRow[7] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.uom");
