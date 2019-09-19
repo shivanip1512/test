@@ -75,6 +75,25 @@ std::vector<unsigned char> E2eDataTransferProtocol::sendRequest(const std::vecto
 }
 
 
+std::vector<unsigned char> E2eDataTransferProtocol::sendReply(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token)
+{
+    if( payload.size() > MaxOutboundPayload )
+    {
+        throw PayloadTooLarge();
+    }
+
+    Coap::scoped_pdu_ptr ack_pdu(coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(Coap::ResponseCode::Content), getOutboundIdForEndpoint(endpointId), COAP_MAX_PDU_SIZE));
+
+    addToken(ack_pdu, token);
+
+    coap_add_data(ack_pdu, payload.size(), &payload.front());
+
+    const unsigned char *raw_pdu = reinterpret_cast<const unsigned char *>(ack_pdu->hdr);
+
+    return std::vector<unsigned char>(raw_pdu, raw_pdu + ack_pdu->length);
+}
+
+
 YukonError_t E2eDataTransferProtocol::translateIndicationCode(const unsigned short code, const RfnIdentifier endpointId)
 {
     switch( auto rc = Coap::ResponseCode { code } )
@@ -226,7 +245,7 @@ std::vector<unsigned char> E2eDataTransferProtocol::sendBlockContinuation(const 
 
 std::vector<unsigned char> E2eDataTransferProtocol::sendAck(const unsigned short id)
 {
-    Coap::scoped_pdu_ptr ack_pdu(coap_pdu_init(COAP_MESSAGE_ACK, COAP_RESPONSE_CODE(0), id, COAP_MAX_PDU_SIZE)); // 0 - EMPTY MESSAGE
+    Coap::scoped_pdu_ptr ack_pdu(coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(Coap::ResponseCode::EmptyMessage), id, COAP_MAX_PDU_SIZE));
 
     const unsigned char *raw_pdu = reinterpret_cast<const unsigned char *>(ack_pdu->hdr);
 

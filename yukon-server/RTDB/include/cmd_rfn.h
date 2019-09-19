@@ -7,9 +7,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>
 
-namespace Cti {
-namespace Devices {
-namespace Commands {
+namespace Cti::Devices::Commands {
 
 class RfDaReadDnpSlaveAddressCommand;
 class RfnAggregateCommand;
@@ -124,14 +122,9 @@ struct InvokerFor : virtual RfnResultHandlerInvoker
     void invokeResultHandler(ResultHandler &rh) const override final
     {
         //  Verify that we're actually the command type we were templated with
-        using SafeCommandType =
-            std::enable_if<
-                std::is_base_of<
-                       InvokerFor<CommandType>,
-                    CommandType>::value,
-                CommandType>::type;
+        static_assert(std::is_base_of_v<InvokerFor<CommandType>, CommandType>, "CommandType is not derived from InvokerFor<CommandType>");
 
-        rh.handleCommandResult(static_cast<const SafeCommandType &>(*this));
+        rh.handleCommandResult(static_cast<const CommandType &>(*this));
     }
 };
 
@@ -148,7 +141,7 @@ public:
     virtual RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response) = 0;
     virtual RfnCommandResultList handleError(const CtiTime now, const YukonError_t errorCode) = 0;
 
-    static std::unique_ptr<RfnConfigNotificationCommand> handleUnsolicitedReport(const CtiTime now, RfnResponsePayload payload);
+    static std::unique_ptr<RfnConfigNotificationCommand> handleNodeOriginated(const CtiTime now, RfnResponsePayload payload);
 
     using ASID = Messaging::Rfn::ApplicationServiceIdentifiers;
 
@@ -178,6 +171,3 @@ using RfnCommandPtr = RfnCommand::RfnCommandPtr;
 using RfnCommandList = std::vector<RfnCommandPtr>;
 
 }
-}
-}
-

@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE(test_request)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_handle_unsolicited)
+BOOST_AUTO_TEST_CASE(test_handle_node_originated)
 {
     const std::vector<uint8_t> payload { 
         0x1e, 
@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE(test_handle_unsolicited)
         0x01
     };
 
-    auto cmd = RfnCommand::handleUnsolicitedReport(execute_time, payload);
+    auto cmd = RfnCommand::handleNodeOriginated(execute_time, payload);
 
     BOOST_REQUIRE(cmd);
 

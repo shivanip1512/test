@@ -9,8 +9,7 @@
 
 #include <boost/ptr_container/ptr_deque.hpp>
 
-namespace Cti {
-namespace Pil {
+namespace Cti::Pil {
 
 struct RfnDeviceRequest
 {
@@ -99,6 +98,7 @@ protected:
 
     virtual Protocols::E2eDataTransferProtocol::EndpointMessage handleE2eDtIndication(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId);
     virtual std::vector<unsigned char> sendE2eDtRequest(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token);
+    virtual std::vector<unsigned char> sendE2eDtReply  (const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token);
 
 private:
 
@@ -186,12 +186,11 @@ private:
 
     using OptionalResult = std::optional<RfnDeviceResult>;
 
-    ConfigNotificationPtr handleUnsolicitedReport  (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
+    ConfigNotificationPtr handleNodeOriginated     (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
     OptionalResult        handleResponse           (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
     void                  handleBlockContinuation  (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
     RfnDeviceResult       handleCommandResponse    (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
     RfnDeviceResult       handleCommandError       (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const YukonError_t error);
 };
 
-}
 }

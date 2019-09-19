@@ -10,8 +10,7 @@
 #include <vector>
 #include <map>
 
-namespace Cti {
-namespace Protocols {
+namespace Cti::Protocols {
 
 //  Also known as E2EDT.
 //  System spec:   http://portal.cooperpowereas.net/sites/Ops/MarylandEngineeringGroup/Shared%20Documents/System/10446%20E2E%20Data%20Transfer%20System%20Specification_R1.2.docx
@@ -73,6 +72,9 @@ public:
     //  throws PayloadTooLarge
     std::vector<unsigned char> sendRequest(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token);
 
+    //  throws PayloadTooLarge
+    std::vector<unsigned char> sendReply  (const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token);
+
     //  throws E2eException
     EndpointMessage handleIndication(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId);
 
@@ -105,5 +107,4 @@ private:
     static YukonError_t translateIndicationCode(const unsigned short code, const RfnIdentifier endpointId);
 };
 
-}
 }
