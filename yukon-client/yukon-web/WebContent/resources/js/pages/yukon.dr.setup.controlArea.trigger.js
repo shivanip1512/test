@@ -12,54 +12,61 @@ yukon.dr.setup.controlArea.trigger = (function() {
 
     var _initialized = false,
 
-    _enableTriggerSection = function() {
-        var triggerType = $("#js-trigger-type option:selected").val();
+    _enableTriggerSection = function (element) {
+        var triggerType = $("#js-trigger-type option:selected").val(),
+            container = element.closest("#js-controlArea-trigger-form"),
+            uniqueIdentifier = container.find(".js-unique-identifier").val();
+        
         if (triggerType === 'THRESHOLD') {
-            $('.js-threshold-point').addClass('dn');
-            $('.js-status').addClass('dn');
-            $('.js-threshold').removeClass('dn');
-            _setDefaultProjectionProperties();
-            _enableDisablePeakTracking();
+            container.find('.js-threshold-point').addClass('dn');
+            container.find('.js-status').addClass('dn');
+            container.find('.js-threshold').removeClass('dn');
+            _setDefaultProjectionProperties(element);
+            _enableDisablePeakTracking(container);
         } else if (triggerType === 'THRESHOLD_POINT') {
-            $('.js-status').addClass('dn');
-            $('.js-threshold').addClass('dn');
-            $('.js-threshold-point').removeClass('dn');
-            _enableDisablePeakTracking();
+            container.find('.js-status').addClass('dn');
+            container.find('.js-threshold').addClass('dn');
+            container.find('.js-threshold-point').removeClass('dn');
+            _enableDisablePeakTracking(container);
         } else {
-            $('.js-threshold').addClass('dn');
-            $('.js-threshold-point').addClass('dn');
-            $('.js-status').removeClass('dn');
-            var pointId = $("#trigger-point-id").val();
-            $('#js-normal-state').toggleClass('dn', pointId == "");
+            container.find('.js-threshold').addClass('dn');
+            container.find('.js-threshold-point').addClass('dn');
+            container.find('.js-status').removeClass('dn');
+            var pointId = container.find("#trigger-point-id-" + uniqueIdentifier).val();
+            element.closest("#js-controlArea-trigger-form").find('#js-normal-state').toggleClass('dn', pointId == "");
             if (pointId != "") {
                 _retrieveNormalStates();
             }
         }
     },
     
-    _enableDisablePeakTracking = function() {
-        var usePeakTracking = $('#js-use-peak-tracking').prop('checked');
-        $('.js-peak-tracking').toggleClass('dn', !usePeakTracking);
+    _enableDisablePeakTracking = function (container) {
+        var usePeakTracking = container.find("input[id^='js-use-peak-tracking']").prop('checked');
+        container.find('.js-peak-tracking').toggleClass('dn', !usePeakTracking);
     },
     
-    _setDefaultProjectionProperties = function(){
-        var noneSelected = $("#js-threshold-projection-type option:selected").val() === "NONE";
-        $('.js-threshold-samples-row').toggleClass('dn', noneSelected);
-        $('.js-threshold-ahead-row').toggleClass('dn', noneSelected);
+    _setDefaultProjectionProperties = function (element) {
+        var container = element.closest("#js-controlArea-trigger-form"),
+            noneSelected = container.find("#js-threshold-projection-type option:selected").val() === "NONE";
+        
+        container.find('.js-threshold-samples-row').toggleClass('dn', noneSelected);
+        container.find('.js-threshold-ahead-row').toggleClass('dn', noneSelected);
         if (noneSelected) {
-            var sampleValue = $('#js-threshold-samples').val();
+            var sampleValue = container.find('#js-threshold-samples').val();
             if (!sampleValue) {
-                $("#js-threshold-samples").val(5);
+                container.find("#js-threshold-samples").val(5);
             }
         }
     },
     
     _retrieveNormalStates = function() {
-        var triggerType = $("#js-trigger-type option:selected").val(),
-        container = $(".js-trigger-controls:visible"),
-        pointId = $("#trigger-point-id").val();
+        var container = $(".js-trigger-controls:visible"),
+            triggerType = container.find("#js-trigger-type option:selected").exists() 
+                ? container.find("#js-trigger-type option:selected").val() : container.find(".js-trigger-type-val").val(),
+            uniqueIdentifier = container.find(".js-unique-identifier").val(),
+            pointId = container.find("#trigger-point-id-" + uniqueIdentifier).val();
         if (triggerType === 'STATUS') {
-            $("#js-normal-state").removeClass("dn");
+            container.find("#js-normal-state").removeClass("dn");
             $.ajax({
                 url: yukon.url('/dr/setup/controlArea/getNormalState/' + pointId),
                 type: 'get'
@@ -79,20 +86,21 @@ yukon.dr.setup.controlArea.trigger = (function() {
             if (_initialized) return;
             
             $(document).on('change', '#js-trigger-type', function() {
-                _enableTriggerSection();
+                _enableTriggerSection($(this));
             });
             $(document).on('change', '#js-threshold-projection-type', function() {
-                _setDefaultProjectionProperties()
+                _setDefaultProjectionProperties($(this));
             });
             
-            $(document).on('change', '#js-use-peak-tracking', function() {
+            $(document).on('change', 'input[id^="js-use-peak-tracking"]', function() {
+                var uniqueIdentifier = $(this).closest("#js-controlArea-trigger-form").find(".js-unique-identifier").val();
                 $('.js-peak-tracking').toggleClass('dn', !this.checked);
                 if (!this.checked) {
-                    $('#peak-point-id').val(0);
+                    $('#peak-point-id-' + uniqueIdentifier).val(0);
                 }
             });
             
-            $(document).on('yukon:trigger:identification:complete', function() {
+            $(document).on('yukon:trigger:identification:complete', function (event) {
                 _retrieveNormalStates();
             });
             

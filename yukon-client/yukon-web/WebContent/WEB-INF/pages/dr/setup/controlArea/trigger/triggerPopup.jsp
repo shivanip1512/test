@@ -23,12 +23,14 @@
     <c:set var="triggerClass" value="${mode == 'VIEW' ? '' : 'spaced-form-controls'}"/>
     <div class="js-trigger-controls ${triggerClass}">
         <form:form modelAttribute="controlAreaTrigger" action="${action}" method="post" id="js-controlArea-trigger-form">
+            <cti:uniqueIdentifier var="uniqueId"/>
+            <input type="hidden" class="js-unique-identifier" value="${uniqueId}"/>
             <cti:csrfToken/>
             <form:hidden path="triggerId"/>
             <input id="js-trigger-id" name="id" type="hidden"/>
             <form:hidden id="point-trigger-identification-name" path="triggerPointName"/>
-            <c:set var="triggerType" value="${!empty controlAreaTrigger.triggerType ? controlAreaTrigger.triggerType : 'THRESHOLD_POINT'}"/>
-            <c:set var="peakTrackClass" value="${!empty controlAreaTrigger.peakPointId ? '' : 'dn'}"/>
+            <c:set var="triggerType" value="${not empty controlAreaTrigger.triggerType ? controlAreaTrigger.triggerType : 'THRESHOLD_POINT'}"/>
+            <c:set var="peakTrackClass" value="${(triggerType != 'STATUS') && (not empty controlAreaTrigger.peakPointId) ? '' : 'dn'}"/>
             <c:set var="projectionClass" value="${controlAreaTrigger.controlAreaProjection.projectionType == 'LSF' ? '' : 'dn'}"/>
             <c:set var="thresholdClass" value="${triggerType == 'THRESHOLD' ? '' : 'dn'}"/>
             <c:set var="thresholdPointClass" value="${triggerType == 'THRESHOLD_POINT' ? '' : 'dn'}"/>
@@ -40,23 +42,40 @@
                         <tags:selectWithItems items="${triggerTypes}" path="triggerType" id="js-trigger-type" />
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW,EDIT">
-                        <form:hidden path="triggerType"/>
+                        <form:hidden path="triggerType" cssClass="js-trigger-type-val"/>
                         <i:inline key=".trigger.${triggerType}"/>
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.identification" valueClass="vam">
-                    <form:hidden id="trigger-point-id" path="triggerPointId"/>
+                    <form:hidden id="trigger-point-id-${uniqueId}" path="triggerPointId"/>
                     <tags:pickerDialog 
-                        id="triggerIdentification"
+                        id="triggerIdentification_${uniqueId}"
                         type="devicePointPicker"
                         linkType="selection"
                         selectionProperty="paoPoint"
                         buttonStyleClass="M0"
-                        destinationFieldId="trigger-point-id"
+                        destinationFieldId="trigger-point-id-${uniqueId}"
                         viewOnlyMode="${mode == 'VIEW'}"
                         includeRemoveButton="${true}"
                         removeValue="0"
                         endEvent="yukon:trigger:identification:complete"/>
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".trigger.usePeakTracking" rowClass="js-threshold js-threshold-point ${thresholdOrThresholdPointClass}" valueClass="vam">
+                    <tags:switchButton name="usePeak" onNameKey=".yes.label" offNameKey=".no.label" checked="${not empty controlAreaTrigger.peakPointId}"
+                                       id="js-use-peak-tracking-${uniqueId}"/>
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".trigger.peakTracking" rowClass="js-threshold js-threshold-point ${peakTrackClass} js-peak-tracking" valueClass="vam">
+                    <form:hidden id="peak-point-id-${uniqueId}" path="peakPointId"/>
+                    <tags:pickerDialog
+                        id="thresholdPointPeakTracking_${uniqueId}"
+                        type="devicePointPicker"
+                        linkType="selection"
+                        selectionProperty="paoPoint"
+                        buttonStyleClass="M0"
+                        viewOnlyMode="${mode == 'VIEW'}"
+                        includeRemoveButton="${true}"
+                        destinationFieldId="peak-point-id-${uniqueId}"
+                        removeValue="0"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.THRESHOLD" rowClass="js-threshold ${thresholdClass}">
                     <tags:numeric path="threshold" size="5" minValue="-999999" maxValue="999999"/>
@@ -76,38 +95,22 @@
                 <tags:nameValue2 nameKey=".trigger.ahead" rowClass="js-threshold js-threshold-ahead-row ${projectionClass}">
                     <tags:intervalDropdown path="controlAreaProjection.projectAheadDuration" intervals="${projectAheadDurations}" id="js-threshold-ahead"/>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".trigger.usePeakTracking" rowClass="js-threshold js-threshold-point ${thresholdOrThresholdPointClass}" valueClass="vam">
-                    <tags:switchButton name="usePeak" onNameKey=".yes.label" offNameKey=".no.label" checked="${!empty controlAreaTrigger.peakPointId}" id="js-use-peak-tracking"/>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".trigger.peakTracking" rowClass="js-threshold js-threshold-point ${peakTrackClass} js-peak-tracking" valueClass="vam">
-                    <form:hidden id="peak-point-id" path="peakPointId"/>
-                    <tags:pickerDialog
-                        id="thresholdPointPeakTracking"
-                        type="devicePointPicker"
-                        linkType="selection"
-                        selectionProperty="paoPoint"
-                        buttonStyleClass="M0"
-                        destinationFieldId="peak-point-id"
-                        viewOnlyMode="${mode == 'VIEW'}"
-                        includeRemoveButton="${true}"
-                        removeValue="0"/>
-                </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.thresholdPointSettings" rowClass="js-threshold-point ${thresholdPointClass}" valueClass="vam">
-                    <form:hidden id="threshold-point-id" path="thresholdPointId"/>
+                    <form:hidden id="threshold-point-id-${uniqueId}" path="thresholdPointId"/>
                     <tags:pickerDialog
-                        id="thresholdPointThresholdSettings"
+                        id="thresholdPointThresholdSettings_${uniqueId}"
                         type="devicePointPicker"
                         linkType="selection"
                         selectionProperty="paoPoint"
                         buttonStyleClass="M0"
-                        destinationFieldId="threshold-point-id"
+                        destinationFieldId="threshold-point-id-${uniqueId}"
                         viewOnlyMode="${mode == 'VIEW'}"
                         includeRemoveButton="${true}"
                         removeValue="0"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".trigger.normalState" id="js-normal-state" rowClass="js-status ${statusClass}">
-                    <tags:selectWithItems items="${normalStates}" path="normalState" defaultItemValue="0" id="js-status-normal-state"
-                    itemLabel="name" itemValue="id"/>
+                    <tags:selectWithItems items="${normalStates}" path="normalState" defaultItemValue="0"
+                                          id="js-status-normal-state" itemLabel="name" itemValue="id"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </form:form>
