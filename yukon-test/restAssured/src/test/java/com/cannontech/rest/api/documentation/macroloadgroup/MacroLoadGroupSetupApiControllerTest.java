@@ -11,8 +11,10 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.http.HttpDocumentation;
@@ -64,8 +66,9 @@ public class MacroLoadGroupSetupApiControllerTest {
     @Test(priority = 1)
     public void assignedLoadGroup_Create(ITestContext context) {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", macroAssignedLoadGroupPayloadfile);
-        String groupId = createResponse.path("groupId").toString();
-        context.setAttribute("macroLoadGroupId", groupId);
+        Integer groupId = createResponse.path("groupId");
+        context.setAttribute("macroLoadGroupId", groupId.toString());
+        context.setAttribute("assignedLoadGroupId", groupId);
         
         JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject(macroAssignedLoadGroupPayloadfile);
         JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
@@ -88,16 +91,29 @@ public class MacroLoadGroupSetupApiControllerTest {
             ApiCallHelper.delete("deleteloadgroup", payload, context.getAttribute("macroLoadGroupId").toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
-    
+
+    private JSONObject buildCreateRequestJSON(ITestContext context) {
+        JSONObject jsonObject =
+            JsonFileReader.readJsonFileAsJSONObject("documentation\\macroloadgroup\\lmMacroLoadGroupCreate.json");
+        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
+        context.setAttribute("macroLoadGroupCopy", jsonPath.getString("LOAD_GROUP_COPY.name"));
+
+        JSONObject jsonArrayObject = new JSONObject();
+        jsonArrayObject.put("id", context.getAttribute("assignedLoadGroupId"));
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.add(jsonArrayObject);
+        jsonObject.put("assignedLoadGroups", jsonArray);
+        return jsonObject;
+    }
+
     /**
      * Test case is to create Macro Load group
      * and to generate Rest api documentation for macro loadgroup create request.
+     * @throws IOException 
      */
     @Test(priority = 2)
-    public void Test_MacroLoadGroup_Create(ITestContext context) {
-        JsonFileReader.updateJsonFile("documentation\\macroloadgroup\\lmMacroLoadGroupCreate.json", "assignedLoadGroups",
-            context.getAttribute("macroLoadGroupId").toString());
-        
+    public void Test_MacroLoadGroup_Create(ITestContext context) throws IOException {
+        JSONObject jsonObject = buildCreateRequestJSON(context);
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
                                     requestFields(
@@ -108,7 +124,7 @@ public class MacroLoadGroupSetupApiControllerTest {
                                     .accept("application/json")
                                     .contentType("application/json")
                                     .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                    .body(ApiCallHelper.getInputFile("documentation\\macroloadgroup\\lmMacroLoadGroupCreate.json"))
+                                    .body(jsonObject.toJSONString())
                                     .when()
                                     .post(ApiCallHelper.getProperty("saveMacroLoadGroup"))
                                     .then()
@@ -152,7 +168,8 @@ public class MacroLoadGroupSetupApiControllerTest {
      * and to generate Rest api documentation for update request.
      */
     @Test(priority=4)
-    public void Test_MacroLoadGroup_Update() {
+    public void Test_MacroLoadGroup_Update(ITestContext context) {
+        JSONObject jsonObject = buildCreateRequestJSON(context);
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
                                     requestFields(
@@ -163,7 +180,7 @@ public class MacroLoadGroupSetupApiControllerTest {
                                    .accept("application/json")
                                    .contentType("application/json")
                                    .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                   .body(ApiCallHelper.getInputFile("documentation\\macroloadgroup\\lmMacroLoadGroupCreate.json"))
+                                   .body(jsonObject.toJSONString())
                                    .when()
                                    .post(ApiCallHelper.getProperty("updateMacroLoadGroup")+ paoId)
                                    .then()

@@ -1,6 +1,6 @@
 {
    "LM_GROUP_METER_DISCONNECT": {
-         "name": "MeteDisonnectLoadGroupTest",
+         "name": "MeterDisssConnect12",
          "type": "LM_GROUP_METER_DISCONNECT",
          "kWCapacity": 163,
          "disableGroup": false,

@@ -1,9 +1,9 @@
 {
-   "name":"macroLoadGrropupCreate",
+   "name":"TesstatingMacroLoadgrp1",
    "type":"MACRO_GROUP",
    "assignedLoadGroups":[
       {
-         "id":16298
+         "id":1622398
       }
    ]
 }
