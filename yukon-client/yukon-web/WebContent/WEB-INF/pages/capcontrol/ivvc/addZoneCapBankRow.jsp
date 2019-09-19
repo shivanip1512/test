@@ -9,7 +9,7 @@
 <table class="compact-results-table">
 <tr>
 	<td>
-        <spring:escapeBody>${row.name}</spring:escapeBody>
+        <spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
         <input type="hidden" value="${row.id}" name="bankAssignments[${itemIndex}].id"/>
         <input type="hidden" value="<spring:escapeBody>${row.name}</spring:escapeBody>" name="bankAssignments[${itemIndex}].name"/>
         <input type="hidden" value="<spring:escapeBody>${row.device}</spring:escapeBody>" name="bankAssignments[${itemIndex}].device"/>
