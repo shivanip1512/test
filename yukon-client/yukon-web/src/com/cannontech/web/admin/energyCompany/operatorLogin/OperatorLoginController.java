@@ -148,8 +148,7 @@ public class OperatorLoginController {
         
         // Determine if we can set a password
         AuthenticationCategory authenticationCategory = AuthenticationCategory.ENCRYPTED;
-        AuthType authType = authenticationCategory.getSupportingAuthType();
-        modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(authType));
+        modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(authenticationCategory));
         
         return "energyCompany/operatorLogin/create.jsp"; 
     }
@@ -208,8 +207,6 @@ public class OperatorLoginController {
         // Check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
-        AuthType defaultAuthType = authenticationService.getDefaultAuthType();
-        
         // Validate login
         LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(null);
         LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(null);
@@ -220,7 +217,8 @@ public class OperatorLoginController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             modelMap.addAttribute("mode", PageEditMode.CREATE);
-            modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(defaultAuthType));
+            AuthenticationCategory authenticationCategory = AuthenticationCategory.ENCRYPTED;
+            modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(authenticationCategory));
             return "energyCompany/operatorLogin/create.jsp";
         }
         
