@@ -60,26 +60,30 @@ yukon.dr.setup.controlArea = (function() {
         return length;
     },
     
-    _validatePickerValues = function(triggerType) {
+    _validatePickerValues = function(triggerType, uniqueIdentifier) {
         var errorFlag = false,
+            container = $("div.ui-dialog:visible"),
+            uniqueIdentifier = container.find(".js-unique-identifier").val(),
             nonSelected = "(none selected)",
-            triggerPointName = $("#point-trigger-identification-name").val(),
-            usePeakTracking = $("#js-use-peak-tracking").prop('checked');
+            triggerPointName = container.find("#point-trigger-identification-name").val(),
+            usePeakTracking = container.find("#js-use-peak-tracking-" + uniqueIdentifier).prop('checked'),
+            thresholdPointPeakTrackingText = container.find("#picker-thresholdPointPeakTracking_" + uniqueIdentifier + "-btn").text(),
+            thresholdPointThresholdSettingsText = container.find("#picker-thresholdPointThresholdSettings_" + uniqueIdentifier + "-btn").text();
 
         if (triggerPointName.indexOf(nonSelected) != -1) {
             errorFlag = true;
-            $(".js-trigger-identification-error").removeClass("dn");
+            container.find(".js-trigger-identification-error").removeClass("dn");
         }
         if (usePeakTracking && triggerType !== 'STATUS') {
-            if (thresholdPointPeakTracking.selectionLabel.innerText.indexOf(nonSelected) != -1) {
+            if (thresholdPointPeakTrackingText.indexOf(nonSelected) != -1) {
                 errorFlag = true;
-                $(".js-peak-tracking-error").removeClass("dn");
+                container.find(".js-peak-tracking-error").removeClass("dn");
             }
         }
         if (triggerType === "THRESHOLD_POINT") {
-            if (thresholdPointThresholdSettings.selectionLabel.innerText.indexOf(nonSelected) != -1) {
+            if (thresholdPointThresholdSettingsText.indexOf(nonSelected) != -1) {
                 errorFlag = true;
-                $(".js-threshold-setting-error").removeClass("dn");
+                container.find(".js-threshold-setting-error").removeClass("dn");
             }
         }
         return errorFlag;
@@ -198,9 +202,11 @@ yukon.dr.setup.controlArea = (function() {
                 _clearErrors();
                 var dialog = $(event.target),
                     container = $("div.ui-dialog:visible"),
-                    triggerType = $("#js-trigger-type option:selected").val();
+                    triggerType = $("#js-trigger-type option:selected").val(),
+                    uniqueIdentifier = container.find(".js-unique-identifier").val(),
+                    triggerIdentificationText = $("#picker-triggerIdentification_" + uniqueIdentifier + "-btn").text();
                 
-                container.find("#point-trigger-identification-name").val(triggerIdentification.selectionLabel.innerText);
+                container.find("#point-trigger-identification-name").val(triggerIdentificationText);
 
                 if(triggerType === undefined){
                     triggerType = container.find("#triggerType").val();
