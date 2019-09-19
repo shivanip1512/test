@@ -60,13 +60,18 @@ public class MeterDisconnectMessageListener {
     public void handleCyclingControlMessage(Message message) {
         if (message instanceof StreamMessage) {
             // Process control message
-            MeterDisconnectControlMessage controlMessage = new MeterDisconnectControlMessage(message);
+            MeterDisconnectControlMessage controlMessage = new MeterDisconnectControlMessage((StreamMessage) message);
             
             // Turn GroupId into a collection for passing to methods
             Collection<Integer> groupIdCollection = Arrays.asList(controlMessage.getGroupId());
             
             // Create duration for control
             int controlDurationSeconds = new Duration(controlMessage.getStartTime(), controlMessage.getEndTime()).toStandardSeconds().getSeconds();
+            
+            // Checks that the control duration received is positive.
+            if(controlDurationSeconds <= 0) {
+                return;
+            }
             
             // Find all the opted out devices that are in the groupId
             Set<Integer> optOutInventory = optOutEventDao.getOptedOutInventoryByLoadGroups(groupIdCollection);
@@ -97,7 +102,7 @@ public class MeterDisconnectMessageListener {
     public void handleRestoreMessage(Message message) {
         if (message instanceof StreamMessage) {
             // Process restore message
-            MeterDisconnectRestoreMessage restoreMessage = new MeterDisconnectRestoreMessage(message);
+            MeterDisconnectRestoreMessage restoreMessage = new MeterDisconnectRestoreMessage((StreamMessage) message);
             
             // Turn GroupId into a collection for passing to methods
             Collection<Integer> groupIdCollection = Arrays.asList(restoreMessage.getGroupId());
@@ -125,7 +130,7 @@ public class MeterDisconnectMessageListener {
             sendConnectAndLogStatusCallback(programId, eventId, collection);
             
             // Log the controlHistoryRestore message and the restore time (now)
-            controlHistoryService.sendControlHistoryRestoreMessage(restoreMessage.getGroupId(), Instant.now());         
+            controlHistoryService.sendControlHistoryRestoreMessage(restoreMessage.getGroupId(), restoreMessage.getRestoreTime());         
         }
     }
 
@@ -171,7 +176,7 @@ public class MeterDisconnectMessageListener {
             return true;
         }
     }
-    
+       
     private void logRestoreEvent(MeterDisconnectRestoreMessage restoreMessage, int programId,
                                  Optional<Integer> eventId) {
         log.debug("Event " + eventId + " found during lookup");
