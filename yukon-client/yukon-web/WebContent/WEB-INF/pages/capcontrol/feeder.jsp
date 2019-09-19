@@ -290,7 +290,7 @@
                         <c:forEach var="capBank" items="${capBankList}">
                         <li>
                             <cti:url var="capBankUrl" value="/capcontrol/capbanks/${capBank.ccId}"/>
-                            <a href="${capBankUrl}">${capBank.ccName}</a>
+                            <a href="${capBankUrl}">${fn:escapeXml(capBank.ccName)}</a>
                         </li>
                         </c:forEach>
                     </ul>
