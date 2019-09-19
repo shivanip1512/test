@@ -211,9 +211,9 @@ public class MacroLoadGroupSetupController {
                 }
                 if (result.hasGlobalErrors()) {
                     List<ObjectError> objectErrorList = result.getGlobalErrors();
-                    List<String> errors =objectErrorList.stream()
-                                                        .map(obj -> obj.getCode())
-                                                        .collect(Collectors.toList());
+                    List<String> errors = objectErrorList.stream()
+                                                         .map(obj -> obj.getCode())
+                                                         .collect(Collectors.toList());
                     flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(String.join(", ", errors)));
                 }
                 return bindAndForward(macroLoadGroup, result, redirectAttributes);
