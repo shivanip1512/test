@@ -526,10 +526,12 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         }
         
         // Copy the files over SFTP
-        List<File> files;
+        List<File> files = new ArrayList<>();
         
         try (SftpConnection sftp = new SftpConnection(domain, port, proxy, user, password, keys.getPrivateKey())) {
             files = copySftpFiles(sftp, fileUrls, commandId, timestamp);
+        } catch (Exception e) {
+            log.debug("Error copying data files over SFTP", e);
         }
         
         // Check and possibly clean up old files
@@ -548,6 +550,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         for (int i = 0; i < fileUrls.size(); i++) {
             String fileUrl = fileUrls.get(i);
             fileUrl = trimItronSftpFilePathToReports(fileUrl);
+            log.debug("Trimmed file path: " + fileUrl);
             
             try {
                 // Determine the local file name/path
@@ -589,6 +592,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             ZipOutputStream zos = new ZipOutputStream(fos);) {
             
             for (File file : files) {
+                log.debug("Zipping file: {}", file.getName());
                 zos.putNextEntry(new ZipEntry(file.getName()));
                 byte[] bytes = Files.readAllBytes(Paths.get(file.getPath()));
                 zos.write(bytes, 0, bytes.length);
