@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -140,30 +139,11 @@ public class UserEditorController {
             @ModelAttribute User user, BindingResult result, ModelMap model, FlashScope flash) {
 
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(user.getUserId());
-        Integer userGroupId = null;
-        String userGroupName = CtiUtilities.STRING_NONE;
-        if (yukonUser.getUserGroupId() != null) {
-            userGroupId = yukonUser.getUserGroupId();
-            userGroupName = userGroupDao.getLiteUserGroup(userGroupId).getUserGroupName();
-        }
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserId());
         user.updateForSave(yukonUser, userAuthenticationInfo);
-        boolean requiresPasswordChanged = user.isAuthenticationChanged()
-                && authService.supportsPasswordSet(user.getAuthCategory());
-        if (requiresPasswordChanged) {
-            PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(yukonUser);
-            String generatedPassword = "";
-            generatedPassword = passwordPolicy.generatePassword();
-            user.getPassword().setConfirmPassword(generatedPassword);
-            user.getPassword().setPassword(generatedPassword);
-            new PasswordValidator(yukonUser, "password.password", "password.confirmPassword")
-            .validate(user.getPassword(), result);
-            if (result.hasErrors()) {
-                model.addAttribute("hasPasswordError", true);
-            }
-        }
-        userValidator.validate(user, result);
         
+        // validate the user, it will be "saved" later
+        userValidator.validate(user, result);
         if (result.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
@@ -171,11 +151,22 @@ public class UserEditorController {
             return "userGroupEditor/user.jsp";
         }
 
+        // load some metadata for logging
         String ecName = CtiUtilities.STRING_NONE;
         if (user.getEnergyCompanyId() != null) {
             ecName = ecDao.getEnergyCompany(user.getEnergyCompanyId()).getName();
         }
+        Integer userGroupId = null;
+        String userGroupName = CtiUtilities.STRING_NONE;
+        if (yukonUser.getUserGroupId() != null) {
+            userGroupId = yukonUser.getUserGroupId();
+            userGroupName = userGroupDao.getLiteUserGroup(userGroupId).getUserGroupName();
+        }
+
+        // update the user
         yukonUserDao.save(yukonUser);
+        
+        // do some logging
         usersEventLogService.userUpdated(user.getUsername(), userGroupName, ecName, user.getLoginStatus(), userContext.getYukonUser());
         if (userGroupId == null && yukonUser.getUserGroupId() != null) {
             LiteUserGroup addedToUserGroup = userGroupDao.getLiteUserGroup(yukonUser.getUserGroupId());
@@ -191,6 +182,7 @@ public class UserEditorController {
                 userContext.getYukonUser());
         }
 
+        // update energy company assignment
         boolean ecMappingExists = ecDao.isEnergyCompanyOperator(yukonUser);
         if (user.getEnergyCompanyId() != null) {
             if (ecMappingExists) {
@@ -205,10 +197,16 @@ public class UserEditorController {
             }
         }
         
-        
+        // update AuthType and Password
+        boolean requiresPasswordChanged = user.isAuthenticationChanged() && authService.supportsPasswordSet(user.getAuthCategory());
         if (requiresPasswordChanged) {
-            authService.setPassword(yukonUser, user.getPassword().getPassword(), userContext.getYukonUser());
-        } else if (user.isAuthenticationChanged()) {
+            PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(yukonUser);
+            String generatedPassword = passwordPolicy.generatePassword();
+            // Password is _not_ being validated, since it is auto generated, we assume it passes.
+            //  Note: we also have a chicken-egg problem. In order to validate password, we need to have the AuthType set. But we can't set that without having password set. (so skip validation)
+            // updates AuthType and Password
+            authService.setPassword(yukonUser, user.getAuthCategory(), generatedPassword, userContext.getYukonUser());
+        } else if (user.isAuthenticationChanged()) { // if password doesn't need to be updated, then just change the AuthType
             authService.setAuthenticationCategory(yukonUser, user.getAuthCategory());
         }
         
