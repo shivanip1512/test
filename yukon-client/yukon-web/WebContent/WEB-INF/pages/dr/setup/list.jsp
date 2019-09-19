@@ -62,16 +62,15 @@
                 <form:form id="setupFilter" method="get" modelAttribute="lmSetupFilter" action="${filterUrl}">
                     <cti:msg2 var="namePlaceholder" key="yukon.common.name"/>
                     <cti:msg2 var="filterLbl" key="yukon.common.filter"/>
+                    <cti:msg2 var="selectLbl" key="yukon.web.modules.dr.setup.loadGroup.filter.types"/>
                     <tags:selectWithItems items="${filterByTypes}" path="filterByType" id="js-filter-by-type" inputClass="vat"/>
                     <tags:input path="name" placeholder="${namePlaceholder}" inputClass="vat" id="js-name"/>
                     <div class="js-load-group-types-container dib dn">
-                        <cti:msg2 var="selectSwitchTypesLbl" key="yukon.web.modules.dr.setup.loadGroup.filter.selectSwitchTypes"/>
-                        <tags:selectWithItems items="${loadGroupTypes}" path="types" dataPlaceholder="${selectSwitchTypesLbl}" 
+                        <tags:selectWithItems items="${loadGroupTypes}" path="types" dataPlaceholder="${selectLbl}" 
                                               id="js-load-group-types"/>
                     </div>
                     <div class="js-load-program-types-container dib dn">
-                        <cti:msg2 var="selectProgramTypesLbl" key="yukon.web.modules.dr.setup.loadGroup.filter.selectProgramTypes"/>
-                        <tags:selectWithItems items="${loadProgramTypes}" path="types" dataPlaceholder="${selectProgramTypesLbl}"
+                        <tags:selectWithItems items="${loadProgramTypes}" path="types" dataPlaceholder="${selectLbl}"
                                               id="js-load-program-types"/>
                     </div>
                     <cti:button label="${filterLbl}" classes="primary action fr" type="submit"/>

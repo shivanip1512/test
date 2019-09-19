@@ -104,8 +104,7 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_6">Load 6</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_7">Load 7</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_8">Load 8</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.filter.selectSwitchTypes">Select Switch Type(s)</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.filter.selectProgramTypes">Select Program Type(s)</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.filter.types">Select Type(s)</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.loadAddressingPopup.title">Load level group addressing vs. load number addressing</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.loadAddressingPopup.message">
 By including load in your address usage, you are requiring the load to be configured
