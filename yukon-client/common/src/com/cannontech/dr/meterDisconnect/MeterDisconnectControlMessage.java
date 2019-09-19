@@ -1,7 +1,6 @@
 package com.cannontech.dr.meterDisconnect;
 
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.StreamMessage;
 
 import org.apache.logging.log4j.Logger;
@@ -17,13 +16,12 @@ public class MeterDisconnectControlMessage {
     private Instant startTime;
     private Instant endTime;
 
-    public MeterDisconnectControlMessage(Message message) {
+    public MeterDisconnectControlMessage(StreamMessage message) {
         log.debug("Received message on yukon.notif.stream.dr.MeterDisconnectControlMessage queue.");
-        StreamMessage msg = (StreamMessage) message;
         try {
-            this.groupId = msg.readInt();
-            this.startTime = new Instant(msg.readLong() * 1000);
-            this.endTime = new Instant(msg.readLong() * 1000);
+            this.groupId = message.readInt();
+            this.startTime = new Instant(message.readLong() * 1000);
+            this.endTime = new Instant(message.readLong() * 1000);
         } catch (JMSException e) {
             log.error("Error parsing Meter Disconnect control message from LM", e);
         }

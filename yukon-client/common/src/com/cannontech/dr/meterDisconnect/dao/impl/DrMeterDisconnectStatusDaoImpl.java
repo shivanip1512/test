@@ -107,7 +107,7 @@ public class DrMeterDisconnectStatusDaoImpl implements DrMeterDisconnectStatusDa
         sql.append("AND StartTime").lt(now);
         // for the next 24 hours after the endtime, any restore sent to a group will be considered associated with the control event.
         // If another control happens the restores are associated with the most recent control
-        sql.append("AND EndTime ").gte(now.minus(86400));
+        sql.append("AND EndTime").gte(now.minus(86400));
         
         // This will error if there are multiple active events
         Integer eventId = jdbcTemplate.queryForObject(sql, TypeRowMapper.INTEGER_NULLABLE);

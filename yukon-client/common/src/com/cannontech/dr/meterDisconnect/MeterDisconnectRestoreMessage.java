@@ -1,7 +1,6 @@
 package com.cannontech.dr.meterDisconnect;
 
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.StreamMessage;
 
 import org.apache.logging.log4j.Logger;
@@ -14,14 +13,13 @@ public class MeterDisconnectRestoreMessage {
         YukonLogManager.getLogger(MeterDisconnectRestoreMessage.class);
 
     private int groupId;
-    Instant restoreTime;
+    private Instant restoreTime;
 
-    public MeterDisconnectRestoreMessage(Message message) {
+    public MeterDisconnectRestoreMessage(StreamMessage message) {
         log.debug("Received message on yukon.notif.stream.dr.MeterDisconnectRestoreMessage queue.");
-        StreamMessage msg = (StreamMessage) message;
         try {
-            this.groupId = msg.readInt();
-            this.restoreTime = new Instant(msg.readLong());
+            this.groupId = message.readInt();
+            this.restoreTime = new Instant(message.readLong() * 1000);
         } catch (JMSException e) {
             log.warn("Error parsing Meter Disconnect restore message from LM", e);
         }
