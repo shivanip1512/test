@@ -1,15 +1,9 @@
 {
-   "name":"Test_LMObject_Macro",
+   "name":"macroLoadGrropupCreate",
    "type":"MACRO_GROUP",
    "assignedLoadGroups":[
       {
-         "id":16237
-      },
-      {
          "id":16298
-      },
-      {
-         "id":16306
       }
    ]
 }

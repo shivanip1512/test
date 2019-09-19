@@ -35,6 +35,7 @@ public class MacroLoadGroupSetupApiControllerTest {
     private ManualRestDocumentation restDocumentation = new ManualRestDocumentation();
     private RequestSpecification documentationSpec;
     private String paoId = null;
+    private final static String macroAssignedLoadGroupPayloadfile = "documentation\\macroloadgroup\\lmMacroAssignedLoadgroupCreate.json";
 
     @BeforeMethod
     public void setUp(Method method) {
@@ -57,11 +58,46 @@ public class MacroLoadGroupSetupApiControllerTest {
     }
 
     /**
+     * Test case is to create Load group
+     * as we need to pass load group on request of macro loadgroup.
+     */
+    @Test(priority = 1)
+    public void assignedLoadGroup_Create(ITestContext context) {
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", macroAssignedLoadGroupPayloadfile);
+        String groupId = createResponse.path("groupId").toString();
+        context.setAttribute("macroLoadGroupId", groupId);
+        
+        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject(macroAssignedLoadGroupPayloadfile);
+        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
+        context.setAttribute("macroLoadGroupName", jsonPath.getString("LM_GROUP_METER_DISCONNECT.name"));
+        
+        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+    }
+
+    /**
+     * Test case is to Delete Load group
+     * we have created for macro laodgroup.
+     */
+    @Test(priority = 7)
+    public void assignedLoadGroup_Delete(ITestContext context) {
+        JSONObject payload =
+            JsonFileReader.updateJsonFile("documentation\\macroloadgroup\\lmMacroAssignedLoadGroupDelete.json", "name",
+                context.getAttribute("macroLoadGroupName").toString());
+
+        ExtractableResponse<?> response =
+            ApiCallHelper.delete("deleteloadgroup", payload, context.getAttribute("macroLoadGroupId").toString());
+        assertTrue("Status code should be 200", response.statusCode() == 200);
+    }
+    
+    /**
      * Test case is to create Macro Load group
      * and to generate Rest api documentation for macro loadgroup create request.
      */
-    @Test(priority = 1)
-    public void Test_MacroLoadGroup_Create() {
+    @Test(priority = 2)
+    public void Test_MacroLoadGroup_Create(ITestContext context) {
+        JsonFileReader.updateJsonFile("documentation\\macroloadgroup\\lmMacroLoadGroupCreate.json", "assignedLoadGroups",
+            context.getAttribute("macroLoadGroupId").toString());
+        
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
                                     requestFields(
@@ -88,7 +124,7 @@ public class MacroLoadGroupSetupApiControllerTest {
      * Test case is to  update Macro Load group created by test case Test_MacroLoadGroup_Create
      * and to generate Rest api documentation for update request.
      */
-    @Test(priority = 2)
+    @Test(priority = 3)
     public void Test_MacroLoadGroup_Get() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}",
@@ -115,7 +151,7 @@ public class MacroLoadGroupSetupApiControllerTest {
      * Test case is to  update Macro Load group created by test case Test_MacroLoadGroup_Create
      * and to generate Rest api documentation for update request.
      */
-    @Test(priority=3)
+    @Test(priority=4)
     public void Test_MacroLoadGroup_Update() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
@@ -143,7 +179,7 @@ public class MacroLoadGroupSetupApiControllerTest {
      * Test case is to  create copy of Macro Load group created by test case Test_MacroLoadGroup_Create
      * and to generate Rest api documentation for copy request.
      */
-    @Test(priority = 4)
+    @Test(priority = 5)
     public void Test_MacroLoadGroup_Copy(ITestContext context) {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
