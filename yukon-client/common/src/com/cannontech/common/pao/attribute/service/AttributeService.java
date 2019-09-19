@@ -276,7 +276,7 @@ public interface AttributeService {
     Multimap<BuiltInAttribute, SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group,
             List<BuiltInAttribute> attributes, List<Integer> deviceIds);
     /**
-     * combines create and find point for attribute
+     * Combines create and find point for attribute
      */
-    LitePoint createAndFindPointForAttribute(LiteYukonPAObject pao, BuiltInAttribute attribute);
+    LitePoint createAndFindPointForAttribute(YukonPao pao, BuiltInAttribute attribute);
 }

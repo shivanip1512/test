@@ -679,8 +679,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public LitePoint createAndFindPointForAttribute(LiteYukonPAObject pao,
-                                                    BuiltInAttribute attribute) {
+    public LitePoint createAndFindPointForAttribute(YukonPao pao, BuiltInAttribute attribute) {
         createPointForAttribute(pao, attribute);
         return findPointForAttribute(pao, attribute);
     }
