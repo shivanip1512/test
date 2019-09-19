@@ -15,6 +15,8 @@ import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.userpage.model.SiteMapCategory;
 import com.cannontech.common.util.MatchStyle;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -131,7 +133,13 @@ public class SiteMapHelper {
             if ( permission instanceof YukonRole) {
                 hasPermission = rolePropertyDao.checkRole((YukonRole) permission, user);
             } else if (permission instanceof YukonRoleProperty) {
-                hasPermission = rolePropertyDao.checkProperty((YukonRoleProperty) permission, user);
+                YukonRoleProperty roleProp = (YukonRoleProperty) permission;
+                InputType<?> type = roleProp.getType();
+                if (type == InputTypeFactory.booleanType()) {
+                    hasPermission = rolePropertyDao.checkProperty((YukonRoleProperty) permission, user);
+                } else if (type.getTypeClass() == HierarchyPermissionLevel.class) {
+                    hasPermission = rolePropertyDao.checkLevel(roleProp, HierarchyPermissionLevel.RESTRICTED, user);
+                }
             } else if (permission instanceof GlobalSettingType) {
                 InputType<?> dataType = ((GlobalSettingType) permission).getType();
                 if (dataType.getTypeClass() == Boolean.class) {

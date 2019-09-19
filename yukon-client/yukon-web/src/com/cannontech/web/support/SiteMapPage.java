@@ -68,6 +68,7 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.ENABLE_ESTIMATED_LOAD, YukonRole.DEMAND_RESPONSE),
     DR_BULK_UPDATE(SiteMapCategory.DR, "yukon.web.modules.tools.bulk.updateUpload.pageName", "/bulk/update/upload",
                 MatchStyle.all, YukonRoleProperty.BULK_UPDATE_OPERATION),
+    DR_SETUP(SiteMapCategory.DR, "yukon.web.modules.dr.setup.pageName", "/dr/setup/list", MatchStyle.all, YukonRoleProperty.DR_SETUP_PERMISSION),
     
     AREAS(SiteMapCategory.VV, "yukon.web.modules.capcontrol.areas.pageName", "/capcontrol/tier/areas",
             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
