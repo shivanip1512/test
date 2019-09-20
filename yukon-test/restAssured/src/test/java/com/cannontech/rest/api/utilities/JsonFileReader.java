@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Set;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -119,4 +121,40 @@ public class JsonFileReader {
             return jsonObj;
         }
     }
+    
+    
+    public static JSONObject updateJson(JSONObject jsonObj, String keyString, String replaceValueWith) {
+
+        Set<String> set = jsonObj.keySet();
+        Iterator iterator = set.iterator();
+        //String key = null;
+        Object obj = null;
+        Object objKey = null;
+        while(iterator.hasNext()) {
+            objKey = iterator.next();
+            obj = jsonObj.get(objKey);
+
+            if (obj instanceof JSONArray) {
+                // It's an array
+                JSONArray jArray = (JSONArray) obj;
+                for (int i=0;i<jArray.size();i++) {
+                    JSONObject js = (JSONObject) jArray.get(i);
+                    updateJson(js, keyString, replaceValueWith);
+                }
+            }
+            else if (obj instanceof JSONObject) {
+                // It's an object
+                JSONObject jo = (JSONObject) obj;
+                updateJson(jo, keyString, replaceValueWith);
+            }
+            else {
+                if (objKey.equals(keyString)) {
+                jsonObj.replace(keyString, replaceValueWith);
+                return jsonObj;
+        }
+        }
+}
+        return jsonObj;
+    
+}
 }
