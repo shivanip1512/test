@@ -61,7 +61,7 @@ public class MacroLoadGroupSetupApiControllerTest {
 
     /**
      * Test case is to create Load group
-     * as we need to pass load group on request of macro loadgroup.
+     * as we need to pass load group on request of macro load group.
      */
     @Test(priority = 1)
     public void assignedLoadGroup_Create(ITestContext context) {
@@ -69,11 +69,11 @@ public class MacroLoadGroupSetupApiControllerTest {
         Integer groupId = createResponse.path("groupId");
         context.setAttribute("macroLoadGroupId", groupId.toString());
         context.setAttribute("assignedLoadGroupId", groupId);
-        
+
         JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject(macroAssignedLoadGroupPayloadfile);
         JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
         context.setAttribute("macroLoadGroupName", jsonPath.getString("LM_GROUP_METER_DISCONNECT.name"));
-        
+
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
     }
 
@@ -121,15 +121,15 @@ public class MacroLoadGroupSetupApiControllerTest {
                                     fieldWithPath("type").type(JsonFieldType.STRING).description("Macro Load Group Type"),
                                     fieldWithPath("assignedLoadGroups[].id").type(JsonFieldType.NUMBER).description("Assigned Load Group Id")),
                                     responseFields(fieldWithPath("paoId").type(JsonFieldType.NUMBER).description("Macro Load Group Id"))))
-                                    .accept("application/json")
-                                    .contentType("application/json")
-                                    .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                    .body(jsonObject.toJSONString())
-                                    .when()
-                                    .post(ApiCallHelper.getProperty("saveMacroLoadGroup"))
-                                    .then()
-                                    .extract()
-                                    .response();
+                                .accept("application/json")
+                                .contentType("application/json")
+                                .header("Authorization","Bearer " + ApiCallHelper.authToken)
+                                .body(jsonObject.toJSONString())
+                                .when()
+                                .post(ApiCallHelper.getProperty("saveMacroLoadGroup"))
+                                .then()
+                                .extract()
+                                .response();
 
         paoId = response.path("paoId").toString();
         assertTrue("PAO ID should not be Null", paoId != null);
@@ -151,14 +151,14 @@ public class MacroLoadGroupSetupApiControllerTest {
                                     fieldWithPath("assignedLoadGroups[].id").type(JsonFieldType.NUMBER).description("Assigned Load Group Id"),
                                     fieldWithPath("assignedLoadGroups[].name").type(JsonFieldType.STRING).description("Assigned Load Group Name"),
                                     fieldWithPath("assignedLoadGroups[].type").type(JsonFieldType.STRING).description("Assigned  Load Group Type"))))
-                                    .accept("application/json")
-                                    .contentType("application/json")
-                                    .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                    .when()
-                                    .get(ApiCallHelper.getProperty("getMacroloadgroup") + paoId)
-                                    .then()
-                                    .extract()
-                                    .response();
+                                .accept("application/json")
+                                .contentType("application/json")
+                                .header("Authorization","Bearer " + ApiCallHelper.authToken)
+                                .when()
+                                .get(ApiCallHelper.getProperty("getMacroloadgroup") + paoId)
+                                .then()
+                                .extract()
+                                .response();
     
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
@@ -177,15 +177,15 @@ public class MacroLoadGroupSetupApiControllerTest {
                                     fieldWithPath("type").type(JsonFieldType.STRING).description("Macro Load Group Type"),
                                     fieldWithPath("assignedLoadGroups[].id").type(JsonFieldType.NUMBER).description("Assigned Load Group Id")),
                                     responseFields(fieldWithPath("paoId").type(JsonFieldType.NUMBER).description("Macro Load Group Id"))))
-                                   .accept("application/json")
-                                   .contentType("application/json")
-                                   .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                   .body(jsonObject.toJSONString())
-                                   .when()
-                                   .post(ApiCallHelper.getProperty("updateMacroLoadGroup")+ paoId)
-                                   .then()
-                                   .extract()
-                                   .response();
+                               .accept("application/json")
+                               .contentType("application/json")
+                               .header("Authorization","Bearer " + ApiCallHelper.authToken)
+                               .body(jsonObject.toJSONString())
+                               .when()
+                               .post(ApiCallHelper.getProperty("updateMacroLoadGroup")+ paoId)
+                               .then()
+                               .extract()
+                               .response();
 
         paoId = response.path("paoId").toString();
         assertTrue("PAO ID should not be Null", paoId != null);
@@ -203,15 +203,15 @@ public class MacroLoadGroupSetupApiControllerTest {
                                     requestFields(
                                     fieldWithPath("LOAD_GROUP_COPY.name").type(JsonFieldType.STRING).description("Macro Load Group Copy Name")), 
                                     responseFields(fieldWithPath("paoId").type(JsonFieldType.NUMBER).description("Macro Load Group Copy Id"))))
-                                    .accept("application/json")
-                                    .contentType("application/json")
-                                    .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                    .body(ApiCallHelper.getInputFile("documentation\\macroloadgroup\\MacroLoadGroupCopy.json"))
-                                    .when()
-                                    .post(ApiCallHelper.getProperty("copyMacroLoadGroup")+ paoId)
-                                    .then()
-                                    .extract()
-                                    .response();
+                                .accept("application/json")
+                                .contentType("application/json")
+                                .header("Authorization","Bearer " + ApiCallHelper.authToken)
+                                .body(ApiCallHelper.getInputFile("documentation\\macroloadgroup\\MacroLoadGroupCopy.json"))
+                                .when()
+                                .post(ApiCallHelper.getProperty("copyMacroLoadGroup")+ paoId)
+                                .then()
+                                .extract()
+                                .response();
 
         JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\macroloadgroup\\MacroLoadGroupCopy.json");
         JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
@@ -243,19 +243,19 @@ public class MacroLoadGroupSetupApiControllerTest {
     @Test(priority=6)
     public void Test_MacroLoadGroup_Delete() {
         Response response = given(documentationSpec)
-                               .filter(document("{ClassName}/{methodName}",
-                               requestFields(
-                               fieldWithPath("name").type(JsonFieldType.STRING).description("Macro Load Group Name")), 
-                               responseFields(fieldWithPath("paoId").type(JsonFieldType.NUMBER).description("Macro Load Group Id"))))
-                               .accept("application/json")
-                               .contentType("application/json")
-                               .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                               .body(ApiCallHelper.getInputFile("documentation\\macroloadgroup\\lmMacroLoadGroupDelete.json"))
-                               .when()
-                               .delete(ApiCallHelper.getProperty("deleteMacroLoadGroup") + paoId)
-                               .then()
-                               .extract()
-                               .response();
+                                .filter(document("{ClassName}/{methodName}",
+                                    requestFields(
+                                    fieldWithPath("name").type(JsonFieldType.STRING).description("Macro Load Group Name")), 
+                                    responseFields(fieldWithPath("paoId").type(JsonFieldType.NUMBER).description("Macro Load Group Id"))))
+                                .accept("application/json")
+                                .contentType("application/json")
+                                .header("Authorization","Bearer " + ApiCallHelper.authToken)
+                                .body(ApiCallHelper.getInputFile("documentation\\macroloadgroup\\lmMacroLoadGroupDelete.json"))
+                                .when()
+                                .delete(ApiCallHelper.getProperty("deleteMacroLoadGroup") + paoId)
+                                .then()
+                                .extract()
+                                .response();
      
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }

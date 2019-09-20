@@ -1,6 +1,6 @@
 {
    "LM_GROUP_METER_DISCONNECT": {
-         "name": "MeterDisssConnect12",
+         "name": "MeterDiconnectLoadGroup",
          "type": "LM_GROUP_METER_DISCONNECT",
          "kWCapacity": 163,
          "disableGroup": false,

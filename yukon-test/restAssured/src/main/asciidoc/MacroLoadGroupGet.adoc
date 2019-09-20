@@ -7,14 +7,14 @@
 
 ==== Macro LaodGroup Retrieve
 
-*Retrieve Response JSON* :
+*Request URL* :
 
 include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Get/http-request.adoc[]
 
-*Response Parameter's* :
+*Response Properties* :
 
 include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Get/response-fields.adoc[]
 
-*Retrieve Response JSON* :
+*Response JSON* :
 
 include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Get/http-response.adoc[]

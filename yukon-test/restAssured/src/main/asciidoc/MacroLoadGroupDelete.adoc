@@ -12,7 +12,7 @@
 include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Delete/request-fields.adoc[]
 
 
-*Delete Request JSON* :
+*Request JSON* :
 
 include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Delete/http-request.adoc[]
 
@@ -22,7 +22,7 @@ include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Del
 include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Delete/response-fields.adoc[]
 
 
-*Delete response JSON* :
+*Response JSON* :
 
 include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Delete/http-response.adoc[]
 
