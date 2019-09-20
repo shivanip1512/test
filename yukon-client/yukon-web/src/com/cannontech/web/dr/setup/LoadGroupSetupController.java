@@ -117,6 +117,7 @@ public class LoadGroupSetupController {
             model.addAttribute("selectedSwitchType", loadGroup.getType());
             model.addAttribute("loadGroup", loadGroup);
             controllerHelper.buildModelMap(loadGroup.getType(), model, request, userContext);
+            model.addAttribute("isLoadGroupSupportRoute", loadGroup.getType().isLoadGroupSupportRoute());
             return "dr/setup/loadGroup/loadGroupView.jsp";
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
@@ -265,7 +266,7 @@ public class LoadGroupSetupController {
     /**
      * Load Group - Copy Popup functionality.
      */
-    @GetMapping("/{id}/rendercopyloadGroup")
+    @GetMapping("/{id}/renderCopyLoadGroup")
     public String renderCopyLoadGroup(@PathVariable int id, Integer routeId, ModelMap model, YukonUserContext userContext,
             HttpServletRequest request) {
 

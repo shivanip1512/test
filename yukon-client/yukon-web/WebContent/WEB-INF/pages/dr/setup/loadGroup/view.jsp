@@ -41,9 +41,8 @@
 
         <!-- Copy loadGroup dialog -->
         <cti:msg2 var="copyloadGroupPopUpTitle" key="yukon.web.modules.dr.setup.loadGroup.copy"/>
-        <cti:url var="renderCopyloadGroupUrl" value="/dr/setup/loadGroup/${loadGroup.id}/rendercopyloadGroup">
-            <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
-                        selectedSwitchType == 'LM_GROUP_EMETCON' || selectedSwitchType == 'LM_GROUP_VERSACOM'}">
+        <cti:url var="renderCopyloadGroupUrl" value="/dr/setup/loadGroup/${loadGroup.id}/renderCopyLoadGroup">
+            <c:if test="${isLoadGroupSupportRoute}">
                 <cti:param name="routeId" value="${loadGroup.routeId}" />
             </c:if>
         </cti:url>
