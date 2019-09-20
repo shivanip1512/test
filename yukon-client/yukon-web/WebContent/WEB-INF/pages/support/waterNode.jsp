@@ -33,7 +33,7 @@
             <div class="MT30">
                 <div>
                     <i:inline key=".intervalEnd"/>
-                    <dt:date name="analysisEnd" wrapperClass="fn vam" displayValidationToRight="true" value="${batteryModel.analysisEnd}"/>
+                    <dt:date name="analysisEnd" maxDate="${maxDate}" minDate="${minDate}" wrapperClass="fn vam" displayValidationToRight="true" value="${batteryModel.analysisEnd}"/>
                     <cti:button nameKey="generateReport" classes="action fn vab" type="submit" icon="icon-page-white-excel"/>
                 </div>
             </div>
@@ -55,7 +55,7 @@
             <div class="MT30">
                 <div>
                     <i:inline key=".intervalEnd"/>
-                    <dt:date name="lastCreatedReport" wrapperClass="fn vam" displayValidationToRight="true" value="${batteryModel.lastCreatedReport}"/>
+                    <dt:date name="lastCreatedReport" maxDate="${maxDate}" minDate="${minDate}" wrapperClass="fn vam" displayValidationToRight="true" value="${batteryModel.lastCreatedReport}"/>
                     <cti:button nameKey="generateDetailedReport" classes="action fn vab" type="submit" icon="icon-page-white-excel"/>
                 </div>
             </div>
@@ -85,7 +85,7 @@
                 </div>
                 <div class="MT30">
                     <i:inline key=".intervalEnd"/>
-                    <dt:date name="csvEndDate" wrapperClass="fn vam" displayValidationToRight="true" value="${batteryModel.csvEndDate}"/>
+                    <dt:date name="csvEndDate" maxDate="${maxDate}" minDate="${minDate}" wrapperClass="fn vam" displayValidationToRight="true" value="${batteryModel.csvEndDate}"/>
                     <cti:button nameKey="generateCSVReport" classes="action fn vab" type="submit" icon="icon-page-white-excel"/>
                 </div>
             </tags:boxContainer2>

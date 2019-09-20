@@ -57,7 +57,8 @@ public class WaterNodeAnalysisController {
         @Autowired private WaterNodeService waterNodeService;
         
         @GetMapping("generateReport")
-        public void downloadWaterNodeReport(@RequestParam("analysisEnd") String analysisEnd, ModelMap model, HttpServletResponse response, YukonUserContext userContext) throws IOException {
+        public void downloadWaterNodeReport(@RequestParam("analysisEnd") String analysisEnd, ModelMap model, HttpServletResponse response, 
+                                            YukonUserContext userContext) throws IOException {
             DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
             DateTimeZone timeZone = userContext.getJodaTimeZone();
             Instant timestampEnd = formatter.parseDateTime(analysisEnd).withTimeAtStartOfDay().withZone(timeZone).toInstant();
@@ -77,7 +78,8 @@ public class WaterNodeAnalysisController {
         }
        
         @GetMapping("generateVoltageReport")
-        public void downloadVoltageReport(@RequestParam("lastCreatedReport") String lastReport, ModelMap model, HttpServletResponse response, YukonUserContext userContext) throws IOException {
+        public void downloadVoltageReport(@RequestParam("lastCreatedReport") String lastReport, ModelMap model, HttpServletResponse response, 
+                                          YukonUserContext userContext) throws IOException {
             DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
             DateTimeZone timeZone = userContext.getJodaTimeZone();           
             Instant timestampEnd = formatter.parseDateTime(lastReport).withTimeAtStartOfDay().withZone(timeZone).toInstant();
@@ -130,11 +132,19 @@ public class WaterNodeAnalysisController {
         
         @GetMapping("view")
         public String waterNodePage(ModelMap model)  {
+            // Setting max date to the previous day. Same as what the date picker defaults to currently.
+            Instant maxDate = Instant.now().minus(Duration.standardDays(1));
+            // Setting min date to 20 years in the past to prevent choosing date outside acceptable range.
+            Instant minDate = maxDate.minus(Duration.standardDays(7300));
+            
             BatteryAnalysisModel batteryAnalysisModel = new BatteryAnalysisModel();
-            batteryAnalysisModel.setAnalysisEnd(Instant.now().minus(Duration.standardDays(1)));
-            batteryAnalysisModel.setLastCreatedReport(Instant.now().minus(Duration.standardDays(1)));
-            batteryAnalysisModel.setCsvEndDate(Instant.now().minus(Duration.standardDays(1)));
+            batteryAnalysisModel.setAnalysisEnd(maxDate);
+            batteryAnalysisModel.setLastCreatedReport(maxDate);
+            batteryAnalysisModel.setCsvEndDate(maxDate);
             model.addAttribute("batteryModel", batteryAnalysisModel);
+            model.addAttribute("maxDate", maxDate);
+            model.addAttribute("minDate", minDate);
+            
             return "waterNode.jsp";
         }
         
