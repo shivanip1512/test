@@ -55,10 +55,12 @@ public class RfnNodeCommArchiveRequestListener implements RfnArchiveProcessor {
      * Sends acknowledgement to NM
      */
     private void sendAcknowledgement(Set<Long> referenceIds, String processor) {
-        RfnNodeCommArchiveResponse response = new RfnNodeCommArchiveResponse();
-        response.setReferenceIDs(referenceIds);
-        log.debug("{} acknowledged ids {}", processor, response.getReferenceIDs());
-        jmsTemplate.convertAndSend(JmsApiDirectory.RFN_NODE_COMM_ARCHIVE.getResponseQueue().get().getName(), response);
+        if(!referenceIds.isEmpty()) {
+            RfnNodeCommArchiveResponse response = new RfnNodeCommArchiveResponse();
+            response.setReferenceIDs(referenceIds);
+            log.debug("{} acknowledged ids {}", processor, response.getReferenceIDs());
+            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_NODE_COMM_ARCHIVE.getResponseQueue().get().getName(), response);
+        }
     }
     
     @Autowired
