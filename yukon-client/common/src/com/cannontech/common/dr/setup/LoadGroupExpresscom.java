@@ -178,7 +178,7 @@ public class LoadGroupExpresscom extends LoadGroupBase<LMGroupExpressCom> implem
             : lmGroupExpresscom.getLMGroupExpressComm().getSerialNumber());
 
         // Address usage can not be blank, no need to handle default
-        String addressUsageString = lmGroupExpresscom.getLMGroupExpressComm().getAddressUsage();
+        String addressUsageString = lmGroupExpresscom.getLMGroupExpressComm().getAddressUsage().trim();
         List<AddressUsage> addressUsage = new ArrayList<>();
         for (int i = 0; i < addressUsageString.length(); i++) {
             addressUsage.add(AddressUsage.getForAbbreviation(addressUsageString.charAt(i)));
