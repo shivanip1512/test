@@ -9,7 +9,7 @@
     <form:form action="generateReport" method="get">
         <tags:boxContainer2 nameKey="waterNode.batteryAnalysis">
             <i:inline key=".description"/>
-            <div><br> <i:inline key=".batteryConditionDefinition"/></div>
+            <div><br> <i:inline key=".depletionCategoryDefinition"/></div>
             <ul>
                 <li><i:inline key=".batteryCategory.NORMAL"/></li>
                 <li><i:inline key=".batteryCategory.LOW"/></li>

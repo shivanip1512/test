@@ -230,8 +230,8 @@
         powered nodes in the system.  The interval voltage data collected by Yukon will be analyzed 
         for two conditions.
     </entry>
-    <entry key="yukon.web.modules.support.waterNode.batteryConditionDefinition">
-        Battery Condition: Weighted average voltage for the three days previous to the selected “Interval End” 
+    <entry key="yukon.web.modules.support.waterNode.depletionCategoryDefinition">
+        Depletion Category: Weighted average voltage for the three days previous to the selected “Interval End” 
         date chosen by the user will be evaluated and one of the following conditions returned:
     </entry>
     <entry key="yukon.web.modules.support.waterNode.sleepingCurrentDefinition">
