@@ -511,7 +511,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::setLastGroupControlled(LONG lastcontroll
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setDirectStartTime(const CtiTime& start)
 {
-    if( _directstarttime != start )
+    if( start >= gInvalidCtiTime && _directstarttime != start )
     {
         _directstarttime = start;
         setDirty(true);
@@ -526,7 +526,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::setDirectStartTime(const CtiTime& start)
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setDirectStopTime(const CtiTime& stop)
 {
-    if( _directstoptime != stop )
+    if( stop >= gInvalidCtiTime && _directstoptime != stop )
     {
         _directstoptime = stop;
         setDirty(true);
@@ -559,7 +559,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::setAdditionalInfo(const string& addition
 ----------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setNotifyActiveTime(const CtiTime& notify)
 {
-    if( _notify_active_time != notify )
+    if( notify >= gInvalidCtiTime && _notify_active_time != notify )
     {
         _notify_active_time = notify;
         setDirty(true);
@@ -581,7 +581,7 @@ void CtiLMProgramDirect::setAdjustNotificationPending(bool adjustNeedsToBeSent)
 ----------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setNotifyInactiveTime(const CtiTime& notify)
 {
-    if( _notify_inactive_time != notify )
+    if( notify >= gInvalidCtiTime && _notify_inactive_time != notify )
     {
         _notify_inactive_time = notify;
         setDirty(true);
