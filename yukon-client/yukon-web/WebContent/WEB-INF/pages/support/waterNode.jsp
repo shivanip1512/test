@@ -23,7 +23,7 @@
                 <li><i:inline key="yukon.web.modules.support.waterNode.meterNumber"/></li>
                 <li><i:inline key="yukon.web.modules.support.waterNode.serialNumber"/></li>
                 <li><i:inline key="yukon.web.modules.support.waterNode.deviceType"/></li>
-                <li><i:inline key="yukon.web.modules.support.waterNode.batteryCondition"/></li>
+                <li><i:inline key="yukon.web.modules.support.waterNode.depletionCategory"/></li>
                 <li><i:inline key="yukon.web.modules.support.waterNode.highSleepingCurrent"/></li>
                 <li><i:inline key="yukon.web.modules.support.waterNode.mostRecentVoltage"/></li>
                 <li><i:inline key="yukon.web.modules.support.waterNode.uom"/></li>
@@ -73,7 +73,7 @@
                     <li><i:inline key="yukon.web.modules.support.waterNode.meterNumber"/></li>
                     <li><i:inline key="yukon.web.modules.support.waterNode.serialNumber"/></li>
                     <li><i:inline key="yukon.web.modules.support.waterNode.deviceType"/></li>
-                    <li><i:inline key="yukon.web.modules.support.waterNode.batteryCondition"/></li>
+                    <li><i:inline key="yukon.web.modules.support.waterNode.depletionCategory"/></li>
                     <li><i:inline key="yukon.web.modules.support.waterNode.highSleepingCurrent"/></li>
                     <li><i:inline key="yukon.web.modules.support.waterNode.mostRecentVoltage"/></li>
                     <li><i:inline key="yukon.web.modules.support.waterNode.uom"/></li>
