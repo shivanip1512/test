@@ -46,7 +46,7 @@
 
         <!-- Copy loadProgram dialog -->
         <cti:msg2 var="copyloadProgramPopUpTitle" key="yukon.web.modules.dr.setup.loadProgram.copy" />
-        <cti:url var="renderCopyloadProgramUrl" value="/dr/setup/loadProgram/${loadProgram.programId}/rendercopyloadProgram">
+        <cti:url var="renderCopyloadProgramUrl" value="/dr/setup/loadProgram/${loadProgram.programId}/renderCopyLoadProgram">
             <cti:param name="operationalState" value="${loadProgram.operationalState}" />
             <cti:param name="constraintId" value="${loadProgram.constraint.constraintId}" />
         </cti:url>
