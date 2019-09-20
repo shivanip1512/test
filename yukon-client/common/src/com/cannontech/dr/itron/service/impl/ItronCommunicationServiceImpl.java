@@ -530,11 +530,21 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         // Copy the files over SFTP
         List<File> files = new ArrayList<>();
         
-        try (SftpConnection sftp = new SftpConnection(domain, port, proxy, user, password, keys.getPrivateKey())) {
+        SftpConnection sftp = null;
+        try {
+            sftp = new SftpConnection(domain, port, proxy, user, password, keys.getPrivateKey());
             log.debug("Copying data files over SFTP");
             files = copySftpFiles(sftp, fileUrls, commandId, timestamp);
         } catch (Exception e) {
             log.debug("Error copying data files over SFTP", e);
+        } finally {
+            if (sftp != null) {
+                try {
+                    sftp.close();
+                } catch (Exception e) {
+                    log.debug("Error closing SFTP connection.", e);
+                }
+            }
         }
         
         // Check and possibly clean up old files
