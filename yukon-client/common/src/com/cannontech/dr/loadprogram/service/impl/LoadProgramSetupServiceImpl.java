@@ -166,6 +166,10 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
             program.getPAOExclusionVector().removeAllElements();
         }
 
+        if (CollectionUtils.isNotEmpty(program.getLmProgramStorageVector())) {
+            program.getLmProgramStorageVector().clear();
+        }
+
         dbPersistentDao.performDBChange(program, TransactionType.INSERT);
 
         List<PointBase> points = pointDao.getPointsForPao(oldProgramId);
