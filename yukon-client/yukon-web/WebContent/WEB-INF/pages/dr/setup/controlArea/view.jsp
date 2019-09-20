@@ -269,10 +269,10 @@
                                     </td>
                                     <td class="js-program-name vam"></td>
                                     <td>
-                                        <input type="text" name="programAssignment[0].startPriority" size="4" data-min-value="1" data-max-value="1024" maxlength="4" disabled="true" class="js-start-priority"/>
+                                        <input type="text" name="programAssignment[0].startPriority" size="4" min="1" max="1024" maxlength="4" disabled="true" class="js-start-priority"/>
                                     </td>
                                     <td>
-                                        <input type="text" name="programAssignment[0].stopPriority" size="4" data-min-value="1" data-max-value="1024" maxlength="4" disabled="true" class="js-stop-priority"/>
+                                        <input type="text" name="programAssignment[0].stopPriority" size="4" min="1" max="1024" maxlength="4" disabled="true" class="js-stop-priority"/>
                                     </td>
                                 </tr>
                             </table>
