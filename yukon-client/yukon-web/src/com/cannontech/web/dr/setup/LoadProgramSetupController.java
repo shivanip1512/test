@@ -408,21 +408,7 @@ public class LoadProgramSetupController {
         if(CollectionUtils.isNotEmpty(gearInfos)) {
             attrs.addFlashAttribute("gearInfos", gearInfos);
         }
-       
-        if (result.hasFieldErrors("controlWindow.controlWindowOne.availableStartTimeInMinutes")) {
-            attrs.addFlashAttribute("startTimeErrorWindowOne", true);
-        }
-        if (result.hasFieldErrors("controlWindow.controlWindowOne.availableStopTimeInMinutes")) {
-            attrs.addFlashAttribute("stopTimeErrorWindowOne", true);
-        }
         
-        if (result.hasFieldErrors("controlWindow.controlWindowTwo.availableStartTimeInMinutes")) {
-            attrs.addFlashAttribute("startTimeErrorWindowTwo", true);
-        }
-        if (result.hasFieldErrors("controlWindow.controlWindowTwo.availableStopTimeInMinutes")) {
-            attrs.addFlashAttribute("stopTimeErrorWindowTwo", true);
-        }
-
         attrs.addFlashAttribute("org.springframework.validation.BindingResult.loadProgram", result);
         if (loadProgram.getProgramId() == null) {
             return "redirect:/dr/setup/loadProgram/create";
