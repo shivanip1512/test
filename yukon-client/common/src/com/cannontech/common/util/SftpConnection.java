@@ -40,8 +40,10 @@ public class SftpConnection implements AutoCloseable {
         
         // Save the connection info
         if (StringUtils.isEmpty(port)) {
+            log.debug("Initializing connection with default port (22)");
             domainPort = domain;
         } else {
+            log.debug("Initializing connection with port" + port);
             domainPort = domain + ":" + port;
         }
         this.username = username;
@@ -51,6 +53,7 @@ public class SftpConnection implements AutoCloseable {
         
         // Handle proxy setting configuration
         proxy.ifPresent(p -> {
+            log.debug("Initializing connection proxy: {} port: {}");
             fscBuilder.setProxyHost(fsOptions, p.getHost());
             fscBuilder.setProxyPort(fsOptions, p.getPort());
             fscBuilder.setProxyType(fsOptions, SftpFileSystemConfigBuilder.PROXY_HTTP);
@@ -58,14 +61,17 @@ public class SftpConnection implements AutoCloseable {
         
         // Handle public/private authentication key configuration
         if (StringUtils.isNotEmpty(privateKey)) {
+            log.debug("Creating temp file for private key.");
             String randomId = UUID.randomUUID().toString();
             privateKeyFile = createTempFile("sftpPrivate-" + randomId, privateKey);
+            log.debug("Initializing connection with private key.");
             // Password-protected private key only seems to be supported via the VFS 2.4+ syntax. e.g.s
             // IdentityInfo identity = new IdentityInfo(privateKeyFile, publicKeyFile, password.getBytes());
             // fscBuilder.setIdentityProvider(fsOptions, identity);
             fscBuilder.setIdentities(fsOptions, new File[] {privateKeyFile});
         }
         
+        log.debug("Initializing connection with user dir as root.");
         fscBuilder.setUserDirIsRoot(fsOptions, true);
     }
     
@@ -77,8 +83,6 @@ public class SftpConnection implements AutoCloseable {
      * @throws FileSystemException If an error occurs resolving or copying the file from the SFTP server
      */
     public void copyRemoteFile(String remoteSftpPath, String localFilePath) throws FileSystemException {
-        log.info("File System Options - " + fsOptions.toString());
-        
         // The "//" in the file path denotes the user home directory on the specified SFTP server
         // e.g. "sftp://demo:password@test.rebex.net//readme.txt"
         String fullSftpFilePath = "sftp://" + username + ":" + password + "@" + domainPort + "//" + remoteSftpPath;
@@ -109,7 +113,7 @@ public class SftpConnection implements AutoCloseable {
         // Create the temp file
         File tempFile = File.createTempFile(fileName, null); //default extension: .tmp
         tempFile.deleteOnExit();
-        log.info("Created temp file: " + tempFile.getCanonicalPath());
+        log.debug("Created temp file: " + tempFile.getCanonicalPath());
         
         // Write the content
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {

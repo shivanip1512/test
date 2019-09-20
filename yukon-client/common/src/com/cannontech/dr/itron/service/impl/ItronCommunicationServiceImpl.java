@@ -484,7 +484,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             }
             
             List<String> fileNames = response.getReportFileNames();
-            log.debug("ITRON-getReport url:{} commandId:{} files:{} result:{}.", url, commandId, fileNames, "success");
+            log.debug("ITRON-getReport url:{} commandId:{} files:{} result:success.", url, commandId, fileNames);
             
             if(fileNames.isEmpty()) {
                 log.debug("No report file to parse.");
@@ -521,6 +521,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         
         ItronSecurityKeyPair keys;
         try {
+            log.debug("Loading Itron SFTP key");
             keys = itronSecurityService.getItronSshRsaKeyPair();
         } catch (ItronSecurityException e) {
             log.error("No SFTP public/private key defined.");
@@ -532,6 +533,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         
         SftpConnection sftp = null;
         try {
+            log.debug("Initializing SFTP connection.");
             sftp = new SftpConnection(domain, port, proxy, user, password, keys.getPrivateKey());
             log.debug("Copying data files over SFTP");
             files = copySftpFiles(sftp, fileUrls, commandId, timestamp);

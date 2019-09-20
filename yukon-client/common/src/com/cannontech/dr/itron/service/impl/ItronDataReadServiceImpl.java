@@ -47,6 +47,7 @@ public class ItronDataReadServiceImpl implements ItronDataReadService{
         try {
             while (true) {
                 Range<Long> range = getRecordRange();
+                log.debug("Exporting Itron data for range: {} - {}", range.getMin(), range.getMax());
                 ZipFile zip = communicationService.exportDeviceLogs(range.getMin(), range.getMax());
                 if (zip == null) {
                     log.debug("Data zip file is null. File parsing will be skipped.");
