@@ -3,26 +3,22 @@ package com.cannontech.rest.api.documentation;
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
-import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
 
 import java.lang.reflect.Method;
 
 import org.springframework.restdocs.ManualRestDocumentation;
-import org.springframework.restdocs.http.HttpDocumentation;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
-import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
@@ -36,30 +32,7 @@ public class LoadGroupSetupApiControllerTest {
     public void setUp(Method method) {
         baseURI = ApiCallHelper.getProperty("baseURI");
         this.restDocumentation.beforeTest(getClass(), method.getName());
-        this.documentationSpec = 
-                new RequestSpecBuilder()
-                        .addFilter(documentationConfiguration(this.restDocumentation)
-                            .operationPreprocessors()
-                            .withRequestDefaults(removeHeaders("Authorization"), 
-                                                 removeHeaders("Accept"),
-                                                 removeHeaders("Host"),
-                                                 removeHeaders("Content-Type"),
-                                                 removeHeaders("Content-Length"),
-                                                 prettyPrint())
-                            .withResponseDefaults(removeHeaders("X-Frame-Options"),
-                                                  removeHeaders("X-Content-Type-Options"),
-                                                  removeHeaders("Content-Security-Policy"),
-                                                  removeHeaders("Strict-Transport-Security"),
-                                                  removeHeaders("X-XSS-Protection"),
-                                                  removeHeaders("Content-Length"),
-                                                  removeHeaders("Content-Type"),
-                                                  removeHeaders("Date"),
-                                                  prettyPrint())
-                            .and()
-                            .snippets()
-                            .withDefaults(HttpDocumentation.httpRequest(),
-                                            HttpDocumentation.httpResponse()))
-                        .build();
+        this.documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
     }
 
     @AfterMethod
