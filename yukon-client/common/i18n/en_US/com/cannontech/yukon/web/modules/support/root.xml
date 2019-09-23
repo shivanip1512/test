@@ -223,7 +223,7 @@
     <entry key="yukon.web.modules.support.routeUsage.level">Level {0}</entry>
     
     <!-- waterNode.jsp -->
-    <entry key="yukon.web.modules.support.waterNode.pageName">Water Node Battery Analysis</entry>
+    <entry key="yukon.web.modules.support.waterNode.pageName">Battery Node Analysis</entry>
     <entry key="yukon.web.modules.support.waterNode.batteryAnalysis.title">Battery Condition Report</entry>
     <entry key="yukon.web.modules.support.waterNode.description">
         The Battery Analysis report is used to evaluate the current condition of all active battery 

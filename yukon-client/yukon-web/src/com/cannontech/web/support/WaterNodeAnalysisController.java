@@ -47,7 +47,7 @@ import com.cannontech.web.util.WebFileUtils;
 
 
 @Controller
-@RequestMapping("/waterNode/*")
+@RequestMapping("/batteryNodeAnalysis/*")
 @CheckRole(YukonRole.METERING)
 public class WaterNodeAnalysisController {
     private static final Logger log = YukonLogManager.getLogger(MeterDisconnectMessageListener.class);
@@ -145,7 +145,7 @@ public class WaterNodeAnalysisController {
             model.addAttribute("maxDate", maxDate);
             model.addAttribute("minDate", minDate);
             
-            return "waterNode.jsp";
+            return "batteryNodeAnalysis.jsp";
         }
         
         private String[] getReportHeaderRow(YukonUserContext userContext) {
