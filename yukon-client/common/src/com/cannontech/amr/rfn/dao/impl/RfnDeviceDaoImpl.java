@@ -408,6 +408,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                && !comm.getGatewayRfnIdentifier().is_Empty_();
        
        if(!isValid) {
+           log.info("Missing RfnIdentifier or GatewayRfnIdentifier {}", comm);
            return false;
        }
        Integer deviceId = rfnIdentifierCache.getPaoIdFor(comm.getDeviceRfnIdentifier());
@@ -430,10 +431,12 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Override
     public void saveDynamicRfnDeviceData(List<NodeComm> nodes) {
         if(CollectionUtils.isNotEmpty(nodes)) {
+            log.info("Attempting to save device to gateway mapping for devices {}", nodes);
             List<DynamicRfnDeviceData> data = nodes.stream()
                     .filter(node -> isValidNodeComm(node))
                     .map(node -> getDynamicRfnDeviceData(node, null))
                     .collect(Collectors.toList());
+            log.info("Saving device to gateway mapping for valid devices {}",  data );
             chunkAndSaveDynamicRfnDeviceData(data);
         }
     }
@@ -443,11 +446,15 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         if(MapUtils.isEmpty(nodes)) {
             return new HashSet<>();
         }
+        log.info("Attempting to save device to gateway mapping for devices {}", nodes);
         List<DynamicRfnDeviceData> data = nodes.entrySet().stream()
                 .filter(node -> isValidNodeComm(node.getValue()))
                 .map(node -> getDynamicRfnDeviceData(node.getValue(), node.getKey()))
                 .collect(Collectors.toList());
-        return chunkAndSaveDynamicRfnDeviceData(data);
+        log.info("Saving device to gateway mapping for valid devices {}",  data );
+        Set<Long> refIds = chunkAndSaveDynamicRfnDeviceData(data);
+        log.info("Rows saved {}", refIds.size());
+        return refIds;
     }
 
     private Set<Long> chunkAndSaveDynamicRfnDeviceData(List<DynamicRfnDeviceData> data) {
