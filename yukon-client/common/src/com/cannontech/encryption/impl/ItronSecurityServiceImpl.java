@@ -75,7 +75,7 @@ public class ItronSecurityServiceImpl implements ItronSecurityService {
             Optional<EncryptionKey> encryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.Itron);
             if(encryptionKey.isEmpty()) {
                 log.debug("Encryption Key is empty, generate a new key");
-                throw new Exception ("Empty Encryption Key, generate a new key");
+                throw new ItronSecurityException ("Empty Encryption Key, generate a new key");
             }
             String sshRsaPrivatekey = encrypter.decryptHexStr(encryptionKey.get().getPrivateKey());
             String sshRsaPublickey = encrypter.decryptHexStr(encryptionKey.get().getPublicKey());
