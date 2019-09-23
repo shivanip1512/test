@@ -284,9 +284,9 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                     </li>
                 </c:if>
                 <c:if test="${showMeterConfigAction}">
-                    <cti:url var="configUrl" value="/stars/operator/hardware/config/meterConfig">
+                    <cti:url var="configUrl" value="/stars/operator/hardware/config/edit">
                         <cti:param name="accountId" value="${accountId}"/>
-                        <cti:param name="meterId" value="${hardware.deviceId}"/>
+                        <cti:param name="inventoryId" value="${inventoryId}"/>
                     </cti:url>
                     <cm:dropdownOption key=".editConfig.label" href="${configUrl}" icon="icon-cog-edit"/>
                 </c:if>
