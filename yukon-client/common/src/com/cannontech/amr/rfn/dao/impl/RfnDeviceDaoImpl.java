@@ -400,6 +400,10 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     }
     
    private boolean isValidNodeComm(NodeComm comm) {
+       if(comm == null) {
+           return false;
+       }
+       
        boolean isValid = comm.getDeviceRfnIdentifier() != null && !comm.getDeviceRfnIdentifier().is_Empty_() && comm.getGatewayRfnIdentifier() != null
                && !comm.getGatewayRfnIdentifier().is_Empty_();
        
