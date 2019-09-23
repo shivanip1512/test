@@ -523,8 +523,9 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         try {
             log.debug("Loading Itron SFTP key");
             keys = itronSecurityService.getItronSshRsaKeyPair();
-        } catch (ItronSecurityException e) {
-            log.error("No SFTP public/private key defined.");
+            log.debug("Loaded Itron SFTP key");
+        } catch (Exception e) {
+            log.error("Error loading SFTP keys.", e);
             throw e;
         }
         
