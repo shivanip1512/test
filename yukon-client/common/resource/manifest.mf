@@ -91,7 +91,7 @@ Class-Path: ./
  bcpkix-fips-1.0.2.jar 
  bc-fips-1.0.1.jar 
  bcpg-fips-1.0.2.jar 
- libthrift-0.11.0.jar 
+ libthrift-0.12.0.jar 
  yukon-shared.jar 
  annotation-detector-3.0.4.jar 
  applicationinsights-core-1.0.2.jar 
