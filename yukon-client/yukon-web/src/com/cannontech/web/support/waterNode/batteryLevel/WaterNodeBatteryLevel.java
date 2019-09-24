@@ -11,7 +11,7 @@ public enum WaterNodeBatteryLevel implements DisplayableEnum {
     
     private final double upperThreshold;
     private final String outputName;//lowercase name for CSV output
-    private final static String baseKey = "yukon.web.modules.support.waterNode.";
+    private final static String baseKey = "yukon.web.modules.support.batteryNodeAnalysis.depletionCategory.";
     
     private WaterNodeBatteryLevel(double upperThreshold, String outputName) {
         this.upperThreshold = upperThreshold;
