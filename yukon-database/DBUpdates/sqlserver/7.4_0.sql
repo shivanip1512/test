@@ -88,23 +88,6 @@ INSERT INTO DBUpdates VALUES ('YUK-19063-1', '7.4.0', GETDATE());
 /* @end YUK-19063-1 */
 
 /* @start YUK-20568-1 */
-UPDATE YukonRoleProperty
-SET DefaultValue = 'NO_ACCESS'
-WHERE DefaultValue = 'RESTRICTED'
-AND RolePropertyID IN (-90049, -21406);
-GO
-
-UPDATE YukonRoleProperty
-SET DefaultValue = 'RESTRICTED'
-WHERE DefaultValue = 'LIMITED'
-AND RolePropertyID IN (-90049, -21406, -21405);
-
-UPDATE YukonRoleProperty
-SET DefaultValue = 'UPDATE'
-WHERE DefaultValue = 'CREATE'
-AND RolePropertyID = -21405;
-GO
-
 UPDATE YukonGroupRole
 SET Value = 'NO_ACCESS'
 WHERE Value = 'RESTRICTED'
@@ -124,6 +107,20 @@ GO
 
 INSERT INTO DBUpdates VALUES ('YUK-20568-1', '7.4.0', GETDATE());
 /* @end YUK-20568-1 */
+
+/*@start YUK-20568-2 */
+UPDATE YukonRoleProperty
+SET DefaultValue = 'RESTRICTED'
+WHERE RolePropertyID IN (-90049);
+GO
+
+UPDATE YukonRoleProperty
+SET DefaultValue = 'UPDATE'
+WHERE RolePropertyID IN (-21200, -21404, -21405, -21406);
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-20568-2', '7.4.0', GETDATE());
+/* @end YUK-20568-2 */
 
 /* @start YUK-20645 */
 DELETE FROM YukonGroupRole 
