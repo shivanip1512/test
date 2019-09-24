@@ -58,7 +58,7 @@ public class RfnStatusArchiveRequestListenerTest {
     @Parameters(name="mode: {0} {1}")
     public static Collection<Object[]> input() {
         Comparator<Enum<?>> sortByName = (a, b) -> a.name().compareTo(b.name());
-        //  Get a combination of all DisconnectMeterMode and DisconnectStateType values
+        //  Get all combinations of DisconnectMeterMode and DisconnectStateType values
         return Arrays.stream(RfnMeterDisconnectMeterMode.values())
                      .sorted(sortByName)
                      .flatMap(mode -> Arrays.stream(RfnMeterDisconnectStateType.values())
@@ -100,24 +100,26 @@ public class RfnStatusArchiveRequestListenerTest {
         
         assertNotNull("Missing state for " + mode + " " + type, expectedState);
         
-        var request = new RfnStatusArchiveRequest();
-        var status = new MeterInfoStatus();
-        var info = new MeterInfo();
-        
+        // Build the RfnStatusArchiveRequest message with MeterDisconnectStatus inside
         var disconnectStatus = new MeterDisconnectStatus();
         disconnectStatus.setMeterMode(mode);
         disconnectStatus.setRelayStatus(type);
 
+        var info = new MeterInfo();
         info.setMeterDisconnectStatus(disconnectStatus);
         
+        var status = new MeterInfoStatus();
         status.setData(info);
         status.setTimeStamp(timestamp);
         status.setRfnIdentifier(rfnIdentifier);
         
+        var request = new RfnStatusArchiveRequest();
         request.setStatus(status);
         
+        // Process the request, capturing any pointdata into pointdataCapture
         statusListener.process(request, "jimmy");
         
+        // Verify the pointdata value
         expectedState.ifPresentOrElse(value -> {
             assertFalse("No pointdata generated", pointdataCapture.getValues().isEmpty());
             assertEquals("Excess pointdata generated", 1, pointdataCapture.getValues().size());
