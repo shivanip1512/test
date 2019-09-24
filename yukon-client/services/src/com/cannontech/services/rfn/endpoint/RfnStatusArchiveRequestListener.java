@@ -58,6 +58,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
         ON_DEMAND_CONFIGURATION         UNKNOWN                                                                 This meter is configured for On-demand disconnect, but the relay status is not known. Ignore.
         DEMAND_THRESHOLD_CONFIGURATION  *                                                                       This meter is configured for Demand Threshold disconnect. We do not know if the mode is active or deactive yet. Ignore.
         DEMAND_THRESHOLD_ACTIVATE       TERMINATED      DISCONNECTED_DEMAND_THRESHOLD_ACTIVE(4)                 This meter is configured for Demand Threshold disconnect, and the mode is active.
+        DEMAND_THRESHOLD_ACTIVATE       ARMED           DISCONNECTED_DEMAND_THRESHOLD_ACTIVE(4)                 This meter is configured for Demand Threshold disconnect, and the mode is active.
         DEMAND_THRESHOLD_ACTIVATE       RESUMED         CONNECTED_DEMAND_THRESHOLD_ACTIVE(5)                    This meter is configured for Demand Threshold disconnect, and the mode is active.
         DEMAND_THRESHOLD_DEACTIVATE     *               CONNECTED(1)                                            This meter is configured for Demand Threshold disconnect, but the mode is not active, and therefore cannot cause the relay to disconnect. Customer needs to send a disconnect command to activate the mode.
         CYCLING_CONFIGURATION           *                                                                       This meter is configured for Cycling disconnect. We do not know if the mode is active or deactive yet. Ignore.
@@ -76,6 +77,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.ON_DEMAND_CONFIGURATION, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED);
         //skipping ON_DEMAND_CONFIGURATION         UNKNOWN 
         //skipping DEMAND_THRESHOLD_CONFIGURATION  *
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.DISCONNECTED_DEMAND_THRESHOLD_ACTIVE);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED_DEMAND_THRESHOLD_ACTIVE);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED_DEMAND_THRESHOLD_ACTIVE);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.CONNECTED);
@@ -121,7 +123,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
             } else if (request.getStatus() instanceof MeterInfoStatus) {
                 MeterInfoStatus status = (MeterInfoStatus) request.getStatus();
 				updateDisconnectInfo(request, processor, status);
-				archiveProgramStatus(status);
+				archiveProgrammingStatus(status);
             }
         }
         sendAcknowledgement(request, processor);
@@ -150,7 +152,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
     /**
      * Sends status update message to SM to update MeterProgramStatus table
      */
-	private void archiveProgramStatus(MeterInfoStatus status) {
+	private void archiveProgrammingStatus(MeterInfoStatus status) {
 		 if (status.getData() != null && status.getData().getMeterConfigurationID() != null) {
 			MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
 			request.setSource(Source.SM_STATUS_ARCHIVE);

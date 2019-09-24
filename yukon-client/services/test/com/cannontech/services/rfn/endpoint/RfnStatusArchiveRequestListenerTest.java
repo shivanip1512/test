@@ -170,7 +170,7 @@ public class RfnStatusArchiveRequestListenerTest {
               ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED, 1),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.UNKNOWN, 1),
               
-              ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.ARMED, null),
+              ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.ARMED, 4),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.RESUMED, 5),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.TERMINATED, 4),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.UNKNOWN, null),
