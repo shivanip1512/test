@@ -366,7 +366,7 @@ public class ProgramController extends ProgramControllerBase {
     
     private void addDisconnectResultToModel(Map<String, Object> json, DisconnectMeterResult result, MessageSourceAccessor accessor) {
         if (result.getError() != null) {
-            json.put("errors", Lists.newArrayList(result.getError()));
+            json.put("errors", result.getError().getDescription());
         }
         if (StringUtils.isNotEmpty(result.getProcessingException())) {
             json.put("errors", result.getProcessingException());
