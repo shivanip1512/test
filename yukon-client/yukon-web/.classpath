@@ -36,7 +36,7 @@
 	<classpathentry kind="lib" path="/third-party/commons-io-2.4.jar"/>
 	<classpathentry kind="lib" path="/third-party/ecs-1.4.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/jopcbridge.jar"/>
-	<classpathentry kind="lib" path="/third-party/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="/third-party/dom4j-2.1.1.jar"/>
 	<classpathentry kind="lib" path="/third-party/easymock-3.0.jar" sourcepath="/third-party/linked-sources/easymock-3.0-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/SchemaCompare.jar" sourcepath="/SchemaCompare"/>
 	<classpathentry kind="lib" path="/third-party/lucene-core-6.0.0.jar"/>

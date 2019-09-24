@@ -43,7 +43,7 @@
         <include name="commons-lang3-3.4.jar"/>
         <include name="commons-logging-1.1.3.jar"/>
         <include name="commons-pool2-2.2.jar"/>
-        <include name="dom4j-1.6.1.jar"/>
+        <include name="dom4j-2.1.1.jar"/>
         <include name="ecs-1.4.2.jar"/>
         <include name="nagasena.jar"/>
         <include name="geronimo-j2ee-management_1.1_spec-1.0.1.jar"/>

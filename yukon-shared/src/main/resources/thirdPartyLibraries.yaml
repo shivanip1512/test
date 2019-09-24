@@ -819,18 +819,18 @@ Java :
     jira : YUK-13411, YUK-20160
     notes : YAJSW, Support Bundle, Itron SFTP file transfer 
   
-  - filename : dom4j-1.6.1.jar
+  - filename : dom4j-2.1.1.jar
     yukon group : XML parsing
     project : dom4j
-    version : 1.6.1
+    version : 2.1.1
     project URL : "https://dom4j.github.io/"
     license : BSD-style
-    license URLs : "https://web.archive.org/web/20081024091717/http://www.dom4j.org:80/dom4j-1.6.1/license.html"
-    maven URL : "https://mvnrepository.com/artifact/dom4j/dom4j/1.6.1"
-    md5 : 4d8f51d3fe3900efc6e395be48030d6d
-    sha1 : 5d3ccc056b6f056dbf0dddfdf43894b9065a8f94
-    updated : 2008-11-03
-    jira : YUK-6281
+    license URLs : "https://github.com/dom4j/dom4j/blob/master/LICENSE"
+    maven URL : "https://mvnrepository.com/artifact/org.dom4j/dom4j/2.1.1"
+    md5 : f5710c1d5f5627ae5ce850a0b12ea87a
+    sha1 : 3dce5dbb3571aa820c677fadd8349bfa8f00c199
+    updated : 2019-24-09
+    jira : YUK-6281, YUK-20321
     notes : 
   
   - filename : easymock-3.0.jar
