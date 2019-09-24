@@ -540,13 +540,18 @@ public class OperatorHardwareController {
                     throws NotAuthorizedException, NotFoundException, CommandCompletionException, SQLException,
                     PersistenceException, WebClientException {
         Hardware hardwareToDelete = hardwareUiService.getHardware(inventoryId);
-        hardwareEventLogService.hardwareDeletionAttempted(userContext.getYukonUser(), hardwareToDelete.getDisplayName(), EventSource.OPERATOR);
+        boolean delete = deleteOption.equalsIgnoreCase("delete");
+        if (delete) {   //device fully deleted from system
+            hardwareEventLogService.hardwareDeletionAttempted(userContext.getYukonUser(), hardwareToDelete.getDisplayName(), EventSource.OPERATOR);
+        } else {    // device removed from account, returned to inventory
+            hardwareEventLogService.hardwareRemovalAttempted(userContext.getYukonUser(), 
+                accountInfoFragment.getAccountNumber(), hardwareToDelete.getSerialNumber(), EventSource.OPERATOR);
+        }
 
         hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), accountInfoFragment.getAccountId());
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 
         // Delete this hardware or just take it off the account and put in back in the warehouse
-        boolean delete = deleteOption.equalsIgnoreCase("delete");
         try {
             hardwareService.deleteHardware(userContext.getYukonUser(), delete, inventoryId);
             AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
