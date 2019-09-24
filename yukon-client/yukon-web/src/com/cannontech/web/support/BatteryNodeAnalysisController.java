@@ -49,14 +49,14 @@ import com.cannontech.web.util.WebFileUtils;
 @Controller
 @RequestMapping("/batteryNodeAnalysis/*")
 @CheckRole(YukonRole.METERING)
-public class WaterNodeAnalysisController {
+public class BatteryNodeAnalysisController {
     private static final Logger log = YukonLogManager.getLogger(MeterDisconnectMessageListener.class);
         
         @Autowired private DateFormattingService dateFormattingService;
         @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
         @Autowired private WaterNodeService waterNodeService;
         
-        @GetMapping("generateReport")
+        @GetMapping("generateBatteryConditionReport")
         public void downloadWaterNodeReport(@RequestParam("analysisEnd") String analysisEnd, ModelMap model, HttpServletResponse response, 
                                             YukonUserContext userContext) throws IOException {
             DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
@@ -77,7 +77,7 @@ public class WaterNodeAnalysisController {
             model.addAttribute("batteryModel", batteryAnalysisModel);
         }
        
-        @GetMapping("generateVoltageReport")
+        @GetMapping("generateVoltageDataReport")
         public void downloadVoltageReport(@RequestParam("lastCreatedReport") String lastReport, ModelMap model, HttpServletResponse response, 
                                           YukonUserContext userContext) throws IOException {
             DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
@@ -94,7 +94,7 @@ public class WaterNodeAnalysisController {
             writeToCSV(headerRow, dataRows, response, userContext, timestampEnd, "BatteryVoltagesDetail");
         }
         
-        @RequestMapping(value = "generateCSVReport", method = RequestMethod.POST)
+        @RequestMapping(value = "generatePreExistingVoltageDataAnalysisReport", method = RequestMethod.POST)
         public String fileUploadAndAnalyze(@RequestParam("csvEndDate") String csvEndDate, ModelMap model, HttpServletResponse response, 
                                          HttpServletRequest request, YukonUserContext userContext, FlashScope flash) throws IOException {
             DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
@@ -119,16 +119,17 @@ public class WaterNodeAnalysisController {
                         List<String[]> dataRows = getReportDataRows(analyzedNodes, userContext);
                         writeToCSV(headerRow, dataRows, response, userContext, timestampEnd, "BatteryAnalysisFromCSV");
                     } catch(Exception e) {
-                        flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.support.waterNode.unableToReadCsvFile"));
+                        flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.support.batteryNodeAnalysisController.unableToReadCsvFile"));
                         log.warn("Unable to read csv file ", e);
+                        return "redirect:view";
                     }
                 }
                 else {
-                    flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.support.waterNode.noFileUploaded"));
+                    flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.support.batteryNodeAnalysisController.noFileUploaded"));
                     return "redirect:view";
                 }
             }
-            return "redirect:view";
+            return null;
         }
         
         @GetMapping("view")
@@ -152,16 +153,16 @@ public class WaterNodeAnalysisController {
         private String[] getReportHeaderRow(YukonUserContext userContext) {
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             String[] headerRow = new String[10];
-            headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.deviceName"); 
-            headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.meterNumber");
-            headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.serialNumber");
-            headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.deviceType");
-            headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.depletionCategory");
-            headerRow[5] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.currentIndicator");
-            headerRow[6] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.recentReading");
-            headerRow[7] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.uom");
-            headerRow[8] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.date");
-            headerRow[9] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.time");
+            headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.deviceName"); 
+            headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.meterNumber");
+            headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.serialNumber");
+            headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.deviceType");
+            headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.depletionCategory");
+            headerRow[5] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.highSleepingCurrentIndicator");
+            headerRow[6] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.mostRecentReading");
+            headerRow[7] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.uom");
+            headerRow[8] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.date");
+            headerRow[9] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.time");
             return headerRow;
          }
         
@@ -190,14 +191,14 @@ public class WaterNodeAnalysisController {
         private String[] getVoltageHeaderRow(YukonUserContext userContext) {
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             String[] headerRow = new String[8];
-            headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.deviceName"); 
-            headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.meterNumber");
-            headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.serialNumber");
-            headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.deviceType");
-            headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.date"); 
-            headerRow[5] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.time");
-            headerRow[6] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.voltage");
-            headerRow[7] = messageSourceAccessor.getMessage("yukon.web.modules.support.waterNode.uom");
+            headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.deviceName"); 
+            headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.meterNumber");
+            headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.serialNumber");
+            headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.deviceType");
+            headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.mostRecentReading");
+            headerRow[5] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.uom");            
+            headerRow[6] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.date"); 
+            headerRow[7] = messageSourceAccessor.getMessage("yukon.web.modules.support.batteryNodeAnalysis.fileHeader.time");
             return headerRow;
          }
         
@@ -218,10 +219,10 @@ public class WaterNodeAnalysisController {
                     dataRow[1] = meterNumber;
                     dataRow[2] = serialNumber;
                     dataRow[3] = deviceType;
-                    dataRow[4] = dateFormattingService.format(timestamps.get(currentIndex), DateFormatEnum.DATE, userContext);
-                    dataRow[5] = dateFormattingService.format(timestamps.get(currentIndex), DateFormatEnum.TIME24H, userContext);
-                    dataRow[6] = voltages.get(currentIndex).toString();
-                    dataRow[7] = "volts";
+                    dataRow[4] = voltages.get(currentIndex).toString();
+                    dataRow[5] = "volts";
+                    dataRow[6] = dateFormattingService.format(timestamps.get(currentIndex), DateFormatEnum.DATE, userContext);
+                    dataRow[7] = dateFormattingService.format(timestamps.get(currentIndex), DateFormatEnum.TIME24H, userContext);
                     dataRows.add(dataRow);
                 }
             });
