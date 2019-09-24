@@ -1,6 +1,8 @@
 package com.cannontech.core.roleproperties;
 
-public enum HierarchyPermissionLevel {
+import com.cannontech.common.i18n.DisplayableEnum;
+
+public enum HierarchyPermissionLevel implements DisplayableEnum {
 
     OWNER(1), //access to everything
     CREATE(2), // access to CREATE, UPDATE, LIMITED 
@@ -28,5 +30,10 @@ public enum HierarchyPermissionLevel {
     
     public int getLevel() {
         return level;
+    }
+    
+    @Override
+    public String getFormatKey() {
+        return "yukon.common.roleproperty.HierarchyPermissionLevel." + name();
     }
 }

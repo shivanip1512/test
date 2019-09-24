@@ -58,6 +58,14 @@
     <entry key="yukon.common.role.WEB_GRAPH">Web Graph</entry>
     <entry key="yukon.common.role.SYSTEM">Yukon</entry>
     
+    <!-- Hierarchy Permission Level Properties -->
+    <entry key="yukon.common.roleproperty.HierarchyPermissionLevel.NO_ACCESS">No Access</entry>
+    <entry key="yukon.common.roleproperty.HierarchyPermissionLevel.RESTRICTED">View</entry>
+    <entry key="yukon.common.roleproperty.HierarchyPermissionLevel.LIMITED">Interact</entry>
+    <entry key="yukon.common.roleproperty.HierarchyPermissionLevel.UPDATE">Update</entry>
+    <entry key="yukon.common.roleproperty.HierarchyPermissionLevel.CREATE">Create</entry>
+    <entry key="yukon.common.roleproperty.HierarchyPermissionLevel.OWNER">Owner</entry>
+    
     <!-- Cap Control Command Access Role Properties -->
     <entry key="yukon.common.roleproperty.CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS">All Device Commands with Yukon Actions</entry>
     <entry key="yukon.common.roleproperty.CapControlCommandsAccessLevel.ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS">All Device Commands without Yukon Actions</entry>
