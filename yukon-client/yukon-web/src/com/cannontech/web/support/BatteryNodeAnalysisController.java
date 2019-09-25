@@ -66,6 +66,8 @@ public class BatteryNodeAnalysisController {
             //interval lasts six days and starts at 00:00:01
             Instant intervalStart = timestampEnd.minus(Duration.standardDays(6)).plus(Duration.standardSeconds(1));
             
+            // Did  I check this out correctly1111111111111111111111111111111111111
+            
             BatteryAnalysisModel batteryAnalysisModel = new BatteryAnalysisModel();
             batteryAnalysisModel.setAnalysisEnd(intervalEnd);
             List<WaterNodeDetails> analyzedNodes = waterNodeService.getAnalyzedNodes(intervalStart, intervalEnd);
