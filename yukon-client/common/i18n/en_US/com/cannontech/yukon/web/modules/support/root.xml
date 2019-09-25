@@ -226,7 +226,7 @@
     <entry key="yukon.web.modules.support.batteryNodeAnalysis.pageName">Battery Node Analysis</entry>
     <entry key="yukon.web.modules.support.batteryNodeAnalysis.batteryConditionReport.title">Battery Condition Report</entry>
     <entry key="yukon.web.modules.support.batteryNodeAnalysis.batteryConditionReport.description">
-        The Battery Analysis report is used to evaluate the current condition of all active battery 
+        The Battery Condition report is used to evaluate the current condition of all active battery 
         powered nodes in the system.  The interval voltage data collected by Yukon will be analyzed 
         for two conditions.
     </entry>

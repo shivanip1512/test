@@ -882,7 +882,7 @@
           <page name="localization" type="BASIC" />
           <page name="fileExportHistory" type="BASIC" />
           <page name="threadDump" type="BASIC" />
-          <page name="waterNode" type="BASIC" />
+          <page name="batteryNodeAnalysis" type="BASIC" />
           <page name="thirdPartyLibraries" type="BASIC" />
           <page name="routeUsage" type="BASIC" />
           <page name="eventViewer" type="BASIC">
