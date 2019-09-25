@@ -57,7 +57,7 @@ public class BatteryNodeAnalysisController {
         @Autowired private WaterNodeService waterNodeService;
         
         @GetMapping("generateBatteryConditionReport")
-        public void downloadWaterNodeReport(@RequestParam("analysisEnd") String analysisEnd, ModelMap model, HttpServletResponse response, 
+        public void downloadBatteryConditionReport(@RequestParam("analysisEnd") String analysisEnd, ModelMap model, HttpServletResponse response, 
                                             YukonUserContext userContext) throws IOException {
             DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
             DateTimeZone timeZone = userContext.getJodaTimeZone();
@@ -133,7 +133,7 @@ public class BatteryNodeAnalysisController {
         }
         
         @GetMapping("view")
-        public String waterNodePage(ModelMap model)  {
+        public String batteryNodeAnalysisPage(ModelMap model)  {
             // Setting max date to the previous day. Same as what the date picker defaults to currently.
             Instant maxDate = Instant.now().minus(Duration.standardDays(1));
             // Setting min date to 20 years in the past to prevent choosing date outside acceptable range.
