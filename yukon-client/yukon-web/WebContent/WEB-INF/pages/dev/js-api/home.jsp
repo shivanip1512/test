@@ -731,6 +731,56 @@ $(&#39;.js-set-cookie-btn&#39;).click(function () {
 &lt;/script&gt;
 </pre>
 
+<h3 id="yukon-escape-xml-function">Function: yukon.escapeXml</h3>
+<p class="description">
+    <span class="label label-attr">yukon.escapeXml</span> returns XSS safe string. We often create UI controls dynamically
+    in jQuery and append them to the page. If such controls renders a text which is a user input, it must be escaped before
+    assigning to the dynamically created control and appending such control to the page.
+</p>
+<h4 class="subtle">Example:</h4>
+
+<div class="stacked clearfix">
+    <label>Enter some text:</label>
+    <input type="text" class="js-user-input">
+    <cti:button label="Append XSS safe span" classes="js-get-xss-safe-str-btn fn vat"/>
+    <br><br>
+    <div class="well js-escapeXml-example">
+        XSS safe &lt;span&gt; will be appended here.
+    </div>
+    <script>
+        $('.js-get-xss-safe-str-btn').click(function () {
+            var userInput = $(".js-user-input").val(),
+                span = $('<span />').addClass('label label-attr js-xss-safe-span').html(yukon.escapeXml(userInput));
+            if ($('.js-xss-safe-span').exists()) {
+                $('.js-xss-safe-span').remove();
+            }
+            $('.js-escapeXml-example').append(span);
+        });
+    </script>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;stacked clearfix&quot;&gt;
+    &lt;label&gt;Enter some text:&lt;/label&gt;
+    &lt;input type=&quot;text&quot; class=&quot;js-user-input&quot;&gt;
+    &lt;cti:button label=&quot;Get XSS safe string&quot; classes=&quot;js-get-xss-safe-str-btn fn vat&quot;/&gt;
+    &lt;br&gt;&lt;br&gt;
+    &lt;div class=&quot;well js-escapeXml-example&quot;&gt;
+        XSS safe &lt;span&gt; will be appended here.
+    &lt;/div&gt;
+    &lt;script&gt;
+        $(&#39;.js-get-xss-safe-str-btn&#39;).click(function () {
+            var userInput = $(&quot;.js-user-input&quot;).val(),
+                span = $(&#39;&lt;span /&gt;&#39;).addClass(&#39;label label-attr&#39;).html(yukon.escapeXml(userInput));
+            if ($(&#39;.js-xss-safe-span&#39;).exists()) {
+                $(&#39;.js-xss-safe-span&#39;).remove();
+            }
+            $(&#39;.js-escapeXml-example&#39;).append(span);
+        });
+    &lt;/script&gt;
+&lt;/div&gt;
+</pre>
+
 <h2>Module: Yukon UI</h2>
 <p class="description">
     The <span class="label label-attr">yukon.ui</span> module contains ui functionality for the whole application as well 

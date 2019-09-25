@@ -472,7 +472,7 @@ yukon.protoPicker = function (okText,
         
         for (index = 0; index < this.extraDestinationFields.length; index += 1) {
             extraDestinationField = this.extraDestinationFields[index];
-            value = hit === null ? '' : $('<span />').text(hit[extraDestinationField.property]).html();
+            value = hit === null ? '' : yukon.escapeXml(hit[extraDestinationField.property]);
             // support for both innerHTML and value setting
             extraDestSelector = extraDestinationField.fieldId;
             extraDestElem = document.getElementById(extraDestSelector);

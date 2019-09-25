@@ -134,6 +134,11 @@ var yukon = (function () {
             }
         },
         
+        /** Escapes characters that could be interpreted as XML markup. */
+        escapeXml: function (stringToEscape) {
+            return $('<span />').text(stringToEscape).html(); 
+        },
+        
         /** 
          * Parse the inner text contents of 'selector' as JSON.
          * Used in conjunction with JsonTag.java 
