@@ -447,22 +447,22 @@
 	</classpathentry>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/yukon-shared"/>
 	<classpathentry kind="lib" path="/third-party/h2-1.4.178.jar" sourcepath="/third-party/linked-sources/h2-1.4.178-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/activemq-broker-5.13.4.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.13.4-source-release.zip">
+	<classpathentry exported="true" kind="lib" path="/third-party/activemq-broker-5.15.10.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.15.10-source-release.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/activemq-client-5.13.4.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.13.4-source-release.zip">
+	<classpathentry exported="true" kind="lib" path="/third-party/activemq-client-5.15.10.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.15.10-source-release.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/activemq-kahadb-store-5.13.4.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.13.4-source-release.zip">
+	<classpathentry exported="true" kind="lib" path="/third-party/activemq-kahadb-store-5.15.10.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.15.10-source-release.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/activemq-openwire-legacy-5.13.4.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.13.4-source-release.zip">
+	<classpathentry exported="true" kind="lib" path="/third-party/activemq-openwire-legacy-5.15.10.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.15.10-source-release.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

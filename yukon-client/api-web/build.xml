@@ -19,10 +19,10 @@
     
     <fileset dir="${yukon.lib}" id="yukon.lib.files">
         <include name="activation.jar"/>
-        <include name="activemq-broker-5.13.4.jar"/>
-        <include name="activemq-client-5.13.4.jar"/>
-        <include name="activemq-kahadb-store-5.13.4.jar"/>
-        <include name="activemq-openwire-legacy-5.13.4.jar"/>
+        <include name="activemq-broker-5.15.10.jar"/>
+        <include name="activemq-client-5.15.10.jar"/>
+        <include name="activemq-kahadb-store-5.15.10.jar"/>
+        <include name="activemq-openwire-legacy-5.15.10.jar"/>
         <include name="activemq-protobuf-1.1.jar"/>
         <include name="aopalliance-1.0.jar"/>
         <include name="api.jar"/>

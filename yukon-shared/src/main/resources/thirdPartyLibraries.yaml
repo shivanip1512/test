@@ -21,60 +21,60 @@ Java :
     jira : none
     notes : This JAR version is not stored in Maven
   
-  - filename : activemq-broker-5.13.4.jar
+  - filename : activemq-broker-5.15.10.jar
     yukon group : ActiveMQ
     project : Apache ActiveMQ
-    version : 5.13.4
+    version : 5.15.10
     project URL : "http://activemq.apache.org/"
     license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-broker/5.13.4"
-    md5 : f53f41bdba159d9cfa1ce661567e9472
-    sha1 : 77869af9719764a9d9c12adc9a4a0a4f23d8bd14
-    updated : 2016-08-22
-    jira : YUK-15354
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-broker/5.15.10"
+    md5 : 22de440ce8590d77c853d8e61b05df2f
+    sha1 : 5700dd48d5e3f5e7ab9d2e44202b865e085009c1
+    updated : 2019-09-25
+    jira : YUK-15354, YUK-20323
     notes : 
   
-  - filename : activemq-client-5.13.4.jar
+  - filename : activemq-client-5.15.10.jar
     yukon group : ActiveMQ
     project : Apache ActiveMQ
-    version : 5.13.4
+    version : 5.15.10
     project URL : "http://activemq.apache.org/"
     license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-client/5.13.4"
-    md5 : 6a9982b82666250de313ba1ca4fd714e
-    sha1 : 9876c0a5851599038b4560135a1fc366e1841959
-    updated : 2016-08-22
-    jira : YUK-15354
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-client/5.15.10"
+    md5 : 45fd3e720d401d90ddbd1c8807646e22
+    sha1 : 37ca66258ba69a6165e534c45635f4a8b4d8fb96
+    updated : 2019-09-25
+    jira : YUK-15354, YUK-20323
     notes : 
   
-  - filename : activemq-kahadb-store-5.13.4.jar
+  - filename : activemq-kahadb-store-5.15.10.jar
     yukon group : ActiveMQ
     project : Apache ActiveMQ
-    version : 5.13.4
+    version : 5.15.10
     project URL : "http://activemq.apache.org/"
     license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-kahadb-store/5.13.4"
-    md5 : 4d3673019532ccfe127e6a3a5c6f2a51
-    sha1 : c1979f2d5a4fe074145f59da83bc4209e789e6aa
-    updated : 2016-08-22
-    jira : YUK-15354
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-kahadb-store/5.15.10"
+    md5 : e49d9645dfdfe7ad2bc3e2f77973e37c
+    sha1 : 6ef712d9e765eee8842bef3b349ef529fe50e84e
+    updated : 2019-09-25
+    jira : YUK-15354, YUK-20323
     notes : 
   
-  - filename : activemq-openwire-legacy-5.13.4.jar
+  - filename : activemq-openwire-legacy-5.15.10.jar
     yukon group : ActiveMQ
     project : Apache ActiveMQ
-    version : 5.13.4
+    version : 5.15.10
     project URL : "http://activemq.apache.org/"
     license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-openwire-legacy/5.13.4"
-    md5 : cab64a3307ff885cb06888f48ed520d9
-    sha1 : 95995fb6819e162ac4df299505800c65f670d2bf
-    updated : 2016-08-22
-    jira : YUK-15354
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-openwire-legacy/5.15.10"
+    md5 : 6faf7f1a42961eef2397baa70c1995fb
+    sha1 : aa377be3e5610283cf426cf77e484617b5ae721b
+    updated : 2019-09-25
+    jira : YUK-15354, YUK-20323
     notes : 
   
   - filename : activemq-protobuf-1.1.jar
