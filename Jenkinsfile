@@ -27,37 +27,22 @@ pipeline {
                             }
                             try {
                                 bat 'java -version'
-                                checkout([$class: 'SubversionSCM',
-                                    additionalCredentials: [],
-                                    excludedCommitMessages: '',
-                                    excludedRegions: '',
-                                    excludedRevprop: '',
-                                    excludedUsers: '',
-                                    filterChangelog: false,
-                                    ignoreDirPropChanges: false,
-                                    includedRegions: '',
-                                    locations: [[cancelProcessOnExternalsFail: true,
-                                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                                            depthOption: 'infinity',
-                                            ignoreExternalsOption: true,
-                                            local: 'yukon-help',
-                                            remote: "${env.SVN_URL}" + '/yukon-help'], [cancelProcessOnExternalsFail: true,
-                                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                                            depthOption: 'infinity',
-                                            ignoreExternalsOption: true,
-                                            local: 'yukon-client',
-                                            remote: "${env.SVN_URL}" + '/yukon-client'], [cancelProcessOnExternalsFail: true,
-                                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                                            depthOption: 'infinity',
-                                            ignoreExternalsOption: true,
-                                            local: 'yukon-build',
-                                            remote: "${env.SVN_URL}" + '/yukon-build'], [cancelProcessOnExternalsFail: true,
-                                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                                            depthOption: 'infinity',
-                                            ignoreExternalsOption: true,
-                                            local: 'yukon-shared',
-                                            remote: "${env.SVN_URL}" + '/yukon-shared']],
-                                    quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                                def scmVars = checkout([$class: 'GitSCM',
+                                                        branches: [[name: 'refs/heads/release/7.3']],
+                                                        doGenerateSubmoduleConfigurations: false,
+                                                        extensions: [[$class: 'CloneOption',
+                                                                      honorRefspec: true, noTags: true,
+                                                                      reference: '', shallow: true, timeout: 30],
+                                                                     [$class: 'SparseCheckoutPaths',
+                                                                      sparseCheckoutPaths: [[path: 'yukon-help'],
+                                                                                            [path: 'yukon-client'],
+                                                                                            [path: 'yukon-build'],
+                                                                                            [path: 'yukon-shared']]],
+                                                                     [$class: 'AuthorInChangelog']],
+                                                        submoduleCfg: [],
+                                                        userRemoteConfigs: [[refspec: '+refs/heads/release/7.3:refs/remotes/origin/release/7.3', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
+
+                                env.GIT_COMMIT = scmVars.GIT_COMMIT
 
                                 bat './yukon-build/go.bat build-client'
 
@@ -88,37 +73,20 @@ pipeline {
                                 cleanWs()
                             }
                             try {
-                                checkout([$class: 'SubversionSCM',
-                                    additionalCredentials: [],
-                                    excludedCommitMessages: '',
-                                    excludedRegions: '',
-                                    excludedRevprop: '',
-                                    excludedUsers: '',
-                                    filterChangelog: false,
-                                    ignoreDirPropChanges: false,
-                                    includedRegions: '',
-                                    locations: [[cancelProcessOnExternalsFail: true,
-                                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                                            depthOption: 'infinity',
-                                            ignoreExternalsOption: true,
-                                            local: 'yukon-server',
-                                            remote: "${env.SVN_URL}" + '/yukon-server'], [cancelProcessOnExternalsFail: true,
-                                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                                            depthOption: 'infinity',
-                                            ignoreExternalsOption: true,
-                                            local: 'yukon-build',
-                                            remote: "${env.SVN_URL}" + '/yukon-build'], [cancelProcessOnExternalsFail: true,
-                                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                                            depthOption: 'infinity',
-                                            ignoreExternalsOption: true,
-                                            local: 'yukon-client/build/ant/bin',
-                                            remote: "${env.SVN_URL}" + '/yukon-client/build/ant/bin'], [cancelProcessOnExternalsFail: true,
-                                            credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                                            depthOption: 'infinity',
-                                            ignoreExternalsOption: true,
-                                            local: 'yukon-shared',
-                                            remote: "${env.SVN_URL}" + '/yukon-shared']],
-                                    quietOperation: true, workspaceUpdater: [$class: 'UpdateUpdater']])
+                                checkout([$class: 'GitSCM',
+                                          branches: [[name: 'refs/heads/release/7.3']],
+                                          doGenerateSubmoduleConfigurations: false,
+                                          extensions: [[$class: 'CloneOption',
+                                                        honorRefspec: true, noTags: true,
+                                                        reference: '', shallow: true, timeout: 30],
+                                                       [$class: 'SparseCheckoutPaths',
+                                                        sparseCheckoutPaths: [[path: 'yukon-server'],
+                                                                              [path: 'yukon-build'],
+                                                                              [path: 'yukon-client/build/ant/bin'],
+                                                                              [path: 'yukon-shared']]],
+                                                       [$class: 'AuthorInChangelog']],
+                                          submoduleCfg: [],
+                                          userRemoteConfigs: [[refspec: '+refs/heads/release/7.3:refs/remotes/origin/release/7.3', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
 
                                 bat './yukon-build/go.bat build-server'
 
@@ -148,47 +116,34 @@ pipeline {
                         cleanWs()
                     }
                 }
-                // The stashed folders are modified during the build, which means a simple
-                // unstash leaves data behind. Here we manually wipe these folders before unstashing.
-                dir('yukon-client') {
-                    deleteDir()
-                }
-                unstash 'yukon-client'
-
-                dir('yukon-server') {
-                    deleteDir()
-                }
-                unstash 'yukon-server'
-
                 // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
                 script {
                     try {
-                        checkout([$class: 'SubversionSCM',
-                            additionalCredentials: [],
-                            excludedCommitMessages: '',
-                            excludedRegions: '',
-                            excludedRevprop: '',
-                            excludedUsers: '',
-                            filterChangelog: false,
-                            ignoreDirPropChanges: false,
-                            includedRegions: '',
-                            locations: [[cancelProcessOnExternalsFail: true,
-                                    credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                                    depthOption: 'infinity',
-                                    ignoreExternalsOption: true,
-                                    local: 'yukon-install',
-                                    remote: "${env.SVN_URL}" + '/yukon-install'], [cancelProcessOnExternalsFail: true,
-                                    credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                                    depthOption: 'infinity',
-                                    ignoreExternalsOption: true,
-                                    local: 'yukon-build',
-                                    remote: "${env.SVN_URL}" + '/yukon-build'], [cancelProcessOnExternalsFail: true,
-                                    credentialsId: '705036f1-44aa-43f0-8a78-4949f8bcc072',
-                                    depthOption: 'infinity',
-                                    ignoreExternalsOption: true,
-                                    local: 'yukon-database',
-                                    remote: "${env.SVN_URL}" + '/yukon-database']],
-                            quietOperation: true, workspaceUpdater: [$class: 'UpdateWithCleanUpdater']])
+                        checkout([$class: 'GitSCM',
+                                  branches: [[name: 'refs/heads/release/7.3']],
+                                  doGenerateSubmoduleConfigurations: false,
+                                  extensions: [[$class: 'CloneOption',
+                                                honorRefspec: true, noTags: true,
+                                                reference: '', shallow: true, timeout: 30],
+                                               [$class: 'SparseCheckoutPaths',
+                                                sparseCheckoutPaths: [[path: 'yukon-install'],
+                                                                      [path: 'yukon-build'],
+                                                                      [path: 'yukon-database']]],
+                                               [$class: 'AuthorInChangelog']],
+                                  submoduleCfg: [],
+                                  userRemoteConfigs: [[refspec: '+refs/heads/release/7.3:refs/remotes/origin/release/7.3', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
+
+                        // The stashed folders are modified during the build, which means a simple
+                        // unstash leaves data behind. Here we manually wipe these folders before unstashing.
+                        dir('yukon-client') {
+                            deleteDir()
+                        }
+                        unstash 'yukon-client'
+
+                        dir('yukon-server') {
+                            deleteDir()
+                        }
+                        unstash 'yukon-server'
 
                         bat './yukon-build/go.bat build-install'
 
@@ -222,9 +177,9 @@ def verifyLastBuild() {
     if (currentBuild.currentResult == 'SUCCESS') {
         if (currentBuild?.getPreviousBuild()?.result == 'FAILURE') {
             emailext body: " See<${env.BUILD_URL}display/redirect> \n ",
-                to: '$DEFAULT_RECIPIENTS',
-                recipientProviders: [culprits(), requestor(), brokenTestsSuspects(), brokenBuildSuspects()],
-                subject: "Jenkins build is back to normal : ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+                    to: '$DEFAULT_RECIPIENTS',
+                    recipientProviders: [culprits(), requestor(), brokenTestsSuspects(), brokenBuildSuspects()],
+                    subject: "Jenkins build is back to normal : ${env.JOB_NAME} #${env.BUILD_NUMBER}"
         }
     }
 }
@@ -253,8 +208,8 @@ def sendEmailNotification(String stageName) {
         }
     }
     emailext body: "${stageName} Failed : Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}\n ${changeString}     ${logString}",
-        to: '$DEFAULT_RECIPIENTS',
-        recipientProviders: [culprits(), brokenTestsSuspects(), brokenBuildSuspects()],
-        subject: "${stageName} failed in Jenkins:  ${env.JOB_NAME}#${env.BUILD_NUMBER}"
+            to: '$DEFAULT_RECIPIENTS',
+            recipientProviders: [culprits(), brokenTestsSuspects(), brokenBuildSuspects()],
+            subject: "${stageName} failed in Jenkins:  ${env.JOB_NAME}#${env.BUILD_NUMBER}"
 
 }
