@@ -44,19 +44,20 @@
                  <c:set var="rampInFieldEnabled"
                        value="${(programGear.fields.rampInPercent > 0 && programGear.fields.rampInIntervalInSeconds != 0) ||
                                 (not empty rampInFieldErrors)}"/>
-                 <tags:nameValueContainer2>
+                 <tags:nameValueContainer2 tableClass="js-rampIn-fields-tbl">
                     <tags:nameValue2 nameKey=".rampIn">
-                        <tags:switchButton id="js-MasterCycle-rampInSwitch" name="rampIn" toggleGroup="rampInWindow" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label"
-                            checked="${rampInFieldEnabled}" classes="js-rampIn-switch"/>
+                        <tags:switchButton name="rampIn" toggleGroup="rampInWindow" toggleAction="hide"
+                                           onNameKey=".yes.label" offNameKey=".no.label" checked="${rampInFieldEnabled}"
+                                           classes="js-rampIn-switch"/>
                      </tags:nameValue2>
                      <c:set var="rampInFieldClass" value="${rampInFieldEnabled ? '' : 'dn'}" />
                      <tags:nameValue2 nameKey=".rampInPercent" data-toggle-group="rampInWindow" rowClass="${rampInFieldClass}">
                          <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
-                         <tags:numeric id="js-MasterCycle-rampInPercent" path="fields.rampInPercent" units="${percent}" size="10" minValue="0" maxValue="100"/>
+                         <tags:numeric inputClass="js-rampInPercent" path="fields.rampInPercent" units="${percent}" size="10" minValue="0" maxValue="100"/>
                      </tags:nameValue2>
                      <tags:nameValue2 nameKey=".rampInInterval" data-toggle-group="rampInWindow" rowClass="${rampInFieldClass}">
                          <cti:msg2 var="rampInIntervalUnit" key="yukon.common.units.SECONDS"/>
-                         <tags:numeric  id="js-MasterCycle-rampInInterval" path="fields.rampInIntervalInSeconds" units="${rampInIntervalUnit}" size="10" minValue="-99999" maxValue="99999"/>
+                         <tags:numeric inputClass="js-rampInInterval" path="fields.rampInIntervalInSeconds" units="${rampInIntervalUnit}" size="10" minValue="-99999" maxValue="99999"/>
                      </tags:nameValue2>
                  </tags:nameValueContainer2>
               </tags:sectionContainer2>
