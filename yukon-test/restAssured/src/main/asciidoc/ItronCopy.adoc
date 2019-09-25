@@ -1,0 +1,24 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Itron
+
+*Request Properties* :
+
+include::{snippets}/ItronLoadGroupSetupApiControllerTest/Test_LmItron_Copy/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/ItronLoadGroupSetupApiControllerTest/Test_LmItron_Copy/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/ItronLoadGroupSetupApiControllerTest/Test_LmItron_Copy/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/ItronLoadGroupSetupApiControllerTest/Test_LmItron_Copy/http-response.adoc[]

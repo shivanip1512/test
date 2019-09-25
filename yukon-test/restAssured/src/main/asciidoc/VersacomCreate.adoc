@@ -1,0 +1,24 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Versacom
+
+*Request Parameter* :
+
+include::{snippets}/VersacomLoadGroupSetupApiControllerTest/Test_LmVersacom_Create/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/VersacomLoadGroupSetupApiControllerTest/Test_LmVersacom_Create/http-request.adoc[]
+
+*Response Parameter* :
+
+include::{snippets}/VersacomLoadGroupSetupApiControllerTest/Test_LmVersacom_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/VersacomLoadGroupSetupApiControllerTest/Test_LmVersacom_Create/http-response.adoc[]

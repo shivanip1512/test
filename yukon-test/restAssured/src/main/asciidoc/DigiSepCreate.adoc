@@ -1,0 +1,24 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== DigiSep
+
+*Request Parameter* :
+
+include::{snippets}/DigiSepLoadGroupSetupApiControllerTest/Test_LmDigiSep_Create/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/DigiSepLoadGroupSetupApiControllerTest/Test_LmDigiSep_Create/http-request.adoc[]
+
+*Response Parameter* :
+
+include::{snippets}/DigiSepLoadGroupSetupApiControllerTest/Test_LmDigiSep_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DigiSepLoadGroupSetupApiControllerTest/Test_LmDigiSep_Create/http-response.adoc[]

@@ -1,0 +1,15 @@
+{
+    "LM_GROUP_DIGI_SEP": {
+        "name": "Test-Digi-Sep",
+        "type": "LM_GROUP_DIGI_SEP",
+        "kWCapacity": 23.0,
+        "disableGroup": false,
+        "disableControl": true,
+        "utilityEnrollmentGroup": 12,
+        "deviceClassSet": [
+            "BASEBOARD_HEAT"
+        ],
+        "rampInMinutes": 30,
+        "rampOutMinutes": 30
+    }
+}

@@ -5,16 +5,16 @@
 :toclevels: 4
 :sectlinks:
 
-==== Meter Disconnect Retrieve
+==== Meter Disconnect
+
+*Response JSON* :
+
+include::{snippets}/MeterDisconnectLoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Get/http-request.adoc[]
+
+*Response Parameter* :
+
+include::{snippets}/MeterDisconnectLoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Get/response-fields.adoc[]
 
 *Retrieve Response JSON* :
 
-include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Get/http-request.adoc[]
-
-*Response Parameter's* :
-
-include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Get/response-fields.adoc[]
-
-*Retrieve Response JSON* :
-
-include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Get/http-response.adoc[]
+include::{snippets}/MeterDisconnectLoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Get/http-response.adoc[]

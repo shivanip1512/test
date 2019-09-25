@@ -9,16 +9,16 @@
 
 *Request Properties* :
 
-include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/request-fields.adoc[]
+include::{snippets}/MeterDisconnectLoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/request-fields.adoc[]
 
-*Create Request JSON* :
+*Request JSON* :
 
-include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/http-request.adoc[]
+include::{snippets}/MeterDisconnectLoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/http-request.adoc[]
 
 *Response Properties* :
 
-include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/response-fields.adoc[]
+include::{snippets}/MeterDisconnectLoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/response-fields.adoc[]
 
-*Create response JSON* :
+*Response JSON* :
 
-include::{snippets}/LoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/http-response.adoc[]
+include::{snippets}/MeterDisconnectLoadGroupSetupApiControllerTest/Test_LmGroupMeterDisconnect_Create/http-response.adoc[]

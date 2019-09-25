@@ -9,17 +9,56 @@
 
 == Load Group
 === Create
+include::DigiSepCreate.adoc[]
+include::EcobeeCreate.adoc[]
+include::EmetconCreate.adoc[]
+include::ExpresscomCreate.adoc[]
+include::HoneywellCreate.adoc[]
+include::ItronCreate.adoc[]
 include::MeterDisconnectCreate.adoc[]
+include::NestCreate.adoc[]
+include::VersacomCreate.adoc[]
 
 === Retrieve
+include::DigiSepGet.adoc[]
+include::EcobeeGet.adoc[]
+include::EmetconGet.adoc[]
+include::ExpresscomGet.adoc[]
+include::HoneywellGet.adoc[]
+include::ItronGet.adoc[]
 include::MeterDisconnectGet.adoc[]
+include::NestGet.adoc[]
+include::VersacomGet.adoc[]
 
 === Update
-
-=== Copy
+include::DigiSepUpdate.adoc[]
+include::EcobeeUpdate.adoc[]
+include::EmetconUpdate.adoc[]
+include::ExpresscomUpdate.adoc[]
+include::HoneywellUpdate.adoc[]
+include::ItronUpdate.adoc[]
+include::MeterDisconnectUpdate.adoc[]
+include::NestUpdate.adoc[]
+include::VersacomUpdate.adoc[]
 
 === Delete
+include::DigiSepDelete.adoc[]
+include::EcobeeDelete.adoc[]
+include::EmetconDelete.adoc[]
+include::ExpresscomDelete.adoc[]
+include::HoneywellDelete.adoc[]
+include::ItronDelete.adoc[]
 include::MeterDisconnectDelete.adoc[]
+include::NestDelete.adoc[]
+include::VersacomDelete.adoc[]
+
+=== Copy
+include::DigiSepCopy.adoc[]
+include::EmetconCopy.adoc[]
+include::ExpresscomCopy.adoc[]
+include::ItronCopy.adoc[]
+include::MeterDisconnectCopy.adoc[]
+include::VersacomCopy.adoc[]
 
 == Macro LoadGroup
 === Create
@@ -66,4 +105,3 @@ include::MacroLoadGroupDelete.adoc[]
 === Delete
 === GetSeasonsSchedules
 === GetHolidaySchedules
-

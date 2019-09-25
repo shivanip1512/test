@@ -1,0 +1,6 @@
+{ 
+    "LOAD_GROUP_COPY":
+    { 
+        "name": "Test-MeterDisconnect-Copy"
+     }
+}
