@@ -65,7 +65,7 @@ public class ExpresscomLoadGroupSetupApiControllerTest {
         this.restDocumentation.afterTest();
     }
 
-    @Test(priority=1)
+    @Test
     public void Test_Expresscom_Create() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", requestFields(expresscomFieldDescriptor),
@@ -86,7 +86,7 @@ public class ExpresscomLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(priority=2)
+    @Test(dependsOnMethods = { "Test_Expresscom_Create" })
     public void Test_LmExpresscom_Get() {
         List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(expresscomFieldDescriptor));
         list.add(0,fieldWithPath("LM_GROUP_EXPRESSCOMM.id").type(JsonFieldType.NUMBER).description("Load Group Id"));
@@ -103,7 +103,7 @@ public class ExpresscomLoadGroupSetupApiControllerTest {
          assertTrue("Status code should be 200", response.statusCode() == 200);
      }
 
-    @Test(priority=3)
+    @Test(dependsOnMethods = { "Test_LmExpresscom_Get" })
     public void Test_LmExpresscom_Update() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", requestFields(expresscomFieldDescriptor),
@@ -123,7 +123,7 @@ public class ExpresscomLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(priority = 4)
+    @Test(dependsOnMethods = { "Test_LmExpresscom_Update" })
     public void Test_LmExpresscom_Copy() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
@@ -145,7 +145,7 @@ public class ExpresscomLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(priority=5)
+    @Test(dependsOnMethods = { "Test_LmExpresscom_Copy" })
     public void Test_LmExpresscom_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
             requestFields(

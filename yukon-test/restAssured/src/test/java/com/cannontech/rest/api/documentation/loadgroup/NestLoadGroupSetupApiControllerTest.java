@@ -52,7 +52,7 @@ public class NestLoadGroupSetupApiControllerTest {
         this.restDocumentation.afterTest();
     }
 
-    @Test(priority=1)
+    @Test
     public void Test_LmNest_Create() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", requestFields(nestFieldDescriptor),
@@ -71,7 +71,7 @@ public class NestLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-   @Test(priority=2)
+    @Test(dependsOnMethods = { "Test_LmNest_Create" })
     public void Test_LmNest_Get() {
        List<FieldDescriptor> responseFields = new ArrayList<>(Arrays.asList(nestFieldDescriptor));
        responseFields.add(0,fieldWithPath("LM_GROUP_NEST.id").type(JsonFieldType.NUMBER).description("Load Group Id"));
@@ -88,8 +88,8 @@ public class NestLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-   @Test(priority=3)
-   public void Test_LmNest_Update() {
+    @Test(dependsOnMethods = { "Test_LmNest_Get" })
+    public void Test_LmNest_Update() {
        Response response = given(documentationSpec)
                                .filter(document("{ClassName}/{methodName}", requestFields(nestFieldDescriptor),
                                    responseFields(fieldWithPath("groupId").type(JsonFieldType.NUMBER).description("Load Group Id"))))
@@ -107,7 +107,7 @@ public class NestLoadGroupSetupApiControllerTest {
        assertTrue("Status code should be 200", response.statusCode() == 200);
    }
 
-   @Test(priority=4)
+   @Test(dependsOnMethods = { "Test_LmNest_Update" })
    public void Test_LmNest_Delete() {
        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
            requestFields(

@@ -56,7 +56,7 @@ public class DigiSepLoadGroupSetupApiControllerTest {
         this.restDocumentation.afterTest();
     }
     
-    @Test(priority=1)
+    @Test
     public void Test_LmDigiSep_Create() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", requestFields(digiSepFieldDescriptor),
@@ -76,7 +76,7 @@ public class DigiSepLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
     
-    @Test(priority=2)
+    @Test(dependsOnMethods = { "Test_LmDigiSep_Create" })
     public void Test_LmDigiSep_Get() {
         List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(digiSepFieldDescriptor));
         list.add(0,fieldWithPath("LM_GROUP_DIGI_SEP.id").type(JsonFieldType.NUMBER).description("Load Group Id"));
@@ -93,7 +93,7 @@ public class DigiSepLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
     
-    @Test(priority=3)
+    @Test(dependsOnMethods = { "Test_LmDigiSep_Get" })
     public void Test_LmDigiSep_Update() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", requestFields(digiSepFieldDescriptor),
@@ -112,7 +112,7 @@ public class DigiSepLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(priority = 4)
+    @Test(dependsOnMethods = { "Test_LmDigiSep_Update" })
     public void Test_LmDigiSep_Copy() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
@@ -133,7 +133,7 @@ public class DigiSepLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(priority=5)
+    @Test(dependsOnMethods = { "Test_LmDigiSep_Copy" })
     public void Test_LmDigiSep_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
             requestFields(

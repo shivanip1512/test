@@ -53,7 +53,7 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
         this.restDocumentation.afterTest();
     }
 
-    @Test(priority=1)
+    @Test
     public void Test_LmGroupMeterDisconnect_Create() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", requestFields(meterDisconnectFieldDescriptor),
@@ -74,7 +74,7 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-   @Test(priority=2)
+    @Test(dependsOnMethods = { "Test_LmGroupMeterDisconnect_Create" })
     public void Test_LmGroupMeterDisconnect_Get() {
        List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(meterDisconnectFieldDescriptor));
        list.add(0,fieldWithPath("LM_GROUP_METER_DISCONNECT.id").type(JsonFieldType.NUMBER).description("Load Group Id"));
@@ -91,9 +91,9 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
         
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
-   
-   @Test(priority=3)
-   public void Test_LmGroupMeterDisconnect_Update() {
+
+    @Test(dependsOnMethods = { "Test_LmGroupMeterDisconnect_Get" })
+    public void Test_LmGroupMeterDisconnect_Update() {
        Response response = given(documentationSpec)
                                .filter(document("{ClassName}/{methodName}", requestFields(meterDisconnectFieldDescriptor),
                                    responseFields(fieldWithPath("groupId").type(JsonFieldType.NUMBER).description("Load Group Id"))))
@@ -113,7 +113,7 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
        assertTrue("Status code should be 200", response.statusCode() == 200);
    }
 
-   @Test(priority = 4)
+    @Test(dependsOnMethods = { "Test_LmGroupMeterDisconnect_Update" })
    public void Test_LmGroupMeterDisconnect_Copy() {
        Response response = given(documentationSpec)
                                .filter(document("{ClassName}/{methodName}", 
@@ -134,8 +134,8 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
        assertTrue("Status code should be 200", response.statusCode() == 200);
    }
 
-   @Test(priority=5)
-   public void Test_LmGroupMeterDisconnect_Delete() {
+    @Test(dependsOnMethods = { "Test_LmGroupMeterDisconnect_Copy" })
+    public void Test_LmGroupMeterDisconnect_Delete() {
        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
            requestFields(
                fieldWithPath("name").type(JsonFieldType.STRING).description("Load Group Name")), 

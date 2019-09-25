@@ -54,7 +54,7 @@ public class ItronLoadGroupSetupApiControllerTest {
         this.restDocumentation.afterTest();
     }
 
-    @Test(priority=1)
+    @Test
     public void Test_LmItron_Create() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", requestFields(itronFieldDescriptor),
@@ -75,7 +75,7 @@ public class ItronLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(priority=2)
+    @Test(dependsOnMethods = { "Test_LmItron_Create" })
     public void Test_LmItron_Get() {
         List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(itronFieldDescriptor));
         list.add(0,fieldWithPath("LM_GROUP_ITRON.id").type(JsonFieldType.NUMBER).description("Load Group Id"));
@@ -92,7 +92,7 @@ public class ItronLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(priority=3)
+    @Test(dependsOnMethods = { "Test_LmItron_Get" })
     public void Test_LmItron_Update() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", requestFields(itronFieldDescriptor),
@@ -112,7 +112,7 @@ public class ItronLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(priority = 4)
+    @Test(dependsOnMethods = { "Test_LmItron_Update" })
     public void Test_LmItron_Copy() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
@@ -133,7 +133,7 @@ public class ItronLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(priority=5)
+    @Test(dependsOnMethods = { "Test_LmItron_Copy" })
     public void Test_LmItron_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
             requestFields(

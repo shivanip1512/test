@@ -52,7 +52,7 @@ public class HoneywellLoadGroupSetupApiControllerTest {
         this.restDocumentation.afterTest();
     }
 
-    @Test(priority=1)
+    @Test
     public void Test_LmHoneywell_Create() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", requestFields(HoneywellFieldDescriptor),
@@ -73,7 +73,7 @@ public class HoneywellLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-   @Test(priority=2)
+    @Test(dependsOnMethods = { "Test_LmHoneywell_Create" })
     public void Test_LmHoneywell_Get() {
        List<FieldDescriptor> responseFields = new ArrayList<>(Arrays.asList(HoneywellFieldDescriptor));
        responseFields.add(0,fieldWithPath("LM_GROUP_HONEYWELL.id").type(JsonFieldType.NUMBER).description("Load Group Id"));
@@ -91,7 +91,7 @@ public class HoneywellLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
    
-   @Test(priority=3)
+   @Test(dependsOnMethods = { "Test_LmHoneywell_Get" })
    public void Test_LmHoneywell_Update() {
        Response response = given(documentationSpec)
                                .filter(document("{ClassName}/{methodName}", requestFields(HoneywellFieldDescriptor),
@@ -111,7 +111,8 @@ public class HoneywellLoadGroupSetupApiControllerTest {
        assertTrue("PAO ID should not be Null", paoId != null);
        assertTrue("Status code should be 200", response.statusCode() == 200);
    }
-   @Test(priority=4)
+
+   @Test(dependsOnMethods = { "Test_LmHoneywell_Update" })
    public void Test_LmHoneywell_Delete() {
        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
            requestFields(
