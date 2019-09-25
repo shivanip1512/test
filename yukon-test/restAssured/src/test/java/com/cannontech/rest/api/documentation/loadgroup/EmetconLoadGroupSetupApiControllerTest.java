@@ -140,21 +140,6 @@ public class EmetconLoadGroupSetupApiControllerTest {
     }
 
     @Test(priority=5)
-    public void Test_LmEmetcon_CopyDelete() {
-        Response response = given()
-            .accept("application/json")
-            .contentType("application/json")
-            .header("Authorization","Bearer " + ApiCallHelper.authToken)
-            .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\EmetconCopyDelete.json"))
-            .when()
-            .delete(ApiCallHelper.getProperty("deleteloadgroup") + copyPaoId)
-            .then()
-            .extract()
-            .response();
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-    }
-
-    @Test(priority=6)
     public void Test_LmEmetcon_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
             requestFields(
