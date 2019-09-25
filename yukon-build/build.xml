@@ -29,18 +29,6 @@
         <echo message=" jsdoctoolkit    - generates documentation from commented JavaScript source code" />
    </target>
 
-    <target name="svn-info-build">
-        <mkdir dir="${log.dir}"/>
-        <exec failonerror="false"
-              dir="${basedir}"
-              output="${basedir}/yukon-client/common/src/com/cannontech/build-info.xml"
-              resultproperty="errorcode"
-              executable="svn.exe" >
-            <arg value="info"/>
-            <arg value="--xml"/>
-        </exec>
-    </target>
-
     <target name="init">
         <property file="yukon-build/build_version.properties" />
 
@@ -57,8 +45,8 @@
     </target>
 
     <!-- build-release is now the only way to store symbols -->
-    <target name="build" depends="init,clean,svn-info-build,buildTarget,build-dist-pdb" />
-    <target name="build-release" depends="init,clean,svn-info-build,buildTarget,symstore,build-dist" />
+    <target name="build" depends="init,clean,buildTarget,build-dist-pdb" />
+    <target name="build-release" depends="init,clean,buildTarget,symstore,build-dist" />
 
     <target name="buildTarget" depends="build-client,build-server,build-install" />
     
@@ -75,7 +63,7 @@
         <antcall target="runUnitTests" />
     </target>
     
-    <target name="compile-java" depends="init,clean,svn-info-build">
+    <target name="compile-java" depends="init,clean">
         <echo message="building module yukon-client" />
         <mkdir dir="${log.dir}" />
         
@@ -252,9 +240,11 @@
             <fileset dir="${install.bag}/Yukon Base/Client/bin" includes="*.exe,*.conf,*.dll"/>
         </copy>
         
-        <exec executable="svnversion" dir='${basedir}/yukon-build' outputproperty="svnversion" />
-        <echo message="SVN Version: ${svnversion}"/>
-        <echo message="SVN Version: ${svnversion}" file="${install.bag}/svnversion.txt"/>
+        <exec executable="git" dir='${basedir}/yukon-build' outputproperty="gitcommit">
+            <arg line="rev-parse --short HEAD"/>
+        </exec>
+        <echo message="GIT Commit Revision: ${gitcommit}"/>
+        <echo message="GIT Commit Revision: ${gitcommit}" file="${install.bag}/gitcommitrevision.txt"/>
 
         <!-- Location of the stand-alone build module -->
         <property name="isshield" location="C:\Program Files (x86)\InstallShield\2012SpringSP1 SAB\System\IsCmdBld.exe" />
