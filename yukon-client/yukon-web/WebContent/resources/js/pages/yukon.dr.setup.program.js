@@ -87,21 +87,6 @@ yukon.dr.setup.program = (function() {
         $('#js-program-' + action + '-span').toggleClass('dn', !checked);
     },
 
-    _handleRampInFields = function() {
-        var controlMethod = $("#controlMethod"),
-            gearType = controlMethod.find("option:selected").val();
-        if(!gearType) {
-            gearType = controlMethod.val();
-        }
-        var isRampInSelected = $("#js-" + gearType + "-rampInSwitch").prop('checked');
-        if (isRampInSelected) {
-            $("#js-" + gearType + "-rampInPercent").val("1");
-        } else {
-            $("#js-" + gearType + "-rampInPercent").val("");
-            $("#js-" + gearType + "-rampInInterval").val("");
-        }
-    },
-
     _loadProgram = function() {
 
         var type = $('#type').val();
@@ -343,8 +328,8 @@ yukon.dr.setup.program = (function() {
                             programType : selectedProgramType
                         }
                     }).done(function(data) {
-                        $(".js-program-gear-container").empty();
-                        $(".js-program-gear-container").html(data);
+                        $(".js-gearPopup").empty();
+                        $(".js-gearPopup").html(data);
                         yukon.ui.unblock($('#js-gear-fields-container'));
                         _initCss();
                     });
@@ -475,8 +460,15 @@ yukon.dr.setup.program = (function() {
                 $('#js-assigned-gear').closest('.select-box').find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
             });
 
-            $(document).on('change', '.js-rampIn-switch', function () {
-                _handleRampInFields();
+            $(document).on('change', '.js-rampIn-switch', function (event) {
+                var isRampInSelected = $(event.target).prop('checked'),
+                    container = $(this).closest(".js-rampIn-fields-tbl");
+                if (isRampInSelected) {
+                    container.find(".js-rampInPercent").val("1");
+                } else {
+                    container.find(".js-rampInPercent").val("");
+                    container.find(".js-rampInInterval").val("");
+                }
             });
 
             _initialized = true;
