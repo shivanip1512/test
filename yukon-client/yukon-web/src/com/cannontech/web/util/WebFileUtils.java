@@ -29,7 +29,10 @@ import com.cannontech.common.exception.NoImportFileException;
 import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.util.ServletUtil;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.opencsv.CSVWriter;
+import com.opencsv.RFC4180Parser;
+import com.opencsv.RFC4180ParserBuilder;
 
 public class WebFileUtils {
 
@@ -70,7 +73,10 @@ public class WebFileUtils {
                 ByteOrderMark.UTF_16LE, ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
         InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-        return new CSVReader(bufferedReader);
+        RFC4180Parser rfc4180Parser = new RFC4180ParserBuilder().build();
+        CSVReaderBuilder csvReaderBuilder = new CSVReaderBuilder(bufferedReader)
+                        .withCSVParser(rfc4180Parser);
+        return csvReaderBuilder.build();
     }
 
     public static void writeToCSV(HttpServletResponse response, List<String> headerRow,
