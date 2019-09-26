@@ -2440,8 +2440,11 @@ void CtiLMControlArea::updateTimedPrograms(LONG secondsFromBeginningOfDay)
             {
                 // If we cant find the next window, this generally means our windows are
                 // messed up and no control will ever happen. Tell client there is a problem!
-                resultStart = CtiTime::neg_infin;
-                resultStop = CtiTime::neg_infin;
+
+                resultStart = gInvalidCtiTime;
+                resultStop = gInvalidCtiTime;
+
+                CTILOG_ERROR( dout, "Program '" << lm_program->getPAOName() << "' has invalid control windows. No control will happen until this is addressed." );
             }
 
             if( lm_direct->getManualControlReceivedFlag() ||
