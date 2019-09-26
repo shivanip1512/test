@@ -100,8 +100,13 @@ include::MacroLoadGroupDelete.adoc[]
 
 == ProgramConstraint
 === Create
+include::ProgramConstraintCreate.adoc[]
+
 === Retrieve
+include::ProgramConstraintGet.adoc[]
+
 === Update
+include::ProgramConstraintUpdate.adoc[]
+
 === Delete
-=== GetSeasonsSchedules
-=== GetHolidaySchedules
+include::ProgramConstraintDelete.adoc[]
