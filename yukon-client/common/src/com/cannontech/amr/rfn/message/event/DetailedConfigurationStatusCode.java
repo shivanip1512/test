@@ -32,6 +32,7 @@ public class DetailedConfigurationStatusCode implements Serializable {
         FILE_TOO_LARGE((short) 33),
         CONFIGURATION_IN_PROGRESS((short) 34),
         UNABLE_TO_GET_FILE((short) 35),
+        INSUFFICIENT_METER_VERSION((short) 36),
         FILE_EXPIRED((short) 37),
         FAILED_REQUIREMENTS((short) 38),
         MALFORMED_RECORD_IN_CONFIGURATION_FILE((short) 39),
