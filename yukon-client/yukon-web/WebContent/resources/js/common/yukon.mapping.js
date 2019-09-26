@@ -106,8 +106,7 @@ yukon.mapping = (function () {
         displayCommonPopupProperties: function(pao) {
             $('.js-device-display').toggleClass('dn', pao.device.name === null);
             if (pao.deviceDetailUrl != null) {
-                var nameSpan = $('<span />'),
-                    deviceLink = '<a href="' + yukon.url(pao.deviceDetailUrl) + '" target=_blank>' + nameSpan.text(pao.device.name).html() + '</a>',
+                var deviceLink = '<a href="' + yukon.url(pao.deviceDetailUrl) + '" target=_blank>' + yukon.escapeXml(pao.device.name) + '</a>',
                     actionsDiv = $('#actionsDiv').clone().removeClass('dn');
                 actionsDiv.find('.js-device-neighbors, .js-device-route, .js-device-map').attr('data-device-id', pao.device.paoIdentifier.paoId);
                 actionsDiv.find('.js-view-all-notes').attr('data-pao-id', pao.device.paoIdentifier.paoId);
@@ -128,9 +127,7 @@ yukon.mapping = (function () {
             mod.updateDeviceStatusClass(pao.statusDisplay);
             $('.js-primary-gateway-display').toggleClass('dn', pao.primaryGateway === null);
             if (pao.primaryGatewayUrl != null) {
-                var nameSpan = $('<span />');
-                nameSpan.text(pao.primaryGateway);
-                $('.js-primary-gateway').html('<a href="' + yukon.url(pao.primaryGatewayUrl) + '" target=_blank>' + nameSpan.html() + '</a>');
+                $('.js-primary-gateway').html('<a href="' + yukon.url(pao.primaryGatewayUrl) + '" target=_blank>' + yukon.escapeXml(pao.primaryGateway) + '</a>');
             } else {
                 $('.js-primary-gateway').text(pao.primaryGateway);
             }
