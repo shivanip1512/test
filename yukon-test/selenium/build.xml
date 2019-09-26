@@ -84,7 +84,7 @@ Author: anuradha.uduwage
             <manifest>
                 <attribute name="Main-Class" value="com.cannontech.selenium.test.TestMainSel"/>
                 <attribute name="Class-Path" 
-                    value="${build.jar}/log4j-1.2.15.jar ${build.jar}/junit-4.6.jar ${build.jar}/selenium-java-client-driver.jar ${build.jar}/dom4j-1.6.1.jar ${build.jar}/testng-5.10-jdk15.jar"/>
+                    value="${build.jar}/log4j-1.2.15.jar ${build.jar}/junit-4.6.jar ${build.jar}/selenium-java-client-driver.jar ${build.jar}/dom4j-2.1.1.jar ${build.jar}/testng-5.10-jdk15.jar"/>
             </manifest>
         </jar>
     </target>

@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry excluding="com/cannon/selenium/|com/pylot/xml/|com/example/tests/|com/example/ExampleTest.java" kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/dom4j-2.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.6.jar" sourcepath="lib/junit-4.6.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/testng-5.10-jdk15.jar"/>
