@@ -133,7 +133,7 @@ public class PointController {
 
     @RequestMapping(value = "/points/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext, HttpServletRequest request) {
-        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.LIMITED);
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.RESTRICTED);
         model.addAttribute("mode", PageEditMode.VIEW);
         return retrievePointAndModel(model, userContext, flashScope, id, request);
     }
