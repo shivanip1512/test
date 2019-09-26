@@ -41,7 +41,7 @@
         <replace file="tempDropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
         <echo message="${databaseName}"/>
 
-        <echo message="Checking out database snapshot folder" />
+        <echo message="Checking out database snapshot folder ${dbSnapshot}" />
     	
     	<exec executable="svn">
         	<arg value="checkout" />
@@ -148,7 +148,7 @@
         <replace file="tempDropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
         <echo message="${databaseName}"/>
         
-        <echo message="Checking out database snapshot folder" />
+        <echo message="Checking out database snapshot folder ${dbSnapshot}" />
         <exec executable="svn">
             <arg value="checkout" />
             <arg value="${env.SVN_BASE_URL}${dbSnapshot}"/>
