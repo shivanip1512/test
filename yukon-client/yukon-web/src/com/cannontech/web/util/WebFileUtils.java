@@ -73,6 +73,9 @@ public class WebFileUtils {
                 ByteOrderMark.UTF_16LE, ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
         InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        /**
+         * RFC4180 parser is needed to allow for embedded slashes in the fields. 
+         */
         RFC4180Parser rfc4180Parser = new RFC4180ParserBuilder().build();
         CSVReaderBuilder csvReaderBuilder = new CSVReaderBuilder(bufferedReader)
                         .withCSVParser(rfc4180Parser);
