@@ -348,13 +348,13 @@ public class ProgramController extends ProgramControllerBase {
                                                        smartNotificationEventCreationService, program.getName());
 
                 CollectionActionResult result = disconnectService.execute(command, collection, doNothingCallback, statusCallback, userContext);
-                if (!result.getExecutionExceptionText().isEmpty()) {
+                if (StringUtils.isNotEmpty(result.getExecutionExceptionText())) {
                     json.put("errors", result.getExecutionExceptionText());
                 }
                 return json;
             }
         } catch (Exception e) {
-            log.info("No current event found for device: " + pao.getPaoName(), e);
+            log.error("No current event found for device: " + pao.getPaoName(), e);
         }
 
         DisconnectMeterResult result = disconnectService.execute(command, DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
