@@ -29,7 +29,7 @@ yukon.dr.setup.program = (function() {
         var stopTimeWindowOne = $('#stopTimeWindowOne').val(), 
             stop = ""; 
         if (stopTimeWindowOne != "") {
-            stop= _timeFormatter.parse24HourTime($('#stopTimeWindowOne').val());
+            stop = _timeFormatter.parse24HourTime($('#stopTimeWindowOne').val());
         }
         $('#stopTimeInMinutesWindowOne').val(stop);
     },
