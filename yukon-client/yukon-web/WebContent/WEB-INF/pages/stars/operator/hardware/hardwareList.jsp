@@ -615,7 +615,7 @@
                                         <c:if test="${meter.hardwareType != 'NON_YUKON_METER'}">
                                             <cm:dropdown>
                                                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                                                    <c:if test="${inventoryChecking}">
+                                                    <c:if test="${inventoryChecking && (meter.hardwareType != 'YUKON_METER')}">
                                                         <li>
                                                             <tags:pickerDialog extraArgs="${energyCompanyId}"
                                                                     id="availableMeterPicker${meter.inventoryId}"
