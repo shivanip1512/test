@@ -210,12 +210,26 @@
                                             checked="${controlWindowOneEnabled}" id="controlWindowOne"/>
                                     </tags:nameValue2>
                                     <c:set var="controlWindowOneClass" value="${controlWindowOneEnabled ? '' : 'dn'}" />
-                                    <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindowOne" rowClass="${controlWindowOneClass}">
-                                        <dt:timeOffset id="startTimeWindowOne" name="startTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}"/>
+                                    <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindowOne" rowClass="${controlWindowOneClass}" >
+                                        <dt:timeOffset id="startTimeWindowOne" name="startTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}" cssClass="${startTimeErrorWindowOne ? 'error' : ''}"/>
+                                            <c:if test="${not empty startTimeErrorWindowOne}">
+                                                <br/></br>
+                                                <div class="error">
+                                                    <cti:msg2 var="startTime" key="yukon.web.modules.dr.setup.loadProgram.startTime"/>
+                                                    <i:inline key="yukon.web.modules.dr.setup.error.required" arguments="${startTime}"/>
+                                                </div>
+                                            </c:if>
                                         <input type="hidden" id="startTimeInMinutesWindowOne" name="controlWindow.controlWindowOne.availableStartTimeInMinutes" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindowOne" rowClass="${controlWindowOneClass}">
-                                        <dt:timeOffset id="stopTimeWindowOne" name="stopTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}"/>
+                                        <dt:timeOffset id="stopTimeWindowOne" name="stopTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}" cssClass="${stopTimeErrorWindowOne ? 'error' : ''}"/>
+                                            <c:if test="${not empty stopTimeErrorWindowOne}">
+                                                <br/></br>
+                                                <div class="error">
+                                                    <cti:msg2 var="stopTime" key="yukon.web.modules.dr.setup.loadProgram.stopTime"/>
+                                                    <i:inline key="yukon.web.modules.dr.setup.error.required" arguments="${stopTime}"/>
+                                                </div>
+                                            </c:if>
                                         <input type="hidden" id="stopTimeInMinutesWindowOne" name="controlWindow.controlWindowOne.availableStopTimeInMinutes" value="${loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}"/>
                                     </tags:nameValue2>
                                 </tags:nameValueContainer2>
@@ -228,11 +242,25 @@
                                     </tags:nameValue2>
                                     <c:set var="controlWindowTwoClass" value="${controlWindowTwoEnabled ? '' : 'dn'}" />
                                     <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindowTwo" rowClass="${controlWindowTwoClass}">
-                                        <dt:timeOffset id="startTimeWindowTwo" name="startTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"/>
+                                        <dt:timeOffset id="startTimeWindowTwo" name="startTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"  cssClass="${startTimeErrorWindowTwo ? 'error' : ''}"/>
+                                            <c:if test="${not empty startTimeErrorWindowTwo}">
+                                                <br/></br>
+                                                <div class="error">
+                                                    <cti:msg2 var="startTime" key="yukon.web.modules.dr.setup.loadProgram.startTime"/>
+                                                    <i:inline key="yukon.web.modules.dr.setup.error.required" arguments="${startTime}"/>
+                                                </div>
+                                            </c:if>
                                         <input type="hidden" id="startTimeInMinutesWindowTwo" name="controlWindow.controlWindowTwo.availableStartTimeInMinutes" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindowTwo" rowClass="${controlWindowTwoClass}">
-                                        <dt:timeOffset id="stopTimeWindowTwo" name="stopTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}"/>
+                                        <dt:timeOffset id="stopTimeWindowTwo" name="stopTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}"  cssClass="${stopTimeErrorWindowTwo ? 'error' : ''}"/>
+                                            <c:if test="${not empty stopTimeErrorWindowTwo}">
+                                                <br/></br>
+                                                <div class="error">
+                                                    <cti:msg2 var="stopTime" key="yukon.web.modules.dr.setup.loadProgram.stopTime"/>
+                                                    <i:inline key="yukon.web.modules.dr.setup.error.required" arguments="${stopTime}"/>
+                                                </div>
+                                            </c:if>
                                         <input type="hidden" id="stopTimeInMinutesWindowTwo" name="controlWindow.controlWindowTwo.availableStopTimeInMinutes" value="${loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}"/>
                                     </tags:nameValue2>
                                 </tags:nameValueContainer2>
