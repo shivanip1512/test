@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.dr.rfn.tlv.FieldType;
 import com.google.common.collect.ImmutableSet;
@@ -16,6 +17,7 @@ public enum RfnLcrTlvPointDataType {
     RELAY_1_REMAINING_CONTROL(BuiltInAttribute.RELAY_1_REMAINING_CONTROL, FieldType.RELAY_N_REMAINING_CONTROLTIME, 0),
     RELAY_2_REMAINING_CONTROL(BuiltInAttribute.RELAY_2_REMAINING_CONTROL, FieldType.RELAY_N_REMAINING_CONTROLTIME, 1),
     RELAY_3_REMAINING_CONTROL(BuiltInAttribute.RELAY_3_REMAINING_CONTROL, FieldType.RELAY_N_REMAINING_CONTROLTIME, 2),
+    RELAY_4_REMAINING_CONTROL(BuiltInAttribute.RELAY_4_REMAINING_CONTROL, FieldType.RELAY_N_REMAINING_CONTROLTIME, 3),
     SERVICE_STATUS(BuiltInAttribute.SERVICE_STATUS, FieldType.SERVICE_STATE),
     TOTAL_LUF_EVENT(BuiltInAttribute.TOTAL_LUF_COUNT, FieldType.LUF_EVENTS),
     TOTAL_LUV_EVENT(BuiltInAttribute.TOTAL_LUV_COUNT, FieldType.LUV_EVENTS),
@@ -70,14 +72,17 @@ public enum RfnLcrTlvPointDataType {
     public static Set<RfnLcrTlvPointDataType> getPointDataTypesByPaoType(PaoType paoType) {
         if (paoType == PaoType.LCR6700_RFN) {
             return lcr6700PointDataTypes;
-        } else {
-            log.error("No RFN LCR point data types found for pao type: " + paoType.getPaoTypeName());
-            throw new IllegalArgumentException();
         }
+        log.error("No RFN LCR point data types found for pao type: " + paoType.getPaoTypeName());
+        throw new IllegalArgumentException();
     }
 
     public boolean isPowerQualityResponse() {
         return isPowerQualityResponse;
+    }
+    
+    public boolean isRelayData() {
+        return attribute.getAttributeGroup() == AttributeGroup.RELAY;
     }
     
     public BuiltInAttribute getAttribute() {
