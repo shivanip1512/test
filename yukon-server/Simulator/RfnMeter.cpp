@@ -92,7 +92,9 @@ const std::map<std::string, std::map<std::string, const metrics>> perType {
         { "FocusAXR-SD",     streaming_focus_ax_400 },
 
         { "FocusAXD-500",    streaming_focus_ax_500 },
-        { "FocusAXD-SD-500", streaming_focus_ax_500 }
+        { "FocusAXD-SD-500", streaming_focus_ax_500 },
+
+        { "E650",            streaming_s4_x }
     }},
     { "EE", {
         { "A3D", streaming_elster_a3dt },
@@ -165,6 +167,59 @@ std::vector<unsigned char> RfnMeter::DataStreamingConfig(const std::vector<unsig
         }
     }
     return {};
+}
+
+auto RfnMeter::RequestMeterProgram(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId) -> path_size
+{
+    auto pos = 1;
+    const auto end = request.size();
+
+    if( request[pos++] != 2 )
+    {
+        return {};  //  error, must have two TLVs
+    }
+    
+    std::optional<int> size;
+    std::optional<std::string> uri;
+
+    while( pos < end )
+    {
+        if( end - pos < 3 )
+        {
+            return {};  //  error, TLV header too small
+        }
+        auto type = request[pos];
+        auto len = ntohs(*reinterpret_cast<const unsigned short *>(request.data() + pos + 1));
+
+        pos += 3;
+
+        if( pos + len >= end )
+        {
+            return {};  //  error, buffer too small
+        }
+
+        switch( type )
+        {
+        case 0x01:
+            if( len != 4 )
+            {
+                return {};  //  error, size must be 4 bytes
+            }
+            size = ntohl(*reinterpret_cast<const u_long*>(request.data() + pos));
+            break;
+        case 0x02:
+            uri = std::string(request.data() + pos, request.data() + pos + len);
+            break;
+        }
+        pos += len;
+    }
+
+    if( ! size || ! uri )
+    {
+        return {};  //  error, missing one of the two required parameters
+    }
+
+    return { *uri, *size };
 }
 
 struct metric_response

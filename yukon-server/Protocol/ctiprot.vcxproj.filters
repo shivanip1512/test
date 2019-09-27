@@ -312,6 +312,9 @@
     <ClCompile Include="..\COMMON\boost_assert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="coap_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ansi_application.h">
