@@ -130,9 +130,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
 
             @Override
             public void complete(StrategyType strategy) {
-                if (result.isComplete()) {
-                    statusCallback.ifPresent(DrDisconnectStatusCallback::handleComplete);
-                } else {
+                if (!result.isComplete()) {
                     pendingStrategies.remove(strategy);
                     log.debug("Completing " + strategy + " strategy. Remaining strategies:" + pendingStrategies);
                     if (pendingStrategies.isEmpty()) {
@@ -141,10 +139,17 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
                         disconnectEventLogService.groupActionCompleted(context.getYukonUser(), command,
                             result.getCounts().getTotalCount(), result.getCounts().getSuccessCount(),
                             result.getCounts().getFailedCount(), result.getCounts().getNotAttemptedCount());
+                        
+                        try {
+                            statusCallback.ifPresent(DrDisconnectStatusCallback::handleComplete);
+                        } catch (Exception e) {
+                            log.error("Error updating DR Disconnect Status", e);
+                        }
+                        
                         try {
                             alertCallback.handle(result);
                         } catch (Exception e) {
-                            log.error(e);
+                            log.error("Error in alert callback", e);
                         }
                     }
                 }
