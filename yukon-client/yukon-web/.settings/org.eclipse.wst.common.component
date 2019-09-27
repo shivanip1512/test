@@ -121,7 +121,7 @@
         <dependent-module archiveName="nagasena.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/nagasena.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="xercesImpl-2.11.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/xercesImpl-2.11.0.jar">
+        <dependent-module archiveName="xercesImpl-2.12.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/xercesImpl-2.12.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="yukon-shared.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/yukon-shared/yukon-shared">
