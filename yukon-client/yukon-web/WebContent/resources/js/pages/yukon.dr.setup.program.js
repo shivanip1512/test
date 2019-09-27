@@ -15,22 +15,40 @@ yukon.dr.setup.program = (function() {
     _timeFormatter = yukon.timeFormatter,
     
     _updateStartTimeWindowOne = function () {
-        var start = _timeFormatter.parse24HourTime($('#startTimeWindowOne').val());
+
+        var startTimeWindowOne = $('#startTimeWindowOne').val(), 
+            start = "";
+        if (startTimeWindowOne != "") {
+            start = _timeFormatter.parse24HourTime($('#startTimeWindowOne').val());
+        }
+       
         $('#startTimeInMinutesWindowOne').val(start);
     },
 
     _updateStopTimeWindowOne = function () {
-        var stop = _timeFormatter.parse24HourTime($('#stopTimeWindowOne').val());
+        var stopTimeWindowOne = $('#stopTimeWindowOne').val(), 
+            stop = ""; 
+        if (stopTimeWindowOne != "") {
+            stop = _timeFormatter.parse24HourTime($('#stopTimeWindowOne').val());
+        }
         $('#stopTimeInMinutesWindowOne').val(stop);
     },
 
     _updateStartTimeWindowTwo = function () {
-        var start = _timeFormatter.parse24HourTime($('#startTimeWindowTwo').val());
+        var startTimeWindowTwo = $('#startTimeWindowTwo').val(), 
+        start = "";
+        if (startTimeWindowTwo != "") {
+            start = _timeFormatter.parse24HourTime($('#startTimeWindowTwo').val());
+        }
         $('#startTimeInMinutesWindowTwo').val(start);
     },
 
     _updateStopTimeWindowTwo = function () {
-        var stop = _timeFormatter.parse24HourTime($('#stopTimeWindowTwo').val());
+        var stopTimeWindowTwo = $('#stopTimeWindowTwo').val(), 
+            stop = ""; 
+        if (stopTimeWindowTwo != "") {
+            stop = _timeFormatter.parse24HourTime($('#stopTimeWindowTwo').val());
+        }
         $('#stopTimeInMinutesWindowTwo').val(stop);
     },
 
@@ -427,12 +445,28 @@ yukon.dr.setup.program = (function() {
                 }
             });
 
+            if($("#startTimeWindowOne").hasClass('error')) {
+                $('#startTimeWindowOne').val('');
+            }
+
+            if($("#stopTimeWindowOne").hasClass('error')) {
+                $('#stopTimeWindowOne').val('');
+            }
+
+            if($("#startTimeWindowTwo").hasClass('error')) {
+                $('#startTimeWindowTwo').val('');
+            }
+
+            if($("#stopTimeWindowTwo").hasClass('error')) {
+                $('#stopTimeWindowTwo').val('');
+            }
+
             $(document).on('click', '#controlWindowTwo', function() {
                 var controlWindowRow = $(this).closest('tr'),
                 useControlWindow = controlWindowRow.find('.switch-btn-checkbox').prop('checked');
                 if (!useControlWindow) {
                     $('#startTimeInMinutesWindowTwo').val('');
-                    $('#startTimeInMinutesWindowTwo').val('');
+                    $('#stopTimeInMinutesWindowTwo').val('');
                 } else {
                     _updateStartTimeWindowTwo();
                     _updateStopTimeWindowTwo();
