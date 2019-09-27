@@ -44,7 +44,7 @@
         <tfoot></tfoot>
         <tbody>
             <c:set var="isPointLinkVisible" value= "false" />
-            <cti:checkRolesAndProperties value="MANAGE_POINTS" level="LIMITED">
+            <cti:checkRolesAndProperties value="MANAGE_POINTS" level="RESTRICTED">
                 <c:set var="isPointLinkVisible" value= "true" />
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
