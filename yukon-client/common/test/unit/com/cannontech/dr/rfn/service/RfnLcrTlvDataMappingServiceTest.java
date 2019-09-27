@@ -15,6 +15,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.cannontech.dr.dao.ExpressComReportedAddress;
 import com.cannontech.dr.dao.ExpressComReportedAddressRelay;
 import com.cannontech.dr.rfn.model.RfnLcrTlvPointDataType;
+import com.cannontech.dr.rfn.service.impl.RfnLcrDataMappingServiceImpl;
 import com.cannontech.dr.rfn.service.impl.RfnLcrTlvDataMappingServiceImpl;
 import com.cannontech.dr.rfn.tlv.FieldType;
 import com.google.common.collect.ArrayListMultimap;
@@ -23,7 +24,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
 
 public class RfnLcrTlvDataMappingServiceTest {
-    private RfnLcrTlvDataMappingServiceImpl service = new RfnLcrTlvDataMappingServiceImpl();
+    private RfnLcrDataMappingServiceImpl<ListMultimap<FieldType, byte[]>> service = new RfnLcrTlvDataMappingServiceImpl();
     
     @Test
     public void test_isValidTimeOfReading_withValidDate() {

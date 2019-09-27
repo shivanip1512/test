@@ -107,6 +107,30 @@
         <unitofmeasure value="SECONDS"/>
         <decimalplaces value="0"/>
     </point>
+    <point offset="28" type="Analog">
+        <name>Relay 4 Run Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="29" type="Analog">
+        <name>Relay 4 Shed Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="30" type="Analog">
+        <name>Relay 4 kW Load Size</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="31" type="Analog">
+        <name>Relay 4 Remaining Control Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
     
     <!-- Power Quality Response (GridBallast) Points -->
     <point offset="900" type="Analog">

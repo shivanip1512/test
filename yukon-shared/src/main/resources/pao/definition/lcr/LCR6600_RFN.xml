@@ -11,18 +11,22 @@
         <pointInfo name="Blink Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="Control Status" init="true" attributes="CONTROL_STATUS"/>
         <pointInfo name="Recording Interval" init="true" attributes="RECORDING_INTERVAL"/>
-        <pointInfo name="Relay 1 kW Load Size" init="true" attributes="RELAY_1_LOAD_SIZE"/>
-        <pointInfo name="Relay 1 Remaining Control Time" init="true" attributes="RELAY_1_REMAINING_CONTROL"/>
-        <pointInfo name="Relay 1 Run Time Data Log" init="true" attributes="RELAY_1_RUN_TIME_DATA_LOG"/>
-        <pointInfo name="Relay 1 Shed Time Data Log" init="true" attributes="RELAY_1_SHED_TIME_DATA_LOG"/>
-        <pointInfo name="Relay 2 kW Load Size" init="true" attributes="RELAY_2_LOAD_SIZE"/>
-        <pointInfo name="Relay 2 Remaining Control Time" init="true" attributes="RELAY_2_REMAINING_CONTROL"/>
-        <pointInfo name="Relay 2 Run Time Data Log" init="true" attributes="RELAY_2_RUN_TIME_DATA_LOG"/>
-        <pointInfo name="Relay 2 Shed Time Data Log" init="true" attributes="RELAY_2_SHED_TIME_DATA_LOG"/>
-        <pointInfo name="Relay 3 kW Load Size" init="true" attributes="RELAY_3_LOAD_SIZE"/>
-        <pointInfo name="Relay 3 Remaining Control Time" init="true" attributes="RELAY_3_REMAINING_CONTROL"/>
-        <pointInfo name="Relay 3 Run Time Data Log" init="true" attributes="RELAY_3_RUN_TIME_DATA_LOG"/>
-        <pointInfo name="Relay 3 Shed Time Data Log" init="true" attributes="RELAY_3_SHED_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 1 kW Load Size" attributes="RELAY_1_LOAD_SIZE"/>
+        <pointInfo name="Relay 1 Remaining Control Time" attributes="RELAY_1_REMAINING_CONTROL"/>
+        <pointInfo name="Relay 1 Run Time Data Log" attributes="RELAY_1_RUN_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 1 Shed Time Data Log" attributes="RELAY_1_SHED_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 2 kW Load Size" attributes="RELAY_2_LOAD_SIZE"/>
+        <pointInfo name="Relay 2 Remaining Control Time" attributes="RELAY_2_REMAINING_CONTROL"/>
+        <pointInfo name="Relay 2 Run Time Data Log" attributes="RELAY_2_RUN_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 2 Shed Time Data Log" attributes="RELAY_2_SHED_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 3 kW Load Size" attributes="RELAY_3_LOAD_SIZE"/>
+        <pointInfo name="Relay 3 Remaining Control Time" attributes="RELAY_3_REMAINING_CONTROL"/>
+        <pointInfo name="Relay 3 Run Time Data Log" attributes="RELAY_3_RUN_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 3 Shed Time Data Log" attributes="RELAY_3_SHED_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 4 kW Load Size" attributes="RELAY_4_LOAD_SIZE"/>
+        <pointInfo name="Relay 4 Remaining Control Time" attributes="RELAY_4_REMAINING_CONTROL"/>
+        <pointInfo name="Relay 4 Run Time Data Log" attributes="RELAY_4_RUN_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 4 Shed Time Data Log" attributes="RELAY_4_SHED_TIME_DATA_LOG"/>
         <pointInfo name="Reporting Interval" init="true" attributes="REPORTING_INTERVAL"/>
         <pointInfo name="Service Status" init="true" attributes="SERVICE_STATUS"/>
         <pointInfo name="Total LUF Event Count" attributes="TOTAL_LUF_COUNT"/>

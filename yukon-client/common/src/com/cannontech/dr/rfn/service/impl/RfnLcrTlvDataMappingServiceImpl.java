@@ -22,7 +22,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
@@ -50,7 +49,6 @@ import com.google.common.collect.Sets;
 public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImpl<ListMultimap<FieldType, byte[]>> {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private PointDao pointDao;
-    @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ExpressComReportedAddressDao expressComReportedAddressDao;
     @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
@@ -114,15 +112,14 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                     continue;
                 }
                 
-                // If PQR is enabled, and it's PQR data, and the point is missing, create the point automatically
                 boolean isPqrEnabled = configurationSource.getBoolean(MasterConfigBoolean.ENABLE_POWER_QUALITY_RESPONSE);
-                if (isPqrEnabled && entry.isPowerQualityResponse()) {
-                    boolean pointExists = attributeService.pointExistsForAttribute(device, entry.getAttribute());
-                    if (!pointExists) {
-                        log.debug("Creating point for PQR attribute (" + entry.getAttribute() + ") on device: " 
-                                 + device.getName() + ".");
-                        attributeService.createPointForAttribute(device, entry.getAttribute());
-                    }
+
+                // If PQR is enabled, and it's PQR data, and the point is missing, create the point automatically
+                boolean createPoint = (isPqrEnabled && entry.isPowerQualityResponse()) 
+                                        || entry.isRelayData(); 
+
+                if (createPoint) {
+                    createPointIfMissing(device, entry.getAttribute());
                 }
                 
                 // Generate the point data
@@ -143,7 +140,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                     
                     PointData pointData = getPointData(entry.getAttribute(), value, paoPointIdentifier, point.getPointID(), timeOfReading.toDate());
                     messagesToSend.add(pointData);
-                } catch (NotFoundException e) {
+                } catch (@SuppressWarnings("unused") NotFoundException e) {
                     log.debug("Point for attribute (" + entry.getAttribute().toString() + ") does not exist for device: "
                             + device.getName());
                     continue;
@@ -152,7 +149,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         }
         return messagesToSend;
     }
-    
+
     private Double evaluateArchiveReadValue(ListMultimap<FieldType, byte[]> data, RfnLcrTlvPointDataType entry) {
 
         Number value = null;
@@ -254,7 +251,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                                               }
                                           });
 
-            LitePoint relayPoint = attributeService.findPointForAttribute(device, relay.getAttribute());
+            LitePoint relayPoint = attributeService.createAndFindPointForAttribute(device, relay.getAttribute());
 
             for (Integer value : intervalData) {
                 // 0xFF represents invalid value
@@ -291,8 +288,8 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         // This is a quick exit if the address is older than the newer
         // It is un-necessary but is being kept to avoid refactoring changes
         if (address == null) {
-            log.info("Current addressing from" + currentAddress.getTimestamp().toDate() + " is newer than newly reported at "
-                    + address.getTimestamp().toDate() + " for device " + device.getName() + ", ignoring older addressing information");
+            log.info("Current addressing from" + currentAddress.getTimestamp().toDate() + " is newer than incoming report for device " 
+                     + device.getName() + ", ignoring older addressing information");
             return;
         }
 
