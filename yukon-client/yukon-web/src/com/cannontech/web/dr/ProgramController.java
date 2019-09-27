@@ -348,7 +348,7 @@ public class ProgramController extends ProgramControllerBase {
                                                        smartNotificationEventCreationService, program.getName());
 
                 CollectionActionResult result = disconnectService.execute(command, collection, doNothingCallback, statusCallback, userContext);
-                if (result.getExecutionExceptionText() != null && !result.getExecutionExceptionText().isEmpty()) {
+                if (StringUtils.isNotEmpty(result.getExecutionExceptionText())) {
                     json.put("errors", result.getExecutionExceptionText());
                 }
                 return json;
