@@ -254,6 +254,7 @@ INIT_ATTRIBUTE( Relay3ShedTime15Min,                                "RELAY_3_SHE
 INIT_ATTRIBUTE( Relay3ShedTime30Min,                                "RELAY_3_SHED_TIME_DATA_LOG_30_MIN" )
 INIT_ATTRIBUTE( Relay3RelayState,                                   "RELAY_3_RELAY_STATE" );
 INIT_ATTRIBUTE( Relay4CallForCool,                                  "RELAY_4_CALL_FOR_COOL" );
+INIT_ATTRIBUTE( Relay4kWLoadSize,                                   "RELAY_4_LOAD_SIZE" );
 INIT_ATTRIBUTE( Relay4RemainingControlTime,                         "RELAY_4_REMAINING_CONTROL" );
 INIT_ATTRIBUTE( Relay4RunTime,                                      "RELAY_4_RUN_TIME_DATA_LOG" );
 INIT_ATTRIBUTE( Relay4RunTime5Min,                                  "RELAY_4_RUN_TIME_DATA_LOG_5_MIN" )

@@ -237,6 +237,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_SHED_TIME_DATA_LOG_15_MIN">Relay 3 Shed Time Data Log 15 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_SHED_TIME_DATA_LOG_30_MIN">Relay 3 Shed Time Data Log 30 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_CALL_FOR_COOL">Relay 4 Call for Cool</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_LOAD_SIZE">Relay 4 kW Load Size</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_REMAINING_CONTROL">Relay 4 Remaining Control Time</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_RUN_TIME_DATA_LOG">Relay 4 Run Time Data Log</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_RUN_TIME_DATA_LOG_5_MIN">Relay 4 Run Time Data Log 5 Minutes</entry>
@@ -406,7 +407,6 @@
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH_RATE_D">Received kWh Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH_RATE_E">Received kWh Rate E</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH_FROZEN">Received kWh Frozen</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.FORWARD_INDUCTIVE_KVARH">Forward Inductive kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH">Net kWh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_A">Net kWh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_RATE_B">Net kWh Rate B</entry>
@@ -592,7 +592,6 @@
     <entry key="yukon.common.attribute.builtInAttribute.TAMPER_LARGE_DECREASE_AFTER_OUTAGE">Tamper - Large Decrease After Outage</entry>
     
     <entry key="yukon.common.attribute.builtInAttribute.SECURITY_ALARM">Security Alarm</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.POWER_FAILURE">Power Failure</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RADIO_FAILURE">Radio Failure</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DOOR_OPEN">Door Open</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NODE_COUNT_EXCEEDED">Node Count Exceeded</entry>
