@@ -245,6 +245,7 @@ public:
     static const Attribute  Relay3ShedTime30Min;
     static const Attribute  Relay3RelayState;
     static const Attribute  Relay4CallForCool;
+    static const Attribute  Relay4kWLoadSize;
     static const Attribute  Relay4RemainingControlTime;
     static const Attribute  Relay4RunTime;
 	static const Attribute  Relay4RunTime5Min;

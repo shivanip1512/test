@@ -257,6 +257,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RELAY_3_SHED_TIME_DATA_LOG_30_MIN("Relay 3 Shed Time Data Log 30 Minutes", AttributeGroup.RELAY),
     RELAY_3_RELAY_STATE("Relay 3 Relay State", AttributeGroup.RELAY),
     RELAY_4_CALL_FOR_COOL("Relay 4 Call for Cool", AttributeGroup.RELAY),
+    RELAY_4_LOAD_SIZE("Relay 4 kW Load Size", AttributeGroup.RELAY),
     RELAY_4_REMAINING_CONTROL("Relay 4 Remaining Control Time", AttributeGroup.RELAY),
     RELAY_4_RUN_TIME_DATA_LOG("Relay 4 Run Time", AttributeGroup.RELAY),
     RELAY_4_RUN_TIME_DATA_LOG_5_MIN("Relay 4 Run Time Data Log 5 Minutes", AttributeGroup.RELAY),

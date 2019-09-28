@@ -1,20 +1,22 @@
 package com.cannontech.common.pao.attribute.model;
 
-import java.util.List;
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+import java.util.EnumSet;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
-
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class BuiltInAttributeTest {
     /*
@@ -26,18 +28,20 @@ public class BuiltInAttributeTest {
      */
     @Test
     public void testAttributeGroupMembership() {
-        Map<AttributeGroup, Set<BuiltInAttribute>> allGroupedAttributes = BuiltInAttribute.getAllGroupedAttributes();
-        List<BuiltInAttribute> allAttributesInAGroup = allGroupedAttributes.values().stream()
-                .flatMap(Set::stream)
-                .collect(Collectors.toList());
+        Set<BuiltInAttribute> allAttributesInAGroup = 
+                BuiltInAttribute.getAllGroupedAttributes().values().stream()
+                    .flatMap(Set::stream)
+                    .collect(Collectors.toSet());
 
-        for (BuiltInAttribute attribute : BuiltInAttribute.values()) {
-            if (!allAttributesInAGroup.contains(attribute)) {
-                Assert.fail("The attribute: " + attribute.name() + " is in BuiltInAttribute.values() " + 
-                		"but it is not in any attribute group. Add it to an existing group or create a new " +
-                        "attribute group for it.");
-            }
-        }
+        Set<BuiltInAttribute> allAttributes = 
+                EnumSet.allOf(BuiltInAttribute.class);
+        
+        Sets.difference(allAttributes, allAttributesInAGroup).stream()
+            .map(Enum::name)
+            .reduce((a,b) -> a + "," + b)
+            .ifPresent(attributes -> 
+                fail("[" + attributes + "] in BuiltInAttribute.values() " + 
+                     "but not included in any attribute group. Add to an existing or new group."));
     }
     
     @Test
@@ -63,6 +67,18 @@ public class BuiltInAttributeTest {
         
         BuiltInAttribute.sort(attributes, accessor);
         
-        Assert.assertEquals(expected, attributes);
+        assertEquals(expected, attributes);
+    }
+
+    @Test
+    public void testPointEntries() throws Exception {
+        var pointXml = getClass().getClassLoader().getResourceAsStream("com/cannontech/yukon/common/point.xml");
+
+        var pointEntries = new Properties();
+        pointEntries.loadFromXML(pointXml);
+        
+        for (var attr : BuiltInAttribute.values()) {
+            assertNotNull("No key for " + attr, pointEntries.get(attr.getFormatKey()));
+        }
     }
 }
