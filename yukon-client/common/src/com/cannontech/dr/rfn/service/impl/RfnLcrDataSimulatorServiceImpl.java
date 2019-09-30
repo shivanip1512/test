@@ -88,11 +88,11 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         SUBSTATION_ADDRESS((byte)0x0b, 2, 1),
         BLINK_COUNT((byte)0x0c, 1, 1),
         RELAY_INTERVAL_START_TIME((byte)0x0d, 4, 1),
-        RELAY_N_RUNTIME((byte)0x0e, 25, 3),
-        RELAY_N_SHEDTIME((byte)0x0f, 25, 3),
-        RELAY_N_PROGRAM_ADDRESS((byte)0x10, 2, 3),
-        RELAY_N_SPLINTER_ADDRESS((byte)0x11, 2, 3),
-        RELAY_N_REMAINING_CONTROLTIME((byte)0x12, 5, 3),
+        RELAY_N_RUNTIME((byte)0x0e, 25, 4),
+        RELAY_N_SHEDTIME((byte)0x0f, 25, 4),
+        RELAY_N_PROGRAM_ADDRESS((byte)0x10, 2, 4),
+        RELAY_N_SPLINTER_ADDRESS((byte)0x11, 2, 4),
+        RELAY_N_REMAINING_CONTROLTIME((byte)0x12, 5, 4),
         PROTECTION_TIME_RELAY_N((byte)0x13, 3, 3),
         CLP_TIME_FOR_RELAY_N((byte)0x14, 3, 3),
         //Power Quality Response fields:
@@ -431,13 +431,12 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                     for (PerformanceVerificationEventMessage eventMsg : eventMessages) {
                         if (messageCount > 15) {
                             break;
-                        } else {
-                            // Write first 4 byte as messageId
-                            writeLongValueAsByteArray(outputStream, eventMsg.getMessageId());
-                            // Write last 4 byte as timeStamp
-                            writeLongValueAsByteArray(outputStream, eventMsg.getTimeMessageSent().getMillis() / 1000);
-                            messageCount++;
                         }
+                        // Write first 4 byte as messageId
+                        writeLongValueAsByteArray(outputStream, eventMsg.getMessageId());
+                        // Write last 4 byte as timeStamp
+                        writeLongValueAsByteArray(outputStream, eventMsg.getTimeMessageSent().getMillis() / 1000);
+                        messageCount++;
                     }
                 } else {
                     // Add no message
@@ -696,6 +695,8 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                     case POWER_QUALITY_RESPONSE_ENABLED:
                         data.write((byte) 1); // 0 = disabled, >0 = enabled
                         valueIndex = field.length;
+                        break;
+                    default:
                         break;
                 }
                 // Fill in remaining values with numbers based on their field ID. (Affects all TLVFields not handled above).

@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -25,6 +26,8 @@ public enum RfnLcrPointDataMap {
     RELAY_2_REMAINING_CONTROL(BuiltInAttribute.RELAY_2_REMAINING_CONTROL, "/DRReport/Relays/Relay[@id=1]/RemainingControlTime"),
     RELAY_3_LOAD_SIZE(BuiltInAttribute.RELAY_3_LOAD_SIZE, "/DRReport/Relays/Relay[@id=2]/KwRating", null, null, .001),
     RELAY_3_REMAINING_CONTROL(BuiltInAttribute.RELAY_3_REMAINING_CONTROL, "/DRReport/Relays/Relay[@id=2]/RemainingControlTime"),
+    RELAY_4_LOAD_SIZE(BuiltInAttribute.RELAY_4_LOAD_SIZE, "/DRReport/Relays/Relay[@id=3]/KwRating", null, null, .001),
+    RELAY_4_REMAINING_CONTROL(BuiltInAttribute.RELAY_4_REMAINING_CONTROL, "/DRReport/Relays/Relay[@id=3]/RemainingControlTime"),
     REPORTING_INTERVAL(BuiltInAttribute.REPORTING_INTERVAL, "/DRReport/Info/ReportingInterval"),
     SERVICE_STATUS(BuiltInAttribute.SERVICE_STATUS, "/DRReport/Info/Flags", 0xC, 2, null),
     TOTAL_LUF_EVENT(BuiltInAttribute.TOTAL_LUF_COUNT, "/DRReport/Info/TotalLUFEvents"),
@@ -39,7 +42,7 @@ public enum RfnLcrPointDataMap {
     
     private static final Logger log = YukonLogManager.getLogger(RfnLcrPointDataMap.class);
     private static final Set<RfnLcrPointDataMap> lcr6200PointDataMap;
-    private static final Set<RfnLcrPointDataMap> lcr6600PointDataMap;
+    private static final Set<RfnLcrPointDataMap> lcr6600PointDataMap = ImmutableSet.copyOf(values());
     
     RfnLcrPointDataMap(BuiltInAttribute attribute, String xPathQuery) {
         this(attribute, xPathQuery, null, null, null);
@@ -65,12 +68,6 @@ public enum RfnLcrPointDataMap {
         builder.add(RELAY_1_LOAD_SIZE);
         builder.add(RELAY_1_REMAINING_CONTROL);
         lcr6200PointDataMap = builder.build();
-
-        builder.add(RELAY_2_LOAD_SIZE);
-        builder.add(RELAY_2_REMAINING_CONTROL);
-        builder.add(RELAY_3_LOAD_SIZE);
-        builder.add(RELAY_3_REMAINING_CONTROL);
-        lcr6600PointDataMap = builder.build();
     }
     
     public static Set<RfnLcrPointDataMap> getRelayMapByPaoType(PaoType paoType) {
@@ -105,5 +102,9 @@ public enum RfnLcrPointDataMap {
 
     public Double getMultiplier() {
         return multiplier;
+    }
+    
+    public boolean isRelayData() {
+        return attribute.getAttributeGroup() == AttributeGroup.RELAY;
     }
 }

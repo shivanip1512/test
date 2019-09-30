@@ -21,7 +21,6 @@ import org.w3c.dom.Node;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -47,7 +46,6 @@ import com.google.common.collect.Sets;
 public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImpl<SimpleXPathTemplate> {
     
     @Autowired private PointDao pointDao;
-    @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ExpressComReportedAddressDao expressComReportedAddressDao;
     @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
@@ -64,7 +62,6 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         Date timeOfReading = instantOfReading.toDate();
         
         List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
-        Set<RfnLcrPointDataMap> rfnLcrPointDataMap = Sets.newHashSet();
         
         RfnDevice device = rfnDeviceLookupService.getDevice(request.getRfnIdentifier());
         
@@ -76,22 +73,26 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
          * and Network Manager share that information. */
         assetAvailabilityTimes.setLastCommunicationTime(instantOfReading);
         
-        rfnLcrPointDataMap = RfnLcrPointDataMap.getRelayMapByPaoType(device.getPaoIdentifier().getPaoType());
+        var rfnLcrPointDataMap = RfnLcrPointDataMap.getRelayMapByPaoType(device.getPaoIdentifier().getPaoType());
         
         for (RfnLcrPointDataMap entry : rfnLcrPointDataMap) {
             
             PaoPointIdentifier paoPointIdentifier = null;
             Integer pointId = null;
             
+            if (entry.isRelayData()) {
+                createPointIfMissing(device, entry.getAttribute());
+            }
+            
             try {
                 paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(device, entry.getAttribute());
                 pointId = pointDao.getPointId(paoPointIdentifier);
-            } catch (IllegalUseOfAttribute e) {
+            } catch (@SuppressWarnings("unused") IllegalUseOfAttribute e) {
                 log.warn("The attribute: " + entry.getAttribute().toString() 
                          + " is not defined for the device: " + device.getName() 
                          + " of type: " + device.getPaoIdentifier().getPaoType());
                 continue;
-            } catch (NotFoundException e) {
+            } catch (@SuppressWarnings("unused") NotFoundException e) {
                 log.debug("Point for attribute (" + entry.getAttribute().toString() + ") does not exist for device: " + device.getName());
                 continue;
             }
@@ -340,7 +341,7 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             throw new RuntimeException();
         }
         
-        List<Long> relayStartTimes = new ArrayList<Long>();
+        List<Long> relayStartTimes = new ArrayList<>();
         for (RfnLcrRelayDataMap relay : rfnLcrRelayDataMap) {
             try{
                 long startTime = data.evaluateAsLong("/DRReport/Relays/Relay"
@@ -349,7 +350,7 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                 if (startTime > 0) {
                     relayStartTimes.add(startTime);
                 }
-            } catch (NullPointerException e) {
+            } catch (@SuppressWarnings("unused") NullPointerException e) {
                 // If there is no relay info, it could be gap filled data before it was configured,
                 // before it had a timesync or a combination.
                 // It is ok for this method to return null if the valid range can't be determined.
@@ -363,7 +364,7 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             // Remove minutes and seconds from time of reading.
             Instant timeOfReading = new DateTime(timeInSec * 1000).hourOfDay().roundFloorCopy().toInstant();
             Instant earliestStartTime = new Instant(relayStartTimes.get(0) * 1000);
-            range = new Range<Instant>(earliestStartTime, true, timeOfReading, true);
+            range = new Range<>(earliestStartTime, true, timeOfReading, true);
             
             log.debug("Created range: Min: " + earliestStartTime.toDate()
                       + "(earliest relay start time)       Max: " + timeOfReading.toDate()

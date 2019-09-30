@@ -16,6 +16,7 @@ public class RfnLcrReadingArchiveRequest extends RfnLcrArchiveRequest implements
     private RfnLcrReadingType type;
     private long dataPointId;
 
+    @Override
     public RfnLcrReading getData() {
         return data;
     }

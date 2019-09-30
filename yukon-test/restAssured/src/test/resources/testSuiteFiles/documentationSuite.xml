@@ -15,6 +15,7 @@
            <class name = "com.cannontech.rest.api.documentation.loadgroup.ItronLoadGroupSetupApiControllerTest" />
 
            <class name = "com.cannontech.rest.api.documentation.macroloadgroup.MacroLoadGroupSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.constraint.ProgramConstraintControllerTest" />
         </classes>
     </test>
 </suite>
