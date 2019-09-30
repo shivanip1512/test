@@ -302,7 +302,7 @@ public class YukonValidationUtils extends ValidationUtils {
         if (!errors.hasFieldErrors(field)) {
             try {
                  Integer portID = Integer.valueOf(fieldValue);
-                 checkRange(errors, field, portID, 0, 65535, true);
+                 checkRange(errors, field, portID, 1, 65535, true);
             } catch (Exception e) {
                 errors.rejectValue(field, "yukon.web.error.invalidPort");
             }
