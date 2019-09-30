@@ -326,13 +326,18 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
     
     private void validateControlWindowTime(String nestedPath, Errors errors, Integer availableStartTimeInMinutes,
             Integer availableStopTimeInMinutes) {
+        errors.pushNestedPath(nestedPath);
         if (availableStartTimeInMinutes != null && availableStopTimeInMinutes != null) {
-            errors.pushNestedPath(nestedPath);
             YukonValidationUtils.checkRange(errors, "availableStartTimeInMinutes", availableStartTimeInMinutes, 0, 1439, false);
             YukonValidationUtils.checkRange(errors, "availableStopTimeInMinutes", availableStopTimeInMinutes, 0, 1440, false);
-            errors.popNestedPath();
+        } else if (availableStartTimeInMinutes == null && availableStopTimeInMinutes != null) {
+            lmValidatorHelper.checkIfFieldRequired("availableStartTimeInMinutes", errors, availableStartTimeInMinutes,
+                "Start Time");
+        } else if (availableStopTimeInMinutes == null && availableStartTimeInMinutes != null) {
+            lmValidatorHelper.checkIfFieldRequired("availableStopTimeInMinutes", errors, availableStopTimeInMinutes,
+                "Stop Time");
         }
-
+        errors.popNestedPath();
     }
 
     private Optional<ProgramGroup> getProgramGroup(ProgramGroup group, PaoType programType) {
