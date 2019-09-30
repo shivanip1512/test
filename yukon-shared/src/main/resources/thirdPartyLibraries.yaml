@@ -2939,7 +2939,7 @@ Java :
     version : 2.11.0
     project URL : "	https://xerces.apache.org/xerces2-j/"
     license : Apache 2.0
-    license URLs : "	http://www.apache.org/licenses/LICENSE-2.0.txt"
+    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/xerces/xercesImpl/2.12.0"
     md5 : b89632b53c4939a2982bcb52806f6dec
     sha1 : f02c844149fd306601f20e0b34853a670bef7fa2
