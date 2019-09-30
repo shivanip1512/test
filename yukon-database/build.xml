@@ -29,7 +29,83 @@
         <replace file="CreationScripts/SqlServerTableCreation.sql" token="/* __YUKON_VERSION__ */" value="${sql.sqlserver.insert}"/>
         <replace file="CreationScripts/OracleTableCreation.sql" token="/* __YUKON_VERSION__ */" value="${sql.oracle.insert}"/>
     </target>
-    
+
+    <!-- macrodef to execute any git command-->
+    <macrodef name="git">
+        <attribute name="command" />
+        <attribute name="dir" default="" />
+        <element name="args" optional="true" />
+            <sequential>
+                <echo message="git @{command}" />
+                <exec executable="git" dir="@{dir}">
+                    <arg value="@{command}" />
+                    <args/>
+                </exec>
+            </sequential>
+     </macrodef>
+
+    <target name="config-git-credential">
+        <git command="config">
+            <args>
+                <arg value="--global" />
+                <arg value="user.name" />
+                <arg value="${git.username}" />
+            </args>
+        </git>
+        <git command="config">
+            <args>
+                <arg value="--global" />
+                <arg value="user.password" />
+                <arg value="${git.password}" />
+            </args>
+        </git>
+    </target>
+
+    <target name="git-checkout">
+            <git command="init" />
+            <git command="config" >
+                <args>
+                    <arg value="core.sparsecheckout" />
+                    <arg value="true" />
+                </args>
+            </git>
+            <git command="remote" >
+                        <args>
+                            <arg value="add" />
+                            <arg value="origin" />
+                            <arg value="${env.GIT_URL}" />
+                        </args>
+            </git>
+            <exec executable="cmd" >
+                          <arg value="/c"/>
+                          <arg value="echo"/>
+                          <arg value="${dbSnapshot}/*" />
+                          <arg value=">>"/>
+                          <arg value=".git/info/sparse-checkout"/>
+            </exec>
+            <git command="pull" >
+                        <args>
+                            <arg value="--depth=1" />
+                            <arg value="origin" />
+                            <arg value="master" />
+                        </args>
+            </git>
+        </target>
+
+        <target name="git-commit">
+                <git command="add">
+                    <args>
+                        <arg value="." />
+                    </args>
+                </git>
+                <git command="commit">
+                    <args>
+                        <arg value="-m Checking in the latest database snapshot" />
+                    </args>
+                </git>
+                <git command="push" />
+        </target>
+
     <target name="sqlServerCreationScriptXMLFile" depends="version_db_files">
         <property name="databaseName" value="TempDBCreation_${version.major}_${version.minor}_${version.revision}" />
         <property environment="env" />
