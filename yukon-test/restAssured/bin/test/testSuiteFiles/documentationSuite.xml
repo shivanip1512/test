@@ -1,0 +1,21 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Demand Response Setup Documentation Suite" preserve-order="true">
+    <test name="DR Setup Documentation Test" >
+        <classes>
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.MeterDisconnectLoadGroupSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.DigiSepLoadGroupSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.EcobeeLoadGroupSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.NestLoadGroupSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.ExpresscomLoadGroupSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.VersacomLoadGroupSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.EmetconLoadGroupSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.HoneywellLoadGroupSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.ItronLoadGroupSetupApiControllerTest" />
+
+           <class name = "com.cannontech.rest.api.documentation.macroloadgroup.MacroLoadGroupSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.constraint.ProgramConstraintControllerTest" />
+        </classes>
+    </test>
+</suite>
