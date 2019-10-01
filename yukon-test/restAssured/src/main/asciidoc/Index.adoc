@@ -77,11 +77,25 @@ include::MacroLoadGroupCopy.adoc[]
 include::MacroLoadGroupDelete.adoc[]
 
 == Load Program
+
 === Create
+include::DirectProgramCreate.adoc[]
+
 === Retrieve
+include::DirectProgramGet.adoc[]
+
 === Update
+include::DirectProgramUpdate.adoc[]
+
 === Copy
+include::DirectProgramCopy.adoc[]
+
 === Delete
+include::DirectProgramDelete.adoc[]
+
+=== Supported Gears
+==== Direct Program
+
 
 == Control Area
 === Create

@@ -1,0 +1,9 @@
+{
+   "LM_GROUP_METER_DISCONNECT": {
+         "name": "LM_MeterDisconnect_Load3",
+         "type": "LM_GROUP_METER_DISCONNECT",
+         "kWCapacity": 163,
+         "disableGroup": false,
+        "disableControl": false
+    }
+}

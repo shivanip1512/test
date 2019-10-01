@@ -1,0 +1,62 @@
+{
+    
+    "name": "LoadPgmTest37",
+    "type": "LM_DIRECT_PROGRAM",
+    "operationalState": "Automatic",
+    "constraint": {
+        "constraintId": 0
+        
+    },
+    "triggerOffset": 1,
+    "restoreOffset": 2,
+    "gears": [
+        {
+            "gearName": "Test343",
+            "gearNumber": 1,
+            "controlMethod": "SmartCycle",
+            "fields": {
+                "noRamp": false,
+                "controlPercent": 50,
+                "cyclePeriodInMinutes": 30,
+                "cycleCountSendType": "FixedCount",
+                "maxCycleCount": 0,
+                "startingPeriodCount": 8,
+                "sendRate": 3600,
+                "stopCommandRepeat": 0,
+                "howToStopControl": "StopCycle",
+                "capacityReduction": 100,
+                "whenToChangeFields": {
+                    "whenToChange": "None"
+                }
+            }
+        }
+
+    ],
+    "controlWindow": {
+        "controlWindowOne": {
+            "availableStartTimeInMinutes": 0,
+            "availableStopTimeInMinutes": 0
+        },
+        "controlWindowTwo": {
+            "availableStartTimeInMinutes": 0,
+            "availableStopTimeInMinutes": 0
+        }
+    },
+    "assignedGroups": [
+        {
+            "groupId": 17919,
+            "groupName": "Test Meter Testng",
+            "type": "LM_GROUP_METER_DISCONNECT"
+        }
+    ],
+    "notification": {
+        "notifyOnAdjust": false,
+        "enableOnSchedule": false,
+        "assignedNotificationGroups": [
+            {
+                "notificationGrpID": 2,
+                "notificationGrpName": "AMR Status Group"
+            }
+        ]
+    }
+}
