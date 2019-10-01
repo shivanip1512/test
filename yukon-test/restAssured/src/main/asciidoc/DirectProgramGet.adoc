@@ -1,0 +1,20 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Direct Program
+
+*Request URL* :
+
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Get/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Get/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Get/http-response.adoc[]
