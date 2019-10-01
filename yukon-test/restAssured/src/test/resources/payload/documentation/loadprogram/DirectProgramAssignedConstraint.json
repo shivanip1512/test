@@ -1,6 +1,6 @@
 {
    "id" : 1,
-   "name":"LM Constraidnt",
+   "name":"Direct_Program_Assigned_Constraint",
    "seasonSchedule":{
       "id":0
    },

@@ -1,6 +1,6 @@
 {
     
-    "name": "LoadPgmTest37",
+    "name": "Direct_Program_Create",
     "type": "LM_DIRECT_PROGRAM",
     "operationalState": "Automatic",
     "constraint": {
