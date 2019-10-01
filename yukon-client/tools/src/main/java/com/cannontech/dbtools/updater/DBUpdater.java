@@ -436,15 +436,7 @@ public class DBUpdater extends MessageFrameAdaptor {
         // "d:/eclipse/head/yukon-database/DBUpdates/oracle" );
 
         if (srcPath == null) {
-            String yukonBase = CtiUtilities.getYukonBase();
-            MetaDataDatabaseVendorResolver resolver = new MetaDataDatabaseVendorResolver();
-            resolver.setDataSource(PoolManager.getYukonDataSource());
-            DatabaseVendor databaseVendor = resolver.getDatabaseVendor();
-            if (databaseVendor.isOracle()) {
-                srcPath = yukonBase + oracleDBPath;
-            } else {
-                srcPath = yukonBase + sqlServerDBPath;
-            }
+            srcPath = getDBScriptPath();
         }
 
         UpdateLine[] validLines = new UpdateLine[0];
@@ -514,5 +506,17 @@ public class DBUpdater extends MessageFrameAdaptor {
 
         CTILogger.error("--------- CAUGHT EXCEPTION ---------");
         CTILogger.error(exception.getMessage(), exception);
+    }
+
+    public static String getDBScriptPath() {
+        String yukonBase = CtiUtilities.getYukonBase();
+        MetaDataDatabaseVendorResolver resolver = new MetaDataDatabaseVendorResolver();
+        resolver.setDataSource(PoolManager.getYukonDataSource());
+        DatabaseVendor databaseVendor = resolver.getDatabaseVendor();
+        if (databaseVendor.isOracle()) {
+            return yukonBase + oracleDBPath;
+        } else {
+            return yukonBase + sqlServerDBPath;
+        }
     }
 }
