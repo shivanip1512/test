@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
@@ -62,6 +63,8 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 public class CollectionActionDaoImpl implements CollectionActionDao {
@@ -75,6 +78,9 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     @Autowired private CollectionActionLogDetailService logService;
    
     private static final Logger log = YukonLogManager.getLogger(CollectionActionDao.class);
+    
+    private Cache<Integer, CollectionActionResult> cache =
+            CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.DAYS).build();
     
     @Override
     @Transactional
@@ -256,11 +262,15 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     
     @Override
     public CollectionActionResult loadResultFromDb(int key) {
+        CollectionActionResult result = cache.getIfPresent(key);
+        if(result != null) {
+            return result;
+        }
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CollectionActionId, Action, StartTime, StopTime, Status");
         sql.append("FROM CollectionAction");
         sql.append("WHERE CollectionActionId").eq(key);
-        return jdbcTemplate.queryForObject(sql, new YukonRowMapper<CollectionActionResult>() {
+        result =  jdbcTemplate.queryForObject(sql, new YukonRowMapper<CollectionActionResult>() {
             @Override
             public CollectionActionResult mapRow(YukonResultSet rs) throws SQLException {
                 CollectionActionResult result = null;
@@ -277,6 +287,8 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
                 return result;      
             }
         });
+        cache.put(key, result);
+        return result;
     }
     
     @Override
