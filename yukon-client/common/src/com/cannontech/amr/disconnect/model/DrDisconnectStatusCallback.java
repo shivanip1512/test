@@ -81,18 +81,22 @@ public class DrDisconnectStatusCallback {
      * waiting for a response.
      */
     public void handleComplete() {
+        Map<String, Long> statusCounts;
         if (isConnect) {
             drStatusService.updateAllControlTimeout(eventId);
+            statusCounts = drStatusService.getAllCurrentStatusForEvent(eventId)
+                    .stream()
+                    .map(DrMeterEventStatus::getRestoreStatus)
+                    .collect(Collectors.groupingBy(DrMeterControlStatus::name, 
+                                                   Collectors.counting()));
         } else {
             drStatusService.updateAllRestoreTimeout(eventId);
-        }
-        
-        // Collect the total counts of each status, for notification
-        Map<String, Long> statusCounts = drStatusService.getAllCurrentStatusForEvent(eventId)
-                                                        .stream()
-                                                        .map(DrMeterEventStatus::getControlStatus)
-                                                        .collect(Collectors.groupingBy(DrMeterControlStatus::name, 
-                                                                                       Collectors.counting()));
+            statusCounts = drStatusService.getAllCurrentStatusForEvent(eventId)
+                    .stream()
+                    .map(DrMeterEventStatus::getControlStatus)
+                    .collect(Collectors.groupingBy(DrMeterControlStatus::name, 
+                                                   Collectors.counting()));
+        }        
         
         smartNotificationEventCreationService.send(SmartNotificationEventType.METER_DR,
             MeterDrEventAssembler.assemble(statusCounts, programName));
