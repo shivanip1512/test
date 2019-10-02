@@ -41,6 +41,7 @@ import com.cannontech.common.device.programming.model.MeterProgramUploadCancelRe
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
@@ -145,7 +146,7 @@ public class MeterProgrammingSummaryController {
     
     @GetMapping("summary")
     public String summary(MeterProgrammingSummaryFilter filter, @DefaultSort(dir=Direction.asc, sort="DEVICE_NAME") SortingParameters sorting, 
-                          PagingParameters paging, ModelMap model, YukonUserContext userContext) {
+                          @DefaultItemsPerPage(value=100) PagingParameters paging, ModelMap model, YukonUserContext userContext) {
         List<MeterProgramInfo> programs = meterProgrammingSummaryDao.getMeterProgramInfos(userContext);
         if (filter.getPrograms() != null) {
             List<String> selectedProgramNames = filter.getPrograms().stream()
@@ -163,7 +164,7 @@ public class MeterProgrammingSummaryController {
     @GetMapping("summaryFilter")
     public String summaryFilter(@ModelAttribute("filter") MeterProgrammingSummaryFilter filter, String deviceGroupName, 
                                 @DefaultSort(dir=Direction.asc, sort="DEVICE_NAME") SortingParameters sorting,
-                                PagingParameters paging, ModelMap model, YukonUserContext userContext) {
+                                @DefaultItemsPerPage(value=100) PagingParameters paging, ModelMap model, YukonUserContext userContext) {
         if (!StringUtils.isBlank(deviceGroupName)) {
             DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroupName);
             filter.setGroups(Arrays.asList(group));
@@ -255,6 +256,15 @@ public class MeterProgrammingSummaryController {
         MeterProgramUploadCancelResult result = meterProgrammingService.cancelMeterProgramUpload(device, userContext);
         json.put("result", result);
         json.put("successMsg", accessor.getMessage(baseKey + "summary.cancelSuccessful"));
+        return json;
+    }
+    
+    @PostMapping("{id}/acceptProgramming")
+    public @ResponseBody Map<String, Object> acceptProgramming(@PathVariable int id, String guid, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        Map<String, Object> json = new HashMap<>();
+        //TODO: Accept failure
+        json.put("successMsg", accessor.getMessage(baseKey + "summary.acceptSuccessful"));
         return json;
     }
     

@@ -49,11 +49,16 @@
                             <td><cti:paoDetailUrl yukonPao="${result.device}">${fn:escapeXml(result.device.name)}</cti:paoDetailUrl></td>
                             <td>${fn:escapeXml(result.meterNumber)}</td>
                             <td>${result.device.paoIdentifier.paoType.paoTypeName}</td>
-                            <td>${fn:escapeXml(result.programInfo.name)}</td>
-                            <td><i:inline key="${result.status.formatKey}"/></td>
+                            <td>${fn:escapeXml(result.assignedProgramName)}</td>
+                            <td>
+                                <cti:msg2 key=".statusMsg.${result.status}" argument="${result.programInfo.name}"/>
+                                <c:if test="${result.displayProgressBar()}">
+                                    <tags:updateableProgressBar totalCount="100" countKey="METER_PROGRAMMING/${result.device.id}/PROGRESS" hideCount="true"/>
+                                </c:if>
+                            </td>
                             <td><cti:formatDate type="BOTH" value="${result.lastUpdate}"/></td>
                             <td>
-                                <c:if test="${result.displayCancel() || result.displayRead() || result.displaySend()}">
+                                <c:if test="${result.displayCancel() || result.displayRead() || result.displaySend() || result.displayAccept()}">
                                     <cm:dropdown icon="icon-cog">
                                         <c:if test="${result.displayCancel()}">
                                             <cm:dropdownOption icon="icon-cross" key=".cancel" classes="js-cancel" data-id="${result.device.id}"/>
@@ -63,6 +68,9 @@
                                         </c:if>
                                         <c:if test="${result.displaySend()}">
                                             <cm:dropdownOption icon="icon-control-repeat-blue" key=".resend" classes="js-resend" data-id="${result.device.id}" data-guid="${result.programInfo.guid}"/>
+                                        </c:if>
+                                        <c:if test="${result.displayAccept()}">
+                                            <cm:dropdownOption icon="icon-accept" key=".accept" classes="js-accept" data-id="${result.device.id}" data-guid="${result.programInfo.guid}"/>
                                         </c:if>
                                     </cm:dropdown>
                                 </c:if>

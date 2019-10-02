@@ -329,7 +329,6 @@
     <entry key="yukon.web.modules.amr.meterProgramming.status.IN_PROGRESS">In Progress</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.status.CONFIRMING">Confirming</entry>
     
-    
     <!-- meterProgramming/home.jsp -->
     <entry key="yukon.web.modules.amr.meterProgramming.pageName">C&amp;I Meter Programming</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summaryLink">Meter Programming Summary</entry>
@@ -350,13 +349,21 @@
     <entry key="yukon.web.modules.amr.meterProgramming.summary.PROGRAM">Current Program</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.STATUS">Status</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.LAST_UPDATE">Last Update</entry>
+    
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.statusMsg.SUCCESS">Success</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.statusMsg.FAILURE">Failed Sending {0}</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.statusMsg.IN_PROGRESS">Sending {0}</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.statusMsg.CONFIRMING">Confirming {0}</entry>
+    
     <entry key="yukon.web.modules.amr.meterProgramming.summary.read">Read</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.resend">Re-send</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.cancel">Cancel</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.accept">Accept</entry>
     
     <entry key="yukon.web.modules.amr.meterProgramming.summary.cancelSuccessful">Program upload has been successfully canceled.</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.readSuccessful">Program retrieval has been initiated. See the following link for status: {0}</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.resendSuccessful">Program upload has been initiated. See the following link for status: {0}</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.acceptSuccessful">Program upload failure has been successfully accepted.</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.readLink">Read Status</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.resendLink">Resend Status</entry>
     
