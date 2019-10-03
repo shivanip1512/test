@@ -5,7 +5,7 @@
 :toclevels: 4
 :sectlinks:
 
-==== SEP Temperature Offset Gear
+===== SEP Temperature Offset Gear
 
 *Request Properties* :
 include::{snippets}/SepProgramSetupApiControllerTest/Test_SepTemperatureOffsetProgram_Create/request-fields.adoc[]
