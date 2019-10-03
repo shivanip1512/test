@@ -49,7 +49,7 @@ public class LoadProgramSetupHelper {
     }
 
     /**
-     * Helper class to create program field descriptor.
+     * Helper method to create program field descriptor.
      */
     public static List<FieldDescriptor> mergeProgramFieldDescriptors(FieldDescriptor[] gearFieldDescriptor) {
         List<FieldDescriptor> fieldDescriptorList = new ArrayList<FieldDescriptor>();
@@ -60,7 +60,7 @@ public class LoadProgramSetupHelper {
     }
 
     /**
-     * Helper class to create field descriptor for getting the program.
+     * Helper method to create field descriptor for getting the program.
      */
     public static List<FieldDescriptor> createFieldDescriptorForGet(FieldDescriptor[] programFieldDescriptor, int index) {
         List<FieldDescriptor> list = mergeFieldDescriptorWithProgramId(programFieldDescriptor);
@@ -71,7 +71,7 @@ public class LoadProgramSetupHelper {
     }
 
     /**
-     * Helper class to merge field descriptor with programId.
+     * Helper method to merge field descriptor with programId.
      */
     public static List<FieldDescriptor> mergeFieldDescriptorWithProgramId(FieldDescriptor[] programFieldDescriptor) {
         List<FieldDescriptor> list = mergeProgramFieldDescriptors(programFieldDescriptor);
@@ -80,7 +80,7 @@ public class LoadProgramSetupHelper {
     }
 
     /**
-     * Helper class to create field descriptor to copy the program.
+     * Helper method to create field descriptor to copy the program.
      */
     public static FieldDescriptor[] fieldDescriptorForCopy() {
         return new FieldDescriptor[] { fieldWithPath("name").type(JsonFieldType.STRING).description("Load Program Name"),
