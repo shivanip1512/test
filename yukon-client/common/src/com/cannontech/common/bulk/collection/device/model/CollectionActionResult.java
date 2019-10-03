@@ -61,11 +61,10 @@ public class CollectionActionResult {
     private List<CollectionActionCancellationCallback> cancelationCallbacks =
         Collections.synchronizedList(new ArrayList<CollectionActionCancellationCallback>());
     private boolean isCanceled;
-    //result is in cache
-    private boolean isCached = true;
     private YukonUserContext context;
     private Logger logger;
     private DeviceMemoryCollectionProducer producer;
+    private boolean isLoadedFromDatabase;
 
     public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,
             LinkedHashMap<String, String> inputs, CommandRequestExecution execution,
@@ -73,12 +72,8 @@ public class CollectionActionResult {
             DeviceGroupCollectionHelper groupHelper, 
             DeviceMemoryCollectionProducer producer, 
             CollectionActionLogDetailService logService,
-            YukonUserContext context) {
-        if(context == null) {
-            isCached = false;
-        }
-        
-        if(action == CollectionAction.MASS_DELETE && isCached()) {
+            YukonUserContext context) {        
+        if(action == CollectionAction.MASS_DELETE && !isLoadedFromDatabase) {
             // deleted devices - in order for the devices to be visible the "in memory" collection
             // is created
             DeviceCollection allDeviceCollection = producer.createDeviceCollection(allDevices);
@@ -127,7 +122,15 @@ public class CollectionActionResult {
     }
 
     public boolean isCancelable() {
-        return isCached && action.isCancelable() && status != null && status == STARTED;
+        return action.isCancelable() && isValidCancelStatus();
+    }
+    
+    public boolean isTerminatable() {
+        return (isLoadedFromDatabase || action.isTerminatable()) && isValidCancelStatus();
+    }
+    
+    private boolean isValidCancelStatus() {
+        return status != null && status == STARTED;
     }
     
     public boolean isComplete() {
@@ -309,10 +312,6 @@ public class CollectionActionResult {
         return StringUtils.isNotEmpty(retValue) ? retValue.substring(0, retValue.length() - 1) : "";
     }
     
-    public boolean isCached() {
-        return isCached;
-    }
-
     public YukonUserContext getContext() {
         return context;
     }
@@ -349,6 +348,14 @@ public class CollectionActionResult {
         this.infoText = infoText;
         logService.appendToLog(this, new CollectionActionLogDetail(infoText));
     }
+    
+    public void setLoadedFromDatabase(boolean isLoadedFromDatabase) {
+        this.isLoadedFromDatabase = isLoadedFromDatabase;
+    }
+    
+    public boolean isLoadedFromDatabase() {
+        return isLoadedFromDatabase;
+    }
 
     public void log() {
         if(logger == null) {
@@ -358,7 +365,7 @@ public class CollectionActionResult {
             DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
             df.withZone(DateTimeZone.getDefault());
             logger.debug("Key=" + getCacheKey() + " Status=" + getStatus());
-            logger.debug("<<<Cached=" + isCached()+">>>");
+            logger.debug("<<<Loaded from database=" + isLoadedFromDatabase +">>>");
             logger.debug("Start Time:" + startTime.toString(df));
             logger.debug(stopTime == null ? "" : "Stop Time:" + startTime.toString(df));
             if (execution != null) {
