@@ -1,28 +1,25 @@
 {
-    "name": "Direct_Program_Create",
+    "name": "LoadProgTimeRefresh_8",
     "type": "LM_DIRECT_PROGRAM",
     "operationalState": "Automatic",
     "constraint": {
-        "constraintId": 0
-        
+        "constraintId": 25
     },
-    "triggerOffset": 1,
-    "restoreOffset": 2,
+    "triggerOffset": 12,
+    "restoreOffset": 22,
     "gears": [
         {
-            "gearName": "Test343",
+            "gearName": "GearTimeRefresh",
             "gearNumber": 1,
-            "controlMethod": "SmartCycle",
+            "controlMethod": "TimeRefresh",
             "fields": {
-                "noRamp": false,
-                "controlPercent": 50,
-                "cyclePeriodInMinutes": 30,
-                "cycleCountSendType": "FixedCount",
-                "maxCycleCount": 0,
-                "startingPeriodCount": 8,
-                "sendRate": 3600,
+                "refreshShedTime": "FixedShedTime",
+                "shedTime": 3600,
+                "numberOfGroups": 0,
+                "sendRate": 1800,
+                "groupSelectionMethod": "LastControlled",
+                "howToStopControl": "TimeIn",
                 "stopCommandRepeat": 0,
-                "howToStopControl": "StopCycle",
                 "capacityReduction": 100,
                 "whenToChangeFields": {
                     "whenToChange": "None"
@@ -43,14 +40,14 @@
     },
     "assignedGroups": [
         {
-            "groupId": 9425,
-            "groupName": "disconnect",
-            "type": "LM_GROUP_METER_DISCONNECT"
+            "groupId": 11705,
+            "groupName": "E1",
+            "type": "LM_GROUP_EMETCON"
         }
     ],
     "notification": {
-        "notifyOnAdjust": false,
-        "enableOnSchedule": false,
+        "notifyOnAdjust": true,
+        "enableOnSchedule": true,
         "assignedNotificationGroups": [
             {
                 "notificationGrpID": 2,

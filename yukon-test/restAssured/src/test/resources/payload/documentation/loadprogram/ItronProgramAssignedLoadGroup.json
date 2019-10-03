@@ -1,7 +1,7 @@
 {
     "LM_GROUP_ITRON":
         { 
-            "name": "ItronGroupShikha",
+            "name": "ItronGroup",
             "type": "LM_GROUP_ITRON",
             "kWCapacity": 23,
             "disableGroup": false,

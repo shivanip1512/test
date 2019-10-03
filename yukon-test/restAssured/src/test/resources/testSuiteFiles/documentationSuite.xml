@@ -23,6 +23,8 @@
            <class name = "com.cannontech.rest.api.documentation.loadprogram.ItronProgramSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.loadprogram.SepProgramSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.loadprogram.MeterDisconnectProgramSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.DirectProgramGearSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.SepProgramGearSetupApiControllerTest" />
         </classes>
     </test>
 </suite>

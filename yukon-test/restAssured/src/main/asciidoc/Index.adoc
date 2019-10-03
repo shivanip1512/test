@@ -120,11 +120,10 @@ include::MeterDisconnectProgramDelete.adoc[]
 
 === Supported Gears
 ==== Direct Program
-include::ThermostatProgramCreate.adoc[]
-include::SimpleThermostatRampingProgramCreate.adoc[]
+include::DirectProgramSupportedGearsCreate.adoc[]
 
 ==== SEP Program
-include::SepTemperatureOffsetProgramCreate.adoc[]
+include::SepProgramSupportedGearsCreate.adoc[]
 
 == Control Area
 === Create

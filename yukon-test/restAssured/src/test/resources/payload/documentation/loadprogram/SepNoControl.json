@@ -1,5 +1,5 @@
 {
-    "name": "TestSepProgram",
+    "name": "TestSepNoControlProgram",
     "type": "LM_SEP_PROGRAM",
     "operationalState": "Automatic",
     "constraint": {
@@ -9,17 +9,10 @@
     "restoreOffset": 0.0,
     "gears": [
         {
-            "gearName": "SepCycle",
+            "gearName": "SepNoControl",
             "gearNumber": 1,
-            "controlMethod": "SepCycle",
+            "controlMethod": "NoControl",
             "fields": {
-                "rampIn": true,
-                "rampOut": true,
-                "trueCycle": true,
-                "controlPercent": 51,
-                "criticality": 5,
-                "howToStopControl": "TimeIn",
-                "capacityReduction": 98,
                 "whenToChangeFields": {
                     "whenToChange": "None"
                 }

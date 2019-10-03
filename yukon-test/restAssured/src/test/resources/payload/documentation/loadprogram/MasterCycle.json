@@ -1,50 +1,51 @@
 {
-    "name": "TestEcobee",
-    "type": "LM_ECOBEE_PROGRAM",
+    "name": "LoadProgMasterCycle10",
+    "type": "LM_DIRECT_PROGRAM",
     "operationalState": "Automatic",
     "constraint": {
-        "constraintId": 0
+        "constraintId": 25
     },
-    "triggerOffset": 1.0,
-    "restoreOffset": 2.0,
+    "triggerOffset": 12,
+    "restoreOffset": 22,
     "gears": [
         {
-            "gearName": "Ecobee Gear",
-            "gearNumber": 1,
-            "controlMethod": "EcobeeCycle",
+            "gearName": "GearMasterCycle",
+            "gearNumber": 3,
+            "controlMethod": "MasterCycle",
             "fields": {
-                "mandatory": true,
-                "rampIn": true,
-                "rampOut": true,
                 "controlPercent": 50,
-                "howToStopControl": "Restore",
+                "cyclePeriodInMinutes": 30,
+                "groupSelectionMethod": "LastControlled",
+                "howToStopControl": "TimeIn",
                 "capacityReduction": 100,
                 "whenToChangeFields": {
                     "whenToChange": "None"
+
                 }
             }
         }
+
     ],
     "controlWindow": {
         "controlWindowOne": {
-            "availableStartTimeInMinutes": 120,
-            "availableStopTimeInMinutes": 300
+            "availableStartTimeInMinutes": 0,
+            "availableStopTimeInMinutes": 0
         },
         "controlWindowTwo": {
             "availableStartTimeInMinutes": 0,
-            "availableStopTimeInMinutes": 300
+            "availableStopTimeInMinutes": 0
         }
     },
     "assignedGroups": [
         {
-            "groupId": 7446,
-            "groupName": "4545",
-            "type": "LM_GROUP_ECOBEE"
+            "groupId": 11705,
+            "groupName": "E1",
+            "type": "LM_GROUP_EMETCON"
         }
     ],
     "notification": {
-        "notifyOnAdjust": false,
-        "enableOnSchedule": false,
+        "notifyOnAdjust": true,
+        "enableOnSchedule": true,
         "assignedNotificationGroups": [
             {
                 "notificationGrpID": 2,
