@@ -68,39 +68,53 @@ public class ItronSecurityServiceImpl implements ItronSecurityService {
     
     @Override
     public ItronSecurityKeyPair getItronSshRsaKeyPair() throws ItronSecurityException { 
+        log.debug("Retrieving Itron key pair");
         try {
-            String privateKeyPassword = getPrivateKeyPassword();
-            char[] password = CryptoUtils.getSharedPasskey();
-            AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
+            log.debug("Loading keys from database");
             Optional<EncryptionKey> encryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.Itron);
             if(encryptionKey.isEmpty()) {
                 log.debug("Encryption Key is empty, generate a new key");
                 throw new ItronSecurityException ("Empty Encryption Key, generate a new key");
             }
-            String sshRsaPrivatekey = encrypter.decryptHexStr(encryptionKey.get().getPrivateKey());
-            String sshRsaPublickey = encrypter.decryptHexStr(encryptionKey.get().getPublicKey());
-            ItronSecurityKeyPair itronKeyPair;
+            
+            log.debug("Building encrypter");
+            char[] password = CryptoUtils.getSharedPasskey();
+            AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
+            
+            log.debug("Decrypting Itron keys");
+            String sshRsaPrivateKey = encrypter.decryptHexStr(encryptionKey.get().getPrivateKey());
+            String sshRsaPublicKey = encrypter.decryptHexStr(encryptionKey.get().getPublicKey());
+            
+            log.debug("Building keypair from keys");
             JSch jsch = new JSch();
-            ByteArrayOutputStream privateKeyBuff = new ByteArrayOutputStream(2048);
-            KeyPair keyPair = KeyPair.load(jsch, sshRsaPrivatekey.getBytes(), sshRsaPublickey.getBytes());
-            // Change this check to see if its encrypted and there is a global password specified
+            KeyPair keyPair = KeyPair.load(jsch, sshRsaPrivateKey.getBytes(), sshRsaPublicKey.getBytes());
+            
+            ItronSecurityKeyPair itronKeyPair;
             if(keyPair.isEncrypted()) {
-                log.debug("Private Key is encrypted, attempting to decrypt");
+                log.debug("Private Key is encrypted, retrieving private key password");
+                String privateKeyPassword = getPrivateKeyPassword();
+                log.debug("Attempting to decrypt private key");
                 keyPair.decrypt(privateKeyPassword);
                 // This checks if the decryption was successful, if not it will pass on the encrypted privateKey
                 if(keyPair.isEncrypted()) {
                     log.debug("Private Key decryption was not successful");
-                    itronKeyPair = new ItronSecurityKeyPair(sshRsaPrivatekey, sshRsaPublickey, true);
+                    itronKeyPair = new ItronSecurityKeyPair(sshRsaPrivateKey, sshRsaPublicKey, true);
                 } else {
+                    log.debug("Private Key decryption successful");
+                    ByteArrayOutputStream privateKeyBuff = new ByteArrayOutputStream(2048);
                     keyPair.writePrivateKey(privateKeyBuff);
-                    itronKeyPair = new ItronSecurityKeyPair(privateKeyBuff.toString(), sshRsaPublickey, false);
+                    itronKeyPair = new ItronSecurityKeyPair(privateKeyBuff.toString(), sshRsaPublicKey, false);
                 }
             } else {
-                itronKeyPair = new ItronSecurityKeyPair(sshRsaPrivatekey, sshRsaPublickey, false);
+                log.debug("Proceeding with unencrypted private key");
+                itronKeyPair = new ItronSecurityKeyPair(sshRsaPrivateKey, sshRsaPublicKey, false);
             }
+            
             keyPair.dispose();
+            log.debug("Finished retrieving Itron key pair");
             return itronKeyPair;
         } catch (Exception e) {
+            log.debug("Exception getting ItronSshRsaKeyPair", e);
             throw new ItronSecurityException("Error retrieving Itron keys.", e);
         }
     }
