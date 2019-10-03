@@ -1,0 +1,9 @@
+{
+   "LM_GROUP_METER_DISCONNECT": {
+         "name": "Direct_Program_Assigned_08",
+         "type": "LM_GROUP_METER_DISCONNECT",
+         "kWCapacity": 163,
+         "disableGroup": false,
+        "disableControl": false
+    }
+}

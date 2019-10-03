@@ -94,8 +94,7 @@ include::DirectProgramCopy.adoc[]
 include::DirectProgramDelete.adoc[]
 
 === Supported Gears
-==== Direct Program
-
+include::DirectProgramSupportedGearsCreate.adoc[]
 
 == Control Area
 === Create

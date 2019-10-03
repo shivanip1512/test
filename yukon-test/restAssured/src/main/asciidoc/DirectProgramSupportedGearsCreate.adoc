@@ -1,0 +1,169 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Time Refresh Gear
+
+*Request Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TimeRefreshGear_Create/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TimeRefreshGear_Create/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TimeRefreshGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TimeRefreshGear_Create/http-response.adoc[]
+
+==== Smart Cycle Gear
+
+*Request Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_SmartCycleGear_Create/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_SmartCycleGear_Create/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_SmartCycleGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_SmartCycleGear_Create/http-response.adoc[]
+
+==== Master Cycle Gear 
+
+*Request Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MasterCycleGear_Create/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MasterCycleGear_Create/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MasterCycleGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MasterCycleGear_Create/http-response.adoc[]
+
+==== True Cycle Gear
+
+*Request Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TrueCycleGear_Create/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TrueCycleGear_Create/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TrueCycleGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TrueCycleGear_Create/http-response.adoc[]
+
+==== Magnitude Cycle Gear
+
+*Request Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MagnitudeCycleGear_Create/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MagnitudeCycleGear_Create/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MagnitudeCycleGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MagnitudeCycleGear_Create/http-response.adoc[]
+
+==== Target Cycle Gear
+
+*Request Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TargetCycleGear_Create/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TargetCycleGear_Create/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TargetCycleGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TargetCycleGear_Create/http-response.adoc[]
+
+==== Latching Gear
+
+*Request Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_LatchingGear_Create/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_LatchingGear_Create/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_LatchingGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_LatchingGear_Create/http-response.adoc[]
+
+==== Beat The Peak Gear
+
+*Request Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_BeatThePeakGear_Create/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_BeatThePeakGear_Create/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_BeatThePeakGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_BeatThePeakGear_Create/http-response.adoc[]
+
+==== No Control Gear
+
+*Request Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_NoControlGear_Create/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_NoControlGear_Create/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_NoControlGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_NoControlGear_Create/http-response.adoc[]
+
