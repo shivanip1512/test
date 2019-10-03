@@ -86,19 +86,20 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Override
     public void cancel(int key, LiteYukonUser user) {
         CollectionActionResult cachedResult = cache.getIfPresent(key);
-        
-        if(cachedResult.isTerminatable()) {
-            log.debug("Attemting to terminate result for {}", cachedResult);
-        } else if (cachedResult.isCancelable()) {
-            log.debug("Attemting to cancel result for {}", cachedResult);
-            Optional<CollectionActionCancellationService> service = cancellationService.stream()
-                                                                                       .filter(s -> s.isCancellable(cachedResult.getAction()))
-                                                                                       .findFirst();
-            if (service.isPresent()) {
-                log.debug("Using " + service.get().getClass() + " to cancel result for " + key);
-                log.debug("Result to be canceled:");
-                cachedResult.log();
-                service.get().cancel(cachedResult.getCacheKey(), user);
+        if(cachedResult.isCancelable()) {
+            if (cachedResult.hasCancelationCallbacks()) {
+                log.debug("Attemting to cancel result for {}", cachedResult.getCacheKey());
+                Optional<CollectionActionCancellationService> service = cancellationService.stream()
+                                                                                           .filter(s -> s.isCancellable(cachedResult.getAction()))
+                                                                                           .findFirst();
+                if (service.isPresent()) {
+                    log.debug("Using " + service.get().getClass() + " to cancel result for " + key);
+                    log.debug("Result to be canceled:");
+                    cachedResult.log();
+                    service.get().cancel(cachedResult.getCacheKey(), user);
+                }
+            } else {
+                log.debug("Attemting to terminate result for {}", cachedResult.getCacheKey());
             }
         } else {
             log.debug("Attemting to cancel result for " + key + " failed. The results was already completed with the status " + cachedResult.getStatus());
@@ -142,6 +143,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
             CollectionActionResult result = collectionActionDao.loadResultFromDb(key);
             result.setLogger(log);
             cache.put(key, result);
+            result.log();
         }
         return cache.getIfPresent(key);
     }

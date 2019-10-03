@@ -88,11 +88,7 @@ public enum CollectionAction implements DisplayableEnum {
     }
 
     public boolean isCancelable() {
-        return details.contains(CANCELED);
-    }
-    
-    public boolean isTerminatable() {
-        return !isCancelable() && process == CollectionActionProcess.CRE;
+        return process == CollectionActionProcess.CRE;
     }
     
     public CollectionActionProcess getProcess() {

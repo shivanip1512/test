@@ -124,11 +124,7 @@ public class CollectionActionResult {
     public boolean isCancelable() {
         return action.isCancelable() && isValidCancelStatus();
     }
-    
-    public boolean isTerminatable() {
-        return (isLoadedFromDatabase || action.isTerminatable()) && isValidCancelStatus();
-    }
-    
+   
     private boolean isValidCancelStatus() {
         return status != null && status == STARTED;
     }
@@ -269,6 +265,10 @@ public class CollectionActionResult {
 
     public void setStartTime(Instant startTime) {
         this.startTime = startTime;
+    }
+    
+    public boolean hasCancelationCallbacks() {
+        return !cancelationCallbacks.isEmpty();
     }
 
     public List<CollectionActionCancellationCallback> getCancellationCallbacks(StrategyType type) {
