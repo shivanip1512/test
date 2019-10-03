@@ -153,10 +153,9 @@ public interface InventoryDao {
      * @param ecIds The energy company id's to filter on.
      * @param start The row count to start at.
      * @param pageCount The amount of rows per page.
-     * @param starsMeters Wether this energy company uses 'STARS' meters (MeterHardwareBase) or MCT's
      * @return result The resulting list of inventory
      */
-    SearchResults<InventorySearchResult> search(InventorySearch inventorySearch, Collection<Integer> ecIds, int start, int pageCount, boolean starsMeters);
+    SearchResults<InventorySearchResult> search(InventorySearch inventorySearch, Collection<Integer> ecIds, int start, int pageCount);
 
     /**
      * This method is a performance method.  This allows us to get a huge map of serial numbers to inventory ids, which can be

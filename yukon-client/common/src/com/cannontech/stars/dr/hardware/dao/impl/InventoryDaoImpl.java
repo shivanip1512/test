@@ -878,7 +878,7 @@ public class InventoryDaoImpl implements InventoryDao {
     @SuppressWarnings("unchecked")
     @Override
     public SearchResults<InventorySearchResult> search(InventorySearch inventorySearch, Collection<Integer> ecIds,
-            int start, int pageCount, final boolean starsMeters) {
+            int start, int pageCount) {
         // Trim fields to null
         inventorySearch.trimFields();
 
@@ -894,13 +894,11 @@ public class InventoryDaoImpl implements InventoryDao {
         selectData.append("SELECT IB.InventoryId,");
         selectData.append("IB.DeviceId,");
         selectData.append("LMHB.ManufacturerSerialNumber,");
-        if (starsMeters) {
-            selectData.append("MHB.MeterNumber,");
-            selectData.append("MHB.MeterTypeID,");
-        } else {
-            selectData.append("DMG.MeterNumber,");
-            selectData.append("YPO.Type,");
-        }
+        selectData.append("MHB.MeterNumber,");
+        selectData.append("MHB.MeterTypeID,");
+        selectData.append("DMG.MeterNumber,");
+        selectData.append("YPO.Type,");
+        selectData.append("COALESCE(MHB.MeterNumber, DMG.MeterNumber) as CombinedMeterNumber,");    
         selectData.append("IM.EnergyCompanyId,");
         selectData.append("EC.Name EnergyCompanyName,");
         selectData.append("LMHB.LMHardwareTypeID,");
@@ -921,12 +919,9 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("JOIN ECToInventoryMapping IM on IM.InventoryID = IB.InventoryID");
         sql.append("JOIN EnergyCompany EC on EC.EnergyCompanyID = IM.EnergyCompanyID");
         sql.append("LEFT JOIN LMHardwareBase LMHB on LMHB.InventoryID = IB.InventoryID");
-        if (starsMeters) {
-            sql.append("LEFT JOIN MeterHardwareBase MHB on MHB.InventoryID = IB.InventoryID");
-        } else {
-            sql.append("LEFT JOIN YukonPAObject YPO on YPO.PAObjectId = IB.DeviceID");
-            sql.append("LEFT JOIN DeviceMeterGroup DMG on DMG.DeviceId = IB.DeviceID");
-        }
+        sql.append("LEFT JOIN MeterHardwareBase MHB on MHB.InventoryID = IB.InventoryID");
+        sql.append("LEFT JOIN YukonPAObject YPO on YPO.PAObjectId = IB.DeviceID");
+        sql.append("LEFT JOIN DeviceMeterGroup DMG on DMG.DeviceId = IB.DeviceID");
         sql.append("JOIN CustomerAccount CA on CA.AccountID = IB.AccountID");
         sql.append("JOIN AccountSite ACS on ACS.AccountSiteID = CA.AccountSiteID");
         sql.append("JOIN Customer CUS on CA.CustomerID = CUS.CustomerID");
@@ -948,11 +943,7 @@ public class InventoryDaoImpl implements InventoryDao {
             whereClause.add(new SqlStatementBuilder("LMHB.ManufacturerSerialNumber").startsWith(inventorySearch.getSerialNumber()));
         }
         if (StringUtils.isNotBlank(inventorySearch.getMeterNumber())) {
-            if (starsMeters) {
-                whereClause.add(new SqlStatementBuilder("MHB.MeterNumber").startsWith(inventorySearch.getMeterNumber()));
-            } else {
-                whereClause.add(new SqlStatementBuilder("DMG.MeterNumber").startsWith(inventorySearch.getMeterNumber()));
-            }
+            whereClause.add(new SqlStatementBuilder("COALESCE(MHB.MeterNumber, DMG.MeterNumber)").startsWith(inventorySearch.getMeterNumber()));
         }
         if (StringUtils.isNotBlank(inventorySearch.getAccountNumber())) {
             whereClause.add(new SqlStatementBuilder("CA.AccountNumber").startsWith(inventorySearch.getAccountNumber()));
@@ -1000,10 +991,8 @@ public class InventoryDaoImpl implements InventoryDao {
                     result.setPhoneNumber(rs.getString("Notification"));
                 }
                 if (identifier.getHardwareType().isMeter()) {
-                    result.setSerialNumber(rs.getString("MeterNumber"));
-                    if (!starsMeters) {
-                        result.setPaoType(rs.getEnum("Type", PaoType.class));
-                    }
+                    result.setSerialNumber(rs.getString("CombinedMeterNumber"));
+                    result.setPaoType(rs.getEnum("Type", PaoType.class));
                 } else {
                     result.setSerialNumber(rs.getString("ManufacturerSerialNumber"));
                 }
