@@ -38,8 +38,6 @@ public class SepProgramSetupApiControllerTest {
     private Number copyProgramId = null;
     private FieldDescriptor[] sepCycleGearFieldDescriptor = null;
     private List<FieldDescriptor> sepCycleProgramFieldDescriptor = null;
-    private FieldDescriptor[] sepTemperatureOffsetGearFieldDescriptor = null;
-    private List<FieldDescriptor> sepTemperatureOffsetProgramFieldDescriptor = null;
 
     @BeforeMethod
     public void setUp(Method method) {
@@ -57,22 +55,6 @@ public class SepProgramSetupApiControllerTest {
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
                                                                                .description("When to change field Expected : None, Duration, Priority, TriggerOffset") };
         sepCycleProgramFieldDescriptor = LoadProgramSetupHelper.mergeProgramFieldDescriptors(sepCycleGearFieldDescriptor);
-
-        // Sep Temperature Offset
-        sepTemperatureOffsetGearFieldDescriptor = new FieldDescriptor[] {
-                fieldWithPath("gears[].fields.rampIn").type(JsonFieldType.BOOLEAN).description("Ramp In"),
-                fieldWithPath("gears[].fields.rampOut").type(JsonFieldType.BOOLEAN).description("Ramp Out"),
-                fieldWithPath("gears[].fields.celsiusOrFahrenheit").type(JsonFieldType.STRING).description("Measurement Unit"),
-                fieldWithPath("gears[].fields.mode").type(JsonFieldType.STRING).description("Heat or Cool Mode."),
-                fieldWithPath("gears[].fields.offset").type(JsonFieldType.NUMBER)
-                                                      .description("Measurement Unit Offset. Min Value: 0.1, Max Value for Celsius: 25.4 and Max Value for Fahrenheit: 77.7"),
-                fieldWithPath("gears[].fields.criticality").type(JsonFieldType.NUMBER).description("Criticality. Min Value: 1, Max Value: 15"),
-                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).ignored().description("How To Stop Control"),
-                fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER).description("Capacity Reduction. Min Value: 0, Max Value: 100"),
-                fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
-                fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
-                                                                               .description("When to change field Expected : None, Duration, Priority, TriggerOffset") };
-        sepTemperatureOffsetProgramFieldDescriptor = LoadProgramSetupHelper.mergeProgramFieldDescriptors(sepTemperatureOffsetGearFieldDescriptor);
     }
 
     @AfterMethod
@@ -130,56 +112,9 @@ public class SepProgramSetupApiControllerTest {
     }
 
     /**
-     * Test case is to create Sep Load Program with and to generate Rest api documentation for Load Program create
-     * request.
-     */
-    @Test(priority = 3)
-    public void Test_SepTemperatureOffsetProgram_Create(ITestContext context) {
-        JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\SepTemperatureOffsetProgramCreate.json");
-        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(sepTemperatureOffsetProgramFieldDescriptor),
-                                                                     responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
-                                                    .accept("application/json")
-                                                    .contentType("application/json")
-                                                    .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(jsonObject.toJSONString())
-                                                    .when()
-                                                    .post(ApiCallHelper.getProperty("saveLoadProgram"))
-                                                    .then()
-                                                    .extract()
-                                                    .response();
-
-        programId = response.path("programId");
-        assertTrue("PAO ID should not be Null", programId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-    }
-
-    /**
-     * Test case is to delete the Sep Load Program created by test case Test_SepTemperatureOffsetProgram_Create and to
-     * generate Rest api documentation for delete request.
-     */
-    @Test(priority = 4)
-    public void Test_SepTemperatureOffsetProgram_Delete() {
-        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
-                                                                     responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
-                                                    .accept("application/json")
-                                                    .contentType("application/json")
-                                                    .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(ApiCallHelper.getInputFile("documentation\\loadprogram\\SepTemperatureOffsetProgramDelete.json"))
-                                                    .when()
-                                                    .delete(ApiCallHelper.getProperty("deleteLoadProgram") + programId)
-                                                    .then()
-                                                    .extract()
-                                                    .response();
-
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-    }
-
-    /**
      * Test case is to create Sep Load Program and to generate Rest api documentation for Load Program create request.
      */
-    @Test(priority = 5)
+    @Test(priority = 3)
     public void Test_SepCycleProgram_Create(ITestContext context) {
         JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\SepProgramCreate.json");
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
@@ -204,7 +139,7 @@ public class SepProgramSetupApiControllerTest {
      * Test case is to get Sep Load Program created by test case Test_SepProgram_Create and to generate Rest api
      * documentation for get request.
      */
-    @Test(priority = 6)
+    @Test(priority = 4)
     public void Test_SepProgram_Get() {
         List<FieldDescriptor> list = LoadProgramSetupHelper.createFieldDescriptorForGet(sepCycleGearFieldDescriptor, 27);
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}", responseFields(list)))
@@ -224,7 +159,7 @@ public class SepProgramSetupApiControllerTest {
      * Test case is to update Load Program created by test case Test_SepProgram_Create and to generate Rest api
      * documentation for Update request.
      */
-    @Test(priority = 7)
+    @Test(priority = 5)
     public void Test_SepProgram_Update(ITestContext context) {
         JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\SepProgramCreate.json");
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
@@ -249,7 +184,7 @@ public class SepProgramSetupApiControllerTest {
      * Test case is to create copy of Sep Load Program created by test case Test_SepProgram_Create and to generate Rest
      * api documentation for copy request.
      */
-    @Test(priority = 8)
+    @Test(priority = 6)
     public void Test_SepProgram_Copy(ITestContext context) {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.fieldDescriptorForCopy()),
@@ -274,7 +209,7 @@ public class SepProgramSetupApiControllerTest {
      * Test case is to delete the Sep Load Program created by test case Test_SepProgram_Copy and to generate Rest api
      * documentation for delete request.
      */
-    @Test(priority = 9)
+    @Test(priority = 7)
     public void Test_SepCopyProgram_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
@@ -296,7 +231,7 @@ public class SepProgramSetupApiControllerTest {
      * Test case is to delete the Sep Load Program created by test case Test_SepProgram_Create and to generate Rest api
      * documentation for delete request.
      */
-    @Test(priority = 10)
+    @Test(priority = 8)
     public void Test_SepProgram_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
@@ -317,7 +252,7 @@ public class SepProgramSetupApiControllerTest {
     /**
      * Test case is to Delete Load group we have created for Load Program.
      */
-    @Test(priority = 11)
+    @Test(priority = 9)
     public void assignedLoadGroup_Delete(ITestContext context) {
         JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\SepProgramAssignedLoadGroupDelete.json",
                                                            "name",
@@ -330,7 +265,7 @@ public class SepProgramSetupApiControllerTest {
     /**
      * Test case is to Delete Constraint which have been created for Load Program.
      */
-    @Test(priority = 12)
+    @Test(priority = 10)
     public void programConstraint_Delete(ITestContext context) {
         JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\LoadProgramAssignedConstraintDelete.json",
                                                            "name",

@@ -1,5 +1,5 @@
 {
-    "name": "TestSepProgram",
+    "name": "TestSepTemperatureProgram",
     "type": "LM_SEP_PROGRAM",
     "operationalState": "Automatic",
     "constraint": {
@@ -9,17 +9,18 @@
     "restoreOffset": 0.0,
     "gears": [
         {
-            "gearName": "SepCycle",
+            "gearName": "SepTemperature",
             "gearNumber": 1,
-            "controlMethod": "SepCycle",
+            "controlMethod": "SepTemperatureOffset",
             "fields": {
                 "rampIn": true,
-                "rampOut": true,
-                "trueCycle": true,
-                "controlPercent": 51,
+                "rampOut": false,
+                "celsiusOrFahrenheit": "CELSIUS",
+                "mode": "HEAT",
+                "offset": 1,
                 "criticality": 5,
-                "howToStopControl": "TimeIn",
-                "capacityReduction": 98,
+                "howToStopControl": "Restore",
+                "capacityReduction": 96,
                 "whenToChangeFields": {
                     "whenToChange": "None"
                 }

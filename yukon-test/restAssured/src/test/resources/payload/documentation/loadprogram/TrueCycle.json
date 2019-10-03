@@ -1,18 +1,17 @@
 {
-    "name": "Direct_Program_Create",
+    "name": "LoadProgTrueCycle3",
     "type": "LM_DIRECT_PROGRAM",
     "operationalState": "Automatic",
     "constraint": {
-        "constraintId": 0
-        
+        "constraintId": 25
     },
-    "triggerOffset": 1,
-    "restoreOffset": 2,
+    "triggerOffset": 12,
+    "restoreOffset": 22,
     "gears": [
         {
-            "gearName": "Test343",
-            "gearNumber": 1,
-            "controlMethod": "SmartCycle",
+            "gearName": "GearTrueCycle",
+            "gearNumber": 5,
+            "controlMethod": "TrueCycle",
             "fields": {
                 "noRamp": false,
                 "controlPercent": 50,
@@ -26,6 +25,7 @@
                 "capacityReduction": 100,
                 "whenToChangeFields": {
                     "whenToChange": "None"
+
                 }
             }
         }
@@ -43,14 +43,14 @@
     },
     "assignedGroups": [
         {
-            "groupId": 9425,
-            "groupName": "disconnect",
-            "type": "LM_GROUP_METER_DISCONNECT"
+            "groupId": 11705,
+            "groupName": "E1",
+            "type": "LM_GROUP_EMETCON"
         }
     ],
     "notification": {
-        "notifyOnAdjust": false,
-        "enableOnSchedule": false,
+        "notifyOnAdjust": true,
+        "enableOnSchedule": true,
         "assignedNotificationGroups": [
             {
                 "notificationGrpID": 2,

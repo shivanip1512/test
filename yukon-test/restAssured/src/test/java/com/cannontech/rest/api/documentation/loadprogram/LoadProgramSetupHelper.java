@@ -1,15 +1,52 @@
 package com.cannontech.rest.api.documentation.loadprogram;
 
+import static io.restassured.RestAssured.given;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.utilities.JsonFileReader;
+
 public class LoadProgramSetupHelper {
+
+    @SuppressWarnings("unchecked")
+    public static JSONObject buildJSONRequest(JSONObject constraintJson, JSONObject loadGroupJson, String inputFilePath) {
+        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject(inputFilePath);
+        JSONObject jsonArrayObject = new JSONObject();
+        jsonArrayObject.put("groupId", loadGroupJson.get("assignedLoadGroupId"));
+        jsonArrayObject.put("groupName", loadGroupJson.get("loadGroupName"));
+        jsonArrayObject.put("type", loadGroupJson.get("loadGroupType"));
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.add(jsonArrayObject);
+        JSONObject constraint = (JSONObject) jsonObject.get("constraint");
+        constraint.put("constraintId", constraintJson.get("constraintId"));
+        jsonObject.put("constraint", constraint);
+        jsonObject.put("assignedGroups", jsonArray);
+        return jsonObject;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void delete(Integer id, String name, String url) {
+        JSONObject obj = new JSONObject();
+        obj.put("name", name);
+
+        given().accept("application/json")
+               .contentType("application/json")
+               .header("Authorization", "Bearer " + ApiCallHelper.authToken)
+               .body(obj)
+               .when()
+               .delete(ApiCallHelper.getProperty(url) + id)
+               .then()
+               .extract();
+    }
 
     public static FieldDescriptor[] loadProgramFields() {
         return new FieldDescriptor[] {
