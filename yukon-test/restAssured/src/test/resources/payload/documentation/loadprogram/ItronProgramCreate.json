@@ -1,0 +1,57 @@
+{
+    "name": "TestItron",
+    "type": "LM_ITRON_PROGRAM",
+    "operationalState": "Timed",
+    "constraint": {
+        "constraintId": 0
+    },
+    "triggerOffset": 1.0,
+    "restoreOffset": 3.0,
+    "gears": [
+        {
+            "gearName": "ItronGear",
+            "gearNumber": 1,
+            "controlMethod": "ItronCycle",
+            "fields": {
+                "cycleType": "STANDARD",
+                "rampIn": true,
+                "rampOut": true,
+                "dutyCyclePercent": 95,
+                "dutyCyclePeriodInMinutes": 30,
+                "criticality": 97,
+                "capacityReduction": 93,
+                "howToStopControl": "Restore",
+                "whenToChangeFields": {
+                    "whenToChange": "None"
+                }
+            }
+        }
+    ],
+    "controlWindow": {
+        "controlWindowOne": {
+            "availableStartTimeInMinutes": 120,
+            "availableStopTimeInMinutes": 240
+        },
+        "controlWindowTwo": {
+            "availableStartTimeInMinutes": 240,
+            "availableStopTimeInMinutes": 480
+        }
+    },
+    "assignedGroups": [
+        {
+            "groupId": 10147,
+            "groupName": "TestItron",
+            "type": "LM_GROUP_ITRON"
+        }
+    ],
+    "notification": {
+        "notifyOnAdjust": false,
+        "enableOnSchedule": false,
+        "assignedNotificationGroups": [
+            {
+                "notificationGrpID": 2,
+                "notificationGrpName": "shikhanotificationgroup"
+            }
+        ]
+    }
+}

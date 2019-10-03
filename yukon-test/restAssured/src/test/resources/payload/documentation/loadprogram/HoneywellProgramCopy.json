@@ -1,0 +1,7 @@
+{
+  "name":"CopyOfTestHoneywell",
+    "operationalState": "Automatic",
+    "constraint": {
+        "constraintId": 0
+    }
+}

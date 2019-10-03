@@ -1,0 +1,7 @@
+{
+  "name":"CopyOfTestMeterDisconnect",
+    "operationalState": "Automatic",
+    "constraint": {
+        "constraintId": 0
+    }
+}

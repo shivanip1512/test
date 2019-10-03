@@ -1,0 +1,15 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Simple Thermostat Ramping
+
+*Request Properties* :
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_SimpleThermostatProgram_Create/request-fields.adoc[]
+
+*Request JSON* :
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_SimpleThermostatProgram_Create/http-request.adoc[]
+
