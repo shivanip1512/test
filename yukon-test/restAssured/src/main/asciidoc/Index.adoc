@@ -80,22 +80,51 @@ include::MacroLoadGroupDelete.adoc[]
 
 === Create
 include::DirectProgramCreate.adoc[]
+include::EcobeeProgramCreate.adoc[]
+include::HoneywellProgramCreate.adoc[]
+include::ItronProgramCreate.adoc[]
+include::SepCycleProgramCreate.adoc[]
+include::MeterDisconnectProgramCreate.adoc[]
 
 === Retrieve
 include::DirectProgramGet.adoc[]
+include::EcobeeProgramGet.adoc[]
+include::HoneywellProgramGet.adoc[]
+include::ItronProgramGet.adoc[]
+include::SepProgramGet.adoc[]
+include::MeterDisconnectProgramGet.adoc[]
 
 === Update
 include::DirectProgramUpdate.adoc[]
+include::EcobeeProgramUpdate.adoc[]
+include::HoneywellProgramUpdate.adoc[]
+include::ItronProgramUpdate.adoc[]
+include::SepProgramUpdate.adoc[]
+include::MeterDisconnectProgramUpdate.adoc[]
 
 === Copy
 include::DirectProgramCopy.adoc[]
+include::EcobeeProgramCopy.adoc[]
+include::HoneywellProgramCopy.adoc[]
+include::ItronProgramCopy.adoc[]
+include::SepProgramCopy.adoc[]
+include::MeterDisconnectProgramCopy.adoc[]
 
 === Delete
 include::DirectProgramDelete.adoc[]
+include::EcobeeProgramDelete.adoc[]
+include::HoneywellProgramDelete.adoc[]
+include::ItronProgramDelete.adoc[]
+include::SepProgramDelete.adoc[]
+include::MeterDisconnectProgramDelete.adoc[]
 
 === Supported Gears
 ==== Direct Program
+include::ThermostatProgramCreate.adoc[]
+include::SimpleThermostatRampingProgramCreate.adoc[]
 
+==== SEP Program
+include::SepTemperatureOffsetProgramCreate.adoc[]
 
 == Control Area
 === Create

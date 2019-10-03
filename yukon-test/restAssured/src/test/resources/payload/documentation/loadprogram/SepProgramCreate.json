@@ -1,0 +1,56 @@
+{
+    "name": "TestSepProgram",
+    "type": "LM_SEP_PROGRAM",
+    "operationalState": "Automatic",
+    "constraint": {
+        "constraintId": 0
+    },
+    "triggerOffset": 0.0,
+    "restoreOffset": 0.0,
+    "gears": [
+        {
+            "gearName": "SepCycle",
+            "gearNumber": 1,
+            "controlMethod": "SepCycle",
+            "fields": {
+                "rampIn": true,
+                "rampOut": true,
+                "trueCycle": true,
+                "controlPercent": 51,
+                "criticality": 5,
+                "howToStopControl": "TimeIn",
+                "capacityReduction": 98,
+                "whenToChangeFields": {
+                    "whenToChange": "None"
+                }
+            }
+        }
+    ],
+    "controlWindow": {
+        "controlWindowOne": {
+            "availableStartTimeInMinutes": 180,
+            "availableStopTimeInMinutes": 480
+        },
+        "controlWindowTwo": {
+            "availableStartTimeInMinutes": 240,
+            "availableStopTimeInMinutes": 540
+        }
+    },
+    "assignedGroups": [
+        {
+            "groupId": 4775,
+            "groupName": "digisep",
+            "type": "LM_GROUP_DIGI_SEP"
+        }
+    ],
+    "notification": {
+        "notifyOnAdjust": false,
+        "enableOnSchedule": false,
+        "assignedNotificationGroups": [
+            {
+                "notificationGrpID": 2,
+                "notificationGrpName": "shikhanotificationgroup"
+            }
+        ]
+    }
+}
