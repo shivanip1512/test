@@ -5,7 +5,7 @@
 :toclevels: 4
 :sectlinks:
 
-==== Simple Thermostat Ramping
+===== Simple Thermostat Ramping
 
 *Request Properties* :
 include::{snippets}/DirectProgramSetupApiControllerTest/Test_SimpleThermostatProgram_Create/request-fields.adoc[]
