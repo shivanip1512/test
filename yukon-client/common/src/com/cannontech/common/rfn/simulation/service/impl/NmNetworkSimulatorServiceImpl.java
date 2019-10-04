@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,6 +39,8 @@ import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetRequest;
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveRequest;
 import com.cannontech.amr.rfn.message.status.type.DemandResetStatus;
 import com.cannontech.amr.rfn.message.status.type.DemandResetStatusCode;
+import com.cannontech.amr.rfn.message.status.type.MeterInfo;
+import com.cannontech.amr.rfn.message.status.type.MeterInfoStatus;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
@@ -390,7 +393,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         reply.setReplyTypes(replies);
                         jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
 
-                        sendDemandResetStatusArchiveRequest(request.getRfnMeterIdentifiers(), null);
+                        String statusCode = yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.DEMAND_RESET_STATUS_ARCHIVE);
+
+                        sendDemandResetStatusArchiveRequest(request.getRfnMeterIdentifiers(), null, DemandResetStatusCode.valueOf(statusCode));
                     }
                 }
             }
@@ -921,7 +926,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     }
     
     @Override
-    public void sendDemandResetStatusArchiveRequest(Set<RfnIdentifier> identifiers, Integer limit) {
+    public void sendDemandResetStatusArchiveRequest(Set<RfnIdentifier> identifiers, Integer limit, DemandResetStatusCode code) {
         List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoIds(
             rfnDeviceDao.getDeviceIdsForRfnIdentifiers(identifiers));
 
@@ -936,12 +941,11 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     .collect(Collectors.toList());
         }
           
-        String statusCode = yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.DEMAND_RESET_STATUS_ARCHIVE);
         for (int i = 0; i < devices.size(); i++) {
             RfnStatusArchiveRequest response = new RfnStatusArchiveRequest();
             response.setStatusPointId(i);
             DemandResetStatus status = new DemandResetStatus();
-            status.setData(DemandResetStatusCode.valueOf(statusCode));
+            status.setData(code);
             status.setRfnIdentifier(devices.get(i).getRfnIdentifier());
             status.setTimeStamp(new Date().getTime());
             response.setStatus(status);
@@ -949,6 +953,21 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         }
     }
     
+    @Override
+    public void sendMeterInfoStatusArchiveRequest(Set<RfnIdentifier> identifiers, Instant timestamp, MeterInfo info) {
+        RfnStatusArchiveRequest response = new RfnStatusArchiveRequest();
+        var statusPointId = new AtomicInteger(77);
+        identifiers.forEach(rfnId -> {
+            var status = new MeterInfoStatus();
+            status.setData(info);
+            status.setTimeStamp(timestamp.getMillis());
+            status.setRfnIdentifier(rfnId);
+            response.setStatus(status);
+            response.setStatusPointId(statusPointId.getAndIncrement());
+            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_STATUS_ARCHIVE.getQueue().getName(), response);
+        });
+    }
+
     private int getRandomNumberInRange(int min, int max) {
         Random r = new Random();
         return r.nextInt((max - min) + 1) + min;

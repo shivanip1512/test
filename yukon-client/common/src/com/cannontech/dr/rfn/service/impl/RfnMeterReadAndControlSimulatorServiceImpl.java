@@ -285,7 +285,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response2);
                             
                             
-                            RfnStatusArchiveRequest response = setupStatusAtchiveRequest(response2.getState(), request.getRfnIdentifier());
+                            RfnStatusArchiveRequest response = setupStatusArchiveRequest(response2.getState(), request.getRfnIdentifier());
                             jmsTemplate.convertAndSend(JmsApiDirectory.RFN_STATUS_ARCHIVE.getQueue().getName(), response);
                         }
                     } catch (Exception e) {
@@ -302,7 +302,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
              * Creates status archive request for disconnect
              * @param rfnIdentifier 
              */
-            private RfnStatusArchiveRequest setupStatusAtchiveRequest(RfnMeterDisconnectState state, RfnIdentifier rfnIdentifier) {
+            private RfnStatusArchiveRequest setupStatusArchiveRequest(RfnMeterDisconnectState state, RfnIdentifier rfnIdentifier) {
                 RfnStatusArchiveRequest response = new RfnStatusArchiveRequest();
                 response.setStatusPointId(1L);
                 MeterInfoStatus status = new MeterInfoStatus();
