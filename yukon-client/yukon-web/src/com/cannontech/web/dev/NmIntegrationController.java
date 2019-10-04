@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.DecoderException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
@@ -1132,14 +1133,17 @@ public class NmIntegrationController {
         
         var mode = report.getMeterMode();
         var type = report.getRelayStatus();
-        var configId = report.getMeterConfigurationId();
-
+        
+        String configId = null;
         MeterDisconnectStatus disconnectStatus = null;
         
         if (mode != null && type != null) {
             disconnectStatus = new MeterDisconnectStatus();
             disconnectStatus.setMeterMode(mode);
             disconnectStatus.setRelayStatus(type);
+        }
+        if (!StringUtils.isBlank(report.getMeterConfigurationId())) {
+            configId = report.getMeterConfigurationId();
         }
         
         var request = new MeterInfoStatusArchiveSimulatorRequest(

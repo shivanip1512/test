@@ -66,8 +66,7 @@ public class StatusArchiveSimulatorMessageHandler extends SimulatorMessageHandle
                     });
                     return new SimulatorResponseBase(true);
                 }
-            }
-            else if (simulatorRequest instanceof MeterInfoStatusArchiveSimulatorRequest) {  
+            } else if (simulatorRequest instanceof MeterInfoStatusArchiveSimulatorRequest) {  
                 if (!isRunning.compareAndExchange(false, true)) {
                     executor.execute(() -> {
                         try {
