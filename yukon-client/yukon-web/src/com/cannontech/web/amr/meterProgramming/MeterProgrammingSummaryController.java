@@ -263,7 +263,7 @@ public class MeterProgrammingSummaryController {
     public @ResponseBody Map<String, Object> acceptProgramming(@PathVariable int id, String guid, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
-        //TODO: Accept failure
+        //TODO: Accept Programming State
         json.put("successMsg", accessor.getMessage(baseKey + "summary.acceptSuccessful"));
         return json;
     }
