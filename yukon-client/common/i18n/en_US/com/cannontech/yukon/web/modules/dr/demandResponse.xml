@@ -579,9 +579,6 @@
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.dailyEmail">Daily Email</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.success">Broadcast Performance Configuration Saved</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.failed">Broadcast Performance Configuration Failed</entry>
-<entry key="yukon.web.modules.dr.home.rfPerformance.successful">Successful</entry>
-<entry key="yukon.web.modules.dr.home.rfPerformance.failure">Failure</entry>
-<entry key="yukon.web.modules.dr.home.rfPerformance.unknown">Unknown</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.percentage">Percent Successful</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.email.subject">RF Performance Results</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.email.header"><![CDATA[
