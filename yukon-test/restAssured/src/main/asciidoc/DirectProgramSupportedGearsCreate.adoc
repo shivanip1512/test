@@ -5,7 +5,7 @@
 :toclevels: 4
 :sectlinks:
 
-===== Time Refresh Gear
+==== Time Refresh Gear
 
 *Request Properties* :
 
@@ -15,7 +15,33 @@ include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_Tim
 
 include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TimeRefreshGear_Create/http-request.adoc[]
 
-===== Master Cycle Gear 
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TimeRefreshGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TimeRefreshGear_Create/http-response.adoc[]
+
+==== Smart Cycle Gear
+
+*Request Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_SmartCycleGear_Create/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_SmartCycleGear_Create/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_SmartCycleGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_SmartCycleGear_Create/http-response.adoc[]
+
+==== Master Cycle Gear 
 
 *Request Properties* :
 
@@ -25,7 +51,15 @@ include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_Mas
 
 include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MasterCycleGear_Create/http-request.adoc[]
 
-===== True Cycle Gear
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MasterCycleGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MasterCycleGear_Create/http-response.adoc[]
+
+==== True Cycle Gear
 
 *Request Properties* :
 
@@ -35,7 +69,15 @@ include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_Tru
 
 include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TrueCycleGear_Create/http-request.adoc[]
 
-===== Magnitude Cycle Gear
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TrueCycleGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TrueCycleGear_Create/http-response.adoc[]
+
+==== Magnitude Cycle Gear
 
 *Request Properties* :
 
@@ -45,7 +87,15 @@ include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_Mag
 
 include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MagnitudeCycleGear_Create/http-request.adoc[]
 
-===== Target Cycle Gear
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MagnitudeCycleGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MagnitudeCycleGear_Create/http-response.adoc[]
+
+==== Target Cycle Gear
 
 *Request Properties* :
 
@@ -55,7 +105,15 @@ include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_Tar
 
 include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TargetCycleGear_Create/http-request.adoc[]
 
-===== Latching Gear
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TargetCycleGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TargetCycleGear_Create/http-response.adoc[]
+
+==== Latching Gear
 
 *Request Properties* :
 
@@ -65,23 +123,15 @@ include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_Lat
 
 include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_LatchingGear_Create/http-request.adoc[]
 
-===== Thermostat Ramping
+*Response Properties* :
 
-*Request Properties* :
-include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_ThermostatGear_Create/request-fields.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_LatchingGear_Create/response-fields.adoc[]
 
-*Request JSON* :
-include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_ThermostatGear_Create/http-request.adoc[]
+*Response JSON* :
 
-===== Simple Thermostat Ramping
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_LatchingGear_Create/http-response.adoc[]
 
-*Request Properties* :
-include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_SimpleThermostatGear_Create/request-fields.adoc[]
-
-*Request JSON* :
-include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_SimpleThermostatGear_Create/http-request.adoc[]
-
-===== Beat The Peak Gear
+==== Beat The Peak Gear
 
 *Request Properties* :
 
@@ -91,7 +141,15 @@ include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_Bea
 
 include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_BeatThePeakGear_Create/http-request.adoc[]
 
-===== No Control Gear
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_BeatThePeakGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_BeatThePeakGear_Create/http-response.adoc[]
+
+==== No Control Gear
 
 *Request Properties* :
 
@@ -100,3 +158,12 @@ include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_NoC
 *Request JSON* :
 
 include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_NoControlGear_Create/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_NoControlGear_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_NoControlGear_Create/http-response.adoc[]
+

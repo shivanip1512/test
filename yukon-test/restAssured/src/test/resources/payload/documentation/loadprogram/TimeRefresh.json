@@ -9,7 +9,7 @@
     "restoreOffset": 22,
     "gears": [
         {
-            "gearName": "GearTimeRefresh",
+             "gearName": "GearTimeRefresh",
             "gearNumber": 1,
             "controlMethod": "TimeRefresh",
             "fields": {
@@ -23,6 +23,7 @@
                 "capacityReduction": 100,
                 "whenToChangeFields": {
                     "whenToChange": "None"
+
                 }
             }
         }
