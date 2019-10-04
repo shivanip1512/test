@@ -44,8 +44,8 @@
     },
     "assignedGroups": [
         {
-            "groupId": 17919,
-            "groupName": "Test Meter Testng",
+            "groupId": 9425,
+            "groupName": "disconnect",
             "type": "LM_GROUP_METER_DISCONNECT"
         }
     ],
@@ -55,7 +55,7 @@
         "assignedNotificationGroups": [
             {
                 "notificationGrpID": 2,
-                "notificationGrpName": "AMR Status Group"
+                "notificationGrpName": "Jess Notification"
             }
         ]
     }
