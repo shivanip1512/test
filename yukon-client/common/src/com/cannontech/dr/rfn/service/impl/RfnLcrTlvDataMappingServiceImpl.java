@@ -119,7 +119,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                                         || entry.isRelayData(); 
 
                 if (createPoint) {
-                    createPointIfMissing(device, entry.getAttribute());
+                    attributeService.createPointForAttribute(device, entry.getAttribute());
                 }
                 
                 // Generate the point data
@@ -138,7 +138,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                         value = modifiedValue;
                     }
                     
-                    PointData pointData = getPointData(entry.getAttribute(), value, paoPointIdentifier, point.getPointID(), timeOfReading.toDate());
+                    PointData pointData = getPointData(entry.getAttribute(), value, point, timeOfReading.toDate());
                     messagesToSend.add(pointData);
                 } catch (@SuppressWarnings("unused") NotFoundException e) {
                     log.debug("Point for attribute (" + entry.getAttribute().toString() + ") does not exist for device: "
@@ -188,8 +188,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
     }
 
     @Override
-    public PointData getPointData(BuiltInAttribute attribute, Double value, PaoPointIdentifier paoPointIdentifier,
-            Integer pointId, Date timeOfReading) {
+    public PointData getPointData(BuiltInAttribute attribute, Double value, LitePoint point, Date timeOfReading) {
         if (attribute == BuiltInAttribute.SERVICE_STATUS) {
             /**
              * LCR 6700
@@ -207,8 +206,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                 value = 2.0;
             }
         }
-        Integer pointTypeId = paoPointIdentifier.getPointIdentifier().getPointType().getPointTypeId();
-        return buildPointData(pointId, pointTypeId, timeOfReading, value);
+        return buildPointData(point, timeOfReading, value);
     }
 
     private List<PointData> mapIntervalData(ListMultimap<FieldType, byte[]>  data, RfnDevice device,
@@ -267,8 +265,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                     }
                 }
                 if (relayPoint != null) {
-                    PointData pointData = buildPointData(relayPoint.getPointID(), relayPoint.getPointType(),
-                        currentIntervalTimestamp.toDate(), Double.valueOf(value));
+                    PointData pointData = buildPointData(relayPoint, currentIntervalTimestamp.toDate(), Double.valueOf(value));
                     intervalPointData.add(pointData);
                 }
 
