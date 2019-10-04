@@ -149,8 +149,8 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             List<Integer> intervalData = data.evaluateAsIntegerList("/DRReport/Relays/Relay" + 
                     relay.getRelayIdXPathString() + "/IntervalData/Interval");
             
-            LitePoint runTimePoint = attributeService.findPointForAttribute(device, relay.getRunTimeAttribute());
-            LitePoint shedTimePoint = attributeService.findPointForAttribute(device, relay.getShedTimeAttribute());
+            LitePoint runTimePoint = attributeService.createAndFindPointForAttribute(device, relay.getRunTimeAttribute());
+            LitePoint shedTimePoint = attributeService.createAndFindPointForAttribute(device, relay.getShedTimeAttribute());
             
             Long intervalStartTime = data.evaluateAsLong("/DRReport/Relays/Relay" + relay.getRelayIdXPathString() + "/IntervalData/@startTime");
             if (intervalStartTime == null) continue;
