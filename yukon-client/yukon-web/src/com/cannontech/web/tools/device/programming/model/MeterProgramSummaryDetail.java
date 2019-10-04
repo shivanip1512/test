@@ -92,7 +92,6 @@ public class MeterProgramSummaryDetail {
     }
 
     public String getAssignedProgramName() {
-        //assignedProgramName = "ProgramTest";
         return assignedProgramName;
     }
 
