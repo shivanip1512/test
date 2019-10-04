@@ -87,8 +87,8 @@ public class DirectProgramSetupApiControllerTest {
     /**
      * Test case is to create Load group as we need to pass load group in request of Direct Load Program.
      */
-    @Test(priority = 1)
-    public void assignedLoadGroup_Create(ITestContext context) {
+    @Test
+    public void directAssignedLoadGroup_Create(ITestContext context) {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", "documentation\\loadprogram\\DirectProgramAssignedLoadGroup.json");
         Integer groupId = createResponse.path("groupId");
         context.setAttribute("loadGroupId", groupId.toString());
@@ -104,7 +104,7 @@ public class DirectProgramSetupApiControllerTest {
     /**
      * Test case is to create Program Constraint as we need to pass constraint in request of Direct Load Program.
      */
-    @Test(priority = 2)
+    @Test(dependsOnMethods={"directAssignedLoadGroup_Create"})
     public void programConstraint_Create(ITestContext context) {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", "documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
         Integer constraintId = createResponse.path("id");
@@ -122,7 +122,7 @@ public class DirectProgramSetupApiControllerTest {
      * Test case is to create Direct Load Program and to generate Rest api documentation for Direct Load Program create
      * request.
      */
-    @Test(priority = 3)
+    @Test(dependsOnMethods={"programConstraint_Create"})
     public void Test_DirectProgram_Create(ITestContext context) {
         JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\DirectProgramCreate.json");
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
@@ -147,7 +147,7 @@ public class DirectProgramSetupApiControllerTest {
      * Test case is to get Direct Load Program created by test case Test_DirectProgram_Create and to generate Rest api
      * documentation for get request.
      */
-    @Test(priority = 4)
+    @Test(dependsOnMethods={"Test_DirectProgram_Create"})
     public void Test_DirectProgram_Get() {
         List<FieldDescriptor> list = LoadProgramSetupHelper.createFieldDescriptorForGet(smartCycleGearFieldDescriptor, 30);
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}", responseFields(list)))
@@ -167,7 +167,7 @@ public class DirectProgramSetupApiControllerTest {
      * Test case is to update Load Program created by test case Test_DirectProgram_Create and to generate Rest api
      * documentation for Update request.
      */
-    @Test(priority = 5)
+    @Test(dependsOnMethods={"Test_DirectProgram_Get"})
     public void Test_DirectProgram_Update(ITestContext context) {
         JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\DirectProgramCreate.json");
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
@@ -192,7 +192,7 @@ public class DirectProgramSetupApiControllerTest {
      * Test case is to create copy of Direct Load Program created by test case Test_DirectProgram_Create and to generate
      * Rest api documentation for copy request.
      */
-    @Test(priority = 6)
+    @Test(dependsOnMethods={"Test_DirectProgram_Update"})
     public void Test_DirectProgram_Copy(ITestContext context) {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.fieldDescriptorForCopy()),
@@ -217,7 +217,7 @@ public class DirectProgramSetupApiControllerTest {
      * Test case is to delete the Direct Load Program created by test case Test_DirectProgram_Copy and to generate Rest api
      * documentation for delete request.
      */
-    @Test(priority = 7)
+    @Test(dependsOnMethods={"Test_DirectProgram_Copy"})
     public void Test_DirectCopyProgram_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
@@ -239,7 +239,7 @@ public class DirectProgramSetupApiControllerTest {
      * Test case is to delete the Load Program created by test case Test_DirectProgram_Create and to generate Rest api
      * documentation for delete request.
      */
-    @Test(priority = 8)
+    @Test(dependsOnMethods={"Test_DirectProgram_Copy"})
     public void Test_DirectProgram_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
@@ -260,8 +260,8 @@ public class DirectProgramSetupApiControllerTest {
     /**
      * Test case is to Delete Load group we have created for Direct Load Program.
      */
-    @Test(priority = 9)
-    public void assignedLoadGroup_Delete(ITestContext context) {
+    @Test(dependsOnMethods={"Test_DirectProgram_Delete"})
+    public void directassignedLoadGroup_Delete(ITestContext context) {
         JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\DirectProgramAssignedLoadGroupDelete.json",
                                                            "name",
                                                            context.getAttribute("loadGroupName").toString());
@@ -273,7 +273,7 @@ public class DirectProgramSetupApiControllerTest {
     /**
      * Test case is to Delete Constraint which have been created for Load Program.
      */
-    @Test(priority = 10)
+    @Test(dependsOnMethods={"directassignedLoadGroup_Delete"})
     public void programConstraint_Delete(ITestContext context) {
         JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\LoadProgramAssignedConstraintDelete.json",
                                                            "name",

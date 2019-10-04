@@ -82,8 +82,8 @@ public class HoneywellProgramSetupApiControllerTest {
     /**
      * Test case is to create Load group as we need to pass load group in request of Honeywell Load Program.
      */
-    @Test(priority = 1)
-    public void assignedLoadGroup_Create(ITestContext context) {
+    @Test
+    public void honeywellAssignedLoadGroup_Create(ITestContext context) {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", "documentation\\loadprogram\\HoneywellProgramAssignedLoadGroup.json");
         Integer groupId = createResponse.path("groupId");
         context.setAttribute("loadGroupId", groupId.toString());
@@ -99,7 +99,7 @@ public class HoneywellProgramSetupApiControllerTest {
     /**
      * Test case is to create Program Constraint as we need to pass constraint in request of Honeywell Load Program.
      */
-    @Test(priority = 2)
+    @Test(dependsOnMethods={"honeywellAssignedLoadGroup_Create"})
     public void programConstraint_Create(ITestContext context) {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", "documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
         Integer constraintId = createResponse.path("id");
@@ -118,7 +118,7 @@ public class HoneywellProgramSetupApiControllerTest {
      * request.
      * @throws IOException
      */
-    @Test(priority = 3)
+    @Test(dependsOnMethods={"programConstraint_Create"})
     public void Test_HoneywellProgram_Create(ITestContext context) {
         JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\HoneywellProgramCreate.json");
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
@@ -143,7 +143,7 @@ public class HoneywellProgramSetupApiControllerTest {
      * Test case is to get Honeywell Load Program created by test case Test_HoneywellProgram_Create and to generate Rest
      * api documentation for get request.
      */
-    @Test(priority = 4)
+    @Test(dependsOnMethods={"Test_HoneywellProgram_Create"})
     public void Test_HoneywellProgram_Get() {
         List<FieldDescriptor> list = LoadProgramSetupHelper.createFieldDescriptorForGet(honeywellGearFieldDescriptor, 25);
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}", responseFields(list)))
@@ -163,7 +163,7 @@ public class HoneywellProgramSetupApiControllerTest {
      * Test case is to update Load Program created by test case Test_HoneywellProgram_Create and to generate Rest api
      * documentation for Update request.
      */
-    @Test(priority = 5)
+    @Test(dependsOnMethods={"Test_HoneywellProgram_Get"})
     public void Test_HoneywellProgram_Update(ITestContext context) {
         JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\HoneywellProgramCreate.json");
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
@@ -188,7 +188,7 @@ public class HoneywellProgramSetupApiControllerTest {
      * Test case is to create copy of Honeywell Load Program created by test case Test_HoneywellProgram_Create and to
      * generate Rest api documentation for copy request.
      */
-    @Test(priority = 6)
+    @Test(dependsOnMethods={"Test_HoneywellProgram_Update"})
     public void Test_HoneywellProgram_Copy(ITestContext context) {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.fieldDescriptorForCopy()),
@@ -213,7 +213,7 @@ public class HoneywellProgramSetupApiControllerTest {
      * Test case is to delete the Honeywell Load Program created by test case Test_HoneywellProgram_Copy and to generate
      * Rest api documentation for delete request.
      */
-    @Test(priority = 7)
+    @Test(dependsOnMethods={"Test_HoneywellProgram_Copy"})
     public void Test_HoneywellCopyProgram_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
@@ -235,7 +235,7 @@ public class HoneywellProgramSetupApiControllerTest {
      * Test case is to delete the Honeywell Load Program created by test case Test_HoneywellProgram_Create and to
      * generate Rest api documentation for delete request.
      */
-    @Test(priority = 8)
+    @Test(dependsOnMethods={"Test_HoneywellProgram_Copy"})
     public void Test_HoneywellProgram_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
@@ -256,7 +256,7 @@ public class HoneywellProgramSetupApiControllerTest {
     /**
      * Test case is to Delete Load group we have created for Load Program.
      */
-    @Test(priority = 9)
+    @Test(dependsOnMethods={"Test_HoneywellProgram_Delete"})
     public void assignedLoadGroup_Delete(ITestContext context) {
         JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\HoneywellProgramAssignedLoadGroupDelete.json",
                                                            "name",
@@ -269,7 +269,7 @@ public class HoneywellProgramSetupApiControllerTest {
     /**
      * Test case is to Delete Constraint which have been created for Load Program.
      */
-    @Test(priority = 10)
+    @Test(dependsOnMethods={"assignedLoadGroup_Delete"})
     public void programConstraint_Delete(ITestContext context) {
         JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\LoadProgramAssignedConstraintDelete.json",
                                                            "name",

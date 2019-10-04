@@ -106,8 +106,8 @@ public class MeterDisconnectProgramSetupApiControllerTest {
     /**
      * Test case is to create Load group as we need to pass load group in request of MeterDisconnect Load Program.
      */
-    @Test(priority = 1)
-    public void assignedLoadGroup_Create(ITestContext context) {
+    @Test
+    public void meterDisconnectAssignedLoadGroup_Create(ITestContext context) {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", "documentation\\loadprogram\\MeterDisconnectProgramAssignedLoadGroup.json");
         Integer groupId = createResponse.path("groupId");
         context.setAttribute("loadGroupId", groupId.toString());
@@ -124,7 +124,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
      * Test case is to create Program Constraint as we need to pass constraint in request of MeterDisconnect Load
      * Program.
      */
-    @Test(priority = 2)
+    @Test(dependsOnMethods={"meterDisconnectAssignedLoadGroup_Create"})
     public void programConstraint_Create(ITestContext context) {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", "documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
         Integer constraintId = createResponse.path("id");
@@ -143,7 +143,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
      * create request.
      * @throws IOException
      */
-    @Test(priority = 3)
+    @Test(dependsOnMethods={"programConstraint_Create"})
     public void Test_MeterDisconnectProgram_Create(ITestContext context) {
         JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\MeterDisconnectProgramCreate.json");
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
@@ -168,7 +168,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
      * Test case is to get MeterDisconnect Load Program created by test case Test_MeterDisconnectProgram_Create and to
      * generate Rest api documentation for get request.
      */
-    @Test(priority = 4)
+    @Test(dependsOnMethods={"Test_MeterDisconnectProgram_Create"})
     public void Test_MeterDisconnectProgram_Get(ITestContext context) {
         List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(meterDisconnectGearFieldDescriptor));
         list.add(5, fieldWithPath("constraint.constraintName").type(JsonFieldType.STRING).description("Constraint Name"));
@@ -192,7 +192,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
      * Test case is to update Load Program created by test case Test_MeterDisconnectProgram_Create and to generate Rest
      * api documentation for Update request.
      */
-    @Test(priority = 5)
+    @Test(dependsOnMethods={"Test_MeterDisconnectProgram_Get"})
     public void Test_MeterDisconnectProgram_Update(ITestContext context) {
         JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\MeterDisconnectProgramCreate.json");
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
@@ -217,7 +217,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
      * Test case is to create copy of MeterDisconnect Load Program created by test case
      * Test_MeterDisconnectProgram_Create and to generate Rest api documentation for copy request.
      */
-    @Test(priority = 6)
+    @Test(dependsOnMethods={"Test_MeterDisconnectProgram_Update"})
     public void Test_MeterDisconnectProgram_Copy(ITestContext context) {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.fieldDescriptorForCopy()),
@@ -242,7 +242,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
      * Test case is to delete the MeterDisconnect Load Program created by test case Test_MeterDisconnectProgram_Copy and
      * to generate Rest api documentation for delete request.
      */
-    @Test(priority = 7)
+    @Test(dependsOnMethods={"Test_MeterDisconnectProgram_Copy"})
     public void Test_MeterDisconnectCopyProgram_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
@@ -264,7 +264,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
      * Test case is to delete the MeterDisconnect Load Program created by test case Test_MeterDisconnectProgram_Create
      * and to generate Rest api documentation for delete request.
      */
-    @Test(priority = 8)
+    @Test(dependsOnMethods={"Test_MeterDisconnectProgram_Copy"})
     public void Test_MeterDisconnectProgram_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
@@ -285,7 +285,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
     /**
      * Test case is to Delete Load group we have created for Load Program.
      */
-    @Test(priority = 9)
+    @Test(dependsOnMethods={"Test_MeterDisconnectProgram_Delete"})
     public void assignedLoadGroup_Delete(ITestContext context) {
         JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\MeterDisconnectProgramAssignedLoadGroupDelete.json",
                                                            "name",
@@ -298,7 +298,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
     /**
      * Test case is to Delete Constraint which have been created for Load Program.
      */
-    @Test(priority = 10)
+    @Test(dependsOnMethods={"assignedLoadGroup_Delete"})
     public void programConstraint_Delete(ITestContext context) {
         JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\LoadProgramAssignedConstraintDelete.json",
                                                            "name",

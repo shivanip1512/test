@@ -8,14 +8,14 @@
 ==== SEP Program
 
 *Request Properties* :
-include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Create/request-fields.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepCycleProgram_Create/request-fields.adoc[]
 
 *Request JSON* :
-include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Create/http-request.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepCycleProgram_Create/http-request.adoc[]
 
 *Response Properties* :
-include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Create/response-fields.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepCycleProgram_Create/response-fields.adoc[]
 
 *Response JSON* :
-include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Create/http-response.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepCycleProgram_Create/http-response.adoc[]
 
