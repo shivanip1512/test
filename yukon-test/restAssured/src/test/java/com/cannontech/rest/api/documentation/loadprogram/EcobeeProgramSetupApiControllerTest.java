@@ -84,8 +84,8 @@ public class EcobeeProgramSetupApiControllerTest {
     /**
      * Test case is to create Load group as we need to pass load group in request of Ecobee Load Program.
      */
-    @Test(priority = 1)
-    public void assignedLoadGroup_Create(ITestContext context) {
+    @Test
+    public void ecobeeAssignedLoadGroup_Create(ITestContext context) {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", "documentation\\loadprogram\\EcobeeProgramAssignedLoadGroup.json");
         Integer groupId = createResponse.path("groupId");
         context.setAttribute("loadGroupId", groupId.toString());
@@ -101,7 +101,7 @@ public class EcobeeProgramSetupApiControllerTest {
     /**
      * Test case is to create Program Constraint as we need to pass constraint in request of Ecobee Load Program.
      */
-    @Test(priority = 2)
+    @Test(dependsOnMethods={"ecobeeAssignedLoadGroup_Create"})
     public void programConstraint_Create(ITestContext context) {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", "documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
         Integer constraintId = createResponse.path("id");
@@ -120,7 +120,7 @@ public class EcobeeProgramSetupApiControllerTest {
      * request.
      * @throws IOException
      */
-    @Test(priority = 3)
+    @Test(dependsOnMethods={"programConstraint_Create"})
     public void Test_EcobeeProgram_Create(ITestContext context) {
         JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\EcobeeProgramCreate.json");
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
@@ -145,7 +145,7 @@ public class EcobeeProgramSetupApiControllerTest {
      * Test case is to get Load Program created by test case Test_EcobeeProgram_Create and to generate Rest api
      * documentation for get request.
      */
-    @Test(priority = 4)
+    @Test(dependsOnMethods={"Test_EcobeeProgram_Create"})
     public void Test_EcobeeProgram_Get() {
         List<FieldDescriptor> list = LoadProgramSetupHelper.createFieldDescriptorForGet(ecobeeGearFieldDescriptor, 26);
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}", responseFields(list)))
@@ -165,7 +165,7 @@ public class EcobeeProgramSetupApiControllerTest {
      * Test case is to update Load Program created by test case Test_EcobeeProgram_Create and to generate Rest api
      * documentation for Update request.
      */
-    @Test(priority = 5)
+    @Test(dependsOnMethods={"Test_EcobeeProgram_Get"})
     public void Test_EcobeeProgram_Update(ITestContext context) {
         JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\EcobeeProgramCreate.json");
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
@@ -190,7 +190,7 @@ public class EcobeeProgramSetupApiControllerTest {
      * Test case is to create copy of Load Program created by test case Test_EcobeeProgram_Create and to generate Rest
      * api documentation for copy request.
      */
-    @Test(priority = 6)
+    @Test(dependsOnMethods={"Test_EcobeeProgram_Update"})
     public void Test_EcobeeProgram_Copy(ITestContext context) {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.fieldDescriptorForCopy()),
@@ -215,7 +215,7 @@ public class EcobeeProgramSetupApiControllerTest {
      * Test case is to delete the Ecobee Load Program created by test case Test_EcobeeProgram_Copy and to generate Rest
      * api documentation for delete request.
      */
-    @Test(priority = 7)
+    @Test(dependsOnMethods={"Test_EcobeeProgram_Copy"})
     public void Test_EcobeeCopyProgram_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
@@ -237,7 +237,7 @@ public class EcobeeProgramSetupApiControllerTest {
      * Test case is to delete Load Program created by test case Test_EcobeeProgram_Create and to generate Rest api
      * documentation for delete request.
      */
-    @Test(priority = 8)
+    @Test(dependsOnMethods={"Test_EcobeeProgram_Copy"})
     public void Test_EcobeeProgram_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
@@ -258,7 +258,7 @@ public class EcobeeProgramSetupApiControllerTest {
     /**
      * Test case is to Delete Load group we have created for Load Program.
      */
-    @Test(priority = 9)
+    @Test(dependsOnMethods={"Test_EcobeeProgram_Delete"})
     public void assignedLoadGroup_Delete(ITestContext context) {
         JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\EcobeeProgramAssignedLoadGroupDelete.json",
                                                            "name",
@@ -271,7 +271,7 @@ public class EcobeeProgramSetupApiControllerTest {
     /**
      * Test case is to Delete Constraint which have been created for Load Program.
      */
-    @Test(priority = 10)
+    @Test(dependsOnMethods={"assignedLoadGroup_Delete"})
     public void programConstraint_Delete(ITestContext context) {
         JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\LoadProgramAssignedConstraintDelete.json",
                                                            "name",
