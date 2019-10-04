@@ -80,12 +80,12 @@ public class DirectProgramGearSetupApiControllerTest {
     // Problem: every time a program require new name for assigned Group. So for this
     @SuppressWarnings("unchecked")
     public void assignedLoadGroup_Create() {
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", "documentation\\loadprogram\\DirectProgramAssignedLoadGroup.json");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", "documentation\\loadprogram\\DirectProgramGearAssignedLoadGroup.json");
         Integer groupId = createResponse.path("groupId");
         loadGroupJson = new JSONObject();
         loadGroupJson.put("loadGroupId", groupId);
         loadGroupJson.put("assignedLoadGroupId", groupId);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\DirectProgramAssignedLoadGroup.json");
+        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\DirectProgramGearAssignedLoadGroup.json");
         JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
         loadGroupJson.put("loadGroupName", jsonPath.getString("LM_GROUP_METER_DISCONNECT.name"));
         loadGroupJson.put("loadGroupType", jsonPath.getString("LM_GROUP_METER_DISCONNECT.type"));
@@ -98,11 +98,11 @@ public class DirectProgramGearSetupApiControllerTest {
     @SuppressWarnings("unchecked")
     public void programConstraint_Create() {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint",
-                                                                   "documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
+                                                                   "documentation\\loadprogram\\DirectProgramGearAssignedConstraint.json");
         Integer constraintId = createResponse.path("id");
         constraintJson = new JSONObject();
         constraintJson.put("constraintId", constraintId);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
+        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\DirectProgramGearAssignedConstraint.json");
         JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
         constraintJson.put("constraintName", jsonPath.getString("name"));
     }
@@ -128,7 +128,7 @@ public class DirectProgramGearSetupApiControllerTest {
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
                                                                                .description("When to change field Expected : 'None', 'Duration', 'Priority', 'TriggerOffset'"), };
 
-        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(timeRefreshDescriptor),
+        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeFieldDescriptors(timeRefreshDescriptor),
                                                  programIdDescriptor,
                                                  LoadProgramSetupHelper.buildJSONRequest(constraintJson,
                                                                                          loadGroupJson,
@@ -139,6 +139,44 @@ public class DirectProgramGearSetupApiControllerTest {
         assertTrue("PAO ID should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
         JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\TimeRefresh.json");
+        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
+    }
+
+    @Test
+    public void Test_LoadProgram_SmartCycleGear_Create() {
+        /*-------Smart cycle Field Descriptor-------*/
+
+        FieldDescriptor[] smartCycleDescriptor = new FieldDescriptor[] {
+                fieldWithPath("gears[].fields.noRamp").type(JsonFieldType.BOOLEAN).description("Flag to enable No Ramp"),
+                fieldWithPath("gears[].fields.controlPercent").type(JsonFieldType.NUMBER).description("Control percent. Min Value: 5, Max Value: 100"),
+                fieldWithPath("gears[].fields.cyclePeriodInMinutes").type(JsonFieldType.NUMBER)
+                                                                    .description("Gear cycle period in minutes. Min Value: 1, Max Value : 945"),
+                fieldWithPath("gears[].fields.cycleCountSendType").type(JsonFieldType.STRING)
+                                                                  .description("Cycle count send type. Expected: 'FixedCount', 'CountDown', 'LimitedCountDown'"),
+                fieldWithPath("gears[].fields.maxCycleCount").type(JsonFieldType.NUMBER).description("Maximum cycle count. Min Value: 0, Max Value : 63"),
+                fieldWithPath("gears[].fields.startingPeriodCount").type(JsonFieldType.NUMBER)
+                                                                   .description("Starting period count. Min Value: 1, Max Value : 63"),
+                fieldWithPath("gears[].fields.sendRate").type(JsonFieldType.NUMBER).description("Command Resendend Rate"),
+                fieldWithPath("gears[].fields.stopCommandRepeat").type(JsonFieldType.NUMBER).description("Stop command repeat. Min Value: 0, Max Value : 5"),
+                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING)
+                                                                .description("How to stop control. Expected :'Restore', 'StopCycle'"),
+                fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER)
+                                                                 .description("Group Capacity Reduction. Min Value: 0, Max Value : 100"),
+                fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
+                fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
+                                                                               .description("When to change field Expected : None, Duration, Priority, TriggerOffset"), };
+
+        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeFieldDescriptors(smartCycleDescriptor),
+                                                 programIdDescriptor,
+                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
+                                                                                         loadGroupJson,
+                                                                                         "documentation\\loadprogram\\SmartCycle.json"),
+                                                 "saveLoadProgram");
+
+        paoId = response.path("programId").toString();
+        assertTrue("PAO ID should not be Null", paoId != null);
+        assertTrue("Status code should be 200", response.statusCode() == 200);
+        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\SmartCycle.json");
         LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
     }
 
@@ -161,7 +199,7 @@ public class DirectProgramGearSetupApiControllerTest {
                                                                                .description("When to change field Expected : None, Duration, Priority, TriggerOffset"),
 
         };
-        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(masterCycleDescriptor),
+        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeFieldDescriptors(masterCycleDescriptor),
                                                  programIdDescriptor,
                                                  LoadProgramSetupHelper.buildJSONRequest(constraintJson,
                                                                                          loadGroupJson,
@@ -200,7 +238,7 @@ public class DirectProgramGearSetupApiControllerTest {
                                                                                .description("When to change field Expected : None, Duration, Priority, TriggerOffset"),
 
         };
-        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(trueCycleDescriptor),
+        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeFieldDescriptors(trueCycleDescriptor),
                                                  programIdDescriptor,
                                                  LoadProgramSetupHelper.buildJSONRequest(constraintJson,
                                                                                          loadGroupJson,
@@ -240,7 +278,7 @@ public class DirectProgramGearSetupApiControllerTest {
 
         };
 
-        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(magnitudeCycleDescriptor),
+        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeFieldDescriptors(magnitudeCycleDescriptor),
                                                  programIdDescriptor,
                                                  LoadProgramSetupHelper.buildJSONRequest(constraintJson,
                                                                                          loadGroupJson,
@@ -279,7 +317,7 @@ public class DirectProgramGearSetupApiControllerTest {
                                                                                .description("When to change field Expected : None, Duration, Priority, TriggerOffset"),
 
         };
-        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(targetCycleDescriptor),
+        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeFieldDescriptors(targetCycleDescriptor),
                                                  programIdDescriptor,
                                                  LoadProgramSetupHelper.buildJSONRequest(constraintJson,
                                                                                          loadGroupJson,
@@ -301,7 +339,7 @@ public class DirectProgramGearSetupApiControllerTest {
                 fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER)
                                                                  .description("Group Capacity reduction. Min Value: 0, Max Value: 100"), };
 
-        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(latchingGearDescriptor),
+        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeFieldDescriptors(latchingGearDescriptor),
                                                  programIdDescriptor,
                                                  LoadProgramSetupHelper.buildJSONRequest(constraintJson,
                                                                                          loadGroupJson,
@@ -311,79 +349,6 @@ public class DirectProgramGearSetupApiControllerTest {
         assertTrue("PAO ID should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
         JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\Latching.json");
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
-    }
-
-    @Test
-    public void Test_LoadProgram_ThermostatGear_Create() {
-        /*---------Thermostat Gear Field Descriptor--------- */
-
-        FieldDescriptor[] thermostatGearDescriptor = new FieldDescriptor[] {
-                fieldWithPath("gears[].fields.absoluteOrDelta").type(JsonFieldType.STRING).description("Absolute or Delta."),
-                fieldWithPath("gears[].fields.measureUnit").type(JsonFieldType.STRING).description("Measurement Unit."),
-                fieldWithPath("gears[].fields.isHeatMode").type(JsonFieldType.BOOLEAN).description("Heat Mode."),
-                fieldWithPath("gears[].fields.isCoolMode").type(JsonFieldType.BOOLEAN).description("Cool Mode."),
-                fieldWithPath("gears[].fields.minValue").type(JsonFieldType.NUMBER).description("Min Value."),
-                fieldWithPath("gears[].fields.maxValue").type(JsonFieldType.NUMBER).description("Max Value"),
-                fieldWithPath("gears[].fields.valueB").type(JsonFieldType.NUMBER).description("Value B for absoluteOrDelta."),
-                fieldWithPath("gears[].fields.valueD").type(JsonFieldType.NUMBER).description("Value D for absoluteOrDelta."),
-                fieldWithPath("gears[].fields.valueF").type(JsonFieldType.NUMBER).description("Value F for absoluteOrDelta."),
-                fieldWithPath("gears[].fields.random").type(JsonFieldType.NUMBER).description("Random."),
-                fieldWithPath("gears[].fields.valueTa").type(JsonFieldType.NUMBER).description("Value Ta for absoluteOrDelta."),
-                fieldWithPath("gears[].fields.valueTb").type(JsonFieldType.NUMBER).description("Value Tb for absoluteOrDelta."),
-                fieldWithPath("gears[].fields.valueTc").type(JsonFieldType.NUMBER).description("Value Tc for absoluteOrDelta."),
-                fieldWithPath("gears[].fields.valueTd").type(JsonFieldType.NUMBER).description("Value Td for absoluteOrDelta."),
-                fieldWithPath("gears[].fields.valueTe").type(JsonFieldType.NUMBER).description("Value Te for absoluteOrDelta."),
-                fieldWithPath("gears[].fields.valueTf").type(JsonFieldType.NUMBER).description("Value Tf for absoluteOrDelta."),
-                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).description("How to stop control"),
-                fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER).description("Group capacity reduction"),
-                fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
-                fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
-                                                                               .description("When to change field. Expected : None, Duration, Priority, TriggerOffset"), };
-
-        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(thermostatGearDescriptor),
-                                                 programIdDescriptor,
-                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
-                                                                                         loadGroupJson,
-                                                                                         "documentation\\loadprogram\\ThermostatRamping.json"),
-                                                 "saveLoadProgram");
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\ThermostatRamping.json");
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
-    }
-
-    @Test
-    public void Test_LoadProgram_SimpleThermostatGear_Create() {
-        /*---------SimpleThermostat Gear Field Descriptor--------- */
-
-        FieldDescriptor[] simpleThermostatGearDescriptor = new FieldDescriptor[] {
-                fieldWithPath("gears[].fields.mode").type(JsonFieldType.STRING).description("Mode."),
-                fieldWithPath("gears[].fields.randomStartTimeInMinutes").type(JsonFieldType.NUMBER)
-                                                                        .description("Random Start Time. Min Value: 0, Max Value: 120"),
-                fieldWithPath("gears[].fields.preOpTemp").type(JsonFieldType.NUMBER).description("PreOp Temp. Min Value: -20, Max Value: 20"),
-                fieldWithPath("gears[].fields.preOpTimeInMinutes").type(JsonFieldType.NUMBER).description("PreOp Time. Min Value: 0, Max Value: 300"),
-                fieldWithPath("gears[].fields.preOpHoldInMinutes").type(JsonFieldType.NUMBER).description("PreOp Hold. Min Value: 0, Max Value: 300"),
-                fieldWithPath("gears[].fields.rampPerHour").type(JsonFieldType.NUMBER).description("Ramp Per Hour. Min Value: -9.9, Max Value: 9.9"),
-                fieldWithPath("gears[].fields.max").type(JsonFieldType.NUMBER).description("Max. Min Value: 0, Max Value: 20"),
-                fieldWithPath("gears[].fields.rampOutTimeInMinutes").type(JsonFieldType.NUMBER).description("Ramp Out Time. Min Value: 0, Max Value: 300"),
-                fieldWithPath("gears[].fields.maxRuntimeInMinutes").type(JsonFieldType.NUMBER).description("Max Runtime. Min Value: 240, Max Value: 1439"),
-                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).description("How to stop control"),
-                fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
-                fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
-                                                                               .description("When to change field. Expected : None, Duration, Priority, TriggerOffset"), };
-
-        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(simpleThermostatGearDescriptor),
-                                                 programIdDescriptor,
-                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
-                                                                                         loadGroupJson,
-                                                                                         "documentation\\loadprogram\\SimpleThermostatRamping.json"),
-                                                 "saveLoadProgram");
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\SimpleThermostatRamping.json");
         LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
     }
 
@@ -402,7 +367,7 @@ public class DirectProgramGearSetupApiControllerTest {
                                                                                .description("When to change field Expected : None, Duration, Priority, TriggerOffset"),
 
         };
-        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(beatThePeakGearDescriptor),
+        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeFieldDescriptors(beatThePeakGearDescriptor),
                                                  programIdDescriptor,
                                                  LoadProgramSetupHelper.buildJSONRequest(constraintJson,
                                                                                          loadGroupJson,
@@ -427,7 +392,7 @@ public class DirectProgramGearSetupApiControllerTest {
 
         };
 
-        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(noControlGearDescriptor),
+        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeFieldDescriptors(noControlGearDescriptor),
                                                  programIdDescriptor,
                                                  LoadProgramSetupHelper.buildJSONRequest(constraintJson,
                                                                                          loadGroupJson,

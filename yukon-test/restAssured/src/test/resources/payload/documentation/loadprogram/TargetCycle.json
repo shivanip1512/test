@@ -9,7 +9,7 @@
     "restoreOffset": 22,
     "gears": [
         {
-            "gearName": "GearTargetCycle",
+                        "gearName": "GearTargetCycle",
             "gearNumber": 7,
             "controlMethod": "TargetCycle",
             "fields": {
