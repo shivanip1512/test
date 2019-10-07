@@ -1,0 +1,29 @@
+{
+    "name": "Program constraint",
+    "seasonSchedule": {
+        "id": 0,
+        "name": null
+    },
+    "maxActivateSeconds": 0,
+    "maxDailyOps": 6,
+    "minActivateSeconds": 0,
+    "minRestartSeconds": 0,
+    "daySelection": [
+        "SUNDAY",
+        "MONDAY",
+        "TUESDAY",
+        "WEDNESDAY",
+        "THURSDAY",
+        "FRIDAY",
+        "SATURDAY"
+    ],
+    "holidaySchedule": {
+        "id": 1,
+        "name": "holidayschedule"
+    },
+    "holidayUsage": "EXCLUDE",
+    "maxHoursDaily": 0,
+    "maxHoursMonthly": 0,
+    "maxHoursAnnually": 0,
+    "maxHoursSeasonal": 0
+}
