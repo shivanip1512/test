@@ -98,6 +98,22 @@ yukon.ami.meterProgramming.summary = (function () {
                         }
                     });
                 });
+                
+                $(document).on('click', '.js-accept', function () {
+                    var id = $(this).data('id'),
+                        guid = $(this).data('guid');
+                    $.ajax({
+                        type: 'POST',
+                        data: {
+                            guid: guid
+                        },
+                        url: yukon.url('/amr/meterProgramming/' + id + '/acceptProgramming')
+                    }).done(function(data) {
+                        if (data.successMsg) {
+                            yukon.ui.alertSuccess(data.successMsg);
+                        }
+                    });
+                });
 
                 _initialized = true;
 
