@@ -894,11 +894,9 @@ public class InventoryDaoImpl implements InventoryDao {
         selectData.append("SELECT IB.InventoryId,");
         selectData.append("IB.DeviceId,");
         selectData.append("LMHB.ManufacturerSerialNumber,");
-        selectData.append("MHB.MeterNumber,");
         selectData.append("MHB.MeterTypeID,");
-        selectData.append("DMG.MeterNumber,");
         selectData.append("YPO.Type,");
-        selectData.append("COALESCE(MHB.MeterNumber, DMG.MeterNumber) as CombinedMeterNumber,");    
+        selectData.append("COALESCE(MHB.MeterNumber, DMG.MeterNumber) as MeterNumber,");    
         selectData.append("IM.EnergyCompanyId,");
         selectData.append("EC.Name EnergyCompanyName,");
         selectData.append("LMHB.LMHardwareTypeID,");
@@ -991,7 +989,7 @@ public class InventoryDaoImpl implements InventoryDao {
                     result.setPhoneNumber(rs.getString("Notification"));
                 }
                 if (identifier.getHardwareType().isMeter()) {
-                    result.setSerialNumber(rs.getString("CombinedMeterNumber"));
+                    result.setSerialNumber(rs.getString("MeterNumber"));
                     result.setPaoType(rs.getEnum("Type", PaoType.class));
                 } else {
                     result.setSerialNumber(rs.getString("ManufacturerSerialNumber"));
