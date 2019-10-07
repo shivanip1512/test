@@ -120,6 +120,13 @@ WHERE RolePropertyID = -20164;
 INSERT INTO DBUpdates VALUES ('YUK-20645', '7.4.0', SYSDATE);
 /* @end YUK-20645 */
 
+/* @start YUK-20756 */
+DELETE FROM EnergyCompanySetting
+WHERE Name LIKE 'METER_MCT_BASE_DESIGNATION';
+
+INSERT INTO DBUpdates VALUES ('YUK-20756', '7.4.0', SYSDATE);
+/* @end YUK-20756 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
