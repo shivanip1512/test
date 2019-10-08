@@ -2468,14 +2468,14 @@
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
-                <modifier>Min</modifier>
+                <modifier>Daily Min</modifier>
             </modifiers>
         </point>
         <point name="Daily Max Volts">
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
-                <modifier>Max</modifier>
+                <modifier>Daily Max</modifier>
             </modifiers>
         </point>
     </pointGroup>
