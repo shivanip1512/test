@@ -34,7 +34,6 @@ public enum EnergyCompanySettingType implements DisplayableEnum {
     DEFAULT_TEMPERATURE_UNIT(HARDWARE,  InputTypeFactory.enumType(TemperatureUnit.class), TemperatureUnit.FAHRENHEIT),
     INVENTORY_CHECKING(HARDWARE, booleanType(), true),
     INVENTORY_CHECKING_CREATE(HARDWARE, booleanType(), true),
-    METER_MCT_BASE_DESIGNATION(HARDWARE, InputTypeFactory.enumType(MeteringType.class), MeteringType.stars),
     SERIAL_NUMBER_VALIDATION(HARDWARE, InputTypeFactory.enumType(SerialNumberValidation.class), SerialNumberValidation.NUMERIC),
     SUPPRESS_IN_OUT_SERVICE_MESSAGES(HARDWARE, booleanType(), false),
     TRACK_HARDWARE_ADDRESSING(HARDWARE, booleanType(), false),

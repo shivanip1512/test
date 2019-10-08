@@ -20,18 +20,13 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
-import com.cannontech.stars.energyCompany.MeteringType;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.model.AssetReportDevice;
 import com.cannontech.web.stars.dr.operator.inventory.service.AssetReportService;
 
 public class AssetReportServiceImpl implements AssetReportService {
     
-    private static final EnergyCompanySettingType meteringType = EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION;
     private static final Logger log = YukonLogManager.getLogger(AssetReportServiceImpl.class);
     
-    @Autowired private EnergyCompanySettingDao ecSettingsDao;
     @Autowired private InventoryIdentifierMapper identifierMapper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
@@ -47,9 +42,7 @@ public class AssetReportServiceImpl implements AssetReportService {
 
         List<AssetReportDevice> devices = new ArrayList<>();
 
-        boolean starsMetering = needStarsMetering(ecId);
-
-        chunkyTemplate.queryInto(getSqlFragmentGenerator(starsMetering, ecId), assetIds,
+        chunkyTemplate.queryInto(getSqlFragmentGenerator(ecId), assetIds,
             getYukonRowMapper(null, new AtomicBoolean(), 0), devices);
 
         return devices;
@@ -58,14 +51,8 @@ public class AssetReportServiceImpl implements AssetReportService {
     @Override
     public void queueAssetReportDevices(int ecId, List<Integer> assetIds, BlockingQueue<AssetReportDevice> queue,
             AtomicBoolean isCompleted) {
-        boolean starsMetering = needStarsMetering(ecId);
-        chunkyTemplate.query(getSqlFragmentGenerator(starsMetering, ecId), assetIds,
+        chunkyTemplate.query(getSqlFragmentGenerator(ecId), assetIds,
             getYukonRowMapper(queue, isCompleted, assetIds.size()));
-    }
-
-    private boolean needStarsMetering(int ecId) {
-        boolean starsMetering = ecSettingsDao.getEnum(meteringType, MeteringType.class, ecId) == MeteringType.stars;
-        return starsMetering;
     }
 
     private YukonRowMapper<AssetReportDevice> getYukonRowMapper(BlockingQueue<AssetReportDevice> queue,
@@ -111,7 +98,7 @@ public class AssetReportServiceImpl implements AssetReportService {
         };
     }
 
-    private SqlFragmentGenerator<Integer> getSqlFragmentGenerator(boolean starsMetering, int ecId) {
+    private SqlFragmentGenerator<Integer> getSqlFragmentGenerator(int ecId) {
         return new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
