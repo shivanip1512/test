@@ -44,6 +44,8 @@ import com.cannontech.common.dr.setup.ControlAreaTriggerType;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -52,10 +54,12 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 @Controller
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.RESTRICTED)
 @RequestMapping("/setup/controlArea")
 public class ControlAreaSetupController {
     
@@ -70,6 +74,7 @@ public class ControlAreaSetupController {
     @Autowired private ControlAreaSetupControllerHelper controllerHelper;
 
     @GetMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
         ControlArea controlArea = new ControlArea();
@@ -104,6 +109,7 @@ public class ControlAreaSetupController {
     }
     
     @GetMapping("/{id}/edit")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaRetrieveUrl + id);
@@ -131,6 +137,7 @@ public class ControlAreaSetupController {
     }
     
     @PostMapping("/save")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String save(ModelMap model, @ModelAttribute ControlArea controlArea, @RequestParam List<String> triggerIds, BindingResult result, YukonUserContext userContext,
             FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
@@ -187,6 +194,7 @@ public class ControlAreaSetupController {
     }
     
     @DeleteMapping("/{id}/delete")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public String delete(@PathVariable int id, @ModelAttribute LMDelete lmDelete, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request) {
 
@@ -266,6 +274,7 @@ public class ControlAreaSetupController {
     }
 
     @GetMapping("/renderTrigger")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String addTrigger(ModelMap model, @ModelAttribute ControlAreaTrigger controlAreaTrigger) {
         model.addAttribute("mode", PageEditMode.CREATE);
         controllerHelper.buildTriggerModelMap(model, controlAreaTrigger);
@@ -291,6 +300,7 @@ public class ControlAreaSetupController {
     }
 
     @PostMapping("/trigger/save")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public @ResponseBody Map<String, String> saveTrigger(ModelMap model, @RequestParam String id,
             @ModelAttribute ControlAreaTrigger controlAreaTrigger) {
         Map<String, String> triggerInfo = new HashMap<>();
@@ -313,6 +323,7 @@ public class ControlAreaSetupController {
     }
 
     @GetMapping("/getNormalState/{pointId}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public @ResponseBody Map<String, List<LMDto>> getNormalState(@PathVariable int pointId,
             YukonUserContext userContext, HttpServletRequest request) {
         List<LMDto> normalStates = retrieveNormalState(pointId, userContext, request);
@@ -335,6 +346,7 @@ public class ControlAreaSetupController {
     }
 
     @DeleteMapping("/trigger/remove/{triggerId}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public void removeTrigger(@PathVariable String triggerId) {
         controlAreaTriggerCache.invalidate(triggerId);
     }
