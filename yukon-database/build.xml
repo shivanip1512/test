@@ -41,18 +41,6 @@
         <replace file="tempDropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
         <echo message="${databaseName}"/>
 
-        <echo message="Checking out database snapshot folder" />
-    	
-    	<exec executable="svn">
-        	<arg value="checkout" />
-            <arg value="${env.SVN_BASE_URL}${dbSnapshot}"/>
-    		<arg value="${dbSnapshotTempDir}" />
-        	<arg value="--username" />
-        	<arg value="${svn.username}" />
-        	<arg value="--password" />
-        	<arg value="${svn.password}" />
-        </exec>
-
         <!-- Create sql server databse and user-->
         <sql
             driver="net.sourceforge.jtds.jdbc.Driver"
@@ -118,23 +106,12 @@
         </sql>
 
         <echo message="Latest diff" />
-        <exec executable="svn" dir="${dbSnapshotTempDir}">
+        <exec executable="git">
             <arg value="diff"/>
+            <arg path = "../yukon-client/common/src/com/cannontech/database/snapshot"/>
         </exec>
-    	
-        <echo message="Checking in sql server database snapshot" />
-        <exec executable="svn" dir="${dbSnapshotTempDir}">
-        	<arg value="commit"/>
-        	<arg value="mssql.xml"/>
-            <arg value="-m" />
-        	<arg value="Checking in the latest database snapshot"/>
-        	<arg value="--username" />
-        	<arg value="${svn.username}" />
-        	<arg value="--password" />
-        	<arg value="${svn.password}" />
-        </exec>
-    	
-    	<echo message="Snapshot complete and checked in" />
+
+        <echo message="Snapshot complete and checked in" />
     </target>
     
     <target name="oracleCreationScriptXMLFile" depends="version_db_files">
