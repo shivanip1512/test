@@ -319,7 +319,7 @@
     <!-- METER PROGRAMMING SOURCES -->
     <entry key="yukon.web.modules.amr.meterProgramming.source.YUKON">Yukon programmed</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.source.OPTICAL">Optically programmed</entry>
-    <entry key="yukon.web.modules.amr.meterProgramming.source.NEW">Newly Programmed</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.source.NEW">Unknown program</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.source.UNPROGRAMMED">Unprogrammed</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.source.OLD_FIRMWARE">Old Firmware</entry>
     
