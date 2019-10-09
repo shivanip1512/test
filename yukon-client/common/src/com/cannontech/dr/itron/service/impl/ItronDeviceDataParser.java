@@ -2,13 +2,14 @@ package com.cannontech.dr.itron.service.impl;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.EmptyImportFileException;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.DeviceDao;
@@ -128,39 +130,47 @@ public class ItronDeviceDataParser {
         ItronDataCategory category = ItronDataCategory.valueOf(rowData[1]);
         String eventTime = rowData[3];//ISO 8601 YYYY-MM-DD
         String source = rowData[5];//Mac address
-        String[] text = rowData[9].split(",");
+        String[] text = rowData[9].split(",");//Tokenized CSV text
         long eventId = 0;
         
         switch(category) {
         case EVENT_CAT_NIC_EVENT:
             byte[] decoded = null;
             for(int i = 0; i < text.length; i++) {
-                String[] tuple = text[i].split(":");
-                if(tuple[0].trim().toLowerCase().equals("log event id")) {
+                Map.Entry<String, String> entry = getEntry(text[i]);
+                if (entry.getKey().equals("log event id")) {
                     //sample: text = log event ID: 32907 (0x808b)
                     //tuple (log event ID, 32907 (0x808b)
-                    eventId = Long.parseLong(tuple[1].trim().split(" ")[0]);
-                }
-                else if(tuple[0].trim().toLowerCase().equals("payload")) {
+                    eventId = Long.parseLong(entry.getValue().trim().split(" ")[0]);
+                } else if (entry.getKey().equals("payload")) {
                     //sample: payload: data(0500000000)
                     //sample: payload: Event ID (5250009) data(00501BD900)
                     //tuple (payload, magicString data(0500000000);
-                    String[] second = tuple[1].split("data\\(");
-                    String hexString = second[1].trim().replaceAll("[^0-9a-fA-F]+", "");
                     try {
-                        decoded = Hex.decodeHex(hexString.toCharArray());
-                    } catch (DecoderException e) {
-                        log.warn("caught exception in generatePointData", e);
+                        String[] data = entry.getValue().split("data\\(");
+                        if (data.length >= 2) {
+                            String hexString = data[1].trim().replaceAll("[^0-9a-fA-F]+", "");
+                            decoded = Hex.decodeHex(hexString.toCharArray());
+                        } else {
+                            log.trace("Ignoring payload with no data.");
+                        }
+                    } catch (Exception e) {
+                        if (log.isTraceEnabled()) {
+                            log.trace("Caught exception in generatePointData", e);
+                        } else {
+                            log.warn("Caught exception in generatePointData: " + e.getMessage() + ". Enable TRACE logging for details.");
+                        }
                     }
                 }
             }
             
-            ItronDataEventType event = ItronDataEventType.getFromHex(eventId);//This could be null if the mapping doesn't exist.
+            ItronDataEventType event = ItronDataEventType.getFromHex(eventId); //This could be null if the mapping doesn't exist.
             if (event != null) {
                 int deviceId = deviceDao.getDeviceIdFromMacAddress(source);
                 LiteYukonPAObject lpo = serverDatabaseCache.getAllPaosMap().get(deviceId);
                 //building the point
-                LitePoint lp = attributeService.createAndFindPointForAttribute(lpo, event.getAttribute(decoded));
+                BuiltInAttribute attribute = event.getAttribute(decoded);
+                LitePoint lp = attributeService.createAndFindPointForAttribute(lpo, attribute);
                 double currentValue = dataSource.getPointValue(lp.getPointID()).getValue();
                 Optional<PointData> optionalPointData = event.getPointData(decoded, currentValue, eventTime , lp);
                 final byte[]  decodedFinal = decoded;
@@ -189,33 +199,33 @@ public class ItronDeviceDataParser {
                     pointData.setTagsPointMustArchive(true);
                     pointValues.put(lpo.getPaoIdentifier(), pointData);
                 });
+            } else if (log.isTraceEnabled()){
+                log.trace("No mapping for event ID " + eventId);
             }
+            break;
+        case EVENT_CAT_PROGRAM_EVENTS:
+            //This event type is sent from Itron, but we are not parsing it because we can get the same information from EVENT_CAT_NIC_EVENTs
+            break;
         default:
+            log.trace("Unknown Event Category: " + rowData[1]);
             break;
         }
         
-//        This event type is sent from Itron, but we are not parsing it because we can get the same information from EVENT_CAT_NIC_EVENTs
-      /*  case EVENT_CAT_PROGRAM_EVENTS:
-            for(int i = 0; i < text.length; i+=2) {
-                String[] tuple = text[i].split(":");
-                if(tuple[0].trim().toLowerCase().startsWith("Load Control Event")) {
-                    //sample: Load Control Event status update - Event: 688
-                    //tuple (log event ID, 32907 (0x808b)
-                    eventId = Long.parseLong(tuple[1].trim().split(" ")[0]);
-                }
-                else if(tuple[0].trim().toLowerCase().equals("status")) {
-                    //sample: Status: Event Completed. 
-                    //tuple (status, Event Completed.
-                    String value = tuple[1];
-                }
-            }
-            break;
-        }*/
-        
-        
         return pointValues;
     }
-
+    
+    private Map.Entry<String, String> getEntry(String text) {
+        String[] tuple = text.split(":");
+        String key = tuple[0].trim().toLowerCase();
+        String value = null;
+        if (tuple.length >= 2) {
+            value = tuple[1];
+        } else {
+            log.trace("Parsed entry with no value.");
+        }
+        return new AbstractMap.SimpleEntry<>(key, value);
+    }
+    
     /**
      * Get persisted itron record Id
      */
