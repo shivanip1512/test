@@ -28900,18 +28900,18 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DEVV_DEV1</i__foreignKeyName>
+            <i__foreignKeyName>FK_DEVV_DEV2</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>RECEIVERID</i__columnName>
+            <i__columnName>TRANSMITTERID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
             <i__foreignTableName>DEVICE</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DEVV_DEV2</i__foreignKeyName>
+            <i__foreignKeyName>FK_DEVV_DEV1</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>TRANSMITTERID</i__columnName>
+            <i__columnName>RECEIVERID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
             <i__foreignTableName>DEVICE</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
