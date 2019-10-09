@@ -1,0 +1,9 @@
+{
+    "LM_GROUP_ECOBEE": {
+        "name": "EcobeeGroup",
+        "type": "LM_GROUP_ECOBEE",
+        "kWCapacity": 10.0,
+        "disableGroup": true,
+        "disableControl": false
+    }
+}

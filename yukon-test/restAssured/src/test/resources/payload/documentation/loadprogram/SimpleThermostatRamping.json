@@ -1,6 +1,6 @@
 {
     
-    "name": "Direct_Program_Create",
+    "name": "TestDirectProgram_SimpleThermostatGear",
     "type": "LM_DIRECT_PROGRAM",
     "operationalState": "Automatic",
     "constraint": {
@@ -11,20 +11,20 @@
     "restoreOffset": 2,
     "gears": [
         {
-            "gearName": "Test343",
+            "gearName": "simplethermostat",
             "gearNumber": 1,
-            "controlMethod": "SmartCycle",
+            "controlMethod": "SimpleThermostatRamping",
             "fields": {
-                "noRamp": false,
-                "controlPercent": 50,
-                "cyclePeriodInMinutes": 30,
-                "cycleCountSendType": "FixedCount",
-                "maxCycleCount": 0,
-                "startingPeriodCount": 8,
-                "sendRate": 3600,
-                "stopCommandRepeat": 0,
-                "howToStopControl": "StopCycle",
-                "capacityReduction": 100,
+                "mode": "COOL",
+                "randomStartTimeInMinutes": 60,
+                "preOpTemp": 1,
+                "preOpTimeInMinutes": 120,
+                "preOpHoldInMinutes": 120,
+                "rampPerHour": 0.2,
+                "max": 3,
+                "rampOutTimeInMinutes": 180,
+                "maxRuntimeInMinutes": 480,
+                "howToStopControl": "TimeIn",
                 "whenToChangeFields": {
                     "whenToChange": "None"
                 }

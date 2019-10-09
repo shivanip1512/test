@@ -1,52 +1,45 @@
 {
-    
-    "name": "Direct_Program_Create",
-    "type": "LM_DIRECT_PROGRAM",
+    "name": "TestEcobee",
+    "type": "LM_ECOBEE_PROGRAM",
     "operationalState": "Automatic",
     "constraint": {
         "constraintId": 0
-        
     },
-    "triggerOffset": 1,
-    "restoreOffset": 2,
+    "triggerOffset": 1.0,
+    "restoreOffset": 2.0,
     "gears": [
         {
-            "gearName": "Test343",
+            "gearName": "Ecobee Gear",
             "gearNumber": 1,
-            "controlMethod": "SmartCycle",
+            "controlMethod": "EcobeeCycle",
             "fields": {
-                "noRamp": false,
+                "mandatory": true,
+                "rampIn": true,
+                "rampOut": true,
                 "controlPercent": 50,
-                "cyclePeriodInMinutes": 30,
-                "cycleCountSendType": "FixedCount",
-                "maxCycleCount": 0,
-                "startingPeriodCount": 8,
-                "sendRate": 3600,
-                "stopCommandRepeat": 0,
-                "howToStopControl": "StopCycle",
+                "howToStopControl": "Restore",
                 "capacityReduction": 100,
                 "whenToChangeFields": {
                     "whenToChange": "None"
                 }
             }
         }
-
     ],
     "controlWindow": {
         "controlWindowOne": {
-            "availableStartTimeInMinutes": 0,
-            "availableStopTimeInMinutes": 0
+            "availableStartTimeInMinutes": 120,
+            "availableStopTimeInMinutes": 300
         },
         "controlWindowTwo": {
             "availableStartTimeInMinutes": 0,
-            "availableStopTimeInMinutes": 0
+            "availableStopTimeInMinutes": 300
         }
     },
     "assignedGroups": [
         {
-            "groupId": 9425,
-            "groupName": "disconnect",
-            "type": "LM_GROUP_METER_DISCONNECT"
+            "groupId": 7446,
+            "groupName": "4545",
+            "type": "LM_GROUP_ECOBEE"
         }
     ],
     "notification": {
