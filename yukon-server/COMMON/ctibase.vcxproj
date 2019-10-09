@@ -605,6 +605,7 @@
     <ClInclude Include="include\pointtypes.h" />
     <ClInclude Include="include\PORTER.H" />
     <ClInclude Include="include\precompiled.h" />
+    <ClInclude Include="include\preprocessor_helper.h" />
     <ClInclude Include="include\queue.h" />
     <ClInclude Include="include\QUEUES.H" />
     <ClInclude Include="include\random_generator.h" />
