@@ -1,6 +1,6 @@
 package com.cannontech.dr.itron.service;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,20 +53,7 @@ public class ItronDeviceDataParserTest {
     
     @Test
     public void validateRowParsingForEventStarted() {
-        String[] rowData = new String[10];
-        rowData[0] = "1";
-        rowData[1] = "EVENT_CAT_NIC_EVENT";
-        rowData[3] = "2018-04-25T10:27:53.117-0700";
-        rowData[5] = "11:22:33:44:55:66:66:77";
-        rowData[9] = "type: 0, log event ID: 32782 (0x800E) - Vendor-specific or Unknown, payload:  data(0000000000)";
-        
-        LiteYukonPAObject lpo = new LiteYukonPAObject(1, "pao1", 
-                                                      PaoCategory.DEVICE, 
-                                                      PaoClass.ITRON, 
-                                                      PaoType.LCR6600S, 
-                                                      "", "");
-        
-        setupMocks(lpo, BuiltInAttribute.CONTROL_STATUS);
+        String[] rowData = rowData("type: 0, log event ID: 32782 (0x800E) - Vendor-specific or Unknown, payload:  data(0000000000)");
 
         RecentEventParticipationService recentEventParticipationService = EasyMock.createMock(RecentEventParticipationService.class);
         recentEventParticipationService.updateDeviceControlEvent(EasyMock.anyInt(), EasyMock.anyInt(), EasyMock.anyObject(), EasyMock.anyObject());
@@ -74,161 +61,95 @@ public class ItronDeviceDataParserTest {
         EasyMock.replay(recentEventParticipationService);
         ReflectionTestUtils.setField(parser, "recentEventParticipationService", recentEventParticipationService);
         
-        Multimap<PaoIdentifier, PointData> results = parser.generatePointData(rowData);
-        Collection<PointData> data = results.get(lpo.getPaoIdentifier());
-        Assert.assertEquals(1, data.size());
-        PointData pointData = (PointData) results.get(lpo.getPaoIdentifier()).toArray()[0];
-        Assert.assertEquals(1, pointData.getValue(), 0.1);
+        Collection<PointData> data = parseRow(BuiltInAttribute.CONTROL_STATUS, rowData);
+        assertOnlyEntryEquals(data, 1);
 
     }
     
     @Test
     public void validateRowParsingForRelayNumberFinding() {
-        String[] rowData = new String[10];
-        rowData[0] = "1";
-        rowData[1] = "EVENT_CAT_NIC_EVENT";
-        rowData[3] = "2018-04-25T10:27:53.117-0700";
-        rowData[5] = "11:22:33:44:55:66:66:77";
-        rowData[9] = "type: 0, log event ID: 32792 (0x8018) - Vendor-specific or Unknown, payload:  data(0300000000)";
-        
-        LiteYukonPAObject lpo = new LiteYukonPAObject(1, "pao1", 
-                                                      PaoCategory.DEVICE, 
-                                                      PaoClass.ITRON, 
-                                                      PaoType.LCR6600S, 
-                                                      "", "");
-        
-        setupMocks(lpo, BuiltInAttribute.RELAY_3_SHED_STATUS);
-
-        Multimap<PaoIdentifier, PointData> results = parser.generatePointData(rowData);
-        Collection<PointData> data = results.get(lpo.getPaoIdentifier());
-        Assert.assertEquals(1, data.size());
-        PointData pointData = (PointData) results.get(lpo.getPaoIdentifier()).toArray()[0];
-        Assert.assertEquals(1, pointData.getValue(), 0.1);
-
+        String[] rowData = rowData("type: 0, log event ID: 32792 (0x8018) - Vendor-specific or Unknown, payload:  data(0300000000)");
+        Collection<PointData> data = parseRow(BuiltInAttribute.RELAY_3_SHED_STATUS, rowData);
+        assertOnlyEntryEquals(data, 1);
     }
     
     @Test
     public void validateRowParsingForPayloadValuedEvent() {
-        String[] rowData = new String[10];
-        rowData[0] = "1";
-        rowData[1] = "EVENT_CAT_NIC_EVENT";
-        rowData[3] = "2018-04-25T10:27:53.117-0700";
-        rowData[5] = "11:22:33:44:55:66:66:77";
-        rowData[9] = "type: 0, log event ID: 32898 (0x8082) - Vendor-specific or Unknown, payload:  data(2213E24400)";
-        
-        LiteYukonPAObject lpo = new LiteYukonPAObject(1, "pao1", 
-                                                      PaoCategory.DEVICE, 
-                                                      PaoClass.ITRON, 
-                                                      PaoType.LCR6600S, 
-                                                      "", "");
-        
-        setupMocks(lpo, BuiltInAttribute.TIME_SYNC);
-
-        Multimap<PaoIdentifier, PointData> results = parser.generatePointData(rowData);
-        Collection<PointData> data = results.get(lpo.getPaoIdentifier());
+        String[] rowData = rowData("type: 0, log event ID: 32898 (0x8082) - Vendor-specific or Unknown, payload:  data(2213E24400)");
+        Collection<PointData> data = parseRow(BuiltInAttribute.TIME_SYNC, rowData);
         Assert.assertEquals(1, data.size());
-        PointData pointData = (PointData) results.get(lpo.getPaoIdentifier()).toArray()[0];
+        PointData pointData = (PointData) data.toArray()[0];
         double value = pointData.getValue();
         Assert.assertEquals(571728452, value, .1);
     }
     
     @Test
     public void validateRowParsingForIncrementalEvent() {
-        String[] rowData = new String[10];
-        rowData[0] = "1";
-        rowData[1] = "EVENT_CAT_NIC_EVENT";
-        rowData[3] = "2018-04-25T10:27:53.117-0700";
-        rowData[5] = "11:22:33:44:55:66:66:77";
-        rowData[9] = "type: 0, log event ID: 32768 (0x8000) - Vendor-specific or Unknown, payload:  data(0000000000)";
-        
-        LiteYukonPAObject lpo = new LiteYukonPAObject(1, "pao1", 
-                                                      PaoCategory.DEVICE, 
-                                                      PaoClass.ITRON, 
-                                                      PaoType.LCR6600S, 
-                                                      "", "");
-        
-        setupMocks(lpo, BuiltInAttribute.BLINK_COUNT);
-        
-        Multimap<PaoIdentifier, PointData> results = parser.generatePointData(rowData);
-        Collection<PointData> data = results.get(lpo.getPaoIdentifier());
-        Assert.assertEquals(1, data.size());
-        PointData pointData = (PointData) results.get(lpo.getPaoIdentifier()).toArray()[0];
-        Assert.assertEquals(1, pointData.getValue(), 0.1);
-
+        String[] rowData = rowData("type: 0, log event ID: 32768 (0x8000) - Vendor-specific or Unknown, payload:  data(0000000000)");
+        Collection<PointData> data = parseRow(BuiltInAttribute.BLINK_COUNT, rowData);
+        assertOnlyEntryEquals(data, 1);
     }
     
     @Test
     public void validateRowParsingForTwoPartVoltageMin() {
-        String[] rowData = new String[10];
-        rowData[0] = "1";
-        rowData[1] = "EVENT_CAT_NIC_EVENT";
-        rowData[3] = "2018-04-25T10:27:53.117-0700";
-        rowData[5] = "11:22:33:44:55:66:66:77";
-        rowData[9] = "type: 0, log event ID: 32924 (0x809C) - Vendor-specific or Unknown, payload:  data(0002000000)";
-        
-        LiteYukonPAObject lpo = new LiteYukonPAObject(1, "pao1", 
-                                                      PaoCategory.DEVICE, 
-                                                      PaoClass.ITRON, 
-                                                      PaoType.LCR6600S, 
-                                                      "", "");
-        
-        setupMocks(lpo, BuiltInAttribute.MINIMUM_VOLTAGE);
-
-        Multimap<PaoIdentifier, PointData> results = parser.generatePointData(rowData);
-        Collection<PointData> data = results.get(lpo.getPaoIdentifier());
+        String[] rowData = rowData("type: 0, log event ID: 32924 (0x809C) - Vendor-specific or Unknown, payload:  data(0002000000)");
+        Collection<PointData> data = parseRow(BuiltInAttribute.MINIMUM_VOLTAGE, rowData);
         Assert.assertEquals(0, data.size());
         
-        String[] rowData2 = new String[10];
-        rowData2[0] = "1";
-        rowData2[1] = "EVENT_CAT_NIC_EVENT";
-        rowData2[3] = "2018-04-25T10:27:53.117-0700";
-        rowData2[5] = "11:22:33:44:55:66:66:77";
-        rowData2[9] = "type: 0, log event ID: 32926 (0x809E) - Vendor-specific or Unknown, payload:  data(2213E24400)";
-        
-        setupMocks(lpo, BuiltInAttribute.MINIMUM_VOLTAGE);
-
-        results = parser.generatePointData(rowData2);
-        data = results.get(lpo.getPaoIdentifier());
-        Assert.assertEquals(1, data.size());
-        PointData pointData = (PointData) results.get(lpo.getPaoIdentifier()).toArray()[0];
-        Assert.assertEquals(2, pointData.getValue(), 0.1);
+        String[] rowData2 = rowData("type: 0, log event ID: 32926 (0x809E) - Vendor-specific or Unknown, payload:  data(2213E24400)");
+        data = parseRow(BuiltInAttribute.MINIMUM_VOLTAGE, rowData2);
+        assertOnlyEntryEquals(data, 2);
     }
 
     @Test
     public void validateRowParsingForTwoPartVoltageMax() {
+        String[] rowData = rowData("type: 0, log event ID: 32923 (0x809B) - Vendor-specific or Unknown, payload:  data(0002000000)");
+        Collection<PointData> data = parseRow(BuiltInAttribute.MAXIMUM_VOLTAGE, rowData);
+        Assert.assertEquals(0, data.size());
+        
+        String[] rowData2 = rowData("type: 0, log event ID: 32927 (0x809F) - Vendor-specific or Unknown, payload:  data(2213E24400)");
+        data = parseRow(BuiltInAttribute.MAXIMUM_VOLTAGE, rowData2);
+        assertOnlyEntryEquals(data, 2);
+    }
+    
+    @Test
+    public void validateRowParsingEmptyPayload() {
+        String[] rowData = rowData("type: 3, log event ID: 622133494, payload: ");
+        try {
+            Collection<PointData> data = parseRow(BuiltInAttribute.MAXIMUM_VOLTAGE, rowData); //attribute doesn't matter here
+            Assert.assertEquals("Incorrect data size for empty payload.", data.size(), 0);
+        } catch (Exception e) {
+            Assert.fail("Exception thrown parsing row with empty payload: " + e.getMessage());
+        }
+    }
+    
+    private String[] rowData(String text) {
         String[] rowData = new String[10];
         rowData[0] = "1";
         rowData[1] = "EVENT_CAT_NIC_EVENT";
         rowData[3] = "2018-04-25T10:27:53.117-0700";
         rowData[5] = "11:22:33:44:55:66:66:77";
-        rowData[9] = "type: 0, log event ID: 32923 (0x809B) - Vendor-specific or Unknown, payload:  data(0002000000)";
-        
+        rowData[9] = text;
+        return rowData;
+    }
+    
+    private Collection<PointData> parseRow(BuiltInAttribute attribute, String[] rowData) {
         LiteYukonPAObject lpo = new LiteYukonPAObject(1, "pao1", 
                                                       PaoCategory.DEVICE, 
                                                       PaoClass.ITRON, 
                                                       PaoType.LCR6600S, 
                                                       "", "");
         
-        setupMocks(lpo, BuiltInAttribute.MAXIMUM_VOLTAGE);
-
+        setupMocks(lpo, attribute);
+        
         Multimap<PaoIdentifier, PointData> results = parser.generatePointData(rowData);
-        Collection<PointData> data = results.get(lpo.getPaoIdentifier());
-        Assert.assertEquals(0, data.size());
-        
-        String[] rowData2 = new String[10];
-        rowData2[0] = "1";
-        rowData2[1] = "EVENT_CAT_NIC_EVENT";
-        rowData2[3] = "2018-04-25T10:27:53.117-0700";
-        rowData2[5] = "11:22:33:44:55:66:66:77";
-        rowData2[9] = "type: 0, log event ID: 32927 (0x809F) - Vendor-specific or Unknown, payload:  data(2213E24400)";
-        
-        setupMocks(lpo, BuiltInAttribute.MAXIMUM_VOLTAGE);
-        
-        results = parser.generatePointData(rowData2);
-        data = results.get(lpo.getPaoIdentifier());
+        return results.get(lpo.getPaoIdentifier());
+    }
+    
+    private void assertOnlyEntryEquals(Collection<PointData> data, int expectedEntryValue) {
         Assert.assertEquals(1, data.size());
-        PointData pointData = (PointData) results.get(lpo.getPaoIdentifier()).toArray()[0];
-        Assert.assertEquals(2, pointData.getValue(), 0.1);
+        PointData pointData = (PointData) data.toArray()[0];
+        Assert.assertEquals(expectedEntryValue, pointData.getValue(), 0.1);
     }
     
     private void setupMocks(LiteYukonPAObject lpo, BuiltInAttribute attribute) {
