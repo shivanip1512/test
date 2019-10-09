@@ -61,50 +61,23 @@
         </git>
     </target>
 
-    <target name="git-checkout">
-            <git command="init" />
-            <git command="config" >
-                <args>
-                    <arg value="core.sparsecheckout" />
-                    <arg value="true" />
-                </args>
-            </git>
-            <git command="remote" >
-                        <args>
-                            <arg value="add" />
-                            <arg value="origin" />
-                            <arg value="${env.GIT_URL}" />
-                        </args>
-            </git>
-            <exec executable="cmd" >
-                          <arg value="/c"/>
-                          <arg value="echo"/>
-                          <arg value="${dbSnapshot}/*" />
-                          <arg value=">>"/>
-                          <arg value=".git/info/sparse-checkout"/>
-            </exec>
-            <git command="pull" >
-                        <args>
-                            <arg value="--depth=1" />
-                            <arg value="origin" />
-                            <arg value="master" />
-                        </args>
-            </git>
-        </target>
-
-        <target name="git-commit">
-                <git command="add">
-                    <args>
-                        <arg value="." />
-                    </args>
-                </git>
-                <git command="commit">
-                    <args>
-                        <arg value="-m Checking in the latest database snapshot" />
-                    </args>
-                </git>
-                <git command="push" />
-        </target>
+    <target name="git-commit">
+        <git command="add" dir="../yukon-client/common/src/com/cannontech/database/snapshot">
+            <args>
+                <arg value="." />
+            </args>
+        </git>
+        <git command="commit">
+            <args>
+                <arg value="-m Checking in the latest database snapshot" />
+            </args>
+         </git>
+         <git command="push" dir="">
+             <arg value="--set-upstream"/>
+             <arg value="origin"/>
+             <arg value="master"/>	
+         </git>
+    </target>
 
     <target name="sqlServerCreationScriptXMLFile" depends="version_db_files">
         <property name="databaseName" value="TempDBCreation_${version.major}_${version.minor}_${version.revision}" />
@@ -116,18 +89,6 @@
     	<copy file="Custom Scripts/SQL Server/DropDatabase.sql" tofile="tempDropDatabase.sql" overwrite="true" />
         <replace file="tempDropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
         <echo message="${databaseName}"/>
-
-        <echo message="Checking out database snapshot folder ${dbSnapshot}" />
-    	
-    	<exec executable="svn">
-        	<arg value="checkout" />
-            <arg value="${env.SVN_BASE_URL}${dbSnapshot}"/>
-    		<arg value="${dbSnapshotTempDir}" />
-        	<arg value="--username" />
-        	<arg value="${svn.username}" />
-        	<arg value="--password" />
-        	<arg value="${svn.password}" />
-        </exec>
 
         <!-- Create sql server databse and user-->
         <sql
@@ -194,23 +155,28 @@
         </sql>
 
         <echo message="Latest diff" />
-        <exec executable="svn" dir="${dbSnapshotTempDir}">
+        <exec executable="git">
             <arg value="diff"/>
+            <arg path = "../yukon-client/common/src/com/cannontech/database/snapshot"/>
         </exec>
-    	
-        <echo message="Checking in sql server database snapshot" />
-        <exec executable="svn" dir="${dbSnapshotTempDir}">
-        	<arg value="commit"/>
-        	<arg value="mssql.xml"/>
-            <arg value="-m" />
-        	<arg value="Checking in the latest database snapshot"/>
-        	<arg value="--username" />
-        	<arg value="${svn.username}" />
-        	<arg value="--password" />
-        	<arg value="${svn.password}" />
-        </exec>
-    	
-    	<echo message="Snapshot complete and checked in" />
+
+        <antcall target="config-git-credential"/>
+        <git command="add" dir="../yukon-client/common/src/com/cannontech/database/snapshot">
+            <args>
+                <arg value="mssql.xml" />
+            </args>
+        </git>
+        <git command="commit">
+            <args>
+                <arg value="-m Checking in the latest database snapshot" />
+            </args>
+        </git>
+        <git command="push" dir="">
+            <arg value="--set-upstream"/>
+            <arg value="origin"/>
+            <arg value="master"/>	
+         </git>
+        <echo message="Snapshot complete and checked in" />
     </target>
     
     <target name="oracleCreationScriptXMLFile" depends="version_db_files">
@@ -223,18 +189,7 @@
         <copy file="Custom Scripts/Oracle/DropDatabase.sql" tofile="tempDropDatabase.sql" overwrite="true" />
         <replace file="tempDropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
         <echo message="${databaseName}"/>
-        
-        <echo message="Checking out database snapshot folder ${dbSnapshot}" />
-        <exec executable="svn">
-            <arg value="checkout" />
-            <arg value="${env.SVN_BASE_URL}${dbSnapshot}"/>
-            <arg value="${dbSnapshotTempDir}" />
-            <arg value="--username" />
-            <arg value="${svn.username}" />
-            <arg value="--password" />
-            <arg value="${svn.password}" />
-        </exec>    	
-        
+
     	<!-- Create oracle databse and user-->
         <sql
             driver="oracle.jdbc.OracleDriver"
@@ -286,24 +241,29 @@
             <fileset dir="C:\app\Administrator\product\11.2.0\dbhome_2\database" includes="tempDbCreation*.ora"/>
         </delete>
         
-        <echo message="Latest diff" />
-        <exec executable="svn" dir="${dbSnapshotTempDir}">
+        <echo message="Latest diff"/>
+        <exec executable="git">
             <arg value="diff"/>
+            <arg path = "../yukon-client/common/src/com/cannontech/database/snapshot"/>
         </exec>
         
-        <echo message="Checking in oracle database snapshot" />
-        <exec executable="svn" dir="${dbSnapshotTempDir}">
-            <arg value="commit"/>
-            <arg value="oracle.xml"/>
-            <arg value="-m" />
-            <arg value="Checking in the latest database snapshot"/>
-            <arg value="--username" />
-            <arg value="${svn.username}" />
-            <arg value="--password" />
-            <arg value="${svn.password}" />
-        </exec>
-
-    	<echo message="Snapshot complete and checked in" />
+        <antcall target="config-git-credential"/>
+        <git command="add" dir="../yukon-client/common/src/com/cannontech/database/snapshot">
+            <args>
+                <arg value="oracle.xml" />
+            </args>
+        </git>
+        <git command="commit">
+            <args>
+                 <arg value="-m Checking in the latest database snapshot" />
+            </args>
+        </git>
+        <git command="push" dir="">
+             <arg value="--set-upstream"/>
+             <arg value="origin"/>
+             <arg value="master"/>	
+        </git>
+        <echo message="Snapshot complete and checked in" />
     </target>
 
 </project>
