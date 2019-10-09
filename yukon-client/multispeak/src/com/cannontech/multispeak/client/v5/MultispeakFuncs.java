@@ -325,7 +325,11 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     private String getNodeValueFromRequestSOAPMessage(QName qNameToFind, QName callerQname) throws SOAPException {
         SOAPHeader header = getRequestSOAPMessage().getSOAPPart().getEnvelope().getHeader();
         SOAPElement childSoapElement = getElementFromSOAPMessage(header, qNameToFind, callerQname);
-        return childSoapElement.getValue();
+        if (childSoapElement != null) {
+            return childSoapElement.getValue();
+        } else {
+            return null;
+        }
     }
 
     /**
