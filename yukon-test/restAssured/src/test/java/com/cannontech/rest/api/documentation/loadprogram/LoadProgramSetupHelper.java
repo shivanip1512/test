@@ -2,45 +2,125 @@ package com.cannontech.rest.api.documentation.loadprogram;
 
 import static io.restassured.RestAssured.given;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.utilities.JsonFileReader;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
+import com.cannontech.rest.api.gear.fields.GearFieldHelper;
+import com.cannontech.rest.api.gear.fields.MockOperationalState;
+import com.cannontech.rest.api.gear.fields.MockProgramGear;
+import com.cannontech.rest.api.gear.fields.MockProgramGearFields;
+import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
+import com.cannontech.rest.api.loadProgram.request.MockLoadProgramCopy;
+import com.cannontech.rest.api.loadProgram.request.MockNotification;
+import com.cannontech.rest.api.loadProgram.request.MockNotificationGroup;
+import com.cannontech.rest.api.loadProgram.request.MockProgramConstraint;
+import com.cannontech.rest.api.loadProgram.request.MockProgramControlWindow;
+import com.cannontech.rest.api.loadProgram.request.MockProgramControlWindowFields;
+import com.cannontech.rest.api.loadProgram.request.MockProgramGroup;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 
 public class LoadProgramSetupHelper {
 
-    @SuppressWarnings("unchecked")
-    public static JSONObject buildJSONRequest(JSONObject constraintJson, JSONObject loadGroupJson, String inputFilePath) {
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject(inputFilePath);
-        JSONObject jsonArrayObject = new JSONObject();
-        jsonArrayObject.put("groupId", loadGroupJson.get("assignedLoadGroupId"));
-        jsonArrayObject.put("groupName", loadGroupJson.get("loadGroupName"));
-        jsonArrayObject.put("type", loadGroupJson.get("loadGroupType"));
-        JSONArray jsonArray = new JSONArray();
-        jsonArray.add(jsonArrayObject);
-        JSONObject constraint = (JSONObject) jsonObject.get("constraint");
-        constraint.put("constraintId", constraintJson.get("constraintId"));
-        jsonObject.put("constraint", constraint);
-        jsonObject.put("assignedGroups", jsonArray);
-        return jsonObject;
+    public static MockLoadProgram buildLoadProgramRequest(MockPaoType type, List<MockLoadGroupBase> loadGroups, List <MockGearControlMethod> gearTypes, Integer constraintId) {
+
+        List<MockProgramGear> gears = new ArrayList<>();
+        Integer gearOrder = 1;
+        for (MockGearControlMethod gearType : gearTypes) {
+            MockProgramGearFields gearFields = GearFieldHelper.createProgramGearFields(gearType);
+            MockProgramGear gear = MockProgramGear.builder()
+                                          .controlMethod(gearType)
+                                          .gearName("TestGear" + gearOrder)
+                                          .gearNumber(gearOrder)
+                                          .fields(gearFields)
+                                          .build();
+            gears.add(gear);
+            gearOrder++;
+        };
+
+        MockProgramControlWindowFields controlWindowOne = MockProgramControlWindowFields.builder()
+                                                                                .availableStartTimeInMinutes(0)
+                                                                                .availableStopTimeInMinutes(0)
+                                                                                .build();
+
+        MockProgramControlWindowFields controlWindowTwo = MockProgramControlWindowFields.builder()
+                                                                                .availableStartTimeInMinutes(1)
+                                                                                .availableStopTimeInMinutes(5)
+                                                                                .build();
+        MockProgramControlWindow controlWindow = MockProgramControlWindow.builder()
+                                                                 .controlWindowOne(controlWindowOne)
+                                                                 .controlWindowTwo(controlWindowTwo)
+                                                                 .build();
+
+        List<MockProgramGroup> assignedGroups = new ArrayList<>();
+        loadGroups.forEach(group -> {
+            MockProgramGroup programGroup = MockProgramGroup.builder()
+                                                    .groupId(group.getId())
+                                                    .groupName(group.getName())
+                                                    .type(group.getType())
+                                                    .build();
+            assignedGroups.add(programGroup);
+        });
+
+        List<MockNotificationGroup> assignedNotificationGroups = new ArrayList<>();
+        MockNotificationGroup notificationGroup = MockNotificationGroup.builder()
+                                                               .notificationGrpID(2)
+                                                               .notificationGrpName("shikhanotificationgroup")
+                                                               .build();
+        assignedNotificationGroups.add(notificationGroup);
+
+        MockNotification notification = MockNotification.builder()
+                                                .notifyOnAdjust(false)
+                                                .enableOnSchedule(false)
+                                                .assignedNotificationGroups(assignedNotificationGroups)
+                                                .build();
+
+        MockProgramConstraint constraint = MockProgramConstraint.builder()
+                                                        .constraintId(constraintId)
+                                                        .build();
+
+        return MockLoadProgram.builder()
+                          .name(StringUtils.remove(WordUtils.capitalizeFully(type.name(), '_'), "_") + "Test")
+                          .type(type)
+                          .triggerOffset(1.0)
+                          .restoreOffset(2.0)
+                          .operationalState(MockOperationalState.Automatic)
+                          .constraint(constraint)
+                          .assignedGroups(assignedGroups)
+                          .controlWindow(controlWindow)
+                          .notification(notification)
+                          .gears(gears)
+                          .build();
+
+    }
+    
+    public static MockLoadProgramCopy buildLoadProgramCopyRequest(MockPaoType programType, Integer constraintId) {
+        return MockLoadProgramCopy.builder()
+                       .name(StringUtils.remove(WordUtils.capitalizeFully(programType.name(), '_'), "_") + "TestCopy")
+                       .operationalState(MockOperationalState.Automatic)
+                       .constraint(MockProgramConstraint.builder().constraintId(constraintId).build())
+                       .copyMemberControl(true)
+                       .build();
+
     }
 
-    @SuppressWarnings("unchecked")
     public static void delete(Integer id, String name, String url) {
-        JSONObject obj = new JSONObject();
-        obj.put("name", name);
+        MockLMDto deleteConstraint = MockLMDto.builder().name(name).build();
 
         given().accept("application/json")
                .contentType("application/json")
                .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-               .body(obj)
+               .body(deleteConstraint)
                .when()
                .delete(ApiCallHelper.getProperty(url) + id)
                .then()
@@ -121,7 +201,8 @@ public class LoadProgramSetupHelper {
     public static FieldDescriptor[] fieldDescriptorForCopy() {
         return new FieldDescriptor[] { fieldWithPath("name").type(JsonFieldType.STRING).description("Load Program Name"),
                 fieldWithPath("operationalState").type(JsonFieldType.STRING).description("Operational State"),
-                fieldWithPath("constraint.constraintId").type(JsonFieldType.NUMBER).description("Constraint Id") };
+                fieldWithPath("constraint.constraintId").type(JsonFieldType.NUMBER).description("Constraint Id"),
+                fieldWithPath("copyMemberControl").type(JsonFieldType.BOOLEAN).description("Copy Member Control") };
 
     }
 

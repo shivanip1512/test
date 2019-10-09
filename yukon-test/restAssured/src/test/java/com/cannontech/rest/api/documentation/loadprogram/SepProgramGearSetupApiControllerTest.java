@@ -9,22 +9,28 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.json.simple.JSONObject;
 import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.utilities.JsonFileReader;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
+import com.cannontech.rest.api.documentation.constraint.ProgramConstraintHelper;
+import com.cannontech.rest.api.dr.loadgroup.LoadGroupHelper;
+import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
+import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -35,8 +41,8 @@ public class SepProgramGearSetupApiControllerTest {
     private RequestSpecification documentationSpec;
     private String paoId = null;
     private FieldDescriptor programIdDescriptor = null;
-    private JSONObject constraintJson = null;
-    private JSONObject loadGroupJson = null;
+    private MockProgramConstraint programConstraint  = null;
+    private List<MockLoadGroupBase> loadGroups = null;
 
     @BeforeMethod
     public void setUp(Method method) {
@@ -44,10 +50,10 @@ public class SepProgramGearSetupApiControllerTest {
         this.restDocumentation.beforeTest(getClass(), method.getName());
         this.documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
         programIdDescriptor = fieldWithPath("programId").type(JsonFieldType.NUMBER).description("Program Id of Load Program");
-        if (constraintJson == null) {
+        if (programConstraint == null) {
             programConstraint_Create();
         }
-        if (loadGroupJson == null) {
+        if (loadGroups == null) {
             assignedLoadGroup_Create();
         }
     }
@@ -55,12 +61,12 @@ public class SepProgramGearSetupApiControllerTest {
     /**
      * Generic method to get response object specified with request/response descriptors, JSONObject & URL
      */
-    private Response getResponseForCreate(List<FieldDescriptor> requestDescriptor, FieldDescriptor responseDescriptor, JSONObject jsonObject, String url) {
+    private Response getResponseForCreate(List<FieldDescriptor> requestDescriptor, FieldDescriptor responseDescriptor, MockLoadProgram loadProgram, String url) {
         return given(documentationSpec).filter(document("{ClassName}/{methodName}", requestFields(requestDescriptor), responseFields(responseDescriptor)))
                 .accept("application/json")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                .body(jsonObject.toJSONString())
+                .body(loadProgram)
                 .when()
                 .post(ApiCallHelper.getProperty(url))
                 .then()
@@ -76,36 +82,31 @@ public class SepProgramGearSetupApiControllerTest {
     /**
      * Method to create Load group as we need to pass load group in request of Sep Load Program.
      */
-    @SuppressWarnings("unchecked")
     public void assignedLoadGroup_Create() {
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", "documentation\\loadprogram\\SepProgramAssignedLoadGroup.json");
-        Integer groupId = createResponse.path("groupId");
-        loadGroupJson = new JSONObject();
-        loadGroupJson.put("loadGroupId", groupId);
-        loadGroupJson.put("assignedLoadGroupId", groupId);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\SepProgramAssignedLoadGroup.json");
-        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
-        loadGroupJson.put("loadGroupName", jsonPath.getString("LM_GROUP_DIGI_SEP.name"));
-        loadGroupJson.put("loadGroupType", jsonPath.getString("LM_GROUP_DIGI_SEP.type"));
+        MockLoadGroupBase loadGroupSep = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupSep);
+        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        loadGroups = new ArrayList<>();
+        Integer loadGroupId = createResponse.path("groupId");
+        loadGroupSep.setId(loadGroupId);
+        loadGroups.add(loadGroupSep);
     }
 
     /**
      * Method to create Program Constraint as we need to pass constraint in request of Sep Load Program.
      */
-    @SuppressWarnings("unchecked")
     public void programConstraint_Create() {
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint",
-                                                                   "documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
+        programConstraint = ProgramConstraintHelper.buildProgramConstraint();
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", programConstraint);
         Integer constraintId = createResponse.path("id");
-        constraintJson = new JSONObject();
-        constraintJson.put("constraintId", constraintId);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
-        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
-        constraintJson.put("constraintName", jsonPath.getString("name"));
+        programConstraint.setId(constraintId);
+        assertTrue("Constraint ID should not be Null", constraintId != null);
+        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    public void Test_LoadProgram_SepTemperatureOffset_Create() {
+    public void Test_LoadProgram_SepTemperatureOffset_Create(ITestContext context) {
         /*-------Sep Temperature Field Descriptor-------*/
 
         FieldDescriptor[] sepTemperatureOffsetDescriptor = new FieldDescriptor[] {
@@ -122,22 +123,27 @@ public class SepProgramGearSetupApiControllerTest {
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
                                                                                .description("When to change field Expected : None, Duration, Priority, TriggerOffset") };
 
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.SepTemperatureOffset);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_SEP_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
+        
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(sepTemperatureOffsetDescriptor),
                                                  programIdDescriptor,
-                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
-                                                                                         loadGroupJson,
-                                                                                         "documentation\\loadprogram\\SepTemperatureOffset.json"),
+                                                 loadProgram,
                                                  "saveLoadProgram");
 
         paoId = response.path("programId").toString();
         assertTrue("PAO ID should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\SepTemperatureOffset.json");
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
+        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    public void Test_LoadProgram_NoControl_Create() {
+    public void Test_LoadProgram_NoControl_Create(ITestContext context) {
         /*-------- No Control Field Descriptor--------- */
         FieldDescriptor[] noControlGearDescriptor = new FieldDescriptor[] {
                 fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
@@ -146,27 +152,32 @@ public class SepProgramGearSetupApiControllerTest {
 
         };
 
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.NoControl);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_SEP_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
+        
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(noControlGearDescriptor),
                                                  programIdDescriptor,
-                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
-                                                                                         loadGroupJson,
-                                                                                         "documentation\\loadprogram\\SepNoControl.json"),
+                                                 loadProgram,
                                                  "saveLoadProgram");
 
         paoId = response.path("programId").toString();
         assertTrue("PAO ID should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\SepNoControl.json");
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
+        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @AfterClass
     public void cleanUp() {
-        LoadProgramSetupHelper.delete(Integer.valueOf(constraintJson.get("constraintId").toString()),
-                                      constraintJson.get("constraintName").toString(),
+        LoadProgramSetupHelper.delete(programConstraint.getId(),
+                                                      programConstraint.getName(),
                                       "deleteProgramConstraint");
-        LoadProgramSetupHelper.delete(Integer.valueOf(loadGroupJson.get("loadGroupId").toString()),
-                                      loadGroupJson.get("loadGroupName").toString(),
-                                      "deleteloadgroup");
+        loadGroups.forEach(group -> {
+            LoadProgramSetupHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
+        });
+
     }
 }

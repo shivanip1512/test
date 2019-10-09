@@ -1,14 +1,13 @@
 package com.cannontech.rest.api.common;
 
-import java.io.File;
+import static io.restassured.RestAssured.baseURI;
+import static io.restassured.RestAssured.given;
+
 import java.util.concurrent.TimeUnit;
 
 import com.cannontech.rest.api.utilities.Log;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
-import static io.restassured.RestAssured.baseURI;
-import static io.restassured.RestAssured.given;
 
 public class ApiTokenAuthentication {
 
@@ -30,11 +29,14 @@ public class ApiTokenAuthentication {
     }
 
     private String generateToken() {
+        MockLoginRequest loginRequest = MockLoginRequest.builder()
+                                                .username("yukon")
+                                                .password("yukon")
+                                                .build();
         baseURI = ApiCallHelper.getProperty("baseURI");
-        File file = ApiCallHelper.getInputFile("login.json");
         String authTokenValue = null;
         try {
-            authTokenValue = given().accept("application/json").contentType("application/json").body(file).when().post(
+            authTokenValue = given().accept("application/json").contentType("application/json").body(loginRequest).when().post(
                 "/api/token").then().extract().path("token").toString();
         } catch (Exception e) {
             Log.error("Error in token generation - " + e.toString(), e);

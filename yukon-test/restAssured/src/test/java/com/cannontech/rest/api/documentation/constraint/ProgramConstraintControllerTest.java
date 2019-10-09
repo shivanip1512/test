@@ -7,10 +7,9 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
+
 import java.lang.reflect.Method;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -19,6 +18,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
 import io.restassured.response.Response;
@@ -28,7 +29,7 @@ public class ProgramConstraintControllerTest {
 
     private ManualRestDocumentation restDocumentation = new ManualRestDocumentation();
     private RequestSpecification documentationSpec;
-    private JSONObject programConstraint = null;
+    private MockProgramConstraint programConstraint = null;
     private String constraintId = null;
     private FieldDescriptor[] programConstraintFieldDescriptor = null;
 
@@ -51,36 +52,9 @@ public class ProgramConstraintControllerTest {
             fieldWithPath("maxHoursMonthly").type(JsonFieldType.NUMBER).description("Max Hours Monthly. Min Value: 0, Max Value: 99999"),
             fieldWithPath("maxHoursAnnually").type(JsonFieldType.NUMBER).description("Max Hours Annually. Min Value: 0, Max Value: 99999"),
             fieldWithPath("maxHoursSeasonal").type(JsonFieldType.NUMBER).description("Max Hours Seasonally. Min Value: 0, Max Value: 99999") };
-        if(this.programConstraint == null)
-            this.programConstraint = buildProgramConstraint();
-    }
-
-    @SuppressWarnings("unchecked")
-    public JSONObject buildProgramConstraint() {
-        JSONObject programConstraint = new JSONObject();
-
-        JSONObject schedule = new JSONObject();
-        schedule.put("id", Integer.valueOf(1));
-
-        JSONArray daySelection = new JSONArray();
-        daySelection.add("SUNDAY");
-        daySelection.add("MONDAY");
-
-        programConstraint.put("name", "Program Constraint");
-        programConstraint.put("seasonSchedule", schedule);
-        programConstraint.put("maxActivateSeconds", 10);
-        programConstraint.put("maxDailyOps", 11);
-        programConstraint.put("minActivateSeconds", 12);
-        programConstraint.put("minRestartSeconds", 13);
-        programConstraint.put("daySelection", daySelection);
-        programConstraint.put("holidaySchedule", schedule);
-        programConstraint.put("holidayUsage", "FORCE");
-        programConstraint.put("maxHoursDaily", 15);
-        programConstraint.put("maxHoursMonthly", 16);
-        programConstraint.put("maxHoursAnnually", 17);
-        programConstraint.put("maxHoursSeasonal", 18);
-
-        return programConstraint;
+        if (this.programConstraint == null) {
+            this.programConstraint = ProgramConstraintHelper.buildProgramConstraint();
+        }
     }
 
     @AfterMethod
@@ -96,7 +70,7 @@ public class ProgramConstraintControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(programConstraint.toJSONString())
+                                .body(programConstraint)
                                 .when()
                                 .post(ApiCallHelper.getProperty("createProgramConstraint"))
                                 .then()
@@ -115,14 +89,14 @@ public class ProgramConstraintControllerTest {
                     responseFields(fieldWithPath("id").type(JsonFieldType.NUMBER).description("Program Constraint ID."),
                         fieldWithPath("name").type(JsonFieldType.STRING).description("Program Constraint Name."), 
                         fieldWithPath("seasonSchedule.id").type(JsonFieldType.NUMBER).description("Season Schedule ID."),
-                        fieldWithPath("seasonSchedule.name").type(JsonFieldType.STRING).description("Season Schedule Name."),
+                        fieldWithPath("seasonSchedule.name").type(JsonFieldType.STRING).description("Season Schedule Name.").optional(),
                         fieldWithPath("maxActivateSeconds").type(JsonFieldType.NUMBER).description("Max Acitvate Seconds."),
                         fieldWithPath("maxDailyOps").type(JsonFieldType.NUMBER).description("Max Daily Operations."),
                         fieldWithPath("minActivateSeconds").type(JsonFieldType.NUMBER).description("Min Activate Seconds."),
                         fieldWithPath("minRestartSeconds").type(JsonFieldType.NUMBER).description("Min Restart Seconds."),
                         fieldWithPath("daySelection").type(JsonFieldType.ARRAY).description("Day Selection."),
                         fieldWithPath("holidaySchedule.id").type(JsonFieldType.NUMBER).description("Holiday Schedule ID."),
-                        fieldWithPath("holidaySchedule.name").type(JsonFieldType.STRING).description("Holiday Schedule Name."),
+                        fieldWithPath("holidaySchedule.name").type(JsonFieldType.STRING).description("Holiday Schedule Name.").optional(),
                         fieldWithPath("holidayUsage").type(JsonFieldType.STRING).description("Holiday Usages."),
                         fieldWithPath("maxHoursDaily").type(JsonFieldType.NUMBER).description("Max Hours Daily."),
                         fieldWithPath("maxHoursMonthly").type(JsonFieldType.NUMBER).description("Max Hours Monthly."),
@@ -140,17 +114,16 @@ public class ProgramConstraintControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @SuppressWarnings("unchecked")
     @Test(dependsOnMethods = {"Test_ProgramConstraint_Get"})
     public void Test_ProgramConstraint_Update() {
-        programConstraint.put("maxActivateSeconds", 100);
+        programConstraint.setMaxActivateSeconds(100);
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", requestFields(programConstraintFieldDescriptor),
                                     responseFields(fieldWithPath("id").type(JsonFieldType.NUMBER).description("Program Constraint."))))
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(programConstraint.toJSONString())
+                                .body(programConstraint)
                                 .when()
                                 .post(ApiCallHelper.getProperty("updateProgramConstraint") + constraintId)
                                 .then()
@@ -161,11 +134,11 @@ public class ProgramConstraintControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-   @SuppressWarnings("unchecked")
    @Test(priority=4)
    public void Test_ProgramConstraint_Delete() {
-       JSONObject deleteConstraint = new JSONObject();
-       deleteConstraint.put("name", "Program Constraint");
+
+        MockLMDto deleteConstraint = MockLMDto.builder().name("Program Constraint").build();
+
        Response response = given(documentationSpec)
                                .filter(document("{ClassName}/{methodName}", requestFields(
                                    fieldWithPath("name").type(JsonFieldType.STRING).description("Program Constraint Name.")), 
@@ -173,7 +146,7 @@ public class ProgramConstraintControllerTest {
                                .accept("application/json")
                                .contentType("application/json")
                                .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                               .body(deleteConstraint.toJSONString())
+                               .body(deleteConstraint)
                                .when()
                                .delete(ApiCallHelper.getProperty("deleteProgramConstraint") + constraintId)
                                .then()

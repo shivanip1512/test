@@ -21,6 +21,10 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.dr.loadgroup.LoadGroupHelper;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
 import io.restassured.response.Response;
@@ -32,6 +36,7 @@ public class EcobeeLoadGroupSetupApiControllerTest {
     private RequestSpecification documentationSpec;
     private String paoId = null;
     private FieldDescriptor[] ecobeeFieldDescriptor = null;
+    private MockLoadGroupBase loadGroup = null;
 
     @BeforeMethod
     public void setUp(Method method) {
@@ -44,6 +49,7 @@ public class EcobeeLoadGroupSetupApiControllerTest {
             fieldWithPath("LM_GROUP_ECOBEE.kWCapacity").type(JsonFieldType.NUMBER).description("KW Capacity"),
             fieldWithPath("LM_GROUP_ECOBEE.disableGroup").type(JsonFieldType.BOOLEAN).description("Flag to disable Group"),
             fieldWithPath("LM_GROUP_ECOBEE.disableControl").type(JsonFieldType.BOOLEAN).description("Flag to disable Control")};
+        loadGroup = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_ECOBEE);
     }
 
     @AfterMethod
@@ -59,7 +65,7 @@ public class EcobeeLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\EcobeeCreate.json"))
+                                .body(loadGroup)
                                 .when()
                                 .post(ApiCallHelper.getProperty("saveloadgroup"))
                                 .then()
@@ -98,7 +104,7 @@ public class EcobeeLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\EcobeeCreate.json"))
+                                .body(loadGroup)
                                 .when()
                                 .post(ApiCallHelper.getProperty("updateloadgroup") + paoId)
                                 .then()
@@ -112,6 +118,9 @@ public class EcobeeLoadGroupSetupApiControllerTest {
 
     @Test(dependsOnMethods = { "Test_LmEcobee_Update" })
     public void Test_LmEcobee_Delete() {
+        MockLMDto lmDeleteObject = MockLMDto.builder()
+                .name("Ecobee_Group_Test")
+                .build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
             requestFields(
                 fieldWithPath("name").type(JsonFieldType.STRING).description("Load Group Name")), 
@@ -119,7 +128,7 @@ public class EcobeeLoadGroupSetupApiControllerTest {
             .accept("application/json")
             .contentType("application/json")
             .header("Authorization","Bearer " + ApiCallHelper.authToken)
-            .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\EcobeeDelete.json"))
+            .body(lmDeleteObject)
             .when()
             .delete(ApiCallHelper.getProperty("deleteloadgroup") + paoId)
             .then()

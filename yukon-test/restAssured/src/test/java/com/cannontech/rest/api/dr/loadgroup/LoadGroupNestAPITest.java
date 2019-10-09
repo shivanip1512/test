@@ -1,60 +1,66 @@
 package com.cannontech.rest.api.dr.loadgroup;
 
 import static org.junit.Assert.assertTrue;
-import org.json.simple.JSONObject;
+
+import java.lang.reflect.Method;
+
 import org.testng.ITestContext;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.data.DataProviderClass;
-import com.cannontech.rest.api.utilities.JsonFileReader;
+import com.cannontech.rest.api.common.model.MockApiError;
+import com.cannontech.rest.api.common.model.JsonUtil;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.Log;
 
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupNestAPITest {
 
-    private final static String nestPaoTypeStr = "LM_GROUP_NEST";
-    private final static String nestPayloadFile = "loadgroup\\lmGroupNestCreate.json";
+    MockLoadGroupBase loadGroup = null;
+
+    @BeforeMethod
+    public void setUp(Method method) {
+        loadGroup = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_NEST);
+    }
 
     @Test
     public void loadGroupNest_01_Create(ITestContext context) {
 
         Log.startTestCase("loadGroupNest_01_Create");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", nestPayloadFile);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
         String groupId = createResponse.path("groupId").toString();
-        context.setAttribute("nestgroupId", groupId);
+        context.setAttribute("groupId", groupId);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        assertTrue("GROUP ID should not be Null", groupId != null);
+        assertTrue("GroupId should not be Null", groupId != null);
         Log.endTestCase("loadGroupNest_01_Create");
     }
 
-    @Test(dependsOnMethods = {"loadGroupNest_01_Create"})
+    @Test(dependsOnMethods = { "loadGroupNest_01_Create" })
     public void loadGroupNest_02_Get(ITestContext context) {
 
         Log.startTestCase("loadGroupNest_02_Get");
-        String groupId = context.getAttribute("nestgroupId").toString();
-        JSONObject jo = JsonFileReader.readJsonFileAsJSONObject(nestPayloadFile);
-        JsonPath jp = new JsonPath(jo.toJSONString());
-        Float kWCapacity = jp.getFloat(nestPaoTypeStr + ".kWCapacity");
-        String name = jp.get(nestPaoTypeStr + ".name");
-
+        String groupId = context.getAttribute("groupId").toString();
         Log.info("GroupId of LmGroupNest created is : " + groupId);
 
         ExtractableResponse<?> response = ApiCallHelper.get("getloadgroup", groupId);
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
-        JsonPath jsonPath = response.jsonPath();
-        context.setAttribute("Nest_GrpName", jsonPath.get(nestPaoTypeStr + ".name"));
+        MockLoadGroupBase nestLoadGroup = response.as(MockLoadGroupBase.class);
+        context.setAttribute("Nest_GrpName", loadGroup.getName());
 
-        assertTrue("Name Should be : " + name, name.equals((String) jsonPath.get(nestPaoTypeStr + ".name")));
-        assertTrue("Type Should be : " + nestPaoTypeStr, nestPaoTypeStr.equals(jsonPath.get(nestPaoTypeStr + ".type")));
-        assertTrue("kWCapacity Should be : " + kWCapacity,
-            kWCapacity.equals(jsonPath.get(nestPaoTypeStr + ".kWCapacity")));
-        boolean disableGroup = (boolean) jsonPath.get(nestPaoTypeStr + ".disableGroup");
+        assertTrue("Name Should be : " + loadGroup.getName(), loadGroup.getName().equals(nestLoadGroup.getName()));
+        assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == nestLoadGroup.getType());
+        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(), loadGroup.getKWCapacity().equals(nestLoadGroup.getKWCapacity()));
+   
+        Boolean disableGroup = nestLoadGroup.isDisableGroup();
         assertTrue("Group Should be disabled : ", !disableGroup);
-        boolean disableControl = (boolean) jsonPath.get(nestPaoTypeStr + ".disableControl");
+   
+        Boolean disableControl = nestLoadGroup.isDisableControl();
         assertTrue("Control Should be disabled : ", !disableControl);
         Log.endTestCase("loadGroupNest_02_Get");
     }
@@ -64,26 +70,26 @@ public class LoadGroupNestAPITest {
 
         Log.startTestCase("loadGroupNest_03_Update");
 
-        String groupId = context.getAttribute("nestgroupId").toString();
-        Float kWCapacity = (float) 888;
+        String groupId = context.getAttribute("groupId").toString();
         String name = "Auto_LM_Group_Nest_Update2";
         context.setAttribute("Nest_UpdateGrpName", name);
 
-        JSONObject payload = JsonFileReader.updateLoadGroup(nestPayloadFile, "id", groupId);
-        payload = JsonFileReader.updateLoadGroup(payload, "kWCapacity", kWCapacity.toString());
-        payload = JsonFileReader.updateLoadGroup(payload, "name", name);
-        Log.info("Updated payload is :" + payload.toJSONString());
+        loadGroup.setId(Integer.valueOf(groupId));
+        loadGroup.setKWCapacity(888.0);
+        loadGroup.setName(name);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("updateloadgroup", payload, groupId);
+        Log.info("Updated payload is :" +  JsonUtil.beautifyJson(loadGroup.toString()));
+
+        ExtractableResponse<?> response = ApiCallHelper.post("updateloadgroup", loadGroup, groupId);
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
-        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getloadgroup", groupId);
+        ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("getloadgroup", groupId);
 
-        JsonPath jsonPath = getupdatedResponse.jsonPath();
-        assertTrue("Name Should be : " + name, name.equals(jsonPath.get(nestPaoTypeStr + ".name")));
-        assertTrue("Type Should be : " + nestPaoTypeStr, nestPaoTypeStr.equals(jsonPath.get(nestPaoTypeStr + ".type")));
-        assertTrue("kWCapacity Should be : " + kWCapacity,
-            kWCapacity.equals(jsonPath.get(nestPaoTypeStr + ".kWCapacity")));
+        MockLoadGroupBase updatedNestLoadGroup = getUpdatedResponse.as(MockLoadGroupBase.class);
+        assertTrue("Name Should be : " + name, name.equals(loadGroup.getName()));
+        assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == updatedNestLoadGroup.getType());
+        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(),
+                   loadGroup.getKWCapacity().equals(updatedNestLoadGroup.getKWCapacity()));
         Log.endTestCase("loadGroupNest_03_Update");
     }
 
@@ -92,54 +98,77 @@ public class LoadGroupNestAPITest {
 
     }
 
-    @Test(dependsOnMethods = {"loadGroupNest_01_Create"})
+    @Test(dependsOnMethods = { "loadGroupNest_01_Create" })
     public void loadGroupNest_05_Delete(ITestContext context) {
 
         Log.startTestCase("loadGroupNest_05_Delete");
-        JSONObject payload = JsonFileReader.updateJsonFile("loadgroup\\delete.json", "name",
-            context.getAttribute("Nest_UpdateGrpName").toString());
-        Log.info("Delete payload is : " + payload);
-        ExtractableResponse<?> response =
-            ApiCallHelper.delete("deleteloadgroup", payload, context.getAttribute("nestgroupId").toString());
+
+        MockLMDto lmDeleteObject = MockLMDto.builder()
+                                    .name(context.getAttribute("Nest_UpdateGrpName").toString())
+                                    .build();
+        Log.info("Delete payload is : " + JsonUtil.beautifyJson(lmDeleteObject.toString()));
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject, context.getAttribute("groupId").toString());
+
         assertTrue("Status code should be 200", response.statusCode() == 200);
         Log.endTestCase("loadGroupNest_05_Delete");
 
     }
-
-    @Test(dataProvider = "GroupNameData", dataProviderClass = DataProviderClass.class, dependsOnMethods = {"loadGroupNest_01_Create"})
-    public void loadGroupNest_06_GroupNameValidation(String groupName, String expectedFieldCode,
-            int expectedStatusCode) {
-
+    
+    @Test(dataProvider = "GroupNameData", dependsOnMethods = { "loadGroupNest_01_Create" })
+    public void loadGroupNest_06_GroupNameValidation(String groupName, String expectedFieldCode, int expectedStatusCode) {
         Log.startTestCase("loadGroupNest_06_GroupNameValidation");
-
-        JSONObject payload = JsonFileReader.updateLoadGroup(nestPayloadFile, "name", groupName);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", payload);
+        loadGroup.setName(groupName);
+        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
         assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
-
-        JsonPath jsonPath = response.jsonPath();
-        assertTrue("Expected message should be - Validation error", jsonPath.get("message").equals("Validation error"));
-        assertTrue("Expected code in response is not correct",
-            expectedFieldCode.equals(jsonPath.get("fieldErrors.code[0]")));
-
+        MockApiError error = response.as(MockApiError.class);
+        assertTrue("Expected message should be - Validation error", error.getMessage().equals("Validation error"));
+        assertTrue("Expected code in response is not correct", expectedFieldCode.equals(error.getFieldErrors().get(0).getCode()));
         Log.endTestCase("loadGroupNest_06_GroupNameValidation");
-
     }
 
-    @Test(dataProvider = "KwCapacityData", dataProviderClass = DataProviderClass.class, dependsOnMethods = {"loadGroupNest_01_Create"})
-    public void loadGroupNest_07_KwCapacityValidation(Float kwCapacity, String expectedFieldCode,
-            int expectedStatusCode) {
-
+    @Test(dataProvider = "KwCapacityData", dependsOnMethods = { "loadGroupNest_01_Create" })
+    public void loadGroupNest_07_KwCapacityValidation(Double kwCapacity, String expectedFieldCode, int expectedStatusCode) {
         Log.startTestCase("loadGroupNest_07_KwCapacityValidation");
-
-        JSONObject payload = JsonFileReader.updateLoadGroup(nestPayloadFile, "kWCapacity", kwCapacity.toString());
-        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", payload);
+        loadGroup.setKWCapacity(kwCapacity);
+        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
         assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
-
-        JsonPath jsonPath = response.jsonPath();
-        assertTrue("Expected message should be - Validation error", jsonPath.get("message").equals("Validation error"));
-        assertTrue("Expected code in response is not correct",
-            expectedFieldCode.equals(jsonPath.get("fieldErrors.code[0]")));
-
+        MockApiError error = response.as(MockApiError.class);
+        assertTrue("Expected message should be - Validation error",  error.getMessage().equals("Validation error"));
+        assertTrue("Expected code in response is not correct", expectedFieldCode.equals(error.getFieldErrors().get(0).getCode()));
         Log.endTestCase("loadGroupNest_07_KwCapacityValidation");
+    }
+     
+    
+    /**
+     * DataProvider provides data to test method in the form of object array
+     * Data provided -
+     * col1 : Group Name
+     * col2 : Expected field errors code in response
+     * col3 : Expected response code
+     */
+    @DataProvider(name = "GroupNameData")
+    public Object[][] getGroupNameData(ITestContext context) {
+
+        return new Object[][] { { "", "Name is required.", 422 },
+            { "Test\\Nest", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
+            { "Test,Nest", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
+            { "TestNestMoreThanSixtyCharacter_TestNestMoreThanSixtyCharacters", "Exceeds maximum length of 60.", 422 },
+                /* { context.getAttribute("Nest_GrpName"), "Name must be unique.", 422 } */};
+    }
+
+    /**
+     * DataProvider provides data to test method in the form of object array
+     * Data provided -
+     * col1 : KwCapacity
+     * col2 : Expected field errors code in response
+     * col3 : Expected response code
+     */
+    @DataProvider(name = "KwCapacityData")
+    public Object[][] getKwCapacityData() {
+
+        return new Object[][] {
+            // {(float) , "kW Capacity is required.", 422 },
+            { -222.0, "Must be between 0 and 99,999.999.", 422 },
+            { 100000.0, "Must be between 0 and 99,999.999.", 422 } };
     }
 }
