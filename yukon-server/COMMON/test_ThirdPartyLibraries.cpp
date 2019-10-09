@@ -2,6 +2,8 @@
 
 #include "ThirdPartyLibraries.h"
 
+#include "std_helper.h"
+
 #include <openssl/md5.h>
 #include <openssl/sha.h>
 
@@ -15,18 +17,17 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
     namespace fs = std::filesystem;
 
     const auto libraries = Cti::ThirdPartyLibraries().getLibraries();
+    const auto libraryPaths = Cti::ThirdPartyLibraries().getKnownLibraryPaths();
 
     for( const auto library : libraries )
     {
         BOOST_TEST_CONTEXT(library.project)
         {
-            std::array<char, MAX_PATH> libraryPath;
-
-            auto pathLen = GetEnvironmentVariable(library.path.c_str(), libraryPath.data(), libraryPath.size());
+            auto libraryPath = Cti::mapFind(libraryPaths, library.path);
             
-            if( ! pathLen )
+            if( ! libraryPath )
             {
-                BOOST_ERROR("No environment variable for " << library.path);
+                BOOST_ERROR("No entry for " << library.path << " in Cti::ThirdPartyLibraries::getKnownLibraryPaths");
 
                 continue;
             }
@@ -34,7 +35,7 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
             uint64_t totalSize = 0;
             uint32_t fileCount = 0;
 
-            for( auto p : fs::recursive_directory_iterator{ libraryPath.data() } )
+            for( auto p : fs::recursive_directory_iterator{ *libraryPath } )
             {
                 if( p.is_regular_file() )
                 {
