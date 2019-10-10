@@ -24,7 +24,6 @@ public class GearFieldHelper {
                                                  .capacityReduction(100)
                                                  .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
                                                  .build();
-
             break;
         case TargetCycle:
                 gearFields = MockTargetCycleGearFields.builder()
@@ -52,7 +51,7 @@ public class GearFieldHelper {
                                                   .capacityReduction(100)
                                                   .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
                                                   .build();
-                break;
+            break;
         case HoneywellCycle:
                 gearFields = MockHoneywellCycleGearFields.builder()
                                                      .rampInOut(true)
@@ -62,7 +61,7 @@ public class GearFieldHelper {
                                                      .capacityReduction(93)
                                                      .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
                                                      .build();
-                break;
+            break;
         case ItronCycle:
                 gearFields = MockItronCycleGearFields.builder()
                                                  .cycleType(MockItronCycleType.STANDARD)
@@ -75,7 +74,7 @@ public class GearFieldHelper {
                                                  .howToStopControl(MockHowToStopControl.Restore)
                                                  .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
                                                  .build();
-                break;
+            break;
         case SepCycle:
                 gearFields = MockSepCycleGearFields.builder()
                                                .rampIn(true)
@@ -87,7 +86,7 @@ public class GearFieldHelper {
                                                .capacityReduction(98)
                                                .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
                                                .build();
-                break;
+            break;
         case MasterCycle:
                 gearFields = MockMasterCycleGearFields.builder()
                                                   .controlPercent(50)
@@ -120,7 +119,7 @@ public class GearFieldHelper {
                                                .sendRate(30)
                                                .shedTime(10)
                                                .build();
-                break;
+            break;
         case Latching:
             gearFields = MockLatchingGearFields.builder()
                                            .startControlState(MockControlStartState.Open)
@@ -184,7 +183,7 @@ public class GearFieldHelper {
                                                   .resendInMinutes(15)
                                                   .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
                                                   .build();
-                break;
+            break;
         case NoControl:
                 gearFields = MockNoControlGearFields.builder()
                                                 .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())

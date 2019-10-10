@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
 @JsonInclude(Include.NON_NULL)
 @SuperBuilder
 @Getter
