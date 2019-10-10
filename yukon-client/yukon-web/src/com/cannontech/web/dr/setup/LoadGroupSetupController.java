@@ -36,6 +36,8 @@ import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -47,9 +49,11 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.RESTRICTED)
 @RequestMapping("/setup/loadGroup")
 public class LoadGroupSetupController {
     
@@ -70,6 +74,7 @@ public class LoadGroupSetupController {
     @Autowired private ServerDatabaseCache cache;
 
     @GetMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
         LoadGroupBase loadGroup = new LoadGroupBase();
@@ -86,6 +91,7 @@ public class LoadGroupSetupController {
     }
     
     @GetMapping("/create/{type}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, @PathVariable String type, @RequestParam String name,
             YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
@@ -128,6 +134,7 @@ public class LoadGroupSetupController {
     }
 
     @GetMapping("/{id}/edit")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
@@ -156,6 +163,7 @@ public class LoadGroupSetupController {
     }
 
     @PostMapping("/save")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String save(@ModelAttribute("loadGroup") LoadGroupBase loadGroup, BindingResult result, YukonUserContext userContext,
             FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
@@ -197,6 +205,7 @@ public class LoadGroupSetupController {
     }
 
     @DeleteMapping("/{id}/delete")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public String delete(@PathVariable int id, @ModelAttribute LMDelete lmDelete, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request) {
 
@@ -221,6 +230,7 @@ public class LoadGroupSetupController {
     }
 
     @PostMapping("/{id}/copy")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String copy(@ModelAttribute("lmCopy") LMCopy lmCopy, @PathVariable int id, BindingResult result,
             YukonUserContext userContext, FlashScope flash, ModelMap model, HttpServletRequest request,
             HttpServletResponse servletResponse) throws IOException {
@@ -267,6 +277,7 @@ public class LoadGroupSetupController {
      * Load Group - Copy Popup functionality.
      */
     @GetMapping("/{id}/renderCopyLoadGroup")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String renderCopyLoadGroup(@PathVariable int id, Integer routeId, ModelMap model, YukonUserContext userContext,
             HttpServletRequest request) {
 

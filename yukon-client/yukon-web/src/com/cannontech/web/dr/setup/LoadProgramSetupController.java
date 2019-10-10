@@ -48,6 +48,8 @@ import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -60,11 +62,13 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 @Controller
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.RESTRICTED)
 @RequestMapping("/setup/loadProgram")
 public class LoadProgramSetupController {
 
@@ -83,6 +87,7 @@ public class LoadProgramSetupController {
     private Cache<String, BindingResult> gearErrorCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();
 
     @GetMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
         LoadProgram loadProgram = new LoadProgram();
@@ -100,6 +105,7 @@ public class LoadProgramSetupController {
     }
 
     @GetMapping("/create/{type}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, @PathVariable PaoType type, @RequestParam String name,
             YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
@@ -142,6 +148,7 @@ public class LoadProgramSetupController {
     }
 
     @GetMapping("/{id}/edit")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
@@ -176,6 +183,7 @@ public class LoadProgramSetupController {
     }
 
     @PostMapping("/save")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String save(@ModelAttribute("loadProgram") LoadProgram loadProgram, BindingResult result,
             YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes,
             HttpServletRequest request, @RequestParam("selectedGroupIds") List<Integer> selectedGroupIds,
@@ -249,6 +257,7 @@ public class LoadProgramSetupController {
     }
 
     @DeleteMapping("/{id}/delete")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public String delete(@PathVariable int id, @ModelAttribute LMDelete lmDelete, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request) {
 
@@ -273,6 +282,7 @@ public class LoadProgramSetupController {
     }
 
     @PostMapping("/{id}/copy")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String copy(@ModelAttribute("programCopy") LoadProgramCopy programCopy, @PathVariable int id, BindingResult result,
             YukonUserContext userContext, FlashScope flash, ModelMap model, HttpServletRequest request,
             HttpServletResponse servletResponse) throws IOException {
@@ -317,6 +327,7 @@ public class LoadProgramSetupController {
      * Load Program - Copy Popup functionality.
      */
     @GetMapping("/{id}/renderCopyLoadProgram")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String renderCopyLoadProgram(@PathVariable int id, OperationalState operationalState, Integer constraintId, ModelMap model, YukonUserContext userContext,
             HttpServletRequest request) {
 
@@ -532,6 +543,7 @@ public class LoadProgramSetupController {
     }
 
     @GetMapping("/createGearPopup/{programType}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String createGearPopup(ModelMap model, @PathVariable PaoType programType) {
         model.addAttribute("mode", PageEditMode.CREATE);
         ProgramGear programGear = new ProgramGear();
@@ -547,6 +559,7 @@ public class LoadProgramSetupController {
     }
 
     @GetMapping("/populateGearFields/{gearType}")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String populateGearFields(ModelMap model, @PathVariable GearControlMethod gearType,
             @RequestParam String gearName, @RequestParam PaoType programType, YukonUserContext userContext,
             HttpServletRequest request) {
@@ -572,6 +585,7 @@ public class LoadProgramSetupController {
     }
 
     @PostMapping("/gear/save")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public @ResponseBody Map<String, String> save(@ModelAttribute("programGear") ProgramGear programGear, @RequestParam String tempGearId,
             BindingResult result, YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes,
             HttpServletRequest request) {
@@ -592,6 +606,7 @@ public class LoadProgramSetupController {
     }
     
     @DeleteMapping("/gear/{id}/delete")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public void deleteGear(@PathVariable String id) {
        gearCache.invalidate(id);
     }
