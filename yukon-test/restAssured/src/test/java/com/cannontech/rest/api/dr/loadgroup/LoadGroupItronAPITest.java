@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupItron;
 import com.cannontech.rest.api.utilities.Log;
 

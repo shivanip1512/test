@@ -1,4 +1,4 @@
-package com.cannontech.rest.api.documentation.constraint;
+package com.cannontech.rest.api.dr.helper;
 
 import java.util.ArrayList;
 import java.util.List;

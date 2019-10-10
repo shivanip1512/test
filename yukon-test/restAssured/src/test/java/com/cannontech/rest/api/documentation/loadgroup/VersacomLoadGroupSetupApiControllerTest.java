@@ -24,7 +24,7 @@ import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.JsonUtil;
 import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
-import com.cannontech.rest.api.dr.loadgroup.LoadGroupHelper;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupVersacom;
 import com.cannontech.rest.api.utilities.Log;

@@ -1,4 +1,33 @@
-package com.cannontech.rest.api.gear.fields;
+package com.cannontech.rest.api.dr.helper;
+
+import com.cannontech.rest.api.gear.fields.MockAbsoluteOrDelta;
+import com.cannontech.rest.api.gear.fields.MockBeatThePeakGearFields;
+import com.cannontech.rest.api.gear.fields.MockBtpLedIndicator;
+import com.cannontech.rest.api.gear.fields.MockControlStartState;
+import com.cannontech.rest.api.gear.fields.MockCycleCountSendType;
+import com.cannontech.rest.api.gear.fields.MockEcobeeCycleGearFields;
+import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
+import com.cannontech.rest.api.gear.fields.MockGroupSelectionMethod;
+import com.cannontech.rest.api.gear.fields.MockHoneywellCycleGearFields;
+import com.cannontech.rest.api.gear.fields.MockHowToStopControl;
+import com.cannontech.rest.api.gear.fields.MockItronCycleGearFields;
+import com.cannontech.rest.api.gear.fields.MockItronCycleType;
+import com.cannontech.rest.api.gear.fields.MockLatchingGearFields;
+import com.cannontech.rest.api.gear.fields.MockMasterCycleGearFields;
+import com.cannontech.rest.api.gear.fields.MockMode;
+import com.cannontech.rest.api.gear.fields.MockNoControlGearFields;
+import com.cannontech.rest.api.gear.fields.MockProgramGearFields;
+import com.cannontech.rest.api.gear.fields.MockRotationGearFields;
+import com.cannontech.rest.api.gear.fields.MockSepCycleGearFields;
+import com.cannontech.rest.api.gear.fields.MockSepTemperatureOffsetGearFields;
+import com.cannontech.rest.api.gear.fields.MockSimpleThermostatRampingGearFields;
+import com.cannontech.rest.api.gear.fields.MockSmartCycleGearFields;
+import com.cannontech.rest.api.gear.fields.MockTargetCycleGearFields;
+import com.cannontech.rest.api.gear.fields.MockTemperatureMeasureUnit;
+import com.cannontech.rest.api.gear.fields.MockThermostatSetbackGearFields;
+import com.cannontech.rest.api.gear.fields.MockTimeRefreshGearFields;
+import com.cannontech.rest.api.gear.fields.MockWhenToChange;
+import com.cannontech.rest.api.gear.fields.MockWhenToChangeFields;
 
 public class GearFieldHelper {
     

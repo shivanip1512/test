@@ -1,4 +1,4 @@
-package com.cannontech.rest.api.documentation.loadprogram;
+package com.cannontech.rest.api.dr.helper;
 
 import static io.restassured.RestAssured.given;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -16,7 +16,6 @@ import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
-import com.cannontech.rest.api.gear.fields.GearFieldHelper;
 import com.cannontech.rest.api.gear.fields.MockOperationalState;
 import com.cannontech.rest.api.gear.fields.MockProgramGear;
 import com.cannontech.rest.api.gear.fields.MockProgramGearFields;

@@ -1,4 +1,4 @@
-package com.cannontech.rest.api.dr.loadgroup;
+package com.cannontech.rest.api.dr.helper;
 
 import static org.junit.Assert.assertTrue;
 
