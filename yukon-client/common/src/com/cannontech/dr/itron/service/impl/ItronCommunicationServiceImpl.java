@@ -251,6 +251,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             boolean rampIn, boolean rampOut, Duration duration) {
         String url = ItronEndpointManager.PROGRAM_EVENT.getUrl(settingDao);
         int relay = itronDao.getVirtualRelayId(yukonGroupId);
+        int adjustedRelay = relay - 1;
+        log.debug("Adjusted group relay " + relay + " to Itron Virtual Relay " + adjustedRelay);
         List<ProgramLoadGroup> programsByLMGroupId = applianceAndProgramDao.getProgramsByLMGroupId(yukonGroupId);
         int programId = programsByLMGroupId.get(0).getPaobjectId();
         int itronProgramId = itronDao.getItronProgramId(programId);
@@ -264,7 +266,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         try {
             itronEventLogService.sendDREventForGroup(yukonGroupId, dutyCyclePercent, dutyCyclePeriod, criticality);
             AddHANLoadControlProgramEventRequest request = ProgramEventManagerHelper.buildDrEvent(dutyCyclePercent, dutyCycleType,
-               dutyCyclePeriod, criticality, relay, itronGroupId, itronProgramId, String.valueOf(programId), rampIn, rampOut, duration);
+               dutyCyclePeriod, criticality, adjustedRelay, itronGroupId, itronProgramId, String.valueOf(programId), rampIn, rampOut, duration);
             log.debug(XmlUtils.getPrettyXml(request));
             log.debug("ITRON-sendDREventForGroup url:{} yukon group:{} yukon program:{}", url, group.getPaoName(), program.getPaoName());
             JAXBElement<AddProgramEventResponseType> response =
