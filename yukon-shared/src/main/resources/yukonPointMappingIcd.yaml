@@ -144,6 +144,7 @@ Modifiers:
         - &Max Max
         - &Prev Previous
         - &DayMax Daily Max
+        - &DayMin Daily Min
         - &Cuml Cumulative
         - &Cont Continuous Cumulative
     Segmentation:
@@ -202,6 +203,10 @@ Centron C1SX and C2SX with Advanced Metrology:
     - Coincident Time of Peak Voltage:              { Unit: *s,   Modifiers: [                                  ], Models: *c1sx_c2sx }
     - Minimum Voltage:                              { Unit: *V,   Modifiers: [ *Min, *milli                     ], Models: *c1sx_c2sx }
     - Coincident Time of Minimum Voltage:           { Unit: *s,   Modifiers: [                                  ], Models: *c1sx_c2sx }
+    - Peak Daily Voltage:                           { Unit: *V,   Modifiers: [ *DayMax, *milli                  ], Models: *c1sx_c2sx }
+    - Coincident Time of Peak Daily Voltage:        { Unit: *s,   Modifiers: [                                  ], Models: *c1sx_c2sx }
+    - Minimum Daily Voltage:                        { Unit: *V,   Modifiers: [ *DayMin, *milli                  ], Models: *c1sx_c2sx }
+    - Coincident Time of Minimum Daily Voltage:     { Unit: *s,   Modifiers: [                                  ], Models: *c1sx_c2sx }
     - Watt-hours Delivered Rate A:                  { Unit: *Wh,  Modifiers: [ *Q1, *Q4, *RateA                 ], Models: *c1sx_c2sx }
     - Watt-hours Received Rate A:                   { Unit: *Wh,  Modifiers: [ *Q2, *Q3, *RateA                 ], Models: *c1sx_c2sx }
     - Watt-hours Total Rate A:                      { Unit: *Wh,  Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *c1sx_c2sx }
@@ -249,6 +254,10 @@ Centron C2SX prior to Advanced Metrology:
     - Coincident Time of Peak Voltage:        { Unit: *s,  Modifiers: [                        ] }
     - Minimum Voltage:                        { Unit: *V,  Modifiers: [ *Min, *milli           ] }
     - Coincident Time of Minimum Voltage:     { Unit: *s,  Modifiers: [                        ] }
+    - Peak Daily Voltage:                     { Unit: *V,  Modifiers: [ *DayMax, *milli        ] }
+    - Coincident Time of Peak Daily Voltage:  { Unit: *s,  Modifiers: [                        ] }
+    - Minimum Daily Voltage:                  { Unit: *V,  Modifiers: [ *DayMin, *milli        ] }
+    - Coincident Time of Minimum Daily Voltage: { Unit: *s,  Modifiers: [                        ] }
     - Watt-hours Total Rate A:                { Unit: *Wh, Modifiers: [ *RateA                 ] }
     - Peak Demand Rate A:                     { Unit: *W,  Modifiers: [ *Q1, *Q4, *Max, *RateA ] }
     - Coincident Time for Peak Demand Rate A: { Unit: *s,  Modifiers: [ *RateA                 ] }
@@ -288,6 +297,10 @@ RFN-420 Node in L & G Focus AX with Advanced Metrology:
     - Coincident Time for Peak Voltage:             { Unit: *s,      Modifiers: [                                  ] }
     - Minimum Voltage:                              { Unit: *V,      Modifiers: [ *Min, *milli                     ] }
     - Coincident Time for Minimum Voltage:          { Unit: *s,      Modifiers: [                                  ] }
+    - Peak Daily Voltage:                           { Unit: *V,      Modifiers: [ *DayMax, *milli                  ] }
+    - Coincident Time of Peak Daily Voltage:        { Unit: *s,      Modifiers: [                                  ] }
+    - Minimum Daily Voltage:                        { Unit: *V,      Modifiers: [ *DayMin, *milli                  ] }
+    - Coincident Time of Minimum Daily Voltage:     { Unit: *s,      Modifiers: [                                  ] }
     - Watt-hours Delivered Rate A:                  { Unit: *Wh,     Modifiers: [ *Q1, *Q4, *RateA                 ] }
     - Watt-hours Received Rate A:                   { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateA                 ] }
     - Watt-hours Total Rate A:                      { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ] }
@@ -406,6 +419,10 @@ RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology:
     - Coincident Time for Peak Voltage:             { Unit: *s,  Modifiers: [                                  ] }
     - Minimum Voltage:                              { Unit: *V,  Modifiers: [ *Min, *milli                     ] }
     - Coincident Time for Minimum Voltage:          { Unit: *s,  Modifiers: [                                  ] }
+    - Peak Daily Voltage:                           { Unit: *V,  Modifiers: [ *DayMax, *milli                  ] }
+    - Coincident Time of Peak Daily Voltage:        { Unit: *s,  Modifiers: [                                  ] }
+    - Minimum Daily Voltage:                        { Unit: *V,  Modifiers: [ *DayMin, *milli                  ] }
+    - Coincident Time of Minimum Daily Voltage:     { Unit: *s,  Modifiers: [                                  ] }
     - Watt-hours Delivered Rate A:                  { Unit: *Wh, Modifiers: [ *Q1, *Q4, *RateA                 ] }
     - Watt-hours Received Rate A:                   { Unit: *Wh, Modifiers: [ *Q2, *Q3, *RateA                 ] }
     - Watt-hours Total Rate A:                      { Unit: *Wh, Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ] }
@@ -1460,6 +1477,10 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Time for Minimum Voltage:             { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AX-RX-23 }
     - Peak Voltage:                         { Unit: *V,      Modifiers: [ *Max, *milli                     ], Models: *AX-RX-23 }
     - Time for Peak Voltage:                { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AX-RX-23 }
+    - Peak Daily Voltage:                   { Unit: *V,      Modifiers: [ *DayMax, *milli                  ], Models: *AX-RX-23 }
+    - Coincident Time of Peak Daily Voltage: { Unit: *s,      Modifiers: [                                  ], Models: *AX-RX-23 }
+    - Minimum Daily Voltage:                { Unit: *V,      Modifiers: [ *DayMin, *milli                  ], Models: *AX-RX-23 }
+    - Coincident Time of Minimum Daily Voltage: { Unit: *s,   Modifiers: [                                  ], Models: *AX-RX-23 }
     - Interval Demand:                      { Unit: *W,      Modifiers: [ *Q1, *Q4                         ], Models: *AX-RX-23 }
     - Interval Voltage:                     { Unit: *V,      Modifiers: [ *milli                           ], Models: *AX-RX-23 }
     - Voltage Phase A:                      { Unit: *V,      Modifiers: [ *PhA, *milli                     ], Models: *AX-RX-23 }
@@ -1619,6 +1640,8 @@ Metric IDs:
     126: { name: "Voltage Angle",                        Unit: *V_deg,  Modifiers: [                                       ] }
     127: { name: "Current Angle",                        Unit: *A_deg,  Modifiers: [                                       ] }
     128: { name: "Current Neutral to Ground",            Unit: *A,      Modifiers: [ *Neutral                              ] }
+    129: { name: "V Daily Max",                          Unit: *V,      Modifiers: [ *DayMax                               ] }
+    130: { name: "V Daily Min",                          Unit: *V,      Modifiers: [ *DayMin                               ] }
     # ------     
     150: { name: "Watts Phase A",                        Unit: *W,      Modifiers: [ *PhA                                  ] }
     151: { name: "Watts Phase B",                        Unit: *W,      Modifiers: [ *PhB                                  ] }
