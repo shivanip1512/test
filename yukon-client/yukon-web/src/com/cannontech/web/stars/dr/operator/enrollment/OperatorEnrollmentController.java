@@ -283,6 +283,16 @@ public class OperatorEnrollmentController {
                                                             assignedProgram,
                                                             accountInfoFragment.getEnergyCompanyId(), programEnrollment));
         try {
+            // This checks if you are "adding" an enrollment
+            if(saveTypeKey == "enrollCompleted") {
+                    // This checks if the program selected for enrollment is blank ( no devices selected )
+                    if(programEnrollment.isBlankEnrollment()) {
+                        log.warn("Unable to enroll program with no devices selected.");
+                        flashScope.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.operator.enrollment.error.addBlankEnrollment"));
+                        return;
+                }
+            }
+            
             enrollmentHelper.updateProgramEnrollments(programEnrollments, accountInfoFragment.getAccountId(), userContext);
             
             //if nest send update command
