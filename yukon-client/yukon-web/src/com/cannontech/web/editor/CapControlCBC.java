@@ -172,7 +172,7 @@ public class CapControlCBC implements YukonPao {
     }
 
     public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+        this.ipAddress = ipAddress.trim();
     }
 
     public String getPort() {
