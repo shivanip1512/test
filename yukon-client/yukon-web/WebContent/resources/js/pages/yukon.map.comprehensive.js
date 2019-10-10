@@ -89,6 +89,36 @@ yukon.map.comprehensive = (function () {
         
             _icons.push(icon);
             source.addFeature(icon);
+            
+            // Drag and drop feature
+            _deviceDragInteraction = new ol.interaction.Modify({
+                features: new ol.Collection([icon]),
+                pixelTolerance: 40
+            });
+            
+            // Add the event to the drag and drop feature
+            _deviceDragInteraction.on('modifyend', function(e) {
+                var feature = e.features.getArray()[0],
+                coord = ol.proj.transform(feature.getGeometry().getCoordinates(), _destProjection, src_projection),
+                latitude = coord[1].toFixed(6),
+                longitude = coord[0].toFixed(6);
+                var location = {
+                        paoId : feature.get('pao').paoId,
+                        latitude : latitude,
+                        longitude : longitude
+                 }
+                 $.ajax({
+                     type: "POST",
+                     url: yukon.url('/stars/mapNetwork/saveCoordinates'),
+                     data: location,
+                     success: function(results) {
+                         //window.location.reload();
+                     }
+                 });
+            }, icon);
+            
+            _map.addInteraction(_deviceDragInteraction);
+
         }
         
         yukon.mapping.updateZoom(_map);

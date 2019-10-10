@@ -11188,7 +11188,7 @@ INSERT INTO YukonRoleProperty VALUES (-90045,-900,'Allow Load Group Control','tr
 INSERT INTO YukonRoleProperty VALUES (-90046,-900,'Enable ecobee','false','Controls access to actions and information related to ecobee devices.');
 INSERT INTO YukonRoleProperty VALUES (-90047,-900,'Allow DR Enable/Disable','true','Controls access to enable or disable control areas,load programs and load groups. Requires Allow DR Control.');
 INSERT INTO YukonRoleProperty VALUES (-90048,-900,'Allow Change Gears','true','Controls access to change gears for scenarios, control areas, and load programs. Requires Allow DR Control.');
-INSERT INTO YukonRoleProperty VALUES (-90049,-900,'DR Setup Permission','RESTRICTED','Controls the ability to create, edit, or delete demand response setup and configuration i.e Load Groups, Programs, Control Areas. Demand Response Role controls view access.');
+INSERT INTO YukonRoleProperty VALUES (-90049,-900,'DR Setup Permission','VIEW','Controls the ability to create, edit, or delete demand response setup and configuration i.e Load Groups, Programs, Control Areas. Demand Response Role controls view access.');
 
 /* Capacitor Control role properties cont...*/
 insert into YukonRoleProperty values (-100205,-1002, 'Capbank Fixed/Static Text', 'Fixed', 'The text to display for fixed/static capbanks');

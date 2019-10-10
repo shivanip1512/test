@@ -24,7 +24,7 @@ public class YukonRolePropertyTest {
             YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.UPDATE);
 
         rolePropertyDaoMock.setupRolesFor(MockRolePropertyDaoImpl.LEVEL_RESTRICTED_USER).withRoleProperty(
-            YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.RESTRICTED);
+            YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.VIEW);
     }
 
     /**
@@ -48,7 +48,7 @@ public class YukonRolePropertyTest {
     }
 
     /**
-     * Verifies that user with an "RESTRICTED" level doesn't have access to "UPDATED" functionality.
+     * Verifies that user with an "VIEW" level doesn't have access to "UPDATED" functionality.
      */
     @Test
     public void checkRestrictedAccessToUpdate() {
@@ -62,12 +62,12 @@ public class YukonRolePropertyTest {
      */
     @Test(expected = NotAuthorizedException.class)
     public void checkNotInRole() {
-        rolePropertyDaoMock.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.RESTRICTED,
+        rolePropertyDaoMock.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.VIEW,
             MockRolePropertyDaoImpl.LEVEL_UNKNOWN_USER);
     }
 
     /**
-     * Verifies that user with an "RESTRICTED" level doesn't have access to "UPDATE" functionality.
+     * Verifies that user with an "VIEW" level doesn't have access to "UPDATE" functionality.
      */
     @Test(expected = NotAuthorizedException.class)
     public void verifyRestrictedAccessToUpdate() {

@@ -138,7 +138,7 @@ public class SiteMapHelper {
                 if (type == InputTypeFactory.booleanType()) {
                     hasPermission = rolePropertyDao.checkProperty((YukonRoleProperty) permission, user);
                 } else if (type.getTypeClass() == HierarchyPermissionLevel.class) {
-                    hasPermission = rolePropertyDao.checkLevel(roleProp, HierarchyPermissionLevel.RESTRICTED, user);
+                    hasPermission = rolePropertyDao.checkLevel(roleProp, HierarchyPermissionLevel.VIEW, user);
                 }
             } else if (permission instanceof GlobalSettingType) {
                 InputType<?> dataType = ((GlobalSettingType) permission).getType();

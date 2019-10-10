@@ -60,8 +60,8 @@
     
     <!-- Hierarchy Permission Level Properties -->
     <entry key="yukon.common.roleproperty.HierarchyPermissionLevel.NO_ACCESS">No Access</entry>
-    <entry key="yukon.common.roleproperty.HierarchyPermissionLevel.RESTRICTED">View</entry>
-    <entry key="yukon.common.roleproperty.HierarchyPermissionLevel.LIMITED">Interact</entry>
+    <entry key="yukon.common.roleproperty.HierarchyPermissionLevel.VIEW">View</entry>
+    <entry key="yukon.common.roleproperty.HierarchyPermissionLevel.INTERACT">Interact</entry>
     <entry key="yukon.common.roleproperty.HierarchyPermissionLevel.UPDATE">Update</entry>
     <entry key="yukon.common.roleproperty.HierarchyPermissionLevel.CREATE">Create</entry>
     <entry key="yukon.common.roleproperty.HierarchyPermissionLevel.OWNER">Owner</entry>
