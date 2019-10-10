@@ -31,6 +31,8 @@ import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.ProgramConstraint;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -39,8 +41,10 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @Controller
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.RESTRICTED)
 @RequestMapping("/setup/constraint")
 public class ProgramConstraintController {
 
@@ -54,6 +58,7 @@ public class ProgramConstraintController {
     private static final Logger log = YukonLogManager.getLogger(ProgramConstraintController.class);
 
     @GetMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
         ProgramConstraint programConstraint = new ProgramConstraint();
@@ -85,6 +90,7 @@ public class ProgramConstraintController {
     }
 
     @GetMapping("/{id}/edit")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.EDIT);
@@ -107,6 +113,7 @@ public class ProgramConstraintController {
     }
 
     @PostMapping("/save")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String save(@ModelAttribute("programConstraint") ProgramConstraint programConstraint, BindingResult result,
             YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes, ModelMap model,
             HttpServletRequest request) {
@@ -149,6 +156,7 @@ public class ProgramConstraintController {
     }
 
     @DeleteMapping("/{id}/delete")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public String delete(@PathVariable int id, @ModelAttribute LMDelete lmDelete, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request) {
         try {
