@@ -33,7 +33,7 @@ public class MeterProgramStatistics {
     }
 
     public boolean displayDelete() {
-        return programInfo.getGuid() != null && deviceTotal == 0;
+        return programInfo.getGuid() != null && deviceTotal == 0 && inProgressTotal == 0 ;
     }
 
     @Override

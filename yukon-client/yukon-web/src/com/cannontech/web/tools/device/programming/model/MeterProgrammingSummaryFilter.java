@@ -14,14 +14,16 @@ import com.google.common.collect.Lists;
 
 public class MeterProgrammingSummaryFilter {
     public enum DisplayableStatus implements DisplayableEnum {
-        SUCCESS(ProgrammingStatus.IDLE), 
+        PROGRAMMED(ProgrammingStatus.IDLE), 
         FAILURE(ProgrammingStatus.FAILED, ProgrammingStatus.CANCELED, ProgrammingStatus.MISMATCHED), 
         IN_PROGRESS(ProgrammingStatus.INITIATING, ProgrammingStatus.UPLOADING), 
         CONFIRMING(ProgrammingStatus.CONFIRMING);
         private List<ProgrammingStatus> programStatuses = null;
 
         private DisplayableStatus(ProgrammingStatus... statuses) {
-            programStatuses = Collections.unmodifiableList(Lists.newArrayList(statuses));
+            if(statuses != null) {
+                programStatuses = Collections.unmodifiableList(Lists.newArrayList(statuses));
+            }
         }
 
         public List<ProgrammingStatus> getProgramStatuses() {

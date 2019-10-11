@@ -9,7 +9,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
 public enum MeterProgramSource implements DisplayableEnum, DatabaseRepresentationSource {
-    YUKON("Y"), 
+    YUKON("R"), 
     OPTICAL("P"), 
     NEW("N"), 
     UNPROGRAMMED("U"),

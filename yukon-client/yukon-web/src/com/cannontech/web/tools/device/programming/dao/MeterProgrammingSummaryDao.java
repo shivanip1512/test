@@ -19,7 +19,7 @@ public interface MeterProgrammingSummaryDao {
         DEVICE_NAME("DeviceName"),
         METER_NUMBER("MeterNumber"),
         DEVICE_TYPE("Type"),
-        PROGRAM("ProgramName"),
+        PROGRAM("ReportedProgramName"),
         STATUS("Status"),
         LAST_UPDATE("LastUpdate");        
         private SortBy(String dbString) {

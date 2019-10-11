@@ -1,7 +1,8 @@
 package com.cannontech.common.device.programming.model;
 
 public enum ProgrammingStatus {
-    IDLE, UPLOADING, 
+    IDLE, 
+    UPLOADING, 
     CONFIRMING, 
     FAILED, 
     INITIATING, 
