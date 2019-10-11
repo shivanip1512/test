@@ -237,3 +237,5 @@ yukon-server/yukon-server.VC.VC.opendb
 yukon-server/yukon-server.VC.db
 yukon-server/yukon-server.log
 yukon-shared/build/classes
+yukon-test/restAssured/test-output/*
+yukon-test/restAssured/Logs

@@ -21,8 +21,16 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.JsonUtil;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
+import com.cannontech.rest.api.utilities.Log;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
+import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
@@ -33,6 +41,7 @@ public class DigiSepLoadGroupSetupApiControllerTest {
     private String paoId = null;
     private String copyPaoId = null;
     private FieldDescriptor[] digiSepFieldDescriptor = null;
+    private MockLoadGroupBase loadGroup = null;
 
     @BeforeMethod
     public void setUp(Method method) {
@@ -49,6 +58,7 @@ public class DigiSepLoadGroupSetupApiControllerTest {
                          fieldWithPath("LM_GROUP_DIGI_SEP.deviceClassSet").type(JsonFieldType.ARRAY).description("Device Class Set"),
                          fieldWithPath("LM_GROUP_DIGI_SEP.rampInMinutes").type(JsonFieldType.NUMBER).description("RampIn value in minutes"),
                          fieldWithPath("LM_GROUP_DIGI_SEP.rampOutMinutes").type(JsonFieldType.NUMBER).description("RampOut value in minutes")};
+        loadGroup = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
     }
 
     @AfterMethod
@@ -64,7 +74,7 @@ public class DigiSepLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\DigiSepCreate.json"))
+                                .body(loadGroup)
                                 .when()
                                 .post(ApiCallHelper.getProperty("saveloadgroup"))
                                 .then()
@@ -101,7 +111,7 @@ public class DigiSepLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\DigiSepCreate.json"))
+                                .body(loadGroup)
                                 .when()
                                 .post(ApiCallHelper.getProperty("updateloadgroup") + paoId)
                                 .then()
@@ -114,6 +124,7 @@ public class DigiSepLoadGroupSetupApiControllerTest {
 
     @Test(dependsOnMethods = { "Test_LmDigiSep_Update" })
     public void Test_LmDigiSep_Copy() {
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name("Test-DigiSep-Copy").build();
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
                                     requestFields(
@@ -122,7 +133,7 @@ public class DigiSepLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\DigiSepCopy.json"))
+                                .body(loadGroupCopy)
                                 .when()
                                 .post(ApiCallHelper.getProperty("copyloadgroup")+ paoId)
                                 .then()
@@ -135,6 +146,10 @@ public class DigiSepLoadGroupSetupApiControllerTest {
 
     @Test(dependsOnMethods = { "Test_LmDigiSep_Copy" })
     public void Test_LmDigiSep_Delete() {
+
+        MockLMDto lmDeleteObject = MockLMDto.builder()
+                                    .name("Test-Digi-Sep")
+                                    .build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
             requestFields(
                 fieldWithPath("name").type(JsonFieldType.STRING).description("Load Group Name")), 
@@ -142,12 +157,19 @@ public class DigiSepLoadGroupSetupApiControllerTest {
             .accept("application/json")
             .contentType("application/json")
             .header("Authorization","Bearer " + ApiCallHelper.authToken)
-            .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\DigiSepDelete.json"))
+            .body(lmDeleteObject)
             .when()
             .delete(ApiCallHelper.getProperty("deleteloadgroup") + paoId)
             .then()
             .extract()
             .response();
         assertTrue("Status code should be 200", response.statusCode() == 200);
+ 
+        MockLMDto lmDeleteCopyObject = MockLMDto.builder()
+                                        .name("Test-DigiSep-Copy")
+                                        .build();
+        Log.info("Delete payload is : " + JsonUtil.beautifyJson(lmDeleteCopyObject.toString()));
+        ExtractableResponse<?> copyResponse = ApiCallHelper.delete("deleteloadgroup", lmDeleteCopyObject, copyPaoId);
+        assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
     }
 }

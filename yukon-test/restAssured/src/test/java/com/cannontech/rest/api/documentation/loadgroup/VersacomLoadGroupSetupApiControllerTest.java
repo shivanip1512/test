@@ -21,8 +21,16 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.JsonUtil;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupVersacom;
+import com.cannontech.rest.api.utilities.Log;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
+import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
@@ -32,6 +40,7 @@ public class VersacomLoadGroupSetupApiControllerTest {
     private RequestSpecification documentationSpec;
     private String paoId = null;
     private String copyPaoId = null;
+    private MockLoadGroupVersacom loadGroup = null;
     private FieldDescriptor[] versacomFieldDescriptor = null;
 
     @BeforeMethod
@@ -54,6 +63,7 @@ public class VersacomLoadGroupSetupApiControllerTest {
             fieldWithPath("LM_GROUP_VERSACOM.addressUsage").type(JsonFieldType.ARRAY).description("Address Uasge. Select UTILITY, SECTION, CLASS, DIVISION"),
             fieldWithPath("LM_GROUP_VERSACOM.relayUsage").type(JsonFieldType.ARRAY).description("Relay Usage. RELAY_1, RELAY_2, RELAY_3, RELAY_4")
         };
+        loadGroup = (MockLoadGroupVersacom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_VERSACOM);
     }
 
     @AfterMethod
@@ -69,7 +79,7 @@ public class VersacomLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\VersacomCreate.json"))
+                                .body(loadGroup)
                                 .when()
                                 .post(ApiCallHelper.getProperty("saveloadgroup"))
                                 .then()
@@ -105,7 +115,7 @@ public class VersacomLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\VersacomCreate.json"))
+                                .body(loadGroup)
                                 .when()
                                 .post(ApiCallHelper.getProperty("updateloadgroup") + paoId)
                                 .then()
@@ -119,6 +129,7 @@ public class VersacomLoadGroupSetupApiControllerTest {
 
     @Test(dependsOnMethods = { "Test_LmVersacom_Update" })
     public void Test_LmVersacom_Copy() {
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name("Versacom-Copy-Test").routeId(12815).build();
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
                                     requestFields(
@@ -128,7 +139,7 @@ public class VersacomLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\VersacomCopy.json"))
+                                .body(loadGroupCopy)
                                 .when()
                                 .post(ApiCallHelper.getProperty("copyloadgroup")+ paoId)
                                 .then()
@@ -141,6 +152,11 @@ public class VersacomLoadGroupSetupApiControllerTest {
 
     @Test(dependsOnMethods = { "Test_LmVersacom_Copy" })
     public void Test_LmVersacom_Delete() {
+
+        MockLMDto lmDeleteObject = MockLMDto.builder()
+                                    .name("Test_Versacom_LoadGroup")
+                                    .build();
+
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
             requestFields(
                 fieldWithPath("name").type(JsonFieldType.STRING).description("Load Group Name")), 
@@ -148,12 +164,17 @@ public class VersacomLoadGroupSetupApiControllerTest {
             .accept("application/json")
             .contentType("application/json")
             .header("Authorization","Bearer " + ApiCallHelper.authToken)
-            .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\VersacomDelete.json"))
+            .body(lmDeleteObject)
             .when()
             .delete(ApiCallHelper.getProperty("deleteloadgroup") + paoId)
             .then()
             .extract()
             .response();
         assertTrue("Status code should be 200", response.statusCode() == 200);
+        
+        MockLMDto lmDeleteCopyObject = MockLMDto.builder().name("Versacom-Copy-Test").build();
+        Log.info("Delete payload is : " + JsonUtil.beautifyJson(lmDeleteCopyObject.toString()));
+        ExtractableResponse<?> copyResponse = ApiCallHelper.delete("deleteloadgroup", lmDeleteCopyObject, copyPaoId);
+        assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
     }
 }

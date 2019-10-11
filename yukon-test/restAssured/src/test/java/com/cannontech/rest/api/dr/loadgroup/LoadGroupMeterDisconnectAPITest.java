@@ -2,58 +2,62 @@ package com.cannontech.rest.api.dr.loadgroup;
 
 import static org.junit.Assert.assertTrue;
 
-import org.json.simple.JSONObject;
+import java.lang.reflect.Method;
+
 import org.testng.ITestContext;
-import org.testng.annotations.DataProvider;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.utilities.JsonFileReader;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.Log;
-import io.restassured.path.json.JsonPath;
+
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupMeterDisconnectAPITest {
-    private final static String meterDisconnectPaoTypeStr = "LM_GROUP_NEST";
-    private final static String meterDisconnectpayloadfile = "loadgroup\\lmGroupMeterDisconnectCreate.json";
+    MockLoadGroupBase loadGroup = null;
+
+    @BeforeMethod
+    public void setUp(Method method) {
+        loadGroup = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_METER_DISCONNECT);
+    }
 
     @Test(priority = 0)
     public void Test01_LmGroupMeterDisconnect_Create(ITestContext context) {
         Log.startTestCase("LmGroupMeterDisconnect_Create");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", meterDisconnectpayloadfile);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
         String groupId = createResponse.path("groupId").toString();
-        context.setAttribute("MeterDisconnectgroupId", groupId);
+        context.setAttribute("groupId", groupId);
+
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        assertTrue("GROUP ID should not be Null", groupId != null);
+        assertTrue("GroupId should not be Null", groupId != null);
+
         Log.endTestCase("LmGroupMeterDisconnect_Create");
     }
 
     @Test(priority = 1)
     public void Test02_LmGroupMeterDisconnect_Get(ITestContext context) {
         Log.startTestCase("Test02_LmGroupMeterDisconnect_Get");
-        String groupId = context.getAttribute("MeterDisconnectgroupId").toString();
-
-        JSONObject jo = JsonFileReader.readJsonFileAsJSONObject(meterDisconnectpayloadfile);
-        JsonPath jp = new JsonPath(jo.toJSONString());
-        Float kWCapacity = jp.getFloat(meterDisconnectPaoTypeStr + ".kWCapacity");
-        String name = jp.get(meterDisconnectPaoTypeStr + ".name");
+        String groupId = context.getAttribute("groupId").toString();
 
         Log.info("GroupId of LmGroupMeterDisconnect created is : " + groupId);
 
         ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup", groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
-        JsonPath jsonPath = getResponse.jsonPath();
-        context.setAttribute("MR_GrpName", jsonPath.get(meterDisconnectPaoTypeStr + ".name"));
+        MockLoadGroupBase meterDisconnectGroup = getResponse.as(MockLoadGroupBase.class);
+        context.setAttribute("MR_GrpName", meterDisconnectGroup.getName());
 
-        assertTrue("Name Should be : " + name, name.equals((String) jsonPath.get(meterDisconnectPaoTypeStr + ".name")));
-        assertTrue("Type Should be : " + meterDisconnectPaoTypeStr,
-            meterDisconnectPaoTypeStr.equals(jsonPath.get(meterDisconnectPaoTypeStr + ".type")));
-        assertTrue("kWCapacity Should be : " + kWCapacity,
-            kWCapacity.equals(jsonPath.get(meterDisconnectPaoTypeStr + ".kWCapacity")));
-        boolean disableGroup = (boolean) jsonPath.get(meterDisconnectPaoTypeStr + ".disableGroup");
+        assertTrue("Name Should be : " + loadGroup.getName(), loadGroup.getName().equals(meterDisconnectGroup.getName()));
+        assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == meterDisconnectGroup.getType());
+        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(), loadGroup.getKWCapacity().equals(meterDisconnectGroup.getKWCapacity()));
+
+        Boolean disableGroup = meterDisconnectGroup.isDisableGroup();
         assertTrue("Group Should be disabled : ", !disableGroup);
-        boolean disableControl = (boolean) jsonPath.get(meterDisconnectPaoTypeStr + ".disableControl");
+
+        Boolean disableControl = meterDisconnectGroup.isDisableControl();
         assertTrue("Control Should be disabled : ", !disableControl);
         Log.endTestCase("Test02_LmGroupMeterDisconnect_Get");
     }
@@ -62,27 +66,23 @@ public class LoadGroupMeterDisconnectAPITest {
     public void Test03_LmGroupMeterDisconnect_Update(ITestContext context) {
         Log.startTestCase("Test03_LmGroupMeterDisconnect_Update");
 
-        String groupId = context.getAttribute("MeterDisconnectgroupId").toString();
-        Float kWCapacity = (float) 888.766;
-        String name = "Test Meter Disconnect_Update";
-        context.setAttribute("MR_GrpName", name);
+        String groupId = context.getAttribute("groupId").toString();
+        loadGroup.setKWCapacity(888.766);
+        loadGroup.setName("Meter_Disconnect_Update_Test");
+        context.setAttribute("MR_GrpName", loadGroup.getName());
 
-        JSONObject payload = JsonFileReader.updateLoadGroup(meterDisconnectpayloadfile, "id", groupId);
-        payload = JsonFileReader.updateLoadGroup(payload, "kWCapacity", kWCapacity.toString());
-        payload = JsonFileReader.updateLoadGroup(payload, "name", name);
-        Log.info("Updated payload is :" + payload.toJSONString());
+        Log.info("Updated payload is :" + loadGroup.toString());
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updateloadgroup", payload, groupId);
+        ExtractableResponse<?> getResponse = ApiCallHelper.post("updateloadgroup", loadGroup, groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
-        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getloadgroup", groupId);
+        ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("getloadgroup", groupId);
 
-        JsonPath jsonPath = getupdatedResponse.jsonPath();
-        assertTrue("Name Should be : " + name, name.equals(jsonPath.get(meterDisconnectPaoTypeStr + ".name")));
-        assertTrue("Type Should be : " + meterDisconnectPaoTypeStr,
-            meterDisconnectPaoTypeStr.equals(jsonPath.get(meterDisconnectPaoTypeStr + ".type")));
-        assertTrue("kWCapacity Should be : " + kWCapacity,
-            kWCapacity.equals(jsonPath.get(meterDisconnectPaoTypeStr + ".kWCapacity")));
+        MockLoadGroupBase updatedMeterDisconnectGroup = getUpdatedResponse.as(MockLoadGroupBase.class);
+        assertTrue("Name Should be : " + loadGroup.getName(), loadGroup.getName().equals(updatedMeterDisconnectGroup.getName()));
+        assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == updatedMeterDisconnectGroup.getType());
+        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(), loadGroup.getKWCapacity().equals(updatedMeterDisconnectGroup.getKWCapacity()));
+
         Log.endTestCase("Test03_LmGroupMeterDisconnect_Update");
 
     }

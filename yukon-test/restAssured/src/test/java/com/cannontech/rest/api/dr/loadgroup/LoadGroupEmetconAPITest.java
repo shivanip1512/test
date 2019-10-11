@@ -2,26 +2,33 @@ package com.cannontech.rest.api.dr.loadgroup;
 
 import static org.junit.Assert.assertTrue;
 
-import org.json.simple.JSONObject;
+import java.lang.reflect.Method;
+
 import org.testng.ITestContext;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.data.DataProviderClass;
-import com.cannontech.rest.api.utilities.ExcelUtils;
-import com.cannontech.rest.api.utilities.JsonFileReader;
+import com.cannontech.rest.api.common.model.MockApiError;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.loadgroup.request.MockEmetconAddressUsage;
+import com.cannontech.rest.api.loadgroup.request.MockEmetconRelayUsage;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupEmetcon;
 import com.cannontech.rest.api.utilities.Log;
 
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupEmetconAPITest {
 
-    private final static String emetconPaoTypeStr = "LM_GROUP_EMETCON";
-    private final static String emetconPayloadFile = "loadgroup\\lmGroupEmetconCreate.json";
-    private final static String filePath = System.getProperty("user.dir") + "\\src\\test\\resources\\testDataFiles\\LoadGroupData.xlsx";
-    private final static String sheetName = "Emetcon";
+    MockLoadGroupEmetcon loadGroup = null;
+
+    @BeforeMethod
+    public void setUp(Method method) {
+        loadGroup = (MockLoadGroupEmetcon)LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_EMETCON);
+    }
 
     /**
      * This test case validates creation of Emetcon load group with default values provided in payload json
@@ -31,11 +38,11 @@ public class LoadGroupEmetconAPITest {
     public void loadGroupEmetcon_01_Create(ITestContext context) {
 
         Log.startTestCase("loadGroupEmetcon_01_Create");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", emetconPayloadFile);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
         String groupId = createResponse.path("groupId").toString();
-        context.setAttribute("emetconGroupId", groupId);
+        context.setAttribute("groupId", groupId);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        assertTrue("GROUP ID should not be Null", groupId != null);
+        assertTrue("GroupId should not be Null", groupId != null);
         Log.endTestCase("loadGroupEmetcon_01_Create");
 
     }
@@ -47,24 +54,19 @@ public class LoadGroupEmetconAPITest {
     public void loadGroupEmetcon_02_Get(ITestContext context) {
 
         Log.startTestCase("loadGroupEmetcon_02_Get");
-        String groupId = context.getAttribute("emetconGroupId").toString();
-        JSONObject jo = JsonFileReader.readJsonFileAsJSONObject(emetconPayloadFile);
-        JsonPath jp = new JsonPath(jo.toJSONString());
-        int routeId = jp.getInt(emetconPaoTypeStr + ".routeId");
-        String name = jp.get(emetconPaoTypeStr + ".name");
+        String groupId = context.getAttribute("groupId").toString();
 
         Log.info("GroupId of LmGroupEmetcon created is : " + groupId);
 
         ExtractableResponse<?> response = ApiCallHelper.get("getloadgroup", groupId);
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
-        JsonPath jsonPath = response.jsonPath();
-        context.setAttribute("Emetcon_GrpName", jsonPath.get(emetconPaoTypeStr + ".name"));
+        MockLoadGroupEmetcon loadGroupEmetcon = response.as(MockLoadGroupEmetcon.class);
+        context.setAttribute("Emetcon_GrpName", loadGroupEmetcon.getName());
 
-        assertTrue("Name Should be : " + name, name.equals((String) jsonPath.get(emetconPaoTypeStr + ".name")));
-        assertTrue("Type Should be : " + emetconPaoTypeStr,
-            emetconPaoTypeStr.equals(jsonPath.get(emetconPaoTypeStr + ".type")));
-        assertTrue("routeId Should be : " + routeId, routeId == (jsonPath.getInt(emetconPaoTypeStr + ".routeId")));
+        assertTrue("Name Should be : " + loadGroup.getName(), loadGroup.getName().equals(loadGroupEmetcon.getName()));
+        assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == loadGroupEmetcon.getType());
+        assertTrue("routeId Should be : " + loadGroup.getRouteId(), loadGroup.getRouteId() == loadGroup.getRouteId());
 
         Log.endTestCase("loadGroupEmetcon_02_Get");
 
@@ -78,27 +80,25 @@ public class LoadGroupEmetconAPITest {
 
         Log.startTestCase("loadGroupEmetcon_03_Update");
 
-        String groupId = context.getAttribute("emetconGroupId").toString();
-        String relayUsage = "RELAY_B";
+        String groupId = context.getAttribute("groupId").toString();
+
         String name = "Auto_EmetconGroup_Update2";
         context.setAttribute("emetcon_UpdateGrpName", name);
 
-        JSONObject payload = JsonFileReader.updateLoadGroup(emetconPayloadFile, "id", groupId);
-        payload = JsonFileReader.updateLoadGroup(payload, "relayUsage", relayUsage);
-        payload = JsonFileReader.updateLoadGroup(payload, "name", name);
-        Log.info("Updated payload is :" + payload.toJSONString());
+        loadGroup.setRelayUsage(MockEmetconRelayUsage.RELAY_B);
+        loadGroup.setName(name);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("updateloadgroup", payload, groupId);
+        Log.info("Updated payload is :" + loadGroup);
+
+        ExtractableResponse<?> response = ApiCallHelper.post("updateloadgroup", loadGroup, groupId);
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getloadgroup", groupId);
 
-        JsonPath jsonPath = getupdatedResponse.jsonPath();
-        assertTrue("Name Should be : " + name, name.equals(jsonPath.get(emetconPaoTypeStr + ".name")));
-        assertTrue("Type Should be : " + emetconPaoTypeStr,
-            emetconPaoTypeStr.equals(jsonPath.get(emetconPaoTypeStr + ".type")));
-        assertTrue("relayUsage Should be : " + relayUsage,
-            relayUsage.equals(jsonPath.get(emetconPaoTypeStr + ".relayUsage")));
+        MockLoadGroupEmetcon updatedLoadGroupEmetcon = getupdatedResponse.as(MockLoadGroupEmetcon.class);
+        assertTrue("Name Should be : " + name, name.equals(updatedLoadGroupEmetcon.getName()));
+        assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == updatedLoadGroupEmetcon.getType());
+        assertTrue("relayUsage Should be : " + MockEmetconRelayUsage.RELAY_B, MockEmetconRelayUsage.RELAY_B == updatedLoadGroupEmetcon.getRelayUsage());
         Log.endTestCase("loadGroupEmetcon_04_Update");
 
     }
@@ -117,21 +117,19 @@ public class LoadGroupEmetconAPITest {
         String expectedMessage = "Id not found";
 
         Log.startTestCase("loadGroupEmetcon_05_Delete");
-        JSONObject payload = JsonFileReader.updateJsonFile("loadgroup\\delete.json", "name",
-            context.getAttribute("emetcon_UpdateGrpName").toString());
-        Log.info("Delete payload is : " + payload);
-        ExtractableResponse<?> response =
-            ApiCallHelper.delete("deleteloadgroup", payload, context.getAttribute("emetconGroupId").toString());
+
+        MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute("emetcon_UpdateGrpName").toString()).build();
+
+        Log.info("Delete payload is : " + lmDeleteObject);
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject, context.getAttribute("groupId").toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> response2 =
-            ApiCallHelper.get("getloadgroup", context.getAttribute("emetconGroupId").toString());
+        ExtractableResponse<?> response2 = ApiCallHelper.get("getloadgroup", context.getAttribute("groupId").toString());
         assertTrue("Status code should be 400", response2.statusCode() == 400);
 
-        JsonPath jsonPath = response2.jsonPath();
-        assertTrue("Expected error message Should be : " + expectedMessage,
-            expectedMessage.equals(jsonPath.get("message")));
+        MockApiError error = response2.as(MockApiError.class);
+        assertTrue("Expected error message Should be : " + expectedMessage, expectedMessage.equals(error.getMessage()));
 
         Log.endTestCase("loadGroupEmetcon_05_Delete");
 
@@ -142,23 +140,21 @@ public class LoadGroupEmetconAPITest {
      * DataProviderClass
      */
     @Test(dataProvider = "EmetconAddressData")
-    public void loadGroupEmetcon_06_AddressValidation(String goldAddress, String silverAddress, String expectedErrorMsg,
-            String expectedStatusCode) {
+    public void loadGroupEmetcon_06_AddressValidation(String goldAddress, String silverAddress, String expectedErrorMsg, Integer expectedStatusCode) {
 
         Log.startTestCase("loadGroupEmetcon_06_AddressValidation");
 
-        JSONObject payload = JsonFileReader.updateLoadGroup(emetconPayloadFile, "goldAddress", goldAddress);
-        payload = JsonFileReader.updateLoadGroup(payload, "silverAddress", silverAddress);
-        payload = JsonFileReader.updateLoadGroup(payload, "addressUsage", "GOLD");
+        loadGroup.setGoldAddress(Integer.valueOf(goldAddress));
+        loadGroup.setSilverAddress(Integer.valueOf(silverAddress));
+        loadGroup.setAddressUsage(MockEmetconAddressUsage.GOLD);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", payload);
+        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
         Integer statusCode = response.statusCode();
-        assertTrue("Status code should be " + expectedStatusCode, expectedStatusCode.equals(statusCode.toString()));
+        assertTrue("Status code should be " + expectedStatusCode, expectedStatusCode.equals(statusCode));
 
-        JsonPath jsonPath = response.jsonPath();
-        assertTrue("Expected message should be - Validation error", jsonPath.get("message").equals("Validation error"));
-        assertTrue("Expected code in response is not correct",
-            expectedErrorMsg.equals(jsonPath.get("fieldErrors.code[0]")));
+        MockApiError error = response.as(MockApiError.class);
+        assertTrue("Expected message should be - Validation error", error.getMessage().equals("Validation error"));
+        assertTrue("Expected code in response is not correct", expectedErrorMsg.equals(error.getFieldErrors().get(0).getCode()));
 
         Log.endTestCase("loadGroupEmetcon_06_AddressValidation");
     }
@@ -172,10 +168,14 @@ public class LoadGroupEmetconAPITest {
      * col4 : expectedStatusCode
      */
     @DataProvider(name = "EmetconAddressData")
-    public Object[][] getEmetconAddressData() throws Exception {
+    public Object[][] getEmetconAddressData(ITestContext context) {
 
-        Object[][] testObjArray = ExcelUtils.getTableArray(filePath, sheetName);
-        return testObjArray;
+        return new Object[][] {{"5","22","Must be between 0 and 4.", 422},
+            {"0","0","Gold Address must be between 1 and 4 when Gold is selected for Address to Use.",422},
+            {"-1","22","Must be between 0 and 4.",422},
+            {"3","61","Must be between 0 and 60.",422},
+            {"3","-1","Must be between 0 and 60.",422} };
     }
+
 
 }

@@ -10,10 +10,9 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -23,10 +22,18 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.utilities.JsonFileReader;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.dr.helper.LoadProgramSetupHelper;
+import com.cannontech.rest.api.dr.helper.ProgramConstraintHelper;
+import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
+import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
+import com.cannontech.rest.api.loadProgram.request.MockLoadProgramCopy;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -35,8 +42,8 @@ public class HoneywellProgramSetupApiControllerTest {
 
     private ManualRestDocumentation restDocumentation = new ManualRestDocumentation();
     private RequestSpecification documentationSpec;
-    private Number programId = null;
-    private Number copyProgramId = null;
+    private Integer programId = null;
+    private Integer copyProgramId = null;
     private FieldDescriptor[] honeywellGearFieldDescriptor = null;
     private List<FieldDescriptor> honeywellProgramFieldDescriptor = null;
 
@@ -61,39 +68,19 @@ public class HoneywellProgramSetupApiControllerTest {
         this.restDocumentation.afterTest();
     }
 
-    private JSONObject buildJSONRequest(ITestContext context, String jsonFileName) {
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject(jsonFileName);
-        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
-        context.setAttribute("loadProgramCopy", jsonPath.getString("name"));
-
-        JSONObject jsonArrayObject = new JSONObject();
-        jsonArrayObject.put("groupId", context.getAttribute("assignedLoadGroupId"));
-        jsonArrayObject.put("groupName", context.getAttribute("loadGroupName"));
-        jsonArrayObject.put("type", context.getAttribute("loadGroupType"));
-        JSONArray jsonArray = new JSONArray();
-        jsonArray.add(jsonArrayObject);
-        JSONObject constraintJson = (JSONObject) jsonObject.get("constraint");
-        constraintJson.put("constraintId", context.getAttribute("constraintId"));
-        jsonObject.put("constraint", constraintJson);
-        jsonObject.put("assignedGroups", jsonArray);
-        return jsonObject;
-    }
-
     /**
      * Test case is to create Load group as we need to pass load group in request of Honeywell Load Program.
      */
     @Test
     public void honeywellAssignedLoadGroup_Create(ITestContext context) {
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", "documentation\\loadprogram\\HoneywellProgramAssignedLoadGroup.json");
-        Integer groupId = createResponse.path("groupId");
-        context.setAttribute("loadGroupId", groupId.toString());
-        context.setAttribute("assignedLoadGroupId", groupId);
-
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\HoneywellProgramAssignedLoadGroup.json");
-        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
-        context.setAttribute("loadGroupName", jsonPath.getString("LM_GROUP_HONEYWELL.name"));
-        context.setAttribute("loadGroupType", jsonPath.getString("LM_GROUP_HONEYWELL.type"));
+        MockLoadGroupBase loadGroupHoneywell = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_HONEYWELL);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupHoneywell);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        List<MockLoadGroupBase> loadGroups = new ArrayList<>();
+        Integer loadGroupId = createResponse.path("groupId");
+        loadGroupHoneywell.setId(loadGroupId);
+        loadGroups.add(loadGroupHoneywell);
+        context.setAttribute("loadGroups", loadGroups);
     }
 
     /**
@@ -101,14 +88,11 @@ public class HoneywellProgramSetupApiControllerTest {
      */
     @Test(dependsOnMethods={"honeywellAssignedLoadGroup_Create"})
     public void programConstraint_Create(ITestContext context) {
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", "documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
+        MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", programConstraint);
         Integer constraintId = createResponse.path("id");
         context.setAttribute("constraintId", constraintId);
-
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
-        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
-        context.setAttribute("constraintName", jsonPath.getString("name"));
-
+        context.setAttribute("constraintName", programConstraint.getName());
         assertTrue("Constraint ID should not be Null", constraintId != null);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
     }
@@ -118,22 +102,28 @@ public class HoneywellProgramSetupApiControllerTest {
      * request.
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
     @Test(dependsOnMethods={"programConstraint_Create"})
     public void Test_HoneywellProgram_Create(ITestContext context) {
-        JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\HoneywellProgramCreate.json");
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.HoneywellCycle);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_HONEYWELL_PROGRAM,
+                                                                                 (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
+                                                                                 gearTypes,
+                                                                                 (Integer) context.getAttribute("constraintId"));
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(honeywellProgramFieldDescriptor),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(jsonObject.toJSONString())
+                                                    .body(loadProgram)
                                                     .when()
                                                     .post(ApiCallHelper.getProperty("saveLoadProgram"))
                                                     .then()
                                                     .extract()
                                                     .response();
-
+        context.setAttribute("programName", loadProgram.getName());
         programId = response.path("programId");
         assertTrue("PAO ID should not be Null", programId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
@@ -163,16 +153,23 @@ public class HoneywellProgramSetupApiControllerTest {
      * Test case is to update Load Program created by test case Test_HoneywellProgram_Create and to generate Rest api
      * documentation for Update request.
      */
+    @SuppressWarnings("unchecked")
     @Test(dependsOnMethods={"Test_HoneywellProgram_Get"})
     public void Test_HoneywellProgram_Update(ITestContext context) {
-        JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\HoneywellProgramCreate.json");
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.HoneywellCycle);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_HONEYWELL_PROGRAM,
+                                                                                 (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
+                                                                                 gearTypes,
+                                                                                 (Integer) context.getAttribute("constraintId"));
+
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(honeywellProgramFieldDescriptor),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(jsonObject.toJSONString())
+                                                    .body(loadProgram)
                                                     .when()
                                                     .post(ApiCallHelper.getProperty("updateLoadProgram") + programId)
                                                     .then()
@@ -190,19 +187,22 @@ public class HoneywellProgramSetupApiControllerTest {
      */
     @Test(dependsOnMethods={"Test_HoneywellProgram_Update"})
     public void Test_HoneywellProgram_Copy(ITestContext context) {
+        MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_HONEYWELL_PROGRAM, (Integer) context.getAttribute("constraintId"));
+
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.fieldDescriptorForCopy()),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(ApiCallHelper.getInputFile("documentation\\loadprogram\\HoneywellProgramCopy.json"))
+                                                    .body(loadProgramCopy)
                                                     .when()
                                                     .post(ApiCallHelper.getProperty("copyLoadProgram") + programId)
                                                     .then()
                                                     .extract()
                                                     .response();
 
+        context.setAttribute("copiedProgramName", loadProgramCopy.getName());
         copyProgramId = response.path("programId");
         String updatedPaoId = copyProgramId.toString();
         assertTrue("PAO ID should not be Null", updatedPaoId != null);
@@ -214,14 +214,15 @@ public class HoneywellProgramSetupApiControllerTest {
      * Rest api documentation for delete request.
      */
     @Test(dependsOnMethods={"Test_HoneywellProgram_Copy"})
-    public void Test_HoneywellCopyProgram_Delete() {
+    public void Test_HoneywellCopyProgram_Delete(ITestContext context) {
+        MockLMDto deleteObject  = MockLMDto.builder().name((String)context.getAttribute("copiedProgramName")).build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(ApiCallHelper.getInputFile("documentation\\loadprogram\\HoneywellCopyProgramDelete.json"))
+                                                    .body(deleteObject)
                                                     .when()
                                                     .delete(ApiCallHelper.getProperty("deleteLoadProgram") + copyProgramId)
                                                     .then()
@@ -236,14 +237,15 @@ public class HoneywellProgramSetupApiControllerTest {
      * generate Rest api documentation for delete request.
      */
     @Test(dependsOnMethods={"Test_HoneywellProgram_Copy"})
-    public void Test_HoneywellProgram_Delete() {
+    public void Test_HoneywellProgram_Delete(ITestContext context) {
+        MockLMDto deleteObject  = MockLMDto.builder().name((String)context.getAttribute("programName")).build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(ApiCallHelper.getInputFile("documentation\\loadprogram\\HoneywellProgramDelete.json"))
+                                                    .body(deleteObject)
                                                     .when()
                                                     .delete(ApiCallHelper.getProperty("deleteLoadProgram") + programId)
                                                     .then()
@@ -256,14 +258,15 @@ public class HoneywellProgramSetupApiControllerTest {
     /**
      * Test case is to Delete Load group we have created for Load Program.
      */
+    @SuppressWarnings("unchecked")
     @Test(dependsOnMethods={"Test_HoneywellProgram_Delete"})
     public void assignedLoadGroup_Delete(ITestContext context) {
-        JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\HoneywellProgramAssignedLoadGroupDelete.json",
-                                                           "name",
-                                                           context.getAttribute("loadGroupName").toString());
-
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", payload, context.getAttribute("loadGroupId").toString());
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        List<MockLoadGroupBase> groups = (List<MockLoadGroupBase>) context.getAttribute("loadGroups");
+        groups.forEach(group -> {
+            MockLMDto deleteObject = MockLMDto.builder().name(group.getName()).build();
+            ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", deleteObject, group.getId().toString());
+            assertTrue("Status code should be 200", response.statusCode() == 200);
+        });
     }
 
     /**
@@ -271,11 +274,8 @@ public class HoneywellProgramSetupApiControllerTest {
      */
     @Test(dependsOnMethods={"assignedLoadGroup_Delete"})
     public void programConstraint_Delete(ITestContext context) {
-        JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\LoadProgramAssignedConstraintDelete.json",
-                                                           "name",
-                                                           context.getAttribute("constraintName").toString());
-
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteProgramConstraint", payload, context.getAttribute("constraintId").toString());
+        MockLMDto deleteConstraint = MockLMDto.builder().name( context.getAttribute("constraintName").toString()).build();
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteProgramConstraint", deleteConstraint, context.getAttribute("constraintId").toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 }

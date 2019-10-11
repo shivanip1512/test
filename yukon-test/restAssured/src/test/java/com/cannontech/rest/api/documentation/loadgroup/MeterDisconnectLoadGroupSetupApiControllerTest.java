@@ -21,8 +21,16 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.JsonUtil;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
+import com.cannontech.rest.api.utilities.Log;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
+import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
@@ -33,6 +41,7 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
     private String paoId = null;
     private String copyPaoId = null;
     private FieldDescriptor[] meterDisconnectFieldDescriptor = null;
+    private MockLoadGroupBase loadGroup = null;
 
     @BeforeMethod
     public void setUp(Method method) {
@@ -46,6 +55,7 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
             fieldWithPath("LM_GROUP_METER_DISCONNECT.disableGroup").type(JsonFieldType.BOOLEAN).description("Flag to disable Group"),
             fieldWithPath("LM_GROUP_METER_DISCONNECT.disableControl").type(JsonFieldType.BOOLEAN).description("Flag to disable Control")
         };
+        loadGroup = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_METER_DISCONNECT);
     }
 
     @AfterMethod
@@ -61,7 +71,7 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\MeterDisconnectCreate.json"))
+                                .body(loadGroup)
                                 .when()
                                 .post(ApiCallHelper.getProperty("saveloadgroup"))
                                 .then()
@@ -100,7 +110,7 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
                                .accept("application/json")
                                .contentType("application/json")
                                .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                               .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\MeterDisconnectCreate.json"))
+                               .body(loadGroup)
                                .when()
                                .post(ApiCallHelper.getProperty("updateloadgroup") + paoId)
                                .then()
@@ -115,6 +125,7 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
 
     @Test(dependsOnMethods = { "Test_LmGroupMeterDisconnect_Update" })
    public void Test_LmGroupMeterDisconnect_Copy() {
+       MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name("Meter_Disconnect_Group_Test-Copy").build();
        Response response = given(documentationSpec)
                                .filter(document("{ClassName}/{methodName}", 
                                    requestFields(
@@ -123,7 +134,7 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
                                .accept("application/json")
                                .contentType("application/json")
                                .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                               .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\MeterDisconnectCopy.json"))
+                               .body(loadGroupCopy)
                                .when()
                                .post(ApiCallHelper.getProperty("copyloadgroup")+ paoId)
                                .then()
@@ -136,6 +147,10 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
 
     @Test(dependsOnMethods = { "Test_LmGroupMeterDisconnect_Copy" })
     public void Test_LmGroupMeterDisconnect_Delete() {
+        MockLMDto lmDeleteObject = MockLMDto.builder()
+                .name("Meter_Disconnect_Group_Test")
+                .build();
+
        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
            requestFields(
                fieldWithPath("name").type(JsonFieldType.STRING).description("Load Group Name")), 
@@ -143,12 +158,20 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
            .accept("application/json")
            .contentType("application/json")
            .header("Authorization","Bearer " + ApiCallHelper.authToken)
-           .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\MeterDisconnectDelete.json"))
+           .body(lmDeleteObject)
            .when()
            .delete(ApiCallHelper.getProperty("deleteloadgroup") + paoId)
            .then()
            .extract()
            .response();
        assertTrue("Status code should be 200", response.statusCode() == 200);
+       
+
+       MockLMDto lmDeleteCopyObject = MockLMDto.builder()
+                                       .name("Meter_Disconnect_Group_Test-Copy")
+                                       .build();
+       Log.info("Delete payload is : " + JsonUtil.beautifyJson(lmDeleteCopyObject.toString()));
+       ExtractableResponse<?> copyResponse = ApiCallHelper.delete("deleteloadgroup", lmDeleteCopyObject, copyPaoId);
+       assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
    }
 }

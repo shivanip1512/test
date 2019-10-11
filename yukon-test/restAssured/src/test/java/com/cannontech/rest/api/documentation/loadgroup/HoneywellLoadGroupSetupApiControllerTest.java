@@ -21,6 +21,10 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
 import io.restassured.response.Response;
@@ -32,6 +36,7 @@ public class HoneywellLoadGroupSetupApiControllerTest {
     private RequestSpecification documentationSpec;
     private String paoId = null;
     private FieldDescriptor[] HoneywellFieldDescriptor = null;
+    private MockLoadGroupBase loadGroup = null;
 
     @BeforeMethod
     public void setUp(Method method) {
@@ -45,6 +50,7 @@ public class HoneywellLoadGroupSetupApiControllerTest {
             fieldWithPath("LM_GROUP_HONEYWELL.disableGroup").type(JsonFieldType.BOOLEAN).description("Flag to disable Group"),
             fieldWithPath("LM_GROUP_HONEYWELL.disableControl").type(JsonFieldType.BOOLEAN).description("Flag to disable Control")
         };
+        loadGroup = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_HONEYWELL);
     }
 
     @AfterMethod
@@ -60,7 +66,7 @@ public class HoneywellLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\HoneywellCreate.json"))
+                                .body(loadGroup)
                                 .when()
                                 .post(ApiCallHelper.getProperty("saveloadgroup"))
                                 .then()
@@ -99,7 +105,7 @@ public class HoneywellLoadGroupSetupApiControllerTest {
                                .accept("application/json")
                                .contentType("application/json")
                                .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                               .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\HoneywellCreate.json"))
+                               .body(loadGroup)
                                .when()
                                .post(ApiCallHelper.getProperty("updateloadgroup") + paoId)
                                .then()
@@ -114,6 +120,9 @@ public class HoneywellLoadGroupSetupApiControllerTest {
 
    @Test(dependsOnMethods = { "Test_LmHoneywell_Update" })
    public void Test_LmHoneywell_Delete() {
+       MockLMDto lmDeleteObject = MockLMDto.builder()
+               .name("HoneyWell_Group_Test")
+               .build();
        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
            requestFields(
                fieldWithPath("name").type(JsonFieldType.STRING).description("Load Group Name")), 
@@ -121,7 +130,7 @@ public class HoneywellLoadGroupSetupApiControllerTest {
            .accept("application/json")
            .contentType("application/json")
            .header("Authorization","Bearer " + ApiCallHelper.authToken)
-           .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\HoneywellDelete.json"))
+           .body(lmDeleteObject)
            .when()
            .delete(ApiCallHelper.getProperty("deleteloadgroup") + paoId)
            .then()

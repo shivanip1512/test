@@ -9,10 +9,9 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -22,10 +21,18 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.utilities.JsonFileReader;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.dr.helper.LoadProgramSetupHelper;
+import com.cannontech.rest.api.dr.helper.ProgramConstraintHelper;
+import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
+import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
+import com.cannontech.rest.api.loadProgram.request.MockLoadProgramCopy;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -34,8 +41,8 @@ public class SepProgramSetupApiControllerTest {
 
     private ManualRestDocumentation restDocumentation = new ManualRestDocumentation();
     private RequestSpecification documentationSpec;
-    private Number programId = null;
-    private Number copyProgramId = null;
+    private Integer programId = null;
+    private Integer copyProgramId = null;
     private FieldDescriptor[] sepCycleGearFieldDescriptor = null;
     private List<FieldDescriptor> sepCycleProgramFieldDescriptor = null;
 
@@ -62,51 +69,28 @@ public class SepProgramSetupApiControllerTest {
         this.restDocumentation.afterTest();
     }
 
-    private static JSONObject buildJSONRequest(ITestContext context, String jsonFileName) {
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject(jsonFileName);
-        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
-        context.setAttribute("loadProgramCopy", jsonPath.getString("name"));
-
-        JSONObject jsonArrayObject = new JSONObject();
-        jsonArrayObject.put("groupId", context.getAttribute("assignedLoadGroupId"));
-        jsonArrayObject.put("groupName", context.getAttribute("loadGroupName"));
-        jsonArrayObject.put("type", context.getAttribute("loadGroupType"));
-        JSONArray jsonArray = new JSONArray();
-        jsonArray.add(jsonArrayObject);
-        JSONObject constraintJson = (JSONObject) jsonObject.get("constraint");
-        constraintJson.put("constraintId", context.getAttribute("constraintId"));
-        jsonObject.put("constraint", constraintJson);
-        jsonObject.put("assignedGroups", jsonArray);
-        return jsonObject;
-    }
-
     /**
      * Test case is to create Load group as we need to pass load group in request of Sep Load Program.
      */
     @Test
     public void sepAssignedLoadGroup_Create(ITestContext context) {
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", "documentation\\loadprogram\\SepProgramAssignedLoadGroup.json");
-        Integer groupId = createResponse.path("groupId");
-        context.setAttribute("loadGroupId", groupId.toString());
-        context.setAttribute("assignedLoadGroupId", groupId);
-
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\SepProgramAssignedLoadGroup.json");
-        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
-        context.setAttribute("loadGroupName", jsonPath.getString("LM_GROUP_DIGI_SEP.name"));
-        context.setAttribute("loadGroupType", jsonPath.getString("LM_GROUP_DIGI_SEP.type"));
+        MockLoadGroupBase loadGroupSep = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupSep);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        List<MockLoadGroupBase> loadGroups = new ArrayList<>();
+        Integer loadGroupId = createResponse.path("groupId");
+        loadGroupSep.setId(loadGroupId);
+        loadGroups.add(loadGroupSep);
+        context.setAttribute("loadGroups", loadGroups);
     }
 
     @Test(dependsOnMethods={"sepAssignedLoadGroup_Create"})
     public void programConstraint_Create(ITestContext context) {
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", "documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
+        MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", programConstraint);
         Integer constraintId = createResponse.path("id");
         context.setAttribute("constraintId", constraintId);
-
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
-        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
-        context.setAttribute("constraintName", jsonPath.getString("name"));
-
+        context.setAttribute("constraintName", programConstraint.getName());
         assertTrue("Constraint ID should not be Null", constraintId != null);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
     }
@@ -114,22 +98,29 @@ public class SepProgramSetupApiControllerTest {
     /**
      * Test case is to create Sep Load Program and to generate Rest api documentation for Load Program create request.
      */
+    @SuppressWarnings("unchecked")
     @Test(dependsOnMethods={"programConstraint_Create"})
     public void Test_SepCycleProgram_Create(ITestContext context) {
-        JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\SepProgramCreate.json");
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.SepCycle);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_SEP_PROGRAM,
+                                                                                 (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
+                                                                                 gearTypes,
+                                                                                 (Integer) context.getAttribute("constraintId"));
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(sepCycleProgramFieldDescriptor),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(jsonObject.toJSONString())
+                                                    .body(loadProgram)
                                                     .when()
                                                     .post(ApiCallHelper.getProperty("saveLoadProgram"))
                                                     .then()
                                                     .extract()
                                                     .response();
 
+        context.setAttribute("programName", loadProgram.getName());
         programId = response.path("programId");
         assertTrue("PAO ID should not be Null", programId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
@@ -159,16 +150,22 @@ public class SepProgramSetupApiControllerTest {
      * Test case is to update Load Program created by test case Test_SepProgram_Create and to generate Rest api
      * documentation for Update request.
      */
+    @SuppressWarnings("unchecked")
     @Test(dependsOnMethods={"Test_SepProgram_Get"})
     public void Test_SepProgram_Update(ITestContext context) {
-        JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\SepProgramCreate.json");
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.SepCycle);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_SEP_PROGRAM,
+                                                                                 (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
+                                                                                 gearTypes,
+                                                                                 (Integer) context.getAttribute("constraintId"));
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(sepCycleProgramFieldDescriptor),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(jsonObject.toJSONString())
+                                                    .body(loadProgram)
                                                     .when()
                                                     .post(ApiCallHelper.getProperty("updateLoadProgram") + programId)
                                                     .then()
@@ -186,19 +183,21 @@ public class SepProgramSetupApiControllerTest {
      */
     @Test(dependsOnMethods={"Test_SepProgram_Update"})
     public void Test_SepProgram_Copy(ITestContext context) {
+        MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_SEP_PROGRAM, (Integer) context.getAttribute("constraintId"));
+
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.fieldDescriptorForCopy()),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(ApiCallHelper.getInputFile("documentation\\loadprogram\\SepProgramCopy.json"))
+                                                    .body(loadProgramCopy)
                                                     .when()
                                                     .post(ApiCallHelper.getProperty("copyLoadProgram") + programId)
                                                     .then()
                                                     .extract()
                                                     .response();
-
+        context.setAttribute("copiedProgramName", loadProgramCopy.getName());
         copyProgramId = response.path("programId");
         String updatedPaoId = copyProgramId.toString();
         assertTrue("PAO ID should not be Null", updatedPaoId != null);
@@ -210,14 +209,15 @@ public class SepProgramSetupApiControllerTest {
      * documentation for delete request.
      */
     @Test(dependsOnMethods={"Test_SepProgram_Copy"})
-    public void Test_SepCopyProgram_Delete() {
+    public void Test_SepCopyProgram_Delete(ITestContext context) {
+        MockLMDto deleteObject  = MockLMDto.builder().name((String)context.getAttribute("copiedProgramName")).build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(ApiCallHelper.getInputFile("documentation\\loadprogram\\SepCopyProgramDelete.json"))
+                                                    .body(deleteObject)
                                                     .when()
                                                     .delete(ApiCallHelper.getProperty("deleteLoadProgram") + copyProgramId)
                                                     .then()
@@ -232,14 +232,15 @@ public class SepProgramSetupApiControllerTest {
      * documentation for delete request.
      */
     @Test(dependsOnMethods={"Test_SepProgram_Copy"})
-    public void Test_SepProgram_Delete() {
+    public void Test_SepProgram_Delete(ITestContext context) {
+        MockLMDto deleteObject  = MockLMDto.builder().name((String)context.getAttribute("programName")).build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(ApiCallHelper.getInputFile("documentation\\loadprogram\\SepProgramDelete.json"))
+                                                    .body(deleteObject)
                                                     .when()
                                                     .delete(ApiCallHelper.getProperty("deleteLoadProgram") + programId)
                                                     .then()
@@ -252,14 +253,15 @@ public class SepProgramSetupApiControllerTest {
     /**
      * Test case is to Delete Load group we have created for Load Program.
      */
+    @SuppressWarnings("unchecked")
     @Test(dependsOnMethods={"Test_SepProgram_Delete"})
     public void assignedLoadGroup_Delete(ITestContext context) {
-        JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\SepProgramAssignedLoadGroupDelete.json",
-                                                           "name",
-                                                           context.getAttribute("loadGroupName").toString());
-
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", payload, context.getAttribute("loadGroupId").toString());
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        List<MockLoadGroupBase> groups = (List<MockLoadGroupBase>) context.getAttribute("loadGroups");
+        groups.forEach(group -> {
+            MockLMDto deleteObject = MockLMDto.builder().name(group.getName()).build();
+            ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", deleteObject, group.getId().toString());
+            assertTrue("Status code should be 200", response.statusCode() == 200);
+        });
     }
 
     /**
@@ -267,11 +269,8 @@ public class SepProgramSetupApiControllerTest {
      */
     @Test(dependsOnMethods={"assignedLoadGroup_Delete"})
     public void programConstraint_Delete(ITestContext context) {
-        JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\LoadProgramAssignedConstraintDelete.json",
-                                                           "name",
-                                                           context.getAttribute("constraintName").toString());
-
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteProgramConstraint", payload, context.getAttribute("constraintId").toString());
+        MockLMDto deleteConstraint = MockLMDto.builder().name( context.getAttribute("constraintName").toString()).build();
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteProgramConstraint", deleteConstraint, context.getAttribute("constraintId").toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 }
