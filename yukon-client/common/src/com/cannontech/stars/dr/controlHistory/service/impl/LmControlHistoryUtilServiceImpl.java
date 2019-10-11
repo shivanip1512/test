@@ -291,11 +291,15 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
 
         List<List<OpenInterval>> temp = Lists.newArrayListWithExpectedSize(Iterables.size(optOuts) * 2); // better method in 5.2
         for (LMHardwareControlGroup optOutEntry : optOuts) {
-            
             OpenInterval optOutInterval = optOutEntry.getOptOutInterval();
-            List<OpenInterval> optInInterval = optOutInterval.invert();
-            
-            temp.add(optInInterval);
+            // Checks if the Stop is before the Start
+            if(optOutInterval.isBefore(optOutInterval)) {
+                log.error("Bad OptOut interval, stop time is before start time " + optOutInterval);
+            }
+            else {
+                List<OpenInterval> optInInterval = optOutInterval.invert();
+                temp.add(optInInterval);
+            }
         }
         
         List<OpenInterval> controlInterval = ImmutableList.of(controlHistory.getOpenInterval());
@@ -305,9 +309,14 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
         
         List<ControlHistoryEntry> result = Lists.newArrayListWithCapacity(intersection.size());
         for (OpenInterval openInterval : intersection) {
-            log.debug(openInterval);
-            ControlHistoryEntry controlHistoryEntry = new ControlHistoryEntry(openInterval);
-            result.add(controlHistoryEntry);
+            // Checks if the Stop is before the Start
+            if(openInterval.isBefore(openInterval)) {
+                log.error("Bad Control interval, stop time is before start time " + openInterval);
+            }
+            else {
+                ControlHistoryEntry controlHistoryEntry = new ControlHistoryEntry(openInterval);
+                result.add(controlHistoryEntry);
+            }
         }
         
         
