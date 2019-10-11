@@ -98,7 +98,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;BOOST_ALL_DYN_LINK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;BOOST_ALL_DYN_LINK;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT=$(MICROSOFT);PATH_TO_MICROSOFT_SQL=$(MICROSOFT_SQL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -122,7 +122,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;BOOST_ALL_DYN_LINK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;BOOST_ALL_DYN_LINK;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT=$(MICROSOFT);PATH_TO_MICROSOFT_SQL=$(MICROSOFT_SQL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -143,7 +143,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT=$(MICROSOFT);PATH_TO_MICROSOFT_SQL=$(MICROSOFT_SQL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -166,7 +166,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT=$(MICROSOFT);PATH_TO_MICROSOFT_SQL=$(MICROSOFT_SQL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>

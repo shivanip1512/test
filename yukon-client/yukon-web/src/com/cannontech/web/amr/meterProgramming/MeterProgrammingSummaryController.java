@@ -85,9 +85,29 @@ public class MeterProgrammingSummaryController {
 
     @GetMapping("home")
     public String home(@DefaultSort(dir=Direction.asc, sort="program") SortingParameters sorting, ModelMap model, YukonUserContext userContext) {
+        getSortedResults(userContext, sorting, model);
+        return "meterProgramming/home.jsp";
+    }
+    
+    @GetMapping("sortedYukonPrograms")
+    public String sortedYukonPrograms(@DefaultSort(dir=Direction.asc, sort="program") SortingParameters sorting, ModelMap model, 
+                                      YukonUserContext userContext) {
+        getSortedResults(userContext, sorting, model);
+        return "meterProgramming/sortedYukonPrograms.jsp";
+    }
+    
+    private void getSortedResults(YukonUserContext userContext, SortingParameters sorting, ModelMap model) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         List<MeterProgramStatistics> detail = meterProgrammingSummaryDao.getProgramStatistics(userContext);
+        
+        List<MeterProgramStatistics> specialCases = detail.stream()
+                                                          .filter(statistic -> statistic.isNotYukonSource())
+                                                          .collect(Collectors.toList());
+        
+        List<MeterProgramStatistics> yukonPrograms = detail.stream()
+                                                           .filter(statistic -> statistic.isYukonSource())
+                                                           .collect(Collectors.toList());
         
         ProgramSortBy sortBy = ProgramSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
@@ -101,7 +121,7 @@ public class MeterProgrammingSummaryController {
         if (sorting.getDirection() == Direction.desc) {
             comparator = Collections.reverseOrder(comparator);
         }
-        Collections.sort(detail, comparator);
+        Collections.sort(yukonPrograms, comparator);
         
         List<SortableColumn> columns = new ArrayList<>();
         for (ProgramSortBy column : ProgramSortBy.values()) {
@@ -111,10 +131,8 @@ public class MeterProgrammingSummaryController {
             model.addAttribute(column.name(), col);
         }
         
-        model.addAttribute("programs", detail);
-
-        
-        return "meterProgramming/home.jsp";
+        model.addAttribute("programs", yukonPrograms);
+        model.addAttribute("specialCases", specialCases);
     }
     
     @DeleteMapping("/{guid}/delete")
@@ -156,7 +174,20 @@ public class MeterProgrammingSummaryController {
         }
 
         getFilteredResults(filter, sorting, paging, model, userContext);
-        model.addAttribute("programList", programs);
+        
+        List<MeterProgramInfo> specialCases = programs.stream()
+                .filter(program -> program.getSource().isNotYukon())
+                .collect(Collectors.toList());
+
+        List<MeterProgramInfo> yukonPrograms = programs.stream()
+                        .filter(program -> program.getSource().isYukon())
+                        .collect(Collectors.toList());
+        
+        List<MeterProgramInfo> sortedPrograms = new ArrayList<>();
+        sortedPrograms.addAll(yukonPrograms);
+        sortedPrograms.addAll(specialCases);
+
+        model.addAttribute("programList", sortedPrograms);
         model.addAttribute("statusList", DisplayableStatus.values());
         return "meterProgramming/summary.jsp";
     }

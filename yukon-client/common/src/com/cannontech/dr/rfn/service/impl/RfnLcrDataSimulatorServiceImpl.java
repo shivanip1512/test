@@ -93,8 +93,8 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         RELAY_N_PROGRAM_ADDRESS((byte)0x10, 2, 4),
         RELAY_N_SPLINTER_ADDRESS((byte)0x11, 2, 4),
         RELAY_N_REMAINING_CONTROLTIME((byte)0x12, 5, 4),
-        PROTECTION_TIME_RELAY_N((byte)0x13, 3, 3),
-        CLP_TIME_FOR_RELAY_N((byte)0x14, 3, 3),
+        PROTECTION_TIME_RELAY_N((byte)0x13, 3, 4),
+        CLP_TIME_FOR_RELAY_N((byte)0x14, 3, 4),
         //Power Quality Response fields:
         LOV_TRIGGER((byte)0x44, 2, 1, 5),
         LOV_RESTORE((byte)0x45, 2, 1, 5),

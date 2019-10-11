@@ -33,7 +33,6 @@ import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
-import com.cannontech.stars.energyCompany.MeteringType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
@@ -108,12 +107,7 @@ public class AssetDashboardController {
             MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
             String title = accessor.getMessage(key + "fileUploadTitle");
             model.addAttribute("fileUploadTitle", title);
-            
-            
-            MeteringType type = ecSettingsDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ecId);
-            boolean showAddMeter = inventoryDao.accountMeterWarehouseIsNotEmpty(Set.of(ecId), false) && type == MeteringType.yukon;
-            model.addAttribute("showAddMeter", showAddMeter);
-            
+                      
             boolean showLinks = configSource.getBoolean(MasterConfigBoolean.DIGI_ENABLED);
             model.addAttribute("showLinks", showLinks);
             
@@ -126,6 +120,9 @@ public class AssetDashboardController {
             /** Hardware Creation */
             boolean hasAddHardwareByRange = rolePropertyDao.checkProperty(YukonRoleProperty.SN_ADD_RANGE, user);
             boolean hasCreateHardware = rolePropertyDao.checkProperty(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, user);
+            
+            boolean showAddMeter = inventoryDao.accountMeterWarehouseIsNotEmpty(Set.of(ecId), false) && hasCreateHardware;
+            model.addAttribute("showAddMeter", showAddMeter);
             
             boolean showHardwareCreate = hasAddHardwareByRange || hasCreateHardware;
             model.addAttribute("showHardwareCreate", showHardwareCreate);

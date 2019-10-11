@@ -135,7 +135,7 @@
                                     
                                     <td>
                                         <c:choose>
-                                            <c:when test="${result.identifier.hardwareType.meter && !starsMeters}">
+                                            <c:when test="${result.identifier.hardwareType.meter && result.deviceId != 0}">
                                                 <cti:msg2 key="${result.paoType}"/>
                                             </c:when>
                                             <c:otherwise>
@@ -145,10 +145,14 @@
                                     </td>
                                     
                                     <td>
-                                        ${fn:escapeXml(result.label)}
-                                        <c:if test="${result.identifier.hardwareType.meter && !starsMeters}">
-                                            &nbsp;<cti:deviceName deviceId="${result.deviceId}"/>
-                                        </c:if>
+                                        <c:choose>
+                                            <c:when test="${result.identifier.hardwareType.meter && result.deviceId != 0}">
+                                                &nbsp;<cti:deviceName deviceId="${result.deviceId}"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                ${fn:escapeXml(result.label)}
+                                            </c:otherwise>
+                                        </c:choose>
                                     </td>
                                     
                                     <c:if test="${showAccountNumber}">

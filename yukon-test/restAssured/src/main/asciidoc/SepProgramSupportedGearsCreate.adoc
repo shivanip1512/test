@@ -1,0 +1,22 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+===== SEP Temperature Offset Gear
+
+*Request Properties* :
+include::{snippets}/SepProgramGearSetupApiControllerTest/Test_LoadProgram_SepTemperatureOffset_Create/request-fields.adoc[]
+
+*Request JSON* :
+include::{snippets}/SepProgramGearSetupApiControllerTest/Test_LoadProgram_SepTemperatureOffset_Create/http-request.adoc[]
+
+===== No Control
+
+*Request Properties* :
+include::{snippets}/SepProgramGearSetupApiControllerTest/Test_LoadProgram_NoControl_Create/request-fields.adoc[]
+
+*Request JSON* :
+include::{snippets}/SepProgramGearSetupApiControllerTest/Test_LoadProgram_NoControl_Create/http-request.adoc[]

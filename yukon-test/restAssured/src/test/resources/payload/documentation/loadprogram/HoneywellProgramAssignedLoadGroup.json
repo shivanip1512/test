@@ -1,0 +1,9 @@
+{
+    "LM_GROUP_HONEYWELL": {
+        "name": "HoneywellGroup",
+        "type": "LM_GROUP_HONEYWELL",
+        "kWCapacity": 10.0,
+        "disableGroup": true,
+        "disableControl": false
+    }
+}

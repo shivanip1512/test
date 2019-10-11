@@ -1,10 +1,15 @@
 package com.cannontech.web.dev;
 
+import static com.cannontech.common.stream.StreamUtils.not;
+
 import java.beans.PropertyEditor;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -12,6 +17,8 @@ import java.util.stream.IntStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
@@ -40,10 +47,14 @@ import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.amr.rfn.message.status.type.DemandResetStatusCode;
+import com.cannontech.amr.rfn.message.status.type.MeterDisconnectStatus;
+import com.cannontech.amr.rfn.message.status.type.RfnMeterDisconnectMeterMode;
+import com.cannontech.amr.rfn.message.status.type.RfnMeterDisconnectStateType;
 import com.cannontech.amr.rfn.service.NmSyncService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigError;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
@@ -72,6 +83,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.DeviceArchiveRequestParameters;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
+import com.cannontech.development.model.RfnTestMeterInfoStatusReport;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.development.service.impl.DRReport;
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
@@ -86,6 +98,7 @@ import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.simulators.message.request.DataStreamingSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.DeviceArchiveSimulatorRequest;
 import com.cannontech.simulators.message.request.GatewaySimulatorStatusRequest;
+import com.cannontech.simulators.message.request.MeterInfoStatusArchiveSimulatorRequest;
 import com.cannontech.simulators.message.request.ModifyDataStreamingSimulatorRequest;
 import com.cannontech.simulators.message.request.ModifyGatewaySimulatorRequest;
 import com.cannontech.simulators.message.request.ModifyRfnMeterReadAndControlSimulatorRequest;
@@ -101,7 +114,7 @@ import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStatusRequ
 import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStopRequest;
 import com.cannontech.simulators.message.request.RfnMeterReadAndControlSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
-import com.cannontech.simulators.message.request.StatusArchiveSimulatorRequest;
+import com.cannontech.simulators.message.request.DemandResetStatusArchiveSimulatorRequest;
 import com.cannontech.simulators.message.response.DataStreamingSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.GatewaySimulatorStatusResponse;
 import com.cannontech.simulators.message.response.NmNetworkSimulatorResponse;
@@ -443,6 +456,11 @@ public class NmIntegrationController {
     @ModelAttribute("meterReading")
     RfnTestMeterReading rfnTestMeterReadingFactory() {
         return new RfnTestMeterReading();
+    }
+    
+    @ModelAttribute("meterInfoStatus")
+    RfnTestMeterInfoStatusReport rfnTestMeterInfoStatusFactory() {
+        return new RfnTestMeterInfoStatusReport();
     }
     
     @RequestMapping("viewMeterReadArchiveRequest")
@@ -804,6 +822,12 @@ public class NmIntegrationController {
         return "redirect:viewConfigNotification";
     }
 
+    @RequestMapping("sendLcrReadArchiveRequest")
+    public String sendLcrReadArchive(int serialFrom, int serialTo, int days, String drReport) throws IOException, DecoderException {
+        rfnEventTestingService.sendLcrReadArchive(serialFrom, serialTo, days, DRReport.valueOf(drReport));
+        return "redirect:viewLcrReadArchiveRequest";
+    }
+    
     @RequestMapping("sendLocationArchiveRequest")
     public String sendLocationArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model, String latitude, String longitude) { 
         rfnEventTestingService.sendLocationResponse(serialFrom, serialTo, manufacturer, model, Double.parseDouble(latitude), Double.parseDouble(longitude));
@@ -1069,15 +1093,66 @@ public class NmIntegrationController {
     @RequestMapping("viewStatusArchiveRequest")
     public String viewStatusArchiveRequest(ModelMap model) {
         model.addAttribute("dRStatusCodes", DemandResetStatusCode.values());
+        model.addAttribute("rfnTypeGroups", rfnEventTestingService.getGroupedRfnTypes());
+        model.addAttribute("meterDisconnectMeterModes", RfnMeterDisconnectMeterMode.values());
+        model.addAttribute("meterDisconnectStateTypes", RfnMeterDisconnectStateType.values());
         return "rfn/viewStatusArchiveRequest.jsp";
     }
     
-    @RequestMapping("sendStatusArchiveRequest")
-    public String sendStatusArchiveRequest(String statusCode, int messageCount, FlashScope flashScope) {
+    @RequestMapping("sendDemandResetStatusArchiveRequest")
+    public String sendDemandResetStatusArchiveRequest(String statusCode, int messageCount, FlashScope flashScope) {
         DemandResetStatusCode demandResetStatusCode = DemandResetStatusCode.valueOf(Integer.parseInt(statusCode));
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.DEMAND_RESET_STATUS_ARCHIVE, demandResetStatusCode.name());
-        StatusArchiveSimulatorRequest request = new StatusArchiveSimulatorRequest(messageCount);
+        DemandResetStatusArchiveSimulatorRequest request = new DemandResetStatusArchiveSimulatorRequest(messageCount, demandResetStatusCode);
         String success = "Demand Reset Status Code " +  demandResetStatusCode.name() + " was sent to " + messageCount + " devices.";
+        String failure = "Can't send status archived request.";
+        sendMessageToSimulator(request, success, failure, flashScope);
+        return "redirect:viewStatusArchiveRequest";
+    }
+        
+    @RequestMapping("sendMeterInfoStatusArchiveRequest")
+    public String sendMeterInfoStatusArchiveRequest(RfnTestMeterInfoStatusReport report, FlashScope flashScope) {
+        String manufacturer = 
+                Optional.ofNullable(report.getManufacturerOverride())
+                            .filter(not(String::isEmpty))
+                            .orElse(report.getManufacturerModel().getManufacturer());
+        String model = 
+                Optional.ofNullable(report.getModelOverride())
+                            .filter(not(String::isEmpty))
+                            .orElse(report.getManufacturerModel().getModel());
+        
+        Set<RfnIdentifier> rfnIdentifiers = 
+                Optional.ofNullable(report.getSerialTo())
+                    .map(to -> IntStream.rangeClosed(report.getSerialFrom(), to))
+                    .orElseGet(() -> IntStream.of(report.getSerialFrom()))
+                    .mapToObj(String::valueOf)
+                    .map(serial -> new RfnIdentifier(serial, manufacturer, model))
+                    .collect(Collectors.toSet());
+        
+        var timestamp = report.isNow() ? Instant.now() : report.getTimestamp();
+        
+        var mode = report.getMeterMode();
+        var type = report.getRelayStatus();
+        
+        String configId = null;
+        MeterDisconnectStatus disconnectStatus = null;
+        
+        if (mode != null && type != null) {
+            disconnectStatus = new MeterDisconnectStatus();
+            disconnectStatus.setMeterMode(mode);
+            disconnectStatus.setRelayStatus(type);
+        }
+        if (!StringUtils.isBlank(report.getMeterConfigurationId())) {
+            configId = report.getMeterConfigurationId();
+        }
+        
+        var request = new MeterInfoStatusArchiveSimulatorRequest(
+                             rfnIdentifiers,
+                             timestamp,
+                             configId,
+                             disconnectStatus);
+
+        String success = "Meter Status";
         String failure = "Can't send status archived request.";
         sendMessageToSimulator(request, success, failure, flashScope);
         return "redirect:viewStatusArchiveRequest";

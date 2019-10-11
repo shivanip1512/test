@@ -1,0 +1,55 @@
+{
+    "name": "TestEcobee",
+    "type": "LM_ECOBEE_PROGRAM",
+    "operationalState": "Automatic",
+    "constraint": {
+        "constraintId": 0
+    },
+    "triggerOffset": 1.0,
+    "restoreOffset": 2.0,
+    "gears": [
+        {
+            "gearName": "Ecobee Gear",
+            "gearNumber": 1,
+            "controlMethod": "EcobeeCycle",
+            "fields": {
+                "mandatory": true,
+                "rampIn": true,
+                "rampOut": true,
+                "controlPercent": 50,
+                "howToStopControl": "Restore",
+                "capacityReduction": 100,
+                "whenToChangeFields": {
+                    "whenToChange": "None"
+                }
+            }
+        }
+    ],
+    "controlWindow": {
+        "controlWindowOne": {
+            "availableStartTimeInMinutes": 120,
+            "availableStopTimeInMinutes": 300
+        },
+        "controlWindowTwo": {
+            "availableStartTimeInMinutes": 0,
+            "availableStopTimeInMinutes": 300
+        }
+    },
+    "assignedGroups": [
+        {
+            "groupId": 7446,
+            "groupName": "4545",
+            "type": "LM_GROUP_ECOBEE"
+        }
+    ],
+    "notification": {
+        "notifyOnAdjust": false,
+        "enableOnSchedule": false,
+        "assignedNotificationGroups": [
+            {
+                "notificationGrpID": 2,
+                "notificationGrpName": "Jess Notification"
+            }
+        ]
+    }
+}
