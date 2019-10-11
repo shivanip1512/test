@@ -35,6 +35,14 @@ public class MeterProgramStatistics {
     public boolean displayDelete() {
         return programInfo.getGuid() != null && deviceTotal == 0;
     }
+    
+    public boolean isYukonSource() {
+        return programInfo.getSource() != null && programInfo.getSource().isYukon();
+    }
+    
+    public boolean isNotYukonSource() {
+        return programInfo.getSource() != null && programInfo.getSource().isNotYukon();
+    }
 
     @Override
     public String toString() {
