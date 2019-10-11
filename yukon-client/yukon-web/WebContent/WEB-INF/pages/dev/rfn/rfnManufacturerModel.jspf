@@ -1,0 +1,11 @@
+<tags:nameValue name="Manufacturer and Model">
+    <form:select path="manufacturerModel">
+    <c:forEach var="group" items="${rfnTypeGroups}">
+        <optgroup label="${group.key}">
+        <c:forEach var="mm" items="${group.value}">
+            <form:option value="${mm}"><cti:msg2 key="${mm.type}" /> (${mm.manufacturer} ${mm.model})</form:option>
+        </c:forEach>
+        </optgroup>
+    </c:forEach>
+    </form:select>
+</tags:nameValue>
