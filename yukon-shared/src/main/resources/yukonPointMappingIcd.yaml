@@ -1478,9 +1478,9 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Peak Voltage:                         { Unit: *V,      Modifiers: [ *Max, *milli                     ], Models: *AX-RX-23 }
     - Time for Peak Voltage:                { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AX-RX-23 }
     - Peak Daily Voltage:                   { Unit: *V,      Modifiers: [ *DayMax, *milli                  ], Models: *AX-RX-23 }
-    - Coincident Time of Peak Daily Voltage: { Unit: *s,      Modifiers: [                                  ], Models: *AX-RX-23 }
+    - Coincident Time of Peak Daily Voltage: { Unit: *s,     Modifiers: [                                  ], Models: *AX-RX-23 }
     - Minimum Daily Voltage:                { Unit: *V,      Modifiers: [ *DayMin, *milli                  ], Models: *AX-RX-23 }
-    - Coincident Time of Minimum Daily Voltage: { Unit: *s,   Modifiers: [                                  ], Models: *AX-RX-23 }
+    - Coincident Time of Minimum Daily Voltage: { Unit: *s,  Modifiers: [                                  ], Models: *AX-RX-23 }
     - Interval Demand:                      { Unit: *W,      Modifiers: [ *Q1, *Q4                         ], Models: *AX-RX-23 }
     - Interval Voltage:                     { Unit: *V,      Modifiers: [ *milli                           ], Models: *AX-RX-23 }
     - Voltage Phase A:                      { Unit: *V,      Modifiers: [ *PhA, *milli                     ], Models: *AX-RX-23 }
