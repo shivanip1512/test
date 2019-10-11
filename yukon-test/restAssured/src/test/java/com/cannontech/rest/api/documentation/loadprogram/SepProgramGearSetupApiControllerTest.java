@@ -105,7 +105,6 @@ public class SepProgramGearSetupApiControllerTest {
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void Test_LoadProgram_SepTemperatureOffset_Create(ITestContext context) {
         /*-------Sep Temperature Field Descriptor-------*/
@@ -142,7 +141,6 @@ public class SepProgramGearSetupApiControllerTest {
         LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void Test_LoadProgram_NoControl_Create(ITestContext context) {
         /*-------- No Control Field Descriptor--------- */

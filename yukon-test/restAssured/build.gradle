@@ -33,7 +33,7 @@ dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor:2.0.3.RELEASE'
     compile group: 'org.springframework.restdocs', name: 'spring-restdocs-restassured', version: '2.0.3.RELEASE'
-    compile group: 'org.testng', name: 'testng', version: '6.14.3'
+    compile group: 'org.testng', name: 'testng', version: '7.0.0'
     compile group: 'io.rest-assured', name: 'rest-assured', version: '4.0.0'
     compile group: 'junit', name: 'junit', version: '4.4'
     compile group: 'com.google.guava', name: 'guava', version: '27.0.1-jre'
@@ -41,7 +41,9 @@ dependencies {
     compile group: 'org.apache.poi', name: 'poi-ooxml', version: '4.0.1'
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.12.1'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.12.1'
-    compile group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+       // https://projectlombok.org
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
 }
 
 ext {
@@ -56,7 +58,7 @@ test {
 asciidoctor {
     dependsOn clean
     inputs.dir snippetsDir
-    sourceDir = file('src/main/asciidoc')
+    sourceDir = file('src/main/resources/asciidoc/dr')
     
     dependsOn test
 }

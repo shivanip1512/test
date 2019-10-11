@@ -19,12 +19,4 @@ import lombok.experimental.SuperBuilder;
 public class MockLoadGroupCopy extends MockLMCopy {
     private Integer routeId;
 
-    public Integer getRouteId() {
-        return routeId;
-    }
-
-    public void setRouteId(Integer routeId) {
-        this.routeId = routeId;
-    }
-
 }
