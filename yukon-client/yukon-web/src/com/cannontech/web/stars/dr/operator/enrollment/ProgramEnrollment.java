@@ -112,13 +112,12 @@ public class ProgramEnrollment {
         return retVal;
     }
     
-    public boolean isBlankEnrollment () {
-        List<InventoryEnrollment> tempList = getInventoryEnrollments();
-        for(int i = 0; i < tempList.size(); i ++) {
-            if(tempList.get(i).isEnrolled()) {
+    public boolean isBlankEnrollment() {
+        for (InventoryEnrollment inventoryEnrollment : getInventoryEnrollments()) {
+            if (inventoryEnrollment.isEnrolled()) {
                 return false;
             }
-        }        
+        }
         return true;
     }
 }
