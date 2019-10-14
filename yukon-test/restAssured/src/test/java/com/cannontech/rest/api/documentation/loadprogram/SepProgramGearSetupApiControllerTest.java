@@ -88,7 +88,7 @@ public class SepProgramGearSetupApiControllerTest {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupSep);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
         loadGroups = new ArrayList<>();
-        Integer loadGroupId = createResponse.path("groupId");
+        Integer loadGroupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID);
         loadGroupSep.setId(loadGroupId);
         loadGroups.add(loadGroupSep);
     }
@@ -99,9 +99,9 @@ public class SepProgramGearSetupApiControllerTest {
     public void programConstraint_Create() {
         programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", programConstraint);
-        Integer constraintId = createResponse.path("id");
+        Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
         programConstraint.setId(constraintId);
-        assertTrue("Constraint ID should not be Null", constraintId != null);
+        assertTrue("Constraint Id should not be Null", constraintId != null);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
     }
 
@@ -135,8 +135,8 @@ public class SepProgramGearSetupApiControllerTest {
                                                  loadProgram,
                                                  "saveLoadProgram");
 
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
         LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
@@ -163,8 +163,8 @@ public class SepProgramGearSetupApiControllerTest {
                                                  loadProgram,
                                                  "saveLoadProgram");
 
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
         LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }

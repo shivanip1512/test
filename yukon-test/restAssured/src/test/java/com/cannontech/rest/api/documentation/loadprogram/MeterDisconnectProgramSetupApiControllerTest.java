@@ -103,7 +103,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
 
         List<MockLoadGroupBase> loadGroups = new ArrayList<>();
-        Integer loadGroupId = createResponse.path("groupId");
+        Integer loadGroupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID);
         loadGroupDisconnect.setId(loadGroupId);
         loadGroups.add(loadGroupDisconnect);
         context.setAttribute("loadGroups", loadGroups);
@@ -117,10 +117,10 @@ public class MeterDisconnectProgramSetupApiControllerTest {
     public void programConstraint_Create(ITestContext context) {
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", programConstraint);
-        Integer constraintId = createResponse.path("id");
-        context.setAttribute("constraintId", constraintId);
-        context.setAttribute("constraintName", programConstraint.getName());
-        assertTrue("Constraint ID should not be Null", constraintId != null);
+        Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
+        context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID, constraintId);
+        context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME, programConstraint.getName());
+        assertTrue("Constraint Id should not be Null", constraintId != null);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
     }
 
@@ -137,7 +137,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
         MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_METER_DISCONNECT_PROGRAM,
                                                                                  (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
                                                                                  gearTypes,
-                                                                                 (Integer) context.getAttribute("constraintId"));
+                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(meterDisconnectGearFieldDescriptor),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
@@ -150,9 +150,9 @@ public class MeterDisconnectProgramSetupApiControllerTest {
                                                     .then()
                                                     .extract()
                                                     .response();
-        context.setAttribute("programName", loadProgram.getName());
-        programId = response.path("programId");
-        assertTrue("PAO ID should not be Null", programId != null);
+        context.setAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME, loadProgram.getName());
+        programId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
+        assertTrue("Program Id should not be Null", programId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -193,7 +193,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
         MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_METER_DISCONNECT_PROGRAM,
                                                                                  (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
                                                                                  gearTypes,
-                                                                                 (Integer) context.getAttribute("constraintId"));
+                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
 
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(meterDisconnectGearFieldDescriptor),
@@ -208,8 +208,8 @@ public class MeterDisconnectProgramSetupApiControllerTest {
                                                     .extract()
                                                     .response();
 
-        programId = response.path("programId");
-        assertTrue("PAO ID should not be Null", programId != null);
+        programId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
+        assertTrue("Program Id should not be Null", programId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -219,7 +219,9 @@ public class MeterDisconnectProgramSetupApiControllerTest {
      */
     @Test(dependsOnMethods = { "Test_MeterDisconnectProgram_Update" })
     public void Test_MeterDisconnectProgram_Copy(ITestContext context) {
-        MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_METER_DISCONNECT_PROGRAM, (Integer) context.getAttribute("constraintId"));
+        MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_METER_DISCONNECT_PROGRAM,
+                                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
+
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.fieldDescriptorForCopy()),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
@@ -232,10 +234,10 @@ public class MeterDisconnectProgramSetupApiControllerTest {
                                                     .then()
                                                     .extract()
                                                     .response();
-        context.setAttribute("copiedProgramName", loadProgramCopy.getName());
-        copyProgramId = response.path("programId");
+        context.setAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME, loadProgramCopy.getName());
+        copyProgramId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
         String updatedPaoId = copyProgramId.toString();
-        assertTrue("PAO ID should not be Null", updatedPaoId != null);
+        assertTrue("Program Id should not be Null", updatedPaoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -245,7 +247,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
      */
     @Test(dependsOnMethods={"Test_MeterDisconnectProgram_Copy"})
     public void Test_MeterDisconnectCopyProgram_Delete(ITestContext context) {
-        MockLMDto deleteObject  = MockLMDto.builder().name((String)context.getAttribute("copiedProgramName")).build();
+        MockLMDto deleteObject  = MockLMDto.builder().name((String)context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME)).build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
@@ -268,7 +270,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
      */
     @Test(dependsOnMethods={"Test_MeterDisconnectProgram_Copy"})
     public void Test_MeterDisconnectProgram_Delete(ITestContext context) {
-        MockLMDto deleteObject  = MockLMDto.builder().name((String)context.getAttribute("programName")).build();
+        MockLMDto deleteObject  = MockLMDto.builder().name((String)context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
@@ -306,8 +308,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
      */
     @Test(dependsOnMethods={"assignedLoadGroup_Delete"})
     public void programConstraint_Delete(ITestContext context) {
-        MockLMDto deleteConstraint = MockLMDto.builder().name( context.getAttribute("constraintName").toString()).build();
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteProgramConstraint", deleteConstraint, context.getAttribute("constraintId").toString());
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        ProgramConstraintHelper.deleteProgramConstraint(context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME).toString(),
+                                                        context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID).toString());
     }
 }

@@ -73,8 +73,8 @@ public class EcobeeLoadGroupSetupApiControllerTest {
                                 .response();
 
 
-        paoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
     
@@ -111,15 +111,15 @@ public class EcobeeLoadGroupSetupApiControllerTest {
                                 .extract()
                                 .response();
 
-        paoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
     @Test(dependsOnMethods = { "Test_LmEcobee_Update" })
     public void Test_LmEcobee_Delete() {
         MockLMDto lmDeleteObject = MockLMDto.builder()
-                .name("Ecobee_Group_Test")
+                .name(LoadGroupHelper.getLoadGroupName(MockPaoType.LM_GROUP_ECOBEE))
                 .build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
             requestFields(

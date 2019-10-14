@@ -5,6 +5,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
+
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
@@ -31,6 +34,9 @@ import com.cannontech.rest.api.utilities.Log;
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupHelper {
+    
+    public final static String CONTEXT_GROUP_ID = "groupId"; 
+
     public final static MockLoadGroupBase buildLoadGroup(MockPaoType paoType) {
 
         MockLoadGroupBase loadGroup = null;
@@ -42,7 +48,7 @@ public class LoadGroupHelper {
                                            .kWCapacity(163.0)
                                            .disableControl(false)
                                            .disableGroup(false)
-                                           .name("Meter_Disconnect_Group_Test")
+                                           .name(getLoadGroupName(paoType))
                                            .build();
             break;
         case LM_GROUP_HONEYWELL:
@@ -51,7 +57,7 @@ public class LoadGroupHelper {
                                           .kWCapacity(163.0)
                                           .disableControl(false)
                                           .disableGroup(false)
-                                          .name("HoneyWell_Group_Test")
+                                          .name(getLoadGroupName(paoType))
                                           .build();
             break;
         case LM_GROUP_ECOBEE:
@@ -60,13 +66,13 @@ public class LoadGroupHelper {
                                        .kWCapacity(163.0)
                                        .disableControl(false)
                                        .disableGroup(false)
-                                       .name("Ecobee_Group_Test")
+                                       .name(getLoadGroupName(paoType))
                                        .build();
            
             break;
         case LM_GROUP_NEST:
             loadGroup = MockLoadGroupNest.builder()
-                                     .name("Nest_LoadGroup_Test")
+                                     .name(getLoadGroupName(paoType))
                                      .type(paoType)
                                      .kWCapacity(163.0)
                                      .disableControl(false)
@@ -89,9 +95,9 @@ public class LoadGroupHelper {
             relayUsage.add(MockLoads.Load_2);
 
             loadGroup = MockLoadGroupExpresscom.builder()
-                                           .name("Test_ExpressCom_LoadGroup")
+                                           .name(getLoadGroupName(paoType))
                                            .type(MockPaoType.LM_GROUP_EXPRESSCOMM)
-                                           .routeId(12815)
+                                           .routeId(1)
                                            .disableControl(false)
                                            .disableGroup(false)
                                            .kWCapacity(123.0)
@@ -126,9 +132,9 @@ public class LoadGroupHelper {
             relays.add(MockRelays.RELAY_3);
             relays.add(MockRelays.RELAY_4);
             loadGroup =  MockLoadGroupVersacom.builder()
-                                          .name("Test_Versacom_LoadGroup")
+                                          .name(getLoadGroupName(paoType))
                                           .type(MockPaoType.LM_GROUP_VERSACOM)
-                                          .routeId(12815)
+                                          .routeId(1)
                                           .disableControl(false)
                                           .disableGroup(false)
                                           .kWCapacity(123.0)
@@ -146,7 +152,7 @@ public class LoadGroupHelper {
             List<MockSepDeviceClass> deviceClassSet = new ArrayList<>();
             deviceClassSet.add(MockSepDeviceClass.BASEBOARD_HEAT);
             loadGroup = MockLoadGroupDigiSep.builder()
-                                        .name("Test-Digi-Sep")
+                                        .name(getLoadGroupName(paoType))
                                         .type(paoType)
                                         .disableControl(true)
                                         .disableGroup(false)
@@ -159,7 +165,7 @@ public class LoadGroupHelper {
             break;
         case LM_GROUP_ITRON:
             loadGroup = MockLoadGroupItron.builder()
-                                      .name("Itron_LoadGroup_Test")
+                                      .name(getLoadGroupName(paoType))
                                       .type(paoType)
                                       .kWCapacity(163.0)
                                       .disableControl(false)
@@ -169,7 +175,7 @@ public class LoadGroupHelper {
             break;
         case LM_GROUP_EMETCON:
             loadGroup = MockLoadGroupEmetcon.builder()
-                                        .name("Emetcon_LoadGroup_Test")
+                                        .name(getLoadGroupName(paoType))
                                         .type(paoType)
                                         .addressUsage(MockEmetconAddressUsage.GOLD)
                                         .disableControl(false)
@@ -178,12 +184,20 @@ public class LoadGroupHelper {
                                         .silverAddress(4)
                                         .kWCapacity(4.0)
                                         .relayUsage(MockEmetconRelayUsage.RELAY_A)
-                                        .routeId(12815)
+                                        .routeId(1)
                                         .build();
             break;
         }
 
         return loadGroup;
+    }
+
+    public static String getLoadGroupName(MockPaoType paoType) {
+        return StringUtils.remove(WordUtils.capitalizeFully(StringUtils.removeStartIgnoreCase(paoType.name(), "LM_GROUP_"), '_'), "_") + "Test";
+    }
+    
+    public static String getCopiedLoadGroupName(MockPaoType paoType) {
+        return StringUtils.remove(WordUtils.capitalizeFully(StringUtils.removeStartIgnoreCase(paoType.name(), "LM_GROUP_"), '_'), "_") + "TestCopy";
     }
 
     public static void deleteLoadGroup(String name, String groupId) {

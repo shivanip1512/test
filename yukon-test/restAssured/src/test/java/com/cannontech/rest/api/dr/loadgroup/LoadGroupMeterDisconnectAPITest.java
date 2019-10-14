@@ -28,11 +28,11 @@ public class LoadGroupMeterDisconnectAPITest {
     public void Test01_LmGroupMeterDisconnect_Create(ITestContext context) {
         Log.startTestCase("LmGroupMeterDisconnect_Create");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
-        String groupId = createResponse.path("groupId").toString();
-        context.setAttribute("groupId", groupId);
+        String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
 
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        assertTrue("GroupId should not be Null", groupId != null);
+        assertTrue("Load Group Id should not be Null", groupId != null);
 
         Log.endTestCase("LmGroupMeterDisconnect_Create");
     }
@@ -40,9 +40,9 @@ public class LoadGroupMeterDisconnectAPITest {
     @Test(priority = 1)
     public void Test02_LmGroupMeterDisconnect_Get(ITestContext context) {
         Log.startTestCase("Test02_LmGroupMeterDisconnect_Get");
-        String groupId = context.getAttribute("groupId").toString();
+        String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
 
-        Log.info("GroupId of LmGroupMeterDisconnect created is : " + groupId);
+        Log.info("Load Group Id of LmGroupMeterDisconnect created is : " + groupId);
 
         ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup", groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
@@ -66,12 +66,12 @@ public class LoadGroupMeterDisconnectAPITest {
     public void Test03_LmGroupMeterDisconnect_Update(ITestContext context) {
         Log.startTestCase("Test03_LmGroupMeterDisconnect_Update");
 
-        String groupId = context.getAttribute("groupId").toString();
+        String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         loadGroup.setKWCapacity(888.766);
         loadGroup.setName("Meter_Disconnect_Update_Test");
         context.setAttribute("MR_GrpName", loadGroup.getName());
 
-        Log.info("Updated payload is :" + loadGroup.toString());
+        Log.info("Updated Load Group is :" + loadGroup.toString());
 
         ExtractableResponse<?> getResponse = ApiCallHelper.post("updateloadgroup", loadGroup, groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);

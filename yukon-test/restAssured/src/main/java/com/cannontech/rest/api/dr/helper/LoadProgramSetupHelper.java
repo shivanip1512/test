@@ -30,7 +30,10 @@ import com.cannontech.rest.api.loadProgram.request.MockProgramGroup;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 
 public class LoadProgramSetupHelper {
-
+    public final static String CONTEXT_PROGRAM_ID = "programId"; 
+    public final static String CONTEXT_PROGRAM_NAME = "programName";
+    public final static String CONTEXT_COPIED_PROGRAM_NAME = "copiedProgramName";
+    
     public static MockLoadProgram buildLoadProgramRequest(MockPaoType type, List<MockLoadGroupBase> loadGroups, List <MockGearControlMethod> gearTypes, Integer constraintId) {
 
         List<MockProgramGear> gears = new ArrayList<>();
@@ -89,7 +92,7 @@ public class LoadProgramSetupHelper {
                                                         .build();
 
         return MockLoadProgram.builder()
-                          .name(StringUtils.remove(WordUtils.capitalizeFully(type.name(), '_'), "_") + "Test")
+                          .name(StringUtils.remove(StringUtils.removeStartIgnoreCase(type.name(), "LM_"), '_') + "Test")
                           .type(type)
                           .triggerOffset(1.0)
                           .restoreOffset(2.0)
@@ -105,7 +108,8 @@ public class LoadProgramSetupHelper {
     
     public static MockLoadProgramCopy buildLoadProgramCopyRequest(MockPaoType programType, Integer constraintId) {
         return MockLoadProgramCopy.builder()
-                       .name(StringUtils.remove(WordUtils.capitalizeFully(programType.name(), '_'), "_") + "TestCopy")
+                                  .name(StringUtils.remove(WordUtils.capitalizeFully(StringUtils.removeStartIgnoreCase(programType.name(), "LM_"), '_'),
+                                                           "_") + "TestCopy")
                        .operationalState(MockOperationalState.Automatic)
                        .constraint(MockProgramConstraint.builder().constraintId(constraintId).build())
                        .copyMemberControl(true)

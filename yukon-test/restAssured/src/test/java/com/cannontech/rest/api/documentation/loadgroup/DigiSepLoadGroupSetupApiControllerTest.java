@@ -81,8 +81,8 @@ public class DigiSepLoadGroupSetupApiControllerTest {
                                 .extract()
                                 .response();
 
-        paoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
     
@@ -117,14 +117,14 @@ public class DigiSepLoadGroupSetupApiControllerTest {
                                 .then()
                                 .extract()
                                 .response();
-        paoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
     @Test(dependsOnMethods = { "Test_LmDigiSep_Update" })
     public void Test_LmDigiSep_Copy() {
-        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name("Test-DigiSep-Copy").build();
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_DIGI_SEP)).build();
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
                                     requestFields(
@@ -139,8 +139,8 @@ public class DigiSepLoadGroupSetupApiControllerTest {
                                 .then()
                                 .extract()
                                 .response();
-        copyPaoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", copyPaoId != null);
+        copyPaoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", copyPaoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -148,7 +148,7 @@ public class DigiSepLoadGroupSetupApiControllerTest {
     public void Test_LmDigiSep_Delete() {
 
         MockLMDto lmDeleteObject = MockLMDto.builder()
-                                    .name("Test-Digi-Sep")
+                                    .name(LoadGroupHelper.getLoadGroupName(MockPaoType.LM_GROUP_DIGI_SEP))
                                     .build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
             requestFields(
@@ -166,9 +166,9 @@ public class DigiSepLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
  
         MockLMDto lmDeleteCopyObject = MockLMDto.builder()
-                                        .name("Test-DigiSep-Copy")
+                                        .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_DIGI_SEP))
                                         .build();
-        Log.info("Delete payload is : " + JsonUtil.beautifyJson(lmDeleteCopyObject.toString()));
+        Log.info("Delete Load Group is : " + JsonUtil.beautifyJson(lmDeleteCopyObject.toString()));
         ExtractableResponse<?> copyResponse = ApiCallHelper.delete("deleteloadgroup", lmDeleteCopyObject, copyPaoId);
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
     }

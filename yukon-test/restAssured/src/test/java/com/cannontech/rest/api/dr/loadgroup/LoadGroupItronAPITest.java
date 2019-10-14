@@ -30,19 +30,19 @@ public class LoadGroupItronAPITest {
     public void loadGroupItron_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupItron_01_Create");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
-        String groupId = createResponse.path("groupId").toString();
-        context.setAttribute("groupId", groupId);
+        String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        assertTrue("GROUP ID should not be Null", groupId != null);
+        assertTrue("Load Group Id should not be Null", groupId != null);
         Log.endTestCase("loadGroupItron_01_Create");
     }
 
     @Test
     public void loadGroupItron_02_Get(ITestContext context) {
         Log.startTestCase("loadGroupItron_02_Get");
-        String groupId = context.getAttribute("groupId").toString();
+        String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
 
-        Log.info("GroupId of LmGroupItron created is : " + groupId);
+        Log.info("Load Group Id of LmGroupItron created is : " + groupId);
 
         ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup", groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
@@ -64,7 +64,7 @@ public class LoadGroupItronAPITest {
     @Test
     public void loadGroupItron_03_Update(ITestContext context) {
         Log.startTestCase("loadGroupItron_03_Update");
-        String groupId = context.getAttribute("groupId").toString();
+        String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
 
         String name = "LM_Group_Itron_Name_Update";
         loadGroup.setVirtualRelayId(7);
@@ -72,7 +72,7 @@ public class LoadGroupItronAPITest {
         loadGroup.setKWCapacity(888.0);
         context.setAttribute("Itron_GrpName", name);
 
-        Log.info("Updated payload is :" + loadGroup);
+        Log.info("Updated Load Group is :" + loadGroup);
 
         ExtractableResponse<?> getResponse = ApiCallHelper.post("updateloadgroup", loadGroup, groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
@@ -105,7 +105,7 @@ public class LoadGroupItronAPITest {
         Log.startTestCase("loadGroupItron_06_GroupNameValidation");
         
         loadGroup.setName(groupName);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup",loadGroup);
+        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
         assertTrue("Status code should be "+expectedStatusCode, response.statusCode() == expectedStatusCode);
         JsonPath jsonPath = response.jsonPath();
         assertTrue("Expected message should be - Validation error", jsonPath.get("message").equals("Validation error"));
