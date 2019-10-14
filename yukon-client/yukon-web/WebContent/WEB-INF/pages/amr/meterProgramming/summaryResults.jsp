@@ -49,9 +49,10 @@
                             <td><cti:paoDetailUrl yukonPao="${result.device}">${fn:escapeXml(result.device.name)}</cti:paoDetailUrl></td>
                             <td>${fn:escapeXml(result.meterNumber)}</td>
                             <td>${result.device.paoIdentifier.paoType.paoTypeName}</td>
-                            <td>${fn:escapeXml(result.assignedProgramName)}</td>
+                            <td>${fn:escapeXml(result.programInfo.name)}</td>
                             <td>
-                                <cti:msg2 key=".statusMsg.${result.status}" argument="${result.programInfo.name}"/>
+                                <c:set var="programName" value="${!empty result.assignedProgramName ? result.assignedProgramName : ''}"/>
+                                <cti:msg2 key=".statusMsg.${result.status}" argument="${programName}"/>
                                 <c:if test="${result.displayProgressBar()}">
                                     <tags:updateableProgressBar totalCount="100" countKey="METER_PROGRAMMING/${result.device.id}/PROGRESS" hideCount="true"/>
                                 </c:if>
