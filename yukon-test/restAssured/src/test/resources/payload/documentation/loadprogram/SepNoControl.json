@@ -1,0 +1,49 @@
+{
+    "name": "TestSepNoControlProgram",
+    "type": "LM_SEP_PROGRAM",
+    "operationalState": "Automatic",
+    "constraint": {
+        "constraintId": 0
+    },
+    "triggerOffset": 0.0,
+    "restoreOffset": 0.0,
+    "gears": [
+        {
+            "gearName": "SepNoControl",
+            "gearNumber": 1,
+            "controlMethod": "NoControl",
+            "fields": {
+                "whenToChangeFields": {
+                    "whenToChange": "None"
+                }
+            }
+        }
+    ],
+    "controlWindow": {
+        "controlWindowOne": {
+            "availableStartTimeInMinutes": 180,
+            "availableStopTimeInMinutes": 480
+        },
+        "controlWindowTwo": {
+            "availableStartTimeInMinutes": 240,
+            "availableStopTimeInMinutes": 540
+        }
+    },
+    "assignedGroups": [
+        {
+            "groupId": 4775,
+            "groupName": "digisep",
+            "type": "LM_GROUP_DIGI_SEP"
+        }
+    ],
+    "notification": {
+        "notifyOnAdjust": false,
+        "enableOnSchedule": false,
+        "assignedNotificationGroups": [
+            {
+                "notificationGrpID": 2,
+                "notificationGrpName": "Jess Notification"
+            }
+        ]
+    }
+}

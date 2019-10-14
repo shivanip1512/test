@@ -30,9 +30,6 @@ import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.general.model.OperatorInventorySearchBy;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
-import com.cannontech.stars.energyCompany.MeteringType;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
@@ -48,7 +45,6 @@ public class InventorySearchController {
     
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private EnergyCompanyDao energyCompanyDao;
-    @Autowired private EnergyCompanySettingDao ecSettingsDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private PhoneNumberFormattingService phoneFormattingService;
@@ -87,17 +83,11 @@ public class InventorySearchController {
         }
         
         if(!hasWarnings){
-            MeteringType value = ecSettingsDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, 
-                    MeteringType.class, ec.getEnergyCompanyId());
-
-            boolean starsMeters = value == MeteringType.stars;
-            model.addAttribute("starsMeters", starsMeters);
-            
             List<EnergyCompany> descendantEcs = 
                     energyCompanyDao.getEnergyCompany(liteEc.getEnergyCompanyId()).getDescendants(true);
             List<Integer> ecDescendantIds = Lists.transform(descendantEcs, EnergyCompanyDao.TO_ID_FUNCTION);
             SearchResults<InventorySearchResult> results = inventoryDao.search(inventorySearch, ecDescendantIds, 
-                    paging.getStartIndex(), paging.getItemsPerPage(), starsMeters);
+                    paging.getStartIndex(), paging.getItemsPerPage());
 
             // Redirect to inventory page if only one result is found
            if (results.getHitCount() == 1) {

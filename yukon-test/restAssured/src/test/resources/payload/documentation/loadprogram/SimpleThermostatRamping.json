@@ -1,0 +1,62 @@
+{
+    
+    "name": "TestDirectProgram_SimpleThermostatGear",
+    "type": "LM_DIRECT_PROGRAM",
+    "operationalState": "Automatic",
+    "constraint": {
+        "constraintId": 0
+        
+    },
+    "triggerOffset": 1,
+    "restoreOffset": 2,
+    "gears": [
+        {
+            "gearName": "simplethermostat",
+            "gearNumber": 1,
+            "controlMethod": "SimpleThermostatRamping",
+            "fields": {
+                "mode": "COOL",
+                "randomStartTimeInMinutes": 60,
+                "preOpTemp": 1,
+                "preOpTimeInMinutes": 120,
+                "preOpHoldInMinutes": 120,
+                "rampPerHour": 0.2,
+                "max": 3,
+                "rampOutTimeInMinutes": 180,
+                "maxRuntimeInMinutes": 480,
+                "howToStopControl": "TimeIn",
+                "whenToChangeFields": {
+                    "whenToChange": "None"
+                }
+            }
+        }
+
+    ],
+    "controlWindow": {
+        "controlWindowOne": {
+            "availableStartTimeInMinutes": 0,
+            "availableStopTimeInMinutes": 0
+        },
+        "controlWindowTwo": {
+            "availableStartTimeInMinutes": 0,
+            "availableStopTimeInMinutes": 0
+        }
+    },
+    "assignedGroups": [
+        {
+            "groupId": 9425,
+            "groupName": "disconnect",
+            "type": "LM_GROUP_METER_DISCONNECT"
+        }
+    ],
+    "notification": {
+        "notifyOnAdjust": false,
+        "enableOnSchedule": false,
+        "assignedNotificationGroups": [
+            {
+                "notificationGrpID": 2,
+                "notificationGrpName": "Jess Notification"
+            }
+        ]
+    }
+}

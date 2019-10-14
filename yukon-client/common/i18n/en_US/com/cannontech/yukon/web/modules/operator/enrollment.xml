@@ -61,6 +61,7 @@
     
     <entry key="yukon.web.modules.operator.enrollment.error.systemConfiguration">Incorrect System Configuration</entry>
     <entry key="yukon.web.modules.operator.enrollment.error.failed">Program Enrollment/Unenrollment Failed</entry>
+    <entry key="yukon.web.modules.operator.enrollment.error.addBlankEnrollment">Program Enrollment Failed, no devices selected for enrollment.</entry>
     
     <entry key="yukon.web.modules.operator.enrollmentList.failed">
         Error processing enrollment/unenrollment for {0}.

@@ -41,6 +41,7 @@ import com.cannontech.common.device.programming.model.MeterProgramUploadCancelRe
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
@@ -84,9 +85,29 @@ public class MeterProgrammingSummaryController {
 
     @GetMapping("home")
     public String home(@DefaultSort(dir=Direction.asc, sort="program") SortingParameters sorting, ModelMap model, YukonUserContext userContext) {
+        getSortedResults(userContext, sorting, model);
+        return "meterProgramming/home.jsp";
+    }
+    
+    @GetMapping("sortedYukonPrograms")
+    public String sortedYukonPrograms(@DefaultSort(dir=Direction.asc, sort="program") SortingParameters sorting, ModelMap model, 
+                                      YukonUserContext userContext) {
+        getSortedResults(userContext, sorting, model);
+        return "meterProgramming/sortedYukonPrograms.jsp";
+    }
+    
+    private void getSortedResults(YukonUserContext userContext, SortingParameters sorting, ModelMap model) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         List<MeterProgramStatistics> detail = meterProgrammingSummaryDao.getProgramStatistics(userContext);
+        
+        List<MeterProgramStatistics> specialCases = detail.stream()
+                                                          .filter(statistic -> statistic.isNotYukonSource())
+                                                          .collect(Collectors.toList());
+        
+        List<MeterProgramStatistics> yukonPrograms = detail.stream()
+                                                           .filter(statistic -> statistic.isYukonSource())
+                                                           .collect(Collectors.toList());
         
         ProgramSortBy sortBy = ProgramSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
@@ -100,7 +121,7 @@ public class MeterProgrammingSummaryController {
         if (sorting.getDirection() == Direction.desc) {
             comparator = Collections.reverseOrder(comparator);
         }
-        Collections.sort(detail, comparator);
+        Collections.sort(yukonPrograms, comparator);
         
         List<SortableColumn> columns = new ArrayList<>();
         for (ProgramSortBy column : ProgramSortBy.values()) {
@@ -110,10 +131,8 @@ public class MeterProgrammingSummaryController {
             model.addAttribute(column.name(), col);
         }
         
-        model.addAttribute("programs", detail);
-
-        
-        return "meterProgramming/home.jsp";
+        model.addAttribute("programs", yukonPrograms);
+        model.addAttribute("specialCases", specialCases);
     }
     
     @DeleteMapping("/{guid}/delete")
@@ -145,7 +164,7 @@ public class MeterProgrammingSummaryController {
     
     @GetMapping("summary")
     public String summary(MeterProgrammingSummaryFilter filter, @DefaultSort(dir=Direction.asc, sort="DEVICE_NAME") SortingParameters sorting, 
-                          PagingParameters paging, ModelMap model, YukonUserContext userContext) {
+                          @DefaultItemsPerPage(value=100) PagingParameters paging, ModelMap model, YukonUserContext userContext) {
         List<MeterProgramInfo> programs = meterProgrammingSummaryDao.getMeterProgramInfos(userContext);
         if (filter.getPrograms() != null) {
             List<String> selectedProgramNames = filter.getPrograms().stream()
@@ -155,7 +174,20 @@ public class MeterProgrammingSummaryController {
         }
 
         getFilteredResults(filter, sorting, paging, model, userContext);
-        model.addAttribute("programList", programs);
+        
+        List<MeterProgramInfo> specialCases = programs.stream()
+                .filter(program -> program.getSource().isNotYukon())
+                .collect(Collectors.toList());
+
+        List<MeterProgramInfo> yukonPrograms = programs.stream()
+                        .filter(program -> program.getSource().isYukon())
+                        .collect(Collectors.toList());
+        
+        List<MeterProgramInfo> sortedPrograms = new ArrayList<>();
+        sortedPrograms.addAll(yukonPrograms);
+        sortedPrograms.addAll(specialCases);
+
+        model.addAttribute("programList", sortedPrograms);
         model.addAttribute("statusList", DisplayableStatus.values());
         return "meterProgramming/summary.jsp";
     }
@@ -163,7 +195,7 @@ public class MeterProgrammingSummaryController {
     @GetMapping("summaryFilter")
     public String summaryFilter(@ModelAttribute("filter") MeterProgrammingSummaryFilter filter, String deviceGroupName, 
                                 @DefaultSort(dir=Direction.asc, sort="DEVICE_NAME") SortingParameters sorting,
-                                PagingParameters paging, ModelMap model, YukonUserContext userContext) {
+                                @DefaultItemsPerPage(value=100) PagingParameters paging, ModelMap model, YukonUserContext userContext) {
         if (!StringUtils.isBlank(deviceGroupName)) {
             DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroupName);
             filter.setGroups(Arrays.asList(group));
@@ -255,6 +287,15 @@ public class MeterProgrammingSummaryController {
         MeterProgramUploadCancelResult result = meterProgrammingService.cancelMeterProgramUpload(device, userContext);
         json.put("result", result);
         json.put("successMsg", accessor.getMessage(baseKey + "summary.cancelSuccessful"));
+        return json;
+    }
+    
+    @PostMapping("{id}/acceptProgramming")
+    public @ResponseBody Map<String, Object> acceptProgramming(@PathVariable int id, String guid, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        Map<String, Object> json = new HashMap<>();
+        //TODO: Accept Programming State
+        json.put("successMsg", accessor.getMessage(baseKey + "summary.acceptSuccessful"));
         return json;
     }
     

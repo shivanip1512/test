@@ -15,13 +15,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.lang.Nullable;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.servlet.resource.ResourceUrlProvider;
+import org.springframework.web.servlet.resource.ResourceUrlProviderExposingInterceptor;
+import org.springframework.web.util.UrlPathHelper;
+
 import com.cannontech.clientutils.YukonLogManager;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class is custom filter which is same as ResourceUrlEncodingFilter.java of Spring MVC 5.1.5
- * except one piece of code i.e. initLookupPath() is removed from setAttribute() method as it is not
- * able to handle empty request URI and this filter wraps the {@link HttpServletResponse} and overrides
+ * this filter wraps the {@link HttpServletResponse} and overrides
  * its {@link HttpServletResponse#encodeURL(String) encodeURL} method in order to translate internal
  * resource request URLs into public URL paths for external use
  */
@@ -48,8 +49,6 @@ public class CustomResourceUrlEncodingFilter extends GenericFilterBean {
 
         @Nullable private Integer indexLookupPath;
 
-        private String prefixLookupPath = StringUtils.EMPTY;
-
         ResourceUrlEncodingRequestWrapper(HttpServletRequest request) {
             super(request);
         }
@@ -57,38 +56,38 @@ public class CustomResourceUrlEncodingFilter extends GenericFilterBean {
         @Override
         public void setAttribute(String name, Object value) {
             super.setAttribute(name, value);
-            // Here I have removed initLookupPath() method as it is not able to handle empty request URI
+            if (ResourceUrlProviderExposingInterceptor.RESOURCE_URL_PROVIDER_ATTR.equals(name)) {
+                if (value instanceof ResourceUrlProvider) {
+                    this.resourceUrlProvider = ((ResourceUrlProvider) value);
+                }
+            }
         }
 
-        @Nullable
-        public String resolveUrlPath(String url) {
+        private String resolveUrlPath(String url) {
             if (this.resourceUrlProvider == null) {
                 log.trace("ResourceUrlProvider not available via request attribute "
                     + "ResourceUrlProviderExposingInterceptor.RESOURCE_URL_PROVIDER_ATTR");
                 return null;
             }
-            if (this.indexLookupPath != null && url.startsWith(this.prefixLookupPath)) {
-                int suffixIndex = getEndPathIndex(url);
-                String suffix = url.substring(suffixIndex);
-                String lookupPath = url.substring(this.indexLookupPath, suffixIndex);
-                lookupPath = this.resourceUrlProvider.getForLookupPath(lookupPath);
+            initIndexLookupPath(this.resourceUrlProvider);
+            if (url.length() >= this.indexLookupPath) {
+                String prefix = url.substring(0, this.indexLookupPath);
+                String lookupPath = url.substring(this.indexLookupPath);
+                lookupPath = resourceUrlProvider.getForLookupPath(lookupPath);
                 if (lookupPath != null) {
-                    return this.prefixLookupPath + lookupPath + suffix;
+                    return prefix + lookupPath;
                 }
             }
-            return null;
+            return url;
         }
 
-        private int getEndPathIndex(String path) {
-            int end = path.indexOf('?');
-            int fragmentIndex = path.indexOf('#');
-            if (fragmentIndex != -1 && (end == -1 || fragmentIndex < end)) {
-                end = fragmentIndex;
+        private void initIndexLookupPath(ResourceUrlProvider urlProvider) {
+            if (this.indexLookupPath == null) {
+                UrlPathHelper pathHelper = this.resourceUrlProvider.getUrlPathHelper();
+                String requestUri = pathHelper.getRequestUri(this);
+                String lookupPath = pathHelper.getLookupPathForRequest(this);
+                this.indexLookupPath = requestUri.lastIndexOf(lookupPath);
             }
-            if (end == -1) {
-                end = path.length();
-            }
-            return end;
         }
     }
 

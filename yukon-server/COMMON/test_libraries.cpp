@@ -3,6 +3,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "ThirdPartyLibraries.h"
+#include "std_helper.h"
 
 #include <openssl/md5.h>
 #include <openssl/sha.h>
@@ -46,24 +47,22 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
 
     auto libraries = Cti::ThirdPartyLibraries().getLibraries();
 
+    const auto libraryPaths = Cti::ThirdPartyLibraries().getKnownLibraryPaths();
+
     for( const auto library : libraries )
     {
         BOOST_TEST_CONTEXT(library.project)
         {
-            std::array<char, MAX_PATH> libraryPath;
+            auto libraryPath = Cti::mapFind(libraryPaths, library.path);
 
-            GetEnvironmentVariable(library.path.c_str(), libraryPath.data(), libraryPath.size());
-
-            const auto pathLen = strnlen_s(libraryPath.data(), libraryPath.size());
-
-            if( pathLen == 0 )
+            if( !libraryPath )
             {
-                BOOST_ERROR("No path");
+                BOOST_ERROR("No entry for " << library.path << " in Cti::ThirdPartyLibraries::getKnownLibraryPaths");
 
                 continue;
             }
 
-            BOOST_TEST_CONTEXT(libraryPath.data())
+            BOOST_TEST_CONTEXT(*libraryPath)
             {
                 BOOST_TEST_MESSAGE("Generating hashes for " + library.project);
 
@@ -78,7 +77,7 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
 
                 std::vector<fs::directory_entry> fileList;
                 
-                std::copy(fs::recursive_directory_iterator{ libraryPath.data() }, {}, std::back_inserter(fileList));
+                std::copy(fs::recursive_directory_iterator{ *libraryPath }, {}, std::back_inserter(fileList));
                 
                 //  Print status so users know why they're waiting
                 std::cout << "Generating hashes for " << ++libraryIndex << "/" << libraries.size() << ": " << library.project << std::endl;

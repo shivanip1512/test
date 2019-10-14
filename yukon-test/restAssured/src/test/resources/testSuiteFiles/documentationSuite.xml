@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="Demand Response Setup Documentation Suite" parallel="classes" preserve-order="true">
+<suite name="Demand Response Setup Documentation Suite" preserve-order="true">
     <test name="DR Setup Documentation Test" >
         <classes>
            <class name = "com.cannontech.rest.api.documentation.loadgroup.MeterDisconnectLoadGroupSetupApiControllerTest" />
@@ -16,6 +16,14 @@
 
            <class name = "com.cannontech.rest.api.documentation.macroloadgroup.MacroLoadGroupSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.constraint.ProgramConstraintControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.DirectProgramSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.EcobeeProgramSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.HoneywellProgramSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.ItronProgramSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.SepProgramSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.MeterDisconnectProgramSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.DirectProgramGearSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.SepProgramGearSetupApiControllerTest" />
         </classes>
     </test>
 </suite>

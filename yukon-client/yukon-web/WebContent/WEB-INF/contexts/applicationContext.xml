@@ -320,6 +320,9 @@
                 <entry key="PQR_CONFIG">
                     <ref bean="pqrConfigBackingService"/>
                 </entry>
+                <entry key="METER_PROGRAMMING">
+                    <ref bean="meterProgrammingBackingService"/>
+                </entry>
             </map>
         </property>
         <property name="bulkBacks">
@@ -1364,6 +1367,8 @@
      <bean class="com.cannontech.web.capcontrol.IvvcHelper"/>
      
      <bean id="pqrConfigBackingService" class="com.cannontech.web.updater.pqrConfig.PqrConfigBackingService"/>
+     
+     <bean id="meterProgrammingBackingService" class="com.cannontech.web.updater.meterProgramming.MeterProgrammingBackingService"/>
      
      <bean class="com.cannontech.web.paonote.validator.PaoNoteValidator"/>
      <bean id="scheduledDataImportService" class="com.cannontech.web.scheduledDataImport.service.impl.ScheduledDataImportServiceImpl"/>

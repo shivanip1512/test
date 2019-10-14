@@ -41,6 +41,11 @@ import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
+import com.cannontech.common.version.VersionTools;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.version.CTIDatabase;
+import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.MetaDataDatabaseVendorResolver;
 import com.cannontech.dbconverter.converter.DBConverter;
 import com.cannontech.dbtools.DBCompare.DBCompare;
 import com.cannontech.dbtools.image.ImageInserter;
@@ -94,12 +99,29 @@ class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, Popu
     private JRadioButton ivjJRadioButton5 = null;
 
     private DBToolsFrame() {
+        populateDBInfo();
         initialize();
     }
 
     private DBToolsFrame(String title) {
         super(title);
+        populateDBInfo();
         initialize();
+    }
+    /**
+     * Method to display DB information on DBToolframe panel.
+     */
+    private void populateDBInfo() {
+        JTextArea textArea = getMessageArea();
+        CTIDatabase db = VersionTools.getDBVersionRefresh();
+        String primaryUser = PoolManager.getInstance().getPrimaryUser();
+        String yukonVersion = VersionTools.getYUKON_VERSION();
+        MetaDataDatabaseVendorResolver resolver = new MetaDataDatabaseVendorResolver();
+        resolver.setDataSource(PoolManager.getYukonDataSource());
+        DatabaseVendor databaseVendor = resolver.getDatabaseVendor();
+        textArea.append("Connected to Yukon with database user " + primaryUser + "\n");
+        textArea.append("Found database files and selected correct files for " + databaseVendor.getVendorName() + " " + databaseVendor.getDatabaseMajorVersion() + ".\n");
+        textArea.append("Press start to upgrade the database from " + db.getVersion() + "." + db.getBuild() + " to " + yukonVersion);
     }
 
     /**
@@ -548,7 +570,7 @@ class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, Popu
                             getJLabelOption().setText(tool.getParamText());
 
                             if (tool.getDefaultValue() != null) {
-                                getPathField().setText(tool.getDefaultValue());
+                                getPathField().setText(DBUpdater.getDBScriptPath());
                             }
 
                             if (!(tool instanceof ModifyConstraints)) {

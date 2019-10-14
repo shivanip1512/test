@@ -1,0 +1,62 @@
+{
+    "name": "LoadProgTargetCycle2",
+    "type": "LM_DIRECT_PROGRAM",
+    "operationalState": "Automatic",
+    "constraint": {
+        "constraintId": 25
+    },
+    "triggerOffset": 12,
+    "restoreOffset": 22,
+    "gears": [
+        {
+                        "gearName": "GearTargetCycle",
+            "gearNumber": 7,
+            "controlMethod": "TargetCycle",
+            "fields": {
+                "noRamp": false,
+                "controlPercent": 50,
+                "cycleCountSendType": "FixedCount",
+                "maxCycleCount": 0,
+                "startingPeriodCount": 8,
+                "sendRate": 3600,
+                "stopCommandRepeat": 0,
+                "howToStopControl": "StopCycle",
+                "capacityReduction": 100,
+                "kWReduction": 0,
+                "whenToChangeFields": {
+                    "whenToChange": "None"
+                },
+                "cyclePeriodInMinutes": 30
+
+            }
+        }
+
+    ],
+    "controlWindow": {
+        "controlWindowOne": {
+            "availableStartTimeInMinutes": 0,
+            "availableStopTimeInMinutes": 0
+        },
+        "controlWindowTwo": {
+            "availableStartTimeInMinutes": 0,
+            "availableStopTimeInMinutes": 0
+        }
+    },
+    "assignedGroups": [
+        {
+            "groupId": 11705,
+            "groupName": "E1",
+            "type": "LM_GROUP_EMETCON"
+        }
+    ],
+    "notification": {
+        "notifyOnAdjust": true,
+        "enableOnSchedule": true,
+        "assignedNotificationGroups": [
+            {
+                "notificationGrpID": 2,
+                "notificationGrpName": "Jess Notification"
+            }
+        ]
+    }
+}

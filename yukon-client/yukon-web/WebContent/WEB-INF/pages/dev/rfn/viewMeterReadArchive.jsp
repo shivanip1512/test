@@ -94,6 +94,7 @@
                                     <tags:check label="Average" path="modifiers" value="avg"/>
                                     <tags:check label="Previous" path="modifiers" value="previous"/>
                                     <tags:check label="Daily Max" path="modifiers" value="dailyMax"/>
+                                    <tags:check label="Daily Min" path="modifiers" value="dailyMin"/>
                                 </div>
                             </td>
                         </tr>  

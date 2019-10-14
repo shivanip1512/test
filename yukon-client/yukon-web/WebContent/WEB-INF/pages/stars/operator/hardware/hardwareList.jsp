@@ -553,40 +553,23 @@
                 <table class="compact-results-table dashed row-highlighting has-actions">
                     <thead>
                         <tr>
-                            <c:if test="${not starsMeters}">
-                                <th class="row-icon"/>
-                            </c:if>
-                            <th>
-                                <c:choose>
-                                    <c:when test="${starsMeters}">
-                                        <i:inline key=".meters.meterNumber"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <i:inline key=".displayName"/>
-                                    </c:otherwise>
-                                </c:choose>
-                            </th>
-                            <c:if test="${not starsMeters}">
-                                <th><i:inline key=".displayType.METER"/></th>
-                            </c:if>
+                            <th class="row-icon"/>
+                            <th><i:inline key=".displayName"/></th>
+                            <th><i:inline key=".displayType.METER"/></th>
                             <th><i:inline key=".label"/></th>
-                            <c:if test="${not starsMeters}">
-                                <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
-                            </c:if>
+                            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
                     <tbody>
                         <c:forEach var="meter" items="${meters}">
                             <tr>
-                                <c:if test="${not starsMeters}">
-                                    <td>
-                                        <c:if test="${notesList.contains(meter.deviceId)}">
-                                            <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
-                                            <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${meter.deviceId}"/>
-                                        </c:if>
-                                    </td>
-                                </c:if>
+                                <td>
+                                    <c:if test="${notesList.contains(meter.deviceId)}">
+                                        <cti:msg2 var="viewAllNotesTitle" key="yukon.web.common.paoNotesSearch.viewAllNotes"/>
+                                        <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${meter.deviceId}"/>
+                                    </c:if>
+                                </td>
                                 <td>
                                     <c:choose>
                                         <c:when test="${meter.hardwareType == 'NON_YUKON_METER'}">
@@ -601,56 +584,47 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
-
-                                <c:if test="${starsMeters}">
-                                    <td>${fn:escapeXml(meter.displayLabel)}</td>
-                                </c:if>
-
-                                <c:if test="${not starsMeters}">
-                                    <td>${fn:escapeXml(meter.displayType)}</td>
-                                    <td>
-                                        ${fn:escapeXml(meter.displayLabel)}
-                                    </td>
-                                    <td>
-                                        <c:if test="${meter.hardwareType != 'NON_YUKON_METER'}">
-                                            <cm:dropdown>
-                                                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                                                    <c:if test="${inventoryChecking}">
-                                                        <li>
-                                                            <tags:pickerDialog extraArgs="${energyCompanyId}"
-                                                                    id="availableMeterPicker${meter.inventoryId}"
-                                                                    type="availableMctPicker"
-                                                                    destinationFieldId="newInventoryId"
-                                                                    immediateSelectMode="true"
-                                                                    endAction="function(items) { return changeOut(${meter.inventoryId}, true); }" >
-                                                                <cti:icon icon="icon-arrow-swap"/>
-                                                                <cti:msg2 key=".changeOut.label"/> 
-                                                            </tags:pickerDialog>
-                                                        </li>
-                                                    </c:if>
-                                                </cti:checkRolesAndProperties>
-                                                <c:if test="${meter.getHardwareTypeEntryId() == 0}">
-                                                    <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editMeterConfigUrl}${meter.deviceId}" />
-                                                </c:if>
-                                                <c:if test="${(meter.hardwareType == 'YUKON_METER') and (meter.getHardwareTypeEntryId() > 0)}">
-                                                    <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editConfigUrl}${meter.inventoryId}" />
-                                                </c:if>
-                                                <cti:checkRolesAndProperties value="METERING">
+                                <td>${fn:escapeXml(meter.displayType)}</td>
+                                <td>${fn:escapeXml(meter.displayLabel)}</td>
+                                <td>
+                                    <c:if test="${meter.hardwareType != 'NON_YUKON_METER'}">
+                                        <cm:dropdown>
+                                            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                                                <c:if test="${inventoryChecking && (meter.hardwareType != 'YUKON_METER')}">
                                                     <li>
-                                                        <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
-                                                            <cti:icon icon="icon-control-equalizer-blue"/>
-                                                            <cti:msg2 key="yukon.web.components.button.meterDetail.label"/>
-                                                        </cti:paoDetailUrl>
+                                                        <tags:pickerDialog extraArgs="${energyCompanyId}"
+                                                                id="availableMeterPicker${meter.inventoryId}"
+                                                                type="availableMctPicker"
+                                                                destinationFieldId="newInventoryId"
+                                                                immediateSelectMode="true"
+                                                                endAction="function(items) { return changeOut(${meter.inventoryId}, true); }" >
+                                                            <cti:icon icon="icon-arrow-swap"/>
+                                                            <cti:msg2 key=".changeOut.label"/> 
+                                                        </tags:pickerDialog>
                                                     </li>
-                                                </cti:checkRolesAndProperties>
-                                            </cm:dropdown>
-                                        </c:if>
-                                        <c:if test="${meter.hardwareType == 'NON_YUKON_METER'}">
-                                            <cm:dropdown triggerClasses="dn">
-                                            </cm:dropdown>
-                                        </c:if>
-                                    </td>
-                                </c:if>
+                                                </c:if>
+                                            </cti:checkRolesAndProperties>
+                                            <c:if test="${meter.getHardwareTypeEntryId() == 0}">
+                                                <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editMeterConfigUrl}${meter.deviceId}" />
+                                            </c:if>
+                                            <c:if test="${(meter.hardwareType == 'YUKON_METER') and (meter.getHardwareTypeEntryId() > 0)}">
+                                                <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editConfigUrl}${meter.inventoryId}" />
+                                            </c:if>
+                                            <cti:checkRolesAndProperties value="METERING">
+                                                <li>
+                                                    <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
+                                                        <cti:icon icon="icon-control-equalizer-blue"/>
+                                                        <cti:msg2 key="yukon.web.components.button.meterDetail.label"/>
+                                                    </cti:paoDetailUrl>
+                                                </li>
+                                            </cti:checkRolesAndProperties>
+                                        </cm:dropdown>
+                                    </c:if>
+                                    <c:if test="${meter.hardwareType == 'NON_YUKON_METER'}">
+                                        <cm:dropdown triggerClasses="dn">
+                                        </cm:dropdown>
+                                    </c:if>
+                                </td>
                             </tr>
                         </c:forEach>
                     </tbody>

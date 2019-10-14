@@ -319,7 +319,7 @@
     <!-- METER PROGRAMMING SOURCES -->
     <entry key="yukon.web.modules.amr.meterProgramming.source.YUKON">Yukon programmed</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.source.OPTICAL">Optically programmed</entry>
-    <entry key="yukon.web.modules.amr.meterProgramming.source.NEW">Newly Programmed</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.source.NEW">Unknown program</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.source.UNPROGRAMMED">Unprogrammed</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.source.OLD_FIRMWARE">Old Firmware</entry>
     
@@ -329,11 +329,13 @@
     <entry key="yukon.web.modules.amr.meterProgramming.status.IN_PROGRESS">In Progress</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.status.CONFIRMING">Confirming</entry>
     
-    
     <!-- meterProgramming/home.jsp -->
     <entry key="yukon.web.modules.amr.meterProgramming.pageName">C&amp;I Meter Programming</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summaryLink">Meter Programming Summary</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.programOtherDevices">Program Other Devices</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.yukonPrograms.title">Yukon Programs</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.specialCases.title">Automatically Generated</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.type">Type</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.program">Program</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.numberOfDevices"># of Devices</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.numberInProgress"># in Progress</entry>
@@ -350,13 +352,21 @@
     <entry key="yukon.web.modules.amr.meterProgramming.summary.PROGRAM">Current Program</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.STATUS">Status</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.LAST_UPDATE">Last Update</entry>
+    
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.statusMsg.SUCCESS">Success</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.statusMsg.FAILURE">Failed Sending {0}</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.statusMsg.IN_PROGRESS">Sending {0}</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.statusMsg.CONFIRMING">Confirming {0}</entry>
+    
     <entry key="yukon.web.modules.amr.meterProgramming.summary.read">Read</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.resend">Re-send</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.cancel">Cancel</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.accept">Accept</entry>
     
     <entry key="yukon.web.modules.amr.meterProgramming.summary.cancelSuccessful">Program upload has been successfully canceled.</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.readSuccessful">Program retrieval has been initiated. See the following link for status: {0}</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.resendSuccessful">Program upload has been initiated. See the following link for status: {0}</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.acceptSuccessful">Current programming state has been accepted.</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.readLink">Read Status</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.resendLink">Resend Status</entry>
     
