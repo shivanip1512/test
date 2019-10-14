@@ -2478,6 +2478,20 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
+        <point name="Daily Min Volts">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Daily Min</modifier>
+            </modifiers>
+        </point>
+        <point name="Daily Max Volts">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Daily Max</modifier>
+            </modifiers>
+        </point>
     </pointGroup>
     
     <pointGroup><!-- INTERVAL VOLTAGE POINT MAPPINGS -->

@@ -32,6 +32,7 @@ public enum Modifiers {
     MAXIMUM              ("Max"),
     PREVIOUS             ("Previous"),
     DAILY_MAXIMUM        ("Daily Max"),
+    DAILY_MINIMUM        ("Daily Min"),
     CUMULATIVE           ("Cumulative"),
     CONTINUOUS_CUMULATIVE("Continuous Cumulative"),
 

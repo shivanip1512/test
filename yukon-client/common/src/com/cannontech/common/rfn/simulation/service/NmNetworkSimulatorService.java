@@ -2,6 +2,11 @@ package com.cannontech.common.rfn.simulation.service;
 
 import java.util.Set;
 
+import org.joda.time.Instant;
+
+import com.cannontech.amr.rfn.message.status.type.DemandResetStatusCode;
+import com.cannontech.amr.rfn.message.status.type.MeterInfo;
+import com.cannontech.amr.rfn.message.status.type.MeterInfoStatus;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.simulators.AutoStartableSimulator;
@@ -30,5 +35,7 @@ public interface NmNetworkSimulatorService extends AutoStartableSimulator {
 
     boolean isRunning();
 
-    void sendDemandResetStatusArchiveRequest(Set<RfnIdentifier> identifiers, Integer limit);
+    void sendDemandResetStatusArchiveRequest(Set<RfnIdentifier> identifiers, Integer limit, DemandResetStatusCode code);
+
+    void sendMeterInfoStatusArchiveRequest(Set<RfnIdentifier> identifiers, Instant timestamp, MeterInfo info);
 }

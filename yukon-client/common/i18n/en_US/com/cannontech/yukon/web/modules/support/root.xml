@@ -251,7 +251,7 @@
             <li>UOM</li>
             <li>Date</li>
             <li>Time</li>
-        <ul>
+        </ul>
         ]]>
     </entry>
     
@@ -261,10 +261,7 @@
     <entry key="yukon.web.modules.support.batteryNodeAnalysis.voltageDataReport.title">Voltage Data</entry>
     <entry key="yukon.web.modules.support.batteryNodeAnalysis.voltageDataReport.helpText">
         <![CDATA[The Voltage Data report is used to export the voltage interval data used by the 
-        Battery Analysis report to indicate the battery condition. <br><br>Clicking “Generate” 
-        will produce a comma separated file of voltage interval data for all active battery powered 
-        nodes in the system for the six days previous to the selected “Interval End” date chosen by the user.  
-        The export contains the following data:
+        Battery Analysis report to indicate the battery condition. <br><br>Clicking “Generate” will produce a comma separated file of the following data for further review:
         <ul>
             <li>Device Name</li>
             <li>Meter Number</li>
@@ -274,7 +271,7 @@
             <li>UOM</li>
             <li>Date</li>
             <li>Time</li>
-        <ul>
+        </ul>
         ]]>
     </entry>
 
@@ -295,7 +292,7 @@
             <li>UOM</li>
             <li>Date</li>
             <li>Time</li>
-        <ul>
+        </ul>
         ]]>
     </entry>
     <entry key="yukon.web.modules.support.batteryNodeAnalysis.upload">Upload</entry>
