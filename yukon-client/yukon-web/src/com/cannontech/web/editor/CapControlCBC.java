@@ -180,7 +180,7 @@ public class CapControlCBC implements YukonPao {
     }
 
     public void setPort(String port) {
-        this.port = port;
+        this.port = port.trim();
     }
 
     public DeviceAddress getDeviceAddress() {
