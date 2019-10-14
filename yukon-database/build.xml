@@ -59,24 +59,13 @@
                 <arg value="${git.password}" />
             </args>
         </git>
-    </target>
-
-    <target name="git-commit">
-        <git command="add" dir="../yukon-client/common/src/com/cannontech/database/snapshot">
+        <git command="config">
             <args>
-                <arg value="." />
+                <arg value="--global" />
+                <arg value="user.email" />
+                <arg value="${git.email}" />
             </args>
         </git>
-        <git command="commit">
-            <args>
-                <arg value="-m Checking in the latest database snapshot" />
-            </args>
-         </git>
-         <git command="push" dir="">
-             <arg value="--set-upstream"/>
-             <arg value="origin"/>
-             <arg value="master"/>	
-         </git>
     </target>
 
     <target name="sqlServerCreationScriptXMLFile" depends="version_db_files">
@@ -135,7 +124,7 @@
             <arg value="--user=${databaseName}"/>
             <arg value="--password=${databaseName}"/>
             <arg value="--schema=dbo"/>
-            <arg value="--outputXmlFile=${dbSnapshotTempDir}/mssql.xml"/>
+            <arg value="--outputXmlFile=../${dbSnapshot}/mssql.xml"/>
             <classpath>
                <pathelement location="../yukon-client/third-party/jtds-1.3.1.jar"/>
             </classpath>
@@ -157,25 +146,29 @@
         <echo message="Latest diff" />
         <exec executable="git">
             <arg value="diff"/>
-            <arg path = "../yukon-client/common/src/com/cannontech/database/snapshot"/>
+            <arg path = "../${dbSnapshot}"/>
         </exec>
 
-        <antcall target="config-git-credential"/>
-        <git command="add" dir="../yukon-client/common/src/com/cannontech/database/snapshot">
+        <!-- Config git credential" before commit changes -->
+        <antcall target="config-git-credential" />
+
+        <!-- Commit snapshot chenges -->
+        <git command="add" dir="../${dbSnapshot}">
             <args>
                 <arg value="mssql.xml" />
             </args>
         </git>
-        <git command="commit">
+        <git command="commit" dir="../${dbSnapshot}">
             <args>
                 <arg value="-m Checking in the latest database snapshot" />
             </args>
         </git>
-        <git command="push" dir="">
-            <arg value="--set-upstream"/>
-            <arg value="origin"/>
-            <arg value="master"/>	
-         </git>
+        <git command="push" dir="../${dbSnapshot}">
+            <args>
+                <arg value="origin"/>
+                <arg value="HEAD:master"/>
+            </args>
+        </git>
         <echo message="Snapshot complete and checked in" />
     </target>
     
@@ -217,7 +210,7 @@
             <arg value="--user=${databaseName}"/>
             <arg value="--password=${databaseName}"/>
             <arg value="--schema=${databaseName}"/>
-            <arg value="--outputXmlFile=${dbSnapshotTempDir}/oracle.xml"/>
+            <arg value="--outputXmlFile=../${dbSnapshot}/oracle.xml"/>
             <classpath>
                 <pathelement location="../yukon-client/third-party/ojdbc6.jar"/>
             </classpath>
@@ -244,24 +237,25 @@
         <echo message="Latest diff"/>
         <exec executable="git">
             <arg value="diff"/>
-            <arg path = "../yukon-client/common/src/com/cannontech/database/snapshot"/>
+            <arg path = "../${dbSnapshot}"/>
         </exec>
-        
-        <antcall target="config-git-credential"/>
-        <git command="add" dir="../yukon-client/common/src/com/cannontech/database/snapshot">
+
+        <!-- Commit snapshot chenges -->
+        <git command="add" dir="../${dbSnapshot}">
             <args>
                 <arg value="oracle.xml" />
             </args>
         </git>
-        <git command="commit">
+        <git command="commit" dir="../${dbSnapshot}">
             <args>
                  <arg value="-m Checking in the latest database snapshot" />
             </args>
         </git>
-        <git command="push" dir="">
-             <arg value="--set-upstream"/>
-             <arg value="origin"/>
-             <arg value="master"/>	
+        <git command="push" dir="../${dbSnapshot}">
+            <args>
+                <arg value="origin"/>
+                <arg value="HEAD:master"/>
+            </args>
         </git>
         <echo message="Snapshot complete and checked in" />
     </target>
