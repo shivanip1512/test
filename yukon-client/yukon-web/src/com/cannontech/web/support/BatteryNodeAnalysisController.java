@@ -33,7 +33,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.dr.meterDisconnect.MeterDisconnectMessageListener;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -41,6 +40,9 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
+import com.cannontech.web.support.waterNode.fileUploadDao.impl.BatteryNodeBadIntervalEndException;
+import com.cannontech.web.support.waterNode.fileUploadDao.impl.BatteryNodeFileParsingException;
+import com.cannontech.web.support.waterNode.fileUploadDao.impl.BatteryNodeUnableToReadFileException;
 import com.cannontech.web.support.waterNode.model.BatteryAnalysisModel;
 import com.cannontech.web.support.waterNode.service.WaterNodeService;
 import com.cannontech.web.util.WebFileUtils;
@@ -50,7 +52,7 @@ import com.cannontech.web.util.WebFileUtils;
 @RequestMapping("/batteryNodeAnalysis/*")
 @CheckRole(YukonRole.METERING)
 public class BatteryNodeAnalysisController {
-    private static final Logger log = YukonLogManager.getLogger(MeterDisconnectMessageListener.class);
+    private static final Logger log = YukonLogManager.getLogger(BatteryNodeAnalysisController.class);
         
         @Autowired private DateFormattingService dateFormattingService;
         @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -109,21 +111,32 @@ public class BatteryNodeAnalysisController {
                 // Create MultiPartFile from the uploadedFile
                 MultipartFile uploadedFile = mRequest.getFile("uploadedFile");
 
-                if(!uploadedFile.isEmpty()) {
-                    // Create temp local file for storing the data to be processed
-                    File temp = File.createTempFile("tempDataFile", ".csv");
-                    try (OutputStream os = Files.newOutputStream(temp.toPath())) {
-                        os.write(uploadedFile.getBytes());
-                        List<WaterNodeDetails> analyzedNodes = waterNodeService.getCsvAnalyzedNodes(intervalStart, intervalEnd, temp);
-                        String[] headerRow = getReportHeaderRow(userContext);
-                        List<String[]> dataRows = getReportDataRows(analyzedNodes, userContext);
-                        writeToCSV(headerRow, dataRows, response, userContext, timestampEnd, "BatteryAnalysisFromCSV");
-                    } catch(Exception e) {
-                        flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.support.batteryNodeAnalysisController.unableToReadCsvFile"));
-                        log.warn("Unable to read csv file ", e);
-                        return "redirect:view";
-                    }
+            if (!uploadedFile.isEmpty()) {
+                // Create temp local file for storing the data to be processed
+                File temp = File.createTempFile("tempDataFile", ".csv");
+                try (OutputStream os = Files.newOutputStream(temp.toPath())) {
+                    os.write(uploadedFile.getBytes());
+                    List<WaterNodeDetails> analyzedNodes = waterNodeService.getCsvAnalyzedNodes(intervalStart, intervalEnd, temp);
+                    String[] headerRow = getReportHeaderRow(userContext);
+                    List<String[]> dataRows = getReportDataRows(analyzedNodes, userContext);
+                    writeToCSV(headerRow, dataRows, response, userContext, timestampEnd, "BatteryAnalysisFromCSV");
+                } catch (BatteryNodeBadIntervalEndException e) {
+                    flash.setWarning(new YukonMessageSourceResolvable(
+                            "yukon.web.modules.support.batteryNodeAnalysisController.badEndIntervalSelected", e.getMessage()));
+                    log.warn("Bad Interval End date, file has a date range of " + e.getMessage());
+                    return "redirect:view";
+                } catch (BatteryNodeFileParsingException e) {
+                    flash.setWarning(new YukonMessageSourceResolvable(
+                            "yukon.web.modules.support.batteryNodeAnalysisController.fileParsingError", e.getMessage()));
+                    log.warn("Error in file parsing: " + e.getMessage() + " unexpected added or missing columns present");
+                    return "redirect:view";
+                } catch (BatteryNodeUnableToReadFileException e) {
+                    flash.setError(new YukonMessageSourceResolvable(
+                            "yukon.web.modules.support.batteryNodeAnalysisController.unableToReadFile", uploadedFile.getOriginalFilename()));
+                    log.warn("Unable to read file ", uploadedFile.getOriginalFilename());
+                    return "redirect:view";
                 }
+            }
                 else {
                     flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.support.batteryNodeAnalysisController.noFileUploaded"));
                     return "redirect:view";
