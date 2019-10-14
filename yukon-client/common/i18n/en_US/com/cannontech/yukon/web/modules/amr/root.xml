@@ -333,6 +333,9 @@
     <entry key="yukon.web.modules.amr.meterProgramming.pageName">C&amp;I Meter Programming</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summaryLink">Meter Programming Summary</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.programOtherDevices">Program Other Devices</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.yukonPrograms.title">Yukon Programs</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.specialCases.title">Automatically Generated</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.type">Type</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.program">Program</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.numberOfDevices"># of Devices</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.numberInProgress"># in Progress</entry>
