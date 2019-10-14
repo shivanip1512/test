@@ -1,5 +1,7 @@
 package com.cannontech.core.service.impl;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -38,23 +40,17 @@ public class PorterDynamicPaoInfoServiceImpl implements PorterDynamicPaoInfoServ
     
     @Autowired
     PorterDynamicPaoInfoServiceImpl(String queueName, ConnectionFactory connectionFactory) {
-        thriftMessenger = new ThriftRequestReplyTemplate<DynamicPaoInfoRequest, DynamicPaoInfoResponse>(
-                 connectionFactory, queueName, serializer, deserializer);
+        thriftMessenger = new ThriftRequestReplyTemplate<>(connectionFactory, queueName, serializer, deserializer);
     }
     
     @Override
     public void getVoltageProfileDetails(int paoId, Consumer<VoltageProfileDetails> callback) {
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-            @Override
-            public void run() {
-                callback.accept(getVoltageProfileDetails(paoId));
-            }
-        });
+        Executors.newSingleThreadExecutor().submit(() -> callback.accept(getVoltageProfileDetails(paoId)));
     }
 
     private DynamicPaoInfoResponse requestInfoFromPorter(DynamicPaoInfoRequest requestMsg)
             throws InterruptedException, ExecutionException, TimeoutException {
-        CompletableFuture<DynamicPaoInfoResponse> f = new CompletableFuture<DynamicPaoInfoResponse>();
+        CompletableFuture<DynamicPaoInfoResponse> f = new CompletableFuture<>();
         
         thriftMessenger.send(requestMsg, f);
 
@@ -108,5 +104,17 @@ public class PorterDynamicPaoInfoServiceImpl implements PorterDynamicPaoInfoServ
         }
         
         return interval;
+    }
+
+    @Override
+    public Map<Integer, ProgrammingProgress> getProgrammingProgress(Set<Integer> paoIds) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void getProgrammingProgress(Set<Integer> paoIds, Consumer<Map<Integer, ProgrammingProgress>> callback) {
+        // TODO Auto-generated method stub
+        
     }
 }
