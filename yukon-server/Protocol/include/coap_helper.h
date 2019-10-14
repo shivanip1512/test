@@ -32,15 +32,16 @@ public:
     scoped_pdu_ptr& operator=(const scoped_pdu_ptr&) = delete;
 
     static scoped_pdu_ptr make_get_request(unsigned long token, unsigned short id);
-    static scoped_pdu_ptr make_get_continuation(unsigned long token, unsigned short id);
+    static scoped_pdu_ptr make_get_continuation(unsigned long token, unsigned short id, const unsigned size, const unsigned num);
     static scoped_pdu_ptr make_post(unsigned long token, unsigned short id);
+    static scoped_pdu_ptr make_ack(unsigned long token, unsigned short id, ResponseCode status);
     static scoped_pdu_ptr make_ack(unsigned short id, ResponseCode status);
     static scoped_pdu_ptr make_ack_with_data(unsigned long token, unsigned short id, std::vector<unsigned char> data);
     static scoped_pdu_ptr parse(std::vector<unsigned char> packet);
 
     std::vector<unsigned char> as_bytes() const;
 
-    operator coap_pdu_t *()  const;
+    operator coap_pdu_t*()  const;
     coap_pdu_t *operator->() const;
 };
 

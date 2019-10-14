@@ -45,6 +45,16 @@ void scoped_pdu_ptr::free_pdu()
     }
 }
 
+scoped_pdu_ptr::operator coap_pdu_t*() const
+{
+    return pdu;
+}
+
+coap_pdu_t* scoped_pdu_ptr::operator->() const
+{
+    return pdu;
+}
+
 void scoped_pdu_ptr::add_token(unsigned long token)
 {
     unsigned char token_buf[4];
@@ -63,11 +73,17 @@ scoped_pdu_ptr scoped_pdu_ptr::make_get_request(unsigned long token, unsigned sh
     return pdu;
 }
 
-scoped_pdu_ptr scoped_pdu_ptr::make_get_continuation(unsigned long token, unsigned short id)
+scoped_pdu_ptr scoped_pdu_ptr::make_get_continuation(unsigned long token, unsigned short id, const unsigned size, const unsigned num)
 {
     scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_CON, static_cast<unsigned char>(RequestMethod::Get), id, COAP_MAX_PDU_SIZE) };
 
     pdu.add_token(token);
+
+    unsigned char buf[4];
+
+    unsigned len = coap_encode_var_bytes(buf, (num << 4) | size);
+
+    coap_add_option(pdu, COAP_OPTION_BLOCK2, len, buf);
 
     return pdu;
 }
@@ -84,6 +100,15 @@ scoped_pdu_ptr scoped_pdu_ptr::make_post(unsigned long token, unsigned short id)
 scoped_pdu_ptr scoped_pdu_ptr::make_ack(unsigned short id, ResponseCode status)
 {
     scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(status), id, COAP_MAX_PDU_SIZE) };
+
+    return pdu;
+}
+
+scoped_pdu_ptr scoped_pdu_ptr::make_ack(unsigned long token, unsigned short id, ResponseCode status)
+{
+    scoped_pdu_ptr pdu{ coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(status), id, COAP_MAX_PDU_SIZE) };
+
+    pdu.add_token(token);
 
     return pdu;
 }

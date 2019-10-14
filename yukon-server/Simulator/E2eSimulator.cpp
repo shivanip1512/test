@@ -321,32 +321,32 @@ std::vector<unsigned char> E2eSimulator::buildE2eDtReplyPayload(const e2edt_repl
 
 std::vector<unsigned char> E2eSimulator::buildE2eRequestNotAcceptable(unsigned id, unsigned long token) const
 {
-    Protocols::Coap::scoped_pdu_ptr reply_pdu(coap_pdu_init(COAP_MESSAGE_ACK, COAP_RESPONSE_CODE(406), id, COAP_MAX_PDU_SIZE)); // 406 - NOT ACCEPTABLE
+    auto reply_pdu = Protocols::Coap::scoped_pdu_ptr::make_ack(token, id, Protocols::Coap::ResponseCode::NotAcceptable);
 
-    //  add token to reply
-    unsigned char reply_token_buf[4];
-
-    const unsigned reply_token_len = coap_encode_var_bytes(reply_token_buf, token);
-
-    coap_add_token(reply_pdu, reply_token_len, reply_token_buf);
-
-    const unsigned char *raw_reply_pdu = reinterpret_cast<unsigned char *>(reply_pdu->hdr);
-
-    return { raw_reply_pdu,
-             raw_reply_pdu + reply_pdu->length };
+    return reply_pdu.as_bytes();
 }
 
 
 std::vector<unsigned char> E2eSimulator::buildE2eDtRequestPayload(const e2edt_request_packet& requestContents) const
 {
-    Protocols::Coap::scoped_pdu_ptr request_pdu(coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(requestContents.method), requestContents.id, COAP_MAX_PDU_SIZE));
+    auto request_pdu = Protocols::Coap::scoped_pdu_ptr::make_get_request(requestContents.token, requestContents.id);
 
-    //  add token to reply
-    unsigned char request_token_buf[4];
+    std::array<unsigned char, 1024> allOptions;
 
-    const unsigned request_token_len = coap_encode_var_bytes(request_token_buf, requestContents.token);
+    size_t allOptionLength = allOptions.size();
+    
+    std::basic_string<unsigned char> path { requestContents.path.cbegin(), requestContents.path.cend() };
 
-    coap_add_token(request_pdu, request_token_len, request_token_buf);
+    auto options = coap_split_path(path.data(), path.size(), allOptions.data(), &allOptionLength);
+
+    for( auto buf = allOptions.data(); options--; )
+    {
+        coap_add_option(request_pdu, COAP_OPTION_URI_PATH,
+                coap_opt_length(buf),
+                coap_opt_value(buf)));
+
+        buf += coap_opt_size(buf);
+    }
 
     if( requestContents.block && requestContents.blockSize )
     {
