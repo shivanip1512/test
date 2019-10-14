@@ -1,19 +1,15 @@
 package com.cannontech.rest.api.dr.helper;
 
-import static io.restassured.RestAssured.given;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 
-import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.ApiUtils;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
 import com.cannontech.rest.api.gear.fields.MockOperationalState;
@@ -92,7 +88,7 @@ public class LoadProgramSetupHelper {
                                                         .build();
 
         return MockLoadProgram.builder()
-                          .name(StringUtils.remove(StringUtils.removeStartIgnoreCase(type.name(), "LM_"), '_') + "Test")
+                          .name(ApiUtils.buildFriendlyName(type, "LM_", "Test"))
                           .type(type)
                           .triggerOffset(1.0)
                           .restoreOffset(2.0)
@@ -108,26 +104,12 @@ public class LoadProgramSetupHelper {
     
     public static MockLoadProgramCopy buildLoadProgramCopyRequest(MockPaoType programType, Integer constraintId) {
         return MockLoadProgramCopy.builder()
-                                  .name(StringUtils.remove(WordUtils.capitalizeFully(StringUtils.removeStartIgnoreCase(programType.name(), "LM_"), '_'),
-                                                           "_") + "TestCopy")
+                                  .name(ApiUtils.buildFriendlyName(programType, "LM_", "TestCopy"))
                        .operationalState(MockOperationalState.Automatic)
                        .constraint(MockProgramConstraint.builder().constraintId(constraintId).build())
                        .copyMemberControl(true)
                        .build();
 
-    }
-
-    public static void delete(Integer id, String name, String url) {
-        MockLMDto deleteConstraint = MockLMDto.builder().name(name).build();
-
-        given().accept("application/json")
-               .contentType("application/json")
-               .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-               .body(deleteConstraint)
-               .when()
-               .delete(ApiCallHelper.getProperty(url) + id)
-               .then()
-               .extract();
     }
 
     public static FieldDescriptor[] loadProgramFields() {

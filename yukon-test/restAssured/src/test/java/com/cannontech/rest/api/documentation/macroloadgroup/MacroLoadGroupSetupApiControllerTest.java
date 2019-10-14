@@ -250,11 +250,8 @@ public class MacroLoadGroupSetupApiControllerTest {
      */
     @Test(dependsOnMethods = { "Test_MacroLoadGroup_Delete" })
     public void assignedLoadGroup_Delete(ITestContext context) {
-
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(loadGroup.getName()).build();
-        
-        String loadGroupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject, loadGroupId.toString());
+        Integer loadGroupId = (Integer)context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID);
+        ExtractableResponse<?> response = ApiCallHelper.delete(loadGroupId, loadGroup.getName(), "deleteloadgroup");
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 

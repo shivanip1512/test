@@ -1,15 +1,9 @@
 package com.cannontech.rest.api.dr.helper;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
-
-import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.ApiUtils;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.loadgroup.request.MockAddressUsage;
 import com.cannontech.rest.api.loadgroup.request.MockControlPriority;
@@ -29,9 +23,6 @@ import com.cannontech.rest.api.loadgroup.request.MockLoads;
 import com.cannontech.rest.api.loadgroup.request.MockRelays;
 import com.cannontech.rest.api.loadgroup.request.MockSepDeviceClass;
 import com.cannontech.rest.api.loadgroup.request.MockVersacomAddressUsage;
-import com.cannontech.rest.api.utilities.Log;
-
-import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupHelper {
     
@@ -193,18 +184,11 @@ public class LoadGroupHelper {
     }
 
     public static String getLoadGroupName(MockPaoType paoType) {
-        return StringUtils.remove(WordUtils.capitalizeFully(StringUtils.removeStartIgnoreCase(paoType.name(), "LM_GROUP_"), '_'), "_") + "Test";
+        return ApiUtils.buildFriendlyName(paoType, "LM_GROUP_", "Test");
     }
     
     public static String getCopiedLoadGroupName(MockPaoType paoType) {
-        return StringUtils.remove(WordUtils.capitalizeFully(StringUtils.removeStartIgnoreCase(paoType.name(), "LM_GROUP_"), '_'), "_") + "TestCopy";
-    }
-
-    public static void deleteLoadGroup(String name, String groupId) {
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(name).build();
-        Log.info("Delete load group is : " + lmDeleteObject);
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject, groupId);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        return ApiUtils.buildFriendlyName(paoType, "LM_GROUP_", "TestCopy");
     }
 
 }

@@ -104,7 +104,7 @@ public class DirectProgramGearSetupApiControllerTest {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", programConstraint);
         Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
         programConstraint.setId(constraintId);
-        assertTrue("Constraint ID should not be Null", constraintId != null);
+        assertTrue("Constraint Id should not be Null", constraintId != null);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
     }
 
@@ -144,7 +144,7 @@ public class DirectProgramGearSetupApiControllerTest {
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -186,7 +186,7 @@ public class DirectProgramGearSetupApiControllerTest {
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -223,7 +223,7 @@ public class DirectProgramGearSetupApiControllerTest {
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -266,7 +266,7 @@ public class DirectProgramGearSetupApiControllerTest {
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -309,7 +309,7 @@ public class DirectProgramGearSetupApiControllerTest {
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -353,7 +353,7 @@ public class DirectProgramGearSetupApiControllerTest {
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -379,7 +379,7 @@ public class DirectProgramGearSetupApiControllerTest {
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -412,7 +412,7 @@ public class DirectProgramGearSetupApiControllerTest {
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -441,14 +441,14 @@ public class DirectProgramGearSetupApiControllerTest {
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @AfterClass
     public void cleanUp() {
-        LoadProgramSetupHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
+        ApiCallHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
         loadGroups.forEach(group -> {
-            LoadProgramSetupHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
+            ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
         });
     }
 }
