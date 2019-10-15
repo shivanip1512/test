@@ -21,6 +21,10 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
 import io.restassured.response.Response;
@@ -32,6 +36,7 @@ public class NestLoadGroupSetupApiControllerTest {
     private RequestSpecification documentationSpec;
     private String paoId = null;
     private FieldDescriptor[] nestFieldDescriptor = null;
+    private MockLoadGroupBase loadGroup = null;
 
     @BeforeMethod
     public void setUp(Method method) {
@@ -45,6 +50,7 @@ public class NestLoadGroupSetupApiControllerTest {
             fieldWithPath("LM_GROUP_NEST.disableGroup").type(JsonFieldType.BOOLEAN).description("Flag to disable Group"),
             fieldWithPath("LM_GROUP_NEST.disableControl").type(JsonFieldType.BOOLEAN).description("Flag to disable Control")
         };
+        loadGroup = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_NEST);
     }
 
     @AfterMethod
@@ -52,7 +58,7 @@ public class NestLoadGroupSetupApiControllerTest {
         this.restDocumentation.afterTest();
     }
 
-    @Test
+    @Test(enabled = false) 
     public void Test_LmNest_Create() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", requestFields(nestFieldDescriptor),
@@ -60,18 +66,18 @@ public class NestLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\NestCreate.json"))
+                                .body(loadGroup)
                                 .when()
                                 .post(ApiCallHelper.getProperty("saveloadgroup"))
                                 .then()
                                 .extract()
                                 .response();
-        paoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(dependsOnMethods = { "Test_LmNest_Create" })
+    @Test(dependsOnMethods = { "Test_LmNest_Create" }, enabled = false)
     public void Test_LmNest_Get() {
        List<FieldDescriptor> responseFields = new ArrayList<>(Arrays.asList(nestFieldDescriptor));
        responseFields.add(0,fieldWithPath("LM_GROUP_NEST.id").type(JsonFieldType.NUMBER).description("Load Group Id"));
@@ -88,7 +94,7 @@ public class NestLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(dependsOnMethods = { "Test_LmNest_Get" })
+    @Test(dependsOnMethods = { "Test_LmNest_Get" }, enabled = false)
     public void Test_LmNest_Update() {
        Response response = given(documentationSpec)
                                .filter(document("{ClassName}/{methodName}", requestFields(nestFieldDescriptor),
@@ -96,19 +102,22 @@ public class NestLoadGroupSetupApiControllerTest {
                                .accept("application/json")
                                .contentType("application/json")
                                .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                               .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\NestCreate.json"))
+                               .body(loadGroup)
                                .when()
                                .post(ApiCallHelper.getProperty("updateloadgroup") + paoId)
                                .then()
                                .extract()
                                .response();
-       paoId = response.path("groupId").toString();
-       assertTrue("PAO ID should not be Null", paoId != null);
+       paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+       assertTrue("Load Group Id should not be Null", paoId != null);
        assertTrue("Status code should be 200", response.statusCode() == 200);
    }
 
-   @Test(dependsOnMethods = { "Test_LmNest_Update" })
+   @Test(dependsOnMethods = { "Test_LmNest_Update" }, enabled = false)
    public void Test_LmNest_Delete() {
+       MockLMDto lmDeleteObject = MockLMDto.builder()
+               .name(LoadGroupHelper.getLoadGroupName(MockPaoType.LM_GROUP_NEST))
+               .build();
        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
            requestFields(
                fieldWithPath("name").type(JsonFieldType.STRING).description("Load Group Name")), 
@@ -116,7 +125,7 @@ public class NestLoadGroupSetupApiControllerTest {
            .accept("application/json")
            .contentType("application/json")
            .header("Authorization","Bearer " + ApiCallHelper.authToken)
-           .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\NestDelete.json"))
+           .body(lmDeleteObject)
            .when()
            .delete(ApiCallHelper.getProperty("deleteloadgroup") + paoId)
            .then()

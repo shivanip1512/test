@@ -1,31 +1,38 @@
 package com.cannontech.rest.api.dr.loadgroup;
 
 import static org.junit.Assert.assertTrue;
-import org.json.simple.JSONObject;
+
+import java.lang.reflect.Method;
+
 import org.testng.ITestContext;
-import org.testng.annotations.DataProvider;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.utilities.JsonFileReader;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.Log;
 
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupDigiSepAPITest {
-    private final static String digiSepPaoTypeStr = "LM_GROUP_NEST";
-    private final static String digiSepPayloadFile = "loadgroup\\lmGroupDigiSepCreate.json";
+    MockLoadGroupBase loadGroup = null;
+
+    @BeforeMethod
+    public void setUp(Method method) {
+        loadGroup = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
+    }
 
     @Test
     public void loadGroupDigiSep_01_Create(ITestContext context) {
 
         Log.startTestCase("loadGroupDigiSep_01_Create");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", digiSepPayloadFile);
-        String groupId = createResponse.path("groupId").toString();
-        context.setAttribute("digiSepgroupId", groupId);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        assertTrue("GROUP ID should not be Null", groupId != null);
+        assertTrue("Load Group Id should not be Null", groupId != null);
         Log.endTestCase("loadGroupDigiSep_01_Create");
     }
 
@@ -33,30 +40,25 @@ public class LoadGroupDigiSepAPITest {
     public void loadGroupDigiSep_02_Get(ITestContext context) {
 
         Log.startTestCase("loadGroupNest_02_Get");
-        String groupId = context.getAttribute("digiSepgroupId").toString();
-        JSONObject jo = JsonFileReader.readJsonFileAsJSONObject(digiSepPayloadFile);
-        JsonPath jp = new JsonPath(jo.toJSONString());
-        Float kWCapacity = jp.getFloat(digiSepPaoTypeStr + ".kWCapacity");
-        String name = jp.get(digiSepPaoTypeStr + ".name");
+        String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
 
         Log.info("GroupId of LmGroupDigiSep created is : " + groupId);
 
         ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup", groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
-        JsonPath jsonPath = getResponse.jsonPath();
-        context.setAttribute("DigiSep_GrpName", jsonPath.get(digiSepPaoTypeStr + ".name"));
+        MockLoadGroupBase digiSepLoadGroup = getResponse.as(MockLoadGroupBase.class);
+        context.setAttribute("DigiSep_GrpName", digiSepLoadGroup.getName());
 
-        assertTrue("Name Should be : " + name, name.equals((String) jsonPath.get(digiSepPaoTypeStr + ".name")));
-        assertTrue("Type Should be : " + digiSepPaoTypeStr,
-            digiSepPaoTypeStr.equals(jsonPath.get(digiSepPaoTypeStr + ".type")));
-        assertTrue("kWCapacity Should be : " + kWCapacity,
-            kWCapacity.equals(jsonPath.get(digiSepPaoTypeStr + ".kWCapacity")));
+        assertTrue("Name Should be : " + loadGroup.getName(), loadGroup.getName().equals(digiSepLoadGroup.getName()));
+        assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == digiSepLoadGroup.getType());
+        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(), loadGroup.getKWCapacity().equals(digiSepLoadGroup.getKWCapacity()));
 
-        boolean disableGroup = (boolean) jsonPath.get(digiSepPaoTypeStr + ".disableGroup");
+        Boolean disableGroup = digiSepLoadGroup.isDisableGroup();
         assertTrue("Group Should be disabled : ", !disableGroup);
-        boolean disableControl = (boolean) jsonPath.get(digiSepPaoTypeStr + ".disableControl");
-        assertTrue("Control Should be disabled : ", !disableControl);
+
+        Boolean disableControl = digiSepLoadGroup.isDisableControl();
+        assertTrue("Control Should be enabled : ", disableControl);
         Log.endTestCase("loadGroupNest_02_Get");
     }
 
@@ -65,27 +67,23 @@ public class LoadGroupDigiSepAPITest {
 
         Log.startTestCase("loadGroupDigiSep_03_Update");
 
-        String groupId = context.getAttribute("digiSepgroupId").toString();
-        Float kWCapacity = (float) 543.908;
-        String name = "DigiSep-update";
+        String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        String name = "DigiSepUpdate";
         context.setAttribute("DigiSep_GrpName", name);
+        loadGroup.setKWCapacity(543.908);
+        loadGroup.setName(name);
 
-        JSONObject payload = JsonFileReader.updateLoadGroup(digiSepPayloadFile, "id", groupId);
-        payload = JsonFileReader.updateLoadGroup(payload, "kWCapacity", kWCapacity.toString());
-        payload = JsonFileReader.updateLoadGroup(payload, "name", name);
-        Log.info("Updated payload is :" + payload.toJSONString());
+        Log.info("Updated Load Group is :" + loadGroup);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updateloadgroup", payload, groupId);
+        ExtractableResponse<?> getResponse = ApiCallHelper.post("updateloadgroup", loadGroup, groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
         ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getloadgroup", groupId);
 
-        JsonPath jsonPath = getupdatedResponse.jsonPath();
-        assertTrue("Name Should be : " + name, name.equals(jsonPath.get(digiSepPaoTypeStr + ".name")));
-        assertTrue("Type Should be : " + digiSepPaoTypeStr,
-            digiSepPaoTypeStr.equals(jsonPath.get(digiSepPaoTypeStr + ".type")));
-        assertTrue("kWCapacity Should be : " + kWCapacity,
-            kWCapacity.equals(jsonPath.get(digiSepPaoTypeStr + ".kWCapacity")));
+        MockLoadGroupBase updatedDigiSepLoadGroup = getupdatedResponse.as(MockLoadGroupBase.class);
+        assertTrue("Name Should be : " + name, name.equals(updatedDigiSepLoadGroup.getName()));
+        assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == updatedDigiSepLoadGroup.getType());
+        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(), loadGroup.getKWCapacity().equals(updatedDigiSepLoadGroup.getKWCapacity()));
 
         Log.endTestCase("loadGroupDigiSep_03_Update");
     }

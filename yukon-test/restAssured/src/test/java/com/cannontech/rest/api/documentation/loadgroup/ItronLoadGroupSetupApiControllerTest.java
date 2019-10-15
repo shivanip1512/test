@@ -21,8 +21,16 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.JsonUtil;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
+import com.cannontech.rest.api.utilities.Log;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
+import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
@@ -33,6 +41,7 @@ public class ItronLoadGroupSetupApiControllerTest {
     private String paoId = null;
     private String copyPaoId = null;
     private FieldDescriptor[] itronFieldDescriptor = null;
+    private MockLoadGroupBase loadGroup = null;
 
     @BeforeMethod
     public void setUp(Method method) {
@@ -47,6 +56,7 @@ public class ItronLoadGroupSetupApiControllerTest {
             fieldWithPath("LM_GROUP_ITRON.disableControl").type(JsonFieldType.BOOLEAN).description("Flag to disable Control"),
             fieldWithPath("LM_GROUP_ITRON.virtualRelayId").type(JsonFieldType.NUMBER).description("Flag to disable Control")
         };
+        loadGroup = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_ITRON);
     }
 
     @AfterMethod
@@ -62,7 +72,7 @@ public class ItronLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\ItronCreate.json"))
+                                .body(loadGroup)
                                 .when()
                                 .post(ApiCallHelper.getProperty("saveloadgroup"))
                                 .then()
@@ -70,8 +80,8 @@ public class ItronLoadGroupSetupApiControllerTest {
                                 .response();
 
 
-        paoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -100,20 +110,21 @@ public class ItronLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\ItronCreate.json"))
+                                .body(loadGroup)
                                 .when()
                                 .post(ApiCallHelper.getProperty("updateloadgroup") + paoId)
                                 .then()
                                 .extract()
                                 .response();
 
-        paoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
     @Test(dependsOnMethods = { "Test_LmItron_Update" })
     public void Test_LmItron_Copy() {
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_ITRON)).build();
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
                                     requestFields(
@@ -122,19 +133,24 @@ public class ItronLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\ItronCopy.json"))
+                                .body(loadGroupCopy)
                                 .when()
                                 .post(ApiCallHelper.getProperty("copyloadgroup")+ paoId)
                                 .then()
                                 .extract()
                                 .response();
-        copyPaoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", copyPaoId != null);
+        copyPaoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", copyPaoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
     @Test(dependsOnMethods = { "Test_LmItron_Copy" })
     public void Test_LmItron_Delete() {
+
+        MockLMDto lmDeleteObject = MockLMDto.builder()
+                                        .name(LoadGroupHelper.getLoadGroupName(MockPaoType.LM_GROUP_ITRON))
+                                        .build();
+
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
             requestFields(
                 fieldWithPath("name").type(JsonFieldType.STRING).description("Load Group Name")), 
@@ -142,12 +158,19 @@ public class ItronLoadGroupSetupApiControllerTest {
             .accept("application/json")
             .contentType("application/json")
             .header("Authorization","Bearer " + ApiCallHelper.authToken)
-            .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\ItronDelete.json"))
+            .body(lmDeleteObject)
             .when()
             .delete(ApiCallHelper.getProperty("deleteloadgroup") + paoId)
             .then()
             .extract()
             .response();
         assertTrue("Status code should be 200", response.statusCode() == 200);
+
+        MockLMDto lmDeleteCopyObject = MockLMDto.builder()
+                                        .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_ITRON))
+                                        .build();
+        Log.info("Delete Load Group is : " + JsonUtil.beautifyJson(lmDeleteCopyObject.toString()));
+        ExtractableResponse<?> copyResponse = ApiCallHelper.delete("deleteloadgroup", lmDeleteCopyObject, copyPaoId);
+        assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
     }
 }
