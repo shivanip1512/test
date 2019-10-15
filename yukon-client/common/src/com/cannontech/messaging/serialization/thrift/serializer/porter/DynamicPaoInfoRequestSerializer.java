@@ -1,15 +1,15 @@
 package com.cannontech.messaging.serialization.thrift.serializer.porter;
 
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.cannontech.message.porter.message.DynamicPaoInfoDurationKeyEnum;
+import com.cannontech.message.porter.message.DynamicPaoInfoPercentageKeyEnum;
 import com.cannontech.message.porter.message.DynamicPaoInfoRequest;
 import com.cannontech.message.porter.message.DynamicPaoInfoTimestampKeyEnum;
 import com.cannontech.messaging.serialization.thrift.ThriftByteSerializer;
 import com.cannontech.messaging.serialization.thrift.SimpleThriftSerializer;
 import com.cannontech.messaging.serialization.thrift.generated.porter.DynamicPaoInfoDurationKeys;
+import com.cannontech.messaging.serialization.thrift.generated.porter.DynamicPaoInfoPercentageKeys;
 import com.cannontech.messaging.serialization.thrift.generated.porter.DynamicPaoInfoTimestampKeys;
 import com.google.common.collect.ImmutableMap;
 
@@ -22,6 +22,9 @@ public class DynamicPaoInfoRequestSerializer extends SimpleThriftSerializer impl
     private static final ImmutableMap<DynamicPaoInfoTimestampKeyEnum, DynamicPaoInfoTimestampKeys> timestampKeyMapping = ImmutableMap.of(
         DynamicPaoInfoTimestampKeyEnum.RFN_VOLTAGE_PROFILE_ENABLED_UNTIL, DynamicPaoInfoTimestampKeys.RFN_VOLTAGE_PROFILE_ENABLED_UNTIL);
 
+    private static final ImmutableMap<DynamicPaoInfoPercentageKeyEnum, DynamicPaoInfoPercentageKeys> percentageKeyMapping = ImmutableMap.of(
+        DynamicPaoInfoPercentageKeyEnum.METER_PROGRAMMING_PROGRESS, DynamicPaoInfoPercentageKeys.METER_PROGRAMMING_PROGRESS);
+
     @Override
     public byte[] toBytes(DynamicPaoInfoRequest msg) {
         com.cannontech.messaging.serialization.thrift.generated.porter.DynamicPaoInfoRequest entity = 
@@ -29,34 +32,18 @@ public class DynamicPaoInfoRequestSerializer extends SimpleThriftSerializer impl
 
         entity.set_deviceId(msg.getDeviceID());
         entity.set_durationKeys(msg.getDurationKeys().stream()
-            .filter(new Predicate<DynamicPaoInfoDurationKeyEnum>() {
-                @Override
-                public boolean test(DynamicPaoInfoDurationKeyEnum key) {
-                    return durationKeyMapping.containsKey(key);
-                }
-            })
-            .map(new Function<DynamicPaoInfoDurationKeyEnum, DynamicPaoInfoDurationKeys>() {
-                @Override
-                public DynamicPaoInfoDurationKeys apply(DynamicPaoInfoDurationKeyEnum key) {
-                    return durationKeyMapping.get(key);
-                }
-            })
+            .filter(durationKeyMapping::containsKey)
+            .map(durationKeyMapping::get)
             .collect(Collectors.toSet()));
         entity.set_timestampKeys(msg.getTimestampKeys().stream()
-            .filter(new Predicate<DynamicPaoInfoTimestampKeyEnum>() {
-                @Override
-                public boolean test(DynamicPaoInfoTimestampKeyEnum key) {
-                    return timestampKeyMapping.containsKey(key);
-                }
-            })
-            .map(new Function<DynamicPaoInfoTimestampKeyEnum, DynamicPaoInfoTimestampKeys>() {
-                @Override
-                public DynamicPaoInfoTimestampKeys apply(DynamicPaoInfoTimestampKeyEnum key) {
-                    return timestampKeyMapping.get(key);
-                }
-            })
+            .filter(timestampKeyMapping::containsKey)
+            .map(timestampKeyMapping::get)
             .collect(Collectors.toSet()));
-        
+        entity.set_percentageKeys(msg.getPercentageKeys().stream()
+            .filter(percentageKeyMapping::containsKey)
+            .map(percentageKeyMapping::get)
+            .collect(Collectors.toSet()));
+                             
         return serialize(entity);
     }
 }
