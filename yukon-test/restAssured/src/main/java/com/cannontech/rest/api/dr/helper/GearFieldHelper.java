@@ -162,6 +162,7 @@ public class GearFieldHelper {
                                                         .isHeatMode(false)
                                                         .isCoolMode(true)
                                                         .minValue(1)
+                                                        .maxValue(5)
                                                         .valueB(1)
                                                         .valueD(1)
                                                         .valueF(1)
