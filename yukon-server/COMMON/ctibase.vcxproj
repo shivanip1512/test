@@ -526,6 +526,7 @@
     <ClInclude Include="include\Attribute.h" />
     <ClInclude Include="include\AttributeService.h" />
     <ClInclude Include="include\BeatThePeakAlertLevel.h" />
+    <ClInclude Include="include\boost_helper.h" />
     <ClInclude Include="include\boost_test_helpers.h" />
     <ClInclude Include="include\boost_time.h" />
     <ClInclude Include="include\boostutil.h" />
