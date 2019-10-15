@@ -1,12 +1,7 @@
 package com.cannontech.web.support.waterNode.fileUploadDao.impl;
 
-public class BatteryNodeBadIntervalEndException extends RuntimeException{
-    String message;
+public class BatteryNodeBadIntervalEndException extends RuntimeException {
     public BatteryNodeBadIntervalEndException(String intervalStartDate, String intervalEndDate) {
-        message = intervalStartDate + " to " + intervalEndDate;
-    }
-
-    public String getMessage() {
-        return message;
+        super(intervalStartDate + " to " + intervalEndDate);
     }
 }
