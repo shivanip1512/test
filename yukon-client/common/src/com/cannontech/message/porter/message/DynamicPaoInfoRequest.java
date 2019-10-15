@@ -13,14 +13,12 @@ public class DynamicPaoInfoRequest {
     private EnumSet<DynamicPaoInfoTimestampKeyEnum> timestampKeys = EnumSet.noneOf(DynamicPaoInfoTimestampKeyEnum.class);
     private EnumSet<DynamicPaoInfoPercentageKeyEnum> percentageKeys = EnumSet.noneOf(DynamicPaoInfoPercentageKeyEnum.class);
 
-    public DynamicPaoInfoRequest() { }
+    public DynamicPaoInfoRequest(int deviceID) {
+        this.deviceID = deviceID;
+    }
     
     public int getDeviceID() {
         return deviceID;
-    }
-    
-    public void setDeviceID(int deviceID) {
-        this.deviceID = deviceID;
     }
     
     public Collection<DynamicPaoInfoDurationKeyEnum> getDurationKeys() {
