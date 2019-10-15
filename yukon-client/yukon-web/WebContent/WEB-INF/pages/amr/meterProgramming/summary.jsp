@@ -8,6 +8,8 @@
 
 <cti:standardPage module="amr" page="meterProgramming.summary">
 
+<cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
+
     <div id="page-actions" class="dn">
         <cti:url var="programOthersUrl" value="/collectionActions/home?redirectUrl=/bulk/meterProgramming/inputs"/>
         <cm:dropdownOption key=".programOtherDevices" href="${programOthersUrl}" icon="icon-cog-add"/>
