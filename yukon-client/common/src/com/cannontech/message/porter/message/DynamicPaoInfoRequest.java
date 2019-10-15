@@ -3,11 +3,15 @@ package com.cannontech.message.porter.message;
 import java.util.Collection;
 import java.util.EnumSet;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public class DynamicPaoInfoRequest {
     
     private int deviceID;
-    private EnumSet<DynamicPaoInfoDurationKeyEnum> durationKeys;
-    private EnumSet<DynamicPaoInfoTimestampKeyEnum> timestampKeys;
+    private EnumSet<DynamicPaoInfoDurationKeyEnum> durationKeys = EnumSet.noneOf(DynamicPaoInfoDurationKeyEnum.class);
+    private EnumSet<DynamicPaoInfoTimestampKeyEnum> timestampKeys = EnumSet.noneOf(DynamicPaoInfoTimestampKeyEnum.class);
+    private EnumSet<DynamicPaoInfoPercentageKeyEnum> percentageKeys = EnumSet.noneOf(DynamicPaoInfoPercentageKeyEnum.class);
 
     public DynamicPaoInfoRequest() { }
     
@@ -35,9 +39,17 @@ public class DynamicPaoInfoRequest {
         this.timestampKeys = EnumSet.copyOf(timestampKeys);
     }
     
+    public EnumSet<DynamicPaoInfoPercentageKeyEnum> getPercentageKeys() {
+        return percentageKeys;
+    }
+
+    public void setPercentageKeys(Collection<DynamicPaoInfoPercentageKeyEnum> percentageKeys) {
+        this.percentageKeys = EnumSet.copyOf(percentageKeys);
+    }
+
     @Override
     public String toString() {
-        return String.format("Request [deviceID=%s, durationKeys=%s, timestampKeys=%s]", deviceID, durationKeys, timestampKeys);
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
     
 }
