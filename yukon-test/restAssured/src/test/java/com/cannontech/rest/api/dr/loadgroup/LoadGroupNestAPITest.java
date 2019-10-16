@@ -29,23 +29,23 @@ public class LoadGroupNestAPITest {
         loadGroup = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_NEST);
     }
 
-    @Test
+    @Test(enabled = false)
     public void loadGroupNest_01_Create(ITestContext context) {
 
         Log.startTestCase("loadGroupNest_01_Create");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
-        String groupId = createResponse.path("groupId").toString();
-        context.setAttribute("groupId", groupId);
+        String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        assertTrue("GroupId should not be Null", groupId != null);
+        assertTrue("Load Group Id should not be Null", groupId != null);
         Log.endTestCase("loadGroupNest_01_Create");
     }
 
-    @Test(dependsOnMethods = { "loadGroupNest_01_Create" })
+    @Test(dependsOnMethods = { "loadGroupNest_01_Create" }, enabled = false)
     public void loadGroupNest_02_Get(ITestContext context) {
 
         Log.startTestCase("loadGroupNest_02_Get");
-        String groupId = context.getAttribute("groupId").toString();
+        String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         Log.info("GroupId of LmGroupNest created is : " + groupId);
 
         ExtractableResponse<?> response = ApiCallHelper.get("getloadgroup", groupId);
@@ -66,12 +66,12 @@ public class LoadGroupNestAPITest {
         Log.endTestCase("loadGroupNest_02_Get");
     }
 
-    @Test(dependsOnMethods = {"loadGroupNest_01_Create"})
+    @Test(dependsOnMethods = {"loadGroupNest_01_Create"}, enabled = false)
     public void loadGroupNest_03_Update(ITestContext context) {
 
         Log.startTestCase("loadGroupNest_03_Update");
 
-        String groupId = context.getAttribute("groupId").toString();
+        String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         String name = "Auto_LM_Group_Nest_Update2";
         context.setAttribute("Nest_UpdateGrpName", name);
 
@@ -79,7 +79,7 @@ public class LoadGroupNestAPITest {
         loadGroup.setKWCapacity(888.0);
         loadGroup.setName(name);
 
-        Log.info("Updated payload is :" +  JsonUtil.beautifyJson(loadGroup.toString()));
+        Log.info("Updated Load Group is :" +  JsonUtil.beautifyJson(loadGroup.toString()));
 
         ExtractableResponse<?> response = ApiCallHelper.post("updateloadgroup", loadGroup, groupId);
         assertTrue("Status code should be 200", response.statusCode() == 200);
@@ -99,7 +99,7 @@ public class LoadGroupNestAPITest {
 
     }
 
-    @Test(dependsOnMethods = { "loadGroupNest_01_Create" })
+    @Test(dependsOnMethods = { "loadGroupNest_01_Create" }, enabled = false)
     public void loadGroupNest_05_Delete(ITestContext context) {
 
         Log.startTestCase("loadGroupNest_05_Delete");
@@ -107,15 +107,15 @@ public class LoadGroupNestAPITest {
         MockLMDto lmDeleteObject = MockLMDto.builder()
                                     .name(context.getAttribute("Nest_UpdateGrpName").toString())
                                     .build();
-        Log.info("Delete payload is : " + JsonUtil.beautifyJson(lmDeleteObject.toString()));
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject, context.getAttribute("groupId").toString());
+        Log.info("Delete Load Group is : " + JsonUtil.beautifyJson(lmDeleteObject.toString()));
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject, context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
 
         assertTrue("Status code should be 200", response.statusCode() == 200);
         Log.endTestCase("loadGroupNest_05_Delete");
 
     }
     
-    @Test(dataProvider = "GroupNameData", dependsOnMethods = { "loadGroupNest_01_Create" })
+    @Test(dataProvider = "GroupNameData", dependsOnMethods = { "loadGroupNest_01_Create" }, enabled = false)
     public void loadGroupNest_06_GroupNameValidation(String groupName, String expectedFieldCode, int expectedStatusCode) {
         Log.startTestCase("loadGroupNest_06_GroupNameValidation");
         loadGroup.setName(groupName);
@@ -127,7 +127,7 @@ public class LoadGroupNestAPITest {
         Log.endTestCase("loadGroupNest_06_GroupNameValidation");
     }
 
-    @Test(dataProvider = "KwCapacityData", dependsOnMethods = { "loadGroupNest_01_Create" })
+    @Test(dataProvider = "KwCapacityData", dependsOnMethods = { "loadGroupNest_01_Create" }, enabled = false)
     public void loadGroupNest_07_KwCapacityValidation(Double kwCapacity, String expectedFieldCode, int expectedStatusCode) {
         Log.startTestCase("loadGroupNest_07_KwCapacityValidation");
         loadGroup.setKWCapacity(kwCapacity);

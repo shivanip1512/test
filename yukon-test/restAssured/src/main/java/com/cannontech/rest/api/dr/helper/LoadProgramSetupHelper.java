@@ -1,19 +1,15 @@
 package com.cannontech.rest.api.dr.helper;
 
-import static io.restassured.RestAssured.given;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 
-import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.ApiUtils;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
 import com.cannontech.rest.api.gear.fields.MockOperationalState;
@@ -30,7 +26,10 @@ import com.cannontech.rest.api.loadProgram.request.MockProgramGroup;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 
 public class LoadProgramSetupHelper {
-
+    public final static String CONTEXT_PROGRAM_ID = "programId"; 
+    public final static String CONTEXT_PROGRAM_NAME = "programName";
+    public final static String CONTEXT_COPIED_PROGRAM_NAME = "copiedProgramName";
+    
     public static MockLoadProgram buildLoadProgramRequest(MockPaoType type, List<MockLoadGroupBase> loadGroups, List <MockGearControlMethod> gearTypes, Integer constraintId) {
 
         List<MockProgramGear> gears = new ArrayList<>();
@@ -89,7 +88,7 @@ public class LoadProgramSetupHelper {
                                                         .build();
 
         return MockLoadProgram.builder()
-                          .name(StringUtils.remove(WordUtils.capitalizeFully(type.name(), '_'), "_") + "Test")
+                          .name(ApiUtils.buildFriendlyName(type, "LM_", "Test"))
                           .type(type)
                           .triggerOffset(1.0)
                           .restoreOffset(2.0)
@@ -105,25 +104,12 @@ public class LoadProgramSetupHelper {
     
     public static MockLoadProgramCopy buildLoadProgramCopyRequest(MockPaoType programType, Integer constraintId) {
         return MockLoadProgramCopy.builder()
-                       .name(StringUtils.remove(WordUtils.capitalizeFully(programType.name(), '_'), "_") + "TestCopy")
+                                  .name(ApiUtils.buildFriendlyName(programType, "LM_", "TestCopy"))
                        .operationalState(MockOperationalState.Automatic)
                        .constraint(MockProgramConstraint.builder().constraintId(constraintId).build())
                        .copyMemberControl(true)
                        .build();
 
-    }
-
-    public static void delete(Integer id, String name, String url) {
-        MockLMDto deleteConstraint = MockLMDto.builder().name(name).build();
-
-        given().accept("application/json")
-               .contentType("application/json")
-               .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-               .body(deleteConstraint)
-               .when()
-               .delete(ApiCallHelper.getProperty(url) + id)
-               .then()
-               .extract();
     }
 
     public static FieldDescriptor[] loadProgramFields() {

@@ -41,13 +41,13 @@ public class ProgramConstraintControllerTest {
         this.documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
         programConstraintFieldDescriptor = new FieldDescriptor[] {
             fieldWithPath("name").type(JsonFieldType.STRING).description("Program Constraint Name."),
-            fieldWithPath("seasonSchedule.id").type(JsonFieldType.NUMBER).description("Season Schedule ID."),
+            fieldWithPath("seasonSchedule.id").type(JsonFieldType.NUMBER).description("Season Schedule Id."),
             fieldWithPath("maxActivateSeconds").type(JsonFieldType.NUMBER).description("Max Acitvate Seconds. Min Value: 0, Max Value: 99999"),
             fieldWithPath("maxDailyOps").type(JsonFieldType.NUMBER).description("Max Daily Operations. Min Value: 0, Max Value: 99999"),
             fieldWithPath("minActivateSeconds").type(JsonFieldType.NUMBER).description("Min Activate Seconds. Min Value: 0, Max Value: 99999"),
             fieldWithPath("minRestartSeconds").type(JsonFieldType.NUMBER).description("Min Restart Seconds. Min Value: 0, Max Value: 99999"),
             fieldWithPath("daySelection").type(JsonFieldType.VARIES).description("Day Selection. Expected: SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY"),
-            fieldWithPath("holidaySchedule.id").type(JsonFieldType.NUMBER).description("Holiday Schedule ID."),
+            fieldWithPath("holidaySchedule.id").type(JsonFieldType.NUMBER).description("Holiday Schedule Id."),
             fieldWithPath("holidayUsage").type(JsonFieldType.STRING).description("Holiday Usages. Expected: EXCLUDE, FORCE, NONE"),
             fieldWithPath("maxHoursDaily").type(JsonFieldType.NUMBER).description("Max Hours Daily. Min Value: 0, Max Value: 99999"),
             fieldWithPath("maxHoursMonthly").type(JsonFieldType.NUMBER).description("Max Hours Monthly. Min Value: 0, Max Value: 99999"),
@@ -78,8 +78,8 @@ public class ProgramConstraintControllerTest {
                                 .extract()
                                 .response();
 
-        constraintId = response.path("id").toString();
-        assertTrue("Constraint ID should not be Null", constraintId != null);
+        constraintId = response.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID).toString();
+        assertTrue("Constraint Id should not be Null", constraintId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -87,16 +87,16 @@ public class ProgramConstraintControllerTest {
     public void Test_ProgramConstraint_Get() {
         Response response = given(documentationSpec)
                 .filter(document("{ClassName}/{methodName}",
-                    responseFields(fieldWithPath("id").type(JsonFieldType.NUMBER).description("Program Constraint ID."),
+                    responseFields(fieldWithPath("id").type(JsonFieldType.NUMBER).description("Program Constraint Id."),
                         fieldWithPath("name").type(JsonFieldType.STRING).description("Program Constraint Name."), 
-                        fieldWithPath("seasonSchedule.id").type(JsonFieldType.NUMBER).description("Season Schedule ID."),
+                        fieldWithPath("seasonSchedule.id").type(JsonFieldType.NUMBER).description("Season Schedule Id."),
                         fieldWithPath("seasonSchedule.name").type(JsonFieldType.STRING).description("Season Schedule Name.").optional(),
                         fieldWithPath("maxActivateSeconds").type(JsonFieldType.NUMBER).description("Max Acitvate Seconds."),
                         fieldWithPath("maxDailyOps").type(JsonFieldType.NUMBER).description("Max Daily Operations."),
                         fieldWithPath("minActivateSeconds").type(JsonFieldType.NUMBER).description("Min Activate Seconds."),
                         fieldWithPath("minRestartSeconds").type(JsonFieldType.NUMBER).description("Min Restart Seconds."),
                         fieldWithPath("daySelection").type(JsonFieldType.ARRAY).description("Day Selection."),
-                        fieldWithPath("holidaySchedule.id").type(JsonFieldType.NUMBER).description("Holiday Schedule ID."),
+                        fieldWithPath("holidaySchedule.id").type(JsonFieldType.NUMBER).description("Holiday Schedule Id."),
                         fieldWithPath("holidaySchedule.name").type(JsonFieldType.STRING).description("Holiday Schedule Name.").optional(),
                         fieldWithPath("holidayUsage").type(JsonFieldType.STRING).description("Holiday Usages."),
                         fieldWithPath("maxHoursDaily").type(JsonFieldType.NUMBER).description("Max Hours Daily."),
@@ -131,7 +131,7 @@ public class ProgramConstraintControllerTest {
                                 .extract()
                                 .response();
 
-        assertTrue("Constraint ID should not be Null", response.path("id").toString() != null);
+        assertTrue("Constraint Id should not be Null", response.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID).toString() != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -143,7 +143,7 @@ public class ProgramConstraintControllerTest {
        Response response = given(documentationSpec)
                                .filter(document("{ClassName}/{methodName}", requestFields(
                                    fieldWithPath("name").type(JsonFieldType.STRING).description("Program Constraint Name.")), 
-                                   responseFields(fieldWithPath("id").type(JsonFieldType.NUMBER).description("Program Constraint ID."))))
+                                   responseFields(fieldWithPath("id").type(JsonFieldType.NUMBER).description("Program Constraint Id."))))
                                .accept("application/json")
                                .contentType("application/json")
                                .header("Authorization","Bearer " + ApiCallHelper.authToken)

@@ -152,7 +152,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping(value="edit", method=RequestMethod.GET)
-    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.INTERACT)
     public String edit(ModelMap model, LiteYukonUser user, int deviceId) throws Exception {
         
         YukonMeter meter = meterDao.getForId(deviceId);
@@ -180,7 +180,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping(value="edit-plc", method=RequestMethod.PUT)
-    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.INTERACT)
     public String editPlc(HttpServletResponse resp, ModelMap model, FlashScope flash,
             @ModelAttribute("meter") PlcMeterModel meter, BindingResult result,  LiteYukonUser user) throws IOException {
         
@@ -224,7 +224,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping(value="edit-rf", method=RequestMethod.PUT)
-    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.INTERACT)
     public String editRf(HttpServletResponse resp, ModelMap model, FlashScope flash, YukonUserContext userContext,
             @ModelAttribute("meter") RfMeterModel meter, BindingResult result, LiteYukonUser user) throws IOException {
         
@@ -276,7 +276,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping(value="edit-ied", method=RequestMethod.PUT)
-    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.INTERACT)
     public String editIed(HttpServletResponse resp, ModelMap model, FlashScope flash,
             @ModelAttribute("meter") IEDMeterModel meter, BindingResult result, LiteYukonUser user) throws IOException {
  

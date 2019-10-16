@@ -121,7 +121,7 @@ public class RelayInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping(value="edit", method=RequestMethod.GET)
-    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.INTERACT)
     public String edit(ModelMap model, LiteYukonUser user, int deviceId) throws Exception {
         
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);

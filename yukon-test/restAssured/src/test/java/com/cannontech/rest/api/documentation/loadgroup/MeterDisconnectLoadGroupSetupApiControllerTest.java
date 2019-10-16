@@ -79,8 +79,8 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
                                 .response();
 
 
-        paoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -118,14 +118,14 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
                                .response();
 
 
-       paoId = response.path("groupId").toString();
-       assertTrue("PAO ID should not be Null", paoId != null);
+       paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+       assertTrue("Load Group Id should not be Null", paoId != null);
        assertTrue("Status code should be 200", response.statusCode() == 200);
    }
 
     @Test(dependsOnMethods = { "Test_LmGroupMeterDisconnect_Update" })
    public void Test_LmGroupMeterDisconnect_Copy() {
-       MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name("Meter_Disconnect_Group_Test-Copy").build();
+       MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_METER_DISCONNECT)).build();
        Response response = given(documentationSpec)
                                .filter(document("{ClassName}/{methodName}", 
                                    requestFields(
@@ -140,15 +140,15 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
                                .then()
                                .extract()
                                .response();
-       copyPaoId = response.path("groupId").toString();
-       assertTrue("PAO ID should not be Null", copyPaoId != null);
+       copyPaoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+       assertTrue("Load Group Id should not be Null", copyPaoId != null);
        assertTrue("Status code should be 200", response.statusCode() == 200);
    }
 
     @Test(dependsOnMethods = { "Test_LmGroupMeterDisconnect_Copy" })
     public void Test_LmGroupMeterDisconnect_Delete() {
         MockLMDto lmDeleteObject = MockLMDto.builder()
-                .name("Meter_Disconnect_Group_Test")
+                .name(LoadGroupHelper.getLoadGroupName(MockPaoType.LM_GROUP_METER_DISCONNECT))
                 .build();
 
        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
@@ -168,9 +168,9 @@ public class MeterDisconnectLoadGroupSetupApiControllerTest {
        
 
        MockLMDto lmDeleteCopyObject = MockLMDto.builder()
-                                       .name("Meter_Disconnect_Group_Test-Copy")
+                                       .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_METER_DISCONNECT))
                                        .build();
-       Log.info("Delete payload is : " + JsonUtil.beautifyJson(lmDeleteCopyObject.toString()));
+       Log.info("Delete Load Group is : " + JsonUtil.beautifyJson(lmDeleteCopyObject.toString()));
        ExtractableResponse<?> copyResponse = ApiCallHelper.delete("deleteloadgroup", lmDeleteCopyObject, copyPaoId);
        assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
    }

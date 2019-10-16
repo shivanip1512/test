@@ -92,8 +92,8 @@ public class ExpresscomLoadGroupSetupApiControllerTest {
                                 .response();
 
 
-        paoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -129,14 +129,14 @@ public class ExpresscomLoadGroupSetupApiControllerTest {
                                 .extract()
                                 .response();
 
-        paoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
     @Test(dependsOnMethods = { "Test_LmExpresscom_Update" })
     public void Test_LmExpresscom_Copy() {
-        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name("Expresscom-Copy-Test").routeId(12815).build();
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EXPRESSCOMM)).routeId(1).build();
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
                                     requestFields(
@@ -152,15 +152,15 @@ public class ExpresscomLoadGroupSetupApiControllerTest {
                                 .then()
                                 .extract()
                                 .response();
-        copyPaoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", copyPaoId != null);
+        copyPaoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", copyPaoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
     @Test(dependsOnMethods = { "Test_LmExpresscom_Copy" })
     public void Test_LmExpresscom_Delete() {
         MockLMDto lmDeleteObject = MockLMDto.builder()
-                .name("Test_ExpressCom_LoadGroup")
+                .name(LoadGroupHelper.getLoadGroupName(MockPaoType.LM_GROUP_EXPRESSCOMM))
                 .build();
 
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
@@ -178,8 +178,8 @@ public class ExpresscomLoadGroupSetupApiControllerTest {
             .response();
         assertTrue("Status code should be 200", response.statusCode() == 200);
         
-        MockLMDto lmDeleteCopyObject = MockLMDto.builder().name("Expresscom-Copy-Test").build();
-        Log.info("Delete payload is : " + JsonUtil.beautifyJson(lmDeleteCopyObject.toString()));
+        MockLMDto lmDeleteCopyObject = MockLMDto.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EXPRESSCOMM)).build();
+        Log.info("Delete Load Group is : " + JsonUtil.beautifyJson(lmDeleteCopyObject.toString()));
         ExtractableResponse<?> copyResponse = ApiCallHelper.delete("deleteloadgroup", lmDeleteCopyObject, copyPaoId);
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
     }

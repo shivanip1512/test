@@ -58,7 +58,7 @@ public class NestLoadGroupSetupApiControllerTest {
         this.restDocumentation.afterTest();
     }
 
-    @Test
+    @Test(enabled = false) 
     public void Test_LmNest_Create() {
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", requestFields(nestFieldDescriptor),
@@ -72,12 +72,12 @@ public class NestLoadGroupSetupApiControllerTest {
                                 .then()
                                 .extract()
                                 .response();
-        paoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(dependsOnMethods = { "Test_LmNest_Create" })
+    @Test(dependsOnMethods = { "Test_LmNest_Create" }, enabled = false)
     public void Test_LmNest_Get() {
        List<FieldDescriptor> responseFields = new ArrayList<>(Arrays.asList(nestFieldDescriptor));
        responseFields.add(0,fieldWithPath("LM_GROUP_NEST.id").type(JsonFieldType.NUMBER).description("Load Group Id"));
@@ -94,7 +94,7 @@ public class NestLoadGroupSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(dependsOnMethods = { "Test_LmNest_Get" })
+    @Test(dependsOnMethods = { "Test_LmNest_Get" }, enabled = false)
     public void Test_LmNest_Update() {
        Response response = given(documentationSpec)
                                .filter(document("{ClassName}/{methodName}", requestFields(nestFieldDescriptor),
@@ -108,15 +108,15 @@ public class NestLoadGroupSetupApiControllerTest {
                                .then()
                                .extract()
                                .response();
-       paoId = response.path("groupId").toString();
-       assertTrue("PAO ID should not be Null", paoId != null);
+       paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+       assertTrue("Load Group Id should not be Null", paoId != null);
        assertTrue("Status code should be 200", response.statusCode() == 200);
    }
 
-   @Test(dependsOnMethods = { "Test_LmNest_Update" })
+   @Test(dependsOnMethods = { "Test_LmNest_Update" }, enabled = false)
    public void Test_LmNest_Delete() {
        MockLMDto lmDeleteObject = MockLMDto.builder()
-               .name("Nest_LoadGroup_Test")
+               .name(LoadGroupHelper.getLoadGroupName(MockPaoType.LM_GROUP_NEST))
                .build();
        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
            requestFields(

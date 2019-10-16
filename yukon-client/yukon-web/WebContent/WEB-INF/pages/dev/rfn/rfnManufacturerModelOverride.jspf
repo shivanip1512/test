@@ -1,0 +1,7 @@
+<tags:nameValue name="Manufacturer override">
+    <tags:input path="manufacturerOverride" size="7" placeholder="optional"/>
+</tags:nameValue>
+
+<tags:nameValue name="Model override">
+    <tags:input path="modelOverride" size="7" placeholder="optional"/>
+</tags:nameValue>

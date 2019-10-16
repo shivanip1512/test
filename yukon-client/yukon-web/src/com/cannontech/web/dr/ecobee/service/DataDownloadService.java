@@ -7,6 +7,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import com.cannontech.common.util.Range;
+import com.cannontech.user.YukonUserContext;
 
 public interface DataDownloadService {
 
@@ -15,5 +16,5 @@ public interface DataDownloadService {
      * @param timeZone The time zone to print the dates in. This may be set to <code>null</code> to print dates in UTC.
      * @return the recent result cache key to look up the task by.
      */
-    String start(List<String> serialNumbers, Range<LocalDate> dateRange, DateTimeZone timeZone) throws IOException;
+    String start(List<String> serialNumbers, Range<LocalDate> dateRange, YukonUserContext userContext) throws IOException;
 }

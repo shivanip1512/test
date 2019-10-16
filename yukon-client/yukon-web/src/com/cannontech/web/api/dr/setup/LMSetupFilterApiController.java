@@ -18,7 +18,7 @@ import com.cannontech.web.api.dr.setup.service.impl.LMSetupFilterServiceImpl;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
-@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.RESTRICTED)
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/dr/setup")
 public class LMSetupFilterApiController {
     @Autowired private LMSetupFilterServiceImpl filterService;

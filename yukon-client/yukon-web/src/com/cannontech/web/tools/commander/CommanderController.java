@@ -188,7 +188,7 @@ public class CommanderController {
                             model.addAttribute("route", route);
                         }
                         if (rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION,
-                            HierarchyPermissionLevel.LIMITED, user)) {
+                            HierarchyPermissionLevel.INTERACT, user)) {
                             model.addAttribute("changeRoute", true);
                         }
                     } catch (NotFoundException nfe) {
@@ -216,7 +216,7 @@ public class CommanderController {
                 LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
                 data.put("route", route);
             }
-            if(rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user)){
+            if(rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.INTERACT, user)){
                 data.put("changeRoute", true);
             }
         } catch (NotFoundException nfe) {
@@ -227,7 +227,7 @@ public class CommanderController {
     
     /** Change route popup */
     @RequestMapping("/commander/route/{routeId}/change")
-    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.INTERACT)
     public String changeRoute(ModelMap model, @PathVariable int routeId) {
         
         Map<Integer, LiteYukonPAObject> all = cache.getAllRoutesMap();
@@ -249,7 +249,7 @@ public class CommanderController {
     
     /** Change route */
     @RequestMapping(value="/commander/{paoId}/route/{routeId}", method=RequestMethod.POST)
-    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.INTERACT)
     public @ResponseBody LiteYukonPAObject changeRoute(HttpServletResponse resp, ModelMap model, LiteYukonUser user,
             @PathVariable int paoId, @PathVariable int routeId) {
                 

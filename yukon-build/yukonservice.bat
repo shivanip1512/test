@@ -70,6 +70,8 @@ set PR_LOGPATH=
 set PR_CLASSPATH=
 set PR_JVM=
 
+rem configure the name of the account under which the service should run
+sc config %SERVICE_NAME% obj= "NT AUTHORITY\Local Service" password= "";
 
 rem Set extra parameters using //US// option on already installed service
 "%EXECUTABLE%"//US//%SERVICE_NAME% --JvmOptions "-Dcatalina.base=%CATALINA_BASE%;-Dcatalina.home=%CATALINA_HOME%" --StartMode jvm --StopMode jvm

@@ -69,7 +69,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 @Controller
-@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.RESTRICTED)
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/setup/loadProgram")
 public class LoadProgramSetupController {
 

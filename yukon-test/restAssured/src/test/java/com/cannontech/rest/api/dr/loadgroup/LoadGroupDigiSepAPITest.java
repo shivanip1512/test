@@ -29,10 +29,10 @@ public class LoadGroupDigiSepAPITest {
 
         Log.startTestCase("loadGroupDigiSep_01_Create");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
-        String groupId = createResponse.path("groupId").toString();
-        context.setAttribute("groupId", groupId);
+        String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        assertTrue("GroupId should not be Null", groupId != null);
+        assertTrue("Load Group Id should not be Null", groupId != null);
         Log.endTestCase("loadGroupDigiSep_01_Create");
     }
 
@@ -40,7 +40,7 @@ public class LoadGroupDigiSepAPITest {
     public void loadGroupDigiSep_02_Get(ITestContext context) {
 
         Log.startTestCase("loadGroupNest_02_Get");
-        String groupId = context.getAttribute("groupId").toString();
+        String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
 
         Log.info("GroupId of LmGroupDigiSep created is : " + groupId);
 
@@ -67,13 +67,13 @@ public class LoadGroupDigiSepAPITest {
 
         Log.startTestCase("loadGroupDigiSep_03_Update");
 
-        String groupId = context.getAttribute("groupId").toString();
+        String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         String name = "DigiSepUpdate";
         context.setAttribute("DigiSep_GrpName", name);
         loadGroup.setKWCapacity(543.908);
         loadGroup.setName(name);
 
-        Log.info("Updated payload is :" + loadGroup);
+        Log.info("Updated Load Group is :" + loadGroup);
 
         ExtractableResponse<?> getResponse = ApiCallHelper.post("updateloadgroup", loadGroup, groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);

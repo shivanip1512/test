@@ -1748,6 +1748,7 @@
               <page name="rfnTest.viewGatewayDataSimulator" type="BASIC"/>
               <page name="rfnTest.viewDataStreamingSimulator" type="BASIC"/>
               <page name="rfnTest.viewMappingSimulator" type="BASIC"/>
+              <page name="rfnTest.statusArchiveRequest" type="BASIC"/>
             </pages>            
           </page>
           <page name="ecobee.mockTest" type="BASIC"/>

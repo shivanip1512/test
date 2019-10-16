@@ -79,7 +79,7 @@ $(function () { yukon.dev.rfn.init(); });
             <li><a href="viewMeterReadArchiveRequest"><i:inline key=".meterReadArchiveRequest.label"/></a></li>
             <li><a href="viewLocationArchiveRequest"><i:inline key=".rfLocationArchiveRequest.label"/></a></li>
             <li><a href="viewConfigNotification"><i:inline key=".rfnConfigNotification.label"/></a></li>
-            <li><a href="viewStatusArchiveRequest"><i:inline key=".statusArchiveRequest.label"/></a></li>
+            <li><a href="viewStatusArchiveRequest"><i:inline key=".statusArchiveRequest.pageName"/></a></li>
         </ul>
         <h3>Simulators</h3>
                 <ul class="simple-list stacked">

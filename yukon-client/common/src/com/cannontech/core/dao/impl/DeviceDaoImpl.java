@@ -126,12 +126,16 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
     
     @Override
-    public int getDeviceIdFromMacAddress(String macAddress) {
+    public int getDeviceIdFromMacAddress(String macAddress) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceId");
         sql.append("FROM DeviceMacAddress");
         sql.append("WHERE MacAddress").eq(macAddress);
-        return jdbcTemplate.queryForInt(sql);
+        try {
+            return jdbcTemplate.queryForInt(sql);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No Device ID found for MAC " + macAddress, e);
+        }
     }
     
     @Override

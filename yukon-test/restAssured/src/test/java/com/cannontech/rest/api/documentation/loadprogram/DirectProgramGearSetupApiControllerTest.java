@@ -90,7 +90,7 @@ public class DirectProgramGearSetupApiControllerTest {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupExpresscomm);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
         loadGroups = new ArrayList<>();
-        Integer loadGroupId = createResponse.path("groupId");
+        Integer loadGroupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID);
         loadGroupExpresscomm.setId(loadGroupId);
         loadGroups.add(loadGroupExpresscomm);
     }
@@ -102,9 +102,9 @@ public class DirectProgramGearSetupApiControllerTest {
     public void programConstraint_Create() {
         programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", programConstraint);
-        Integer constraintId = createResponse.path("id");
+        Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
         programConstraint.setId(constraintId);
-        assertTrue("Constraint ID should not be Null", constraintId != null);
+        assertTrue("Constraint Id should not be Null", constraintId != null);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
     }
 
@@ -141,10 +141,10 @@ public class DirectProgramGearSetupApiControllerTest {
                                                  loadProgram,
                                                  "saveLoadProgram");
 
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -183,10 +183,10 @@ public class DirectProgramGearSetupApiControllerTest {
                                                  loadProgram,
                                                  "saveLoadProgram");
 
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -220,10 +220,10 @@ public class DirectProgramGearSetupApiControllerTest {
                                                  loadProgram,
                                                  "saveLoadProgram");
 
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -263,10 +263,10 @@ public class DirectProgramGearSetupApiControllerTest {
                                                  loadProgram,
                                                  "saveLoadProgram");
 
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -306,10 +306,10 @@ public class DirectProgramGearSetupApiControllerTest {
                                                  programIdDescriptor,
                                                  loadProgram,
                                                  "saveLoadProgram");
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -350,10 +350,89 @@ public class DirectProgramGearSetupApiControllerTest {
                                                  programIdDescriptor,
                                                  loadProgram,
                                                  "saveLoadProgram");
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+    }
+
+
+    @Test
+    public void Test_LoadProgram_ThermostatGear_Create() {
+        /*---------Thermostat Gear Field Descriptor--------- */
+
+        FieldDescriptor[] thermostatGearDescriptor = new FieldDescriptor[] {
+                fieldWithPath("gears[].fields.absoluteOrDelta").type(JsonFieldType.STRING).description("Absolute or Delta."),
+                fieldWithPath("gears[].fields.measureUnit").type(JsonFieldType.STRING).description("Measurement Unit."),
+                fieldWithPath("gears[].fields.isHeatMode").type(JsonFieldType.BOOLEAN).description("Heat Mode."),
+                fieldWithPath("gears[].fields.isCoolMode").type(JsonFieldType.BOOLEAN).description("Cool Mode."),
+                fieldWithPath("gears[].fields.minValue").type(JsonFieldType.NUMBER).description("Min Value."),
+                fieldWithPath("gears[].fields.maxValue").type(JsonFieldType.NUMBER).description("Max Value"),
+                fieldWithPath("gears[].fields.valueB").type(JsonFieldType.NUMBER).description("Value B for absoluteOrDelta."),
+                fieldWithPath("gears[].fields.valueD").type(JsonFieldType.NUMBER).description("Value D for absoluteOrDelta."),
+                fieldWithPath("gears[].fields.valueF").type(JsonFieldType.NUMBER).description("Value F for absoluteOrDelta."),
+                fieldWithPath("gears[].fields.random").type(JsonFieldType.NUMBER).description("Random."),
+                fieldWithPath("gears[].fields.valueTa").type(JsonFieldType.NUMBER).description("Value Ta for absoluteOrDelta."),
+                fieldWithPath("gears[].fields.valueTb").type(JsonFieldType.NUMBER).description("Value Tb for absoluteOrDelta."),
+                fieldWithPath("gears[].fields.valueTc").type(JsonFieldType.NUMBER).description("Value Tc for absoluteOrDelta."),
+                fieldWithPath("gears[].fields.valueTd").type(JsonFieldType.NUMBER).description("Value Td for absoluteOrDelta."),
+                fieldWithPath("gears[].fields.valueTe").type(JsonFieldType.NUMBER).description("Value Te for absoluteOrDelta."),
+                fieldWithPath("gears[].fields.valueTf").type(JsonFieldType.NUMBER).description("Value Tf for absoluteOrDelta."),
+                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).description("How to stop control"),
+                fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER).description("Group capacity reduction"),
+                fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
+                fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
+                                                                               .description("When to change field. Expected : None, Duration, Priority, TriggerOffset"), };
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.ThermostatRamping);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
+        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(thermostatGearDescriptor),
+                                                 programIdDescriptor,
+                                                 loadProgram,
+                                                 "saveLoadProgram");
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
+        assertTrue("Status code should be 200", response.statusCode() == 200);
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+    }
+
+    @Test
+    public void Test_LoadProgram_SimpleThermostatGear_Create() {
+        /*---------SimpleThermostat Gear Field Descriptor--------- */
+
+        FieldDescriptor[] simpleThermostatGearDescriptor = new FieldDescriptor[] {
+                fieldWithPath("gears[].fields.mode").type(JsonFieldType.STRING).description("Mode."),
+                fieldWithPath("gears[].fields.randomStartTimeInMinutes").type(JsonFieldType.NUMBER)
+                                                                        .description("Random Start Time. Min Value: 0, Max Value: 120"),
+                fieldWithPath("gears[].fields.preOpTemp").type(JsonFieldType.NUMBER).description("PreOp Temp. Min Value: -20, Max Value: 20"),
+                fieldWithPath("gears[].fields.preOpTimeInMinutes").type(JsonFieldType.NUMBER).description("PreOp Time. Min Value: 0, Max Value: 300"),
+                fieldWithPath("gears[].fields.preOpHoldInMinutes").type(JsonFieldType.NUMBER).description("PreOp Hold. Min Value: 0, Max Value: 300"),
+                fieldWithPath("gears[].fields.rampPerHour").type(JsonFieldType.NUMBER).description("Ramp Per Hour. Min Value: -9.9, Max Value: 9.9"),
+                fieldWithPath("gears[].fields.max").type(JsonFieldType.NUMBER).description("Max. Min Value: 0, Max Value: 20"),
+                fieldWithPath("gears[].fields.rampOutTimeInMinutes").type(JsonFieldType.NUMBER).description("Ramp Out Time. Min Value: 0, Max Value: 300"),
+                fieldWithPath("gears[].fields.maxRuntimeInMinutes").type(JsonFieldType.NUMBER).description("Max Runtime. Min Value: 240, Max Value: 1439"),
+                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).description("How to stop control"),
+                fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
+                fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
+                                                                               .description("When to change field. Expected : None, Duration, Priority, TriggerOffset"), };
+
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.SimpleThermostatRamping);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
+        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(simpleThermostatGearDescriptor),
+                                                 programIdDescriptor,
+                                                 loadProgram,
+                                                 "saveLoadProgram");
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
+        assertTrue("Status code should be 200", response.statusCode() == 200);
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -376,10 +455,10 @@ public class DirectProgramGearSetupApiControllerTest {
                                                  programIdDescriptor,
                                                  loadProgram,
                                                  "saveLoadProgram");
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -409,10 +488,10 @@ public class DirectProgramGearSetupApiControllerTest {
                                                  loadProgram,
                                                  "saveLoadProgram");
 
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -438,17 +517,17 @@ public class DirectProgramGearSetupApiControllerTest {
                                                  loadProgram,
                                                  "saveLoadProgram");
 
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @AfterClass
     public void cleanUp() {
-        LoadProgramSetupHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
+        ApiCallHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
         loadGroups.forEach(group -> {
-            LoadProgramSetupHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
+            ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
         });
     }
 }

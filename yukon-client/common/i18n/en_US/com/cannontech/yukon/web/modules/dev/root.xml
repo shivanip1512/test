@@ -318,14 +318,25 @@
     <entry key="yukon.web.modules.dev.rfnTest.rfnConfigNotification.label">RFN Config Notification</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnConfigNotification.helpText"><![CDATA[The RFN Config Notification Test simulates RFN Config Notification messages 
     from RFN nodes to Porter. ]]></entry>
-    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.label">Status Archive Request</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.helpTitle">Status Archive Request Help</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.helpText"><![CDATA[
+    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.crumbTitle">Status Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.pageName">Status Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.demandReset.title">Demand Reset Status Archive</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.demandReset.helpText"><![CDATA[
         You can set the following options for the request:
         <ul>
             <li>Demand Reset Status Code - this is the Status Code that Yukon will reply with</li>
             <li>Number of Messages to send - Yukon will find this number of devices and send a message with the value entered above</li>
         </ul>
+    ]]></entry>
+    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.meterInfo.title">Meter Info Status Archive</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.meterInfo.helpText"><![CDATA[
+        You can set the following options for the request:
+        <ul>
+            <li>Meter Configuration ID - this is the GUID of the meter configuration the meter will report.</li>
+            <li>Meter Disconnect Meter Mode - the disconnect mode the meter is configured with.</li>
+            <li>Meter Disconnect State Type - the disconnect relay state.</li>
+        </ul>
+        Both Disconnect Meter Mode and State Type must be set for the disconnect info to be sent. 
     ]]></entry>
     
     <!-- Smart Notifications -->

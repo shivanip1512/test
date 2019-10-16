@@ -16,7 +16,6 @@ include::ExpresscomCreate.adoc[]
 include::HoneywellCreate.adoc[]
 include::ItronCreate.adoc[]
 include::MeterDisconnectCreate.adoc[]
-include::NestCreate.adoc[]
 include::VersacomCreate.adoc[]
 
 === Retrieve
@@ -27,7 +26,6 @@ include::ExpresscomGet.adoc[]
 include::HoneywellGet.adoc[]
 include::ItronGet.adoc[]
 include::MeterDisconnectGet.adoc[]
-include::NestGet.adoc[]
 include::VersacomGet.adoc[]
 
 === Update
@@ -38,7 +36,6 @@ include::ExpresscomUpdate.adoc[]
 include::HoneywellUpdate.adoc[]
 include::ItronUpdate.adoc[]
 include::MeterDisconnectUpdate.adoc[]
-include::NestUpdate.adoc[]
 include::VersacomUpdate.adoc[]
 
 === Delete
@@ -49,7 +46,6 @@ include::ExpresscomDelete.adoc[]
 include::HoneywellDelete.adoc[]
 include::ItronDelete.adoc[]
 include::MeterDisconnectDelete.adoc[]
-include::NestDelete.adoc[]
 include::VersacomDelete.adoc[]
 
 === Copy
