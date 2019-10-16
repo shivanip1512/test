@@ -4,9 +4,7 @@
 #include <map>
 #include <chrono>
 
-namespace Cti {
-namespace Messaging {
-namespace Porter {
+namespace Cti::Messaging::Porter {
 
 enum class DynamicPaoInfoDurationKeys
 {
@@ -19,12 +17,18 @@ enum class DynamicPaoInfoTimestampKeys
     RfnVoltageProfileEnabledUntil
 };
 
+enum class DynamicPaoInfoPercentageKeys
+{
+    MeterProgrammingProgress
+};
+
 struct DynamicPaoInfoRequestMsg
 {
     long deviceId;
 
     std::set<DynamicPaoInfoDurationKeys> durationKeys;
     std::set<DynamicPaoInfoTimestampKeys> timestampKeys;
+    std::set<DynamicPaoInfoPercentageKeys> percentageKeys;
 };
 
 struct DynamicPaoInfoResponseMsg
@@ -33,11 +37,11 @@ struct DynamicPaoInfoResponseMsg
 
     using DurationMap = std::map<DynamicPaoInfoDurationKeys, std::chrono::milliseconds>;
     using TimestampMap = std::map<DynamicPaoInfoTimestampKeys, std::chrono::system_clock::time_point>;
+    using PercentageMap = std::map<DynamicPaoInfoPercentageKeys, double>;
 
     DurationMap durationValues;
     TimestampMap timestampValues;
+    PercentageMap percentageValues;
 };
 
-}
-}
 }
