@@ -30,6 +30,44 @@
         <replace file="CreationScripts/OracleTableCreation.sql" token="/* __YUKON_VERSION__ */" value="${sql.oracle.insert}"/>
     </target>
     
+    <!-- macrodef to execute any git command-->
+        <macrodef name="git">
+            <attribute name="command" />
+            <attribute name="dir" default="" />
+            <element name="args" optional="true" />
+                <sequential>
+                    <echo message="git @{command}" />
+                    <exec executable="git" dir="@{dir}">
+                        <arg value="@{command}" />
+                        <args/>
+                    </exec>
+                </sequential>
+         </macrodef>
+
+        <target name="config-git-credential">
+            <git command="config">
+                <args>
+                    <arg value="--global" />
+                    <arg value="user.name" />
+                    <arg value="${git.username}" />
+                </args>
+            </git>
+            <git command="config">
+                <args>
+                    <arg value="--global" />
+                    <arg value="user.password" />
+                    <arg value="${git.password}" />
+                </args>
+            </git>
+            <git command="config">
+                <args>
+                    <arg value="--global" />
+                    <arg value="user.email" />
+                    <arg value="${git.email}" />
+                </args>
+            </git>
+        </target>
+    
     <target name="sqlServerCreationScriptXMLFile" depends="version_db_files">
         <property name="databaseName" value="TempDBCreation_${version.major}_${version.minor}_${version.revision}" />
         <property environment="env" />
@@ -40,18 +78,6 @@
     	<copy file="Custom Scripts/SQL Server/DropDatabase.sql" tofile="tempDropDatabase.sql" overwrite="true" />
         <replace file="tempDropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
         <echo message="${databaseName}"/>
-
-        <echo message="Checking out database snapshot folder" />
-    	
-    	<exec executable="svn">
-        	<arg value="checkout" />
-            <arg value="${env.SVN_BASE_URL}${dbSnapshot}"/>
-    		<arg value="${dbSnapshotTempDir}" />
-        	<arg value="--username" />
-        	<arg value="${svn.username}" />
-        	<arg value="--password" />
-        	<arg value="${svn.password}" />
-        </exec>
 
         <!-- Create sql server databse and user-->
         <sql
@@ -98,7 +124,7 @@
             <arg value="--user=${databaseName}"/>
             <arg value="--password=${databaseName}"/>
             <arg value="--schema=dbo"/>
-            <arg value="--outputXmlFile=${dbSnapshotTempDir}/mssql.xml"/>
+            <arg value="--outputXmlFile=../${dbSnapshot}/mssql.xml"/>
             <classpath>
                <pathelement location="../yukon-client/third-party/jtds-1.3.1.jar"/>
             </classpath>
@@ -118,23 +144,32 @@
         </sql>
 
         <echo message="Latest diff" />
-        <exec executable="svn" dir="${dbSnapshotTempDir}">
+        <exec executable="git">
             <arg value="diff"/>
+            <arg path = "../${dbSnapshot}"/>
         </exec>
-    	
-        <echo message="Checking in sql server database snapshot" />
-        <exec executable="svn" dir="${dbSnapshotTempDir}">
-        	<arg value="commit"/>
-        	<arg value="mssql.xml"/>
-            <arg value="-m" />
-        	<arg value="Checking in the latest database snapshot"/>
-        	<arg value="--username" />
-        	<arg value="${svn.username}" />
-        	<arg value="--password" />
-        	<arg value="${svn.password}" />
-        </exec>
-    	
-    	<echo message="Snapshot complete and checked in" />
+
+        <!-- Config git credential" before commit changes -->
+        <antcall target="config-git-credential" />
+
+        <!-- Commit snapshot chenges -->
+        <git command="add" dir="../${dbSnapshot}">
+             <args>
+                 <arg value="mssql.xml" />
+             </args>
+        </git>
+        <git command="commit" dir="../${dbSnapshot}">
+             <args>
+                 <arg value="-m Checking in the latest database snapshot" />
+             </args>
+        </git>
+        <git command="push" dir="../${dbSnapshot}">
+            <args>
+                <arg value="origin"/>
+                <arg value="HEAD:feature/7.2"/>
+            </args>
+        </git>
+        <echo message="Snapshot complete and checked in" />
     </target>
     
     <target name="oracleCreationScriptXMLFile" depends="version_db_files">
@@ -147,18 +182,7 @@
         <copy file="Custom Scripts/Oracle/DropDatabase.sql" tofile="tempDropDatabase.sql" overwrite="true" />
         <replace file="tempDropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
         <echo message="${databaseName}"/>
-        
-        <echo message="Checking out database snapshot folder" />
-        <exec executable="svn">
-            <arg value="checkout" />
-            <arg value="${env.SVN_BASE_URL}${dbSnapshot}"/>
-            <arg value="${dbSnapshotTempDir}" />
-            <arg value="--username" />
-            <arg value="${svn.username}" />
-            <arg value="--password" />
-            <arg value="${svn.password}" />
-        </exec>    	
-        
+
     	<!-- Create oracle databse and user-->
         <sql
             driver="oracle.jdbc.OracleDriver"
@@ -186,7 +210,7 @@
             <arg value="--user=${databaseName}"/>
             <arg value="--password=${databaseName}"/>
             <arg value="--schema=${databaseName}"/>
-            <arg value="--outputXmlFile=${dbSnapshotTempDir}/oracle.xml"/>
+            <arg value="--outputXmlFile=../${dbSnapshot}/oracle.xml"/>
             <classpath>
                 <pathelement location="../yukon-client/third-party/ojdbc6.jar"/>
             </classpath>
@@ -211,23 +235,32 @@
         </delete>
         
         <echo message="Latest diff" />
-        <exec executable="svn" dir="${dbSnapshotTempDir}">
-            <arg value="diff"/>
-        </exec>
-        
-        <echo message="Checking in oracle database snapshot" />
-        <exec executable="svn" dir="${dbSnapshotTempDir}">
-            <arg value="commit"/>
-            <arg value="oracle.xml"/>
-            <arg value="-m" />
-            <arg value="Checking in the latest database snapshot"/>
-            <arg value="--username" />
-            <arg value="${svn.username}" />
-            <arg value="--password" />
-            <arg value="${svn.password}" />
+        <exec executable="git">
+              <arg value="diff"/>
+              <arg path = "../${dbSnapshot}"/>
         </exec>
 
-    	<echo message="Snapshot complete and checked in" />
+        <!-- Config git credential" before commit changes -->
+        <antcall target="config-git-credential" />
+
+        <!-- Commit snapshot chenges -->
+        <git command="add" dir="../${dbSnapshot}">
+              <args>
+                   <arg value="oracle.xml" />
+              </args>
+        </git>
+        <git command="commit" dir="../${dbSnapshot}">
+               <args>
+                   <arg value="-m Checking in the latest database snapshot" />
+               </args>
+        </git>
+        <git command="push" dir="../${dbSnapshot}">
+              <args>
+                   <arg value="origin"/>
+                   <arg value="HEAD:release/7.2"/>
+              </args>
+        </git>
+        <echo message="Snapshot complete and checked in" />
     </target>
 
 </project>
