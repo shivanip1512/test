@@ -238,7 +238,7 @@
             <li>Unreported (missing more than 50% of interval data from the selected timeframe)</li>
         </ul>
         <br><b>High Sleeping Current: </b>Linear regression algorithm executed against the six days previous to the selected “Interval End” date chosen by the user will be evaluated and an indication of 
-        True or False will be returned.
+        True or False will be returned. This will return True if the calculated slope of the battery voltage is between the Minimum Slope -0.1mV/hr and the Maximum Slope -0.4mV/hr.
         <br><br>Clicking “Generate” will produce a comma separated file of the following data for further review:
         <ul>
             <li>Device Name</li>
