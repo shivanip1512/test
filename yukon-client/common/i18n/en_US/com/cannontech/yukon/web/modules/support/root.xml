@@ -237,8 +237,8 @@
             <li>Critically low (&lt; 3.3 Volts)</li>
             <li>Unreported (missing more than 50% of interval data from the selected timeframe)</li>
         </ul>
-        <br><b>High Sleeping Current: </b>Linear regression algorithm executed against the six days previous to the selected “Interval End” date chosen by the user will be evaluated and an indication of 
-        True or False will be returned.
+        <br><b>High Sleeping Current: </b>Linear regression algorithm executed over the six days previous to the selected “Interval End” date chosen by the user.
+         If the regression slope of the voltage is between -0.4mV/hr and -0.1mV/hr, a value of True will returned, else False.
         <br><br>Clicking “Generate” will produce a comma separated file of the following data for further review:
         <ul>
             <li>Device Name</li>
