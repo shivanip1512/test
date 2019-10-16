@@ -302,6 +302,7 @@ BOOST_AUTO_TEST_CASE(test_getKeyString)
         { CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds,          "rfn recording interval seconds" },
         { CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds,          "rfn reporting interval seconds" },
         { CtiTableDynamicPaoInfo::Key_RF_DA_DnpSlaveAddress,                 "rf da dnp slave address" },
+        { CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress,          "rfn meter programming progress" },
     };
 
     {
