@@ -21,8 +21,8 @@ public class WaterNodeFileUploadDaoImpl implements WaterNodeFileUploadDao {
         CSVReader reader;
         ArrayList<WaterNodeDetails> resultsList = new ArrayList<WaterNodeDetails>();
         WaterNodeDetails waterNodeDetails = new WaterNodeDetails();
-        Instant intervalStart = startTime;;
-        Instant intervalEnd = startTime;;
+        Instant intervalStart = startTime;
+        Instant intervalEnd = startTime;
         
         //Java millisecond time and second time are both stored as type long. Current millisecond time
         //is 1000 as large as current second time. To determine if the input is second or millisecond
