@@ -390,7 +390,7 @@ begin
 	sServicePathFile = TARGETDIR + "\\Server\\bin\\loadmanagement.exe";
 	ServiceAddService(LM_NAME, LM_NAME, LM_DESC, sServicePathFile, FALSE, "");
 	sProg = "cmd.exe";
-	sCMD = "/c sc config "+ "\"" + LM_NAME + "\"" + " start=delayed-auto obj= "+ "\"" + "NT AUTHORITY\\Local Service" + "\"" + " password= " + "\"" + " "+ "\"";";
+	sCMD = "/c sc config "+ "\"" + LM_NAME + "\"" + " start=delayed-auto obj= "+ "\"" + "NT AUTHORITY\\Local Service" + "\"" + " password= " + "\"" + " "+ "\"";
 	LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
 end;
 
