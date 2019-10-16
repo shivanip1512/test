@@ -346,7 +346,7 @@
     <entry key="yukon.web.modules.amr.meterProgramming.oldFirmware.helpText"><![CDATA[The following Firmware versions are required for Meter Programming:
         <ul>
             <li><b>Elster A3</b> - Firmware version 5.1+</li>
-            <li><b>L+G</b> - TBD</li>
+            <li><b>L&G</b> - Hardware version 1.1+ and Firmware versions 8.2+ or 8.4+</li>
         </ul>
     ]]></entry>
     
