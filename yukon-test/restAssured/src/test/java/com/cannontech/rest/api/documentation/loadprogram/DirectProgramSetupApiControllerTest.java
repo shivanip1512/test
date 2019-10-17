@@ -9,10 +9,9 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -22,10 +21,18 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.utilities.JsonFileReader;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.dr.helper.LoadProgramSetupHelper;
+import com.cannontech.rest.api.dr.helper.ProgramConstraintHelper;
+import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
+import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
+import com.cannontech.rest.api.loadProgram.request.MockLoadProgramCopy;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -34,8 +41,8 @@ public class DirectProgramSetupApiControllerTest {
 
     private ManualRestDocumentation restDocumentation = new ManualRestDocumentation();
     private RequestSpecification documentationSpec;
-    private Number programId = null;
-    private Number copyProgramId = null;
+    private Integer programId = null;
+    private Integer copyProgramId = null;
 
     private FieldDescriptor[] smartCycleGearFieldDescriptor = null;
     private List<FieldDescriptor> smartCycleProgramFieldDescriptor = null;
@@ -66,39 +73,19 @@ public class DirectProgramSetupApiControllerTest {
         this.restDocumentation.afterTest();
     }
 
-    private JSONObject buildJSONRequest(ITestContext context, String jsonFileName) {
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject(jsonFileName);
-        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
-        context.setAttribute("loadProgramCopy", jsonPath.getString("name"));
-
-        JSONObject jsonArrayObject = new JSONObject();
-        jsonArrayObject.put("groupId", context.getAttribute("assignedLoadGroupId"));
-        jsonArrayObject.put("groupName", context.getAttribute("loadGroupName"));
-        jsonArrayObject.put("type", context.getAttribute("loadGroupType"));
-        JSONArray jsonArray = new JSONArray();
-        jsonArray.add(jsonArrayObject);
-        JSONObject constraintJson = (JSONObject) jsonObject.get("constraint");
-        constraintJson.put("constraintId", context.getAttribute("constraintId"));
-        jsonObject.put("constraint", constraintJson);
-        jsonObject.put("assignedGroups", jsonArray);
-        return jsonObject;
-    }
-
     /**
      * Test case is to create Load group as we need to pass load group in request of Direct Load Program.
      */
     @Test
     public void directAssignedLoadGroup_Create(ITestContext context) {
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", "documentation\\loadprogram\\DirectProgramAssignedLoadGroup.json");
-        Integer groupId = createResponse.path("groupId");
-        context.setAttribute("loadGroupId", groupId.toString());
-        context.setAttribute("assignedLoadGroupId", groupId);
-
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\DirectProgramAssignedLoadGroup.json");
-        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
-        context.setAttribute("loadGroupName", jsonPath.getString("LM_GROUP_METER_DISCONNECT.name"));
-        context.setAttribute("loadGroupType", jsonPath.getString("LM_GROUP_METER_DISCONNECT.type"));
+        MockLoadGroupBase loadGroupExpresscom = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_EXPRESSCOMM);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupExpresscom);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        List<MockLoadGroupBase> loadGroups = new ArrayList<>();
+        Integer loadGroupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID);
+        loadGroupExpresscom.setId(loadGroupId);
+        loadGroups.add(loadGroupExpresscom);
+        context.setAttribute("loadGroups", loadGroups);
     }
 
     /**
@@ -106,15 +93,12 @@ public class DirectProgramSetupApiControllerTest {
      */
     @Test(dependsOnMethods={"directAssignedLoadGroup_Create"})
     public void programConstraint_Create(ITestContext context) {
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", "documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
-        Integer constraintId = createResponse.path("id");
-        context.setAttribute("constraintId", constraintId);
-
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
-        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
-        context.setAttribute("constraintName", jsonPath.getString("name"));
-
-        assertTrue("Constraint ID should not be Null", constraintId != null);
+        MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", programConstraint);
+        Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
+        context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID, constraintId);
+        context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME, programConstraint.getName());
+        assertTrue("Constraint Id should not be Null", constraintId != null);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
     }
 
@@ -122,24 +106,30 @@ public class DirectProgramSetupApiControllerTest {
      * Test case is to create Direct Load Program and to generate Rest api documentation for Direct Load Program create
      * request.
      */
+    @SuppressWarnings("unchecked")
     @Test(dependsOnMethods={"programConstraint_Create"})
     public void Test_DirectProgram_Create(ITestContext context) {
-        JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\DirectProgramCreate.json");
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.SmartCycle);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
+                                                                                 gearTypes,
+                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(smartCycleProgramFieldDescriptor),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(jsonObject.toJSONString())
+                                                    .body(loadProgram)
                                                     .when()
                                                     .post(ApiCallHelper.getProperty("saveLoadProgram"))
                                                     .then()
                                                     .extract()
                                                     .response();
-
-        programId = response.path("programId");
-        assertTrue("PAO ID should not be Null", programId != null);
+        context.setAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME, loadProgram.getName());
+        programId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
+        assertTrue("Program Id should not be Null", programId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -167,24 +157,30 @@ public class DirectProgramSetupApiControllerTest {
      * Test case is to update Load Program created by test case Test_DirectProgram_Create and to generate Rest api
      * documentation for Update request.
      */
+    @SuppressWarnings("unchecked")
     @Test(dependsOnMethods={"Test_DirectProgram_Get"})
     public void Test_DirectProgram_Update(ITestContext context) {
-        JSONObject jsonObject = buildJSONRequest(context, "documentation\\loadprogram\\DirectProgramCreate.json");
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.SmartCycle);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
+                                                                                 gearTypes,
+                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(smartCycleProgramFieldDescriptor),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(jsonObject.toJSONString())
+                                                    .body(loadProgram)
                                                     .when()
                                                     .post(ApiCallHelper.getProperty("updateLoadProgram") + programId)
                                                     .then()
                                                     .extract()
                                                     .response();
 
-        programId = response.path("programId");
-        assertTrue("PAO ID should not be Null", programId != null);
+        programId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
+        assertTrue("Program Id should not be Null", programId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -194,22 +190,25 @@ public class DirectProgramSetupApiControllerTest {
      */
     @Test(dependsOnMethods={"Test_DirectProgram_Update"})
     public void Test_DirectProgram_Copy(ITestContext context) {
+        MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.fieldDescriptorForCopy()),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(ApiCallHelper.getInputFile("documentation\\loadprogram\\DirectProgramCopy.json"))
+                                                    .body(loadProgramCopy)
                                                     .when()
                                                     .post(ApiCallHelper.getProperty("copyLoadProgram") + programId)
                                                     .then()
                                                     .extract()
                                                     .response();
-
-        copyProgramId = response.path("programId");
+        
+        context.setAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME, loadProgramCopy.getName());
+        copyProgramId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
         String updatedPaoId = copyProgramId.toString();
-        assertTrue("PAO ID should not be Null", updatedPaoId != null);
+        assertTrue("Program Id should not be Null", updatedPaoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -218,14 +217,15 @@ public class DirectProgramSetupApiControllerTest {
      * documentation for delete request.
      */
     @Test(dependsOnMethods={"Test_DirectProgram_Copy"})
-    public void Test_DirectCopyProgram_Delete() {
+    public void Test_DirectCopyProgram_Delete(ITestContext context) {
+        MockLMDto deleteObject  = MockLMDto.builder().name((String)context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME)).build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(ApiCallHelper.getInputFile("documentation\\loadprogram\\DirectProgramCopyDelete.json"))
+                                                    .body(deleteObject)
                                                     .when()
                                                     .delete(ApiCallHelper.getProperty("deleteLoadProgram") + copyProgramId)
                                                     .then()
@@ -240,14 +240,15 @@ public class DirectProgramSetupApiControllerTest {
      * documentation for delete request.
      */
     @Test(dependsOnMethods={"Test_DirectProgram_Copy"})
-    public void Test_DirectProgram_Delete() {
+    public void Test_DirectProgram_Delete(ITestContext context) {
+        MockLMDto deleteObject  = MockLMDto.builder().name((String)context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
                                                                      requestFields(LoadProgramSetupHelper.requestFieldDesriptorForDelete()),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(ApiCallHelper.getInputFile("documentation\\loadprogram\\DirectProgramDelete.json"))
+                                                    .body(deleteObject)
                                                     .when()
                                                     .delete(ApiCallHelper.getProperty("deleteLoadProgram") + programId)
                                                     .then()
@@ -260,14 +261,14 @@ public class DirectProgramSetupApiControllerTest {
     /**
      * Test case is to Delete Load group we have created for Direct Load Program.
      */
+    @SuppressWarnings("unchecked")
     @Test(dependsOnMethods={"Test_DirectProgram_Delete"})
     public void directassignedLoadGroup_Delete(ITestContext context) {
-        JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\DirectProgramAssignedLoadGroupDelete.json",
-                                                           "name",
-                                                           context.getAttribute("loadGroupName").toString());
-
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", payload, context.getAttribute("assignedLoadGroupId").toString());
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        List<MockLoadGroupBase> groups = (List<MockLoadGroupBase>) context.getAttribute("loadGroups");
+        groups.forEach(group -> {
+            ExtractableResponse<?> response = ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
+            assertTrue("Status code should be 200", response.statusCode() == 200);
+        });
     }
 
     /**
@@ -275,11 +276,10 @@ public class DirectProgramSetupApiControllerTest {
      */
     @Test(dependsOnMethods={"directassignedLoadGroup_Delete"})
     public void programConstraint_Delete(ITestContext context) {
-        JSONObject payload = JsonFileReader.updateJsonFile("documentation\\loadprogram\\LoadProgramAssignedConstraintDelete.json",
-                                                           "name",
-                                                           context.getAttribute("constraintName").toString());
-
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteProgramConstraint", payload, context.getAttribute("constraintId").toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete((Integer)context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID),
+                                                               (String)context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME),
+                                                               "deleteProgramConstraint");
+        
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 }

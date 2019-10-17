@@ -9,9 +9,9 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.json.simple.JSONObject;
 import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -21,10 +21,16 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.utilities.JsonFileReader;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.dr.helper.LoadProgramSetupHelper;
+import com.cannontech.rest.api.dr.helper.ProgramConstraintHelper;
+import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
+import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -35,8 +41,8 @@ public class DirectProgramGearSetupApiControllerTest {
     private RequestSpecification documentationSpec;
     private String paoId = null;
     private FieldDescriptor programIdDescriptor = null;
-    private JSONObject constraintJson = null;
-    private JSONObject loadGroupJson = null;
+    private MockProgramConstraint programConstraint  = null;
+    private List<MockLoadGroupBase> loadGroups = null;
 
     @BeforeMethod
     public void setUp(Method method) {
@@ -44,10 +50,10 @@ public class DirectProgramGearSetupApiControllerTest {
         this.restDocumentation.beforeTest(getClass(), method.getName());
         this.documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
         programIdDescriptor = fieldWithPath("programId").type(JsonFieldType.NUMBER).description("Program Id of Load Program");
-        if (constraintJson == null) {
+        if (programConstraint == null) {
             programConstraint_Create();
         }
-        if (loadGroupJson == null) {
+        if (loadGroups == null) {
             assignedLoadGroup_Create();
         }
     }
@@ -55,12 +61,12 @@ public class DirectProgramGearSetupApiControllerTest {
     /**
      * Generic method to get response object specified with request/response descriptors, JSONObject & URL
      */
-    private Response getResponseForCreate(List<FieldDescriptor> requestDescriptor, FieldDescriptor responseDescriptor, JSONObject jsonObject, String url) {
+    private Response getResponseForCreate(List<FieldDescriptor> requestDescriptor, FieldDescriptor responseDescriptor, MockLoadProgram loadProgram, String url) {
         return given(documentationSpec).filter(document("{ClassName}/{methodName}", requestFields(requestDescriptor), responseFields(responseDescriptor)))
                                        .accept("application/json")
                                        .contentType("application/json")
                                        .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                       .body(jsonObject.toJSONString())
+                                       .body(loadProgram)
                                        .when()
                                        .post(ApiCallHelper.getProperty(url))
                                        .then()
@@ -78,33 +84,28 @@ public class DirectProgramGearSetupApiControllerTest {
      */
 
     // Problem: every time a program require new name for assigned Group. So for this
-    @SuppressWarnings("unchecked")
+
     public void assignedLoadGroup_Create() {
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", "documentation\\loadprogram\\DirectProgramAssignedLoadGroup.json");
-        Integer groupId = createResponse.path("groupId");
-        loadGroupJson = new JSONObject();
-        loadGroupJson.put("loadGroupId", groupId);
-        loadGroupJson.put("assignedLoadGroupId", groupId);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\DirectProgramAssignedLoadGroup.json");
-        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
-        loadGroupJson.put("loadGroupName", jsonPath.getString("LM_GROUP_METER_DISCONNECT.name"));
-        loadGroupJson.put("loadGroupType", jsonPath.getString("LM_GROUP_METER_DISCONNECT.type"));
+        MockLoadGroupBase loadGroupExpresscomm = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_EXPRESSCOMM);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupExpresscomm);
+        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        loadGroups = new ArrayList<>();
+        Integer loadGroupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID);
+        loadGroupExpresscomm.setId(loadGroupId);
+        loadGroups.add(loadGroupExpresscomm);
     }
 
     /**
      * Method to create Program Constraint as we need to pass constraint in request of Direct Load Program.
      */
 
-    @SuppressWarnings("unchecked")
     public void programConstraint_Create() {
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint",
-                                                                   "documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
-        Integer constraintId = createResponse.path("id");
-        constraintJson = new JSONObject();
-        constraintJson.put("constraintId", constraintId);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\LoadProgramAssignedConstraint.json");
-        JsonPath jsonPath = new JsonPath(jsonObject.toJSONString());
-        constraintJson.put("constraintName", jsonPath.getString("name"));
+        programConstraint = ProgramConstraintHelper.buildProgramConstraint();
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", programConstraint);
+        Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
+        programConstraint.setId(constraintId);
+        assertTrue("Constraint Id should not be Null", constraintId != null);
+        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
     }
 
     @Test
@@ -128,18 +129,64 @@ public class DirectProgramGearSetupApiControllerTest {
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
                                                                                .description("When to change field Expected : 'None', 'Duration', 'Priority', 'TriggerOffset'"), };
 
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.TimeRefresh);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
+        
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(timeRefreshDescriptor),
                                                  programIdDescriptor,
-                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
-                                                                                         loadGroupJson,
-                                                                                         "documentation\\loadprogram\\TimeRefresh.json"),
+                                                 loadProgram,
                                                  "saveLoadProgram");
 
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\TimeRefresh.json");
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+    }
+
+    @Test
+    public void Test_LoadProgram_SmartCycleGear_Create() {
+        /*-------Smart cycle Field Descriptor-------*/
+
+        FieldDescriptor[] smartCycleDescriptor = new FieldDescriptor[] {
+                fieldWithPath("gears[].fields.noRamp").type(JsonFieldType.BOOLEAN).description("Flag to enable No Ramp"),
+                fieldWithPath("gears[].fields.controlPercent").type(JsonFieldType.NUMBER).description("Control percent. Min Value: 5, Max Value: 100"),
+                fieldWithPath("gears[].fields.cyclePeriodInMinutes").type(JsonFieldType.NUMBER)
+                                                                    .description("Gear cycle period in minutes. Min Value: 1, Max Value : 945"),
+                fieldWithPath("gears[].fields.cycleCountSendType").type(JsonFieldType.STRING)
+                                                                  .description("Cycle count send type. Expected: 'FixedCount', 'CountDown', 'LimitedCountDown'"),
+                fieldWithPath("gears[].fields.maxCycleCount").type(JsonFieldType.NUMBER).description("Maximum cycle count. Min Value: 0, Max Value : 63"),
+                fieldWithPath("gears[].fields.startingPeriodCount").type(JsonFieldType.NUMBER)
+                                                                   .description("Starting period count. Min Value: 1, Max Value : 63"),
+                fieldWithPath("gears[].fields.sendRate").type(JsonFieldType.NUMBER).description("Command Resendend Rate"),
+                fieldWithPath("gears[].fields.stopCommandRepeat").type(JsonFieldType.NUMBER).description("Stop command repeat. Min Value: 0, Max Value : 5"),
+                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING)
+                                                                .description("How to stop control. Expected :'Restore', 'StopCycle'"),
+                fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER)
+                                                                 .description("Group Capacity Reduction. Min Value: 0, Max Value : 100"),
+                fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
+                fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
+                                                                               .description("When to change field Expected : None, Duration, Priority, TriggerOffset"), };
+
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.SmartCycle);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
+        
+        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(smartCycleDescriptor),
+                                                 programIdDescriptor,
+                                                 loadProgram,
+                                                 "saveLoadProgram");
+
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
+        assertTrue("Status code should be 200", response.statusCode() == 200);
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -161,18 +208,22 @@ public class DirectProgramGearSetupApiControllerTest {
                                                                                .description("When to change field Expected : None, Duration, Priority, TriggerOffset"),
 
         };
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.MasterCycle);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
+        
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(masterCycleDescriptor),
                                                  programIdDescriptor,
-                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
-                                                                                         loadGroupJson,
-                                                                                         "documentation\\loadprogram\\MasterCycle.json"),
+                                                 loadProgram,
                                                  "saveLoadProgram");
 
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\MasterCycle.json");
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -200,18 +251,22 @@ public class DirectProgramGearSetupApiControllerTest {
                                                                                .description("When to change field Expected : None, Duration, Priority, TriggerOffset"),
 
         };
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.TrueCycle);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
+        
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(trueCycleDescriptor),
                                                  programIdDescriptor,
-                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
-                                                                                         loadGroupJson,
-                                                                                         "documentation\\loadprogram\\TrueCycle.json"),
+                                                 loadProgram,
                                                  "saveLoadProgram");
 
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\TrueCycle.json");
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -240,17 +295,21 @@ public class DirectProgramGearSetupApiControllerTest {
 
         };
 
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.MagnitudeCycle);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
+        
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(magnitudeCycleDescriptor),
                                                  programIdDescriptor,
-                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
-                                                                                         loadGroupJson,
-                                                                                         "documentation\\loadprogram\\MagnitudeCycle.json"),
+                                                 loadProgram,
                                                  "saveLoadProgram");
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\MagnitudeCycle.json");
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -277,42 +336,26 @@ public class DirectProgramGearSetupApiControllerTest {
                 fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
                                                                                .description("When to change field Expected : None, Duration, Priority, TriggerOffset"),
+                                                                               
 
         };
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.TargetCycle);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
+        
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(targetCycleDescriptor),
                                                  programIdDescriptor,
-                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
-                                                                                         loadGroupJson,
-                                                                                         "documentation\\loadprogram\\TargetCycle.json"),
+                                                 loadProgram,
                                                  "saveLoadProgram");
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\TargetCycle.json");
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
-    @Test
-    public void Test_LoadProgram_LatchingGear_Create() {
-        /*---------Latching Gear Field Descriptor--------- */
-
-        FieldDescriptor[] latchingGearDescriptor = new FieldDescriptor[] {
-                fieldWithPath("gears[].fields.startControlState").type(JsonFieldType.STRING).description("Control Start state. Expected: 'Open','Close'"),
-                fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER)
-                                                                 .description("Group Capacity reduction. Min Value: 0, Max Value: 100"), };
-
-        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(latchingGearDescriptor),
-                                                 programIdDescriptor,
-                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
-                                                                                         loadGroupJson,
-                                                                                         "documentation\\loadprogram\\Latching.json"),
-                                                 "saveLoadProgram");
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\Latching.json");
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
-    }
 
     @Test
     public void Test_LoadProgram_ThermostatGear_Create() {
@@ -340,18 +383,20 @@ public class DirectProgramGearSetupApiControllerTest {
                 fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
                                                                                .description("When to change field. Expected : None, Duration, Priority, TriggerOffset"), };
-
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.ThermostatRamping);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(thermostatGearDescriptor),
                                                  programIdDescriptor,
-                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
-                                                                                         loadGroupJson,
-                                                                                         "documentation\\loadprogram\\ThermostatRamping.json"),
+                                                 loadProgram,
                                                  "saveLoadProgram");
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\ThermostatRamping.json");
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -374,17 +419,46 @@ public class DirectProgramGearSetupApiControllerTest {
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
                                                                                .description("When to change field. Expected : None, Duration, Priority, TriggerOffset"), };
 
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.SimpleThermostatRamping);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(simpleThermostatGearDescriptor),
                                                  programIdDescriptor,
-                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
-                                                                                         loadGroupJson,
-                                                                                         "documentation\\loadprogram\\SimpleThermostatRamping.json"),
+                                                 loadProgram,
                                                  "saveLoadProgram");
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\SimpleThermostatRamping.json");
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+    }
+
+    @Test
+    public void Test_LoadProgram_LatchingGear_Create() {
+        /*---------Latching Gear Field Descriptor--------- */
+
+        FieldDescriptor[] latchingGearDescriptor = new FieldDescriptor[] {
+                fieldWithPath("gears[].fields.startControlState").type(JsonFieldType.STRING).description("Control Start state. Expected: 'Open','Close'"),
+                fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER)
+                                                                 .description("Group Capacity reduction. Min Value: 0, Max Value: 100"), };
+
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.Latching);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
+        
+        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(latchingGearDescriptor),
+                                                 programIdDescriptor,
+                                                 loadProgram,
+                                                 "saveLoadProgram");
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
+        assertTrue("Status code should be 200", response.statusCode() == 200);
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -402,18 +476,22 @@ public class DirectProgramGearSetupApiControllerTest {
                                                                                .description("When to change field Expected : None, Duration, Priority, TriggerOffset"),
 
         };
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.BeatThePeak);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
+        
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(beatThePeakGearDescriptor),
                                                  programIdDescriptor,
-                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
-                                                                                         loadGroupJson,
-                                                                                         "documentation\\loadprogram\\BeatThePeak.json"),
+                                                 loadProgram,
                                                  "saveLoadProgram");
 
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\BeatThePeak.json");
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @Test
@@ -427,27 +505,29 @@ public class DirectProgramGearSetupApiControllerTest {
 
         };
 
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.NoControl);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
+        
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(noControlGearDescriptor),
                                                  programIdDescriptor,
-                                                 LoadProgramSetupHelper.buildJSONRequest(constraintJson,
-                                                                                         loadGroupJson,
-                                                                                         "documentation\\loadprogram\\NoControl.json"),
+                                                 loadProgram,
                                                  "saveLoadProgram");
 
-        paoId = response.path("programId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        JSONObject jsonObject = JsonFileReader.readJsonFileAsJSONObject("documentation\\loadprogram\\NoControl.json");
-        LoadProgramSetupHelper.delete(Integer.parseInt(paoId), jsonObject.get("name").toString(), "deleteLoadProgram");
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
     }
 
     @AfterClass
     public void cleanUp() {
-        LoadProgramSetupHelper.delete(Integer.valueOf(constraintJson.get("constraintId").toString()),
-                                      constraintJson.get("constraintName").toString(),
-                                      "deleteProgramConstraint");
-        LoadProgramSetupHelper.delete(Integer.valueOf(loadGroupJson.get("loadGroupId").toString()),
-                                      loadGroupJson.get("loadGroupName").toString(),
-                                      "deleteloadgroup");
+        ApiCallHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
+        loadGroups.forEach(group -> {
+            ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
+        });
     }
 }

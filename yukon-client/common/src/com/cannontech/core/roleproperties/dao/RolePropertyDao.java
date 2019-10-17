@@ -337,10 +337,10 @@ public interface RolePropertyDao {
     /**
      * Returns true if the user access level is less or equal the minimum level.
      * Examples:
-     * If the user level is UPDATE , the user is allowed access to UPDATE, LIMITED and RESTRICTED.
+     * If the user level is UPDATE , the user is allowed access to UPDATE, INTERACT and VIEW.
      * 
-     * If the user level is UPDATE and minLevel is LIMITED, UPDATE(3) <=  LIMITED(4) = true, the user is allowed access.
-     * If the user level is LIMITED  and minLevel is UPDATE, LIMITED(4) <= UPDATE(3) = false, the user is not allowed access.
+     * If the user level is UPDATE and minLevel is INTERACT, UPDATE(3) <=  INTERACT(4) = true, the user is allowed access.
+     * If the user level is INTERACT  and minLevel is UPDATE, INTERACT(4) <= UPDATE(3) = false, the user is not allowed access.
      * @param property - property to check
      * @param minLevel - minimum level that grants access
      * @param user

@@ -74,6 +74,7 @@
 #include "amq_connection.h"
 #include "amq_queues.h"
 #include "porter_message_serialization.h"
+#include "random_generator.h"
 
 #include "NetworkManagerMessaging.h"
 
@@ -1002,6 +1003,7 @@ void registerServices()
     using SerializedMessage = ActiveMQConnectionManager::SerializedMessage;
     using Cti::Messaging::ActiveMQ::Queues::InboundQueue;
     using Cti::Messaging::Porter::DynamicPaoInfoDurationKeys;
+    using Cti::Messaging::Porter::DynamicPaoInfoPercentageKeys;
     using Cti::Messaging::Porter::DynamicPaoInfoTimestampKeys;
     using Cti::Messaging::Porter::DynamicPaoInfoRequestMsg;
     using Cti::Messaging::Porter::DynamicPaoInfoResponseMsg;
@@ -1058,6 +1060,24 @@ void registerServices()
                             rsp.timestampValues.emplace(key,
                                     std::chrono::system_clock::time_point(
                                             std::chrono::seconds(timeValue.seconds())));
+                        }
+                    }
+                }
+
+                static const std::map<DynamicPaoInfoPercentageKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> percentageKeyLookup {
+                    { DynamicPaoInfoPercentageKeys::MeterProgrammingProgress, CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress } };
+
+                Cti::RandomGenerator randomPercentage { 100 };
+
+                for( const auto key : req->percentageKeys )
+                {
+                    if( const auto mappedKey = Cti::mapFind(percentageKeyLookup, key) )
+                    {
+                        double percentage = randomPercentage();
+
+                        //if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, percentage) )
+                        {
+                            rsp.percentageValues.emplace(key, percentage);
                         }
                     }
                 }

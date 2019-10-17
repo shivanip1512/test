@@ -28,7 +28,7 @@ import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
-@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.RESTRICTED)
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/dr/setup/loadGroup")
 public class LoadGroupSetupApiController {
 

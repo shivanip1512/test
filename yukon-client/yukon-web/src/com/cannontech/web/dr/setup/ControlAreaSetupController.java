@@ -59,7 +59,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 @Controller
-@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.RESTRICTED)
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/setup/controlArea")
 public class ControlAreaSetupController {
     

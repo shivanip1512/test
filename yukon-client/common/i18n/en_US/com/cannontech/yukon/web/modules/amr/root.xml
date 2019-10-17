@@ -321,7 +321,7 @@
     <entry key="yukon.web.modules.amr.meterProgramming.source.OPTICAL">Optically programmed</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.source.NEW">Unknown program</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.source.UNPROGRAMMED">Unprogrammed</entry>
-    <entry key="yukon.web.modules.amr.meterProgramming.source.OLD_FIRMWARE">Old Firmware</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.source.OLD_FIRMWARE">Insufficient meter hardware/firmware</entry>
     
     <!-- METER PROGRAMMING SOURCES -->
     <entry key="yukon.web.modules.amr.meterProgramming.status.SUCCESS">Success</entry>
@@ -342,6 +342,13 @@
     <entry key="yukon.web.modules.amr.meterProgramming.noProgramsFound">No programs found.</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.delete.success">Program {0} was successfully deleted.</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.delete.error">There was a problem deleting program {0}.</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.oldFirmware.helpTitle">Required Firmware Versions</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.oldFirmware.helpText"><![CDATA[The following Firmware versions are required for Meter Programming:
+        <ul>
+            <li><b>Elster A3</b> - Firmware version 5.1+</li>
+            <li><b>L&G</b> - Hardware version 1.1+ and Firmware versions 8.2+ or 8.4+</li>
+        </ul>
+    ]]></entry>
     
     <!-- meterProgramming/summary.jsp -->
     <entry key="yukon.web.modules.amr.meterProgramming.summary.pageName">C&amp;I Meter Programming Summary</entry>
@@ -369,6 +376,7 @@
     <entry key="yukon.web.modules.amr.meterProgramming.summary.acceptSuccessful">Current programming state has been accepted.</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.readLink">Read Status</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.resendLink">Resend Status</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.noProgramsFound">No programs found</entry>
     
     
 </properties>

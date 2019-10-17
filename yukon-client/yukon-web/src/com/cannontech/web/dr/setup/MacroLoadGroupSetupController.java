@@ -60,7 +60,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 @Controller
-@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.RESTRICTED)
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/setup/macroLoadGroup")
 public class MacroLoadGroupSetupController {
 

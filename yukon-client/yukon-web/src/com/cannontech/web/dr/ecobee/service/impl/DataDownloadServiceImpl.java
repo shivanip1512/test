@@ -9,23 +9,22 @@ import java.util.List;
 import java.util.concurrent.Executor;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeReadResult;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.dr.ecobee.service.DataDownloadService;
 
 public class DataDownloadServiceImpl implements DataDownloadService {
@@ -35,9 +34,10 @@ public class DataDownloadServiceImpl implements DataDownloadService {
     @Autowired private EcobeeCommunicationService commService;
     @Autowired @Qualifier("longRunning") private Executor executor;
     @Autowired @Qualifier("ecobeeReads") private RecentResultsCache<EcobeeReadResult> readResultsCache;
+    @Autowired private DateFormattingService dateFormattingService;
 
     @Override
-    public String start(final List<String> serialNumbers, final Range<LocalDate> dateRange, final DateTimeZone timeZone) throws IOException {
+    public String start(final List<String> serialNumbers, final Range<LocalDate> dateRange, final YukonUserContext userContext) throws IOException {
         
         final File file = File.createTempFile("ecobee_data_" + Instant.now().getMillis(), ".csv");
         file.deleteOnExit();
@@ -50,7 +50,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
             
             @Override
             public void run() {
-                runTask(serialNumbers, dateRange, timeZone, file, result);
+                runTask(serialNumbers, dateRange, userContext, file, result);
             }
         };
         
@@ -59,12 +59,11 @@ public class DataDownloadServiceImpl implements DataDownloadService {
         return resultKey;
     }
     
-    private void runTask(List<String> serialNumbers, Range<LocalDate> dateRange, DateTimeZone timeZone, File file, 
+    private void runTask(List<String> serialNumbers, Range<LocalDate> dateRange, YukonUserContext userContext, File file, 
                          EcobeeReadResult result) {
         
         try (FileWriter output = new FileWriter(file)) {
             
-            DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss").withZone(timeZone);
             String format = "%s,%s,%s,%s,%s,%s,%s,%s\n";
             output.write(String.format(format, "Serial Number", 
                     "Date", 
@@ -83,20 +82,20 @@ public class DataDownloadServiceImpl implements DataDownloadService {
                 log.error("Unable to retreive data from ecobee service.", e);
                 result.setComplete();
                 result.setSuccessful(false);
-
             }
 
             for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
 
                 for (EcobeeDeviceReading deviceReading : deviceReadings.getReadings()) {
-                    String dateStr = timeFormatter.print(deviceReading.getDate());
+                    String deviceReadingDate = dateFormattingService.format(deviceReading.getDate(),
+                                                                              DateFormattingService.DateFormatEnum.FULL, userContext);
                     Integer runtimeSeconds = deviceReading.getRuntimeSeconds();
                     if (runtimeSeconds != null && 0 > runtimeSeconds) {
                         log.debug("runtimeSeconds=" + runtimeSeconds + ", converting to absolute value");
                         runtimeSeconds = Math.abs(runtimeSeconds);
                     }
 
-                    String dataRow = String.format(format, deviceReadings.getSerialNumber(), dateStr,
+                    String dataRow = String.format(format, deviceReadings.getSerialNumber(), deviceReadingDate,
                         formatNullable(deviceReading.getOutdoorTempInF()),
                         formatNullable(deviceReading.getIndoorTempInF()),
                         formatNullable(deviceReading.getSetCoolTempInF()),

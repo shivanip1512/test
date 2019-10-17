@@ -1,9 +1,0 @@
-{
-    "LM_GROUP_NEST": {
-        "name": "Auto_LM_Group_Nest55",
-        "type": "LM_GROUP_NEST",
-        "kWCapacity": 123.0,
-        "disableGroup": false,
-        "disableControl": false
-    }
-}
