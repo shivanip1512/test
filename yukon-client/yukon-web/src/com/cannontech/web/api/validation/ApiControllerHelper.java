@@ -99,34 +99,6 @@ public class ApiControllerHelper {
         String webUrl = null;
         if (StringUtils.isEmpty(webServerUrl)) {
             try {
-                String serverPort = Integer.toString(request.getLocalPort());
-                InetAddress[] inetAddress = InetAddress.getAllByName(InetAddress.getLocalHost().getHostName());
-                for (InetAddress hostName : inetAddress) {
-                    if (request.isSecure()) {
-                        webUrl = "https://" + hostName.getHostAddress() + ":" + serverPort;
-                    } else {
-                        webUrl = "http://" + hostName.getHostAddress() + ":" + serverPort;
-                    }
-
-                    if (!request.getContextPath().isEmpty()) {
-                        webUrl = webUrl + request.getContextPath();
-                    }
-
-                    if (request.isSecure() && !isHttpsSettingInitialized) {
-                        SSLSettingsInitializer.initializeHttpsSetting();
-                    }
-
-                    responseCode = checkUrl(userContext, request, webUrl);
-                    if (responseCode != HttpStatus.OK) {
-                        continue;
-                    } else {
-                        break;
-                    }
-                }
-            } catch (UnknownHostException ex) {
-                log.error("Error communicating with Api with host IP. " + ex.getMessage());
-            }
-            if (responseCode != HttpStatus.OK) {
                 if (!getYukonInternalUrl().isEmpty()) {
                     webUrl = getYukonInternalUrl();
                     boolean isHttps = StringUtils.startsWithIgnoreCase(webUrl, "https");
@@ -135,6 +107,35 @@ public class ApiControllerHelper {
                     }
                     responseCode = checkUrl(userContext, request, webUrl);
                 }
+
+                if (responseCode != HttpStatus.OK) {
+                    String serverPort = Integer.toString(request.getLocalPort());
+                    InetAddress[] inetAddress = InetAddress.getAllByName(InetAddress.getLocalHost().getHostName());
+                    for (InetAddress hostName : inetAddress) {
+                        if (request.isSecure()) {
+                            webUrl = "https://" + hostName.getHostAddress() + ":" + serverPort;
+                        } else {
+                            webUrl = "http://" + hostName.getHostAddress() + ":" + serverPort;
+                        }
+
+                        if (!request.getContextPath().isEmpty()) {
+                            webUrl = webUrl + request.getContextPath();
+                        }
+
+                        if (request.isSecure() && !isHttpsSettingInitialized) {
+                            SSLSettingsInitializer.initializeHttpsSetting();
+                        }
+
+                        responseCode = checkUrl(userContext, request, webUrl);
+                        if (responseCode != HttpStatus.OK) {
+                            continue;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            } catch (UnknownHostException | SecurityException ex) {
+                log.warn("Error while finding API host " + ex.getMessage());
             }
             if (responseCode == HttpStatus.OK) {
                 setWebServerUrl(webUrl);
@@ -150,7 +151,7 @@ public class ApiControllerHelper {
      */
     private HttpStatus checkUrl(YukonUserContext userContext, HttpServletRequest request, String webUrl) {
         try {
-            String testConnectionUrl = webUrl + "/api/testyukon";
+            String testConnectionUrl = webUrl + "/api/yUk0n1ranD6_";
             log.info("Checking the Api communication with URL: " + testConnectionUrl);
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request,
                 testConnectionUrl, HttpMethod.GET, String.class);
