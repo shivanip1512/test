@@ -69,12 +69,15 @@ yukon.dr.setup.macroloadGroup = (function() {
                 var picker = yukon.pickers['js-avaliable-load-groups-picker'];
                 
                 picker.selectedItems.forEach(function (loadGroup) {
-                    var clonedRow = $('.js-template-row').clone();
-                    clonedRow.attr('data-id', loadGroup.paoId);
-                    clonedRow.find(".js-load-group-name").text(loadGroup.paoName);
-                    clonedRow.removeClass('dn js-template-row');
-                    clonedRow.appendTo($("#js-assigned-load-groups"));
-                    picker.disableItem(loadGroup.paoId);
+                    var divSelector = 'div[data-id="' + loadGroup.paoId + '"]';
+                    if (!$(divSelector).exists()) {
+                        var clonedRow = $('.js-template-row').clone();
+                        clonedRow.attr('data-id', loadGroup.paoId);
+                        clonedRow.find(".js-load-group-name").text(loadGroup.paoName);
+                        clonedRow.removeClass('dn js-template-row');
+                        clonedRow.appendTo($("#js-assigned-load-groups"));
+                        picker.disableItem(loadGroup.paoId);
+                    }
                 });
                 $("#js-assigned-load-groups").closest('.select-box').find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
                 picker.clearEntireSelection();
