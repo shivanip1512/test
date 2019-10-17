@@ -40,7 +40,7 @@
                     <td>
                         <c:choose>
                             <c:when test="${program.inProgressTotal > 0}">
-                                <a href="${programUrl}&statuses=IN_PROGRESS">${program.inProgressTotal}</a>
+                                <a href="${programUrl}&statuses=IN_PROGRESS&statuses=CONFIRMING">${program.inProgressTotal}</a>
                             </c:when>
                             <c:otherwise>
                                 ${program.inProgressTotal}
