@@ -40,6 +40,10 @@ public enum MeterProgramSource implements DisplayableEnum, DatabaseRepresentatio
     public boolean isNotYukon() {
         return !isYukon();
     }
+    
+    public boolean isOldFirmware() {
+        return this == OLD_FIRMWARE;
+    }
 
     @Override
     public String getFormatKey() {

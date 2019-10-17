@@ -163,8 +163,9 @@ public enum ItronDataEventType {
     }
     /**
      * This is currently used to get relay numbered attributes.
+     * @throws IllegalArgumentException if no appropriate attribute can be found.
      */
-    public BuiltInAttribute getAttribute(byte[] byteArray) {
+    public BuiltInAttribute getAttribute(byte[] byteArray) throws IllegalArgumentException {
         long relayNumber = decode(byteArray);
         switch (this) {
         case LOAD_ON:
@@ -182,7 +183,7 @@ public enum ItronDataEventType {
     }
     
     public Optional<PointData> getPointData(byte[] byteArray, double currentValue, String eventTime, LitePoint lp) {
-        if (this.isVoltageType()) {
+        if (isVoltageType()) {
             return getPointDataForMinMaxVoltage(byteArray, eventTime, lp);
         }
         
@@ -197,7 +198,7 @@ public enum ItronDataEventType {
         if (value != null) { 
             // Event translates straight to a status point value
             return value;
-        } else if (this.isIncrementalType()) { 
+        } else if (isIncrementalType()) { 
             // Event increments a count
             return currentValue + 1;
         } else {

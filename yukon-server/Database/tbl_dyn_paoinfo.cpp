@@ -346,6 +346,8 @@ const PaoInfoKeyNames KeyNames = boost::assign::list_of<PaoInfoKeyNames::relatio
 
         (Dpi::Key_RFN_RecordingIntervalSeconds, "rfn recording interval seconds")
         (Dpi::Key_RFN_ReportingIntervalSeconds, "rfn reporting interval seconds")
+            
+        (Dpi::Key_RFN_MeterProgrammingProgress, "rfn meter programming progress")
         ;
 
 typedef CtiTableDynamicPaoInfoIndexed DpiIndexed;

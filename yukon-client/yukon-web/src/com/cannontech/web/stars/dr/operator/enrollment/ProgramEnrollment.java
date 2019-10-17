@@ -111,4 +111,13 @@ public class ProgramEnrollment {
         }
         return retVal;
     }
+    
+    public boolean isBlankEnrollment() {
+        for (InventoryEnrollment inventoryEnrollment : getInventoryEnrollments()) {
+            if (inventoryEnrollment.isEnrolled()) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
