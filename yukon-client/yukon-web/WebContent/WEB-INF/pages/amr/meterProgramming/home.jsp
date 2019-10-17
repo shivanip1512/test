@@ -33,6 +33,11 @@
                                     <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
                                 </cti:url>
                                 <a href="${programUrl}">${fn:escapeXml(program.programInfo.name)}</a>
+                                <c:if test="${program.programInfo.source.isOldFirmware()}">
+                                    <cti:icon icon="icon-help" data-popup="#firmware-help" classes="fn cp ML0 vam"/>
+                                    <cti:msg2 var="helpTitle" key=".oldFirmware.helpTitle"/>
+                                    <div id="firmware-help" class="dn" data-dialog data-cancel-omit="true" data-title="${helpTitle}"><cti:msg2 key=".oldFirmware.helpText"/></div>
+                                </c:if>
                             </td>
                             <td>
                                 <c:choose>
