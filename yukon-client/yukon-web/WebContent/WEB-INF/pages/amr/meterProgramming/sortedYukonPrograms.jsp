@@ -30,7 +30,7 @@
                     <td>
                         <c:choose>
                             <c:when test="${program.deviceTotal > 0}">
-                                <a href="${programUrl}">${program.deviceTotal}</a>
+                                <a href="${programUrl}&statuses=PROGRAMMED">${program.deviceTotal}</a>
                             </c:when>
                             <c:otherwise>
                                 ${program.deviceTotal}

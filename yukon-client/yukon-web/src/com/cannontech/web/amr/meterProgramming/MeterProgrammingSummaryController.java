@@ -102,11 +102,11 @@ public class MeterProgrammingSummaryController {
         List<MeterProgramStatistics> detail = meterProgrammingSummaryDao.getProgramStatistics(userContext);
         
         List<MeterProgramStatistics> specialCases = detail.stream()
-                                                          .filter(statistic -> statistic.isNotYukonSource())
+                                                          .filter(statistic -> statistic.getProgramInfo().getGuid() == null)
                                                           .collect(Collectors.toList());
         
         List<MeterProgramStatistics> yukonPrograms = detail.stream()
-                                                           .filter(statistic -> statistic.isYukonSource())
+                                                           .filter(statistic -> !specialCases.contains(statistic))
                                                            .collect(Collectors.toList());
         
         ProgramSortBy sortBy = ProgramSortBy.valueOf(sorting.getSort());

@@ -42,7 +42,11 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${program.deviceTotal > 0}">
-                                        <a href="${programUrl}">${program.deviceTotal}</a>
+                                        <c:set var="deviceTotalUrl" value="${programUrl}&statuses=PROGRAMMED"/>
+                                        <c:if test="${program.programInfo.source.isOldFirmware() || program.programInfo.source == 'UNPROGRAMMED'}">
+                                            <c:set var="deviceTotalUrl" value="${programUrl}&statuses=FAILURE"/>
+                                        </c:if>
+                                        <a href="${deviceTotalUrl}">${program.deviceTotal}</a>
                                     </c:when>
                                     <c:otherwise>
                                         ${program.deviceTotal}
