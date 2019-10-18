@@ -21,8 +21,8 @@ public class WaterNodeFileUploadDaoImpl implements WaterNodeFileUploadDao {
         CSVReader reader;
         ArrayList<WaterNodeDetails> resultsList = new ArrayList<WaterNodeDetails>();
         WaterNodeDetails waterNodeDetails = new WaterNodeDetails();
-        Instant intervalStart = startTime;
-        Instant intervalEnd = startTime;
+        Instant intervalStart = null;
+        Instant intervalEnd = null;
         
         //Java millisecond time and second time are both stored as type long. Current millisecond time
         //is 1000 as large as current second time. To determine if the input is second or millisecond
@@ -42,9 +42,12 @@ public class WaterNodeFileUploadDaoImpl implements WaterNodeFileUploadDao {
                     Long newTimestamp = Long.valueOf(row[4]);
                     if (newTimestamp < MILLISBOUNDARY) {
                         newTimestamp = newTimestamp * 1000;// convert from seconds to milliseconds
-
                     }
                     Instant currentTimestamp = new Instant(newTimestamp);
+                    if (intervalStart == null) {
+                        intervalStart = currentTimestamp;
+                        intervalEnd = intervalStart;
+                    }
                     if (currentTimestamp.isAfter(startTime) && currentTimestamp.isBefore(stopTime)) {
                         // Set a meter's serial number and details once for each set of voltage readings.
                         if (!row[0].equals(oldSN)) {
@@ -73,12 +76,11 @@ public class WaterNodeFileUploadDaoImpl implements WaterNodeFileUploadDao {
                         oldSN = row[0];
                     }
                     // Create an interval representative of the uploaded file
-                    if (currentTimestamp.isBefore(startTime)) {
-                        if (currentTimestamp.isBefore(intervalStart)) {
-                            intervalStart = currentTimestamp;
-                        } else {
-                            intervalEnd = currentTimestamp;
-                        }
+                    if (currentTimestamp.isBefore(intervalStart)) {
+                        intervalStart = currentTimestamp;
+                    }
+                    if (currentTimestamp.isAfter(intervalEnd)) {
+                        intervalEnd = currentTimestamp;
                     }
                 } else {
                     rowLengthErrors++;
@@ -87,7 +89,7 @@ public class WaterNodeFileUploadDaoImpl implements WaterNodeFileUploadDao {
             resultsList.add(waterNodeDetails);// add final meter to resultsList
             reader.close();
             // If file is outside of range, throw
-            if (intervalEnd.isBefore(startTime)) {
+            if (intervalEnd.isBefore(startTime) || !intervalStart.isBefore(stopTime)) {
                 String intervalStartDate = intervalStart.toDateTime().toLocalDate().toString();
                 String intervalEndDate = intervalEnd.toDateTime().toLocalDate().toString();
                 throw new BatteryNodeBadIntervalEndException(intervalStartDate, intervalEndDate);
