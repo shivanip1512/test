@@ -54,7 +54,7 @@ public class HoneywellProgramApiTest {
         context.setAttribute("programName", loadProgram.getName());
         programId = response.path("programId");
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        assertTrue("PAO ID should not be Null", programId != null);
+        assertTrue("Program Id should not be Null", programId != null);
         loadProgram.setProgramId(programId);
         context.setAttribute("expectedloadProgram", loadProgram);
     }
@@ -114,7 +114,7 @@ public class HoneywellProgramApiTest {
 
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, programId.toString());
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
-        assertTrue("PAO ID should not be Null", copyResponse.path("programId") != null);
+        assertTrue("Program Id should not be Null", copyResponse.path("programId") != null);
         context.setAttribute("copiedProgramName", loadProgramCopy.getName());
         copyProgramId = copyResponse.path("programId");
     }
@@ -182,7 +182,7 @@ public class HoneywellProgramApiTest {
      * message in response
      */
     @Test(dependsOnMethods = { "HoneywellProgram_04_Copy" })
-    public void HoneywellProgram_09_CreateWithExistingPaoName(ITestContext context) {
+    public void HoneywellProgram_09_CreateWithExistingProgramName(ITestContext context) {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName(context.getAttribute("copiedProgramName").toString());
@@ -309,8 +309,8 @@ public class HoneywellProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.getGears().get(0).setGearName("");
-        ;
         mockLoadProgram.setNotification(null);
+        
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));

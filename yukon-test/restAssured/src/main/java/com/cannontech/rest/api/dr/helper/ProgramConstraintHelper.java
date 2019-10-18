@@ -74,8 +74,8 @@ public class ProgramConstraintHelper {
      */
     public static MockProgramConstraint createProgramConstraint() {
         Random rand = new Random();
-        int str = rand.nextInt(10000);
-        String name = "Auto_ProgramConstraint" + str;
+        int randomInt = rand.nextInt(10000);
+        String name = "ProgramConstraint" + randomInt;
         Integer constraintId = null;
 
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();

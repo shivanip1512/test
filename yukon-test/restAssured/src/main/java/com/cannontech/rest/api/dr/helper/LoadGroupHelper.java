@@ -212,8 +212,8 @@ public class LoadGroupHelper {
      */
     public static MockLoadGroupBase createLoadGroup(MockPaoType paoType) {
         Random rand = new Random();
-        int str = rand.nextInt(10000);
-        String name = "Auto_" + paoType + str;
+        int randomInt = rand.nextInt(10000);
+        String name = paoType + "" + randomInt;
 
         MockLoadGroupBase loadGroup = buildLoadGroup(paoType);
         loadGroup.setName(name);
@@ -221,7 +221,7 @@ public class LoadGroupHelper {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
         loadGroup.setId(createResponse.path("groupId"));
-        ;
+        
         return loadGroup;
     }
 }
