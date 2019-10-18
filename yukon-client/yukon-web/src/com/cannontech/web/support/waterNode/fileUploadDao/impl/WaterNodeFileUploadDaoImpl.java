@@ -23,7 +23,6 @@ public class WaterNodeFileUploadDaoImpl implements WaterNodeFileUploadDao {
         WaterNodeDetails waterNodeDetails = new WaterNodeDetails();
         Instant intervalStart = null;
         Instant intervalEnd = null;
-        Boolean initialize = true;
         
         //Java millisecond time and second time are both stored as type long. Current millisecond time
         //is 1000 as large as current second time. To determine if the input is second or millisecond
@@ -45,10 +44,9 @@ public class WaterNodeFileUploadDaoImpl implements WaterNodeFileUploadDao {
                         newTimestamp = newTimestamp * 1000;// convert from seconds to milliseconds
                     }
                     Instant currentTimestamp = new Instant(newTimestamp);
-                    if (initialize) {
+                    if (intervalStart == null) {
                         intervalStart = currentTimestamp;
                         intervalEnd = intervalStart;
-                        initialize = false;
                     }
                     if (currentTimestamp.isAfter(startTime) && currentTimestamp.isBefore(stopTime)) {
                         // Set a meter's serial number and details once for each set of voltage readings.
