@@ -46,15 +46,11 @@ public class LoadGroupEcoBeeAPITest {
     @Test(dependsOnMethods = { "loadGroupEcoBee_01_Create" })
     public void loadGroupEcoBee_02_Get(ITestContext context) {
         Log.startTestCase("loadGroupEcoBee_02_Get");
-
         Log.info("Load Group Id of LmGroupItron created is : " + PaoId);
-
         ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup", PaoId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
-
         MockLoadGroupEcobee loadGroupResponse = getResponse.as(MockLoadGroupEcobee.class);
         context.setAttribute("EcoBee_GrpName", loadGroupResponse.getName());
-
         assertTrue("Name Should be : " + loadGroup.getName(), loadGroup.getName().equals(loadGroupResponse.getName()));
         assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == loadGroupResponse.getType());
         assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(), loadGroup.getKWCapacity().equals(loadGroupResponse.getKWCapacity()));
@@ -68,13 +64,10 @@ public class LoadGroupEcoBeeAPITest {
     @Test(dependsOnMethods = { "loadGroupEcoBee_01_Create" })
     public void loadGroupEcoBee_03_Update(ITestContext context) {
         Log.startTestCase("loadGroupEcoBee_03_Update");
-
         String name = "LM_Group_EcoBee_Name_Update";
-
         loadGroup.setName(name);
         loadGroup.setKWCapacity(888.0);
         context.setAttribute("EcoBee_GrpName", name);
-
         Log.info("Updated Load Group is :" + loadGroup);
         ExtractableResponse<?> getResponse = ApiCallHelper.post("updateloadgroup", loadGroup, PaoId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
@@ -91,7 +84,7 @@ public class LoadGroupEcoBeeAPITest {
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_ECOBEE)).build();
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup", loadGroupCopy, PaoId);
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
-        assertTrue("PAO ID should not be Null", copyResponse.path("groupId") != null);
+        assertTrue("Load Group ID should not be Null", copyResponse.path("groupId") != null);
         context.setAttribute("copiedProgramName", loadGroupCopy.getName());
         copyPaoId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
 
@@ -99,20 +92,15 @@ public class LoadGroupEcoBeeAPITest {
 
     @Test(dependsOnMethods = { "loadGroupEcoBee_01_Create" })
     public void loadGroupEcoBee_05_Delete(ITestContext context) {
-
         String expectedMessage = "Id not found";
-
         Log.startTestCase("loadGroupEcoBee_05_Delete");
-
         MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute("EcoBee_GrpName").toString()).build();
-
         Log.info("Delete Load Group is : " + lmDeleteObject);
         ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject, PaoId.toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         // for copied load group
         MockLMDto lmDeleteObject1 = MockLMDto.builder().name(context.getAttribute("copiedProgramName").toString()).build();
-
         Log.info("Delete Load Group is : " + lmDeleteObject1);
         ExtractableResponse<?> response1 = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject1, copyPaoId);
         assertTrue("Status code should be 200", response1.statusCode() == 200);
@@ -130,7 +118,6 @@ public class LoadGroupEcoBeeAPITest {
 
     @Test(dataProvider = "GroupNameData")
     public void loadGroupEcoBee_06_GroupNameValidation(String groupName, String expectedFieldCode, int expectedStatusCode) {
-
         Log.startTestCase("loadGroupItron_06_GroupNameValidation");
         loadGroup.setName(groupName);
         ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
@@ -143,7 +130,6 @@ public class LoadGroupEcoBeeAPITest {
 
     @Test(dataProvider = "KwCapacityData")
     public void loadGroupEcoBee_07_KwCapacityValidation(Double kwCapacity, String expectedFieldCode, int expectedStatusCode) {
-
         Log.startTestCase("loadGroupItron_07_KwCapacityValidation");
         loadGroup.setKWCapacity(kwCapacity);
         loadGroup.setName("KwCapacityValidation");
