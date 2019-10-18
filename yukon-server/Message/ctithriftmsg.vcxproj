@@ -484,6 +484,8 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\Message_types.cpp">
     </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MeterProgramming_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\MeterProgramming_types.cpp" />
     <ClCompile Include="Serialization\Thrift\Multi_constants.cpp">
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\Multi_types.cpp">
@@ -566,6 +568,8 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\Return_types.cpp">
     </ClCompile>
+    <ClCompile Include="Serialization\Thrift\RfnAddressing_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\RfnAddressing_types.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnDataStreamingUpdate_constants.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnDataStreamingUpdate_types.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnE2eData_constants.cpp">
@@ -696,6 +700,8 @@
     <ClInclude Include="Serialization\Thrift\MCUpdateSchedule_types.h" />
     <ClInclude Include="Serialization\Thrift\Message_constants.h" />
     <ClInclude Include="Serialization\Thrift\Message_types.h" />
+    <ClInclude Include="Serialization\Thrift\MeterProgramming_constants.h" />
+    <ClInclude Include="Serialization\Thrift\MeterProgramming_types.h" />
     <ClInclude Include="Serialization\Thrift\Multi_constants.h" />
     <ClInclude Include="Serialization\Thrift\Multi_types.h" />
     <ClInclude Include="Serialization\Thrift\NetworkManagerMessaging_constants.h" />
@@ -738,6 +744,8 @@
     <ClInclude Include="Serialization\Thrift\RequestCancel_types.h" />
     <ClInclude Include="Serialization\Thrift\Return_constants.h" />
     <ClInclude Include="Serialization\Thrift\Return_types.h" />
+    <ClInclude Include="Serialization\Thrift\RfnAddressing_constants.h" />
+    <ClInclude Include="Serialization\Thrift\RfnAddressing_types.h" />
     <ClInclude Include="Serialization\Thrift\RfnDataStreamingUpdate_constants.h" />
     <ClInclude Include="Serialization\Thrift\RfnDataStreamingUpdate_types.h" />
     <ClInclude Include="Serialization\Thrift\RfnE2eData_constants.h" />
