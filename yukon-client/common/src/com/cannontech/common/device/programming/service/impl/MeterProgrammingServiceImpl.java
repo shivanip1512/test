@@ -13,8 +13,6 @@ import javax.jms.ConnectionFactory;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
@@ -50,6 +48,7 @@ import com.cannontech.common.events.loggers.MeterProgrammingEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.util.jms.ThriftRequestTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -71,7 +70,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     @Autowired private WaitableCommandCompletionCallbackFactory waitableFactory;
     @Autowired private MeterProgrammingDao meterProgrammingDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
-    private JmsTemplate jmsTemplate;
+    private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
 
     @Override
     public boolean isCancellable(CollectionAction action) {
@@ -89,7 +88,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         String command = "";
 
         MeterProgramUploadCancelResult result = new MeterProgramUploadCancelResult();
-        CommandCompletionCallback<CommandRequestDevice> execCallback = new CommandCompletionCallback<CommandRequestDevice>() {
+        var execCallback = new CommandCompletionCallback<CommandRequestDevice>() {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 
             @Override
@@ -175,8 +174,8 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
             request.setConfigurationId(MeterProgramSource.YUKON.getPrefix() + guid.toString());
             request.setStatus(ProgrammingStatus.INITIATING);
             request.setTimeStamp(System.currentTimeMillis());
-            log.debug("Sending {} on queue {}", request, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName());
-            jmsTemplate.convertAndSend(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(), request);
+            log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
+            thriftMessenger.send(request);
         });
     }
 
@@ -225,7 +224,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     }
 
     private CommandCompletionCallback<CommandRequestDevice> getExecutionCallback(YukonUserContext context, CollectionActionResult result) {
-        CommandCompletionCallback<CommandRequestDevice> execCallback = new CommandCompletionCallback<CommandRequestDevice>() {
+        var execCallback = new CommandCompletionCallback<CommandRequestDevice>() {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 
             @Override
@@ -293,8 +292,6 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
+        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName());
     }
 }
