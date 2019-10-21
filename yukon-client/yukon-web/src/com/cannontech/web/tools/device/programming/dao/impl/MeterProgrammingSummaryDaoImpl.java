@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +42,7 @@ import com.cannontech.web.tools.device.programming.model.MeterProgramSummaryDeta
 import com.cannontech.web.tools.device.programming.model.MeterProgramWidgetDisplay;
 import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter;
 import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter.DisplayableStatus;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -179,7 +181,7 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
     @Override
     public List<MeterProgramInfo> getMeterProgramInfos(YukonUserContext context) {
         return getProgramStatistics(context).stream()
-                .filter(program -> !program.displayDelete())
+                .filter(program -> !program.isUnused())
                 .map(MeterProgramStatistics::getProgramInfo)
                 .collect(Collectors.toList());
     }
@@ -231,86 +233,96 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
        
         SqlStatementBuilder selectFrom = getSelect(selectCount);
         
-        SqlStatementBuilder fragment = new SqlStatementBuilder();
         Set<MeterProgramSource> failedSources = sources.stream()
-                                                       .filter(source -> source == MeterProgramSource.OLD_FIRMWARE || source == MeterProgramSource.UNPROGRAMMED)
+                                                       .filter(source -> source.isUnprogrammed())
                                                        .collect(Collectors.toSet());
-        boolean addUnion = false;
+                                                      
+        List<SqlStatementBuilder> fragments = new ArrayList<>();
         if (sources.removeAll(failedSources)) {
             if (filter.getStatuses().contains(DisplayableStatus.FAILURE)) {
+                var fragment = new SqlStatementBuilder();
                 fragment.append(selectFrom.toString());
                 fragment.append("WHERE Source").in_k(failedSources);
-                addUnion = true;
                 addSelectCountGroupBy(selectCount, fragment);
+                fragments.add(fragment);
             }
         }
         
         if(!guids.isEmpty() || !sources.isEmpty()) {
             if (filter.getStatuses().contains(DisplayableStatus.PROGRAMMED)) {
-                addUnion(fragment, addUnion);
+                var fragment = new SqlStatementBuilder();
                 fragment.append(selectFrom);
-                appendGuidAndSourceSelector(guids, sources, fragment);
-                addUnion = true;
+                fragment.append("WHERE");
+                if (!guids.isEmpty() && !sources.isEmpty()) {
+                    fragment.append("(ReportedGuid").in(guids).append("OR Source").in_k(sources).append(" AND AssignedGuid IS NULL)");
+                }
+                else if (!sources.isEmpty()) {
+                    fragment.append("(Source").in_k(sources).append(" AND AssignedGuid IS NULL)");
+                }
+                else if (!guids.isEmpty()) {
+                    fragment.append("ReportedGuid").in(guids);
+                }
                 addSelectCountGroupBy(selectCount, fragment);
+                fragments.add(fragment);
             }
 
             List<ProgrammingStatus> inProgressOrConfirming = getInProgressOrConfirmingStatuses(filter);
             if (!inProgressOrConfirming.isEmpty() && !guids.isEmpty()) {
-                addUnion(fragment, addUnion);
+                var fragment = new SqlStatementBuilder();
                 fragment.append(selectFrom);
                 fragment.append("WHERE AssignedGuid").in(guids).append("AND Status").in_k(inProgressOrConfirming);
-                addUnion = true;
                 addSelectCountGroupBy(selectCount, fragment);
+                fragments.add(fragment);
             }
 
             if (filter.getStatuses().contains(DisplayableStatus.FAILURE)) {
-                addUnion(fragment, addUnion);
+                var fragment = new SqlStatementBuilder();
                 fragment.append(selectFrom);
-                appendGuidAndSourceSelector(guids, sources, fragment);
+                fragment.append("WHERE");
+                if (!guids.isEmpty() && !sources.isEmpty()) {
+                    fragment.append("(AssignedGuid").in(guids).append("OR Source").in_k(sources).append(")");
+                }
+                else if (!sources.isEmpty()) {
+                    fragment.append("(Source").in_k(sources).append(" AND AssignedGuid IS NULL)");
+                }
+                else if (!guids.isEmpty()) {
+                    fragment.append("AssignedGuid").in(guids);
+                }
                 fragment.append("AND (Status")
                         .in_k(Sets.newHashSet(ProgrammingStatus.CANCELED, ProgrammingStatus.MISMATCHED))
                         .append(" OR Status LIKE 'FAILED%')");
                 addSelectCountGroupBy(selectCount, fragment);
+                fragments.add(fragment);
             }
         }
         
-        log.debug("Fragment {}", fragment.getDebugSql());
-        if(!fragment.getSql().isBlank()) {
-            SqlStatementBuilder combinedSql = getSqlWithProgrammingCte(sources, context);
-            if(selectCount) {
-                combinedSql.append("SELECT SUM(total)").append("FROM").append("(");
-            }
-            combinedSql.append(fragment);
-            if (!CollectionUtils.isEmpty(filter.getGroups())) {
-                combinedSql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(filter.getGroups(), "DeviceId"));
-            }
+        log.debug("Fragments {}", Lists.transform(fragments, SqlStatementBuilder::getDebugSql));
 
-            if (sortBy != null) {
-                combinedSql.append("ORDER BY");
-                combinedSql.append(sortBy.getDbString());
-                combinedSql.append(direction);
-            }
-            
-            if(selectCount) {
-                combinedSql.append(") x");
-            }
-            return combinedSql;
-        }
-        
-        return null;
-    }
+        return fragments.stream()
+                //  Join with a UNION if there is more than one fragment
+                .collect(Collectors.reducing((sb1, sb2) -> sb1.append("UNION").appendFragment(sb2)))
+                .map(fragment -> {
+                    SqlStatementBuilder combinedSql = getSqlWithProgrammingCte(sources, context);
+                    if(selectCount) {
+                        combinedSql.append("SELECT SUM(total)").append("FROM").append("(");
+                    }
+                    combinedSql.append(fragment);
+                    if (!CollectionUtils.isEmpty(filter.getGroups())) {
+                        combinedSql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(filter.getGroups(), "DeviceId"));
+                    }
 
-    private void appendGuidAndSourceSelector(List<String> guids, Set<MeterProgramSource> sources, SqlStatementBuilder fragment) {
-        fragment.append("WHERE");
-        if (!guids.isEmpty() && !sources.isEmpty()) {
-            fragment.append("(ReportedGuid").in(guids).append("OR Source").in_k(sources).append(" AND AssignedGuid IS NULL)");
-        }
-        else if (!sources.isEmpty()) {
-            fragment.append("(Source").in_k(sources).append(" AND AssignedGuid IS NULL)");
-        }
-        else if (!guids.isEmpty()) {
-            fragment.append("ReportedGuid").in(guids);
-        }
+                    if (sortBy != null) {
+                        combinedSql.append("ORDER BY");
+                        combinedSql.append(sortBy.getDbString());
+                        combinedSql.append(direction);
+                    }
+                    
+                    if(selectCount) {
+                        combinedSql.append(") x");
+                    }
+                    return combinedSql;
+                })
+                .orElse(null);
     }
 
     private void addSelectCountGroupBy(boolean selectCount, SqlStatementBuilder sql) {
@@ -320,20 +332,10 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
     }
 
     private List<ProgrammingStatus> getInProgressOrConfirmingStatuses(MeterProgrammingSummaryFilter filter) {
-        List<ProgrammingStatus> inProgressOrConfirming = new ArrayList<>();
-        if(filter.getStatuses().contains(DisplayableStatus.IN_PROGRESS)) {
-            inProgressOrConfirming.addAll(DisplayableStatus.IN_PROGRESS.getProgramStatuses());
-        }
-        if(filter.getStatuses().contains(DisplayableStatus.CONFIRMING)) {
-            inProgressOrConfirming.addAll(DisplayableStatus.CONFIRMING.getProgramStatuses());
-        }
-        return inProgressOrConfirming;
-    }
-
-    private void addUnion(SqlStatementBuilder sql, boolean addUnion) {
-        if (addUnion) {
-            sql.append("UNION");
-        }
+        return Stream.of(DisplayableStatus.IN_PROGRESS, DisplayableStatus.CONFIRMING)
+                .filter(s -> filter.getStatuses().contains(s))
+                .flatMap(s -> s.getProgramStatuses().stream())
+                .collect(Collectors.toList());
     }
 
     private SqlStatementBuilder getSelect(boolean selectCount) {

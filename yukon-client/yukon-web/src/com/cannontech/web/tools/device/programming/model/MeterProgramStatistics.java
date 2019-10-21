@@ -32,7 +32,7 @@ public class MeterProgramStatistics {
         this.inProgressTotal = inProgressTotal;
     }
 
-    public boolean displayDelete() {
+    public boolean isUnused() {
         return programInfo.getGuid() != null && deviceTotal == 0 && inProgressTotal == 0 ;
     }
 

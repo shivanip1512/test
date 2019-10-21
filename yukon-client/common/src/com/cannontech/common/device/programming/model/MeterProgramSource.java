@@ -44,6 +44,10 @@ public enum MeterProgramSource implements DisplayableEnum, DatabaseRepresentatio
     public boolean isOldFirmware() {
         return this == OLD_FIRMWARE;
     }
+    
+    public boolean isUnprogrammed() {
+        return isOldFirmware() || this == UNPROGRAMMED;
+    }
 
     @Override
     public String getFormatKey() {
