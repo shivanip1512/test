@@ -343,7 +343,7 @@ std::vector<unsigned char> E2eSimulator::buildE2eDtRequestPayload(const e2edt_re
     {
         coap_add_option(request_pdu, COAP_OPTION_URI_PATH,
                 coap_opt_length(buf),
-                coap_opt_value(buf)));
+                coap_opt_value(buf));
 
         buf += coap_opt_size(buf);
     }
