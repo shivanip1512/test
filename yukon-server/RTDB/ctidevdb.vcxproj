@@ -388,6 +388,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="cmd_rfn_DataStreamingConfiguration.cpp" />
     <ClCompile Include="cmd_rfn_DemandInterval.cpp" />
     <ClCompile Include="cmd_rfn_Individual.cpp" />
+    <ClCompile Include="cmd_rfn_MeterProgramming.cpp" />
     <ClCompile Include="cmd_rf_da_dnpAddress.cpp">
     </ClCompile>
     <ClCompile Include="cmd_rfn.cpp">
@@ -667,6 +668,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\cmd_rfn_FocusAlLcdConfiguration.h" />
     <ClInclude Include="include\cmd_rfn_helper.h" />
     <ClInclude Include="include\cmd_rfn_LoadProfile.h" />
+    <ClInclude Include="include\cmd_rfn_MeterProgramming.h" />
     <ClInclude Include="include\cmd_rfn_OvUvConfiguration.h" />
     <ClInclude Include="include\cmd_rfn_RemoteDisconnect.h" />
     <ClInclude Include="include\cmd_rfn_TemperatureAlarm.h" />

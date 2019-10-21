@@ -371,6 +371,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="ansi_kv2_mtable_110.cpp">
     </ClCompile>
+    <ClCompile Include="coap_helper.cpp" />
     <ClCompile Include="dll_prot.cpp">
     </ClCompile>
     <ClCompile Include="dnp_application.cpp">
