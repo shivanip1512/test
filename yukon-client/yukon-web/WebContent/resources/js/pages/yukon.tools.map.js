@@ -771,6 +771,11 @@ yukon.tools.map = (function() {
                     $('#marker-info').hide();
                 });
             });
+
+            /** Add an elevation layer to the map **/
+            $(document).on('click', '.js-elevation-layer', function() {
+                yukon.mapping.showHideElevationLayer(_map, $(this));
+            });
             
             /** Remove animation classes when animation finishes. */
             $('#device-collection .js-count')

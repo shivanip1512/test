@@ -815,6 +815,11 @@ yukon.map.network = (function () {
                     }
 
                 });
+
+                /** Add an elevation layer to the map **/
+                $(document).on('click', '.js-elevation-layer', function() {
+                    yukon.mapping.showHideElevationLayer(_map, $(this));
+                });
                 
                 /** Gets the nearby devices **/
                 $(document).on('click', '.js-nearby', function() {
