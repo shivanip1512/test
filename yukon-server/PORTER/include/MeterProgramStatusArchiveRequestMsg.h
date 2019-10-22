@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rfn_identifier.h"
+
 #include <set>
 #include <map>
 #include <chrono>
