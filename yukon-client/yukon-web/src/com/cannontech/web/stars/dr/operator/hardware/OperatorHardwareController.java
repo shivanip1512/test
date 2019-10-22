@@ -92,7 +92,6 @@ import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
-import com.cannontech.stars.energyCompany.MeteringType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -994,11 +993,6 @@ public class OperatorHardwareController {
         model.addAttribute("thermostatClass", HardwareClass.THERMOSTAT);
         model.addAttribute("meterClass", HardwareClass.METER);
         model.addAttribute("gatewayClass", HardwareClass.GATEWAY);
-
-        MeteringType meterDesignation = ecSettingDao.getEnum(
-                EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, energyCompanyId);
-        boolean starsMeters = meterDesignation == MeteringType.stars; 
-        model.addAttribute("starsMeters", starsMeters);
 
         boolean inventoryChecking = ecSettingDao.getBoolean(EnergyCompanySettingType.INVENTORY_CHECKING,
                 energyCompanyId);

@@ -40,6 +40,8 @@ import com.cannontech.common.dr.setup.MacroLoadGroup;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -50,6 +52,7 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.yukon.IDatabaseCache;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -57,6 +60,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 @Controller
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/setup/macroLoadGroup")
 public class MacroLoadGroupSetupController {
 
@@ -92,6 +96,7 @@ public class MacroLoadGroupSetupController {
     }
 
     @GetMapping("/{id}/edit")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
@@ -118,6 +123,7 @@ public class MacroLoadGroupSetupController {
     }
 
     @GetMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flash) {
         MacroLoadGroup macroLoadGroup = new MacroLoadGroup();
         macroLoadGroup.setType(PaoType.MACRO_GROUP);
@@ -133,6 +139,7 @@ public class MacroLoadGroupSetupController {
     }
 
     @PostMapping("/{id}/copy")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String copy(@ModelAttribute("lmCopy") LMCopy lmCopy, @PathVariable int id, BindingResult result,
             YukonUserContext userContext, FlashScope flash, HttpServletRequest request, HttpServletResponse response,
             ModelMap model) throws JsonGenerationException, JsonMappingException, IOException {
@@ -176,6 +183,7 @@ public class MacroLoadGroupSetupController {
     }
 
     @PostMapping("/save")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String save(@ModelAttribute("macroLoadGroup") MacroLoadGroup macroLoadGroup, BindingResult result,
             YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes,
             HttpServletRequest request, @RequestParam("selectedLoadGroupIds") List<Integer> selectedLoadGroupIds) {
@@ -239,6 +247,7 @@ public class MacroLoadGroupSetupController {
     }
 
     @DeleteMapping("/{id}/delete")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public String delete(@PathVariable int id, @ModelAttribute LMDelete lmDelete, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request) {
         try {
@@ -264,6 +273,7 @@ public class MacroLoadGroupSetupController {
     }
 
     @GetMapping("/{id}/renderCopyPopup")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String renderCopyPopup(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
         LMCopy lmCopy = null;
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);

@@ -199,5 +199,15 @@ See {3}]]></entry>
     <entry key="yukon.web.modules.smartNotifications.METER_DR.single.SUMMARY.text"><![CDATA[Meter demand response results for program "{0}":
 
 {1}]]></entry>
+    <entry key="yukon.web.modules.smartNotifications.METER_DR.single.EXPANDED.text"><![CDATA[Meter demand response results for program "{0}":
+
+{1}]]></entry>
     <entry key="yukon.web.modules.smartNotifications.METER_DR.single.subject">[yukon] Meter Demand Response Results - {0}</entry>
+    <entry key="yukon.web.modules.smartNotifications.METER_DR.multi.SUMMARY.text"><![CDATA[Meter demand response results for program "{0}":
+
+{1}]]></entry>
+    <entry key="yukon.web.modules.smartNotifications.METER_DR.multi.EXPANDED.text"><![CDATA[Meter demand response results for program "{0}":
+
+{1}]]></entry>
+    <entry key="yukon.web.modules.smartNotifications.METER_DR.multi.subject">[yukon] Meter Demand Response Results - {0}</entry>
 </properties>

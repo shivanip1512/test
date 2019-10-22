@@ -34,6 +34,8 @@ import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.ProgramDetails;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -44,9 +46,11 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/setup/controlScenario")
 public class ControlScenarioSetupController {
 
@@ -60,6 +64,7 @@ public class ControlScenarioSetupController {
     private static final Logger log = YukonLogManager.getLogger(ControlScenarioSetupController.class);
 
     @GetMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
         ControlScenario controlScenario = null;
@@ -104,6 +109,7 @@ public class ControlScenarioSetupController {
     }
 
     @GetMapping("/{id}/edit")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.EDIT);
@@ -132,6 +138,7 @@ public class ControlScenarioSetupController {
     }
 
     @DeleteMapping("/{id}/delete")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public String delete(@PathVariable int id, @ModelAttribute LMDelete lmDelete, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request) {
         try {
@@ -157,6 +164,7 @@ public class ControlScenarioSetupController {
     }
 
     @PostMapping(value = "/save")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String save(@ModelAttribute ControlScenario controlScenario, BindingResult result, FlashScope flash,
             YukonUserContext userContext, RedirectAttributes redirectAttributes, ModelMap model,
             HttpServletRequest request) {
@@ -200,6 +208,7 @@ public class ControlScenarioSetupController {
     }
 
     @PostMapping("/renderAssignedPrograms")
+    @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String renderAssignedPrograms(ControlScenario controlScenario, @RequestParam List<Integer> programIds,
             ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         if (CollectionUtils.isEmpty(controlScenario.getAllPrograms())) {

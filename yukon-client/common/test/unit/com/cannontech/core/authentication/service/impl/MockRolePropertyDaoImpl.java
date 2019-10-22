@@ -102,7 +102,7 @@ public class MockRolePropertyDaoImpl extends RolePropertyDaoImpl {
         }else if (user == LEVEL_UPDATE_USER){
             return enumClass.cast(HierarchyPermissionLevel.UPDATE);
         }else if (user == LEVEL_RESTRICTED_USER){
-            return enumClass.cast(HierarchyPermissionLevel.RESTRICTED);
+            return enumClass.cast(HierarchyPermissionLevel.VIEW);
         }
         throw new UserNotInRoleException(property, user.getLiteID());
     }

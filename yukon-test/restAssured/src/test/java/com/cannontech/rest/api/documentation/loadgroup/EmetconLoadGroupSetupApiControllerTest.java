@@ -21,8 +21,16 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.JsonUtil;
+import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupEmetcon;
+import com.cannontech.rest.api.utilities.Log;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
+import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
@@ -33,7 +41,8 @@ public class EmetconLoadGroupSetupApiControllerTest {
     private String paoId = null;
     private String copyPaoId = null;
     private FieldDescriptor[] emetconFieldDescriptor = null;
-
+    private MockLoadGroupEmetcon loadGroup = null;
+    
     @BeforeMethod
     public void setUp(Method method) {
         baseURI = ApiCallHelper.getProperty("baseURI");
@@ -52,6 +61,7 @@ public class EmetconLoadGroupSetupApiControllerTest {
             fieldWithPath("LM_GROUP_EMETCON.goldAddress").type(JsonFieldType.NUMBER).description("Gold address value."),
             fieldWithPath("LM_GROUP_EMETCON.silverAddress").type(JsonFieldType.NUMBER).description("Silver address value.")
         };
+        loadGroup = (MockLoadGroupEmetcon) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_EMETCON);
     }
 
     @AfterMethod
@@ -67,15 +77,15 @@ public class EmetconLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\EmetconCreate.json"))
+                                .body(loadGroup)
                                 .when()
                                 .post(ApiCallHelper.getProperty("saveloadgroup"))
                                 .then()
                                 .extract()
                                 .response();
 
-        paoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -105,20 +115,21 @@ public class EmetconLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\EmetconCreate.json"))
+                                .body(loadGroup)
                                 .when()
                                 .post(ApiCallHelper.getProperty("updateloadgroup") + paoId)
                                 .then()
                                 .extract()
                                 .response();
 
-        paoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", paoId != null);
+        paoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", paoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
     @Test(dependsOnMethods = { "Test_LmEmetcon_Update" })
     public void Test_LmEmetcon_Copy() {
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EMETCON)).routeId(1).build();
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
                                     requestFields(
@@ -128,19 +139,23 @@ public class EmetconLoadGroupSetupApiControllerTest {
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
-                                .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\EmetconCopy.json"))
+                                .body(loadGroupCopy)
                                 .when()
                                 .post(ApiCallHelper.getProperty("copyloadgroup")+ paoId)
                                 .then()
                                 .extract()
                                 .response();
-        copyPaoId = response.path("groupId").toString();
-        assertTrue("PAO ID should not be Null", copyPaoId != null);
+        copyPaoId = response.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Load Group Id should not be Null", copyPaoId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
     @Test(dependsOnMethods = { "Test_LmEmetcon_Copy" })
     public void Test_LmEmetcon_Delete() {
+        MockLMDto lmDeleteObject = MockLMDto.builder()
+                                    .name(LoadGroupHelper.getLoadGroupName(MockPaoType.LM_GROUP_EMETCON))
+                                    .build();
+        
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
             requestFields(
                 fieldWithPath("name").type(JsonFieldType.STRING).description("Load Group Name")), 
@@ -148,12 +163,17 @@ public class EmetconLoadGroupSetupApiControllerTest {
             .accept("application/json")
             .contentType("application/json")
             .header("Authorization","Bearer " + ApiCallHelper.authToken)
-            .body(ApiCallHelper.getInputFile("documentation\\loadgroup\\EmetconDelete.json"))
+            .body(lmDeleteObject)
             .when()
             .delete(ApiCallHelper.getProperty("deleteloadgroup") + paoId)
             .then()
             .extract()
             .response();
         assertTrue("Status code should be 200", response.statusCode() == 200);
+
+        MockLMDto lmDeleteCopyObject = MockLMDto.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EMETCON)).build();
+        Log.info("Delete Load Group is : " + JsonUtil.beautifyJson(lmDeleteCopyObject.toString()));
+        ExtractableResponse<?> copyResponse = ApiCallHelper.delete("deleteloadgroup", lmDeleteCopyObject, copyPaoId);
+        assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
     }
 }

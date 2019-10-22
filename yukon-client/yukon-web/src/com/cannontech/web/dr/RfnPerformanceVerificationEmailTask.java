@@ -153,9 +153,9 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
         theaderData.put("cell", "th");
         theaderData.put("cellStyle", thStyle);
         theaderData.put("date", accessor.getMessage("yukon.common.date"));
-        theaderData.put("successful", accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.successful"));
-        theaderData.put("failure", accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.failure"));
-        theaderData.put("unknown",accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.unknown"));
+        theaderData.put("successful", accessor.getMessage("yukon.web.modules.dr.rf.broadcast.eventDetail.status.SUCCESS"));
+        theaderData.put("failure", accessor.getMessage("yukon.web.modules.dr.rf.broadcast.eventDetail.status.FAILURE"));
+        theaderData.put("unknown",accessor.getMessage("yukon.web.modules.dr.rf.broadcast.eventDetail.status.UNKNOWN"));
         theaderData.put("percentage", accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.percentage"));
         String theader = tp.process(rowTemplate, theaderData);
 

@@ -16,6 +16,8 @@ public class MeterProgramSummaryDetail {
     private DisplayableStatus status;
     private DeviceError error;
     private Instant lastUpdate;
+    private String assignedProgramName;
+    private String assignedGuid;
 
     public DisplayableDevice getDevice() {
         return device;
@@ -64,8 +66,28 @@ public class MeterProgramSummaryDetail {
     public void setError(DeviceError error) {
         this.error = error;
     }
+    
+    public String getAssignedProgramName() {
+        return assignedProgramName;
+    }
+
+    public void setAssignedProgramName(String assignedProgramName) {
+        this.assignedProgramName = assignedProgramName;
+    }
+
+    public String getAssignedGuid() {
+        return assignedGuid;
+    }
+
+    public void setAssignedGuid(String assignedGuid) {
+        this.assignedGuid = assignedGuid;
+    }
 
     public boolean displayCancel() {
+        return status == DisplayableStatus.IN_PROGRESS;
+    }
+    
+    public boolean displayProgressBar() {
         return status == DisplayableStatus.IN_PROGRESS;
     }
 
@@ -75,6 +97,10 @@ public class MeterProgramSummaryDetail {
 
     public boolean displaySend() {
         return status == DisplayableStatus.FAILURE && programInfo.getSource() != MeterProgramSource.OLD_FIRMWARE;
+    }
+    
+    public boolean displayAccept() {
+        return status == DisplayableStatus.FAILURE;
     }
 
     @Override

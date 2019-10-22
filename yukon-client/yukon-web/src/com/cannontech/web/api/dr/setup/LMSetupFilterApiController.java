@@ -12,12 +12,13 @@ import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LMSetupFilter;
 import com.cannontech.common.search.FilterCriteria;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.api.dr.setup.service.impl.LMSetupFilterServiceImpl;
-import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
-@CheckRole(YukonRole.DEMAND_RESPONSE)
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/dr/setup")
 public class LMSetupFilterApiController {
     @Autowired private LMSetupFilterServiceImpl filterService;

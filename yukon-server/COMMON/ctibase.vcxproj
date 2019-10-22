@@ -526,6 +526,7 @@
     <ClInclude Include="include\Attribute.h" />
     <ClInclude Include="include\AttributeService.h" />
     <ClInclude Include="include\BeatThePeakAlertLevel.h" />
+    <ClInclude Include="include\boost_helper.h" />
     <ClInclude Include="include\boost_test_helpers.h" />
     <ClInclude Include="include\boost_time.h" />
     <ClInclude Include="include\boostutil.h" />
@@ -605,6 +606,7 @@
     <ClInclude Include="include\pointtypes.h" />
     <ClInclude Include="include\PORTER.H" />
     <ClInclude Include="include\precompiled.h" />
+    <ClInclude Include="include\preprocessor_helper.h" />
     <ClInclude Include="include\queue.h" />
     <ClInclude Include="include\QUEUES.H" />
     <ClInclude Include="include\random_generator.h" />

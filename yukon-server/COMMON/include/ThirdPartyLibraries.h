@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <map>
+#include <string>
 
 namespace Cti {
 
@@ -23,10 +25,11 @@ public:
 
     std::vector<Library> getLibraries();
 
+    std::map<std::string, std::string> getKnownLibraryPaths();
+
 private:
 
     std::vector<Library> _libraries;
 };
 
 }
-

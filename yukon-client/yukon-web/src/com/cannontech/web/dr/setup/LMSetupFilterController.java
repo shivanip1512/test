@@ -27,6 +27,8 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.FilterCriteria;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -37,8 +39,10 @@ import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @Controller
+@CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/setup")
 public class LMSetupFilterController {
 

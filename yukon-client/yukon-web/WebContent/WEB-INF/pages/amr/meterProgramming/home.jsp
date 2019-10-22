@@ -1,7 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -15,79 +14,58 @@
         <cm:dropdownOption key=".programOtherDevices" href="${programOthersUrl}" icon="icon-cog-add"/>
     </div>
     
-    <cti:url var="programUrl" value="/amr/meterProgramming/home"/>
-    <div data-url="${filterUrl}" data-static>
-        <table class="compact-results-table has-actions row-highlighting">
-            <thead>
-                <tr>
-                    <tags:sort column="${program}"/>
-                    <tags:sort column="${numberOfDevices}"/>
-                    <tags:sort column="${numberInProgress}"/>
-                    <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
-                </tr>
-            </thead>
-            <tbody>
-                <c:forEach var="program" items="${programs}">
+    <c:if test="${!empty specialCases}">
+        <tags:sectionContainer2 nameKey="specialCases" styleClass="PB10">
+            <table class="compact-results-table row-highlighting">
+                <thead>
                     <tr>
-                        <td>
-                            <cti:url var="programUrl" value="/amr/meterProgramming/summary">
-                                <cti:param name="programs[0].guid" value="${program.programInfo.guid}"/>
-                                <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
-                                <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
-                            </cti:url>
-                            <a href="${programUrl}">${fn:escapeXml(program.programInfo.name)}</a>
-                        </td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${program.deviceTotal > 0}">
-                                    <cti:url var="programDevicesUrl" value="/amr/meterProgramming/summary">
-                                        <cti:param name="programs[0].guid" value="${program.programInfo.guid}"/>
-                                        <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
-                                        <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
-                                        <cti:param name="statuses" value="SUCCESS"/>
-                                    </cti:url>
-                                    <a href="${programDevicesUrl}">${program.deviceTotal}</a>
-                                </c:when>
-                                <c:otherwise>
-                                    ${program.deviceTotal}
-                                </c:otherwise>
-                            </c:choose>
-                       </td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${program.inProgressTotal > 0}">
-                                    <cti:url var="programInProgressUrl" value="/amr/meterProgramming/summary">
-                                        <cti:param name="programs[0].guid" value="${program.programInfo.guid}"/>
-                                        <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
-                                        <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
-                                        <cti:param name="statuses" value="IN_PROGRESS"/>
-                                    </cti:url>
-                                    <a href="${programInProgressUrl}">${program.inProgressTotal}</a>
-                                </c:when>
-                                <c:otherwise>
-                                    ${program.inProgressTotal}
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <c:if test="${program.displayDelete()}">
-                                <cm:dropdown icon="icon-cog">
-                                    <cm:dropdownOption id="deleteProgram-${program.programInfo.guid}" icon="icon-cross" key="yukon.web.components.button.delete.label"
-                                        data-program-guid="${program.programInfo.guid}" data-ok-event="yukon:program:delete"/>
-                                    <d:confirm on="#deleteProgram-${program.programInfo.guid}" nameKey="confirmDelete" argument="${program.programInfo.name}"/>
-                                </cm:dropdown>
-                            </c:if>
-                        </td>
+                        <th width="40%"><i:inline key=".type"/></th>
+                        <th><i:inline key=".numberOfDevices"/></th>
                     </tr>
-                </c:forEach>
-                <c:if test="${empty programs}">
-                    <tr>
-                        <td colspan="4"><span class="empty-list"><i:inline key=".noProgramsFound" /></span></td>
-                    </tr>
-                </c:if>
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    <c:forEach var="program" items="${specialCases}">
+                        <tr>
+                            <td>
+                                <cti:url var="programUrl" value="/amr/meterProgramming/summary">
+                                    <cti:param name="programs[0].guid" value="${program.programInfo.guid}"/>
+                                    <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
+                                    <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
+                                </cti:url>
+                                <a href="${programUrl}">${fn:escapeXml(program.programInfo.name)}</a>
+                                <c:if test="${program.programInfo.source.isOldFirmware()}">
+                                    <cti:icon icon="icon-help" data-popup="#firmware-help" classes="fn cp ML0 vam"/>
+                                    <cti:msg2 var="helpTitle" key=".oldFirmware.helpTitle"/>
+                                    <div id="firmware-help" class="dn" data-dialog data-cancel-omit="true" data-title="${helpTitle}"><cti:msg2 key=".oldFirmware.helpText"/></div>
+                                </c:if>
+                            </td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${program.deviceTotal > 0}">
+                                        <c:set var="deviceTotalUrl" value="${programUrl}&statuses=PROGRAMMED"/>
+                                        <c:if test="${program.programInfo.source.isFailure()}">
+                                            <c:set var="deviceTotalUrl" value="${programUrl}&statuses=FAILURE"/>
+                                        </c:if>
+                                        <a href="${deviceTotalUrl}">${program.deviceTotal}</a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        ${program.deviceTotal}
+                                    </c:otherwise>
+                                </c:choose>
+                           </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </tags:sectionContainer2>
+    </c:if>
+    
+    <tags:sectionContainer2 nameKey="yukonPrograms">
+        <cti:url var="programUrl" value="/amr/meterProgramming/sortedYukonPrograms"/>
+        <div data-url="${programUrl}">
+            <%@ include file="sortedYukonPrograms.jsp" %>
+        </div>
+    </tags:sectionContainer2>
     
     <cti:includeScript link="/resources/js/pages/yukon.ami.meterProgramming.summary.js" />
 

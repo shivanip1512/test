@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(test_writeread)
         const DWORD milliseconds = timer.elapsed();
 
         BOOST_CHECK_GT( milliseconds, 75 );
-        BOOST_CHECK_LT( milliseconds, 300 );
+        BOOST_CHECK_LT( milliseconds, 4000 );
     }
 
     //Test reading off a closed empty queue

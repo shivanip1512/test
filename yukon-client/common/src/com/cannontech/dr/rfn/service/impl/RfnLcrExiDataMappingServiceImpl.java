@@ -22,14 +22,12 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
@@ -45,7 +43,6 @@ import com.google.common.collect.Sets;
 
 public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImpl<SimpleXPathTemplate> {
     
-    @Autowired private PointDao pointDao;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ExpressComReportedAddressDao expressComReportedAddressDao;
     @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
@@ -77,16 +74,14 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         
         for (RfnLcrPointDataMap entry : rfnLcrPointDataMap) {
             
-            PaoPointIdentifier paoPointIdentifier = null;
-            Integer pointId = null;
+            LitePoint point = null;
             
             if (entry.isRelayData()) {
-                createPointIfMissing(device, entry.getAttribute());
+                attributeService.createPointForAttribute(device, entry.getAttribute());
             }
             
             try {
-                paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(device, entry.getAttribute());
-                pointId = pointDao.getPointId(paoPointIdentifier);
+                point = attributeService.findPointForAttribute(device, entry.getAttribute());
             } catch (@SuppressWarnings("unused") IllegalUseOfAttribute e) {
                 log.warn("The attribute: " + entry.getAttribute().toString() 
                          + " is not defined for the device: " + device.getName() 
@@ -100,7 +95,7 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             Double value = evaluateArchiveReadValue(data, entry);
             
             if (value != null) {
-                PointData pointData = getPointData(entry.getAttribute(), value, paoPointIdentifier, pointId, timeOfReading);
+                PointData pointData = getPointData(entry.getAttribute(), value, point, timeOfReading);
                 messagesToSend.add(pointData);
             }
         }
@@ -154,8 +149,8 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             List<Integer> intervalData = data.evaluateAsIntegerList("/DRReport/Relays/Relay" + 
                     relay.getRelayIdXPathString() + "/IntervalData/Interval");
             
-            LitePoint runTimePoint = attributeService.findPointForAttribute(device, relay.getRunTimeAttribute());
-            LitePoint shedTimePoint = attributeService.findPointForAttribute(device, relay.getShedTimeAttribute());
+            LitePoint runTimePoint = attributeService.createAndFindPointForAttribute(device, relay.getRunTimeAttribute());
+            LitePoint shedTimePoint = attributeService.createAndFindPointForAttribute(device, relay.getShedTimeAttribute());
             
             Long intervalStartTime = data.evaluateAsLong("/DRReport/Relays/Relay" + relay.getRelayIdXPathString() + "/IntervalData/@startTime");
             if (intervalStartTime == null) continue;
@@ -196,13 +191,11 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                     assetAvailabilityTimes.setRelayRuntime(relay.getIndex(), currentIntervalTimestamp);
                 }
                 if (runTimePoint != null) {
-                    PointData runTimePointData = buildPointData(runTimePoint.getPointID(), 
-                        runTimePoint.getPointType(), currentIntervalTimestamp.toDate(), Double.valueOf(runTime));
+                    PointData runTimePointData = buildPointData(runTimePoint, currentIntervalTimestamp.toDate(), Double.valueOf(runTime));
                     intervalPointData.add(runTimePointData);
                 }
                 if (shedTimePoint != null) {
-                    PointData shedTimePointData = buildPointData(shedTimePoint.getPointID(), 
-                        shedTimePoint.getPointType(), currentIntervalTimestamp.toDate(), Double.valueOf(shedTime));
+                    PointData shedTimePointData = buildPointData(shedTimePoint, currentIntervalTimestamp.toDate(), Double.valueOf(shedTime));
                     intervalPointData.add(shedTimePointData);
                 }
                 currentIntervalTimestamp = currentIntervalTimestamp.minus(Duration.standardMinutes(intervalLengthMinutes));
@@ -240,8 +233,7 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
     }
 
     @Override
-    public PointData getPointData(BuiltInAttribute attribute, Double value, PaoPointIdentifier paoPointIdentifier,
-            Integer pointId, Date timeOfReading) {
+    public PointData getPointData(BuiltInAttribute attribute, Double value, LitePoint point, Date timeOfReading) {
         if (attribute == BuiltInAttribute.SERVICE_STATUS) {
             /**
              * Adjust value for state group 'LCR Service Status'
@@ -256,8 +248,7 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                 value = 3.0;
             }
         }
-        Integer pointTypeId = paoPointIdentifier.getPointIdentifier().getPointType().getPointTypeId();
-        return buildPointData(pointId, pointTypeId, timeOfReading, value);
+        return buildPointData(point, timeOfReading, value);
     }
 
     @Override

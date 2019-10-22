@@ -253,6 +253,7 @@ public class AttributeServiceImpl implements AttributeService {
     public boolean createPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         boolean pointExists = this.pointExistsForAttribute(pao, attribute);
         if (!pointExists) {
+            log.debug("Creating point for attribute (" + attribute + ") on pao: " + pao);
             PaoPointTemplate paoPointTemplate = getPaoPointTemplateForAttribute(pao, attribute);
             PointBase point =
                 pointCreationService.createPoint(paoPointTemplate.getPaoIdentifier(),

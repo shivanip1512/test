@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(test_fifoqueue_single_threaded)
 template <class T>
 void read_success(CtiFIFOQueue<T> &q, T compare)
 {
-    T *element = q.getQueue(50);
+    T *element = q.getQueue(60'000);
 
     BOOST_CHECK_EQUAL(*element, compare);
 

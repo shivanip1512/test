@@ -32,6 +32,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeComparator;
 
 import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.util.BootstrapUtils;
@@ -336,7 +337,6 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
         @Override
         public boolean accept(File file) {
             Calendar retentionDate = Calendar.getInstance();
-            retentionDate.setTime(calendar.getTime());
             retentionDate.add(Calendar.DAY_OF_YEAR, -logRetentionDays);
             Date fileDate = null;
             if (FileUtil.isJavaLogFile(file.getName(), regex)) {
@@ -355,7 +355,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
             if (fileDate == null) {
                 return false;
             } else {
-                return fileDate.before(retentionDate.getTime());
+               return DateTimeComparator.getDateOnlyInstance().compare(fileDate, retentionDate.getTime()) < 0 ? true : false;
             }
         }
     }

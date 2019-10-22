@@ -166,7 +166,7 @@ public class MockInventoryDao implements InventoryDao {
     @Override
     public SearchResults<InventorySearchResult> search(InventorySearch inventorySearch,
                                                       Collection<Integer> ecIds, int start,
-                                                      int pageCount, boolean starsMeters) {
+                                                      int pageCount) {
         throw new MethodNotImplementedException();
     }
 

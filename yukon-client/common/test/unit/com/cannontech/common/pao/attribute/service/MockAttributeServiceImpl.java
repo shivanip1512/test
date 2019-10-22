@@ -36,6 +36,11 @@ public class MockAttributeServiceImpl extends AttributeServiceImpl {
     }
     
     @Override
+    public LitePoint createAndFindPointForAttribute(YukonPao pao, BuiltInAttribute attribute) {
+        return findPointForAttribute(pao, attribute);
+    }
+    
+    @Override
     public LitePoint findPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         return getPointForAttribute(pao, attribute);
     }

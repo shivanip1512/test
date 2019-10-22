@@ -142,3 +142,4 @@ Class-Path: ./
  commons-compress-1.18.jar 
  opencsv-4.5.jar 
  commons-vfs2-2.0.jar 
+ jsch-0.1.54.jar 

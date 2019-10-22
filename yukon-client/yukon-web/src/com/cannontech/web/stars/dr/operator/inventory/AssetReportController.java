@@ -33,9 +33,6 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
-import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
-import com.cannontech.stars.energyCompany.MeteringType;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.model.AssetReportDevice;
 import com.cannontech.user.YukonUserContext;
@@ -52,11 +49,9 @@ public class AssetReportController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private AssetReportService assetReportService;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private DateFormattingService dateFormatting;
     
     private Logger log = YukonLogManager.getLogger(AssetReportController.class);
-    private static final EnergyCompanySettingType meteringSetting = EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION;
     private static final String[] header = new String[] {
         "SERIAL_NUMBER",
         "METER_NUMBER",
@@ -85,9 +80,6 @@ public class AssetReportController {
         SearchResults<AssetReportDevice> paged = SearchResults.pageBasedForWholeList(paging, devices);
         model.addAttribute("devices", paged);
         
-        MeteringType meteringType = ecSettingDao.getEnum(meteringSetting, MeteringType.class, ecId);
-        model.addAttribute("starsMetering", meteringType == MeteringType.stars);
-        
         return "operator/inventory/report/table.jsp";
     }
 
@@ -99,8 +91,6 @@ public class AssetReportController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
 
         int ecId = ecDao.getEnergyCompany(user).getId();
-        MeteringType meteringType = ecSettingDao.getEnum(meteringSetting, MeteringType.class, ecId);
-
         BlockingQueue<AssetReportDevice> queue = new ArrayBlockingQueue<AssetReportDevice>(100000);
         AtomicBoolean isCompleted = new AtomicBoolean(false);
         String date = dateFormatting.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
@@ -124,7 +114,7 @@ public class AssetReportController {
                             row.add(device.getSerialNumber());
                             row.add(device.getMeterNumber());
                             HardwareType type = device.getInventoryIdentifier().getHardwareType();
-                            if (type.isMeter() && meteringType != MeteringType.stars) {
+                            if (type.isMeter()) {
                                 row.add(accessor.getMessage(device.getPaoIdentifier().getPaoType()));
                             } else {
                                 row.add(accessor.getMessage(type));

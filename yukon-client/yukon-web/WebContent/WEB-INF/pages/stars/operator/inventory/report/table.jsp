@@ -31,7 +31,7 @@
                 <td>${fn:escapeXml(device.meterNumber)}</td>
                 <td>
                     <c:choose>
-                        <c:when test="${device.inventoryIdentifier.hardwareType.meter && !starsMeters}">
+                        <c:when test="${device.inventoryIdentifier.hardwareType.meter}">
                             <cti:msg2 key="${device.paoIdentifier.paoType}"/>
                         </c:when>
                         <c:otherwise>

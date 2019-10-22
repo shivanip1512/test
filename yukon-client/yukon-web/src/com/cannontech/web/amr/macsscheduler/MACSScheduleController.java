@@ -67,7 +67,7 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
-@CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.RESTRICTED)
+@CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.VIEW)
 @Controller
 @RequestMapping("/schedules/*")
 public class MACSScheduleController {
@@ -306,7 +306,7 @@ public class MACSScheduleController {
     }
     
     @RequestMapping(value="{id}/startStop", method = RequestMethod.GET)
-    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.LIMITED)
+    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.INTERACT)
     public String startStop(ModelMap model, YukonUserContext userContext, @PathVariable int id) throws Exception {        
         MacsSchedule schedule = service.getMacsScheduleById(id);
         final Calendar cal = dateFormattingService.getCalendar(userContext);
@@ -332,7 +332,7 @@ public class MACSScheduleController {
     }
     
     @RequestMapping(value="{id}/start", method = RequestMethod.POST)
-    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.LIMITED)
+    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.INTERACT)
     public @ResponseBody Map<String, Object> start(@PathVariable int id, YukonUserContext yukonUserContext, 
                       @RequestParam(value="startNow", required=false, defaultValue="false") Boolean startNow, 
                       @RequestParam("start") String startTime, @RequestParam("stop") String stopTime){
@@ -366,7 +366,7 @@ public class MACSScheduleController {
     }
     
     @RequestMapping(value="{id}/stop", method = RequestMethod.POST)
-    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.LIMITED)
+    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.INTERACT)
     public @ResponseBody Map<String, Object> stop(@PathVariable int id, YukonUserContext yukonUserContext, 
                      @RequestParam(value="stopNow", required=false, defaultValue="false") boolean stopNow, 
                      @RequestParam("stop") String stopTime){
@@ -393,7 +393,7 @@ public class MACSScheduleController {
     }
 
     @RequestMapping(value="{id}/toggleState", method = RequestMethod.POST)
-    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.LIMITED)
+    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.INTERACT)
     public @ResponseBody Map<String, Object> toggleState(@PathVariable int id, YukonUserContext yukonUserContext){    
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(yukonUserContext);
         Map<String, Object> json = new HashMap<>();

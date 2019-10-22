@@ -559,8 +559,6 @@
     <entry key="yukon.common.energyCompanySetting.SUPPRESS_IN_OUT_SERVICE_MESSAGES.description">When true, suppresses In and Out of Service messages.</entry>
     <entry key="yukon.common.energyCompanySetting.TRACK_HARDWARE_ADDRESSING">Track Hardware Addressing</entry>
     <entry key="yukon.common.energyCompanySetting.TRACK_HARDWARE_ADDRESSING.description">Controls whether to track the hardware addressing information.</entry>
-    <entry key="yukon.common.energyCompanySetting.METER_MCT_BASE_DESIGNATION">Meter Mct Base Designation</entry>
-    <entry key="yukon.common.energyCompanySetting.METER_MCT_BASE_DESIGNATION.description">Allow meters to be used general stars entries versus Yukon MCTs</entry>
     <entry key="yukon.common.energyCompanySetting.OPTIONAL_PRODUCT_DEV">Optional Product Dev</entry>
     <entry key="yukon.common.energyCompanySetting.OPTIONAL_PRODUCT_DEV.description">This feature is for development purposes only</entry>
 
