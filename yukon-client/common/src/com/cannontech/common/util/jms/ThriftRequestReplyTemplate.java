@@ -12,9 +12,8 @@ import javax.jms.TemporaryQueue;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.SessionCallback;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ExceptionHelper;
 import com.cannontech.messaging.serialization.thrift.ThriftByteDeserializer;
@@ -28,13 +27,14 @@ public class ThriftRequestReplyTemplate<Q, R> {
     private JmsTemplate jmsTemplate;
     private String requestQueueName;
     
-    //  @Autowired when we upgrade to Spring 4.0
-    private ThriftByteSerializer<Q> requestSerializer;
-    private ThriftByteDeserializer<R> replyDeserializer;
+    @Autowired private ThriftByteSerializer<Q> requestSerializer;
+    @Autowired private ThriftByteDeserializer<R> replyDeserializer;
     
     public ThriftRequestReplyTemplate(ConnectionFactory connectionFactory, String requestQueueName, 
             ThriftByteSerializer<Q> requestSerializer, ThriftByteDeserializer<R> replyDeserializer) {
         this.jmsTemplate = new JmsTemplate(connectionFactory);
+        this.jmsTemplate.setExplicitQosEnabled(true);
+        this.jmsTemplate.setDeliveryPersistent(false);
         this.requestQueueName = requestQueueName;
         this.requestSerializer = requestSerializer;
         this.replyDeserializer = replyDeserializer;
@@ -43,19 +43,14 @@ public class ThriftRequestReplyTemplate<Q, R> {
     public void send(final Q requestPayload, final CompletableFuture<R> callback) {
         try {
             log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
-            jmsTemplate.execute(new SessionCallback<Object>() {
-
-                @Override
-                public Object doInJms(Session session) throws JMSException {
+            jmsTemplate.execute(session -> {
                     try {
                         doJmsWork(session, requestPayload, callback);
                     } catch (Exception e) {
                         ExceptionHelper.throwOrWrap(e);
                     }
                     return null;
-                }
-
-            }, true);
+                }, true);
             log.trace("RequestReplyTemplateBase execute End " + requestPayload.toString());
         } catch (Exception e) {
             callback.completeExceptionally(e);
