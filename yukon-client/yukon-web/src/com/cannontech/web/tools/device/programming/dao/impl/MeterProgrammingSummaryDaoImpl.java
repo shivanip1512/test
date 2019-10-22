@@ -234,7 +234,7 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         SqlStatementBuilder selectFrom = getSelect(selectCount);
         
         Set<MeterProgramSource> failedSources = sources.stream()
-                                                       .filter(source -> source.isUnprogrammed())
+                                                       .filter(source -> source.isFailure())
                                                        .collect(Collectors.toSet());
                                                       
         List<SqlStatementBuilder> fragments = new ArrayList<>();

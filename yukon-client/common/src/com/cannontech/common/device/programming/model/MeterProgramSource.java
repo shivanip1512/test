@@ -45,7 +45,7 @@ public enum MeterProgramSource implements DisplayableEnum, DatabaseRepresentatio
         return this == OLD_FIRMWARE;
     }
     
-    public boolean isUnprogrammed() {
+    public boolean isFailure() {
         return isOldFirmware() || this == UNPROGRAMMED;
     }
 

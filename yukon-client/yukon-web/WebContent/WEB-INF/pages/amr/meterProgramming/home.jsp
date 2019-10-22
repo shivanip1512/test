@@ -43,7 +43,7 @@
                                 <c:choose>
                                     <c:when test="${program.deviceTotal > 0}">
                                         <c:set var="deviceTotalUrl" value="${programUrl}&statuses=PROGRAMMED"/>
-                                        <c:if test="${program.programInfo.source.isUnprogrammed()}">
+                                        <c:if test="${program.programInfo.source.isFailure()}">
                                             <c:set var="deviceTotalUrl" value="${programUrl}&statuses=FAILURE"/>
                                         </c:if>
                                         <a href="${deviceTotalUrl}">${program.deviceTotal}</a>
