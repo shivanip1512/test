@@ -64,7 +64,7 @@ public class CollectionActionResult {
     private YukonUserContext context;
     private Logger logger;
     private DeviceMemoryCollectionProducer producer;
-    private boolean isLoadedFromDatabase;
+    private boolean loadedFromDatabase;
 
     public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,
             LinkedHashMap<String, String> inputs, CommandRequestExecution execution,
@@ -73,7 +73,7 @@ public class CollectionActionResult {
             DeviceMemoryCollectionProducer producer, 
             CollectionActionLogDetailService logService,
             YukonUserContext context) {        
-        if(action == CollectionAction.MASS_DELETE && !isLoadedFromDatabase) {
+        if(action == CollectionAction.MASS_DELETE && !isLoadedFromDatabase()) {
             // deleted devices - in order for the devices to be visible the "in memory" collection
             // is created
             DeviceCollection allDeviceCollection = producer.createDeviceCollection(allDevices);
@@ -350,11 +350,11 @@ public class CollectionActionResult {
     }
     
     public void setLoadedFromDatabase(boolean isLoadedFromDatabase) {
-        this.isLoadedFromDatabase = isLoadedFromDatabase;
+        this.loadedFromDatabase = isLoadedFromDatabase;
     }
     
     public boolean isLoadedFromDatabase() {
-        return isLoadedFromDatabase;
+        return loadedFromDatabase;
     }
 
     public void log() {
@@ -365,7 +365,7 @@ public class CollectionActionResult {
             DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
             df.withZone(DateTimeZone.getDefault());
             logger.debug("Key=" + getCacheKey() + " Status=" + getStatus());
-            logger.debug("<<<Loaded from database=" + isLoadedFromDatabase +">>>");
+            logger.debug("<<<Loaded from database=" + loadedFromDatabase +">>>");
             logger.debug("Start Time:" + startTime.toString(df));
             logger.debug(stopTime == null ? "" : "Stop Time:" + startTime.toString(df));
             if (execution != null) {
