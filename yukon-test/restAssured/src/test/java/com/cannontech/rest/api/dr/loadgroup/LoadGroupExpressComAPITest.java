@@ -152,7 +152,7 @@ public class LoadGroupExpressComAPITest {
      * This test case validates negative scenarios of Emetcon load group with different input data provided in
      * DataProviderClass
      */
-    @Test(dataProvider = "ExpresscomAddressData",  dependsOnMethods =  "loadGroupExpresscom_01_Create")
+    @Test(dataProvider = "ExpresscomAddressData", dependsOnMethods = "loadGroupExpresscom_01_Create")
     public void loadGroupExpresscom_06_PhysicalAddressValidation(String spid, String geoId, String subId, String zip, String user, String expectedErrorMsg,
             Integer expectedStatusCode) {
 

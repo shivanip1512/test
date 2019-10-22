@@ -123,7 +123,7 @@ public class LoadGroupItronAPITest {
         Log.endTestCase("loadGroupItron_05_GroupNameValidation");
     }
 
-    @Test(dataProvider = "KwCapacityData", dependsOnMethods =  "loadGroupItron_01_Create" )
+    @Test(dataProvider = "KwCapacityData", dependsOnMethods = "loadGroupItron_01_Create")
     public void loadGroupItron_06_KwCapacityValidation(Double kwCapacity, String expectedFieldCode, int expectedStatusCode) {
 
         Log.startTestCase("loadGroupItron_06_KwCapacityValidation");

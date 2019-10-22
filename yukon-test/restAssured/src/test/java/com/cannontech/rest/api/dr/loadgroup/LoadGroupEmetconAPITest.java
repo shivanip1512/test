@@ -123,7 +123,7 @@ public class LoadGroupEmetconAPITest {
      * This test case validates negative scenarios of Emetcon load group with different input data provided in
      * DataProviderClass
      */
-    @Test(dataProvider = "EmetconAddressData", dependsOnMethods = "loadGroupEmetcon_01_Create" )
+    @Test(dataProvider = "EmetconAddressData", dependsOnMethods = "loadGroupEmetcon_01_Create")
     public void loadGroupEmetcon_05_AddressValidation(String goldAddress, String silverAddress, String expectedErrorMsg, Integer expectedStatusCode) {
 
         Log.startTestCase("loadGroupEmetcon_05_AddressValidation");
@@ -169,6 +169,7 @@ public class LoadGroupEmetconAPITest {
 
         Log.endTestCase("loadGroupEmetcon_06_Delete");
     }
+
     /**
      * DataProvider provides data to test method in the form of object array Data provided in test data sheet - col1 :
      * goldAddress col2 : silverAddress col3 : expectedErrorMsg col4 : expectedStatusCode
