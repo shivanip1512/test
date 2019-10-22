@@ -17,7 +17,8 @@ scoped_pdu_ptr::scoped_pdu_ptr(coap_pdu_t* pdu_)
 
 scoped_pdu_ptr::scoped_pdu_ptr(scoped_pdu_ptr&& other)
 {
-    *this = std::move(other);
+    pdu = other.pdu;
+    other.pdu = nullptr;
 }
 
 scoped_pdu_ptr& scoped_pdu_ptr::operator=(scoped_pdu_ptr&& other)
