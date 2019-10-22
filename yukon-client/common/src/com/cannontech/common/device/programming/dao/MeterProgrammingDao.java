@@ -68,4 +68,20 @@ public interface MeterProgrammingDao {
      * Returns subset of devices that have old firmware.
      */
     List<SimpleDevice> getMetersWithOldFirmware(List<SimpleDevice> devices);
+
+    /**
+     * Returns subset of devices that are not in MeterProgramStatus table.
+     */
+    List<SimpleDevice> getMetersWithoutProgramStatus(List<SimpleDevice> devices);
+
+    /**
+     * Updates status and date in  in MeterProgramStatus table.
+     */
+    void updateMeterProgramStatusToInitiating(int deviceId, long lastUpdate);
+
+    /**
+     * Returns true if meter program with guid exists
+     */
+    boolean hasMeterProgram(UUID guid);
+
 }

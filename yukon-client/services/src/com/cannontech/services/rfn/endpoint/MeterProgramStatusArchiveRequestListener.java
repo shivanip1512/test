@@ -58,6 +58,21 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
      * Attempts to update Meter Program Status with a new status
      */
     private void processRequest(MeterProgramStatusArchiveRequest request, String processor) {
+       
+        int deviceId = rfnDeviceDao.getDeviceIdForRfnIdentifier(request.getRfnIdentifier());
+        if (request.getStatus() == ProgrammingStatus.INITIATING) {
+            MeterProgramStatus oldStatus = meterProgrammingDao.getMeterProgramStatus(deviceId);
+            if (oldStatus.getLastUpdate().isBefore(request.getTimeStamp())) {
+                log.info("(Request to initiate download recieved and is older then existing status. Discarding the record. Existing status {}",
+                         oldStatus);
+                return;
+            } else {
+                log.info("Updated status to Initiating for device {}.", request.getRfnIdentifier());
+                meterProgrammingDao.updateMeterProgramStatusToInitiating(deviceId, request.getTimeStamp());
+                return;
+            }
+        }
+        
         StringBuilder configId = new StringBuilder(request.getConfigurationId().toString());
 
         MeterProgramSource prefix = MeterProgramSource.getByPrefix(Character.toString(configId.charAt(0)));
@@ -68,11 +83,10 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
         if (prefix == null) {
             log.error("Configuration Id {} in {} doesn't contain recognizable prefix, discarding response", configId, request);
         } else {
-            int deviceId = rfnDeviceDao.getDeviceIdForRfnIdentifier(request.getRfnIdentifier());
             MeterProgramStatus newStatus = getMeterProgramStatus(request, prefix);
             MeterProgramStatus oldStatus = null;
             try {
-                oldStatus = meterProgrammingDao.getMeterProgramStatus(rfnDeviceDao.getDeviceIdForRfnIdentifier(request.getRfnIdentifier()));
+                oldStatus = meterProgrammingDao.getMeterProgramStatus(deviceId);
             } catch (@SuppressWarnings("unused") NotFoundException e) {
                 log.info("Creating status. \nNew Status {}", newStatus);
                 meterProgrammingDao.createMeterProgramStatus(newStatus);

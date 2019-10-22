@@ -1,6 +1,7 @@
 package com.cannontech.common.device.programming.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +41,7 @@ import com.cannontech.common.device.programming.dao.MeterProgrammingDao;
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest;
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest.Source;
 import com.cannontech.common.device.programming.model.MeterProgram;
-import com.cannontech.common.device.programming.model.MeterProgramSource;
-import com.cannontech.common.device.programming.model.MeterProgramUploadCancelResult;
+import com.cannontech.common.device.programming.model.MeterProgramCommandResult;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.events.loggers.MeterProgrammingEventLogService;
@@ -71,6 +71,12 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     @Autowired private MeterProgrammingDao meterProgrammingDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
+    private final Map<DeviceRequestType, String> commands = new HashMap<>();
+    {
+        commands.put(DeviceRequestType.METER_PROGRAM_STATUS_READ, "");
+        commands.put(DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL, "");
+        commands.put(DeviceRequestType.METER_PROGRAM_UPLOAD_INITIATE, ""); 
+    }
 
     @Override
     public boolean isCancellable(CollectionAction action) {
@@ -83,23 +89,52 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     }
 
     @Override
-    public MeterProgramUploadCancelResult cancelMeterProgramUpload(SimpleDevice device, YukonUserContext context) {
+    public MeterProgramCommandResult retrieveMeterProgrammingStatus(SimpleDevice device, YukonUserContext context) {
 
-        String command = "";
+        return sendCommandToPorter(device, context, DeviceRequestType.METER_PROGRAM_STATUS_READ);
+    }
+    
+    @Override
+    public MeterProgramCommandResult cancelMeterProgramUpload(SimpleDevice device, YukonUserContext context, UUID assignedGuid) {
 
-        MeterProgramUploadCancelResult result = new MeterProgramUploadCancelResult();
+        return sendCommandToPorter(device, context, DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL);
+    }
+    
+    @Override
+    public MeterProgramCommandResult reinitiateMeterProgramUpload(SimpleDevice device, YukonUserContext context, UUID assignedGuid) {
+
+        return sendCommandToPorter(device, context, DeviceRequestType.METER_PROGRAM_UPLOAD_INITIATE);
+    }
+    
+    @Override
+    public boolean acceptMeterProgrammingStatus(SimpleDevice device, YukonUserContext context, UUID reportedGuid) {
+
+        // return false if validation fails
+        if (meterProgrammingDao.hasMeterProgram(reportedGuid)) {
+            // Yukon program
+            meterProgrammingDao.assignDevicesToProgram(reportedGuid, Lists.newArrayList(device));
+        } else {
+            // Unknown Yukon program, All others
+            meterProgrammingDao.unassignDeviceFromProgram(device.getDeviceId());
+        }
+        return true;
+    }
+
+
+    private MeterProgramCommandResult sendCommandToPorter(SimpleDevice device, YukonUserContext context, DeviceRequestType deviceRequestType) {
+        MeterProgramCommandResult result = new MeterProgramCommandResult();
         var execCallback = new CommandCompletionCallback<CommandRequestDevice>() {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 
             @Override
             public void receivedLastResultString(CommandRequestDevice command, String value) {
-                logCompleted(command.getDevice(), DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL, true);
+                logCompleted(command.getDevice(), deviceRequestType, true);
                 result.setSuccess(true);
             }
 
             @Override
             public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-                logCompleted(command.getDevice(), DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL, false);
+                logCompleted(command.getDevice(), deviceRequestType, false);
                 String errorText = accessor.getMessage(error.getDetail());
                 result.setErrorText(errorText);
                 log.error("{} Error:{}", command, errorText);
@@ -114,11 +149,12 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback = waitableFactory.createWaitable(execCallback);
 
-        logInitiated(Lists.newArrayList(device), DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL, context.getYukonUser());
+        logInitiated(Lists.newArrayList(device), deviceRequestType, context.getYukonUser());
 
+        String command = commands.get(deviceRequestType);
         commandRequestService.execute(Lists.newArrayList(new CommandRequestDevice(command, device)),
                                       waitableCallback,
-                                      DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL,
+                                      deviceRequestType,
                                       context.getYukonUser());
         try {
             waitableCallback.waitForCompletion();
@@ -131,7 +167,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     @Override
     public int initiateMeterProgramUpload(DeviceCollection deviceCollection, UUID guid, YukonUserContext context) {
 
-        String command = "";
+        String command = commands.get(DeviceRequestType.METER_PROGRAM_UPLOAD_INITIATE);
 
         List<SimpleDevice> unsupportedDevices = new ArrayList<>(deviceCollection.getDeviceList());
         LinkedHashMap<String, String> input = null;
@@ -144,6 +180,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         }
 
         unsupportedDevices.addAll(meterProgrammingDao.getMetersWithOldFirmware(deviceCollection.getDeviceList()));
+        unsupportedDevices.addAll(meterProgrammingDao.getMetersWithoutProgramStatus(deviceCollection.getDeviceList()));
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.METER_PROGRAM_UPLOAD_INITIATE,
                                                                              input,
                                                                              deviceCollection,
@@ -171,7 +208,6 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
             MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
             request.setSource(Source.WS_COLLECTION_ACTION);
             request.setRfnIdentifier(meterIdentifiersByPao.get(device));
-            request.setConfigurationId(MeterProgramSource.YUKON.getPrefix() + guid.toString());
             request.setStatus(ProgrammingStatus.INITIATING);
             request.setTimeStamp(System.currentTimeMillis());
             log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
@@ -182,7 +218,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     @Override
     public int retrieveMeterProgrammingStatus(DeviceCollection deviceCollection, YukonUserContext context) {
 
-        String command = "";
+        String command = commands.get(DeviceRequestType.METER_PROGRAM_STATUS_READ);
 
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.METER_PROGRAM_STATUS_READ,
                                                                              null,
