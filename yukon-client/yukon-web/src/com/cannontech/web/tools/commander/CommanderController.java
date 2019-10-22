@@ -461,7 +461,7 @@ public class CommanderController {
     
     
     @GetMapping("/commander/customCommands")
-    public String customCommandsPopup(ModelMap model, @RequestParam(value = "paoId", required = false) Integer paoId, 
+    public String customCommandsPopup(ModelMap model, @RequestParam(value="paoId", required=false) Integer paoId, 
                                       @RequestParam(value="category", required=false) String category) {
         //get command categories and paotypes
         Set<CommandCategory> categories = CommandCategoryUtil.getAllCategories();
@@ -497,7 +497,7 @@ public class CommanderController {
         
         //check if Command Category
         boolean commandCategory = CommandCategoryUtil.isCommandCategory(category);
-        if (commandCategory || CommandCategory.EXPRESSCOM_SERIAL.getDbString().equals(category) || CommandCategory.VERSACOM_SERIAL.getDbString().equals(category)) {
+        if (commandCategory || CommandCategoryUtil.isExpressComOrVersaCom(category)) {
             List<LiteCommand> cmds = commandDao.getAllCommandsByCategory(category);
             for (LiteCommand cmd : cmds) {
                 LiteDeviceTypeCommand typeCmd = new LiteDeviceTypeCommand(0, cmd.getCommandId(), category, 0, 'Y');
