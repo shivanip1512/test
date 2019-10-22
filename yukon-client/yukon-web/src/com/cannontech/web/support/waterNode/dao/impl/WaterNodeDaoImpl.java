@@ -28,7 +28,7 @@ public class WaterNodeDaoImpl implements WaterNodeDao {
         sql.append(  "JOIN RawPointHistory rph ON rph.PointId = p.PointId");
         sql.append(  "JOIN RfnAddress rfa ON ypo.PaObjectId = rfa.DeviceId");
         sql.append(  "JOIN DeviceMeterGroup dmg ON dmg.DeviceId = ypo.PaObjectId");
-        sql.append("WHERE ypo.Type").in(PaoType.getWaterMeterTypes());
+        sql.append("WHERE ypo.Type").in(PaoType.getBatteryAnalysisTypes());
         sql.append(  "AND p.PointType").eq_k(PointType.Analog);
         sql.append(  "AND p.PointOffset").eq(5);
         sql.append(  "AND rph.Timestamp").lte(stopTime);

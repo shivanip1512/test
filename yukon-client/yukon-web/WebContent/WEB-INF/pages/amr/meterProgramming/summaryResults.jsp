@@ -5,7 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:msgScope paths="modules.amr.meterProgramming.summary">
+<cti:msgScope paths="modules.amr.meterProgramming.summary,modules.amr.meterProgramming">
     
     <span class="fwn"><i:inline key="yukon.common.filteredResults"/></span>
     <span class="badge">${searchResults.hitCount}</span>&nbsp;<i:inline key="yukon.common.devices"/>
@@ -49,7 +49,13 @@
                             <td><cti:paoDetailUrl yukonPao="${result.device}">${fn:escapeXml(result.device.name)}</cti:paoDetailUrl></td>
                             <td>${fn:escapeXml(result.meterNumber)}</td>
                             <td>${result.device.paoIdentifier.paoType.paoTypeName}</td>
-                            <td>${fn:escapeXml(result.programInfo.name)}</td>
+                            <td>${fn:escapeXml(result.programInfo.name)}
+                                <c:if test="${result.programInfo.source.isOldFirmware()}">
+                                    <cti:icon icon="icon-help" data-popup="#firmware-help" classes="fn cp ML0 vam"/>
+                                    <cti:msg2 var="helpTitle" key=".oldFirmware.helpTitle"/>
+                                    <div id="firmware-help" class="dn" data-dialog data-cancel-omit="true" data-title="${helpTitle}"><cti:msg2 key=".oldFirmware.helpText"/></div>
+                                </c:if>
+                            </td>
                             <td>
                                 <c:set var="programName" value="${!empty result.assignedProgramName ? result.assignedProgramName : ''}"/>
                                 <cti:msg2 key=".statusMsg.${result.status}" argument="${programName}"/>

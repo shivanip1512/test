@@ -384,7 +384,9 @@ public:
         Key_RFN_RecordingIntervalSeconds,
         Key_RFN_ReportingIntervalSeconds,
 
-        Key_RF_DA_DnpSlaveAddress
+        Key_RF_DA_DnpSlaveAddress,
+
+        Key_RFN_MeterProgrammingProgress,
     };
 
 protected:
