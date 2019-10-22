@@ -1,7 +1,6 @@
 package com.cannontech.web.tools.device.programming.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +42,9 @@ import com.cannontech.web.tools.device.programming.model.MeterProgramSummaryDeta
 import com.cannontech.web.tools.device.programming.model.MeterProgramWidgetDisplay;
 import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter;
 import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter.DisplayableStatus;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDao{
 	
@@ -82,7 +84,7 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
 
         row.setDeviceId(rs.getInt("DeviceId"));
         row.setProgramInfo(programInfo);
-        log.debug("Created {} ", row);
+        //log.debug("Created {} ", row);
         return row;
     };
     
@@ -99,7 +101,7 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         row.setProgramInfo(programInfo);
         row.setDeviceTotal(rs.getInt("Total"));
         row.setInProgressTotal(rs.getInt("InProgress"));
-        log.debug("Created {} ", row);
+       // log.debug("Created {} ", row);
         return row;
     };
     
@@ -108,9 +110,12 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         MeterProgramSource source = MeterProgramSource.getByPrefix(rs.getString("Source"));
         MeterProgramInfo programInfo = new MeterProgramInfo();
         programInfo.setSource(source);
-        programInfo.setName(rs.getStringSafe("ProgramName"));
-        programInfo.setGuid(rs.getStringSafe("Guid"));
+        programInfo.setGuid(rs.getStringSafe("ReportedGuid"));    
+        programInfo.setName(rs.getStringSafe("ReportedProgramName"));
         row.setProgramInfo(programInfo);
+        row.setAssignedProgramName(rs.getStringSafe("AssignedProgramName"));
+        row.setAssignedGuid(rs.getStringSafe("AssignedGuid"));
+
         String[] parts = rs.getStringSafe("Status").split("/");
         ProgrammingStatus status = ProgrammingStatus.valueOf(parts[0]);
         row.setStatus(DisplayableStatus.getDisplayableStatus(status));
@@ -120,6 +125,7 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         row.setDevice(new DisplayableDevice(rs.getPaoIdentifier("DeviceId", "Type"), rs.getString("DeviceName")));
         row.setMeterNumber(rs.getStringSafe("MeterNumber"));
         row.setLastUpdate(rs.getInstant("LastUpdate"));
+       // log.debug("row {}", row);
         return row;
     };
 
@@ -147,36 +153,35 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
 
     @Override
     public List<MeterProgramStatistics> getProgramStatistics(YukonUserContext context) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Name, ReportedGuid as Guid, Source,");
-        sql.append("    COUNT(*) Total,");
-        sql.append("    SUM(CASE WHEN Status").in_k(DisplayableStatus.IN_PROGRESS.getProgramStatuses()).append("THEN 1 ELSE 0 END) InProgress");
-        sql.append("        FROM MeterProgramStatus status JOIN MeterProgram program ON program.Guid = status.ReportedGuid");
-        sql.append("        GROUP BY ReportedGuid, Name, Source");
-        sql.append("UNION");
-        sql.append("SELECT NULL, NULL, Source,");
-        sql.append("    COUNT(*) Total,");
-        sql.append("    SUM(CASE WHEN Status").in_k(DisplayableStatus.IN_PROGRESS.getProgramStatuses()).append("THEN 1 ELSE 0 END) InProgress");
-        sql.append("    FROM MeterProgramStatus");
-        sql.append("        WHERE ReportedGuid NOT IN (SELECT Guid FROM MeterProgram)");
-        sql.append("    GROUP BY Source");
-        sql.append("UNION");
-        sql.append("SELECT Name, Guid, NULL,");
-        sql.append("    0 as Total,");
-        sql.append("    0 as InProgress");
-        sql.append("    FROM MeterProgram");
-        sql.append("        WHERE Guid NOT IN (SELECT Guid FROM MeterProgramAssignment)");
-        sql.append("    GROUP BY Name, Guid");
+        List<ProgrammingStatus> inProgressAndConfirming = new ArrayList<>();
+        inProgressAndConfirming.addAll(DisplayableStatus.IN_PROGRESS.getProgramStatuses());
+        inProgressAndConfirming.addAll(DisplayableStatus.CONFIRMING.getProgramStatuses());
+        SqlStatementBuilder sql = new SqlStatementBuilder();        
+        sql.append("SELECT mp.Guid, Source, Name, SUM(reported.Total) Total, SUM(assigned.InProgress) InProgress");
+        sql.append("FROM MeterProgram mp");
+        sql.append("FULL JOIN (");
+        sql.append("    SELECT ReportedGuid, Source, count(deviceid) Total");
+        sql.append("    FROM MeterProgramStatus ");
+        sql.append("    GROUP BY ReportedGuid, Source) reported");
+        sql.append("    ON mp.Guid=reported.ReportedGuid");
+        sql.append("FULL JOIN (");
+        sql.append("    SELECT Guid, count(mps.deviceid) InProgress");
+        sql.append("    FROM MeterProgramAssignment mpa JOIN MeterProgramStatus mps on mpa.DeviceId=mps.DeviceId");
+        sql.append("    WHERE mps.Status").in_k(inProgressAndConfirming);
+        sql.append("    GROUP BY Guid) assigned");
+        sql.append("    ON mp.Guid=assigned.Guid");
+        sql.append("group by mp.Guid, Source, Name");
         List<MeterProgramStatistics> statistics = jdbcTemplate.query(sql, statisticsMapper);
         statistics.forEach(statistic -> populateProgramNameForUnknownPrograms(context, statistic.getProgramInfo()));
         Collections.sort(statistics, (s1, s2) -> s1.getProgramInfo().getName().compareTo(s2.getProgramInfo().getName()));
+        log.debug(statistics);
         return statistics;
     }
 	
     @Override
     public List<MeterProgramInfo> getMeterProgramInfos(YukonUserContext context) {
         return getProgramStatistics(context).stream()
-                .filter(program -> program.getDeviceTotal() > 0)
+                .filter(program -> !program.isUnused())
                 .map(MeterProgramStatistics::getProgramInfo)
                 .collect(Collectors.toList());
     }
@@ -186,6 +191,14 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
             Direction direction, YukonUserContext context) {
         log.debug("Getting summary for filter {}", filter);
         SqlStatementBuilder allRowsSql = buildDetailSelect(filter, sortBy, direction, false, context);
+        if(allRowsSql == null) {
+            // in some cases we do not want to run sql (Insufficient meter hardware and and buttons other then failed)
+            SearchResults<MeterProgramSummaryDetail> searchResult = new SearchResults<>();
+            searchResult.setBounds(paging.getStartIndex(), paging.getItemsPerPage(), 0);
+            searchResult.setResultList(new ArrayList<>());
+            return searchResult;
+        }
+        
         log.debug(allRowsSql.getDebugSql());
         SqlStatementBuilder countSql = buildDetailSelect(filter, null, null, true, context);
         int totalCount = jdbcTemplate.queryForInt(countSql);
@@ -209,7 +222,6 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         log.debug("Filter {}", filter);
         
         List<MeterProgramInfo> programs = coalesce(filter.getPrograms(), () -> getMeterProgramInfos(context));
-        List<DisplayableStatus> statuses = coalesce(filter.getStatuses(), () -> Arrays.asList(DisplayableStatus.values()));
         List<String> guids = programs.stream()
                 .filter(program -> StringUtils.isNotBlank(program.getGuid()))
                 .map(MeterProgramInfo::getGuid)
@@ -218,60 +230,153 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
                 .filter(program -> StringUtils.isBlank(program.getGuid()))
                 .map(program -> program.getSource())
                 .collect(Collectors.toSet());
+       
+        SqlStatementBuilder selectFrom = getSelect(selectCount);
         
+        Set<MeterProgramSource> failedSources = sources.stream()
+                                                       .filter(source -> source.isFailure())
+                                                       .collect(Collectors.toSet());
+                                                      
+        List<SqlStatementBuilder> fragments = new ArrayList<>();
+        if (sources.removeAll(failedSources)) {
+            if (filter.getStatuses().contains(DisplayableStatus.FAILURE)) {
+                var fragment = new SqlStatementBuilder();
+                fragment.append(selectFrom.toString());
+                fragment.append("WHERE Source").in_k(failedSources);
+                addSelectCountGroupBy(selectCount, fragment);
+                fragments.add(fragment);
+            }
+        }
+        
+        if(!guids.isEmpty() || !sources.isEmpty()) {
+            if (filter.getStatuses().contains(DisplayableStatus.PROGRAMMED)) {
+                var fragment = new SqlStatementBuilder();
+                fragment.append(selectFrom);
+                fragment.append("WHERE");
+                if (!guids.isEmpty() && !sources.isEmpty()) {
+                    fragment.append("(ReportedGuid").in(guids).append("OR Source").in_k(sources).append(" AND AssignedGuid IS NULL)");
+                }
+                else if (!sources.isEmpty()) {
+                    fragment.append("(Source").in_k(sources).append(" AND AssignedGuid IS NULL)");
+                }
+                else if (!guids.isEmpty()) {
+                    fragment.append("ReportedGuid").in(guids);
+                }
+                addSelectCountGroupBy(selectCount, fragment);
+                fragments.add(fragment);
+            }
+
+            List<ProgrammingStatus> inProgressOrConfirming = getInProgressOrConfirmingStatuses(filter);
+            if (!inProgressOrConfirming.isEmpty() && !guids.isEmpty()) {
+                var fragment = new SqlStatementBuilder();
+                fragment.append(selectFrom);
+                fragment.append("WHERE AssignedGuid").in(guids).append("AND Status").in_k(inProgressOrConfirming);
+                addSelectCountGroupBy(selectCount, fragment);
+                fragments.add(fragment);
+            }
+
+            if (filter.getStatuses().contains(DisplayableStatus.FAILURE)) {
+                var fragment = new SqlStatementBuilder();
+                fragment.append(selectFrom);
+                fragment.append("WHERE");
+                if (!guids.isEmpty() && !sources.isEmpty()) {
+                    fragment.append("(AssignedGuid").in(guids).append("OR Source").in_k(sources).append(")");
+                }
+                else if (!sources.isEmpty()) {
+                    fragment.append("(Source").in_k(sources).append(" AND AssignedGuid IS NULL)");
+                }
+                else if (!guids.isEmpty()) {
+                    fragment.append("AssignedGuid").in(guids);
+                }
+                fragment.append("AND (Status")
+                        .in_k(Sets.newHashSet(ProgrammingStatus.CANCELED, ProgrammingStatus.MISMATCHED))
+                        .append(" OR Status LIKE 'FAILED%')");
+                addSelectCountGroupBy(selectCount, fragment);
+                fragments.add(fragment);
+            }
+        }
+        
+        log.debug("Fragments {}", Lists.transform(fragments, SqlStatementBuilder::getDebugSql));
+
+        return fragments.stream()
+                //  Join with a UNION if there is more than one fragment
+                .collect(Collectors.reducing((sb1, sb2) -> sb1.append("UNION").appendFragment(sb2)))
+                .map(fragment -> {
+                    SqlStatementBuilder combinedSql = getSqlWithProgrammingCte(sources, context);
+                    if(selectCount) {
+                        combinedSql.append("SELECT SUM(total)").append("FROM").append("(");
+                    }
+                    combinedSql.append(fragment);
+                    if (!CollectionUtils.isEmpty(filter.getGroups())) {
+                        combinedSql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(filter.getGroups(), "DeviceId"));
+                    }
+
+                    if (sortBy != null) {
+                        combinedSql.append("ORDER BY");
+                        combinedSql.append(sortBy.getDbString());
+                        combinedSql.append(direction);
+                    }
+                    
+                    if(selectCount) {
+                        combinedSql.append(") x");
+                    }
+                    return combinedSql;
+                })
+                .orElse(null);
+    }
+
+    private void addSelectCountGroupBy(boolean selectCount, SqlStatementBuilder sql) {
+        if(selectCount) {
+            sql.append("GROUP BY DeviceId");
+        }
+    }
+
+    private List<ProgrammingStatus> getInProgressOrConfirmingStatuses(MeterProgrammingSummaryFilter filter) {
+        return Stream.of(DisplayableStatus.IN_PROGRESS, DisplayableStatus.CONFIRMING)
+                .filter(s -> filter.getStatuses().contains(s))
+                .flatMap(s -> s.getProgramStatuses().stream())
+                .collect(Collectors.toList());
+    }
+
+    private SqlStatementBuilder getSelect(boolean selectCount) {
+        SqlStatementBuilder sqlFrom = new SqlStatementBuilder();
+        if(selectCount) {
+            sqlFrom.append("SELECT DeviceId, count(DeviceId) as total");
+        } else {
+            sqlFrom.append("SELECT ReportedProgramName , AssignedProgramName, DeviceId, LastUpdate, Source, Status, DeviceName, Type, MeterNumber, AssignedGuid, ReportedGuid");
+        }
+        sqlFrom.append("FROM ProgrammingCTE");
+        return sqlFrom;
+    }
+
+    private SqlStatementBuilder getSqlWithProgrammingCte(Set<MeterProgramSource> sources, YukonUserContext context) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         Map<MeterProgramSource, String> translatedSources = Maps.asMap(sources, source -> accessor.getMessage(source.getFormatKey()));
-
-        List<ProgrammingStatus> programmingStatuses = new ArrayList<>();
-        statuses.forEach(status -> programmingStatuses.addAll(status.getProgramStatuses()));
-       
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        if (selectCount) {
-            sql.append("SELECT count(status.DeviceId)");
-        }else {
+        sql.append("WITH ProgrammingCTE (ReportedProgramName , AssignedProgramName, DeviceId, LastUpdate, Source, Status, DeviceName, Type, MeterNumber, AssignedGuid, ReportedGuid");
+        sql.append(") AS (");
             if(translatedSources.isEmpty()) {
-                sql.append("SELECT Name as ProgramName");
+                sql.append("SELECT mpReported.Name as ReportedProgramName");
             } else {
                 sql.append("SELECT");
                 sql.append("    CASE");
-                sql.append("        WHEN Name IS NULL THEN");
+                sql.append("        WHEN mpReported.Name IS NULL THEN");
                 sql.append("            CASE");
                 translatedSources.forEach((source, translated) -> sql.append("WHEN Source").eq(source)
                                           .append("THEN").appendArgument(translated));
                 sql.append("            END");
-                sql.append("        ELSE Name");
-                sql.append("    END as ProgramName");
+                sql.append("        ELSE mpReported.Name");
+                sql.append("    END as ReportedProgramName");
             }
-            sql.append(", status.DeviceId, LastUpdate, Source, Status, PaoName as DeviceName, Type, MeterNumber, program.Guid");
-        }
-        sql.append("FROM MeterProgramStatus status FULL JOIN MeterProgram program ON program.Guid = status.reportedGuid");
-        sql.append("JOIN YukonPAObject ypo ON status.DeviceId = ypo.PAObjectID");
-        sql.append("LEFT JOIN DeviceMeterGroup dmg ON status.DeviceId = dmg.DeviceId");
-        if(guids != null && !sources.isEmpty()) {
-            sql.append("WHERE (ReportedGuid").in(guids).append("OR").append("Source").in(sources).append(")");
-        } else if (guids != null){
-            sql.append("WHERE ReportedGuid").in(guids); 
-        } else if (!sources.isEmpty()){
-            sql.append("WHERE Source").in(sources); 
-        }
-        if(programmingStatuses.remove(ProgrammingStatus.FAILED) == false) {
-            sql.append("AND status.Status").in_k(programmingStatuses);
-        } else if(programmingStatuses.isEmpty()) {
-            sql.append("AND status.Status LIKE 'FAILED%'");
-        } else {
-            sql.append("AND (status.Status LIKE 'FAILED%' OR status.Status").in_k(programmingStatuses).append(")");
-        }
-        if (!CollectionUtils.isEmpty(filter.getGroups())) {
-            sql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(filter.getGroups(), "status.DeviceId"));
-        }
-        if (sortBy != null) {
-            sql.append("ORDER BY");
-            sql.append(sortBy.getDbString());
-            sql.append(direction);
-        }
+            sql.append(", mpAssigned.name as AssignedProgramName, mps.DeviceId, LastUpdate, Source, Status, PaoName as DeviceName, Type, MeterNumber, mpa.Guid as AssignedGuid, ReportedGuid");
         
-        log.debug("Debug Sql {}", sql.getDebugSql());
-        
+        sql.append("FROM MeterProgramStatus mps FULL join MeterProgramAssignment mpa ON mps.DeviceId = mpa.DeviceId");
+        sql.append("FULL JOIN MeterProgram mpReported ON mpReported.Guid = mps.ReportedGuid");
+        sql.append("FULL JOIN MeterProgram mpAssigned ON mpAssigned.Guid = mpa.Guid");
+        sql.append("JOIN YukonPAObject ypo ON mps.DeviceId = ypo.PAObjectID");
+        sql.append("LEFT JOIN DeviceMeterGroup dmg ON mps.DeviceId = dmg.DeviceId");
+        sql.append(")");
         return sql;
     }
 

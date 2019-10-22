@@ -317,14 +317,14 @@
     <entry key="yukon.web.modules.amr.mapViolations">Map Violations</entry>
     
     <!-- METER PROGRAMMING SOURCES -->
-    <entry key="yukon.web.modules.amr.meterProgramming.source.YUKON">Yukon programmed</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.source.YUKON">Unknown Yukon program</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.source.OPTICAL">Optically programmed</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.source.NEW">Unknown program</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.source.UNPROGRAMMED">Unprogrammed</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.source.OLD_FIRMWARE">Insufficient meter hardware/firmware</entry>
     
     <!-- METER PROGRAMMING SOURCES -->
-    <entry key="yukon.web.modules.amr.meterProgramming.status.SUCCESS">Success</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.status.PROGRAMMED">Programmed</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.status.FAILURE">Failure</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.status.IN_PROGRESS">In Progress</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.status.CONFIRMING">Confirming</entry>
@@ -360,7 +360,7 @@
     <entry key="yukon.web.modules.amr.meterProgramming.summary.STATUS">Status</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.LAST_UPDATE">Last Update</entry>
     
-    <entry key="yukon.web.modules.amr.meterProgramming.summary.statusMsg.SUCCESS">Success</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.statusMsg.PROGRAMMED">Success</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.statusMsg.FAILURE">Failed Sending {0}</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.statusMsg.IN_PROGRESS">Sending {0}</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.statusMsg.CONFIRMING">Confirming {0}</entry>

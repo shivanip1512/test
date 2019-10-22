@@ -37,7 +37,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.programming.dao.MeterProgrammingDao;
 import com.cannontech.common.device.programming.model.MeterProgram;
-import com.cannontech.common.device.programming.model.MeterProgramUploadCancelResult;
+import com.cannontech.common.device.programming.model.MeterProgramCommandResult;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -102,11 +102,11 @@ public class MeterProgrammingSummaryController {
         List<MeterProgramStatistics> detail = meterProgrammingSummaryDao.getProgramStatistics(userContext);
         
         List<MeterProgramStatistics> specialCases = detail.stream()
-                                                          .filter(statistic -> statistic.isNotYukonSource())
+                                                          .filter(statistic -> statistic.getProgramInfo().getGuid() == null)
                                                           .collect(Collectors.toList());
         
         List<MeterProgramStatistics> yukonPrograms = detail.stream()
-                                                           .filter(statistic -> statistic.isYukonSource())
+                                                           .filter(statistic -> !specialCases.contains(statistic))
                                                            .collect(Collectors.toList());
         
         ProgramSortBy sortBy = ProgramSortBy.valueOf(sorting.getSort());
@@ -284,7 +284,7 @@ public class MeterProgrammingSummaryController {
         Map<String, Object> json = new HashMap<>();
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
         SimpleDevice device = new SimpleDevice(pao);
-        MeterProgramUploadCancelResult result = meterProgrammingService.cancelMeterProgramUpload(device, userContext);
+        MeterProgramCommandResult result = meterProgrammingService.cancelMeterProgramUpload(device, userContext,  UUID.fromString(""));
         json.put("result", result);
         json.put("successMsg", accessor.getMessage(baseKey + "summary.cancelSuccessful"));
         return json;
