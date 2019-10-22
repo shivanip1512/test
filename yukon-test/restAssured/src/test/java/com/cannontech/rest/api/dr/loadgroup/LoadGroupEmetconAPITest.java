@@ -1,11 +1,9 @@
 package com.cannontech.rest.api.dr.loadgroup;
 
 import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Method;
-
 import org.testng.ITestContext;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -16,6 +14,7 @@ import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.loadgroup.request.MockEmetconAddressUsage;
 import com.cannontech.rest.api.loadgroup.request.MockEmetconRelayUsage;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupEmetcon;
 import com.cannontech.rest.api.utilities.Log;
 
@@ -25,14 +24,13 @@ public class LoadGroupEmetconAPITest {
 
     MockLoadGroupEmetcon loadGroup = null;
 
-    @BeforeMethod
-    public void setUp(Method method) {
-        loadGroup = (MockLoadGroupEmetcon)LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_EMETCON);
+    @BeforeClass
+    public void setUp() {
+        loadGroup = (MockLoadGroupEmetcon) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_EMETCON);
     }
 
     /**
-     * This test case validates creation of Emetcon load group with default values provided in payload json
-     * file
+     * This test case validates creation of Emetcon load group with default values
      */
     @Test
     public void loadGroupEmetcon_01_Create(ITestContext context) {
@@ -103,46 +101,32 @@ public class LoadGroupEmetconAPITest {
 
     }
 
-    @Test(enabled = false)
-    public void loadGroupEmetcon_04_Copy(ITestContext context) {
-
-    }
-
     /**
-     * This test case validates deletion of Emetcon load group
+     * This test case validates copy of Emetcon load group
      */
     @Test(dependsOnMethods = { "loadGroupEmetcon_01_Create" })
-    public void loadGroupEmetcon_05_Delete(ITestContext context) {
+    public void loadGroupEmetcon_04_Copy(ITestContext context) {
 
-        String expectedMessage = "Id not found";
+        Log.startTestCase("loadGroupEmetcon_04_Copy");
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EMETCON)).build();
 
-        Log.startTestCase("loadGroupEmetcon_05_Delete");
-
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute("emetcon_UpdateGrpName").toString()).build();
-
-        Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject, context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-
-        // Get request to validate load group is deleted
-        ExtractableResponse<?> response2 = ApiCallHelper.get("getloadgroup", context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
-        assertTrue("Status code should be 400", response2.statusCode() == 400);
-
-        MockApiError error = response2.as(MockApiError.class);
-        assertTrue("Expected error message Should be : " + expectedMessage, expectedMessage.equals(error.getMessage()));
-
-        Log.endTestCase("loadGroupEmetcon_05_Delete");
-
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup",
+                                                                 loadGroupCopy,
+                                                                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        String copyPaoId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Group Id should not be Null", copyPaoId != null);
+        assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
+        Log.endTestCase("loadGroupEmetcon_04_Copy");
     }
 
     /**
      * This test case validates negative scenarios of Emetcon load group with different input data provided in
      * DataProviderClass
      */
-    @Test(dataProvider = "EmetconAddressData")
-    public void loadGroupEmetcon_06_AddressValidation(String goldAddress, String silverAddress, String expectedErrorMsg, Integer expectedStatusCode) {
+    @Test(dataProvider = "EmetconAddressData", dependsOnMethods = "loadGroupEmetcon_01_Create" )
+    public void loadGroupEmetcon_05_AddressValidation(String goldAddress, String silverAddress, String expectedErrorMsg, Integer expectedStatusCode) {
 
-        Log.startTestCase("loadGroupEmetcon_06_AddressValidation");
+        Log.startTestCase("loadGroupEmetcon_05_AddressValidation");
 
         loadGroup.setGoldAddress(Integer.valueOf(goldAddress));
         loadGroup.setSilverAddress(Integer.valueOf(silverAddress));
@@ -156,26 +140,46 @@ public class LoadGroupEmetconAPITest {
         assertTrue("Expected message should be - Validation error", error.getMessage().equals("Validation error"));
         assertTrue("Expected code in response is not correct", expectedErrorMsg.equals(error.getFieldErrors().get(0).getCode()));
 
-        Log.endTestCase("loadGroupEmetcon_06_AddressValidation");
+        Log.endTestCase("loadGroupEmetcon_05_AddressValidation");
     }
-    
+
     /**
-     * DataProvider provides data to test method in the form of object array
-     * Data provided in test data sheet -
-     * col1 : goldAddress
-     * col2 : silverAddress
-     * col3 : expectedErrorMsg
-     * col4 : expectedStatusCode
+     * This test case validates deletion of Emetcon load group
+     */
+    @Test(dependsOnMethods = { "loadGroupEmetcon_03_Update" })
+    public void loadGroupEmetcon_06_Delete(ITestContext context) {
+
+        String expectedMessage = "Id not found";
+        String grpToDelete = "emetcon_UpdateGrpName";
+        Log.startTestCase("loadGroupEmetcon_06_Delete");
+
+        MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute(grpToDelete).toString()).build();
+
+        Log.info("Delete Load Group is : " + lmDeleteObject);
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup",
+                                                               lmDeleteObject,
+                                                               context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        assertTrue("Status code should be 200", response.statusCode() == 200);
+
+        // Get request to validate load group is deleted
+        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("getloadgroup", context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        assertTrue("Status code should be 400", getDeletedResponse.statusCode() == 400);
+        MockApiError error = getDeletedResponse.as(MockApiError.class);
+        assertTrue("Expected error message Should be : " + expectedMessage, expectedMessage.equals(error.getMessage()));
+
+        Log.endTestCase("loadGroupEmetcon_06_Delete");
+    }
+    /**
+     * DataProvider provides data to test method in the form of object array Data provided in test data sheet - col1 :
+     * goldAddress col2 : silverAddress col3 : expectedErrorMsg col4 : expectedStatusCode
      */
     @DataProvider(name = "EmetconAddressData")
     public Object[][] getEmetconAddressData(ITestContext context) {
 
-        return new Object[][] {{"5","22","Must be between 0 and 4.", 422},
-            {"0","0","Gold Address must be between 1 and 4 when Gold is selected for Address to Use.",422},
-            {"-1","22","Must be between 0 and 4.",422},
-            {"3","61","Must be between 0 and 60.",422},
-            {"3","-1","Must be between 0 and 60.",422} };
+        return new Object[][] { { "5", "22", "Must be between 0 and 4.", 422 },
+                { "0", "0", "Gold Address must be between 1 and 4 when Gold is selected for Address to Use.", 422 },
+                { "-1", "22", "Must be between 0 and 4.", 422 }, { "3", "61", "Must be between 0 and 60.", 422 },
+                { "3", "-1", "Must be between 0 and 60.", 422 } };
     }
-
 
 }

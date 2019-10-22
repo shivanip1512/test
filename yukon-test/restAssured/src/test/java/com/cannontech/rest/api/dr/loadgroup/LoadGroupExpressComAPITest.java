@@ -2,12 +2,11 @@ package com.cannontech.rest.api.dr.loadgroup;
 
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.testng.ITestContext;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -18,6 +17,7 @@ import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.loadgroup.request.MockAddressUsage;
 import com.cannontech.rest.api.loadgroup.request.MockControlPriority;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupExpresscom;
 import com.cannontech.rest.api.loadgroup.request.MockLoads;
 import com.cannontech.rest.api.utilities.Log;
@@ -28,13 +28,13 @@ public class LoadGroupExpressComAPITest {
 
     MockLoadGroupExpresscom loadGroup = null;
 
-    @BeforeMethod
-    public void setUp(Method method) {
-        loadGroup = (MockLoadGroupExpresscom)LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_EXPRESSCOMM);
+    @BeforeClass
+    public void setUp() {
+        loadGroup = (MockLoadGroupExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_EXPRESSCOMM);
     }
 
     /**
-     * This test case validates creation of Expresscomm load group with default values provided in payload json file
+     * This test case validates creation of Expresscomm load group with default values
      */
     @Test
     public void loadGroupExpresscom_01_Create(ITestContext context) {
@@ -44,7 +44,7 @@ public class LoadGroupExpressComAPITest {
         String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        assertTrue("Load Group Id should not be Null", groupId != null);
+        assertTrue("Group Id should not be Null", groupId != null);
         Log.endTestCase("loadGroupExpresscom_01_Create");
 
     }
@@ -103,44 +103,58 @@ public class LoadGroupExpressComAPITest {
 
     }
 
-    @Test(enabled = false)
+    /**
+     * This test case validates copy of Expresscom load group
+     */
+    @Test(dependsOnMethods = { "loadGroupExpresscom_01_Create" })
     public void loadGroupExpresscom_04_Copy(ITestContext context) {
 
+        Log.startTestCase("loadGroupExpresscom_04_Copy");
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EXPRESSCOMM)).build();
+
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup",
+                                                                 loadGroupCopy,
+                                                                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        String copyPaoId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Group Id should not be Null", copyPaoId != null);
+        assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
+        Log.endTestCase("loadGroupExpresscom_04_Copy");
     }
 
     /**
      * This test case validates deletion of Expresscomm load group
      */
-    @Test(dependsOnMethods = { "loadGroupExpresscom_01_Create" })
+    @Test(dependsOnMethods = { "loadGroupExpresscom_02_Get" })
     public void loadGroupExpresscom_05_Delete(ITestContext context) {
 
         String expectedMessage = "Id not found";
-
+        String grpToDelete = "expresscom_UpdateGrpName";
         Log.startTestCase("loadGroupExpresscom_05_Delete");
 
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute("expresscom_UpdateGrpName").toString()).build();
+        MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute(grpToDelete).toString()).build();
         Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject, context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup",
+                                                               lmDeleteObject,
+                                                               context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> response2 = ApiCallHelper.get("getloadgroup", context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
-        assertTrue("Status code should be 400", response2.statusCode() == 400);
+        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("getloadgroup", context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        assertTrue("Status code should be 400", getDeletedResponse.statusCode() == 400);
 
-        MockApiError error = response2.as(MockApiError.class);
+        MockApiError error = getDeletedResponse.as(MockApiError.class);
         assertTrue("Expected error message Should be : " + expectedMessage, expectedMessage.equals(error.getMessage()));
 
         Log.endTestCase("loadGroupExpresscom_05_Delete");
-
     }
 
     /**
      * This test case validates negative scenarios of Emetcon load group with different input data provided in
      * DataProviderClass
      */
-    @Test(dataProvider = "ExpresscomAddressData")
-    public void loadGroupExpresscom_06_PhysicalAddressValidation(String spid, String geoId, String subId, String zip,
-            String user, String expectedErrorMsg, Integer expectedStatusCode) {
+    @Test(dataProvider = "ExpresscomAddressData",  dependsOnMethods =  "loadGroupExpresscom_01_Create")
+    public void loadGroupExpresscom_06_PhysicalAddressValidation(String spid, String geoId, String subId, String zip, String user, String expectedErrorMsg,
+            Integer expectedStatusCode) {
 
         Log.startTestCase("loadGroupExpresscom_06_PhysicalAddressValidation");
 
@@ -153,28 +167,28 @@ public class LoadGroupExpressComAPITest {
         addressUsage.add(MockAddressUsage.LOAD);
         addressUsage.add(MockAddressUsage.ZIP);
         addressUsage.add(MockAddressUsage.FEEDER);
-        
+
         List<MockLoads> relayUsage = new ArrayList<>();
         relayUsage.add(MockLoads.Load_1);
 
         MockLoadGroupExpresscom loadGroup = MockLoadGroupExpresscom.builder()
-                                       .name("Test_ExpressCom_LoadGroup")
-                                       .type(MockPaoType.LM_GROUP_EXPRESSCOMM)
-                                       .routeId(1)
-                                       .disableControl(false)
-                                       .disableGroup(false)
-                                       .feeder("1000000000000000")
-                                       .serviceProvider(100)
-                                       .geo(223)
-                                       .zip(3334)
-                                       .kWCapacity(0.0)
-                                       .addressUsage(addressUsage)
-                                       .relayUsage(relayUsage)
-                                       .serialNumber("1245")
-                                       .program(12)
-                                       .protocolPriority(MockControlPriority.DEFAULT)
-                                       .build();
-        
+                                                                   .name("Test_ExpressCom_LoadGroup")
+                                                                   .type(MockPaoType.LM_GROUP_EXPRESSCOMM)
+                                                                   .routeId(1)
+                                                                   .disableControl(false)
+                                                                   .disableGroup(false)
+                                                                   .feeder("1000000000000000")
+                                                                   .serviceProvider(100)
+                                                                   .geo(223)
+                                                                   .zip(3334)
+                                                                   .kWCapacity(0.0)
+                                                                   .addressUsage(addressUsage)
+                                                                   .relayUsage(relayUsage)
+                                                                   .serialNumber("1245")
+                                                                   .program(12)
+                                                                   .protocolPriority(MockControlPriority.DEFAULT)
+                                                                   .build();
+
         loadGroup.setSplinter(Integer.valueOf(spid));
         loadGroup.setGeo(Integer.valueOf(geoId));
         loadGroup.setZip(Integer.valueOf(zip));
@@ -184,7 +198,7 @@ public class LoadGroupExpressComAPITest {
         ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
         Integer statusCode = response.statusCode();
         assertTrue("Status code should be " + expectedStatusCode, expectedStatusCode.equals(statusCode));
-       
+
         MockApiError error = response.as(MockApiError.class);
         assertTrue("Expected message should be - Validation error", error.getMessage().equals("Validation error"));
         assertTrue("Expected code in response is not correct", expectedErrorMsg.equals(error.getFieldErrors().get(0).getCode()));
@@ -193,16 +207,9 @@ public class LoadGroupExpressComAPITest {
     }
 
     /**
-     * DataProvider provides data to test method in the form of object array
-     * Data provided in test data sheet -
-     * col1 : serviceProviderId
-     * col2 : geoId
-     * col3 : substationId
-     * col4 : feeder
-     * col5 : zip
-     * col6 : user
-     * col7 : Expected field errors code in response
-     * col8 : Expected response code
+     * DataProvider provides data to test method in the form of object array Data provided in test data sheet - col1 :
+     * serviceProviderId col2 : geoId col3 : substationId col4 : feeder col5 : zip col6 : user col7 : Expected field
+     * errors code in response col8 : Expected response code
      */
     @DataProvider(name = "ExpresscomAddressData")
     public Object[][] getExpresscomAddressData(ITestContext context) {

@@ -1,17 +1,18 @@
 package com.cannontech.rest.api.dr.loadgroup;
 
 import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Method;
-
 import org.testng.ITestContext;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.MockApiError;
+import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupItron;
 import com.cannontech.rest.api.utilities.Log;
 
@@ -21,8 +22,8 @@ import io.restassured.response.ExtractableResponse;
 public class LoadGroupItronAPITest {
     MockLoadGroupItron loadGroup = null;
 
-    @BeforeMethod
-    public void setUp(Method method) {
+    @BeforeClass
+    public void setUp() {
         loadGroup = (MockLoadGroupItron) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_ITRON);
     }
 
@@ -33,16 +34,16 @@ public class LoadGroupItronAPITest {
         String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        assertTrue("Load Group Id should not be Null", groupId != null);
+        assertTrue("Group Id should not be Null", groupId != null);
         Log.endTestCase("loadGroupItron_01_Create");
     }
 
-    @Test
+    @Test(dependsOnMethods = { "loadGroupItron_01_Create" })
     public void loadGroupItron_02_Get(ITestContext context) {
         Log.startTestCase("loadGroupItron_02_Get");
         String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
 
-        Log.info("Load Group Id of LmGroupItron created is : " + groupId);
+        Log.info("Group Id of LmGroupItron created is : " + groupId);
 
         ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup", groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
@@ -61,7 +62,7 @@ public class LoadGroupItronAPITest {
         Log.endTestCase("loadGroupItron_02_Get");
     }
 
-    @Test
+    @Test(dependsOnMethods = { "loadGroupItron_01_Create" })
     public void loadGroupItron_03_Update(ITestContext context) {
         Log.startTestCase("loadGroupItron_03_Update");
         String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
@@ -87,110 +88,135 @@ public class LoadGroupItronAPITest {
                    loadGroup.getVirtualRelayId().equals(updatedLoadGroupResponse.getVirtualRelayId()));
         Log.endTestCase("loadGroupItron_03_Update");
     }
-    
-    /*@Test
-    public void Test04_LmGroupNest_Copy(ITestContext context) {
-        
+
+    /**
+     * This test case validates copy of Itron load group
+     */
+
+    @Test(dependsOnMethods = { "loadGroupItron_01_Create" })
+    public void loadGroupItron_04_Copy(ITestContext context) {
+
+        Log.startTestCase("loadGroupItron_04_Copy");
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_ITRON)).build();
+
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup",
+                                                                 loadGroupCopy,
+                                                                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        String copyPaoId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        assertTrue("Group Id should not be Null", copyPaoId != null);
+        assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
+        Log.endTestCase("loadGroupItron_04_Copy");
     }
-    
-    @Test
-    public void Test05_LmGroupNest_Delete() {
-        
-    }
-    */
-    
-    @Test(dataProvider = "GroupNameData")
-    public void loadGroupItron_06_GroupNameValidation(String groupName, String expectedFieldCode, int expectedStatusCode) {
-        
-        Log.startTestCase("loadGroupItron_06_GroupNameValidation");
-        
+
+    @Test(dataProvider = "GroupNameData", dependsOnMethods = "loadGroupItron_01_Create")
+    public void loadGroupItron_05_GroupNameValidation(String groupName, String expectedFieldCode, int expectedStatusCode) {
+
+        Log.startTestCase("loadGroupItron_05_GroupNameValidation");
+
         loadGroup.setName(groupName);
         ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
-        assertTrue("Status code should be "+expectedStatusCode, response.statusCode() == expectedStatusCode);
+        assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
         JsonPath jsonPath = response.jsonPath();
         assertTrue("Expected message should be - Validation error", jsonPath.get("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", expectedFieldCode.equals(jsonPath.get("fieldErrors.code[0]")));
-        
-        Log.endTestCase("loadGroupItron_06_GroupNameValidation");
+
+        Log.endTestCase("loadGroupItron_05_GroupNameValidation");
     }
-    
-    @Test(dataProvider = "KwCapacityData")
-    public void loadGroupItron_07_KwCapacityValidation(Double kwCapacity, String expectedFieldCode, int expectedStatusCode) {
-        
-        Log.startTestCase("loadGroupItron_07_KwCapacityValidation");
-        
+
+    @Test(dataProvider = "KwCapacityData", dependsOnMethods =  "loadGroupItron_01_Create" )
+    public void loadGroupItron_06_KwCapacityValidation(Double kwCapacity, String expectedFieldCode, int expectedStatusCode) {
+
+        Log.startTestCase("loadGroupItron_06_KwCapacityValidation");
+
         loadGroup.setKWCapacity(kwCapacity);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup",loadGroup);
-        assertTrue("Status code should be "+expectedStatusCode, response.statusCode() == expectedStatusCode);
+        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
         JsonPath jsonPath = response.jsonPath();
         assertTrue("Expected message should be - Validation error", jsonPath.get("message").equals("Validation error"));
-        assertTrue("Expected code in response is not correct", expectedFieldCode.equals(jsonPath.get("fieldErrors.code[0]")));
-        
-        Log.endTestCase("loadGroupItron_0y_KwCapacityValidation");
+        assertTrue("Expected code in response is not correct", expectedFieldCode.equals(jsonPath.get("fieldErrors.code[1]")));
+
+        Log.endTestCase("loadGroupItron_06_KwCapacityValidation");
     }
-    
-    @Test(dataProvider = "VirtualRelayIdData")
-    public void loadGroupItron_08_VirtualRelayIdValidation(Integer virtualRelayId, String expectedFieldCode, int expectedStatusCode) {
-        
-        Log.startTestCase("loadGroupItron_08_VirtualRelayIdValidation");
-        
+
+    @Test(dataProvider = "VirtualRelayIdData", dependsOnMethods = "loadGroupItron_01_Create")
+    public void loadGroupItron_07_VirtualRelayIdValidation(Integer virtualRelayId, String expectedFieldCode, int expectedStatusCode) {
+
+        Log.startTestCase("loadGroupItron_07_VirtualRelayIdValidation");
+
         loadGroup.setVirtualRelayId(virtualRelayId);
         ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
-        assertTrue("Status code should be "+expectedStatusCode, response.statusCode() == expectedStatusCode);
+        assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
         JsonPath jsonPath = response.jsonPath();
         assertTrue("Expected message should be - Validation error", jsonPath.get("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", expectedFieldCode.equals(jsonPath.get("fieldErrors.code[0]")));
-        
-        Log.endTestCase("loadGroupItron_08_VirtualRelayIdValidation");
+
+        Log.endTestCase("loadGroupItron_07_VirtualRelayIdValidation");
     }
-    
+
     /**
-     * DataProvider provides data to test method in the form of object array
-     * Data provided -
-     * col1 : Group Name
-     * col2 : Expected field errors code in response
-     * col3 : Expected response code
+     * This test case validates deletion of Itron load group
+     */
+
+    @Test(dependsOnMethods = { "loadGroupItron_02_Get" })
+    public void loadGroupItron_08_Delete(ITestContext context) {
+
+        String expectedMessage = "Id not found";
+        String grpToDelete = "Itron_GrpName";
+        Log.startTestCase("loadGroupItron_08_Delete");
+
+        MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute(grpToDelete).toString()).build();
+        Log.info("Delete Load Group is : " + lmDeleteObject);
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup",
+                                                               lmDeleteObject,
+                                                               context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        assertTrue("Status code should be 200", response.statusCode() == 200);
+
+        // Get request to validate load group is deleted
+        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("getloadgroup", context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        assertTrue("Status code should be 400", getDeletedResponse.statusCode() == 400);
+
+        MockApiError error = getDeletedResponse.as(MockApiError.class);
+        assertTrue("Expected error message Should be : " + expectedMessage, expectedMessage.equals(error.getMessage()));
+
+        Log.endTestCase("loadGroupItron_08_Delete");
+    }
+
+    /**
+     * DataProvider provides data to test method in the form of object array Data provided - col1 : Group Name col2 :
+     * Expected field errors code in response col3 : Expected response code
      */
     @DataProvider(name = "GroupNameData")
     public Object[][] getGroupNameData(ITestContext context) {
 
         return new Object[][] { { "", "Name is required.", 422 },
-            { "Test\\Nest", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
-            { "Test,Nest", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
-            { "TestNestMoreThanSixtyCharacter_TestNestMoreThanSixtyCharacters", "Exceeds maximum length of 60.", 422 },
-            { context.getAttribute("Itron_GrpName"), "Name must be unique.", 422 } };
+                { "Test\\Itron", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
+                { "Test,Itron", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
+                { "TestItronMoreThanSixtyCharacter_TestNestMoreThanSixtyCharacters", "Exceeds maximum length of 60.", 422 },
+                { context.getAttribute("Itron_GrpName"), "Name must be unique.", 422 } };
     }
 
     /**
-     * DataProvider provides data to test method in the form of object array
-     * Data provided -
-     * col1 : KwCapacity
-     * col2 : Expected field errors code in response
-     * col3 : Expected response code
+     * DataProvider provides data to test method in the form of object array Data provided - col1 : KwCapacity col2 :
+     * Expected field errors code in response col3 : Expected response code
      */
     @DataProvider(name = "KwCapacityData")
     public Object[][] getKwCapacityData() {
 
         return new Object[][] {
-            // {(float) , "kW Capacity is required.", 422 },
-            { -222.0, "Must be between 0 and 99,999.999.", 422 },
-            { 100000.0, "Must be between 0 and 99,999.999.", 422 } };
+                // {(float) , "kW Capacity is required.", 422 },
+                { -222.0, "Must be between 0 and 99,999.999.", 422 }, { 100000.0, "Must be between 0 and 99,999.999.", 422 } };
     }
 
     /**
-     * DataProvider provides data to test method in the form of object array
-     * Data provided -
-     * col1 : VirtualRelayIdData
-     * col2 : Expected field errors code in response
-     * col3 : Expected response code
+     * DataProvider provides data to test method in the form of object array Data provided - col1 : VirtualRelayIdData
+     * col2 : Expected field errors code in response col3 : Expected response code
      */
     @DataProvider(name = "VirtualRelayIdData")
     public Object[][] getVirtualRelayIdData() {
 
-        return new Object[][] { 
-        //{ "", "Virtual RelayId  is required.", 422 },
-        { -2, "Must be between 1 and 8.", 422 }, 
-        { 11, "Must be between 1 and 8.", 422 } };
+        return new Object[][] {
+                // { "", "Virtual RelayId is required.", 422 },
+                { -2, "Must be between 1 and 8.", 422 }, { 11, "Must be between 1 and 8.", 422 } };
     }
 
 }
