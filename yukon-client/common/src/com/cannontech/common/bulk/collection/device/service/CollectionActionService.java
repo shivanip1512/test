@@ -20,18 +20,7 @@ public interface CollectionActionService {
      * Returns result from cache, if result is not found re-created result from the database.
      */
     CollectionActionResult getResult(int key);
-
-    /**
-     * Returns result from cache. This method should be used if we do not want the result to be re-created from the database.
-     * Example would be cancellations, we only can cancel cached executions.
-     */
-    CollectionActionResult getCachedResult(int key);
-    
-    /**
-     * Returns result from db. Used for testing only.
-     */
-    CollectionActionResult getDbResult(int key);
-    
+        
     /**
      * Clears cache. Used for testing only.
      */

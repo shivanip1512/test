@@ -302,8 +302,8 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
 
     @Override
     public void cancel(int key, LiteYukonUser user) {
-        CollectionActionResult result = collectionActionService.getCachedResult(key);
-        if (result != null) {
+        CollectionActionResult result = collectionActionService.getResult(key);
+        if (result.isCancelable()) {
             disconnectEventLogService.groupCancelAttempted(user,
                 DisconnectCommand.getDisconnectCommand(result.getAction()));
             result.setCanceled(true);
@@ -311,7 +311,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
             strategies.forEach(s -> s.cancel(result, user));
         }
     }
-
+    
     private void completeCommandRequestExecutionRecord(CommandRequestExecution cre,
             CommandRequestExecutionStatus status) {
         // If one execution failed and one succeeded (PLC or RFN), consider the execution failed.

@@ -86,22 +86,23 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Override
     public void cancel(int key, LiteYukonUser user) {
         CollectionActionResult cachedResult = cache.getIfPresent(key);
-        //make sure result didn't complete before canceling
-        if (cachedResult.isCancelable()) {
-            log.debug("Attemting to cancel result for " + key);
-            if (cachedResult != null) {
-                Optional<CollectionActionCancellationService> service =
-                    cancellationService.stream().filter(s -> s.isCancellable(cachedResult.getAction())).findFirst();
+        if(cachedResult.isCancelable()) {
+            if (cachedResult.hasCancelationCallbacks()) {
+                log.debug("Attemting to cancel result for {}", cachedResult.getCacheKey());
+                Optional<CollectionActionCancellationService> service = cancellationService.stream()
+                                                                                           .filter(s -> s.isCancellable(cachedResult.getAction()))
+                                                                                           .findFirst();
                 if (service.isPresent()) {
                     log.debug("Using " + service.get().getClass() + " to cancel result for " + key);
                     log.debug("Result to be canceled:");
                     cachedResult.log();
                     service.get().cancel(cachedResult.getCacheKey(), user);
                 }
+            } else {
+                log.debug("Attemting to terminate result for {}", cachedResult.getCacheKey());
             }
         } else {
-            log.debug("Attemting to cancel result for " + key
-                + " failed. The results was already completed with the status " + cachedResult.getStatus());
+            log.debug("Attemting to cancel result for " + key + " failed. The results was already completed with the status " + cachedResult.getStatus());
             cachedResult.log();
         }
     }
@@ -138,11 +139,12 @@ public class CollectionActionServiceImpl implements CollectionActionService {
 
     @Override
     public CollectionActionResult getResult(int key) {
-        return cache.getIfPresent(key) != null ? getCachedResult(key) : getDbResult(key);
-    }
-    
-    @Override
-    public CollectionActionResult getCachedResult(int key) {
+        if(cache.getIfPresent(key) == null) {
+            CollectionActionResult result = collectionActionDao.loadResultFromDb(key);
+            result.setLogger(log);
+            cache.put(key, result);
+            result.log();
+        }
         return cache.getIfPresent(key);
     }
     
@@ -150,14 +152,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     public void clearCache() {
         cache.invalidateAll();
     }
-    
-    @Override
-    public CollectionActionResult getDbResult(int key) {
-        CollectionActionResult result = collectionActionDao.loadResultFromDb(key);
-        result.setLogger(log);
-        return result;
-    }
-    
+   
     @Override
     public List<CollectionActionResult> getCachedResults(List<Integer> cacheKeys) {
         return cache.getAllPresent(cacheKeys).values().asList();
