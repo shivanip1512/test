@@ -2,11 +2,8 @@ package com.cannontech.core.service.impl;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
-
 import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
@@ -18,6 +15,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.jms.ThriftRequestReplyTemplate;
 import com.cannontech.core.service.PorterDynamicPaoInfoService;
 import com.cannontech.message.porter.message.DynamicPaoInfoDurationKeyEnum;
+import com.cannontech.message.porter.message.DynamicPaoInfoPercentageKeyEnum;
 import com.cannontech.message.porter.message.DynamicPaoInfoRequest;
 import com.cannontech.message.porter.message.DynamicPaoInfoResponse;
 import com.cannontech.message.porter.message.DynamicPaoInfoTimestampKeyEnum;
@@ -38,34 +36,28 @@ public class PorterDynamicPaoInfoServiceImpl implements PorterDynamicPaoInfoServ
     
     @Autowired
     PorterDynamicPaoInfoServiceImpl(String queueName, ConnectionFactory connectionFactory) {
-        thriftMessenger = new ThriftRequestReplyTemplate<DynamicPaoInfoRequest, DynamicPaoInfoResponse>(
-                 connectionFactory, queueName, serializer, deserializer);
+        thriftMessenger = new ThriftRequestReplyTemplate<>(connectionFactory, queueName, serializer, deserializer);
     }
     
-    @Override
-    public void getVoltageProfileDetails(int paoId, Consumer<VoltageProfileDetails> callback) {
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-            @Override
-            public void run() {
-                callback.accept(getVoltageProfileDetails(paoId));
-            }
-        });
-    }
-
     private DynamicPaoInfoResponse requestInfoFromPorter(DynamicPaoInfoRequest requestMsg)
             throws InterruptedException, ExecutionException, TimeoutException {
-        CompletableFuture<DynamicPaoInfoResponse> f = new CompletableFuture<DynamicPaoInfoResponse>();
+        var f = new CompletableFuture<DynamicPaoInfoResponse>();
+        
+        log.debug("Requesting info from Porter: {}", requestMsg);
         
         thriftMessenger.send(requestMsg, f);
 
-        return f.get(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);
+        var responseMsg = f.get(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);
+        
+        log.debug("Received info from Porter: {}", responseMsg);
+        
+        return responseMsg;
     }
 
     @Override
     public VoltageProfileDetails getVoltageProfileDetails(int paoId) {
-        DynamicPaoInfoRequest requestMsg = new DynamicPaoInfoRequest();
+        var requestMsg = new DynamicPaoInfoRequest(paoId);
         
-        requestMsg.setDeviceID(paoId);
         requestMsg.setDurationKeys(Sets.immutableEnumSet(DynamicPaoInfoDurationKeyEnum.RFN_VOLTAGE_PROFILE_INTERVAL));
         requestMsg.setTimestampKeys(Sets.immutableEnumSet(DynamicPaoInfoTimestampKeyEnum.RFN_VOLTAGE_PROFILE_ENABLED_UNTIL));
         
@@ -91,9 +83,8 @@ public class PorterDynamicPaoInfoServiceImpl implements PorterDynamicPaoInfoServ
 
     @Override
     public Duration getMctIedLoadProfileInterval(int paoId) {
-        DynamicPaoInfoRequest requestMsg = new DynamicPaoInfoRequest();
+        var requestMsg = new DynamicPaoInfoRequest(paoId);
         
-        requestMsg.setDeviceID(paoId);
         requestMsg.setDurationKeys(Sets.immutableEnumSet(DynamicPaoInfoDurationKeyEnum.MCT_IED_LOAD_PROFILE_INTERVAL));
         
         Duration interval = null;
@@ -108,5 +99,25 @@ public class PorterDynamicPaoInfoServiceImpl implements PorterDynamicPaoInfoServ
         }
         
         return interval;
+    }
+
+    @Override
+    public Double getProgrammingProgress(Integer deviceId) {
+        var requestMsg = new DynamicPaoInfoRequest(deviceId);
+        
+        requestMsg.setPercentageKeys(Sets.immutableEnumSet(DynamicPaoInfoPercentageKeyEnum.METER_PROGRAMMING_PROGRESS));
+        
+        Double progress = null;
+        
+        try {
+            DynamicPaoInfoResponse response = requestInfoFromPorter(requestMsg);
+
+            progress = response.getPercentageValues()
+                               .get(DynamicPaoInfoPercentageKeyEnum.METER_PROGRAMMING_PROGRESS);
+        } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+            log.error(ex);
+        }
+        
+        return progress;
     }
 }

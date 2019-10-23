@@ -9,7 +9,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
 public enum MeterProgramSource implements DisplayableEnum, DatabaseRepresentationSource {
-    YUKON("Y"), 
+    YUKON("R"), 
     OPTICAL("P"), 
     NEW("N"), 
     UNPROGRAMMED("U"),
@@ -39,6 +39,14 @@ public enum MeterProgramSource implements DisplayableEnum, DatabaseRepresentatio
 
     public boolean isNotYukon() {
         return !isYukon();
+    }
+    
+    public boolean isOldFirmware() {
+        return this == OLD_FIRMWARE;
+    }
+    
+    public boolean isFailure() {
+        return isOldFirmware() || this == UNPROGRAMMED;
     }
 
     @Override

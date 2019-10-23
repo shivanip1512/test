@@ -9,8 +9,6 @@ import javax.jms.ConnectionFactory;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.rfn.message.event.DetailedConfigurationStatusCode.Status;
 import com.cannontech.amr.rfn.message.event.MeterConfigurationStatus;
@@ -25,6 +23,7 @@ import com.cannontech.common.device.programming.message.MeterProgramStatusArchiv
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.ThriftRequestTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.message.dispatch.message.PointData;
@@ -33,7 +32,7 @@ public class RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor exte
         implements RfnArchiveRequestProcessor {
     
     private static final Logger log = YukonLogManager.getLogger(RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor.class);
-    private JmsTemplate jmsTemplate;
+    private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
     
     private Map<Status, DeviceError> statusCodesToErrors = new HashMap<>();
     {
@@ -99,8 +98,8 @@ public class RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor exte
 				request.setError(statusCodesToErrors.get(status));
 			}
 			request.setTimeStamp(System.currentTimeMillis());
-			log.debug("Sending {} on queue {}", request, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName());
-			jmsTemplate.convertAndSend(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(), request);
+			log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
+			thriftMessenger.send(request);
 		} else {
 			 log.info("Failed to update program status, insufficient information for the update for device={}, meterConfigurationId={}, status={}", device, meterConfigurationId, meterConfigurationStatus);
 		}
@@ -113,8 +112,6 @@ public class RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor exte
     
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
+        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName());
     }
 }

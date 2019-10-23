@@ -73,7 +73,17 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
             throw new DuplicateException("Unable to save program as the name must be unique.", e);
         }
     }
-
+    
+    @Override
+    public void updateMeterProgramStatusToInitiating(int deviceId, long lastUpdate) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink params = sql.update("MeterProgramStatus");
+        params.addValue("LastUpdate", lastUpdate);
+        params.addValue("Status", ProgrammingStatus.INITIATING);
+        sql.append("WHERE deviceId").eq(deviceId);
+        jdbcTemplate.update(sql);
+    }
+    
     @Override
     public void updateMeterProgramStatus(MeterProgramStatus status) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -123,6 +133,24 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
     }
     
     @Override
+    public List<SimpleDevice> getMetersWithoutProgramStatus(List<SimpleDevice> devices) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        
+        return template.query(new SqlFragmentGenerator<SimpleDevice>() {
+            @Override
+            public SqlFragmentSource generate(List<SimpleDevice> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT PAObjectID, type");
+                sql.append("FROM  MeterProgramStatus JOIN YukonPAObject ypo ON DeviceId = ypo.PAObjectID");
+                sql.append("AND DeviceId").notIn(subList.stream()
+                                              .map(SimpleDevice::getDeviceId)
+                                              .collect(Collectors.toList()));
+                return sql;
+            }
+        }, devices, new YukonDeviceRowMapper());
+    }
+    
+    @Override
     public MeterProgramStatus getMeterProgramStatus(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceId, ReportedGuid, LastUpdate, Source, Status");
@@ -145,6 +173,16 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
             return jdbcTemplate.queryForObject(sql, programRowMapper);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Meter Program not found guid:" + guid, e);
+        }
+    }
+    
+    @Override
+    public boolean hasMeterProgram(UUID guid) {
+        try {
+            getMeterProgram(guid);
+            return true;
+        } catch (NotFoundException e) {
+            return false;
         }
     }
 

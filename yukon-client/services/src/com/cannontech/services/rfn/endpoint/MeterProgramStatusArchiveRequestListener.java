@@ -2,6 +2,9 @@ package com.cannontech.services.rfn.endpoint;
 
 import java.util.UUID;
 
+import javax.jms.BytesMessage;
+import javax.jms.JMSException;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import com.cannontech.common.device.programming.model.MeterProgramSource;
 import com.cannontech.common.device.programming.model.MeterProgramStatus;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.messaging.serialization.thrift.ThriftByteDeserializer;
 import com.cannontech.services.rfn.RfnArchiveProcessor;
 import com.cannontech.services.rfn.RfnArchiveQueueHandler;
 
@@ -25,6 +29,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnArchiveQueueHandler queueHandler;
     @Autowired private MeterProgrammingDao meterProgrammingDao;
+    @Autowired ThriftByteDeserializer<MeterProgramStatusArchiveRequest> deserializer;
 
     @Override
     public void process(Object obj, String processor) {
@@ -35,14 +40,39 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
      * Handles message from SM and Porter, logs the message and put in on a
      * queue.
      */
-    public void handleArchiveRequest(MeterProgramStatusArchiveRequest request) {
-        queueHandler.add(this, request);
+    public void handleArchiveRequest(BytesMessage request) {
+        try {
+            byte[] msgBytes = new byte[(int)request.getBodyLength()];
+            
+            request.readBytes(msgBytes);
+            
+            var requestMessage = deserializer.fromBytes(msgBytes); 
+
+            queueHandler.add(this, requestMessage);
+        } catch (JMSException e) {
+            log.error("Error while deserializing message", e);
+        }
     }
 
     /**
      * Attempts to update Meter Program Status with a new status
      */
     private void processRequest(MeterProgramStatusArchiveRequest request, String processor) {
+       
+        int deviceId = rfnDeviceDao.getDeviceIdForRfnIdentifier(request.getRfnIdentifier());
+        if (request.getStatus() == ProgrammingStatus.INITIATING) {
+            MeterProgramStatus oldStatus = meterProgrammingDao.getMeterProgramStatus(deviceId);
+            if (oldStatus.getLastUpdate().isBefore(request.getTimeStamp())) {
+                log.info("(Request to initiate download recieved and is older then existing status. Discarding the record. Existing status {}",
+                         oldStatus);
+                return;
+            } else {
+                log.info("Updated status to Initiating for device {}.", request.getRfnIdentifier());
+                meterProgrammingDao.updateMeterProgramStatusToInitiating(deviceId, request.getTimeStamp());
+                return;
+            }
+        }
+        
         StringBuilder configId = new StringBuilder(request.getConfigurationId().toString());
 
         MeterProgramSource prefix = MeterProgramSource.getByPrefix(Character.toString(configId.charAt(0)));
@@ -51,14 +81,13 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
         request.setConfigurationId(configId.toString());
 
         if (prefix == null) {
-            log.error("Configuration Id {} in {} doesn't contain recognizable prefix, discrading response", configId, request);
+            log.error("Configuration Id {} in {} doesn't contain recognizable prefix, discarding response", configId, request);
         } else {
-            int deviceId = rfnDeviceDao.getDeviceIdForRfnIdentifier(request.getRfnIdentifier());
             MeterProgramStatus newStatus = getMeterProgramStatus(request, prefix);
             MeterProgramStatus oldStatus = null;
             try {
-                oldStatus = meterProgrammingDao.getMeterProgramStatus(rfnDeviceDao.getDeviceIdForRfnIdentifier(request.getRfnIdentifier()));
-            } catch (NotFoundException e) {
+                oldStatus = meterProgrammingDao.getMeterProgramStatus(deviceId);
+            } catch (@SuppressWarnings("unused") NotFoundException e) {
                 log.info("Creating status. \nNew Status {}", newStatus);
                 meterProgrammingDao.createMeterProgramStatus(newStatus);
                 return;

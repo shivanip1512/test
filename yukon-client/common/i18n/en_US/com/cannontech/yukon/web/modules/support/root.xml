@@ -237,8 +237,8 @@
             <li>Critically low (&lt; 3.3 Volts)</li>
             <li>Unreported (missing more than 50% of interval data from the selected timeframe)</li>
         </ul>
-        <br><b>High Sleeping Current: </b>Linear regression algorithm executed against the six days previous to the selected “Interval End” date chosen by the user will be evaluated and an indication of 
-        True or False will be returned.
+        <br><b>High Sleeping Current: </b>Linear regression algorithm executed over the six days previous to the selected “Interval End” date chosen by the user.
+         If the regression slope of the voltage is between -0.4mV/hr and -0.1mV/hr, a value of True will returned, else False.
         <br><br>Clicking “Generate” will produce a comma separated file of the following data for further review:
         <ul>
             <li>Device Name</li>
@@ -318,8 +318,10 @@
     
     <!-- BatteryNodeAnalysisController flash messages-->
     <entry key="yukon.web.modules.support.batteryNodeAnalysisController.noFileUploaded">No file was selected or the file is empty, please try a different file.</entry>
-    <entry key="yukon.web.modules.support.batteryNodeAnalysisController.unableToReadCsvFile">The CSV file was unable to be read, please check the data and try again.</entry>
-
+    <entry key="yukon.web.modules.support.batteryNodeAnalysisController.unableToReadFile">The file {0} was unable to be read, please check the data and try again.</entry>
+    <entry key="yukon.web.modules.support.batteryNodeAnalysisController.badEndIntervalSelected">Bad Interval End date, uploaded file has a date range of {0}, please select an appropriate Interval End date.</entry>
+    <entry key="yukon.web.modules.support.batteryNodeAnalysisController.fileParsingError">Error parsing file: {0} unexpected added or missing columns present, please verify uploaded file and try again.</entry>
+    
     <!-- deviceDefinition/deviceDefinitionViewer.jsp -->
     <entry key="yukon.web.modules.support.deviceDef.pageName">Device Definitions</entry>
     <entry key="yukon.web.modules.support.deviceDef.filters.title">Filters</entry>

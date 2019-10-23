@@ -50,7 +50,7 @@ RfnCommandResult RfnDemandIntervalSetConfigurationCommand::decodeCommand( const 
     validate( Condition( response[1] == 0, ClientErrors::Abnormal )
             << "Set command failed with error code " << std::to_string(response[1]) );
 
-    return StreamBuffer() << "Successfully set demand interval to " << demandInterval;
+    return { (StreamBuffer() << "Successfully set demand interval to " << demandInterval).extractToString() };
 }
 
 
@@ -90,7 +90,7 @@ RfnCommandResult RfnDemandIntervalGetConfigurationCommand::decodeCommand( const 
     validate( Condition( _interval < 61min, ClientErrors::BadParameter )
             << "Invalid demand interval " << _interval);
 
-    return StreamBuffer() << "Demand interval: " << _interval;
+    return { (StreamBuffer() << "Demand interval: " << _interval).extractToString() };
 }
 
 

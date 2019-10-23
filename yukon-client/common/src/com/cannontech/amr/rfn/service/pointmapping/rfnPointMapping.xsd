@@ -49,6 +49,7 @@
             <xs:enumeration value="Avg" />
             <xs:enumeration value="Net Flow" />
             <xs:enumeration value="Daily Max" />
+            <xs:enumeration value="Daily Min" />
             <xs:enumeration value="Cumulative" />
             <xs:enumeration value="Previous" />
             
