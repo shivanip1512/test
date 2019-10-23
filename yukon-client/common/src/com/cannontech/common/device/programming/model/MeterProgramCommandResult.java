@@ -3,7 +3,7 @@ package com.cannontech.common.device.programming.model;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class MeterProgramUploadCancelResult {
+public class MeterProgramCommandResult {
     private boolean isSuccess;
     private String errorText;
 
