@@ -19,6 +19,8 @@ import com.cannontech.rest.api.dr.helper.ProgramConstraintHelper;
 import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
 import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
 import com.cannontech.rest.api.loadProgram.request.MockLoadProgramCopy;
+import com.cannontech.rest.api.loadProgram.request.MockProgramControlWindow;
+import com.cannontech.rest.api.loadProgram.request.MockProgramControlWindowFields;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import io.restassured.response.ExtractableResponse;
 
@@ -31,7 +33,7 @@ public class HoneywellProgramApiTest {
     /**
      * Test case is to create Honeywell Load Program for Honeywell Load Program create request.
      */
-    @Test()
+    @Test
     public void HoneywellProgram_01_Create(ITestContext context) {
 
         MockLoadGroupBase loadGroupHoneywell = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_HONEYWELL);
@@ -39,8 +41,8 @@ public class HoneywellProgramApiTest {
         List<MockLoadGroupBase> loadGroups = new ArrayList<>();
         loadGroups.add(loadGroupHoneywell);
         MockProgramConstraint programConstraint = ProgramConstraintHelper.createProgramConstraint();
-        context.setAttribute("constraintId", programConstraint.getId());
-        context.setAttribute("constraintName", programConstraint.getName());
+        context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID, programConstraint.getId());
+        context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME, programConstraint.getName());
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.HoneywellCycle);
 
@@ -51,8 +53,8 @@ public class HoneywellProgramApiTest {
         loadProgram.setName("Auto_LmHoneywellProgramTest");
         loadProgram.setNotification(null);
         ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", loadProgram);
-        context.setAttribute("programName", loadProgram.getName());
-        programId = response.path("programId");
+        context.setAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME, loadProgram.getName());
+        programId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
         assertTrue("Status code should be 200", response.statusCode() == 200);
         assertTrue("Program Id should not be Null", programId != null);
         loadProgram.setProgramId(programId);
@@ -101,7 +103,7 @@ public class HoneywellProgramApiTest {
         MockLoadProgram updatedLoadProgram = getUpdatedResponse.as(MockLoadProgram.class);
         assertTrue("Name should be " + name, updatedLoadProgram.getName().equals(name));
         assertTrue("Gear Name should be " + gearName, updatedLoadProgram.getGears().get(0).getGearName().equals(gearName));
-        context.setAttribute("programName", updatedLoadProgram.getName());
+        context.setAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME, updatedLoadProgram.getName());
     }
 
     /**
@@ -110,12 +112,12 @@ public class HoneywellProgramApiTest {
     @Test(dependsOnMethods = { "HoneywellProgram_01_Create" })
     public void HoneywellProgram_04_Copy(ITestContext context) {
         MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_HONEYWELL_PROGRAM,
-                                                                                                 (Integer) context.getAttribute("constraintId"));
+                                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
 
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, programId.toString());
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
         assertTrue("Program Id should not be Null", copyResponse.path("programId") != null);
-        context.setAttribute("copiedProgramName", loadProgramCopy.getName());
+        context.setAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME, loadProgramCopy.getName());
         copyProgramId = copyResponse.path("programId");
     }
 
@@ -125,7 +127,7 @@ public class HoneywellProgramApiTest {
     @Test(dependsOnMethods = { "HoneywellProgram_01_Create" })
     public void HoneywellProgram_05_Delete(ITestContext context) {
 
-        MockLMDto deleteObject = MockLMDto.builder().name((String) context.getAttribute("programName")).build();
+        MockLMDto deleteObject = MockLMDto.builder().name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
 
         ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject, programId.toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
@@ -185,7 +187,7 @@ public class HoneywellProgramApiTest {
     public void HoneywellProgram_09_CreateWithExistingProgramName(ITestContext context) {
 
         mockLoadProgram = buildMockLoadProgram();
-        mockLoadProgram.setName(context.getAttribute("copiedProgramName").toString());
+        mockLoadProgram.setName(context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME).toString());
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
@@ -310,11 +312,79 @@ public class HoneywellProgramApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.getGears().get(0).setGearName("");
         mockLoadProgram.setNotification(null);
-        
+
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[1]").equals("Gear Name is required."));
+    }
+
+    /**
+     * Test case to validate Control Window Start time cannot be less than 0 and validates valid error message in
+     * response
+     */
+    @Test
+    public void HoneywellProgram_18_ControlWindowStartTimeLessThanMinValue() {
+
+        mockLoadProgram = buildMockLoadProgram();
+        mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStartTimeInMinutes(-1);
+        mockLoadProgram.setNotification(null);
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
+        assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[1]").equals("Must be between 0 and 1,439."));
+    }
+
+    /**
+     * Test case to validate Load Program cannot be created ControlWindow Start time less than 0 and validates valid
+     * error message in response
+     */
+    @Test
+    public void HoneywellProgram_19_ControlWindowStopTimeLessThanMinValue() {
+
+        mockLoadProgram = buildMockLoadProgram();
+        mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStopTimeInMinutes(-1);
+        mockLoadProgram.setNotification(null);
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
+        assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[1]").equals("Must be between 0 and 1,440."));
+    }
+
+    /**
+     * Test case to validate Load Program cannot be created ControlWindow Start time greater than max value and
+     * validates valid error message in response
+     */
+    @Test
+    public void HoneywellProgram_20_ControlWindowStartTimeGreaterThanMaxValue() {
+
+        mockLoadProgram = buildMockLoadProgram();
+        mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStartTimeInMinutes(1440);
+        mockLoadProgram.setNotification(null);
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
+        assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[1]").equals("Must be between 0 and 1,439."));
+    }
+
+    /**
+     * Test case to validate Load Program cannot be created ControlWindow Start time greater than max value and
+     * validates valid error message in response
+     */
+    @Test
+    public void HoneywellProgram_21_ControlWindowStopTimeGreaterThanMaxValue() {
+
+        mockLoadProgram = buildMockLoadProgram();
+        mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStopTimeInMinutes(1441);
+        mockLoadProgram.setNotification(null);
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
+        assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[1]").equals("Must be between 0 and 1,440."));
     }
 
     /**
@@ -325,7 +395,7 @@ public class HoneywellProgramApiTest {
 
         SoftAssert softAssert = new SoftAssert();
         // Delete Copied LoadProgram
-        MockLMDto deleteObject = MockLMDto.builder().name((String) context.getAttribute("copiedProgramName")).build();
+        MockLMDto deleteObject = MockLMDto.builder().name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME)).build();
         ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject, copyProgramId.toString());
         softAssert.assertTrue(response.statusCode() == 200, "Status code should be 200. Delete copied LoadProgram failed.");
 
@@ -336,8 +406,10 @@ public class HoneywellProgramApiTest {
         softAssert.assertTrue(response1.statusCode() == 200, "Status code should be 200. Delete LoadGroup failed.");
 
         // Delete Program Constraint which have been created for Load Program
-        MockLMDto deleteConstraint = MockLMDto.builder().name(context.getAttribute("constraintName").toString()).build();
-        ExtractableResponse<?> response2 = ApiCallHelper.delete("deleteProgramConstraint", deleteConstraint, context.getAttribute("constraintId").toString());
+        MockLMDto deleteConstraint = MockLMDto.builder().name(context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME).toString()).build();
+        ExtractableResponse<?> response2 = ApiCallHelper.delete("deleteProgramConstraint",
+                                                                deleteConstraint,
+                                                                context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID).toString());
         softAssert.assertTrue(response2.statusCode() == 200, "Status code should be 200. Delete Program Constraint failed.");
 
         softAssert.assertAll();

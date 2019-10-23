@@ -213,7 +213,7 @@ public class LoadGroupHelper {
     public static MockLoadGroupBase createLoadGroup(MockPaoType paoType) {
         Random rand = new Random();
         int randomInt = rand.nextInt(10000);
-        String name = paoType + "" + randomInt;
+        String name = paoType + "_" + randomInt;
 
         MockLoadGroupBase loadGroup = buildLoadGroup(paoType);
         loadGroup.setName(name);

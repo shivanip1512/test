@@ -75,15 +75,15 @@ public class ProgramConstraintHelper {
     public static MockProgramConstraint createProgramConstraint() {
         Random rand = new Random();
         int randomInt = rand.nextInt(10000);
-        String name = "ProgramConstraint" + randomInt;
+        String name = "ProgramConstraint_" + randomInt;
         Integer constraintId = null;
 
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setName(name);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", programConstraint);
-        constraintId = createResponse.path("id");
-        assertTrue("Constraint ID should not be Null", constraintId != null);
+        constraintId = createResponse.path(CONTEXT_PROGRAM_CONSTRAINT_ID);
+        assertTrue("Constraint Id should not be Null", constraintId != null);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
 
         programConstraint.setId(constraintId);
