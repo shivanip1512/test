@@ -450,9 +450,9 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
 
     @Override
     public void cancel(int key, LiteYukonUser user) {
-        CollectionActionResult result = collectionActionService.getCachedResult(key);
-        if (result != null) {
-           //log cancellation attempt
+        CollectionActionResult result = collectionActionService.getResult(key);
+        if (result.isCancelable()) {
+            // log cancellation attempt
             result.setCanceled(true);
             collectionActionService.updateResult(result, CommandRequestExecutionStatus.CANCELING);
             strategies.forEach(s -> s.cancel(result, user));
