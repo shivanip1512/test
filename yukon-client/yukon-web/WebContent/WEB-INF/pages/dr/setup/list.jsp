@@ -73,6 +73,21 @@
                         <tags:selectWithItems items="${loadProgramTypes}" path="types" dataPlaceholder="${selectLbl}"
                                               id="js-load-program-types"/>
                     </div>
+                    <div class="js-gear-types-container dib dn">
+                        <tags:selectWithItems items="${gearTypes}" path="gearTypes" dataPlaceholder="${selectLbl}"
+                                                               id="js-gear-types"/>
+                    </div>
+                    <div class="js-program-container dib dn vat">
+                            <form:hidden path="programIds" id="js-programIds"/>
+                           <tags:pickerDialog id="programPicker"
+                                                            type="programPicker"
+                                                            destinationFieldId="js-programIds"
+                                                            linkType="selection"
+                                                            selectionProperty="paoName"
+                                                            multiSelectMode="true"
+                                                            initialIds="${lmSetupFilter.programIds}"
+                                                            endEvent="yukon:gear:filter:programSelected"/>
+                    </div>
                     <cti:button label="${filterLbl}" classes="primary action fr" type="submit"/>
                 </form:form>
             </div>
@@ -83,6 +98,9 @@
     <c:choose>
         <c:when test="${filteredResults.hitCount == 0}">
             <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
+        </c:when>
+        <c:when test="${isFilterByGearSelected}">
+            <%@ include file="gearFilteredResults.jsp" %>
         </c:when>
         <c:otherwise>
             <%@ include file="filteredResults.jsp" %>

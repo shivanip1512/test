@@ -306,9 +306,12 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.LOAD_PROGRAM">Load Program</entry>
 <entry key="yukon.web.modules.dr.setup.MACRO_LOAD_GROUP">Macro Load Group</entry>
 <entry key="yukon.web.modules.dr.setup.PROGRAM_CONSTRAINT">Program Constraint</entry>
+<entry key="yukon.web.modules.dr.setup.GEAR">Gear</entry>
 
 <entry key="yukon.web.modules.dr.setup.filter.NAME">Name</entry>
 <entry key="yukon.web.modules.dr.setup.filter.TYPE">Type</entry>
+<entry key="yukon.web.modules.dr.setup.filter.ORDER">Order</entry>
+<entry key="yukon.web.modules.dr.setup.filter.PROGRAM">Program</entry>
 <entry key="yukon.web.modules.dr.setup.filter.error">Error filtering records: {0}.</entry>
 
 <!-- Program Gear -->
