@@ -181,6 +181,8 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 
         unsupportedDevices.addAll(meterProgrammingDao.getMetersWithOldFirmware(deviceCollection.getDeviceList()));
         unsupportedDevices.addAll(meterProgrammingDao.getMetersWithoutProgramStatus(deviceCollection.getDeviceList()));
+        List<SimpleDevice> alreadyConfigured = meterProgrammingDao.getAlreadyProgrammedMeters(deviceCollection.getDeviceList(), guid);
+        
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.METER_PROGRAM_UPLOAD_INITIATE,
                                                                              input,
                                                                              deviceCollection,
@@ -189,8 +191,11 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
                                                                              context);
 
         collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result, unsupportedDevices);
+        collectionActionService.addUnsupportedToResult(CollectionActionDetail.ALREADY_CONFIGURED, result, alreadyConfigured);
+        
         List<SimpleDevice> supportedDevices = new ArrayList<>(deviceCollection.getDeviceList());
         supportedDevices.removeAll(unsupportedDevices);
+        supportedDevices.removeAll(alreadyConfigured);
 
         CommandCompletionCallback<CommandRequestDevice> execCallback = getExecutionCallback(context, result);
         meterProgrammingDao.assignDevicesToProgram(guid, supportedDevices);
@@ -211,6 +216,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
             request.setStatus(ProgrammingStatus.INITIATING);
             request.setTimeStamp(System.currentTimeMillis());
             log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
+         
             thriftMessenger.send(request);
         });
     }
