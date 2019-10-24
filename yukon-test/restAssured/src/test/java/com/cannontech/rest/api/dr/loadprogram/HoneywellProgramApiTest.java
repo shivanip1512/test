@@ -19,8 +19,6 @@ import com.cannontech.rest.api.dr.helper.ProgramConstraintHelper;
 import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
 import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
 import com.cannontech.rest.api.loadProgram.request.MockLoadProgramCopy;
-import com.cannontech.rest.api.loadProgram.request.MockProgramControlWindow;
-import com.cannontech.rest.api.loadProgram.request.MockProgramControlWindowFields;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import io.restassured.response.ExtractableResponse;
 
