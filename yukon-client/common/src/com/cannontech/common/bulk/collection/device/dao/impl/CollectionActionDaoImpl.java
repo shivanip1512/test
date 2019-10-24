@@ -270,6 +270,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
                 } else if (action.getProcess() == CollectionActionProcess.DB) {
                     result = buildDbResult(action, key);
                 }
+                result.setLoadedFromDatabase(true);
                 result.setCacheKey(key);
                 result.setStatus(rs.getEnum("Status", CommandRequestExecutionStatus.class));
                 result.setStartTime(rs.getInstant("StartTime"));
