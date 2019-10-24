@@ -35,10 +35,9 @@ public class LoadGroupEcobeeAPITest {
 
     @Test
     public void loadGroupEcobee_01_Create(ITestContext context) {
-        String paoId = null;
         Log.startTestCase("loadGroupEcobee_01_Create");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
-        paoId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        String paoId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, paoId);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
         assertTrue("Group Id should not be Null", paoId != null);
