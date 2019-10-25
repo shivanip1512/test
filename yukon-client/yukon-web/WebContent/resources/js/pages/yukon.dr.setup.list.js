@@ -17,13 +17,13 @@ yukon.dr.setup.list = (function() {
         if (isFilterByTypeChanged) {
             var selectedFilterByType = $("#js-filter-by-type option:selected").val();
             $("#js-name").val('');
-            if (selectedFilterByType !== 'LOAD_GROUP') {
+            if (!$("#js-load-group-types").is(":visible")) {
                 $("#js-load-group-types").val("").trigger("chosen:updated");
             }
-            if (selectedFilterByType !== 'LOAD_PROGRAM') {
+            if (!$("#js-load-program-types").is(":visible")) {
                 $("#js-load-program-types").val("").trigger("chosen:updated");
             }
-            if (selectedFilterByType !== 'GEAR') {
+            if (!$("#js-gear-types").is(":visible")) {
                 $("#js-gear-types").val("").trigger("chosen:updated");
             }
         }
