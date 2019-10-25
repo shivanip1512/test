@@ -43,6 +43,8 @@ namespace Cti::Devices::Commands {
 
         std::string getCommandName() override;
 
+        bool isPost() const override;
+
     private:
 
         enum Command
@@ -95,17 +97,5 @@ namespace Cti::Devices::Commands {
         RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
 
         std::string getCommandName() override;
-
-    private:
-
-        Bytes getCommandHeader() override;
-        Bytes getCommandData()   override;
-    protected:
-
-        enum TlvType
-        {
-            TlvType_ConfigurationSize = 0x01,
-            TlvType_ConfigurationURI = 0x02
-        };
     };
 }

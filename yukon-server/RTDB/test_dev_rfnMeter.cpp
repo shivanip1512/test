@@ -1205,7 +1205,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_unsupported_attribute)
 
 BOOST_AUTO_TEST_CASE( test_config_notification )
 {
-    auto cmd = Cti::Devices::Commands::RfnCommand::handleNodeOriginated(execute_time, test_cmd_rfn_ConfigNotification::payload);
+    auto cmd = Cti::Devices::Commands::RfnCommand::handleUnsolicitedReport(execute_time, test_cmd_rfn_ConfigNotification::payload);
 
     BOOST_REQUIRE(cmd);
 

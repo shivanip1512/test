@@ -66,6 +66,9 @@ class IM_EX_CTIPIL RfnRequestManager
 public:
 
     using ConfigNotificationPtr = std::unique_ptr<Devices::Commands::RfnConfigNotificationCommand>;
+    using Bytes = std::vector<unsigned char>;
+    using Block = Protocols::E2eDataTransferProtocol::Block;
+    using BlockSize = Protocols::E2eDataTransferProtocol::BlockSize;
 
     struct UnsolicitedReport
     {
@@ -96,9 +99,12 @@ public:
 
 protected:
 
-    virtual Protocols::E2eDataTransferProtocol::EndpointMessage handleE2eDtIndication(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId);
-    virtual std::vector<unsigned char> sendE2eDtRequest(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token);
-    virtual std::vector<unsigned char> sendE2eDtReply  (const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token);
+    virtual Protocols::E2eDataTransferProtocol::EndpointMessage handleE2eDtIndication(const Bytes& payload, const RfnIdentifier endpointId);
+    virtual Bytes sendE2eDtRequest(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token);
+    virtual Bytes sendE2eDtPost(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token);
+    virtual Bytes sendE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const RfnIdentifier endpointId, const unsigned long token);
+    virtual Bytes sendE2eDtReply(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token);
+    virtual Bytes sendE2eDtBlockReply(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token, Block block);
 
 private:
 
@@ -111,21 +117,26 @@ private:
     void             postResults();
     void             reportStatistics();
 
-    typedef Messaging::Rfn::ApplicationServiceIdentifiers ApplicationServiceIdentifiers;
+    using ApplicationServiceIdentifiers = Messaging::Rfn::ApplicationServiceIdentifiers;
 
     Protocols::E2eDataTransferProtocol _e2edt;
 
     struct PacketInfo
     {
-        std::vector<unsigned char> payloadSent;
+        Bytes    payloadSent;
         CtiTime  timeSent;
         unsigned retransmissionDelay;
         unsigned retransmits;
         unsigned maxRetransmits;
     };
 
-    PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier, const unsigned priority, const long groupMessageId, const CtiTime timeout);
-    void sendE2eDataAck(const std::vector<unsigned char> &e2eAck, const ApplicationServiceIdentifiers &asid,  const RfnIdentifier &rfnIdentifier);
+    enum class AckType {
+        Success,
+        BadRequest
+    };
+
+    PacketInfo sendE2eDataRequestPacket(const Bytes& e2ePacket, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier, const unsigned priority, const long groupMessageId, const CtiTime timeout);
+    void sendE2eDataAck(const unsigned short id, const AckType ackType, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier);
 
     void checkForNewRequest(const RfnIdentifier &rfnId);
 
@@ -186,10 +197,10 @@ private:
 
     using OptionalResult = std::optional<RfnDeviceResult>;
 
-    ConfigNotificationPtr handleNodeOriginated     (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
+    void                  handleNodeOriginated     (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message, const ApplicationServiceIdentifiers asid);
     OptionalResult        handleResponse           (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
-    void                  handleBlockContinuation  (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
-    RfnDeviceResult       handleCommandResponse    (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
+    void                  handleBlockContinuation  (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const unsigned long token, const Bytes& payload, const Protocols::E2eDataTransferProtocol::Block block);
+    RfnDeviceResult       handleCommandResponse    (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const unsigned long token, const Bytes& payload);
     RfnDeviceResult       handleCommandError       (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const YukonError_t error);
 };
 

@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE(test_handle_node_originated)
         0x01
     };
 
-    auto cmd = RfnCommand::handleNodeOriginated(execute_time, payload);
+    auto cmd = RfnCommand::handleUnsolicitedReport(execute_time, payload);
 
     BOOST_REQUIRE(cmd);
 

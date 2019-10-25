@@ -20,9 +20,7 @@
 
 #include <mutex>
 
-namespace Cti {
-namespace Messaging {
-namespace Rfn {
+namespace Cti::Messaging::Rfn {
 
 class IM_EX_RFN_E2E E2eMessenger
 {
@@ -58,6 +56,7 @@ public:
 
     struct Indication : PayloadMessage, CallbackFor<Indication>
     {
+        ApplicationServiceIdentifiers asid;
     };
 
     struct Confirm : Message, CallbackFor<Confirm>
@@ -132,6 +131,3 @@ private:
 extern IM_EX_RFN_E2E std::unique_ptr<E2eMessenger> gE2eMessenger;
 
 }
-}
-}
-

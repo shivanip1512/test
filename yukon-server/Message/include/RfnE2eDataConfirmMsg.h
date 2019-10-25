@@ -4,9 +4,7 @@
 #include "RfnE2eMsg.h"
 #include "NetworkManagerMessaging.h"
 
-namespace Cti {
-namespace Messaging {
-namespace Rfn {
+namespace Cti::Messaging::Rfn {
 
 struct /*IM_EX_MSG*/ E2eDataConfirmMsg : E2eMsg  //  no methods, does not need to be exported
 {
@@ -26,12 +24,10 @@ struct /*IM_EX_MSG*/ E2eDataConfirmMsg : E2eMsg  //  no methods, does not need t
     };
 
     Protocol protocol;
-    unsigned char applicationServiceId;
+    ApplicationServiceIdentifiers applicationServiceId;
     RfnIdentifier rfnIdentifier;
     ReplyType replyType;
     boost::optional<NetworkManagerRequestHeader> header;
 };
 
-}
-}
 }

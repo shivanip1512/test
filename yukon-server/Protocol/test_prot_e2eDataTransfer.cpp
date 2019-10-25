@@ -60,8 +60,8 @@ BOOST_AUTO_TEST_CASE( test_handleIndication )
 
     const auto er = e2e.handleIndication(inbound, endpointId);
 
-    BOOST_CHECK(er.ack.empty());
-    BOOST_CHECK(er.blockContinuation.empty());
+    BOOST_CHECK_EQUAL(er.confirmable, false);
+    BOOST_CHECK_EQUAL(er.block.has_value(), false);
     BOOST_CHECK_EQUAL(er.token, token);
 
     Cti::Test::byte_str payloadBytesExpected =
@@ -192,14 +192,14 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_duplicatePacket )
     const unsigned long token = 0x5ad6;
 
     Cti::Test::byte_str inboundBytes =
-        "52 45 02 73 5a d6 ff";
+        "52 01 02 73 5a d6 ff";
 
     const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
     const auto er = e2e.handleIndication(inbound, endpointId);
 
-    BOOST_CHECK(er.ack.empty());
-    BOOST_CHECK(er.blockContinuation.empty());
+    BOOST_CHECK_EQUAL(er.confirmable, false);
+    BOOST_CHECK_EQUAL(er.block.has_value(), false);
     BOOST_CHECK(er.data.empty());
     BOOST_CHECK_EQUAL(er.token, token);
 
@@ -251,7 +251,9 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_requestNotAcceptable )
 
     auto message = e2e.handleIndication(inbound, endpointId);
 
-    BOOST_CHECK_EQUAL(message.status, ClientErrors::E2eRequestNotAcceptable);
+    auto message_status = test_E2eDataTransferProtocol::translateIndicationCode(message.code, endpointId);
+
+    BOOST_CHECK_EQUAL(message_status, ClientErrors::E2eRequestNotAcceptable);
 }
 
 BOOST_AUTO_TEST_CASE( test_handleIndication_badRequest )
@@ -284,7 +286,9 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_badRequest )
 
     auto message = e2e.handleIndication(inbound, endpointId);
 
-    BOOST_CHECK_EQUAL(message.status, ClientErrors::E2eBadRequest);
+    auto message_status = test_E2eDataTransferProtocol::translateIndicationCode(message.code, endpointId);
+
+    BOOST_CHECK_EQUAL(message_status, ClientErrors::E2eBadRequest);
 }
 
 BOOST_AUTO_TEST_CASE( test_handleIndication_unexpectedAck_mismatch )

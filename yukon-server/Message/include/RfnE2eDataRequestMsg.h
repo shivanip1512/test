@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rfn_identifier.h"
+#include "rfn_asid.h"
 #include "RfnE2eMsg.h"
 #include "NetworkManagerMessaging.h"
 
@@ -8,14 +9,12 @@
 
 #include <string>
 
-namespace Cti {
-namespace Messaging {
-namespace Rfn {
+namespace Cti::Messaging::Rfn {
 
 struct /*IM_EX_MSG*/ E2eDataRequestMsg : E2eMsg  //  no methods, does not need to be exported
 {
     Protocol protocol;
-    unsigned char applicationServiceId;
+    ApplicationServiceIdentifiers applicationServiceId;
     RfnIdentifier rfnIdentifier;
     bool highPriority;
     boost::optional<std::string> security;
@@ -24,6 +23,4 @@ struct /*IM_EX_MSG*/ E2eDataRequestMsg : E2eMsg  //  no methods, does not need t
     NetworkManagerRequestHeader header;
 };
 
-}
-}
 }
