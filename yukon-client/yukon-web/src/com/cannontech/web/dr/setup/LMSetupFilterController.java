@@ -96,9 +96,11 @@ public class LMSetupFilterController {
                 model.addAttribute(column.name(), col);
             }
         } else if (lmSetupFilter.getFilterByType() == LmSetupFilterType.GEAR) {
+            //TODO: These logs will be removed after YUK-19938 is implemented.
             log.info("Gear Name: " + lmSetupFilter.getName());
             log.info("Gear Types: " + lmSetupFilter.getGearTypes());
             log.info("Program Ids: " + lmSetupFilter.getProgramIds());
+            
             LMFilterGearSortBy sortBy = LMFilterGearSortBy.valueOf(sorting.getSort());
             for (LMFilterGearSortBy column : LMFilterGearSortBy.values()) {
                 String text = accessor.getMessage(column);

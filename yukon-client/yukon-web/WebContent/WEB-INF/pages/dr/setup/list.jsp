@@ -83,6 +83,7 @@
                                                             type="programPicker"
                                                             destinationFieldId="js-programIds"
                                                             linkType="selection"
+                                                            nameKey="selectPrograms"
                                                             selectionProperty="paoName"
                                                             multiSelectMode="true"
                                                             initialIds="${lmSetupFilter.programIds}"

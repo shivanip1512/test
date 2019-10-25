@@ -14,6 +14,7 @@
 <entry key="yukon.web.modules.dr.setup.delete.error.exception.message">{0}</entry>
 <entry key="yukon.web.modules.dr.setup.delete.success">{0} deleted successfully.</entry>
 <entry key="yukon.web.modules.dr.setup.select">Select</entry>
+<entry key="yukon.web.modules.dr.setup.selectPrograms.label">Select Program(s)</entry>
 
 <!-- Load Group -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.CREATE.pageName">Create Load Group</entry>
