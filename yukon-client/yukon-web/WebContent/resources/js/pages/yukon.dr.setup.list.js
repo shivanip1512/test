@@ -13,14 +13,6 @@ yukon.dr.setup.list = (function() {
     var
     _initialized = false,
     
-    _initTypes = function () {
-        var selectedFilterByType = $("#js-filter-by-type option:selected").val();
-        $(".js-load-group-types-container").toggleClass("dn", selectedFilterByType !== 'LOAD_GROUP');
-        $(".js-load-program-types-container").toggleClass("dn", selectedFilterByType !== 'LOAD_PROGRAM');
-        $(".js-gear-types-container").toggleClass("dn", selectedFilterByType !== 'GEAR');
-        $(".js-program-container").toggleClass("dn", selectedFilterByType !== 'GEAR');
-    },
-    
     _filterResults = function (isFilterByTypeChanged) {
         if (isFilterByTypeChanged) {
             var selectedFilterByType = $("#js-filter-by-type option:selected").val();
@@ -45,19 +37,17 @@ yukon.dr.setup.list = (function() {
             
             if (_initialized) return;
             
-            if ($("#js-load-group-types").exists()) {
+           if ($("#js-load-group-types").is(":visible")) {
                 $("#js-load-group-types").chosen({width: "450px"});
             }
             
-            if ($("#js-load-program-types").exists()) {
+            if ($("#js-load-program-types").is(":visible")) {
                 $("#js-load-program-types").chosen({width: "305px"});
             }
             
-            if ($("#js-gear-types").exists()) {
+            if ($("#js-gear-types").is(":visible")) {
                 $("#js-gear-types").chosen({width: "250px"});
             }
-            
-            _initTypes();
             
             $('#setupFilter :input').change(function (event) {
                 var isFilterByTypeChanged = event.currentTarget.id === 'js-filter-by-type';

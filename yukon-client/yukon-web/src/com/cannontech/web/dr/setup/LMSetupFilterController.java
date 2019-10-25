@@ -121,6 +121,8 @@ public class LMSetupFilterController {
         model.addAttribute("loadProgramTypes", PaoType.getDirectLMProgramTypes());
         model.addAttribute("gearTypes", GearControlMethod.values());
         model.addAttribute("isFilterByGearSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.GEAR);
+        model.addAttribute("isFilterByLoadProgramSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_PROGRAM);
+        model.addAttribute("isFilterByLoadGroupSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_GROUP);
         
         if (lmSetupFilter.getFilterByType() != LmSetupFilterType.GEAR) {
             ResponseEntity<? extends Object> response = null;
