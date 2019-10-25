@@ -27,7 +27,7 @@ public:
     {
         unsigned szx;
 
-        size_t getSize() const { return szx << 6; }
+        size_t getSize() const { return 16 << szx; }
     };
 
     struct Block
