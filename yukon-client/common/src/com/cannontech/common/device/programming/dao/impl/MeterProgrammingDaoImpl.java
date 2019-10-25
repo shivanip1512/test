@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -16,6 +17,7 @@ import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.model.MeterProgramSource;
 import com.cannontech.common.device.programming.model.MeterProgramStatus;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -27,6 +29,8 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.encryption.CryptoUtils;
+import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.google.common.collect.Lists;
 
 public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
@@ -60,6 +64,8 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
     @Override
     public UUID saveMeterProgram(MeterProgram program) {
         try {
+            AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey());
+            String password =  encrypter.encryptToHexStr(program.getPassword());
             UUID uuid = UUID.randomUUID();
             SqlStatementBuilder sql = new SqlStatementBuilder();
             SqlParameterSink params = sql.insertInto("MeterProgram");
@@ -67,10 +73,13 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
             params.addValue("Name", program.getName());
             params.addValue("PaoType", program.getPaoType());
             params.addValue("Program", program.getProgram());
+            params.addValue("Password", password);
             jdbcTemplate.update(sql);
             return uuid;
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Unable to save program as the name must be unique.", e);
+        } catch (Exception e) {
+            throw new BadConfigurationException("Unable to encrypt password: " + program.getPassword(), e);
         }
     }
     
