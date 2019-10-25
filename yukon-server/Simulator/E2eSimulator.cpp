@@ -178,6 +178,8 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
                     {
                         if( auto e2edtRequest = parseE2eDtRequestPayload(requestMsg.payload, requestMsg.rfnIdentifier) )
                         {
+                            //e2edtRequest->method
+
                             //  Request Unacceptable
                             if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_REQUEST_NOT_ACCEPTABLE_CHANCE") )
                             {
@@ -283,6 +285,11 @@ auto E2eSimulator::parseE2eDtRequestPayload(const std::vector<unsigned char>& pa
         CTILOG_INFO(dout, "Received NONconfirmable packet (" << request_pdu->hdr->id << ") for rfnIdentifier " << rfnId);
         e2edtRequest->confirmable = false;
     }
+    else if( request_pdu->hdr->type == COAP_MESSAGE_ACK )
+    {
+        CTILOG_INFO(dout, "Received ACKnowledge packet (" << request_pdu->hdr->id << ") for rfnIdentifier " << rfnId);
+        e2edtRequest->confirmable = false;
+    }
     else
     {
         CTILOG_INFO(dout, "Received unhandled type ("<< request_pdu->hdr->type <<") for rfnIdentifier "<< rfnId);
@@ -315,7 +322,7 @@ auto E2eSimulator::parseE2eDtRequestPayload(const std::vector<unsigned char>& pa
 
 std::vector<unsigned char> E2eSimulator::buildE2eDtReplyPayload(const e2edt_reply_packet& replyContents) const
 {
-    return Protocols::Coap::scoped_pdu_ptr::make_ack_with_data(replyContents.token, replyContents.id, replyContents.payload).as_bytes();
+    return Protocols::Coap::scoped_pdu_ptr::make_data_ack(replyContents.token, replyContents.id, replyContents.payload).as_bytes();
 }
 
 
@@ -390,7 +397,7 @@ void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, co
 }
 
 
-std::vector<unsigned char> E2eSimulator::buildRfnResponse(const e2edt_request_packet& request, const unsigned char applicationServiceId, const RfnIdentifier& rfnId)
+std::vector<unsigned char> E2eSimulator::buildRfnResponse(const e2edt_request_packet& request, const ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId)
 {
     switch( request.method )
     {
@@ -400,14 +407,14 @@ std::vector<unsigned char> E2eSimulator::buildRfnResponse(const e2edt_request_pa
 
             replyPacket.id = request.id;
             replyPacket.token = request.token;
-            replyPacket.payload = buildRfnGetResponse(request.payload, applicationServiceId, rfnId);
+            replyPacket.payload = buildRfnGetResponse(request.payload, asid, rfnId);
             replyPacket.status = Protocols::Coap::ResponseCode::Content;
 
             return buildE2eDtReplyPayload(replyPacket);
         }
         case Protocols::Coap::RequestMethod::Post:
         {
-            return buildRfnGetRequest(request, applicationServiceId, rfnId);
+            return buildRfnGetRequest(request, asid, rfnId);
         }
         default:
             CTILOG_INFO(dout, "Received unknown method (" << static_cast<int>(request.method) << ") for rfnIdentifier " << rfnId);
@@ -415,11 +422,11 @@ std::vector<unsigned char> E2eSimulator::buildRfnResponse(const e2edt_request_pa
     }
 }
 
-std::vector<unsigned char> E2eSimulator::buildRfnGetResponse(const std::vector<unsigned char> &request, const unsigned char applicationServiceId, const RfnIdentifier& rfnId)
+std::vector<unsigned char> E2eSimulator::buildRfnGetResponse(const std::vector<unsigned char> &request, const ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId)
 {
-    switch( applicationServiceId )
+    switch( asid )
     {
-        case static_cast<unsigned char>(ApplicationServiceIdentifiers::ChannelManager):
+        case ApplicationServiceIdentifiers::ChannelManager:
         {
             if( ! request.empty() )
             {
@@ -432,7 +439,7 @@ std::vector<unsigned char> E2eSimulator::buildRfnGetResponse(const std::vector<u
             }
             break;
         }
-        case static_cast<unsigned char>(ApplicationServiceIdentifiers::HubMeterCommandSet):
+        case ApplicationServiceIdentifiers::HubMeterCommandSet:
         {
             if( ! request.empty() )
             {
@@ -449,11 +456,11 @@ std::vector<unsigned char> E2eSimulator::buildRfnGetResponse(const std::vector<u
     return {};
 }
 
-std::vector<unsigned char> E2eSimulator::buildRfnGetRequest(const e2edt_request_packet& post_request, const unsigned char applicationServiceId, const RfnIdentifier& rfnId)
+std::vector<unsigned char> E2eSimulator::buildRfnGetRequest(const e2edt_request_packet& post_request, const ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId)
 {
-    switch( applicationServiceId )
+    switch( asid )
     {
-        case static_cast<unsigned char>(ApplicationServiceIdentifiers::ChannelManager):
+        case ApplicationServiceIdentifiers::ChannelManager:
         {
             if( ! post_request.payload.empty() )
             {
@@ -467,8 +474,6 @@ std::vector<unsigned char> E2eSimulator::buildRfnGetRequest(const e2edt_request_
                         request.method = Protocols::Coap::RequestMethod::Get;
                         const auto meterProgramInfo = RfnMeter::RequestMeterProgram(post_request.payload, rfnId);
                         request.path = meterProgramInfo.path;
-                        request.block = 1;
-                        request.blockSize = 1000;
                         request.token = post_request.token;
 
                         return buildE2eDtRequestPayload(request);

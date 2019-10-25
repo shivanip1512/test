@@ -3,14 +3,13 @@
 #include "RfnE2eDataRequestMsg.h"
 #include "RfnE2eDataConfirmMsg.h"
 #include "RfnE2eDataIndicationMsg.h"
+#include "rfn_asid.h"
 
 #include "message_serialization_util.h"
 
 #include "Thrift/RfnE2eData_types.h"
 
-namespace Cti {
-namespace Messaging {
-namespace Rfn {
+namespace Cti::Messaging::Rfn {
 
 using namespace Messaging::Serialization;
 
@@ -90,7 +89,7 @@ MessagePtr<Thrift::RfnE2eDataRequest>::type serialize( const E2eDataRequestMsg& 
 
     omsg->__set_e2eProtocol         ( mapping(imsg.protocol) );
 
-    omsg->__set_applicationServiceId( imsg.applicationServiceId );
+    omsg->__set_applicationServiceId( static_cast<int8_t>(imsg.applicationServiceId) );
     omsg->__set_payload             ( transformContainer<std::string>( imsg.payload ) );
     omsg->__set_priority            ( imsg.highPriority
                                         ? Thrift::RfnE2eMessagePriority::APP_HI
@@ -121,7 +120,7 @@ MessagePtr<E2eDataRequestMsg>::type deserialize( const Thrift::RfnE2eDataRequest
     MessagePtr<E2eDataRequestMsg>::type omsg( new E2eDataRequestMsg );
 
     omsg->protocol             = mapping(imsg.e2eProtocol);
-    omsg->applicationServiceId = imsg.applicationServiceId;
+    omsg->applicationServiceId = static_cast<ApplicationServiceIdentifiers>( imsg.applicationServiceId );
     omsg->payload              = transformContainer<std::vector<unsigned char>>( imsg.payload );
     omsg->highPriority         = imsg.priority == Thrift::RfnE2eMessagePriority::APP_HI;
 
@@ -155,7 +154,7 @@ MessagePtr<Thrift::RfnE2eDataConfirm>::type serialize( const E2eDataConfirmMsg& 
     MessagePtr<Thrift::RfnE2eDataConfirm>::type omsg( new Thrift::RfnE2eDataConfirm );
 
     omsg->__set_e2eProtocol         ( mapping(imsg.protocol) );
-    omsg->__set_applicationServiceId( imsg.applicationServiceId );
+    omsg->__set_applicationServiceId( static_cast<int8_t>(imsg.applicationServiceId) );
     omsg->__set_replyType           ( static_cast<Thrift::RfnE2eDataReplyType::type>( imsg.replyType ) );
 
     Thrift::RfnIdentifier rfnId;
@@ -179,7 +178,7 @@ MessagePtr<E2eDataConfirmMsg>::type deserialize( const Thrift::RfnE2eDataConfirm
     MessagePtr<E2eDataConfirmMsg>::type omsg( new E2eDataConfirmMsg );
 
     omsg->protocol             = mapping(imsg.e2eProtocol);
-    omsg->applicationServiceId = imsg.applicationServiceId;
+    omsg->applicationServiceId = static_cast<ApplicationServiceIdentifiers>( imsg.applicationServiceId );
     omsg->replyType            = static_cast<E2eDataConfirmMsg::ReplyType>( imsg.replyType );
 
     ::Cti::RfnIdentifier rfnId;
@@ -207,7 +206,7 @@ MessagePtr<Thrift::RfnE2eDataIndication>::type serialize( const E2eDataIndicatio
     MessagePtr<Thrift::RfnE2eDataIndication>::type omsg( new Thrift::RfnE2eDataIndication );
 
     omsg->__set_e2eProtocol         ( mapping(imsg.protocol) );
-    omsg->__set_applicationServiceId( imsg.applicationServiceId );
+    omsg->__set_applicationServiceId( static_cast<int8_t>(imsg.applicationServiceId) );
     omsg->__set_payload             ( transformContainer<std::string>( imsg.payload ) );
     omsg->__set_priority            ( imsg.highPriority
                                         ? Thrift::RfnE2eMessagePriority::APP_HI
@@ -234,7 +233,7 @@ MessagePtr<E2eDataIndicationMsg>::type deserialize( const Thrift::RfnE2eDataIndi
     MessagePtr<E2eDataIndicationMsg>::type omsg( new E2eDataIndicationMsg );
 
     omsg->protocol             = mapping(imsg.e2eProtocol);
-    omsg->applicationServiceId = imsg.applicationServiceId;
+    omsg->applicationServiceId = static_cast<ApplicationServiceIdentifiers>( imsg.applicationServiceId );
     omsg->payload              = transformContainer<std::vector<unsigned char>>( imsg.payload );
     omsg->highPriority         = imsg.priority == Thrift::RfnE2eMessagePriority::APP_HI;
 
@@ -269,6 +268,4 @@ struct RfnMessageRegistration  //  must be named so it can have a constructor
 
 } rfnMessageRegistration;
 
-}
-}
 }

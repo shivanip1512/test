@@ -91,6 +91,7 @@ scoped_pdu_ptr scoped_pdu_ptr::make_get_continuation(unsigned long token, unsign
 
 scoped_pdu_ptr scoped_pdu_ptr::make_post(unsigned long token, unsigned short id)
 {
+    //  TODO - make the CON/NON selectable, maybe by splitting this method?
     scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_NON, static_cast<unsigned char>(RequestMethod::Post), id, COAP_MAX_PDU_SIZE) };
 
     pdu.add_token(token);
@@ -114,11 +115,28 @@ scoped_pdu_ptr scoped_pdu_ptr::make_ack(unsigned long token, unsigned short id, 
     return pdu;
 }
 
-scoped_pdu_ptr scoped_pdu_ptr::make_ack_with_data(unsigned long token, unsigned short id, std::vector<unsigned char> data)
+scoped_pdu_ptr scoped_pdu_ptr::make_data_ack(unsigned long token, unsigned short id, std::vector<unsigned char> data)
 {
     scoped_pdu_ptr pdu(coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(ResponseCode::Content), id, COAP_MAX_PDU_SIZE));
 
     pdu.add_token(token);
+
+    coap_add_data(pdu, data.size(), data.data());
+
+    return pdu;
+}
+
+scoped_pdu_ptr scoped_pdu_ptr::make_block_ack(unsigned long token, unsigned short id, std::vector<unsigned char> data, const unsigned szx, const unsigned num, const bool more)
+{
+    scoped_pdu_ptr pdu(coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(ResponseCode::Content), id, COAP_MAX_PDU_SIZE));
+
+    pdu.add_token(token);
+
+    unsigned char buf[4];
+
+    unsigned len = coap_encode_var_bytes(buf, (num << 4) | (more << 3) | szx);
+
+    coap_add_option(pdu, COAP_OPTION_BLOCK2, len, buf);
 
     coap_add_data(pdu, data.size(), data.data());
 

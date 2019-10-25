@@ -39,6 +39,9 @@
     <ClCompile Include="rf_data_streaming_processor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mgr_meter_programming.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\exe_pcreq.h">
@@ -57,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\rf_data_streaming_processor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mgr_meter_programming.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

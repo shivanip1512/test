@@ -36,7 +36,8 @@ public:
     static scoped_pdu_ptr make_post(unsigned long token, unsigned short id);
     static scoped_pdu_ptr make_ack(unsigned long token, unsigned short id, ResponseCode status);
     static scoped_pdu_ptr make_ack(unsigned short id, ResponseCode status);
-    static scoped_pdu_ptr make_ack_with_data(unsigned long token, unsigned short id, std::vector<unsigned char> data);
+    static scoped_pdu_ptr make_data_ack(unsigned long token, unsigned short id, std::vector<unsigned char> data);
+    static scoped_pdu_ptr make_block_ack(unsigned long token, unsigned short id, std::vector<unsigned char> data, const unsigned size, const unsigned num, const bool more);
     static scoped_pdu_ptr parse(std::vector<unsigned char> packet);
 
     std::vector<unsigned char> as_bytes() const;
@@ -56,6 +57,7 @@ enum class ResponseCode {
     EmptyMessage  = COAP_RESPONSE_CODE(  0),
     Content       = COAP_RESPONSE_CODE(205),
     BadRequest    = COAP_RESPONSE_CODE(400),
+    Forbidden     = COAP_RESPONSE_CODE(403),
     NotAcceptable = COAP_RESPONSE_CODE(406),
 };
 

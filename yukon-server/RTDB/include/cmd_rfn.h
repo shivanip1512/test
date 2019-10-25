@@ -147,11 +147,14 @@ public:
     virtual RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response) = 0;
     virtual RfnCommandResultList handleError(const CtiTime now, const YukonError_t errorCode) = 0;
 
-    static std::unique_ptr<RfnConfigNotificationCommand> handleNodeOriginated(const CtiTime now, RfnResponsePayload payload);
+    static std::unique_ptr<RfnConfigNotificationCommand> handleUnsolicitedReport(const CtiTime now, RfnResponsePayload payload);
+    static std::unique_ptr<RfnMeterProgrammingGetFileCommand> handleMeterProgramRequest(const CtiTime now, std::string uri);
 
     using ASID = Messaging::Rfn::ApplicationServiceIdentifiers;
 
     virtual ASID getApplicationServiceId() const;
+
+    virtual bool isPost() const;
 
 protected:
 

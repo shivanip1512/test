@@ -18,9 +18,7 @@
 
 #include <random>
 
-namespace Cti {
-namespace Messaging {
-namespace Rfn {
+namespace Cti::Messaging::Rfn {
 
 enum
 {
@@ -188,7 +186,7 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 
             //  check protocol?
 
-            const unsigned asid = indicationMsg->applicationServiceId;
+            const auto asid = indicationMsg->applicationServiceId;
 
             if( isAsid_E2eDt(asid) )
             {
@@ -202,6 +200,7 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 
                 ind.rfnIdentifier = indicationMsg->rfnIdentifier;
                 ind.payload       = indicationMsg->payload;
+                ind.asid          = indicationMsg->applicationServiceId;
 
                 return (*_e2edtCallback)(ind);
             }
@@ -220,6 +219,7 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 
                 ind.rfnIdentifier = indicationMsg->rfnIdentifier;
                 ind.payload       = indicationMsg->payload;
+                ind.asid          = indicationMsg->applicationServiceId;
 
                 return (*dnp3Callback)(ind);
             }
@@ -236,6 +236,7 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 
                 ind.rfnIdentifier = indicationMsg->rfnIdentifier;
                 ind.payload       = indicationMsg->payload;
+                ind.asid          = indicationMsg->applicationServiceId;
 
                 return (*_dataStreamingCallback)(ind);
             }
@@ -387,7 +388,7 @@ E2eDataRequestMsg E2eMessenger::createMessageFromRequest(const Request& req, con
 {
     E2eDataRequestMsg msg;
 
-    msg.applicationServiceId = static_cast<unsigned char>(asid);
+    msg.applicationServiceId = asid;
     msg.highPriority  = req.priority > 7;
     msg.rfnIdentifier = req.rfnIdentifier;
     msg.protocol      = E2eMsg::Application;
@@ -519,6 +520,4 @@ void E2eMessenger::ackProcessor(const ActiveMQConnectionManager::MessageDescript
 }
 
 
-}
-}
 }
