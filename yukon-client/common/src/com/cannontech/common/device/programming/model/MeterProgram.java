@@ -11,6 +11,7 @@ public class MeterProgram {
     private UUID guid;
     private String name;
     private PaoType paoType;
+    private String password;
     private byte[] program;
 
     public PaoType getPaoType() {
@@ -45,6 +46,14 @@ public class MeterProgram {
         this.guid = guid;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
