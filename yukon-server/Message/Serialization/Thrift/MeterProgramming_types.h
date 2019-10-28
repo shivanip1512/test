@@ -52,6 +52,10 @@ std::ostream& operator<<(std::ostream& out, const ProgrammingStatus::type& val);
 
 class MeterProgramStatusArchiveRequest;
 
+typedef struct _MeterProgramStatusArchiveRequest__isset {
+  _MeterProgramStatusArchiveRequest__isset() : configurationId(false) {}
+  bool configurationId :1;
+} _MeterProgramStatusArchiveRequest__isset;
 
 class MeterProgramStatusArchiveRequest : public virtual ::apache::thrift::TBase {
  public:
@@ -69,6 +73,8 @@ class MeterProgramStatusArchiveRequest : public virtual ::apache::thrift::TBase 
   int64_t timeStamp;
   Source::type source;
 
+  _MeterProgramStatusArchiveRequest__isset __isset;
+
   void __set_rfnIdentifier(const  ::Cti::Messaging::Serialization::Thrift::Rfn::RfnIdentifier& val);
 
   void __set_configurationId(const std::string& val);
@@ -85,7 +91,9 @@ class MeterProgramStatusArchiveRequest : public virtual ::apache::thrift::TBase 
   {
     if (!(rfnIdentifier == rhs.rfnIdentifier))
       return false;
-    if (!(configurationId == rhs.configurationId))
+    if (__isset.configurationId != rhs.__isset.configurationId)
+      return false;
+    else if (__isset.configurationId && !(configurationId == rhs.configurationId))
       return false;
     if (!(status == rhs.status))
       return false;

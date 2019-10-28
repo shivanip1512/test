@@ -22,7 +22,7 @@ enum ProgrammingStatus {
 
 struct MeterProgramStatusArchiveRequest {
     1: required  RfnAddressing.RfnIdentifier rfnIdentifier;
-    2: required  string configurationId;
+    2: optional  string configurationId;
     3: required  ProgrammingStatus status;
     4: required  i32 error;
     5: required  i64 timeStamp;

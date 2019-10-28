@@ -206,7 +206,7 @@ public enum DeviceError {
     TIMESTAMP_OUT_OF_RANGE(YUKON_SYSTEM, 283),
     
     // SUCCESS
-    SUCCESSFUL_READ(NA, 0),
+    SUCCESS(NA, 0),
     
     // replaces * 
     UNKNOWN(NA, -1);
@@ -262,7 +262,7 @@ public enum DeviceError {
     public static DeviceError of(RfnMeterReadingReplyType type) {
         switch (type) {
         case OK:
-            return SUCCESSFUL_READ;
+            return SUCCESS;
         case NO_NODE:
             return NO_NODE;
         case NO_GATEWAY:
@@ -279,7 +279,7 @@ public enum DeviceError {
     public static DeviceError of(RfnMeterReadingDataReplyType type) {
         switch (type) {
         case OK:
-            return SUCCESSFUL_READ;
+            return SUCCESS;
         case NETWORK_TIMEOUT:
             return NM_TIMEOUT;
         case TIMEOUT:   // Yukon specific timeout

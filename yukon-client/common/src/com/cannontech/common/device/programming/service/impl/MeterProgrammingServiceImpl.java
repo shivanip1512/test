@@ -14,6 +14,8 @@ import javax.jms.ConnectionFactory;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
@@ -53,6 +55,7 @@ import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.messaging.serialization.thrift.serializer.MeterProgramStatusArchiveRequestSerializer;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -211,6 +214,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         Map<? extends YukonPao, RfnIdentifier> meterIdentifiersByPao = rfnDeviceDao.getRfnIdentifiersByPao(supportedDevices);
         supportedDevices.forEach(device -> {
             MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
+            request.setError(DeviceError.SUCCESS);
             request.setSource(Source.WS_COLLECTION_ACTION);
             request.setRfnIdentifier(meterIdentifiersByPao.get(device));
             request.setStatus(ProgrammingStatus.INITIATING);
@@ -334,6 +338,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName());
+        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
+                new MeterProgramStatusArchiveRequestSerializer());
     }
 }

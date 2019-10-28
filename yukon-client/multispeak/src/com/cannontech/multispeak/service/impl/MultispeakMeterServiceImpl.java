@@ -229,7 +229,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         builder.putAll(OutageEventType.RESTORATION, DeviceError.ABNORMAL_RETURN.getCode(),
                                                     DeviceError.WORD_1_NACK.getCode(),
                                                     DeviceError.ROUTE_FAILED.getCode(),
-                                                    DeviceError.SUCCESSFUL_READ.getCode());
+                                                    DeviceError.SUCCESS.getCode());
         ImmutableMultimap<OutageEventType, Integer> systemDefault = builder.build();
 
         supportedEventTypes = ImmutableSet.of(OutageEventType.OUTAGE,
@@ -581,7 +581,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                         YukonMeter yukonMeter = meterDao.getForId(pao.getPaoId());
                         if (meters.contains(yukonMeter)) {
                             meters.remove(yukonMeter);
-                            OutageEventType outageEventType = getForStatusCode(DeviceError.SUCCESSFUL_READ.getCode());  // assume if we got one value, then the meter must be talking successfully
+                            OutageEventType outageEventType = getForStatusCode(DeviceError.SUCCESS.getCode());  // assume if we got one value, then the meter must be talking successfully
                             OutageDetectionEvent outageDetectionEvent = buildOutageDetectionEvent(yukonMeter, outageEventType, value.getPointDataTimeStamp(), "");
                             sendODEventNotification(yukonMeter, mspVendor, transactionId, responseUrl, outageDetectionEvent);
                         }

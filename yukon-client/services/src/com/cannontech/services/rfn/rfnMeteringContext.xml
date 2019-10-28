@@ -200,6 +200,8 @@
         <property name="messageListener" ref="rfnDataStreamingUpdateListener"/>
         <property name="acceptMessagesWhileStopping" value="true"/>
     </bean>
+    <bean class="com.cannontech.messaging.serialization.thrift.serializer.porter.RfnDataStreamingUpdateSerializer"/>
+    <bean class="com.cannontech.messaging.serialization.thrift.serializer.porter.RfnDataStreamingUpdateReplySerializer"/>
     
     <bean id="meterProgramStatusArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.MeterProgramStatusArchiveRequestListener"/>
        <jms:listener-container
@@ -210,7 +212,5 @@
             container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="com.eaton.eas.yukon.MeterProgramStatusArchiveRequest" ref="meterProgramStatusArchiveRequestListener" method="handleArchiveRequest"/>
     </jms:listener-container>
-    
-    <bean class="com.cannontech.messaging.serialization.thrift.serializer.porter.RfnDataStreamingUpdateSerializer"/>
-    <bean class="com.cannontech.messaging.serialization.thrift.serializer.porter.RfnDataStreamingUpdateReplySerializer"/>
+    <bean class="com.cannontech.messaging.serialization.thrift.serializer.MeterProgramStatusArchiveRequestSerializer"/>
 </beans>
