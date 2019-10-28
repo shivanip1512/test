@@ -2,9 +2,6 @@ package com.cannontech.services.rfn.endpoint;
 
 import java.util.UUID;
 
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,18 +37,10 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
      * Handles message from SM and Porter, logs the message and put in on a
      * queue.
      */
-    public void handleArchiveRequest(BytesMessage request) {
-        try {
-            byte[] msgBytes = new byte[(int)request.getBodyLength()];
-            
-            request.readBytes(msgBytes);
-            
-            var requestMessage = deserializer.fromBytes(msgBytes); 
+    public void handleArchiveRequest(byte[] msgBytes) {
+        var requestMessage = deserializer.fromBytes(msgBytes); 
 
-            queueHandler.add(this, requestMessage);
-        } catch (JMSException e) {
-            log.error("Error while deserializing message", e);
-        }
+        queueHandler.add(this, requestMessage);
     }
 
     /**
@@ -62,7 +51,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
         int deviceId = rfnDeviceDao.getDeviceIdForRfnIdentifier(request.getRfnIdentifier());
         if (request.getStatus() == ProgrammingStatus.INITIATING) {
             MeterProgramStatus oldStatus = meterProgrammingDao.getMeterProgramStatus(deviceId);
-            if (oldStatus.getLastUpdate().isBefore(request.getTimeStamp())) {
+            if (oldStatus.getLastUpdate().isAfter(request.getTimeStamp())) {
                 log.info("(Request to initiate download recieved and is older then existing status. Discarding the record. Existing status {}",
                          oldStatus);
                 return;
