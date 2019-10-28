@@ -7,6 +7,7 @@ import java.util.Map;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoMacAddress;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.MethodNotImplementedException;
@@ -189,6 +190,21 @@ public class MockDeviceDao implements DeviceDao {
 
     @Override
     public int getDeviceIdFromMacAddress(String macAddress) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public void updateSecondaryMacAddress(PaoType type, int deviceId, String macAddress) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public String getSecondaryMacAddressForDevice(int deviceId) throws NotFoundException {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<PaoMacAddress> findAllDevicesWithNoSecondaryMacAddress() {
         throw new MethodNotImplementedException();
     }
 }

@@ -399,6 +399,7 @@
     <entry key="yukon.web.modules.dev.itronKeyPair.save.success">Itron Key Pair Saved Successfully</entry>
     <entry key="yukon.web.modules.dev.itronKeyPair.save.failed">Provide Public and Private Key</entry>
     <entry key="yukon.web.modules.dev.itronKeyPair.pageName">Save Itron Key Pair</entry>
+    <entry key="yukon.web.modules.dev.itronKeyPair.loadError">Error loading Itron key pair. Keys may not be set.</entry>
     
     <!-- Nest Test -->
     <entry key="yukon.web.modules.dev.nest.pageName">Nest Test</entry>
