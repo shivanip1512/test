@@ -174,6 +174,7 @@ public class ItronDeviceDataParser {
                     pao = serverDatabaseCache.getAllPaosMap().get(deviceId);
                 } catch (NotFoundException e) {
                     log.debug("Ignoring data for unknown device with MAC " + source);
+                    log.trace("Exception: ", e);
                     break;
                 }
                 
