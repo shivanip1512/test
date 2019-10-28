@@ -117,6 +117,7 @@ public class MeterProgrammingController {
             //save
             program.setName(programModel.getName());
             program.setPaoType(programModel.getPaoType());
+            program.setPassword(programModel.getPassword());
             try {
                 UUID guid = meterProgrammingDao.saveMeterProgram(program);
                 program.setGuid(guid);
