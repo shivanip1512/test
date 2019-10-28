@@ -68,13 +68,13 @@
                                 <c:if test="${result.displayCancel() || result.displayRead() || result.displaySend() || result.displayAccept()}">
                                     <cm:dropdown icon="icon-cog">
                                         <c:if test="${result.displayCancel()}">
-                                            <cm:dropdownOption icon="icon-cross" key=".cancel" classes="js-cancel" data-id="${result.device.id}"/>
+                                            <cm:dropdownOption icon="icon-cross" key=".cancel" classes="js-cancel" data-id="${result.device.id}" data-guid="${result.assignedGuid}"/>
                                         </c:if>
                                         <c:if test="${result.displayRead()}">
                                             <cm:dropdownOption icon="icon-read" key=".read" classes="js-read" data-id="${result.device.id}"/>
                                         </c:if>
                                         <c:if test="${result.displaySend()}">
-                                            <cm:dropdownOption icon="icon-control-repeat-blue" key=".resend" classes="js-resend" data-id="${result.device.id}" data-guid="${result.programInfo.guid}"/>
+                                            <cm:dropdownOption icon="icon-control-repeat-blue" key=".resend" classes="js-resend" data-id="${result.device.id}" data-guid="${result.assignedGuid}"/>
                                         </c:if>
                                         <c:if test="${result.displayAccept()}">
                                             <cm:dropdownOption icon="icon-accept" key=".accept" classes="js-accept" data-id="${result.device.id}" data-guid="${result.programInfo.guid}"/>
