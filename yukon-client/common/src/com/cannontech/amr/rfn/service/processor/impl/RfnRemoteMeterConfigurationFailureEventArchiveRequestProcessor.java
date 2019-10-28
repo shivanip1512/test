@@ -49,7 +49,6 @@ public class RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor exte
     	.put(Status.INVALID_SERVICE_SEQUENCE_STATE, DeviceError.UNKNOWN)
     	.put(Status.DOWNLOAD_ABORTED, DeviceError.UNKNOWN)
     	.put(Status.FILE_TOO_LARGE, DeviceError.UNKNOWN)
-    	.put(Status.INSUFFICIENT_SECURITY_CLEARANCE, DeviceError.UNKNOWN)
     	.put(Status.CONFIGURATION_IN_PROGRESS, DeviceError.UNKNOWN)
     	.put(Status.UNABLE_TO_GET_FILE, DeviceError.UNKNOWN)
     	.put(Status.FILE_EXPIRED, DeviceError.UNKNOWN)
