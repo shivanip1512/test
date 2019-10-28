@@ -44,7 +44,7 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
         row.setReportedGuid(UUID.fromString(rs.getStringSafe("ReportedGuid")));
         row.setLastUpdate(rs.getInstant("LastUpdate"));
         row.setSource(MeterProgramSource.getByPrefix(rs.getStringSafe("Source")));
-        String[] parts = rs.getStringSafe("MeterProgramStatus").split("/");
+        String[] parts = rs.getStringSafe("Status").split("/");
         var status = ProgrammingStatus.valueOf(parts[0]);
         row.setStatus(status);
         if (status == ProgrammingStatus.FAILED && parts.length > 1) {
