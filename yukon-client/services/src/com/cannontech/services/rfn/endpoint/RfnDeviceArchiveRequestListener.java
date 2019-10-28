@@ -65,6 +65,8 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
             try {
                 lookupAndAcknowledge(entry, processor);
             } catch (Exception e) {
+                log.debug("LookupAndAcknowledge failed due to exception " + e);
+                log.debug("Attempting createAndAcknowedge");
                 createAndAcknowedge(entry, processor);
             }
         } else {
