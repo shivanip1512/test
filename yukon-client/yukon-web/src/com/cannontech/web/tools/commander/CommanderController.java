@@ -477,7 +477,7 @@ public class CommanderController {
 
         if (paoId != null) {
             YukonPao pao = cache.getAllPaosMap().get(paoId);
-            String type = pao.getPaoIdentifier().getPaoType().getDbString();
+            String type = pao.getPaoIdentifier().getPaoType().name();
             typeCommands = getCommandsByCategory(type);
             model.addAttribute("selectedPaoType", pao.getPaoIdentifier().getPaoType());
         } else if (category != null) {
