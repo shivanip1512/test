@@ -211,6 +211,7 @@
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.newMeterProgram"><![CDATA[&nbsp;&nbsp;&nbsp;New&nbsp;&nbsp;&nbsp;]]></entry>
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.deviceType">Device Type</entry>
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.name">Name</entry>
+    <entry key="yukon.web.modules.tools.bulk.meterProgramming.password">Password</entry>
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.noFileSelected">Please select a file to upload.</entry>
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.invalidFileSelected">There was a problem reading the meter program file.</entry>    
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.duplicateName">There is already a program with the entered name. Please enter a unique name.</entry>    

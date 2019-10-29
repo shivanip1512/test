@@ -8,6 +8,7 @@ public class MeterProgrammingModel {
     private String existingProgramGuid;
     private String name;
     private PaoType paoType;
+    private String password;
 
     public boolean isNewProgram() {
         return newProgram;
@@ -32,6 +33,12 @@ public class MeterProgrammingModel {
     }
     public void setPaoType(PaoType paoType) {
         this.paoType = paoType;
+    }
+    public String getPassword() {
+        return password;
+    }
+    public void setPassword(String password) {
+        this.password = password;
     }
 
 }
