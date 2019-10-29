@@ -70,6 +70,14 @@ public class CommandCategoryUtil {
         return false;
     }
     
+    /**
+     * Return true if category is either ExpressCom or VersaCom
+     * false if not.
+     */
+    public static boolean isExpressComOrVersaCom(String category) {
+        return CommandCategory.EXPRESSCOM_SERIAL.getDbString().equals(category) || CommandCategory.VERSACOM_SERIAL.getDbString().equals(category);
+    }
+    
     public static List<PaoType> getAllTypesForCategory(CommandCategory category) {
         
         if (category == CommandCategory.ALPHA_BASE) {

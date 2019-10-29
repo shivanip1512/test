@@ -495,6 +495,36 @@ yukon.tools.commander = (function () {
                 yukon.cookie.set('commander', 'scrollLock', on);
                 _scrollLock = on;
             });
+
+            /** User clicked the custom commands button, display the custom commands popup. */
+            $(document).on('click', '#custom-commands', function() {
+                var target = _targetButtons[$('#target-row .on').attr('id')],
+                    data = {};
+                if (target === _targetTypes.device || target === _targetTypes.lmGroup) {
+                    var paoId = target === _targetTypes.device ? $('#pao-id').val() : $('#lm-group-id').val();
+                    if (paoId != "") {
+                        data.paoId = paoId;
+                    }
+                } else {
+                    var category = target === _targetTypes.ecom ? 'EXPRESSCOM_SERIAL' : 'VERSACOM_SERIAL';
+                    data.category = category;
+                }
+                $.ajax({ 
+                    url: yukon.url('/tools/commander/customCommands'),
+                    data: data
+                }).done(function (html) {
+                    var popup = $('#custom-commands-popup').html(html);
+                    popup.dialog({title: 'Device Commands', width: '980px'});
+                });
+            });
+
+            $(document).on('change', '.js-selected-category', function() {
+                var category = $(this).val();
+                $.ajax({ url: yukon.url('/tools/commander/customCommandsByCategory?category=' + category) })
+                .done(function (html) {
+                    $('#device-commands-table').html(html);
+                });
+            });
             
             /** User clicked the device readings menu option, show points popup. */
             $('#readings-btn').on('click', function (ev) {

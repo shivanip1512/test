@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,11 +23,13 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -59,6 +62,7 @@ import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.command.CommandCategory;
+import com.cannontech.database.db.command.CommandCategoryUtil;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
@@ -453,6 +457,67 @@ public class CommanderController {
                 + " To see the correct recent targets, please make correction in user preference for recent targets");
         }
         return result;
+    }
+    
+    
+    @GetMapping("/commander/customCommands")
+    public String customCommandsPopup(ModelMap model, @RequestParam(value="paoId", required=false) Integer paoId, 
+                                      @RequestParam(value="category", required=false) String category) {
+        //get command categories and paotypes
+        Set<CommandCategory> categories = CommandCategoryUtil.getAllCategories();
+        List<CommandCategory> categoryList = new ArrayList<CommandCategory>();
+        categoryList.addAll(categories);
+        categoryList.add(CommandCategory.EXPRESSCOM_SERIAL);
+        categoryList.add(CommandCategory.VERSACOM_SERIAL);
+        model.addAttribute("categories", categoryList);
+        List<PaoType> existingPaoTypes = paoDao.getExistingPaoTypes();
+        model.addAttribute("paoTypes", existingPaoTypes);
+        
+        List<LiteDeviceTypeCommand> typeCommands = new ArrayList<>();
+
+        if (paoId != null) {
+            YukonPao pao = cache.getAllPaosMap().get(paoId);
+            String type = pao.getPaoIdentifier().getPaoType().getDbString();
+            typeCommands = getCommandsByCategory(type);
+            model.addAttribute("selectedPaoType", pao.getPaoIdentifier().getPaoType());
+        } else if (category != null) {
+            CommandCategory cmdCategory = CommandCategory.valueOf(category);
+            typeCommands = commandDao.getAllDevTypeCommands(cmdCategory.getDbString());
+            model.addAttribute("selectedCategory", cmdCategory.getDbString());
+        }
+
+        model.addAttribute("typeCommands", typeCommands);
+        Map<Integer, LiteCommand> commands = cache.getAllCommands();
+        model.addAttribute("commands", commands);
+        return "commander/customCommands.jsp";
+    }
+    
+    private List<LiteDeviceTypeCommand> getCommandsByCategory(String category) {
+        List<LiteDeviceTypeCommand> typeCommands = new ArrayList<>();
+        
+        //check if Command Category
+        boolean commandCategory = CommandCategoryUtil.isCommandCategory(category);
+        if (commandCategory || CommandCategoryUtil.isExpressComOrVersaCom(category)) {
+            List<LiteCommand> cmds = commandDao.getAllCommandsByCategory(category);
+            for (LiteCommand cmd : cmds) {
+                LiteDeviceTypeCommand typeCmd = new LiteDeviceTypeCommand(0, cmd.getCommandId(), category, 0, 'Y');
+                typeCommands.add(typeCmd);
+            }
+        } else {
+            PaoType paoType = PaoType.valueOf(category);
+            typeCommands = commandDao.getAllDevTypeCommands(paoType.getDbString()); 
+        }
+        
+        return typeCommands;
+    }
+    
+    @GetMapping("/commander/customCommandsByCategory")
+    public String customCommandsByCategory(ModelMap model, String category) {
+        List<LiteDeviceTypeCommand> typeCommands = getCommandsByCategory(category);
+        Map<Integer, LiteCommand> commands = cache.getAllCommands();
+        model.addAttribute("typeCommands", typeCommands);
+        model.addAttribute("commands", commands);
+        return "commander/customCommandsTable.jsp";
     }
     
     /** Get commands for a particular pao. */

@@ -53,6 +53,12 @@
     <entry key="yukon.web.modules.tools.commander.commandPriority.title">Accepted range {0}</entry>
     <entry key="yukon.web.modules.tools.commander.commandPriority.error.invalid">Please enter integer value between {0}</entry>
     <entry key="yukon.web.modules.tools.commander.maxLoopCountExceeded">Loop count exceeds limit, the maximum of loop 10 will be sent.</entry>
+    <entry key="yukon.web.modules.tools.commander.customCommands.title">Device Commands</entry>
+    <entry key="yukon.web.modules.tools.commander.customCommands.commandName">Command Name</entry>
+    <entry key="yukon.web.modules.tools.commander.customCommands.command">Command</entry>
+    <entry key="yukon.web.modules.tools.commander.customCommands.visible">Visible</entry>
+    <entry key="yukon.web.modules.tools.commander.customCommands.category">Category</entry>
+    <entry key="yukon.web.modules.tools.commander.customCommands.noResultsFound">No commands found for selected category.</entry>
     
     <!-- Map -->
     <entry key="yukon.web.modules.tools.map.pageTitle">Tools: Map Devices ({0})</entry>
