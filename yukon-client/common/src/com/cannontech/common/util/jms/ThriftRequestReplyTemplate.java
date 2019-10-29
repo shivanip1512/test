@@ -27,8 +27,8 @@ public class ThriftRequestReplyTemplate<Q, R> {
     private JmsTemplate jmsTemplate;
     private String requestQueueName;
     
-    @Autowired private ThriftByteSerializer<Q> requestSerializer;
-    @Autowired private ThriftByteDeserializer<R> replyDeserializer;
+    private ThriftByteSerializer<Q> requestSerializer;
+    private ThriftByteDeserializer<R> replyDeserializer;
     
     public ThriftRequestReplyTemplate(ConnectionFactory connectionFactory, String requestQueueName, 
             ThriftByteSerializer<Q> requestSerializer, ThriftByteDeserializer<R> replyDeserializer) {

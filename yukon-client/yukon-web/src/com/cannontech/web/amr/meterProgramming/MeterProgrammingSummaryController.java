@@ -176,11 +176,11 @@ public class MeterProgrammingSummaryController {
         getFilteredResults(filter, sorting, paging, model, userContext);
         
         List<MeterProgramInfo> specialCases = programs.stream()
-                .filter(program -> program.getSource().isNotYukon())
+                .filter(program -> program.getSource() != null && program.getSource().isNotYukon())
                 .collect(Collectors.toList());
 
         List<MeterProgramInfo> yukonPrograms = programs.stream()
-                        .filter(program -> program.getSource().isYukon())
+                        .filter(program -> program.getSource() == null || program.getSource().isYukon())
                         .collect(Collectors.toList());
         
         List<MeterProgramInfo> sortedPrograms = new ArrayList<>();

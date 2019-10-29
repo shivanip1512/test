@@ -6,7 +6,6 @@ import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ExceptionHelper;
@@ -19,13 +18,14 @@ public class ThriftRequestTemplate<Q> {
     private JmsTemplate jmsTemplate;
     private String requestQueueName;
     
-    @Autowired private ThriftByteSerializer<Q> requestSerializer;
+    private ThriftByteSerializer<Q> requestSerializer;
     
-    public ThriftRequestTemplate(ConnectionFactory connectionFactory, String requestQueueName) {
+    public ThriftRequestTemplate(ConnectionFactory connectionFactory, String requestQueueName, ThriftByteSerializer<Q> requestSerializer) {
         this.jmsTemplate = new JmsTemplate(connectionFactory);
         this.jmsTemplate.setExplicitQosEnabled(true);
         this.jmsTemplate.setDeliveryPersistent(false);
         this.requestQueueName = requestQueueName;
+        this.requestSerializer = requestSerializer;
     }
     
     public void send(final Q requestPayload) {

@@ -78,6 +78,7 @@ void MeterProgramStatusArchiveRequest::__set_rfnIdentifier(const  ::Cti::Messagi
 
 void MeterProgramStatusArchiveRequest::__set_configurationId(const std::string& val) {
   this->configurationId = val;
+__isset.configurationId = true;
 }
 
 void MeterProgramStatusArchiveRequest::__set_status(const ProgrammingStatus::type val) {
@@ -115,7 +116,6 @@ uint32_t MeterProgramStatusArchiveRequest::read(::apache::thrift::protocol::TPro
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_rfnIdentifier = false;
-  bool isset_configurationId = false;
   bool isset_status = false;
   bool isset_error = false;
   bool isset_timeStamp = false;
@@ -140,7 +140,7 @@ uint32_t MeterProgramStatusArchiveRequest::read(::apache::thrift::protocol::TPro
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->configurationId);
-          isset_configurationId = true;
+          this->__isset.configurationId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -192,8 +192,6 @@ uint32_t MeterProgramStatusArchiveRequest::read(::apache::thrift::protocol::TPro
 
   if (!isset_rfnIdentifier)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_configurationId)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_status)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_error)
@@ -214,10 +212,11 @@ uint32_t MeterProgramStatusArchiveRequest::write(::apache::thrift::protocol::TPr
   xfer += this->rfnIdentifier.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("configurationId", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->configurationId);
-  xfer += oprot->writeFieldEnd();
-
+  if (this->__isset.configurationId) {
+    xfer += oprot->writeFieldBegin("configurationId", ::apache::thrift::protocol::T_STRING, 2);
+    xfer += oprot->writeString(this->configurationId);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldBegin("status", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32((int32_t)this->status);
   xfer += oprot->writeFieldEnd();
@@ -247,6 +246,7 @@ void swap(MeterProgramStatusArchiveRequest &a, MeterProgramStatusArchiveRequest 
   swap(a.error, b.error);
   swap(a.timeStamp, b.timeStamp);
   swap(a.source, b.source);
+  swap(a.__isset, b.__isset);
 }
 
 MeterProgramStatusArchiveRequest::MeterProgramStatusArchiveRequest(const MeterProgramStatusArchiveRequest& other2) {
@@ -256,6 +256,7 @@ MeterProgramStatusArchiveRequest::MeterProgramStatusArchiveRequest(const MeterPr
   error = other2.error;
   timeStamp = other2.timeStamp;
   source = other2.source;
+  __isset = other2.__isset;
 }
 MeterProgramStatusArchiveRequest& MeterProgramStatusArchiveRequest::operator=(const MeterProgramStatusArchiveRequest& other3) {
   rfnIdentifier = other3.rfnIdentifier;
@@ -264,13 +265,14 @@ MeterProgramStatusArchiveRequest& MeterProgramStatusArchiveRequest::operator=(co
   error = other3.error;
   timeStamp = other3.timeStamp;
   source = other3.source;
+  __isset = other3.__isset;
   return *this;
 }
 void MeterProgramStatusArchiveRequest::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "MeterProgramStatusArchiveRequest(";
   out << "rfnIdentifier=" << to_string(rfnIdentifier);
-  out << ", " << "configurationId=" << to_string(configurationId);
+  out << ", " << "configurationId="; (__isset.configurationId ? (out << to_string(configurationId)) : (out << "<null>"));
   out << ", " << "status=" << to_string(status);
   out << ", " << "error=" << to_string(error);
   out << ", " << "timeStamp=" << to_string(timeStamp);

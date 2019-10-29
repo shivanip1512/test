@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveRequest;
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveResponse;
@@ -36,6 +37,7 @@ import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.serialization.thrift.serializer.MeterProgramStatusArchiveRequestSerializer;
 import com.cannontech.services.rfn.RfnArchiveProcessor;
 import com.cannontech.services.rfn.RfnArchiveQueueHandler;
 
@@ -157,6 +159,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
 	private void archiveProgrammingStatus(MeterInfoStatus status) {
 		 if (status.getData() != null && status.getData().getMeterConfigurationID() != null) {
 			MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
+			request.setError(DeviceError.SUCCESS);
 			request.setSource(Source.SM_STATUS_ARCHIVE);
 			request.setRfnIdentifier(status.getRfnIdentifier());
 			request.setConfigurationId(status.getData().getMeterConfigurationID());
@@ -218,6 +221,8 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(true);
         jmsTemplate.setDeliveryPersistent(false);
-        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName());
+        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory, 
+                                                      JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
+                                                      new MeterProgramStatusArchiveRequestSerializer());
     }
 }

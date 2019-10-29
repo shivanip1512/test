@@ -1,6 +1,7 @@
 package com.cannontech.common.device.programming.dao.impl;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,14 +36,18 @@ import com.google.common.collect.Lists;
 
 public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-
+    private static final Set<ProgrammingStatus> nonRetriableStatusus = Set.of(ProgrammingStatus.IDLE,
+                                                                              ProgrammingStatus.INITIATING,
+                                                                              ProgrammingStatus.MISMATCHED,
+                                                                              ProgrammingStatus.UPLOADING);
+    
     private static final YukonRowMapper<MeterProgramStatus> programStatusRowMapper = rs -> {
         MeterProgramStatus row = new MeterProgramStatus();
         row.setDeviceId(rs.getInt("DeviceId"));
         row.setReportedGuid(UUID.fromString(rs.getStringSafe("ReportedGuid")));
         row.setLastUpdate(rs.getInstant("LastUpdate"));
         row.setSource(MeterProgramSource.getByPrefix(rs.getStringSafe("Source")));
-        String[] parts = rs.getStringSafe("MeterProgramStatus").split("/");
+        String[] parts = rs.getStringSafe("Status").split("/");
         var status = ProgrammingStatus.valueOf(parts[0]);
         row.setStatus(status);
         if (status == ProgrammingStatus.FAILED && parts.length > 1) {
@@ -145,18 +150,20 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
     public List<SimpleDevice> getMetersWithoutProgramStatus(List<SimpleDevice> devices) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
         
-        return template.query(new SqlFragmentGenerator<SimpleDevice>() {
+        List<SimpleDevice> devicesWithStatus = template.query(new SqlFragmentGenerator<SimpleDevice>() {
             @Override
             public SqlFragmentSource generate(List<SimpleDevice> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT PAObjectID, type");
                 sql.append("FROM  MeterProgramStatus JOIN YukonPAObject ypo ON DeviceId = ypo.PAObjectID");
-                sql.append("AND DeviceId").notIn(subList.stream()
+                sql.append("AND DeviceId").in(subList.stream()
                                               .map(SimpleDevice::getDeviceId)
                                               .collect(Collectors.toList()));
                 return sql;
             }
         }, devices, new YukonDeviceRowMapper());
+        devices.removeAll(devicesWithStatus);
+        return devices;
     }
     
     @Override
@@ -170,6 +177,28 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Meter Program Status not found deviceId:" + deviceId, e);
         }
+    }
+    
+    @Override
+    public List<SimpleDevice> getAlreadyProgrammedMeters(List<SimpleDevice> devices, UUID guid) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        
+        return template.query(new SqlFragmentGenerator<SimpleDevice>() {
+            @Override
+            public SqlFragmentSource generate(List<SimpleDevice> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT PAObjectID, type");
+                sql.append("FROM  MeterProgramStatus status JOIN YukonPAObject ypo ON status.DeviceId = ypo.PAObjectID");
+                sql.append("JOIN MeterProgramAssignment assignment ON assignment.DeviceId = status.DeviceId");
+                sql.append("AND status.DeviceId").in(subList.stream()
+                                              .map(SimpleDevice::getDeviceId)
+                                              .collect(Collectors.toList()));
+                sql.append("AND assignment.Guid").eq(guid.toString());
+                sql.append("AND status.Status").in(nonRetriableStatusus);
+                Log.debug(sql);
+                return sql;
+            }
+        }, devices, new YukonDeviceRowMapper());
     }
 
     @Override

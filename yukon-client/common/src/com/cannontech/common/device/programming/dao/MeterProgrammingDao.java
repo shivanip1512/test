@@ -84,4 +84,8 @@ public interface MeterProgrammingDao {
      */
     boolean hasMeterProgram(UUID guid);
 
+    /**
+     * Returns a subset of devices already assigned to the program
+     */
+    List<SimpleDevice> getAlreadyProgrammedMeters(List<SimpleDevice> devices, UUID guid);
 }

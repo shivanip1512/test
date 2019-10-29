@@ -18,8 +18,6 @@
   <bean id="porterDynamicPaoInfoService" class="com.cannontech.core.service.impl.PorterDynamicPaoInfoServiceImpl">
     <constructor-arg name="queueName" value="com.eaton.eas.yukon.porter.dynamicPaoInfoRequest"/>
   </bean>
-  <bean class="com.cannontech.messaging.serialization.thrift.serializer.porter.DynamicPaoInfoRequestSerializer"/>
-  <bean class="com.cannontech.messaging.serialization.thrift.serializer.MeterProgramStatusArchiveRequestSerializer"/>
   
   <bean id="templateProcessorFactory" class="com.cannontech.common.util.TemplateProcessorFactory"/>
   
