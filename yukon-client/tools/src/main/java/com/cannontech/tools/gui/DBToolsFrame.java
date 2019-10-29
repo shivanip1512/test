@@ -120,7 +120,7 @@ class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, Popu
         resolver.setDataSource(PoolManager.getYukonDataSource());
         DatabaseVendor databaseVendor = resolver.getDatabaseVendor();
         textArea.append("Connected to Yukon with database user " + primaryUser + "\n");
-        textArea.append("Found database files and selected correct files for " + databaseVendor.getVendorName() + " " + databaseVendor.getDatabaseMajorVersion() + ".\n");
+        textArea.append("Found database files and selected correct files for " + databaseVendor.getVendorName() + " " + databaseVendor.getDatabaseMajorVersion() + "(" + databaseVendor + ")" +".\n");
         textArea.append("Press start to upgrade the database from " + db.getVersion() + "." + db.getBuild() + " to " + yukonVersion);
     }
 

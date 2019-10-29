@@ -25,12 +25,19 @@
                             <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
                             <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
                         </cti:url>
-                        <a href="${programUrl}">${fn:escapeXml(program.programInfo.name)}</a>
+                        <c:choose>
+                            <c:when test="${program.deviceTotal > 0 || program.inProgressTotal > 0}">
+                                <a href="${programUrl}">${fn:escapeXml(program.programInfo.name)}</a>
+                            </c:when>
+                            <c:otherwise>
+                                ${fn:escapeXml(program.programInfo.name)}
+                            </c:otherwise>
+                        </c:choose>
                     </td>
                     <td>
                         <c:choose>
                             <c:when test="${program.deviceTotal > 0}">
-                                <a href="${programUrl}">${program.deviceTotal}</a>
+                                <a href="${programUrl}&statuses=PROGRAMMED">${program.deviceTotal}</a>
                             </c:when>
                             <c:otherwise>
                                 ${program.deviceTotal}
@@ -48,7 +55,7 @@
                         </c:choose>
                     </td>
                     <td>
-                        <c:if test="${program.displayDelete()}">
+                        <c:if test="${program.isUnused()}">
                             <cm:dropdown icon="icon-cog">
                                 <cm:dropdownOption id="deleteProgram-${program.programInfo.guid}" icon="icon-cross" key="yukon.web.components.button.delete.label"
                                     data-program-guid="${program.programInfo.guid}" data-ok-event="yukon:program:delete"/>

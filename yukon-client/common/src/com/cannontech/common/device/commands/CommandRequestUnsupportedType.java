@@ -7,7 +7,8 @@ public enum CommandRequestUnsupportedType implements DatabaseRepresentationSourc
     NOT_CONFIGURED,
     UNSUPPORTED,
     CANCELED,
-    INVALID_STATE
+    INVALID_STATE,
+    ALREADY_CONFIGURED
     ;
 
     @Override

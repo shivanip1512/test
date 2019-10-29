@@ -1,6 +1,7 @@
 package com.cannontech.common.device.programming.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +14,8 @@ import javax.jms.ConnectionFactory;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
@@ -42,18 +43,19 @@ import com.cannontech.common.device.programming.dao.MeterProgrammingDao;
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest;
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest.Source;
 import com.cannontech.common.device.programming.model.MeterProgram;
-import com.cannontech.common.device.programming.model.MeterProgramSource;
-import com.cannontech.common.device.programming.model.MeterProgramUploadCancelResult;
+import com.cannontech.common.device.programming.model.MeterProgramCommandResult;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.events.loggers.MeterProgrammingEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.util.jms.ThriftRequestTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.messaging.serialization.thrift.serializer.MeterProgramStatusArchiveRequestSerializer;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -71,7 +73,13 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     @Autowired private WaitableCommandCompletionCallbackFactory waitableFactory;
     @Autowired private MeterProgrammingDao meterProgrammingDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
-    private JmsTemplate jmsTemplate;
+    private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
+    private final Map<DeviceRequestType, String> commands = new HashMap<>();
+    {
+        commands.put(DeviceRequestType.METER_PROGRAM_STATUS_READ, "");
+        commands.put(DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL, "");
+        commands.put(DeviceRequestType.METER_PROGRAM_UPLOAD_INITIATE, ""); 
+    }
 
     @Override
     public boolean isCancellable(CollectionAction action) {
@@ -84,23 +92,52 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     }
 
     @Override
-    public MeterProgramUploadCancelResult cancelMeterProgramUpload(SimpleDevice device, YukonUserContext context) {
+    public MeterProgramCommandResult retrieveMeterProgrammingStatus(SimpleDevice device, YukonUserContext context) {
 
-        String command = "";
+        return sendCommandToPorter(device, context, DeviceRequestType.METER_PROGRAM_STATUS_READ);
+    }
+    
+    @Override
+    public MeterProgramCommandResult cancelMeterProgramUpload(SimpleDevice device, YukonUserContext context, UUID assignedGuid) {
 
-        MeterProgramUploadCancelResult result = new MeterProgramUploadCancelResult();
-        CommandCompletionCallback<CommandRequestDevice> execCallback = new CommandCompletionCallback<CommandRequestDevice>() {
+        return sendCommandToPorter(device, context, DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL);
+    }
+    
+    @Override
+    public MeterProgramCommandResult reinitiateMeterProgramUpload(SimpleDevice device, YukonUserContext context, UUID assignedGuid) {
+
+        return sendCommandToPorter(device, context, DeviceRequestType.METER_PROGRAM_UPLOAD_INITIATE);
+    }
+    
+    @Override
+    public boolean acceptMeterProgrammingStatus(SimpleDevice device, YukonUserContext context, UUID reportedGuid) {
+
+        // return false if validation fails
+        if (meterProgrammingDao.hasMeterProgram(reportedGuid)) {
+            // Yukon program
+            meterProgrammingDao.assignDevicesToProgram(reportedGuid, Lists.newArrayList(device));
+        } else {
+            // Unknown Yukon program, All others
+            meterProgrammingDao.unassignDeviceFromProgram(device.getDeviceId());
+        }
+        return true;
+    }
+
+
+    private MeterProgramCommandResult sendCommandToPorter(SimpleDevice device, YukonUserContext context, DeviceRequestType deviceRequestType) {
+        MeterProgramCommandResult result = new MeterProgramCommandResult();
+        var execCallback = new CommandCompletionCallback<CommandRequestDevice>() {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 
             @Override
             public void receivedLastResultString(CommandRequestDevice command, String value) {
-                logCompleted(command.getDevice(), DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL, true);
+                logCompleted(command.getDevice(), deviceRequestType, true);
                 result.setSuccess(true);
             }
 
             @Override
             public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-                logCompleted(command.getDevice(), DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL, false);
+                logCompleted(command.getDevice(), deviceRequestType, false);
                 String errorText = accessor.getMessage(error.getDetail());
                 result.setErrorText(errorText);
                 log.error("{} Error:{}", command, errorText);
@@ -115,11 +152,12 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback = waitableFactory.createWaitable(execCallback);
 
-        logInitiated(Lists.newArrayList(device), DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL, context.getYukonUser());
+        logInitiated(Lists.newArrayList(device), deviceRequestType, context.getYukonUser());
 
+        String command = commands.get(deviceRequestType);
         commandRequestService.execute(Lists.newArrayList(new CommandRequestDevice(command, device)),
                                       waitableCallback,
-                                      DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL,
+                                      deviceRequestType,
                                       context.getYukonUser());
         try {
             waitableCallback.waitForCompletion();
@@ -132,7 +170,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     @Override
     public int initiateMeterProgramUpload(DeviceCollection deviceCollection, UUID guid, YukonUserContext context) {
 
-        String command = "";
+        String command = commands.get(DeviceRequestType.METER_PROGRAM_UPLOAD_INITIATE);
 
         List<SimpleDevice> unsupportedDevices = new ArrayList<>(deviceCollection.getDeviceList());
         LinkedHashMap<String, String> input = null;
@@ -145,6 +183,9 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         }
 
         unsupportedDevices.addAll(meterProgrammingDao.getMetersWithOldFirmware(deviceCollection.getDeviceList()));
+        unsupportedDevices.addAll(meterProgrammingDao.getMetersWithoutProgramStatus(deviceCollection.getDeviceList()));
+        List<SimpleDevice> alreadyConfigured = meterProgrammingDao.getAlreadyProgrammedMeters(deviceCollection.getDeviceList(), guid);
+        
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.METER_PROGRAM_UPLOAD_INITIATE,
                                                                              input,
                                                                              deviceCollection,
@@ -153,8 +194,11 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
                                                                              context);
 
         collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result, unsupportedDevices);
+        collectionActionService.addUnsupportedToResult(CollectionActionDetail.ALREADY_CONFIGURED, result, alreadyConfigured);
+        
         List<SimpleDevice> supportedDevices = new ArrayList<>(deviceCollection.getDeviceList());
         supportedDevices.removeAll(unsupportedDevices);
+        supportedDevices.removeAll(alreadyConfigured);
 
         CommandCompletionCallback<CommandRequestDevice> execCallback = getExecutionCallback(context, result);
         meterProgrammingDao.assignDevicesToProgram(guid, supportedDevices);
@@ -170,20 +214,21 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         Map<? extends YukonPao, RfnIdentifier> meterIdentifiersByPao = rfnDeviceDao.getRfnIdentifiersByPao(supportedDevices);
         supportedDevices.forEach(device -> {
             MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
+            request.setError(DeviceError.SUCCESS);
             request.setSource(Source.WS_COLLECTION_ACTION);
             request.setRfnIdentifier(meterIdentifiersByPao.get(device));
-            request.setConfigurationId(MeterProgramSource.YUKON.getPrefix() + guid.toString());
             request.setStatus(ProgrammingStatus.INITIATING);
             request.setTimeStamp(System.currentTimeMillis());
-            log.debug("Sending {} on queue {}", request, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName());
-            jmsTemplate.convertAndSend(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(), request);
+            log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
+         
+            thriftMessenger.send(request);
         });
     }
 
     @Override
     public int retrieveMeterProgrammingStatus(DeviceCollection deviceCollection, YukonUserContext context) {
 
-        String command = "";
+        String command = commands.get(DeviceRequestType.METER_PROGRAM_STATUS_READ);
 
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.METER_PROGRAM_STATUS_READ,
                                                                              null,
@@ -225,7 +270,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     }
 
     private CommandCompletionCallback<CommandRequestDevice> getExecutionCallback(YukonUserContext context, CollectionActionResult result) {
-        CommandCompletionCallback<CommandRequestDevice> execCallback = new CommandCompletionCallback<CommandRequestDevice>() {
+        var execCallback = new CommandCompletionCallback<CommandRequestDevice>() {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 
             @Override
@@ -293,8 +338,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
+        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
+                new MeterProgramStatusArchiveRequestSerializer());
     }
 }

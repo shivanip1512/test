@@ -473,6 +473,18 @@
     <ClCompile Include="Serialization\Thrift\RfnDataStreamingUpdate_types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MeterProgramming_constants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\MeterProgramming_types.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\RfnAddressing_constants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\RfnAddressing_types.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Serialization\Thrift\CCCapBankMove_constants.h">
@@ -935,6 +947,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Serialization\Thrift\RfnDataStreamingUpdate_constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Serialization\Thrift\MeterProgramming_constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Serialization\Thrift\MeterProgramming_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Serialization\Thrift\RfnAddressing_constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Serialization\Thrift\RfnAddressing_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

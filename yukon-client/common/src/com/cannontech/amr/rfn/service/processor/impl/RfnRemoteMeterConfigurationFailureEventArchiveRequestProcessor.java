@@ -1,6 +1,5 @@
 package com.cannontech.amr.rfn.service.processor.impl;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,8 +8,6 @@ import javax.jms.ConnectionFactory;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.rfn.message.event.DetailedConfigurationStatusCode.Status;
 import com.cannontech.amr.rfn.message.event.MeterConfigurationStatus;
@@ -25,40 +22,42 @@ import com.cannontech.common.device.programming.message.MeterProgramStatusArchiv
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.ThriftRequestTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.serialization.thrift.serializer.MeterProgramStatusArchiveRequestSerializer;
+import com.google.common.collect.ImmutableMap;
 
 public class RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor extends RfnEventConditionDataProcessorHelper
         implements RfnArchiveRequestProcessor {
     
     private static final Logger log = YukonLogManager.getLogger(RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor.class);
-    private JmsTemplate jmsTemplate;
+    private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
     
-    private Map<Status, DeviceError> statusCodesToErrors = new HashMap<>();
-    {
-    	//statusCodesToErrors.put(Status.SUCCESS, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.REASON_UNKNOWN, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.SERVICE_NOT_SUPPORTED, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.INSUFFICIENT_SECURITY_CLEARANCE, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.OPERATION_NOT_POSSIBLE, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.INAPPROPRIATE_ACTION_REQUESTED, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.DEVICE_BUSY, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.DATA_NOT_READY, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.RENEGOTIATE_REQUEST, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.INVALID_SERVICE_SEQUENCE_STATE, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.DOWNLOAD_ABORTED, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.FILE_TOO_LARGE, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.INSUFFICIENT_SECURITY_CLEARANCE, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.CONFIGURATION_IN_PROGRESS, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.UNABLE_TO_GET_FILE, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.FILE_EXPIRED, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.FAILED_REQUIREMENTS, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.MALFORMED_RECORD_IN_CONFIGURATION_FILE, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.VERIFICATION_FAILED, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.WRITE_KEY_FAILED, DeviceError.UNKNOWN);
-    	statusCodesToErrors.put(Status.CATASTROPHIC_FAILURE_FULL_REPROGRAM_REQUIRED, DeviceError.UNKNOWN);
-    }
+    private Map<Status, DeviceError> statusCodesToErrors = ImmutableMap.<Status, DeviceError>builder()
+
+    	//.put(Status.SUCCESS, DeviceError.UNKNOWN)
+    	.put(Status.REASON_UNKNOWN, DeviceError.UNKNOWN)
+    	.put(Status.SERVICE_NOT_SUPPORTED, DeviceError.UNKNOWN)
+    	.put(Status.INSUFFICIENT_SECURITY_CLEARANCE, DeviceError.UNKNOWN)
+    	.put(Status.OPERATION_NOT_POSSIBLE, DeviceError.UNKNOWN)
+    	.put(Status.INAPPROPRIATE_ACTION_REQUESTED, DeviceError.UNKNOWN)
+    	.put(Status.DEVICE_BUSY, DeviceError.UNKNOWN)
+    	.put(Status.DATA_NOT_READY, DeviceError.UNKNOWN)
+    	.put(Status.RENEGOTIATE_REQUEST, DeviceError.UNKNOWN)
+    	.put(Status.INVALID_SERVICE_SEQUENCE_STATE, DeviceError.UNKNOWN)
+    	.put(Status.DOWNLOAD_ABORTED, DeviceError.UNKNOWN)
+    	.put(Status.FILE_TOO_LARGE, DeviceError.UNKNOWN)
+    	.put(Status.CONFIGURATION_IN_PROGRESS, DeviceError.UNKNOWN)
+    	.put(Status.UNABLE_TO_GET_FILE, DeviceError.UNKNOWN)
+    	.put(Status.FILE_EXPIRED, DeviceError.UNKNOWN)
+    	.put(Status.FAILED_REQUIREMENTS, DeviceError.UNKNOWN)
+    	.put(Status.MALFORMED_RECORD_IN_CONFIGURATION_FILE, DeviceError.UNKNOWN)
+    	.put(Status.VERIFICATION_FAILED, DeviceError.UNKNOWN)
+    	.put(Status.WRITE_KEY_FAILED, DeviceError.UNKNOWN)
+    	.put(Status.CATASTROPHIC_FAILURE_FULL_REPROGRAM_REQUIRED, DeviceError.UNKNOWN)
+    	.build();
     
     @Override
     public void process(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, Instant now) {
@@ -94,13 +93,14 @@ public class RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor exte
 			request.setConfigurationId(meterConfigurationId);
 			if (status == Status.SUCCESS) {
 				request.setStatus(ProgrammingStatus.IDLE);
+				request.setError(DeviceError.SUCCESS);
 			} else {
 				request.setStatus(ProgrammingStatus.FAILED);
 				request.setError(statusCodesToErrors.get(status));
 			}
 			request.setTimeStamp(System.currentTimeMillis());
-			log.debug("Sending {} on queue {}", request, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName());
-			jmsTemplate.convertAndSend(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(), request);
+			log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
+			thriftMessenger.send(request);
 		} else {
 			 log.info("Failed to update program status, insufficient information for the update for device={}, meterConfigurationId={}, status={}", device, meterConfigurationId, meterConfigurationStatus);
 		}
@@ -113,8 +113,8 @@ public class RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor exte
     
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
+        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory, 
+                                                      JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
+                                                      new MeterProgramStatusArchiveRequestSerializer());
     }
 }

@@ -67,7 +67,11 @@ yukon.ami.meterProgramming.summary = (function () {
                         type: 'POST',
                         url: yukon.url('/amr/meterProgramming/' + id + '/readProgramming')
                     }).done(function(data) {
-                        yukon.ui.alertSuccess(data.successMsg);
+                        if (data.successMsg) {
+                            yukon.ui.alertSuccess(data.successMsg);
+                        } else {
+                            yukon.ui.alertError(data.errorMsg);
+                        }
                     });
                 });
                 
@@ -81,20 +85,28 @@ yukon.ami.meterProgramming.summary = (function () {
                         },
                         url: yukon.url('/amr/meterProgramming/' + id + '/resendProgramming')
                     }).done(function(data) {
-                        yukon.ui.alertSuccess(data.successMsg);
+                        if (data.successMsg) {
+                            yukon.ui.alertSuccess(data.successMsg);
+                        } else {
+                            yukon.ui.alertError(data.errorMsg);
+                        }
                     });
                 });
                 
                 $(document).on('click', '.js-cancel', function () {
-                    var id = $(this).data('id');
+                    var id = $(this).data('id'),
+                        guid = $(this).data('guid');
                     $.ajax({
                         type: 'POST',
+                        data: {
+                            guid: guid
+                        },
                         url: yukon.url('/amr/meterProgramming/' + id + '/cancelProgramming')
                     }).done(function(data) {
-                        if (data.result.success) {
+                        if (data.successMsg) {
                             yukon.ui.alertSuccess(data.successMsg);
                         } else {
-                            yukon.ui.alertError(data.result.errorText);
+                            yukon.ui.alertError(data.errorMsg);
                         }
                     });
                 });
@@ -111,6 +123,8 @@ yukon.ami.meterProgramming.summary = (function () {
                     }).done(function(data) {
                         if (data.successMsg) {
                             yukon.ui.alertSuccess(data.successMsg);
+                        } else {
+                            yukon.ui.alertError(data.errorMsg);
                         }
                     });
                 });

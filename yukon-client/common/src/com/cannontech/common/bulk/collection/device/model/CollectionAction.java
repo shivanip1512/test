@@ -10,6 +10,7 @@ import static com.cannontech.common.bulk.collection.device.model.CollectionActio
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.SUCCESS;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNCONFIRMED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.ALREADY_CONFIGURED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.POINT_DATA;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.LAST_VALUE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.DEVICE_TYPE;
@@ -48,7 +49,7 @@ public enum CollectionAction implements DisplayableEnum {
     CONFIGURE_DATA_STREAMING(CRE, null, SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
     READ_DATA_STREAMING_CONFIG(CRE, null, SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
     REMOVE_DATA_STREAMING(CRE, null, SUCCESS, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
-    METER_PROGRAM_UPLOAD_INITIATE(CRE, getLogEntries(LAST_VALUE), SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
+    METER_PROGRAM_UPLOAD_INITIATE(CRE, getLogEntries(LAST_VALUE), SUCCESS, FAILURE, UNSUPPORTED, ALREADY_CONFIGURED, CANCELED),
     METER_PROGRAM_STATUS_READ(CRE, getLogEntries(LAST_VALUE), SUCCESS, FAILURE, CANCELED),
     MASS_CHANGE(DB, null, SUCCESS, FAILURE),
     CHANGE_TYPE(DB, null, SUCCESS, FAILURE),
@@ -88,9 +89,9 @@ public enum CollectionAction implements DisplayableEnum {
     }
 
     public boolean isCancelable() {
-        return details.contains(CANCELED);
+        return process == CollectionActionProcess.CRE;
     }
-
+    
     public CollectionActionProcess getProcess() {
         return process;
     }

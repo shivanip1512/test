@@ -51,9 +51,17 @@ struct test_RfnRequestManager : Cti::Pil::RfnRequestManager
     {
         return e2e.handleIndication(payload, endpointId);
     }
-    std::vector<unsigned char> sendE2eDtRequest(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const unsigned long token) override
+    Bytes sendE2eDtRequest(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const unsigned long token) override
     {
         return e2e.sendRequest(payload, endpointId, token);
+    }
+    Bytes sendE2eDtBlockContinuation(const Cti::Protocols::E2eDataTransferProtocol::BlockSize blockSize, const int blockNum, const Cti::RfnIdentifier endpointId, const unsigned long token) override
+    {
+        return e2e.sendBlockContinuation(blockSize, blockNum, endpointId, token);
+    }
+    Bytes sendE2eDtPost(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const unsigned long token) override
+    {
+        return e2e.sendPost(payload, endpointId, token);
     }
 };
 

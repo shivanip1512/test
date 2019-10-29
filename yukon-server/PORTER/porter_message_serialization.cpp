@@ -2,8 +2,6 @@
 
 #include "porter_message_serialization.h"
 
-#include "PorterDynamicPaoInfoMsg.h"
-
 #include "std_helper.h"
 #include "boost_helper.h"
 #include "amq_connection.h"
@@ -17,20 +15,20 @@ namespace Cti::Messaging::Serialization {
 namespace {
 
 using ThriftDurationKeys = Thrift::Porter::DynamicPaoInfoDurationKeys::type;
-using YukonDurationKeys = Messaging::Porter::DynamicPaoInfoDurationKeys;
+using YukonDurationKeys = Porter::DynamicPaoInfoDurationKeys;
 
 static const auto durationKeyLookup = make_bimap<ThriftDurationKeys, YukonDurationKeys>({
     { ThriftDurationKeys::RFN_VOLTAGE_PROFILE_INTERVAL, YukonDurationKeys::RfnVoltageProfileInterval },
     { ThriftDurationKeys::MCT_IED_LOAD_PROFILE_INTERVAL, YukonDurationKeys::MctIedLoadProfileInterval }});
 
 using ThriftTimestampKeys = Thrift::Porter::DynamicPaoInfoTimestampKeys::type;
-using YukonTimestampKeys = Messaging::Porter::DynamicPaoInfoTimestampKeys;
+using YukonTimestampKeys = Porter::DynamicPaoInfoTimestampKeys;
 
 static const auto timestampKeyLookup = make_bimap<ThriftTimestampKeys, YukonTimestampKeys>({
     { ThriftTimestampKeys::RFN_VOLTAGE_PROFILE_ENABLED_UNTIL, YukonTimestampKeys::RfnVoltageProfileEnabledUntil }});
 
 using ThriftPercentageKeys = Thrift::Porter::DynamicPaoInfoPercentageKeys::type;
-using YukonPercentageKeys = Messaging::Porter::DynamicPaoInfoPercentageKeys;
+using YukonPercentageKeys = Porter::DynamicPaoInfoPercentageKeys;
 
 static const auto percentageKeyLookup = make_bimap<ThriftPercentageKeys, YukonPercentageKeys>({
     { ThriftPercentageKeys::METER_PROGRAMMING_PROGRESS, YukonPercentageKeys::MeterProgrammingProgress }});
@@ -75,16 +73,17 @@ std::set<Key> translateKeys(std::string type, const std::set<ThriftKey>& thriftK
     return output;
 }
 
+long long as_milliseconds(std::chrono::system_clock::time_point tp)
+{
+    return std::chrono::duration_cast<std::chrono::milliseconds>(tp.time_since_epoch()).count();
 }
 
-using ReqMsg = ::Cti::Messaging::Porter::DynamicPaoInfoRequestMsg;
-using RspMsg = ::Cti::Messaging::Porter::DynamicPaoInfoResponseMsg;
+}
 
-using std::chrono::milliseconds;
-using std::chrono::duration_cast;
-using std::chrono::system_clock;
+using DpiReqMsg = Porter::DynamicPaoInfoRequestMsg;
+using DpiRspMsg = Porter::DynamicPaoInfoResponseMsg;
 
-MessagePtr<Thrift::Porter::DynamicPaoInfoResponse>::type populateThrift( const RspMsg & imsg )
+MessagePtr<Thrift::Porter::DynamicPaoInfoResponse>::type populateThrift( const DpiRspMsg & imsg )
 {
     MessagePtr<Thrift::Porter::DynamicPaoInfoResponse>::type omsg( new Thrift::Porter::DynamicPaoInfoResponse );
 
@@ -94,9 +93,7 @@ MessagePtr<Thrift::Porter::DynamicPaoInfoResponse>::type populateThrift( const R
         [](std::chrono::milliseconds ms) { 
             return ms.count(); });
 
-    omsg->_timestampValues = translateMap("timestamp", imsg.timestampValues, timestampKeyLookup, 
-        [](std::chrono::system_clock::time_point tp) {
-            return duration_cast<milliseconds>(tp.time_since_epoch()).count(); });
+    omsg->_timestampValues = translateMap("timestamp", imsg.timestampValues, timestampKeyLookup, as_milliseconds);
 
     omsg->_percentageValues = translateMap("percentage", imsg.percentageValues, percentageKeyLookup, 
         [](double d) { 
@@ -105,9 +102,9 @@ MessagePtr<Thrift::Porter::DynamicPaoInfoResponse>::type populateThrift( const R
     return omsg;
 }
 
-MessagePtr<ReqMsg>::type populateMessage(const Thrift::Porter::DynamicPaoInfoRequest& imsg)
+MessagePtr<DpiReqMsg>::type populateMessage(const Thrift::Porter::DynamicPaoInfoRequest& imsg)
 {
-    MessagePtr<ReqMsg>::type omsg(new ReqMsg);
+    MessagePtr<DpiReqMsg>::type omsg(new DpiReqMsg);
 
     omsg->deviceId = imsg._deviceId;
 
@@ -120,7 +117,7 @@ MessagePtr<ReqMsg>::type populateMessage(const Thrift::Porter::DynamicPaoInfoReq
 
 
 template<>
-boost::optional<ReqMsg> MessageSerializer<ReqMsg>::deserialize(const ActiveMQConnectionManager::SerializedMessage &msg)
+boost::optional<DpiReqMsg> MessageSerializer<DpiReqMsg>::deserialize(const ActiveMQConnectionManager::SerializedMessage &msg)
 {
     try
     {
@@ -132,14 +129,14 @@ boost::optional<ReqMsg> MessageSerializer<ReqMsg>::deserialize(const ActiveMQCon
     }
     catch( apache::thrift::TException &e )
     {
-        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to deserialize a \"" << typeid(ReqMsg).name() << "\"");
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to deserialize a \"" << typeid(DpiReqMsg).name() << "\"");
     }
 
     return boost::none;
 }
 
 template<>
-ActiveMQConnectionManager::SerializedMessage MessageSerializer<RspMsg>::serialize(const RspMsg &msg)
+ActiveMQConnectionManager::SerializedMessage MessageSerializer<DpiRspMsg>::serialize(const DpiRspMsg &msg)
 {
     try
     {
@@ -152,7 +149,74 @@ ActiveMQConnectionManager::SerializedMessage MessageSerializer<RspMsg>::serializ
     }
     catch( apache::thrift::TException &e )
     {
-        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to serialize a \"" << typeid(RspMsg).name() << "\"");
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to serialize a \"" << typeid(DpiRspMsg).name() << "\"");
+    }
+
+    return{};
+}
+
+using MpsMsg = Porter::MeterProgramStatusArchiveRequestMsg;
+
+MessagePtr<Thrift::MeterProgramming::MeterProgramStatusArchiveRequest>::type populateThrift(const MpsMsg & imsg)
+{
+    MessagePtr<Thrift::MeterProgramming::MeterProgramStatusArchiveRequest>::type omsg(new Thrift::MeterProgramming::MeterProgramStatusArchiveRequest);
+
+    omsg->__set_configurationId(imsg.configurationId);
+    omsg->__set_error(imsg.error);
+
+    Thrift::Rfn::RfnIdentifier rfnId;
+
+    rfnId.__set_sensorManufacturer(imsg.rfnIdentifier.manufacturer);
+    rfnId.__set_sensorModel(imsg.rfnIdentifier.model);
+    rfnId.__set_sensorSerialNumber(imsg.rfnIdentifier.serialNumber);
+
+    omsg->__set_rfnIdentifier(rfnId);
+
+    //  Hardcoded to Porter
+    omsg->__set_source(Thrift::MeterProgramming::Source::PORTER);
+
+    using PPS = Porter::ProgrammingStatus;
+    using TPS = Thrift::MeterProgramming::ProgrammingStatus::type;
+
+    static const std::map<PPS, TPS> sourceMapping{
+        { PPS::Canceled,   TPS::CANCELED },
+        { PPS::Confirming, TPS::CONFIRMING },
+        { PPS::Failed,     TPS::FAILED },
+        { PPS::Idle,       TPS::IDLE },
+        { PPS::Initiating, TPS::INITIATING },
+        { PPS::Mismatched, TPS::MISMATCHED },
+        { PPS::Uploading,  TPS::UPLOADING }
+    };
+
+    if( auto thriftStatus = mapFind(sourceMapping, imsg.status) )
+    {
+        omsg->__set_status(*thriftStatus);
+    }
+    else
+    {
+        CTILOG_WARN(dout, "No Thrift mapping found for ProgrammingStatus " << static_cast<int>(imsg.status));
+    }
+
+    omsg->__set_timeStamp(as_milliseconds(imsg.timeStamp));
+
+    return omsg;
+}
+
+template<>
+ActiveMQConnectionManager::SerializedMessage MessageSerializer<MpsMsg>::serialize(const MpsMsg &msg)
+{
+    try
+    {
+        auto tmsg = populateThrift(msg);
+
+        if( tmsg.get() )
+        {
+            return SerializeThriftBytes(*tmsg);
+        }
+    }
+    catch( apache::thrift::TException &e )
+    {
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to serialize a \"" << typeid(MpsMsg).name() << "\"");
     }
 
     return{};

@@ -56,41 +56,59 @@ unsigned short E2eDataTransferProtocol::getOutboundIdForEndpoint(const RfnIdenti
 }
 
 
-std::vector<unsigned char> E2eDataTransferProtocol::sendRequest(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token)
+auto E2eDataTransferProtocol::sendRequest(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token) -> Bytes
 {
     if( payload.size() > MaxOutboundPayload )
     {
         throw PayloadTooLarge();
     }
 
-    Coap::scoped_pdu_ptr pdu(coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_GET, getOutboundIdForEndpoint(endpointId), COAP_MAX_PDU_SIZE));
-
-    addToken(pdu, token);
+    auto pdu = Coap::scoped_pdu_ptr::make_get_request(token, getOutboundIdForEndpoint(endpointId));
 
     coap_add_data(pdu, payload.size(), &payload.front());
 
-    const unsigned char *raw_pdu = reinterpret_cast<unsigned char *>(pdu->hdr);
-
-    return std::vector<unsigned char>(raw_pdu, raw_pdu + pdu->length);
+    return pdu.as_bytes();
 }
 
 
-std::vector<unsigned char> E2eDataTransferProtocol::sendReply(const std::vector<unsigned char> &payload, const RfnIdentifier endpointId, const unsigned long token)
+auto E2eDataTransferProtocol::sendPost(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token) -> Bytes
 {
     if( payload.size() > MaxOutboundPayload )
     {
         throw PayloadTooLarge();
     }
 
-    Coap::scoped_pdu_ptr ack_pdu(coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(Coap::ResponseCode::Content), getOutboundIdForEndpoint(endpointId), COAP_MAX_PDU_SIZE));
+    auto pdu = Coap::scoped_pdu_ptr::make_post(token, getOutboundIdForEndpoint(endpointId));
 
-    addToken(ack_pdu, token);
+    coap_add_data(pdu, payload.size(), &payload.front());
 
-    coap_add_data(ack_pdu, payload.size(), &payload.front());
+    return pdu.as_bytes();
+}
 
-    const unsigned char *raw_pdu = reinterpret_cast<const unsigned char *>(ack_pdu->hdr);
 
-    return std::vector<unsigned char>(raw_pdu, raw_pdu + ack_pdu->length);
+auto E2eDataTransferProtocol::sendReply(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token) -> Bytes
+{
+    if( payload.size() > MaxOutboundPayload )
+    {
+        throw PayloadTooLarge();
+    }
+
+    auto ack_pdu = Coap::scoped_pdu_ptr::make_data_ack(token, getOutboundIdForEndpoint(endpointId), payload);
+
+    return ack_pdu.as_bytes();
+}
+
+
+auto E2eDataTransferProtocol::sendBlockReply(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token, Block block) -> Bytes
+{
+    if( payload.size() > MaxOutboundPayload )
+    {
+        throw PayloadTooLarge();
+    }
+
+    auto ack_pdu = Coap::scoped_pdu_ptr::make_block_ack(token, getOutboundIdForEndpoint(endpointId), payload, block.size.szx, block.num, block.more);
+
+    return ack_pdu.as_bytes();
 }
 
 
@@ -114,7 +132,7 @@ YukonError_t E2eDataTransferProtocol::translateIndicationCode(const unsigned sho
     }
 }
 
-E2eDataTransferProtocol::EndpointMessage E2eDataTransferProtocol::handleIndication(const std::vector<unsigned char> &raw_indication_pdu, const RfnIdentifier endpointId)
+auto E2eDataTransferProtocol::handleIndication(const Bytes& raw_indication_pdu, const RfnIdentifier endpointId) -> EndpointMessage
 {
     EndpointMessage message;
 
@@ -124,22 +142,21 @@ E2eDataTransferProtocol::EndpointMessage E2eDataTransferProtocol::handleIndicati
     }
 
     //  parse the payload into the CoAP packet
-    std::vector<unsigned char> mutable_raw_pdu(raw_indication_pdu);
+    auto indication_pdu = Coap::scoped_pdu_ptr::parse(raw_indication_pdu);
 
-    Coap::scoped_pdu_ptr indication_pdu(coap_pdu_init(COAP_MESSAGE_NON, COAP_REQUEST_GET, COAP_INVALID_TID, COAP_MAX_PDU_SIZE));
-
-    coap_pdu_parse(mutable_raw_pdu.data(), mutable_raw_pdu.size(), indication_pdu);
-
+    message.id = indication_pdu->hdr->id;
+    
     //  Decode the token
     message.token = coap_decode_var_bytes(indication_pdu->hdr->token, indication_pdu->hdr->token_length);
     
-    message.status = translateIndicationCode(indication_pdu->hdr->code, endpointId);
+    message.code = indication_pdu->hdr->code;
 
     switch( indication_pdu->hdr->type )
     {
         case COAP_MESSAGE_ACK:
         {
             message.nodeOriginated = false;
+            message.confirmable = false;
 
             const auto existingId = mapFindRef(_outboundIds, endpointId);
 
@@ -164,10 +181,19 @@ E2eDataTransferProtocol::EndpointMessage E2eDataTransferProtocol::handleIndicati
         case COAP_MESSAGE_CON:
         {
             //  This is the behavior at present.  Nodes only send "piggybacked responses" in an ACK to Yukon requests, and do not send CoAP "separate responses" yet.
+            //    When we do receive separate responses, we will need to switch on the incoming request method/response code in indication_pdu->hdr->code, and ideally
+            //    return separate message types for requests vs responses.
             message.nodeOriginated = true;
 
-            const bool confirmable = indication_pdu->hdr->type == COAP_MESSAGE_CON;
-            const std::string type = confirmable ? "CONfirmable" : "NONconfirmable";
+            if( message.code != COAP_REQUEST_GET )
+            {
+                CTILOG_WARN(dout, "Unknown request method " << message.code << " (" << indication_pdu->hdr->id << ") for endpointId " << endpointId);
+
+                throw UnknownRequestMethod(message.code, indication_pdu->hdr->id);
+            }
+
+            message.confirmable = indication_pdu->hdr->type == COAP_MESSAGE_CON;
+            const auto type = message.confirmable ? "CONfirmable" : "NONconfirmable";
 
             CTILOG_INFO(dout, "Received " << type << " packet ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
 
@@ -179,11 +205,6 @@ E2eDataTransferProtocol::EndpointMessage E2eDataTransferProtocol::handleIndicati
             }
 
             _inboundIds[endpointId] = indication_pdu->hdr->id;
-
-            if( confirmable )
-            {
-                message.ack = sendAck(indication_pdu->hdr->id);
-            }
 
             break;
         }
@@ -210,46 +231,31 @@ E2eDataTransferProtocol::EndpointMessage E2eDataTransferProtocol::handleIndicati
     message.data.assign(data, data + len);
 
     //  Look for any block option
-    coap_block_t block;
-
-    if( coap_get_block(indication_pdu, COAP_OPTION_BLOCK2, &block) )
+    if( coap_block_t block; coap_get_block(indication_pdu, COAP_OPTION_BLOCK2, &block) )
     {
-        if( block.m )
-        {
-            message.blockContinuation =
-                    sendBlockContinuation(block.szx, block.num + 1, endpointId, message.token);
-        }
+        message.block = { block.num, !! block.m, 16u << block.szx };
     }
 
     return message;
 }
 
 
-std::vector<unsigned char> E2eDataTransferProtocol::sendBlockContinuation(const unsigned size, const unsigned num, const RfnIdentifier endpointId, const unsigned long token)
+auto E2eDataTransferProtocol::sendBlockContinuation(const BlockSize blockSize, const unsigned num, const RfnIdentifier endpointId, const unsigned long token) -> Bytes
 {
-    Coap::scoped_pdu_ptr continuation_pdu = coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_GET, getOutboundIdForEndpoint(endpointId), COAP_MAX_PDU_SIZE);
+    auto continuation_pdu = Coap::scoped_pdu_ptr::make_get_continuation(token, getOutboundIdForEndpoint(endpointId), blockSize.szx, num);
 
-    addToken(continuation_pdu, token);
-
-    unsigned char buf[4];
-
-    unsigned len = coap_encode_var_bytes(buf, (num << 4) | size);
-
-    coap_add_option(continuation_pdu, COAP_OPTION_BLOCK2, len, buf);
-
-    const unsigned char *raw_pdu = reinterpret_cast<const unsigned char *>(continuation_pdu->hdr);
-
-    return std::vector<unsigned char>(raw_pdu, raw_pdu + continuation_pdu->length);
+    return continuation_pdu.as_bytes();
 }
 
 
-std::vector<unsigned char> E2eDataTransferProtocol::sendAck(const unsigned short id)
+auto E2eDataTransferProtocol::sendAck(const unsigned short id) -> Bytes
 {
-    Coap::scoped_pdu_ptr ack_pdu(coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(Coap::ResponseCode::EmptyMessage), id, COAP_MAX_PDU_SIZE));
+    return Coap::scoped_pdu_ptr::make_ack(id, Coap::ResponseCode::EmptyMessage).as_bytes();
+}
 
-    const unsigned char *raw_pdu = reinterpret_cast<const unsigned char *>(ack_pdu->hdr);
-
-    return std::vector<unsigned char>(raw_pdu, raw_pdu + ack_pdu->length);
+auto E2eDataTransferProtocol::sendBadRequest(const unsigned short id) -> Bytes
+{
+    return Coap::scoped_pdu_ptr::make_ack(id, Coap::ResponseCode::BadRequest).as_bytes();
 }
 
 

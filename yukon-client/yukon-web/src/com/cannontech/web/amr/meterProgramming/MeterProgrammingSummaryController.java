@@ -37,7 +37,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.programming.dao.MeterProgrammingDao;
 import com.cannontech.common.device.programming.model.MeterProgram;
-import com.cannontech.common.device.programming.model.MeterProgramUploadCancelResult;
+import com.cannontech.common.device.programming.model.MeterProgramCommandResult;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -102,11 +102,11 @@ public class MeterProgrammingSummaryController {
         List<MeterProgramStatistics> detail = meterProgrammingSummaryDao.getProgramStatistics(userContext);
         
         List<MeterProgramStatistics> specialCases = detail.stream()
-                                                          .filter(statistic -> statistic.isNotYukonSource())
+                                                          .filter(statistic -> statistic.getProgramInfo().getGuid() == null)
                                                           .collect(Collectors.toList());
         
         List<MeterProgramStatistics> yukonPrograms = detail.stream()
-                                                           .filter(statistic -> statistic.isYukonSource())
+                                                           .filter(statistic -> !specialCases.contains(statistic))
                                                            .collect(Collectors.toList());
         
         ProgramSortBy sortBy = ProgramSortBy.valueOf(sorting.getSort());
@@ -176,11 +176,11 @@ public class MeterProgrammingSummaryController {
         getFilteredResults(filter, sorting, paging, model, userContext);
         
         List<MeterProgramInfo> specialCases = programs.stream()
-                .filter(program -> program.getSource().isNotYukon())
+                .filter(program -> program.getSource() != null && program.getSource().isNotYukon())
                 .collect(Collectors.toList());
 
         List<MeterProgramInfo> yukonPrograms = programs.stream()
-                        .filter(program -> program.getSource().isYukon())
+                        .filter(program -> program.getSource() == null || program.getSource().isYukon())
                         .collect(Collectors.toList());
         
         List<MeterProgramInfo> sortedPrograms = new ArrayList<>();
@@ -279,14 +279,17 @@ public class MeterProgrammingSummaryController {
     }
     
     @PostMapping("{id}/cancelProgramming")
-    public @ResponseBody Map<String, Object> cancelProgramming(@PathVariable int id, YukonUserContext userContext) {
+    public @ResponseBody Map<String, Object> cancelProgramming(@PathVariable int id, String guid, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
         SimpleDevice device = new SimpleDevice(pao);
-        MeterProgramUploadCancelResult result = meterProgrammingService.cancelMeterProgramUpload(device, userContext);
-        json.put("result", result);
-        json.put("successMsg", accessor.getMessage(baseKey + "summary.cancelSuccessful"));
+        MeterProgramCommandResult result = meterProgrammingService.cancelMeterProgramUpload(device, userContext,  UUID.fromString(guid));
+        if (result.isSuccess()) {
+            json.put("successMsg", accessor.getMessage(baseKey + "summary.cancelSuccessful"));
+        } else {
+            json.put("errorMsg", result.getErrorText());
+        }
         return json;
     }
     
@@ -294,8 +297,14 @@ public class MeterProgrammingSummaryController {
     public @ResponseBody Map<String, Object> acceptProgramming(@PathVariable int id, String guid, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
-        //TODO: Accept Programming State
-        json.put("successMsg", accessor.getMessage(baseKey + "summary.acceptSuccessful"));
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
+        SimpleDevice device = new SimpleDevice(pao);
+        boolean success = meterProgrammingService.acceptMeterProgrammingStatus(device, userContext, UUID.fromString(guid));
+        if (success) {
+            json.put("successMsg", accessor.getMessage(baseKey + "summary.acceptSuccessful"));
+        } else {
+            json.put("errorMsg", accessor.getMessage(baseKey + "summary.acceptError"));
+        }
         return json;
     }
     
@@ -303,13 +312,14 @@ public class MeterProgrammingSummaryController {
     public @ResponseBody Map<String, Object> readProgramming(@PathVariable int id, YukonUserContext userContext, HttpServletRequest request) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
-        DeviceCollection deviceCollection = dcProducer.createDeviceCollection(Collections.singletonList(id), null);
-        int key = meterProgrammingService.retrieveMeterProgrammingStatus(deviceCollection, userContext);
-        String contextPath = request.getContextPath();
-        String url = contextPath + "/collectionActions/progressReport/view?key=" + key;
-        String readLink = accessor.getMessage(baseKey + "summary.readLink");
-        String urlLink = "<a href='" + url + "' target='_blank'>" + readLink + "</a>";
-        json.put("successMsg", accessor.getMessage(baseKey + "summary.readSuccessful", urlLink));
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
+        SimpleDevice device = new SimpleDevice(pao);
+        MeterProgramCommandResult result = meterProgrammingService.retrieveMeterProgrammingStatus(device, userContext);
+        if (result.isSuccess()) {
+            json.put("successMsg", accessor.getMessage(baseKey + "summary.readSuccessful"));
+        } else {
+            json.put("errorMsg", result.getErrorText());
+        }
         return json;
     }
     
@@ -317,13 +327,14 @@ public class MeterProgrammingSummaryController {
     public @ResponseBody Map<String, Object> resendProgramming(@PathVariable int id, String guid, YukonUserContext userContext, HttpServletRequest request) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
-        DeviceCollection deviceCollection = dcProducer.createDeviceCollection(Collections.singletonList(id), null);
-        int key = meterProgrammingService.initiateMeterProgramUpload(deviceCollection, UUID.fromString(guid), userContext);
-        String contextPath = request.getContextPath();
-        String resendLink = accessor.getMessage(baseKey + "summary.resendLink");
-        String url = contextPath + "/collectionActions/progressReport/view?key=" + key;
-        String urlLink = "<a href='" + url + "' target='_blank'>" + resendLink + "</a>";
-        json.put("successMsg", accessor.getMessage(baseKey + "summary.resendSuccessful", urlLink));
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
+        SimpleDevice device = new SimpleDevice(pao);
+        MeterProgramCommandResult result = meterProgrammingService.reinitiateMeterProgramUpload(device, userContext, UUID.fromString(guid));
+        if (result.isSuccess()) {
+            json.put("successMsg", accessor.getMessage(baseKey + "summary.resendSuccessful"));
+        } else {
+            json.put("errorMsg", result.getErrorText());
+        }
         return json;
     }
 

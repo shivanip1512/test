@@ -453,8 +453,6 @@ auto extractExpectMore(const CtiDeviceSingle::ReturnMsgList & returnMsgs)
     return boost::copy_range<std::vector<bool>>(returnMsgs | boost::adaptors::transformed([](const std::unique_ptr<CtiReturnMsg> &msg) { return msg->ExpectMore(); }));
 }
 
-#if __cplusplus >= 201703L  //  only enable if the translation unit is C++17 or above
-
 struct PaoInfoValidator
 {
     CtiTableDynamicPaoInfo::PaoInfoKeys key;
@@ -480,8 +478,6 @@ struct PaoInfoValidator
         return std::visit(visitor, value);
     }
 };
-
-#endif
 
 }
 }

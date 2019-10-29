@@ -4,11 +4,10 @@
 #include "cmd_rfn.h"
 
 #include "cmd_rfn_ConfigNotification.h"
+#include "cmd_rfn_MeterProgramming.h"
 #include "error_helper.h"
 
-namespace Cti {
-namespace Devices {
-namespace Commands {
+namespace Cti::Devices::Commands {
 
 using Logging::Vector::Hex::operator<<;
 
@@ -47,8 +46,13 @@ auto RfnCommand::getApplicationServiceId() const -> ASID
     return ASID::ChannelManager;
 }
 
+bool RfnCommand::isPost() const
+{
+    return false;
+}
 
-std::unique_ptr<RfnConfigNotificationCommand> RfnCommand::handleNodeOriginated(const CtiTime now, RfnResponsePayload payload)
+
+std::unique_ptr<RfnConfigNotificationCommand> RfnCommand::handleUnsolicitedReport(const CtiTime now, RfnResponsePayload payload)
 {
     validate( Condition( ! payload.empty(), ClientErrors::DataMissing ) << "Empty payload");
 
@@ -70,6 +74,14 @@ std::unique_ptr<RfnConfigNotificationCommand> RfnCommand::handleNodeOriginated(c
 }
 
 
+std::unique_ptr<RfnMeterProgrammingGetFileCommand> RfnCommand::handleMeterProgramRequest(const CtiTime now, std::string uri)
+{
+    CTILOG_INFO(dout, "Handling meter program request: " << FormattedList::of(
+        "URI", uri,
+        "Block options", "<block options>"));
+
+    return nullptr;
 }
-}
+
+
 }

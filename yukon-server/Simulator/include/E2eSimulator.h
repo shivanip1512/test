@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rfn_asid.h"
+
 namespace cms {
 class Session;
 class Message;
@@ -22,7 +24,8 @@ namespace Cti::Messaging::Rfn {
 
 namespace Cti::Simulator {
 
-struct e2edt_packet;
+struct e2edt_request_packet;
+struct e2edt_reply_packet;
 
 class E2eSimulator
 {
@@ -34,6 +37,8 @@ public:
     void stop();
 
 private:
+
+    using Bytes = std::vector<unsigned char>;
 
     std::unique_ptr<Messaging::ActiveMQ::ManagedConnection> conn;
 
@@ -51,15 +56,18 @@ private:
     void sendNetworkManagerRequestAck(const Messaging::Rfn::NetworkManagerRequestHeader&, const cms::Destination*);
     void sendE2eDataConfirm(const Messaging::Rfn::E2eDataRequestMsg&);
 
-    std::unique_ptr<e2edt_packet> parseE2eDtRequestPayload(const std::vector<unsigned char>&, const RfnIdentifier&);
+    std::unique_ptr<e2edt_request_packet> parseE2eDtRequestPayload(const std::vector<unsigned char>&, const RfnIdentifier&);
 
-    std::vector<unsigned char> buildE2eDtReplyPayload(const e2edt_packet&);
-    std::vector<unsigned char> buildE2eRequestNotAcceptable(unsigned id, unsigned long token) const;
+    Bytes buildE2eDtReplyPayload(const e2edt_reply_packet&) const;
+    Bytes buildE2eDtRequestPayload(const e2edt_request_packet&) const;
+    Bytes buildE2eRequestNotAcceptable(unsigned id, unsigned long token) const;
 
     void sendE2eDataIndication(const Messaging::Rfn::E2eDataRequestMsg &, const std::vector<unsigned char>&);
 
-    std::vector<unsigned char> buildRfnResponse(const std::vector<unsigned char>& request, const unsigned char applicationServiceId, const RfnIdentifier& rfnId);
-    std::vector<unsigned char> buildDnp3Response(const std::vector<unsigned char>& request);
+    Bytes buildRfnResponse(const e2edt_request_packet& request, const Messaging::Rfn::ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId);
+    Bytes buildRfnGetResponse(const std::vector<unsigned char> &request, const Messaging::Rfn::ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId);
+    Bytes buildRfnGetRequest(const e2edt_request_packet& request, const Messaging::Rfn::ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId);
+    Bytes buildDnp3Response(const std::vector<unsigned char>& request);
 };
 
 }

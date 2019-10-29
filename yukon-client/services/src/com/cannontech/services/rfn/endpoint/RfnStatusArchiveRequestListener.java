@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveRequest;
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveResponse;
@@ -31,10 +32,12 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
+import com.cannontech.common.util.jms.ThriftRequestTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.serialization.thrift.serializer.MeterProgramStatusArchiveRequestSerializer;
 import com.cannontech.services.rfn.RfnArchiveProcessor;
 import com.cannontech.services.rfn.RfnArchiveQueueHandler;
 
@@ -46,6 +49,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     private JmsTemplate jmsTemplate;
+    private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
     private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
     /**
      * Meter Mode                       Relay Status    RfnMeterDisconnectState                                 Comments
@@ -155,13 +159,14 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
 	private void archiveProgrammingStatus(MeterInfoStatus status) {
 		 if (status.getData() != null && status.getData().getMeterConfigurationID() != null) {
 			MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
+			request.setError(DeviceError.SUCCESS);
 			request.setSource(Source.SM_STATUS_ARCHIVE);
 			request.setRfnIdentifier(status.getRfnIdentifier());
 			request.setConfigurationId(status.getData().getMeterConfigurationID());
 			request.setStatus(ProgrammingStatus.IDLE);
 			request.setTimeStamp(status.getTimeStamp());
-			log.debug("Sending {} on queue {}", request, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName());
-			jmsTemplate.convertAndSend(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(), request);
+			log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
+			thriftMessenger.send(request);
 		} else {
 			log.info("Attempt to update meter programming status {} failed. MeterConfigurationID doesn't exist",
 					status);
@@ -216,5 +221,8 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(true);
         jmsTemplate.setDeliveryPersistent(false);
+        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory, 
+                                                      JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
+                                                      new MeterProgramStatusArchiveRequestSerializer());
     }
 }

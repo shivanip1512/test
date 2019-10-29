@@ -1,10 +1,9 @@
 #pragma once
 
 #include "dlldefs.h"
+#include "streamBuffer.h"
 
-namespace Cti {
-namespace Messaging {
-namespace Rfn {
+namespace Cti::Messaging::Rfn {
 
 enum class IM_EX_MSG ApplicationServiceIdentifiers : unsigned char
 {
@@ -25,34 +24,37 @@ enum class IM_EX_MSG ApplicationServiceIdentifiers : unsigned char
 };
 
 namespace {
-
     using ASIDs = ApplicationServiceIdentifiers;
 
-    bool isAsid_E2eDt(const unsigned char &asid)
+    bool isAsid_E2eDt(const ASIDs asid)
     {
-        static const std::set<unsigned char> e2eDtAsids{
-            static_cast<unsigned char>(ASIDs::ChannelManager),
-            static_cast<unsigned char>(ASIDs::E2EDT),
-            static_cast<unsigned char>(ASIDs::EventManager),
-            static_cast<unsigned char>(ASIDs::HubMeterCommandSet),
-            static_cast<unsigned char>(ASIDs::BulkMessageHandler),
-        };
-
-        return e2eDtAsids.count(asid);
+        switch( asid )
+        {
+            case ASIDs::ChannelManager:
+            case ASIDs::E2EDT:
+            case ASIDs::EventManager:
+            case ASIDs::HubMeterCommandSet:
+            case ASIDs::BulkMessageHandler:
+                return true;
+            default:
+                return false;
+        }
     }
 
-    bool isAsid_Dnp3(const unsigned char &asid)
+    bool isAsid_Dnp3(const ASIDs asid)
     {
-        return asid == static_cast<unsigned char>(ASIDs::E2EAP_DNP3);
+        return asid == ASIDs::E2EAP_DNP3;
     }
 
-    bool isAsid_DataStreaming(const unsigned char &asid)
+    bool isAsid_DataStreaming(const ASIDs asid)
     {
-        return asid == static_cast<unsigned char>(ASIDs::E2EAP_DataStreaming);
+        return asid == ASIDs::E2EAP_DataStreaming;
     }
 
+    StreamBufferSink& operator<<(StreamBufferSink& sb, ASIDs asid)
+    {
+        return sb << static_cast<unsigned char>(asid);
+    }
 }
 
-}
-}
 }

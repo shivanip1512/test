@@ -216,7 +216,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         builder.putAll(EndDeviceStateKind.IN_SERVICE, DeviceError.ABNORMAL_RETURN.getCode(),
                                                       DeviceError.WORD_1_NACK.getCode(),
                                                       DeviceError.ROUTE_FAILED.getCode(),
-                                                      DeviceError.SUCCESSFUL_READ.getCode());
+                                                      DeviceError.SUCCESS.getCode());
         ImmutableMultimap<EndDeviceStateKind, Integer> systemDefault = builder.build();
 
         supportedEndDeviceStateTypes =
@@ -1486,7 +1486,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                         if (meters.contains(yukonMeter)) {
                             meters.remove(yukonMeter);
                             EndDeviceStateType deviceStateType = new EndDeviceStateType();
-                            deviceStateType.setValue(getForStatusCode(DeviceError.SUCCESSFUL_READ.getCode()));  // assume if we got one value, then the meter must be talking successfully
+                            deviceStateType.setValue(getForStatusCode(DeviceError.SUCCESS.getCode()));  // assume if we got one value, then the meter must be talking successfully
                             EndDeviceState endDeviceState = buildEndDeviceStates(yukonMeter, deviceStateType, value.getPointDataTimeStamp(), value.toString());
                             sendEndDeviceStatesNotification(yukonMeter, mspVendor, transactionId, responseUrl, endDeviceState);
                         }

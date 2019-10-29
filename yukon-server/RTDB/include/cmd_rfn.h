@@ -31,6 +31,9 @@ class RfnTouScheduleGetConfigurationCommand;
 class RfnTouScheduleSetConfigurationCommand;
 class RfnTouStateConfigurationCommand;
 class RfnTouHolidayConfigurationCommand;
+class RfnMeterProgrammingGetConfigurationCommand;
+class RfnMeterProgrammingSetConfigurationCommand;
+class RfnMeterProgrammingGetFileCommand;
 class RfnGetOvUvAlarmConfigurationCommand;
 class RfnSetOvUvAlarmProcessingStateCommand;
 class RfnSetOvUvAlarmRepeatCountCommand;
@@ -50,10 +53,10 @@ class RfnTemperatureAlarmCommand;
 
 struct RfnCommandResult
 {
-    RfnCommandResult(const std::string &desc) 
+    RfnCommandResult(const std::string desc) 
         :   RfnCommandResult(desc, ClientErrors::None)
     {}
-    RfnCommandResult(const std::string &desc, YukonError_t error) 
+    RfnCommandResult(const std::string desc, YukonError_t error) 
         :   description(desc)
         ,   status(error) 
     {}
@@ -91,6 +94,9 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnTouScheduleSetConfigurationCommand &)               {}
         virtual void handleCommandResult(const RfnTouStateConfigurationCommand &)                     {}
         virtual void handleCommandResult(const RfnTouHolidayConfigurationCommand &)                   {}
+        virtual void handleCommandResult(const RfnMeterProgrammingGetConfigurationCommand &)          {}
+        virtual void handleCommandResult(const RfnMeterProgrammingSetConfigurationCommand &)          {}
+        virtual void handleCommandResult(const RfnMeterProgrammingGetFileCommand &)                   {}
         virtual void handleCommandResult(const RfnGetOvUvAlarmConfigurationCommand &)                 {}
         virtual void handleCommandResult(const RfnSetOvUvAlarmProcessingStateCommand &)               {}
         virtual void handleCommandResult(const RfnSetOvUvAlarmRepeatCountCommand &)                   {}
@@ -141,11 +147,14 @@ public:
     virtual RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response) = 0;
     virtual RfnCommandResultList handleError(const CtiTime now, const YukonError_t errorCode) = 0;
 
-    static std::unique_ptr<RfnConfigNotificationCommand> handleNodeOriginated(const CtiTime now, RfnResponsePayload payload);
+    static std::unique_ptr<RfnConfigNotificationCommand> handleUnsolicitedReport(const CtiTime now, RfnResponsePayload payload);
+    static std::unique_ptr<RfnMeterProgrammingGetFileCommand> handleMeterProgramRequest(const CtiTime now, std::string uri);
 
     using ASID = Messaging::Rfn::ApplicationServiceIdentifiers;
 
     virtual ASID getApplicationServiceId() const;
+
+    virtual bool isPost() const;
 
 protected:
 
