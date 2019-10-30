@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/11/2019 1:31:48 PM                        */
+/* Created on:     10/30/2019 9:54:25 AM                        */
 /*==============================================================*/
 
 
@@ -3235,6 +3235,7 @@ create table DeviceMCT400Series  (
 create table DeviceMacAddress  (
    DeviceId             NUMBER                          not null,
    MacAddress           VARCHAR2(255)                   not null,
+   SecondaryMacAddress  VARCHAR2(255),
    constraint PK_DeviceMacAddress primary key (DeviceId)
 );
 
@@ -7239,7 +7240,7 @@ create table MeterProgram  (
    Guid                 VARCHAR2(40)                    not null,
    Name                 VARCHAR2(100)                   not null,
    PaoType              VARCHAR2(30)                    not null,
-   Program              BLOB                            not null,
+   Program              BINMax                          not null,
    constraint PK_MeterProgram primary key (Guid)
 );
 
