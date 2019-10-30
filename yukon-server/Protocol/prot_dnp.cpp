@@ -415,8 +415,6 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
                             if( ao->getStatus() )
                             {
-                                retVal = ClientErrors::Abnormal;
-
                                 s += "unsuccessful";
                             }
                             else
