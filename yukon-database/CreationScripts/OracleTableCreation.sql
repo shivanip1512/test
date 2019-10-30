@@ -7240,7 +7240,7 @@ create table MeterProgram  (
    Guid                 VARCHAR2(40)                    not null,
    Name                 VARCHAR2(100)                   not null,
    PaoType              VARCHAR2(30)                    not null,
-   Program              BINMax                          not null,
+   Program              BLOB                            not null,
    constraint PK_MeterProgram primary key (Guid)
 );
 
