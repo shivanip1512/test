@@ -21,6 +21,8 @@ yukon.mapping = (function () {
     /** @type {string} - The default projection code of our map tiles. */
     _destProjection = 'EPSG:3857',
     _srcProjection = 'EPSG:4326',
+
+    _elevationLayer,
     
     /** @type {Object.<string, {ol.style.Style}>} - A cache of styles to avoid creating lots of objects using lots of memory. */
     _styles = { 
@@ -339,6 +341,25 @@ yukon.mapping = (function () {
             } else {
                 map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
                 map.getView().setZoom(13);
+            }
+        },
+
+        showHideElevationLayer: function(map, button) {
+            var checked = button.hasClass('on');
+            if (checked) {
+                button.removeClass('on');
+                map.removeLayer(_elevationLayer);
+            } else {
+                _elevationLayer = new ol.layer.VectorTile({
+                    declutter: true,
+                    opacity: 0.6,
+                    source: new ol.source.VectorTile({
+                        format: new ol.format.MVT(),
+                        url: yg.map_devices_elevation_url
+                    }),
+                })
+                button.addClass('on');
+                map.addLayer(_elevationLayer);
             }
         },
 
